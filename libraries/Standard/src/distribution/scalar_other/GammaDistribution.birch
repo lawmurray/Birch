@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/gamma.hpp>
 }}
 
 /**
@@ -80,7 +80,7 @@ function simulate_gamma(k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   cpp{{
-  return std::gamma_distribution<birch::Real>(k, θ)(rng);
+  return std::gamma_distribution<Real>(k, θ)(rng);
   }}
 }
 

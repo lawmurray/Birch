@@ -38,15 +38,21 @@ void birch::CppGenerator::visit(const Literal<bool>* o) {
 }
 
 void birch::CppGenerator::visit(const Literal<int64_t>* o) {
-  middle("birch::Integer(" << o->str << ')');
+  middle("Integer(" << o->str << ')');
 }
 
 void birch::CppGenerator::visit(const Literal<double>* o) {
-  middle(o->str);
+  if (o->str == "nan") {
+    middle("std::numeric_limits<double>::quiet_NaN()");
+  } else if (o->str == "inf") {
+    middle("std::numeric_limits<double>::infinity()");
+  } else {
+    middle(o->str);
+  }
 }
 
 void birch::CppGenerator::visit(const Literal<const char*>* o) {
-  middle("birch::String(" << o->str << ')');
+  middle("String(" << o->str << ')');
 }
 
 void birch::CppGenerator::visit(const Parentheses* o) {
@@ -108,11 +114,11 @@ void birch::CppGenerator::visit(const Assign* o) {
   if (*o->name == "<-?") {
     line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "<~") {
-    line(o->left << "= birch::handle_simulate(" << o->right << ");");
+    line(o->left << "= handle_simulate(" << o->right << ");");
   } else if (*o->name == "~>") {
-    line("birch::handle_observe(" << o->left << ", " << o->right << ");");
+    line("handle_observe(" << o->left << ", " << o->right << ");");
   } else if (*o->name == "~") {
-    line("birch::handle_assume(" << o->left << ", " << o->right << ");");
+    line("handle_assume(" << o->left << ", " << o->right << ");");
   } else {
     middle(o->left << " = " << o->right);
   }
@@ -207,18 +213,27 @@ void birch::CppGenerator::visit(const Parameter* o) {
 }
 
 void birch::CppGenerator::visit(const NamedExpression* o) {
-  if (inConstructor && o->uses->useCount == 1) {
-    middle("std::move(" << o->name << ')');
-  } else {
-    middle(o->name);
-  }
+  middle(o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }
 }
 
 void birch::CppGenerator::visit(const File* o) {
-  *this << o->root;
+  /* raw C++ code */
+  for (auto o1 : *o->root) {
+    if (dynamic_cast<const Raw*>(o1)) {
+      *this << o1;
+    }
+  }
+
+  line("namespace birch {");
+  for (auto o1 : *o->root) {
+    if (!dynamic_cast<const Raw*>(o1)) {
+      *this << o1;
+    }
+  }
+  line('}');
 }
 
 void birch::CppGenerator::visit(const GlobalVariable* o) {
@@ -228,11 +243,7 @@ void birch::CppGenerator::visit(const GlobalVariable* o) {
   if (header) {
     middle("extern ");
   }
-  start(o->type << ' ');
-  if (!header) {
-    middle("birch::");
-  }
-  middle(o->name);
+  start(o->type << ' ' << o->name);
   if (!header) {
     genInit(o);
   }
@@ -275,11 +286,7 @@ void birch::CppGenerator::visit(const Function* o) {
     if (!header && o->isGeneric()) {
       middle("inline ");
     }
-    middle(o->returnType << ' ');
-    if (!header) {
-      middle("birch::");
-    }
-    middle(o->name << '(' << o->params << ')');
+    middle(o->returnType << ' ' << o->name << '(' << o->params << ')');
     if (header) {
       finish(";");
     } else {
@@ -302,7 +309,7 @@ void birch::CppGenerator::visit(const Program* o) {
     if (header) {
       line("extern \"C\" int " << o->name << "(int, char**);");
     } else {
-      line("int birch::" << o->name << "(int argc_, char** argv_) {");
+      line("int " << o->name << "(int argc_, char** argv_) {");
       in();
 
       /* program options */
@@ -385,17 +392,17 @@ void birch::CppGenerator::visit(const Program* o) {
           line("if (!::optarg) {");
           in();
           genSourceLine(p->loc);
-          line("birch::error(birch::String(\"value required for option --\") + birch::String(long_options_[::optopt].name));");
+          line("error(String(\"value required for option --\") + String(long_options_[::optopt].name));");
           out();
           genSourceLine(p->loc);
           line("}");
           genSourceLine(p->loc);
           auto type = dynamic_cast<Named*>(p->type->unwrap());
           if (type && type->name->str() != "String") {
-            start(name << " = birch::from_string<birch::" << type->name << '>');
-            finish("(birch::String(::optarg));");
+            start(name << " = from_string<" << type->name << '>');
+            finish("(String(::optarg));");
           } else {
-            line(name << " = birch::String(::optarg);");
+            line(name << " = String(::optarg);");
           }
           genSourceLine(p->loc);
           line("break;");
@@ -406,21 +413,21 @@ void birch::CppGenerator::visit(const Program* o) {
         line("case '?':");
         in();
         genSourceLine(o->loc);
-        line("birch::error(birch::String(\"unrecognized option --\") + birch::String(argv_[::optind - 1]));");
+        line("error(String(\"unrecognized option --\") + String(argv_[::optind - 1]));");
         out();
 
         genSourceLine(o->loc);
         line("case ':':");
         in();
         genSourceLine(o->loc);
-        line("birch::error(birch::String(\"value required for option --\") + birch::String(long_options_[::optopt].name));");
+        line("error(String(\"value required for option --\") + String(long_options_[::optopt].name));");
         out();
 
         genSourceLine(o->loc);
         line("default:");
         in();
         genSourceLine(o->loc);
-        line("birch::error(birch::String(\"unknown error parsing command-line options.\"));");
+        line("error(String(\"unknown error parsing command-line options.\"));");
         out();
 
         out();
@@ -461,9 +468,6 @@ void birch::CppGenerator::visit(const BinaryOperator* o) {
       middle("inline ");
     }
     middle(o->returnType << ' ');
-    if (!header) {
-      middle("birch::");
-    }
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -489,9 +493,6 @@ void birch::CppGenerator::visit(const UnaryOperator* o) {
     genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
-    if (!header) {
-      middle("birch::");
-    }
     if (isTranslatable(o->name->str())) {
       middle("operator" << o->name->str());
     } else {
@@ -537,7 +538,7 @@ void birch::CppGenerator::visit(const Braces* o) {
 
 void birch::CppGenerator::visit(const Factor* o) {
   genSourceLine(o->loc);
-  line("birch::handle_factor(" << o->single << ");");
+  line("handle_factor(" << o->single << ");");
 }
 
 void birch::CppGenerator::visit(const ExpressionStatement* o) {
@@ -616,9 +617,9 @@ void birch::CppGenerator::visit(const With* o) {
   genSourceLine(o->loc);
   line("{");
   in();
-  line("auto handler_ = birch::swap_handler(" << o->single << ");");
+  line("auto handler_ = swap_handler(" << o->single << ");");
   *this << o->braces->strip();
-  line("birch::set_handler(handler_);");
+  line("set_handler(handler_);");
   out();
   line("}");
 }
@@ -672,11 +673,7 @@ void birch::CppGenerator::visit(const MemberType* o) {
 }
 
 void birch::CppGenerator::visit(const NamedType* o) {
-  if (o->isGeneric()) {
-    middle(o->name);
-  } else {
-    middle("birch::" << o->name);
-  }
+  middle(o->name);
   if (!o->typeArgs->isEmpty()) {
     middle('<' << o->typeArgs << '>');
   }

@@ -190,9 +190,9 @@ void birch::CppGenerator::genInit(const T* o) {
       middle(" = ");
     }
     if (*o->op == "<~") {
-      middle("birch::handle_simulate(" << o->value << ')');
+      middle("handle_simulate(" << o->value << ')');
     } else if (*o->op == "~") {
-      middle("birch::handle_assume(" << o->value << ')');
+      middle("handle_assume(" << o->value << ')');
     } else {
       middle(o->value);
     }

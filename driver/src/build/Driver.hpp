@@ -106,11 +106,9 @@ private:
   void target(const std::string& cmd = "");
 
   /**
-   * Create the package.r
-   *
-   * @param includeRequires Include checks for required packages?
+   * Create the package.
    */
-  Package* createPackage(bool includeRequires);
+  Package* createPackage();
 
   /**
    * Consume a list of files from the build configuration file contents.

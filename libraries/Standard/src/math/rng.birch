@@ -1,6 +1,4 @@
 hpp{{
-#include <random>
-
 /*
  * Pseudorandom number generator for each thread.
  */

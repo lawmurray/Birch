@@ -24,4 +24,20 @@ struct is_pointer<T&&> {
   static const bool value = is_pointer<T>::value;
 };
 
+/**
+ * If `T` is a pointer type, unwrap it to the referent type, otherwise to `T`.
+ */
+template<class T>
+struct unwrap_pointer {
+  using type = T;
+};
+template<class T>
+struct unwrap_pointer<T&> {
+  using type = typename unwrap_pointer<T>::type;
+};
+template<class T>
+struct unwrap_pointer<T&&> {
+  using type = typename unwrap_pointer<T>::type;
+};
+
 }

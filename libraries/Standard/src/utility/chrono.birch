@@ -1,7 +1,8 @@
 cpp{{
 #include <chrono>
 
-thread_local static std::chrono::time_point<std::chrono::steady_clock> savedTimePoint = std::chrono::steady_clock::now();
+thread_local static std::chrono::time_point<std::chrono::steady_clock>
+    savedTimePoint = std::chrono::steady_clock::now();
 }}
 
 /**

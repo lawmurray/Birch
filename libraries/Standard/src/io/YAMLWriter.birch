@@ -1,7 +1,3 @@
-hpp{{
-#include <yaml.h>
-}}
-
 /**
  * Writer for YAML files.
  *
@@ -58,8 +54,8 @@ class YAMLWriter < Writer {
   override function flush() {
     cpp{{
     yaml_emitter_flush(&this->emitter);
-    }}
     fflush(file);
+    }}
   }
 
   override function close() {
@@ -72,8 +68,8 @@ class YAMLWriter < Writer {
     yaml_stream_end_event_initialize(&this->event);
     yaml_emitter_emit(&this->emitter, &this->event);
     yaml_emitter_delete(&this->emitter);
-    }}
     fclose(file);
+    }}
   }
 
   override function visit(keys:String[_], values:Buffer[_]) {

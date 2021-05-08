@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/weibull.hpp>
 }}
 
 /**
@@ -72,7 +72,7 @@ function simulate_weibull(k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
   cpp{{
-  return std::weibull_distribution<birch::Real>(k, λ)(rng);
+  return std::weibull_distribution<Real>(k, λ)(rng);
   }}
 }
 

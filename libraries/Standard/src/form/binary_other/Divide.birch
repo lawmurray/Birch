@@ -54,7 +54,7 @@ operator (x:Integer[_]/y:Integer) -> Integer[_] {
  */
 operator (x:Integer[_]/y:Real) -> Real[_] {
   cpp{{
-  return x.toEigen().cast<birch::Real>().operator/(y);
+  return x.toEigen().cast<Real>().operator/(y);
   }}
 }
 
@@ -88,7 +88,7 @@ operator (x:Integer[_,_]/y:Integer) -> Integer[_,_] {
  */
 operator (x:Integer[_,_]/y:Real) -> Real[_,_] {
   cpp{{
-  return x.toEigen().cast<birch::Real>().operator/(y);
+  return x.toEigen().cast<Real>().operator/(y);
   }}
 }
 

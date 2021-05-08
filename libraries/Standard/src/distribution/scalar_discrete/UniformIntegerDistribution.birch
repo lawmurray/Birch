@@ -1,3 +1,7 @@
+cpp{{
+#include <boost/math/distributions/uniform.hpp>
+}}
+
 /**
  * Uniform integer distribution.
  */
@@ -64,7 +68,7 @@ function UniformInteger<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
 function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
   assert l <= u;
   cpp{{
-  return std::uniform_int_distribution<birch::Integer>(l, u)(rng);
+  return std::uniform_int_distribution<Integer>(l, u)(rng);
   }}
 }
 

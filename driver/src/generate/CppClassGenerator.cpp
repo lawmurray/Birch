@@ -36,7 +36,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
       }
       if (!o->has(STRUCT)) {
         middle(" : public ");
-        genBase(o);
+        genBase(o, false);
       }
       finish(" {");
       line("public:");
@@ -60,7 +60,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
       middle('(' << o->name << '_');
       if (!o->has(STRUCT)) {
         middle(", ");
-        genBase(o);
+        genBase(o, true);
       }
       finish(')');
       genSourceLine(o->loc);
@@ -91,9 +91,8 @@ void birch::CppClassGenerator::visit(const Class* o) {
         * overridden */
         std::set<std::string> names;
         for (auto f : memberFunctions) {
-          auto name = f->name->str();
-          if (o->scope->overrides(name)) {
-            names.insert(name);
+          if (f->has(OVERRIDE)) {
+            names.insert(f->name->str());
           }
         }
 
@@ -111,7 +110,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
     if (!header) {
       genTemplateParams(o);
       genSourceLine(o->loc);
-      start("birch::" << o->name << '_');
+      start(o->name << '_');
       genTemplateArgs(o);
       middle("::");
     } else {
@@ -177,10 +176,10 @@ void birch::CppClassGenerator::visit(const Class* o) {
       if (header) {
         line("extern \"C\" " << o->name << "_* make_" << o->name << "_();");
       } else {
-        line("birch::" << o->name << "_* birch::make_" << o->name << "_() {");
+        line(o->name << "_* make_" << o->name << "_() {");
         in();
         genSourceLine(o->loc);
-        line("return new birch::" << o->name << "_();");
+        line("return new " << o->name << "_();");
         genSourceLine(o->loc);
         out();
         line("}");
@@ -214,7 +213,7 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
     }
     middle(o->returnType << ' ');
     if (!header) {
-      middle("birch::" << currentClass->name << '_');
+      middle(currentClass->name << '_');
       genTemplateArgs(currentClass);
       middle("::");
     }
@@ -240,8 +239,8 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
 
 void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
+    start("");
     if (header) {
-      start("");
       if (!currentClass->has(FINAL)) {
         genSourceLine(o->loc);
         middle("virtual ");
@@ -249,13 +248,12 @@ void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
     } else {
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
-      start("birch::");
     }
     middle(currentClass->name << '_');
     genTemplateArgs(currentClass);
     middle("& ");
     if (!header) {
-      middle("birch::" << currentClass->name << '_');
+      middle(currentClass->name << '_');
       genTemplateArgs(currentClass);
       middle("::");
     }
@@ -287,7 +285,7 @@ void birch::CppClassGenerator::visit(const ConversionOperator* o) {
     } else {
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
-      start("birch::" << currentClass->name << '_');
+      start(currentClass->name << '_');
       genTemplateArgs(currentClass);
       middle("::");
     }
@@ -326,7 +324,7 @@ void birch::CppClassGenerator::visit(const SliceOperator* o) {
       middle(' ');
     }
     if (!header) {
-      middle("birch::" << currentClass->name << '_');
+      middle(currentClass->name << '_');
       genTemplateArgs(currentClass);
       middle("::");
     }
@@ -346,16 +344,18 @@ void birch::CppClassGenerator::visit(const SliceOperator* o) {
   }
 }
 
-void birch::CppClassGenerator::genBase(const Class* o) {
+void birch::CppClassGenerator::genBase(const Class* o,
+    const bool includeTypename) {
   auto base = dynamic_cast<const NamedType*>(o->base);
   if (base) {
-    middle(base->name);
-    if (!base->isGeneric()) {
-      middle('_');
+    if (includeTypename) {
+      middle("typename ");
     }
+    middle("libbirch::unwrap_pointer<" << base->name);
     if (!base->typeArgs->isEmpty()) {
       middle('<' << base->typeArgs << '>');
     }
+    middle(">::type");
   } else if (o->name->str() == "Object") {
     middle("libbirch::Any");
   } else {

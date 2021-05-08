@@ -25,7 +25,7 @@ function cholinv<Middle>(m:Middle) -> {
  */
 function cholinv(S:Real[_,_]) -> Real[_,_] {
   cpp{{
-  return S.toEigen().llt().solve(libbirch::EigenMatrix<birch::Real>::Identity(
-      birch::rows(S), birch::columns(S)));
+  return S.toEigen().llt().solve(libbirch::EigenMatrix<Real>::Identity(
+      rows(S), columns(S)));
   }}
 }

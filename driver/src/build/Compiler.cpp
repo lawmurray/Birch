@@ -6,7 +6,6 @@
 #include "src/birch.hpp"
 #include "src/lexer.hpp"
 #include "src/visitor/all.hpp"
-#include "src/generate/BirchGenerator.hpp"
 #include "src/generate/CppGenerator.hpp"
 #include "src/generate/CppPackageGenerator.hpp"
 #include "src/primitive/string.hpp"
@@ -21,12 +20,9 @@ birch::Compiler::Compiler(Package* package, const std::string& unit) :
   //
 }
 
-void birch::Compiler::parse(bool includeHeaders) {
+void birch::Compiler::parse() {
   compiler = this;  // set global variable needed by parser for callbacks
   auto files = package->sources;
-  if (includeHeaders) {
-    files = package->files;
-  }
   for (auto file : files) {
     raw.str("");
     auto fd = fopen(file->path.c_str(), "r");
@@ -48,31 +44,13 @@ void birch::Compiler::parse(bool includeHeaders) {
   compiler = nullptr;
 }
 
-void birch::Compiler::resolve() {
-  Scoper scoper;
-  package->accept(&scoper);
-
-  Baser baser;
-  package->accept(&baser);
-
-  Resolver resolver;
-  package->accept(&resolver);
-}
-
 void birch::Compiler::gen() {
   std::stringstream stream;
   std::string tarName = tar(package->name);
   fs::path path = fs::path(tarName);
 
-  BirchGenerator birchOutput(stream, 0, true);
   CppPackageGenerator hppOutput(stream, 0, true);
   CppGenerator cppOutput(stream, 0, false, false);
-
-  /* single birch header for whole package */
-  stream.str("");
-  birchOutput << package;
-  path.replace_extension(".birch");
-  write_all_if_different(path, stream.str());
 
   /* single *.hpp header for whole package */
   stream.str("");

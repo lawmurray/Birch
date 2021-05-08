@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/inverse_gamma.hpp>
 }}
 
 /**

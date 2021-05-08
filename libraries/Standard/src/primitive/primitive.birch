@@ -191,7 +191,6 @@ function transform<Input1,Input2,Input3,Lambda>(X:Input1[_,_],
  */
 function reduce<Type,Output,Lambda>(x:Type[_], init:Output, op:Lambda) ->
     Output {
-  result:Type;
   cpp{{
   #ifdef __cpp_lib_parallel_algorithm
   return std::reduce(x.begin(), x.end(), init, op);
@@ -466,7 +465,7 @@ function sort<Type>(x:Type[_]) -> Type[_] {
 function sort_index<Type>(x:Type[_]) -> Integer[_] {
   let a <- iota(1, length(x));
   cpp{{
-  std::sort(a.begin(), a.end(), [=](birch::Integer i, birch::Integer j) {
+  std::sort(a.begin(), a.end(), [=](Integer i, Integer j) {
       return x(i - 1) < x(j - 1);
     });
   }}

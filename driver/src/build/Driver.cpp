@@ -736,11 +736,11 @@ void birch::Driver::audit() {
 
 void birch::Driver::docs() {
   meta();
-  Package* package = createPackage(false);
+  Package* package = createPackage();
 
   /* parse all files */
   Compiler compiler(package, unit);
-  compiler.parse(false);
+  compiler.parse();
 
   /* output everything into single file */
   fs_stream::ofstream docsStream("DOCS.md");
@@ -1124,8 +1124,6 @@ void birch::Driver::setup() {
   auto header = fs::path(tarName);
   header.replace_extension(".hpp");
   makeStream << " \\\n  " << header.string();
-  header.replace_extension(".birch");
-  makeStream << " \\\n  " << header.string();
   makeStream << '\n';
 
   /* data files to distribute */
@@ -1146,9 +1144,8 @@ void birch::Driver::setup() {
 }
 
 void birch::Driver::transpile() {
-  Compiler compiler(createPackage(true), unit);
-  compiler.parse(true);
-  compiler.resolve();
+  Compiler compiler(createPackage(), unit);
+  compiler.parse();
   compiler.gen();
 }
 
@@ -1307,17 +1304,10 @@ void birch::Driver::target(const std::string& cmd) {
   }
 }
 
-birch::Package* birch::Driver::createPackage(bool includeRequires) {
+birch::Package* birch::Driver::createPackage() {
   Package* package = new Package(packageName);
-  if (includeRequires) {
-    for (auto value : metaContents["require.package"]) {
-      package->addPackage(value);
-
-      /* add *.birch dependency */
-      fs::path header = tar(value);
-      header.replace_extension(".birch");
-      package->addHeader(find(includeDirs, header).string());
-    }
+  for (auto value : metaContents["require.package"]) {
+    package->addPackage(value);
   }
   for (auto file : metaFiles["manifest.source"]) {
     if (file.extension().compare(".birch") == 0) {

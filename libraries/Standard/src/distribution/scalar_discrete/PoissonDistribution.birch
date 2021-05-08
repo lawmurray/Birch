@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/poisson.hpp>
 }}
 
 /**
@@ -65,7 +65,7 @@ function simulate_poisson(λ:Real) -> Integer {
   assert 0.0 <= λ;
   if λ > 0.0 {
     cpp{{
-    return std::poisson_distribution<birch::Integer>(λ)(rng);
+    return std::poisson_distribution<Integer>(λ)(rng);
     }}
   } else {
     return 0;

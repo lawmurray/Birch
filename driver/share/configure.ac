@@ -57,14 +57,9 @@ AX_CHECK_COMPILE_FLAG([-fno-diagnostics-show-caret], [CXXFLAGS="$CXXFLAGS -fno-d
 AX_CHECK_COMPILE_FLAG([-fno-diagnostics-show-option], [CXXFLAGS="$CXXFLAGS -fno-diagnostics-show-option"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-fno-show-column], [CXXFLAGS="$CXXFLAGS -fno-show-column"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
-AX_CHECK_COMPILE_FLAG([-Wno-overloaded-virtual], [CXXFLAGS="$CXXFLAGS -Wno-overloaded-virtual"], [], [-Werror])
-AX_CHECK_COMPILE_FLAG([-Wno-inconsistent-missing-override], [CXXFLAGS="$CXXFLAGS -Wno-inconsistent-missing-override"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-attributes], [CXXFLAGS="$CXXFLAGS -Wno-attributes"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-int-to-pointer-cast], [CXXFLAGS="$CXXFLAGS  -Wno-int-to-pointer-cast"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-parameter"], [], [-Werror])
-AX_CHECK_COMPILE_FLAG([-Wno-unused-variable], [CXXFLAGS="$CXXFLAGS -Wno-unused-variable"], [], [-Werror])
-AX_CHECK_COMPILE_FLAG([-Wno-unused-value], [CXXFLAGS="$CXXFLAGS -Wno-unused-value"], [], [-Werror])
-AX_CHECK_COMPILE_FLAG([-Wno-unused-local-typedefs], [CXXFLAGS="$CXXFLAGS -Wno-unused-local-typedefs"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
 # Checks for libraries

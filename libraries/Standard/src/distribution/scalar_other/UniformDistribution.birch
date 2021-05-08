@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/uniform.hpp>
 }}
 
 /**
@@ -67,7 +67,7 @@ function Uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
 function simulate_uniform(l:Real, u:Real) -> Real {
   assert l <= u;
   cpp{{
-  return std::uniform_real_distribution<birch::Real>(l, u)(rng);
+  return std::uniform_real_distribution<Real>(l, u)(rng);
   }}
 }
 

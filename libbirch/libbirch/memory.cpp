@@ -10,6 +10,8 @@
 #include "libbirch/Scanner.hpp"
 #include "libbirch/Collector.hpp"
 
+#include <vector>
+
 /**
  * Possible roots list for each thread.
  */

@@ -25,15 +25,8 @@ public:
 
   /**
    * Parse source files.
-   * 
-   * @param includeHeaders Include header files also?
    */
-  void parse(bool includeHeaders);
-
-  /**
-   * Resolve identifiers and check types.
-   */
-  void resolve();
+  void parse();
 
   /**
    * Generate output code for all input files.

@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/negative_binomial.hpp>
 }}
 
 /**
@@ -75,7 +75,7 @@ function simulate_negative_binomial(k:Integer, ρ:Real) -> Integer {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return std::negative_binomial_distribution<birch::Integer>(k, ρ)(rng);
+  return std::negative_binomial_distribution<Integer>(k, ρ)(rng);
   }}
 }
 

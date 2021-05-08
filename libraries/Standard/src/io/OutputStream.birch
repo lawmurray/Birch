@@ -31,7 +31,9 @@ struct OutputStream {
    */
   function close() {
     assert file?;
-    fclose(file!);
+    cpp{{
+    fclose(file.value());
+    }}
     file <- nil;
   }
   
@@ -40,7 +42,9 @@ struct OutputStream {
    */
   function flush() {
     assert file?;
-    fflush(file!);
+    cpp{{
+    fflush(file.value());
+    }}
   }
 
   /**

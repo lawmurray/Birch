@@ -1,9 +1,9 @@
 cpp{{
-#include <boost/math/special_functions.hpp>
+#include <boost/math/special_functions/digamma.hpp>
 }}
 
 /**
- * The gamma function.
+ * Gamma function.
  */
 function gamma(x:Real) -> Real {
   cpp {{
@@ -12,7 +12,7 @@ function gamma(x:Real) -> Real {
 }
 
 /**
- * The multivariate gamma function.
+ * Multivariate gamma function.
  */
 function gamma(x:Real, p:Integer) -> Real {
   assert p > 0;
@@ -23,21 +23,15 @@ function gamma(x:Real, p:Integer) -> Real {
   return y;
 }
 
-function expm1(x:Real) -> Real {
-  cpp {{
-    return ::expm1(x);
-    }}
-}
-
 /**
- * The beta function.
+ * Beta function.
  */
 function beta(x:Real, y:Real) -> Real {
   return (gamma(x) * gamma(y)) / (gamma(x + y));
 }
 
 /**
- * The incomplete beta function.
+ * Incomplete beta function.
  */
 function ibeta(a:Real, b:Real, x:Real) -> Real {
   if (x < 0.0 || x > 1.0) {
@@ -100,7 +94,7 @@ function ibeta(a:Real, b:Real, x:Real) -> Real {
 }
 
 /**
- * The digamma function (derivative of `lgamma`).
+ * Digamma function (derivative of `lgamma`).
  */
 function digamma(x:Real) -> Real {
   cpp {{
@@ -109,7 +103,7 @@ function digamma(x:Real) -> Real {
 }
 
 /**
- * The binomial coefficient.
+ * Binomial coefficient.
  */
 function choose(x:Integer, y:Integer) -> Real {
   assert 0 <= x;
@@ -125,7 +119,7 @@ function choose(x:Integer, y:Integer) -> Real {
 }
 
 /**
- * The binomial coefficient.
+ * Binomial coefficient.
  */
 function choose(x:Real, y:Real) -> Real {
   assert 0.0 <= x;
@@ -141,7 +135,7 @@ function choose(x:Real, y:Real) -> Real {
 }
 
 function lower_inc_gamma(a:Real, x:Real) -> Real {
-  // this implementation is taken from https://github.com/scipy/scipy/blob/3af8448114dd4a2755d513edb5a2272a338dc483/scipy/special/cephes/igam.c
+  // implementation based on SciPy
   assert x >= 0.0;
   assert a >= 0.0;
   IGAM_SMALL:Real <- 20;
@@ -210,10 +204,9 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
   } else if (isinf(x)) {
     return 0.0;
   }
-    /* Asymptotic regime where a ~ x; Maddock et. al., "Incomplete Gamma Functions", https://www.boost.org/doc/libs/1_61_0/libs/math/doc/html/math_toolkit/sf_gamma/igamma.html */
 
+  /* Asymptotic regime where a ~ x; based on Boost */
   absxma_a <- abs(x - a) / a;
-
   if ((a > IGAM_SMALL) && (a < IGAM_LARGE) && (absxma_a < IGAM_SMALLRATIO)) {
     // the last parameter is a boolean term whether it's LINVGAM or UPPINVGAM
     return asymptotic_series(a, x, 0);
@@ -227,7 +220,6 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
     } else {
       return igamc_continued_fraction(a, x);
     }
-
   } else if (x <= 0.5) {
     if (-0.4 / log(x) < a) {
       return 1.0 - igam_series(a, x);
@@ -244,8 +236,8 @@ function upper_inc_gamma(a:Real, x:Real) -> Real {
 }
 
 function igam_fac(a:Real, x:Real) -> Real {
-  IGAM_MAXLOG:Real <- 709.782712893383996732;
-  IGAM_LANCZOS_G:Real <- 6.024680040776729583740234375;
+  let IGAM_MAXLOG <- 709.782712893383996732;
+  let IGAM_LANCZOS_G <- 6.024680040776729583740234375;
 
   if (abs(a - x) > 0.4 * abs(a)) {
     let ax <- a * log(x) - x - lgamma(a);
@@ -269,8 +261,8 @@ function igam_fac(a:Real, x:Real) -> Real {
 }
 
 function igamc_continued_fraction(a:Real, x:Real) -> Real {
-  IGAM_BIG:Real <- 4.503599627370496e15;
-  IGAM_BIGINV:Real <- 2.22044604925031308085e-16;
+  let IGAM_BIG <- 4.503599627370496e15;
+  let IGAM_BIGINV <- 2.22044604925031308085e-16;
   let ax <- igam_fac(a, x);
   if (ax == 0.0) {
     return 0.0;
@@ -318,7 +310,7 @@ function igamc_continued_fraction(a:Real, x:Real) -> Real {
     if (t <= MACHEP) {
       flag <- false;
     }
-    ++i;
+    i <- i + 1;
   }
 
   return (ans * ax);
@@ -343,7 +335,7 @@ function igam_series(a:Real, x:Real) -> Real {
     if (c <= MACHEP * ans) {
       flag <- false;
     }
-    ++i;
+    i <- i + 1;
   }
   return (ans * ax / a);
 }
@@ -363,7 +355,7 @@ function igamc_series(a:Real, x:Real) -> Real {
     if (abs(term) <= MACHEP * abs(sum)) {
       flag <- false;
     }
-    ++n;
+    n <- n + 1;
   }
 
   logx <- log(x);
@@ -433,7 +425,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
     }
     absoldterm <- absterm;
     afac <- afac / a;
-    ++k;
+    k <- k + 1;
   }
   res <- res + sgn * exp(-0.5 * a * η * η) * tot / sqrt(2.0 * π * a);
 
@@ -441,16 +433,19 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
 }
 
 function lanczos_sum_expg_scaled(x:Real) -> Real {
-  return ratevl(x, lanczos_sum_expg_scaled_num, length(lanczos_sum_expg_scaled_num) - 1, lanczos_sum_expg_scaled_denom, length(lanczos_sum_expg_scaled_denom) - 1);
+  return ratevl(x, LANCZOS_SUM_EXPG_SCALED_NUM,
+      length(LANCZOS_SUM_EXPG_SCALED_NUM) - 1,
+      LANCZOS_SUM_EXPG_SCALED_DENOM,
+      length(LANCZOS_SUM_EXPG_SCALED_DENOM) - 1);
 }
 
-function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Real {
+function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_],
+    N:Integer) -> Real {
   dir:Integer;
 
   y:Real;
   let absx <- abs(x);
   let pind <- 1;
-  let pval <- 0.0;
 
   if (absx > 1.0) {
 
@@ -467,8 +462,8 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_], N:Integer) -> Rea
     y <- x;
   }
 
-   /* Evaluate the numerator */
-   // breaks in the loop below
+  /* Evaluate the numerator */
+  // breaks in the loop below
 
   // get the value of the first/last element depending on the abs(x)
   let num_ans <- num[pind];

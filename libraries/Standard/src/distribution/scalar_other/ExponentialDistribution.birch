@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/exponential.hpp>
 }}
 
 /**
@@ -64,7 +64,7 @@ function Exponential<Arg>(λ:Arg) -> {
 function simulate_exponential(λ:Real) -> Real {
   assert 0.0 < λ;
   cpp{{
-  return std::exponential_distribution<birch::Real>(λ)(rng);
+  return std::exponential_distribution<Real>(λ)(rng);
   }}
 }
 

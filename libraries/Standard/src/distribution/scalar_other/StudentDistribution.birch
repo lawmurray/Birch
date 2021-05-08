@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/students_t.hpp>
 }}
 
 /**
@@ -80,7 +80,7 @@ function Student<Arg>(ν:Arg) -> {
 function simulate_student_t(k:Real) -> Real {
   assert 0.0 < k;
   cpp{{
-  return std::student_t_distribution<birch::Real>(k)(rng);
+  return std::student_t_distribution<Real>(k)(rng);
   }}
 }
 

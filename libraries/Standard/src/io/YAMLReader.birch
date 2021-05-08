@@ -1,7 +1,3 @@
-hpp{{
-#include <yaml.h>
-}}
-
 /**
  * Reader for YAML files.
  *
@@ -52,8 +48,8 @@ class YAMLReader < Reader {
     cpp{{
     yaml_event_delete(&event);
     yaml_parser_delete(&parser);
-    }}
     fclose(file);
+    }}
   }
 
   override function slurp() -> Buffer {
@@ -136,7 +132,7 @@ class YAMLReader < Reader {
       
         /* value */
         nextEvent();
-        auto value = birch::make_buffer();
+        auto value = make_buffer();
         if (event.type == YAML_SCALAR_EVENT) {
           parseValue(value);
         } else if (event.type == YAML_SEQUENCE_START_EVENT) {
@@ -164,7 +160,7 @@ class YAMLReader < Reader {
       if (event.type == YAML_SCALAR_EVENT) {
         parseElement(buffer);
       } else if (event.type == YAML_SEQUENCE_START_EVENT) {
-        auto element = birch::make_buffer();
+        auto element = make_buffer();
         parseSequence(element);
 
         /* attempt to merge sequences into numerical matrices */
@@ -178,7 +174,7 @@ class YAMLReader < Reader {
           buffer->push(element);
         }
       } else if (event.type == YAML_MAPPING_START_EVENT) {
-        auto element = birch::make_buffer();
+        auto element = make_buffer();
         parseMapping(element);
         buffer->push(element);
       }

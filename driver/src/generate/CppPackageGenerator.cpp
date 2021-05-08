@@ -60,7 +60,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       line("#include \"" << include.string() << "\"");
     }
 
-    /* raw C++ code for headers */
+    /* raw C++ code */
     for (auto file : o->sources) {
       for (auto o : *file->root) {
         auto raw = dynamic_cast<const Raw*>(o);
@@ -70,7 +70,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    line("");
     line("namespace birch {");
 
     /* forward class type declarations */
@@ -158,8 +157,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    line("}\n");
-
     /* generic function and operator definitions */
     for (auto o : functions) {
       if (o->isGeneric()) {
@@ -196,6 +193,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
+    line("}\n");  // close namespace
     line("#endif");
   }
 }

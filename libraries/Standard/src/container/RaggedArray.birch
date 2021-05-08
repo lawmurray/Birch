@@ -163,7 +163,6 @@ final class RaggedArray<Type> {
    * Add a new row at the back.
    */
   function pushBack() {
-    let nrows <- length(offsets);
     let nvalues <- length(values);
     cpp{{    
     this->offsets.push(nvalues + 1);

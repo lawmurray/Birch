@@ -372,6 +372,11 @@ template<class T>
 struct is_pointer<Shared<T>> {
   static const bool value = true;
 };
+
+template<class T>
+struct unwrap_pointer<Shared<T>> {
+  using type = T;
+};
 }
 
 #include "libbirch/Spanner.hpp"

@@ -1,5 +1,5 @@
 cpp{{
-#include <boost/math/distributions.hpp>
+#include <boost/math/distributions/normal.hpp>
 }}
 
 /**
@@ -78,7 +78,7 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
     return μ;
   } else {
     cpp{{
-    return std::normal_distribution<birch::Real>(μ, std::sqrt(σ2))(rng);
+    return std::normal_distribution<Real>(μ, std::sqrt(σ2))(rng);
     }}
   }
 }

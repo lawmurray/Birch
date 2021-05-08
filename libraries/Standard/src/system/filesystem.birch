@@ -6,11 +6,9 @@ namespace fs = std::filesystem;
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #else
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 #endif
-
-#include <cstdio>
 }}
 
 READ:Integer <- 1;
@@ -77,7 +75,7 @@ function fopen(path:String, mode:Integer) -> File {
   cpp{{
   auto f = ::fopen(path.c_str(), s.c_str());
   if (!f) {
-    birch::error("could not open file " + path + ".");
+    error("could not open file " + path + ".");
   }
   lockf(fileno(f), F_LOCK, 0);
   return f;
@@ -95,18 +93,3 @@ function extension(path:String) -> String {
   }}
   return ext;
 }
-
-/**
- * Flush a file.
- */
-function fflush(file:File);
-
-/**
- * Check for end of file.
- */
-function feof(file:File) -> Boolean;
-
-/**
- * Close a file.
- */
-function fclose(file:File);

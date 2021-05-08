@@ -1,7 +1,3 @@
-cpp{{
-#include <cstdio>
-}}
-
 /*
  * Returns the file associated with stdin.
  */

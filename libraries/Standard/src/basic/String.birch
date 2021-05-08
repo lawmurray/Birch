@@ -99,7 +99,7 @@ function to_string<Type>(x:Type[_]) -> String {
     if (i > 1) {
       buf << ' ';
     }
-    buf << birch::to_string(value);
+    buf << to_string(value);
     }}
   }
   cpp{{
@@ -128,7 +128,7 @@ function to_string<Type>(X:Type[_,_]) -> String {
       if (j > 1) {
         buf << ' ';
       }
-      buf << birch::to_string(value);
+      buf << to_string(value);
       }}
     }
   }
@@ -145,9 +145,9 @@ function to_string<Type>(X:Type[_,_]) -> String {
  */
 function from_string<Value>(s:String) -> Value {
   cpp{{
-  if (std::is_same<Value,birch::Real>::value) {
+  if (std::is_same<Value,Real>::value) {
     return static_cast<Value>(std::stod(s));
-  } else if (std::is_same<Value,birch::Integer>::value) {
+  } else if (std::is_same<Value,Integer>::value) {
     return static_cast<Value>(std::stoll(s));
   } else if (s == "true" || s == "True") {
     return true;

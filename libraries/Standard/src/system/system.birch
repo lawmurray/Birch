@@ -1,9 +1,3 @@
-cpp{{
-#ifdef __FreeBSD__
-#include <sys/wait.h>  /* For WIF.. */
-#endif
-}}
-
 /**
  * Execute a command.
  *
