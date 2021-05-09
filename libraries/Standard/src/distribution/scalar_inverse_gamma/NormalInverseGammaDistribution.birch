@@ -25,8 +25,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
-    β:Arg4) < Distribution<Real> {
+final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
+    λ:Arg2, α:Arg3, β:Arg4) < Distribution<Real> {
   /**
    * Mean.
    */
@@ -108,7 +108,8 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2
 
 function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
     β:Arg4) -> {
-  return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ, α, β);
+  return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ,
+      α, β);
 }
 
 /**
@@ -138,7 +139,8 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
     σ2.r.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Arg1,Multiply<Arg2,Random<Real>>>>(μ, σ2);
+    return construct<GaussianDistribution<Arg1,Multiply<Arg2,Random<Real>>>>(
+        μ, σ2);
   }
 }
 
@@ -154,7 +156,31 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
     σ2.l.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Arg1,Multiply<Random<Real>,Arg2>>>(μ, σ2);
+    return construct<GaussianDistribution<Arg1,Multiply<Random<Real>,Arg2>>>(
+        μ, σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg>(μ:Arg, σ2:Multiply<Random<Real>,Random<Real>>) ->
+    Distribution<Real> {
+  σ2.l.prune();
+  σ2.r.prune();
+  if σ2.l.hasInverseGamma() {
+    let (α, β) <- σ2.l.getInverseGamma();
+    let p <- NormalInverseGamma(μ/σ2.r, 1.0/σ2.r, α, β);
+    σ2.l.graft(p);
+    return p;
+  } else if σ2.r.hasInverseGamma() {
+    let (α, β) <- σ2.r.getInverseGamma();
+    let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
+    σ2.r.graft(p);
+    return p;
+  } else {
+    return construct<GaussianDistribution<Arg,Multiply<Random<Real>,
+        Random<Real>>>>(μ, σ2);
   }
 }
 

@@ -2,12 +2,12 @@ class TestScaledGammaExponential < TestModel {
   λ:Random<Real>;
   x:Random<Real>;
 
-  a:Real;
+  a:Random<Real>;
   k:Random<Real>;
   θ:Random<Real>;
 
   override function initialize() {
-    a <~ Uniform(0.1, 10.0);
+    a ~ Uniform(0.1, 10.0);
     k ~ Uniform(2.0, 10.0);
     θ ~ Uniform(0.1, 10.0);
   }

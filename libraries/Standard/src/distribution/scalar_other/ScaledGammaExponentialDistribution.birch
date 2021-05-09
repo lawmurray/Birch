@@ -95,6 +95,30 @@ function Exponential<Arg>(λ:Multiply<Random<Real>,Arg>) ->
   }
 }
 
+/**
+ * Create Exponential distribution.
+ */
+function Exponential(λ:Multiply<Random<Real>,Random<Real>>) ->
+    Distribution<Real> {
+  λ.l.prune();
+  if λ.l.hasGamma() {
+    let (k, θ) <- λ.l.getGamma();
+    let p <- ScaledGammaExponential(λ.r, k, θ);
+    λ.l.graft(p);
+    return p;
+  } else {
+    λ.r.prune();
+    if λ.r.hasGamma() {
+      let (k, θ) <- λ.r.getGamma();
+      let p <- ScaledGammaExponential(λ.l, k, θ);
+      λ.r.graft(p);
+      return p;
+    } else {
+      return construct<ExponentialDistribution<Multiply<Random<Real>,Random<Real>>>>(λ);
+    }
+  }
+}
+
 /*
  * Update the parameters of a scaled Gamma distribution with an exponential
  * likelihood.

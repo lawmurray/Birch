@@ -7,26 +7,28 @@ class TestFanNormalInverseGammaGaussian < TestModel {
   x4:Random<Real>;
   x5:Random<Real>;
 
-  μ_0:Real;
-  a2:Real;
+  μ_0:Random<Real>;
+  a2:Random<Real>;
   α:Random<Real>;
   β:Random<Real>;
+  s2:Random<Real>;
 
   override function initialize() {
-    μ_0 <~ Uniform(-10.0, 10.0);
-    a2 <~ Uniform(0.0, 2.0);
+    μ_0 ~ Uniform(-10.0, 10.0);
+    a2 ~ Uniform(0.0, 2.0);
     α ~ Uniform(2.1, 10.0);
     β ~ Uniform(0.1, 10.0);
+    s2 ~ Uniform(0.1, 10.0);
   }
 
   override function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2*σ2);
-    x1 ~ Gaussian(μ, σ2);
-    x2 ~ Gaussian(μ, σ2);
-    x3 ~ Gaussian(μ, σ2);
-    x4 ~ Gaussian(μ, σ2);
-    x5 ~ Gaussian(μ, σ2);
+    x1 ~ Gaussian(μ, s2*σ2);
+    x2 ~ Gaussian(μ, s2*σ2);
+    x3 ~ Gaussian(μ, s2*σ2);
+    x4 ~ Gaussian(μ, s2*σ2);
+    x5 ~ Gaussian(μ, s2*σ2);
   }
 
   override function forward() -> Real[_] {

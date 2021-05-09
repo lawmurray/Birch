@@ -2,14 +2,14 @@ class TestNormalInverseGamma < TestModel {
   σ2:Random<Real>;
   x:Random<Real>;
 
-  μ:Real;
-  a2:Real;
+  μ:Random<Real>;
+  a2:Random<Real>;
   α:Random<Real>;
   β:Random<Real>;
 
   override function initialize() {
-    μ <~ Uniform(-10.0, 10.0);
-    a2 <~ Uniform(0.1, 2.0);
+    μ ~ Uniform(-10.0, 10.0);
+    a2 ~ Uniform(0.1, 2.0);
     α ~ Uniform(2.1, 10.0);
     β ~ Uniform(0.1, 10.0);
   }

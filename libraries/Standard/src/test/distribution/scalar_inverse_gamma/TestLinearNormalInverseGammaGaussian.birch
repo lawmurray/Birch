@@ -3,26 +3,28 @@ class TestLinearNormalInverseGammaGaussian < TestModel {
   μ:Random<Real>;
   x:Random<Real>;
 
-  a:Real;
-  μ_0:Real;
-  a2:Real;
-  c:Real;
+  a:Random<Real>;
+  μ_0:Random<Real>;
+  a2:Random<Real>;
   α:Random<Real>;
   β:Random<Real>;
+  c:Random<Real>;
+  s2:Random<Real>;
 
   override function initialize() {
-    a <~ Uniform(-2.0, 2.0);
-    μ_0 <~ Uniform(-10.0, 10.0);
-    a2 <~ Uniform(0.1, 2.0);
-    c <~ Uniform(-10.0, 10.0);
+    a ~ Uniform(-2.0, 2.0);
+    μ_0 ~ Uniform(-10.0, 10.0);
+    a2 ~ Uniform(0.1, 2.0);
     α ~ Uniform(2.1, 10.0);
     β ~ Uniform(0.1, 10.0);
+    c ~ Uniform(-10.0, 10.0);
+    s2 ~ Uniform(0.1, 10.0);
   }
 
   override function simulate() {
     σ2 ~ InverseGamma(α, β);
     μ ~ Gaussian(μ_0, a2*σ2);
-    x ~ Gaussian(a*μ + c, σ2);
+    x ~ Gaussian(a*μ + c, s2*σ2);
   }
 
   override function forward() -> Real[_] {

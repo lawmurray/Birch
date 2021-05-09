@@ -3,14 +3,14 @@ class TestNormalInverseGammaGaussian < TestModel {
   μ:Random<Real>;
   x:Random<Real>;
 
-  μ_0:Real;
-  a2:Real;
+  μ_0:Random<Real>;
+  a2:Random<Real>;
   α:Random<Real>;
   β:Random<Real>;
 
   override function initialize() {
-    μ_0 <~ Uniform(-10.0, 10.0);
-    a2 <~ Uniform(0.0, 2.0);
+    μ_0 ~ Uniform(-10.0, 10.0);
+    a2 ~ Uniform(0.0, 2.0);
     α ~ Uniform(2.1, 10.0);
     β ~ Uniform(0.1, 10.0);
   }

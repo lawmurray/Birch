@@ -24,7 +24,7 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
   c:Arg4 <- c;
   
   /**
-   * Likelihood covariance.
+   * Likelihood variance.
    */
   s2:Arg5 <- s2;
 
@@ -90,31 +90,15 @@ function LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
  * Create Gaussian distribution.
  */
 function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
-    Σ:Arg3) -> Distribution<Real> {
+    σ2:Arg3) -> Distribution<Real> {
   μ.m.prune();
   if μ.m.hasMultivariateGaussian() {
     let (m, S) <- μ.m.getMultivariateGaussian();
-    let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, μ.r, Σ);
+    let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, μ.r, σ2);
     μ.m.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<DotAdd<Arg1,Random<Real[_]>,Arg2>,Arg3>>(μ, Σ);
-  }
-}
-
-/**
- * Create Gaussian distribution.
- */
-function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, Σ:Arg2) ->
-    Distribution<Real> {
-  if μ.r.hasMultivariateGaussian() {
-    μ.r.prune();
-    let (m, S) <- μ.r.getMultivariateGaussian();
-    let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, 0.0, Σ);
-    μ.r.graft(p);
-    return p;
-  } else {
-    return construct<GaussianDistribution<Dot<Arg1,Random<Real[_]>>,Arg2>>(μ, Σ);
+    return construct<GaussianDistribution<DotAdd<Arg1,Random<Real[_]>,Arg2>,Arg3>>(μ, σ2);
   }
 }
 

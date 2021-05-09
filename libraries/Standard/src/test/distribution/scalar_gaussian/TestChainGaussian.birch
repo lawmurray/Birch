@@ -1,10 +1,10 @@
 class TestChainGaussian < TestModel {
   x:Random<Real>[5];
-  μ:Real;
+  μ:Random<Real>;
   σ2:Real[_];
 
   override function initialize() {
-    μ <- simulate_uniform(-10.0, 10.0);
+    μ ~ Uniform(-10.0, 10.0);
     σ2 <- [
       simulate_uniform(0.1, 10.0),
       simulate_uniform(0.1, 10.0),

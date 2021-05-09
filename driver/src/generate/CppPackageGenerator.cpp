@@ -76,16 +76,24 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     for (auto o : classes) {
       if (!o->isAlias()) {
         if (o->has(STRUCT)) {
+          genSourceLine(o->loc);
           genTemplateParams(o);
+          genSourceLine(o->loc);
           line("struct " << o->name << "_;");
+          genSourceLine(o->loc);
           genTemplateParams(o);
+          genSourceLine(o->loc);
           start("using " << o->name << " = libbirch::Inplace<" << o->name << '_');
           genTemplateArgs(o);
           finish(">;");
         } else {
+          genSourceLine(o->loc);
           genTemplateParams(o);
+          genSourceLine(o->loc);
           line("class " << o->name << "_;");
+          genSourceLine(o->loc);
           genTemplateParams(o);
+          genSourceLine(o->loc);
           start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
           genTemplateArgs(o);
           finish(">;");
@@ -99,6 +107,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       if (o->isAlias()) {
         auto base = dynamic_cast<const NamedType*>(o->base);
         assert(base);
+        genSourceLine(o->loc);
         genTemplateParams(o);
         genSourceLine(o->loc);
         start("using " << o->name << " = " << base->name);
@@ -115,6 +124,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       if (o->isAlias()) {
         auto base = dynamic_cast<const NamedType*>(o->base);
         assert(base);
+        genSourceLine(o->loc);
         genTemplateParams(o);
         genSourceLine(o->loc);
         start("using " << o->name << " = " << base->name);

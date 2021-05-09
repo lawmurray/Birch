@@ -270,10 +270,9 @@ void birch::CppGenerator::visit(const TupleVariable* o) {
 
 void birch::CppGenerator::visit(const Function* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
+    genSourceLine(o->loc);
     genTemplateParams(o);
-    if (!header) {
-      genSourceLine(o->loc);
-    }
+    genSourceLine(o->loc);
     start("");
     if (!header && o->isGeneric()) {
       middle("inline ");
@@ -453,6 +452,7 @@ void birch::CppGenerator::visit(const Program* o) {
 
 void birch::CppGenerator::visit(const BinaryOperator* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
+    genSourceLine(o->loc);
     genTemplateParams(o);
     genSourceLine(o->loc);
     start("");
@@ -482,6 +482,7 @@ void birch::CppGenerator::visit(const BinaryOperator* o) {
 
 void birch::CppGenerator::visit(const UnaryOperator* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
+    genSourceLine(o->loc);
     genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
@@ -630,9 +631,7 @@ void birch::CppGenerator::visit(const Return* o) {
 
 void birch::CppGenerator::visit(const Raw* o) {
   if ((header && *o->name == "hpp") || (!header && *o->name == "cpp")) {
-    if (!header) {
-      genSourceLine(o->loc);
-    }
+    genSourceLine(o->loc);
     *this << escape_unicode(o->raw);
     if (!std::isspace(o->raw.back())) {
       *this << ' ';

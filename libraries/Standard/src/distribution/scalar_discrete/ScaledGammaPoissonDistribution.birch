@@ -66,7 +66,7 @@ function ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
 /**
  * Create Poisson distribution.
  */
-function Poisson<Arg1>(λ:Multiply<Arg1,Random<Real>>) ->
+function Poisson<Arg>(λ:Multiply<Arg,Random<Real>>) ->
     Distribution<Integer> {
   λ.r.prune();
   if λ.r.hasGamma() {
@@ -75,14 +75,14 @@ function Poisson<Arg1>(λ:Multiply<Arg1,Random<Real>>) ->
     λ.r.graft(p);
     return p;
   } else {
-    return construct<PoissonDistribution<Multiply<Arg1,Random<Real>>>>(λ);
+    return construct<PoissonDistribution<Multiply<Arg,Random<Real>>>>(λ);
   }
 }
 
 /**
  * Create Poisson distribution.
  */
-function Poisson<Arg3>(λ:Multiply<Random<Real>,Arg3>) ->
+function Poisson<Arg>(λ:Multiply<Random<Real>,Arg>) ->
     Distribution<Integer> {
   λ.l.prune();
   if λ.l.hasGamma() {
@@ -91,7 +91,31 @@ function Poisson<Arg3>(λ:Multiply<Random<Real>,Arg3>) ->
     λ.l.graft(p);
     return p;
   } else {
-    return construct<PoissonDistribution<Multiply<Random<Real>,Arg3>>>(λ);
+    return construct<PoissonDistribution<Multiply<Random<Real>,Arg>>>(λ);
+  }
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson(λ:Multiply<Random<Real>,Random<Real>>) ->
+    Distribution<Integer> {
+  λ.l.prune();
+  if λ.l.hasGamma() {
+    let (k, θ) <- λ.l.getGamma();
+    let p <- ScaledGammaPoisson(λ.r, k, θ);
+    λ.l.graft(p);
+    return p;
+  } else {
+    λ.r.prune();
+    if λ.r.hasGamma() {
+      let (k, θ) <- λ.r.getGamma();
+      let p <- ScaledGammaPoisson(λ.l, k, θ);
+      λ.r.graft(p);
+      return p;
+    } else {
+      return construct<PoissonDistribution<Multiply<Random<Real>,Random<Real>>>>(λ);
+    }
   }
 }
 

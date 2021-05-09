@@ -2,8 +2,8 @@ class TestScaledGammaPoisson < TestModel {
   λ:Random<Real>;
   x:Random<Integer>;
 
-  a:Real;
-  k:Real;
+  a:Random<Real>;
+  k:Random<Real>;
   θ:Random<Real>;
 
   override function initialize() {
