@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over an arbitrary empty container.
  */
 final class EmptyIterator<Type> < Iterator<Type> {

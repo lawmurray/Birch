@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over a Stack.
  *
  * - head: Head node.

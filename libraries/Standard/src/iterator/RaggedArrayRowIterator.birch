@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over the rows of a RaggedArray.
  *
  * - o: Container.

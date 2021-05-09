@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over the elements of a vector, that wraps each element in a
  * [Buffer](../Buffer) object.
  *

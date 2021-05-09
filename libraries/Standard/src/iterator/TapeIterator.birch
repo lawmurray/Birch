@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over a Tape.
  *
  * - head: Head node.

@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over a List.
  *
  * - head: Head node.

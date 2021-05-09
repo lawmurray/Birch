@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over a scalar, wrapped in a [Buffer](../Buffer) object.
  *
  * - x: Values.

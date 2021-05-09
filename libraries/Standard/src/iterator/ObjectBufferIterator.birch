@@ -1,4 +1,4 @@
-/**
+/*
  * Iterator over the contents of a [Buffer](../Buffer) that represents an
  * object (in the JSON sense).
  *
