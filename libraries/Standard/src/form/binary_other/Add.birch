@@ -16,7 +16,7 @@ struct Add<Left,Right> = Binary<AddFunction,Left,Right>;
 /**
  * Addition.
  */
-operator<Left,Right> (l:Left + r:Right) -> {
+operator<Left,Right> (l:Left + r:Right) -> Add<Left,Right> {
   return construct<Add<Left,Right>>(l, r);
 }
 

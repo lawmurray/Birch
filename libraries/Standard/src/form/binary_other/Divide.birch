@@ -16,7 +16,7 @@ struct Divide<Left,Right> = Binary<DivideFunction,Left,Right>;
 /**
  * Division.
  */
-operator<Left,Right> (l:Left/r:Right) -> {
+operator<Left,Right> (l:Left/r:Right) -> Divide<Left,Right> {
   return construct<Divide<Left,Right>>(l, r);
 }
 

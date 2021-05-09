@@ -16,7 +16,7 @@ struct Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;
 /**
  * Subtraction.
  */
-operator<Left,Right> (l:Left - r:Right) -> {
+operator<Left,Right> (l:Left - r:Right) -> Subtract<Left,Right> {
   return construct<Subtract<Left,Right>>(l, r);
 }
 

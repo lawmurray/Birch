@@ -32,7 +32,7 @@ struct Multiply<Left,Right> = Binary<MultiplyFunction,Left,Right>;
 /**
  * Multiplication.
  */
-operator<Left,Right> (l:Left*r:Right) -> {
+operator<Left,Right> (l:Left*r:Right) -> Multiply<Left,Right> {
   return construct<Multiply<Left,Right>>(l, r);
 }
 
