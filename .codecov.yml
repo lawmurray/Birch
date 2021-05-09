@@ -1,7 +1,7 @@
 coverage:
   precision: 2
   round: nearest
-  range: "40...80"
+  range: "60...90"
 status:
   project:
     default:
