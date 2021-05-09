@@ -760,8 +760,7 @@ void birch::Driver::docs() {
   fs::create_directories(docs / "variables");
   fs::create_directories(docs / "programs");
   fs::create_directories(docs / "functions");
-  fs::create_directories(docs / "unary_operators");
-  fs::create_directories(docs / "binary_operators");
+  fs::create_directories(docs / "operators");
   fs::create_directories(docs / "classes");
   fs::create_directories(docs / "structs");
 

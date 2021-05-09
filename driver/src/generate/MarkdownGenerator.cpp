@@ -16,35 +16,12 @@ birch::MarkdownGenerator::MarkdownGenerator(std::ostream& base) :
 void birch::MarkdownGenerator::visit(const Package* o) {
   package = o;
 
-  /* collect type names, in order to distinguish between factory functions
-   * and other functions */
-  std::unordered_set<std::string> classNames, basicNames;
-  Gatherer<Class> allClasses;
-  o->accept(&allClasses);
-  Gatherer<Basic> allBasics;
-  o->accept(&allBasics);
-  for (auto o : allClasses) {
-    classNames.insert(o->name->str());
-  }
-  for (auto o : allBasics) {
-    basicNames.insert(o->name->str());
-  }
-
   /* lambdas */
   auto all = [](const void*) {
     return true;
   };
   auto docsNotEmpty = [](const Located* o) {
     return !o->loc->doc.empty();
-  };
-  auto docsNotEmptyAndNotFactory = [&](const Function* o) {
-    return !o->loc->doc.empty() &&
-        basicNames.find(o->name->str()) == basicNames.end() &&
-        classNames.find(o->name->str()) == classNames.end();
-  };
-  auto docsNotEmptyAndBasicFactory = [&](const Function* o) {
-    return !o->loc->doc.empty() &&
-        basicNames.find(o->name->str()) != basicNames.end();
   };
   auto sortByName = [](const Named* o1, const Named* o2) {
     return o1->name->str() < o2->name->str();
@@ -62,23 +39,8 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     for (auto o : basics) {
       line("| " << o << " | " << one_line(o->loc->doc) << " |");
     }
-    line("");
-
-    Gatherer<Function> basicFactories(docsNotEmptyAndBasicFactory, false);
-    o->accept(&basicFactories);
-    std::stable_sort(basicFactories.begin(), basicFactories.end(), sortByName);
-
-    if (basicFactories.size() > 0) {
-      ++depth;
-      for (auto o : basicFactories) {
-        *this << o;
-        line("");
-        line(quote(detailed(o->loc->doc), "    "));
-        line("");
-      }
-      --depth;
-    }
     --depth;
+    line("");
   }
 
   /* global variables */
@@ -119,7 +81,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   }
 
   /* functions */
-  Gatherer<Function> functions(docsNotEmptyAndNotFactory, false);
+  Gatherer<Function> functions(docsNotEmpty, false);
   o->accept(&functions);
   std::stable_sort(functions.begin(), functions.end(), sortByName);
   if (functions.size() > 0) {
@@ -143,39 +105,20 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     --depth;
   }
 
-  /* unary operators */
-  Gatherer<UnaryOperator> unaries(all, false);
-  o->accept(&unaries);
-  std::stable_sort(unaries.begin(), unaries.end(), sortByName);
-  if (unaries.size() > 0) {
-    genHead("Unary Operators");
-    ++depth;
-    std::string name, desc;
-    for (auto o : unaries) {
-      if (o->name->str() != name) {
-        /* heading only for the first overload of this name */
-        genHead(o->name->str());
-        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
-      }
-      name = o->name->str();
-      desc = quote(detailed(o->loc->doc), "    ");
-      *this << o;
-      line("");
-      line(desc);
-      line("");
-    }
-    line("");
-    --depth;
-  }
-
-  /* binary operators */
+  /* operators */
   Gatherer<BinaryOperator> binaries(all, false);
   o->accept(&binaries);
   std::stable_sort(binaries.begin(), binaries.end(), sortByName);
-  if (binaries.size() > 0) {
-    genHead("Binary Operators");
+
+  Gatherer<UnaryOperator> unaries(all, false);
+  o->accept(&unaries);
+  std::stable_sort(unaries.begin(), unaries.end(), sortByName);
+
+  if (binaries.size() + unaries.size() > 0) {
+    genHead("Operators");
     ++depth;
     std::string name, desc;
+
     for (auto o : binaries) {
       if (o->name->str() != name) {
         /* heading only for the first overload of this name */
@@ -190,6 +133,22 @@ void birch::MarkdownGenerator::visit(const Package* o) {
       line("");
     }
     line("");
+
+    for (auto o : unaries) {
+      if (o->name->str() != name) {
+        /* heading only for the first overload of this name */
+        genHead(o->name->str());
+        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+      }
+      name = o->name->str();
+      desc = quote(detailed(o->loc->doc), "    ");
+      *this << o;
+      line("");
+      line(desc);
+      line("");
+    }
+    line("");
+    
     --depth;
   }
 
@@ -336,9 +295,6 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   auto docsNotEmpty = [](const Located* o) {
     return !o->loc->doc.empty();
   };
-  auto isFactory = [o](const Function* func) {
-    return func->name->str() == o->name->str();
-  };
   auto sortByName = [](const Named* o1, const Named* o2) {
     return o1->name->str() < o2->name->str();
   };
@@ -383,26 +339,6 @@ void birch::MarkdownGenerator::visit(const Class* o) {
 
   ++depth;
 
-  /* factory functions */
-  Gatherer<Function> factories(isFactory, false);
-  if (package) {
-    package->accept(&factories);
-    if (factories.size() > 0) {
-      genHead("Factory Functions");
-      line("| Name | Description |");
-      line("| --- | --- |");
-      ++depth;
-      for (auto o : factories) {
-        start("| ");
-        middle('[' << o->name->str() << ']');
-        middle("(#" << anchor(o->name->str()) << ')');
-        finish(" | " << brief(o->loc->doc) << " |");
-      }
-      line("");
-      --depth;
-    }
-  }
-
   /* assignment operators */
   Gatherer<AssignmentOperator> assignments;
   o->accept(&assignments);
@@ -433,6 +369,21 @@ void birch::MarkdownGenerator::visit(const Class* o) {
     --depth;
   }
 
+  /* slice operators */
+  Gatherer<SliceOperator> slices(docsNotEmpty);
+  o->accept(&slices);
+  if (slices.size() > 0) {
+    genHead("Slices");
+    line("| Name | Description |");
+    line("| --- | --- |");
+    ++depth;
+    for (auto o : slices) {
+      start("| [[...]](#slice) | " << brief(o->loc->doc) << " |");
+    }
+    line("");
+    --depth;
+  }
+
   /* member variables */
   Gatherer<MemberVariable> variables(docsNotEmpty);
   o->accept(&variables);
@@ -443,21 +394,6 @@ void birch::MarkdownGenerator::visit(const Class* o) {
     ++depth;
     for (auto o : variables) {
       line("| " << o << " | " << one_line(o->loc->doc) << " |");
-    }
-    line("");
-    --depth;
-  }
-
-  /* slice operators */
-  Gatherer<SliceOperator> slices(docsNotEmpty);
-  o->accept(&slices);
-  if (slices.size() > 0) {
-    genHead("Member Slices");
-    line("| Name | Description |");
-    line("| --- | --- |");
-    ++depth;
-    for (auto o : slices) {
-      start("| [[...]](#slice) | " << brief(o->loc->doc) << " |");
     }
     line("");
     --depth;
@@ -476,20 +412,6 @@ void birch::MarkdownGenerator::visit(const Class* o) {
       middle('[' << o->name->str() << ']');
       middle("(#" << anchor(o->name->str()) << ')');
       finish(" | " << brief(o->loc->doc) << " |");
-    }
-    line("");
-    --depth;
-  }
-
-  /* factory function details */
-  if (factories.size() > 0) {
-    genHead("Factory Function Details");
-    ++depth;
-    for (auto o : factories) {
-      *this << o;
-      line("");
-      line(quote(detailed(o->loc->doc), "    "));
-      line("");
     }
     line("");
     --depth;
