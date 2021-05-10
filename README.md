@@ -28,6 +28,10 @@ Packages are provided for major Linux distributions. Click through to the
 Service](https://software.opensuse.org//download.html?project=home%3Alawmurray%3Abirch&package=birch)
 and select your distribution for installation instructions.
 
+### FreeBSD
+
+You will need to install from source, see below.
+
 ### Mac
 
 Install [Homebrew](https://brew.sh) if not already, then install Birch with:
