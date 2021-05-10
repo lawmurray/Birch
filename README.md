@@ -69,20 +69,20 @@ Install the driver by running, from within the `driver/` directory:
     ./bootstrap
     ./configure
     make
-    make install
+    sudo make install
 
 Install LibBirch by running, from within the `libbirch/` directory:
 
     ./bootstrap
     ./configure --enable-debug --enable-release
     make
-    make install
+    sudo make install
 
 Install the standard library by running, from within the `libraries/Standard/`
 directory:
 
     birch build --enable-debug --enable-release
-    birch install
+    sudo birch install
 
 This constitutes a basic install with both *debug* (unoptimized, with
 debugging information) and *release* (optimized, without debugging
