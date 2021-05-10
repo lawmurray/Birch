@@ -23,10 +23,17 @@ License. You may obtain a copy of the License at
 
 ### Linux
 
-Packages are provided for major Linux distributions. Click through to the
-[Open Build
+Packages are provided for major Linux distributions, including Debian, Ubuntu,
+Fedora, CentOS, openSUSE, SUSE Linux Enterprise, Mageia, and Arch. Click
+through to the [Open Build
 Service](https://software.opensuse.org//download.html?project=home%3Alawmurray%3Abirch&package=birch)
 and select your distribution for installation instructions.
+
+For Raspberry Pi OS, head straight to the
+[repository](https://download.opensuse.org/repositories/home:/lawmurray:/birch/).
+For Alpine Linux, which you may be particularly interested in for installing
+Birch in a lightweight container environment, you will need to install [from
+source](#from-source), but we do support `musl` for this purpose.
 
 ### FreeBSD
 
