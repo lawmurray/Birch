@@ -20,7 +20,7 @@ class EcologyModel < Model {
   function simulate() {
     q ~ InverseGamma(2.5, 2.5);
     r ~ InverseGamma(2.5, 2.5);
-    b ~ Gaussian(vector(1.0, 2), identity(2), q);
+    b ~ MultivariateGaussian(vector(1.0, 2), identity(2)*q);
     c ~ Gaussian(1.0, 2.0);
   }
 
@@ -28,9 +28,17 @@ class EcologyModel < Model {
     if t == 1 {
       x[t] ~ Gaussian(3.5, 0.1);
     } else {
-      l:Expression<Real> <- box(1.0);
-      r:Expression<Real> <- exp(x[t - 1]*c);
-      let a <- join([l, r]);
+      /* creating `a` is the trickiest part of the model, but it preserves the
+       * ability to marginalize out all parameters but `c`, and even to make
+       * gradient-based moves on `c`: `box()` converts each `Real` to an
+       * `Expression<Real>`, the square brackets combine the two
+       * `Expression<Real>` to a single `Expression<Real>[_]`, then `join()`
+       * converts the `Expression<Real>[_]` to an `Expression<Real[_]>` */ 
+      let a <- join([box(1.0), box(exp(x[t - 1]*c))]);
+
+      /* with `a` so constructed, the mean of the next line looks like a
+       * linear transformation of `b`, itself normal-inverse-gamma distributed
+       * with `q`, establishing a conjugacy relationship */
       x[t] ~ Gaussian(dot(a, b) + x[t - 1], q);
     }
     y[t] ~ Gaussian(exp(x[t]), r);

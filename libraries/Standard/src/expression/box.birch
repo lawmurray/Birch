@@ -8,84 +8,88 @@ function box<Value>(x:Expression<Value>) -> Expression<Value> {
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value,Form>(x:BoxedForm<Value,Form>) -> BoxedForm<Value,Form> {
+function box<Value,Form>(x:BoxedForm<Value,Form>) -> Expression<Value> {
   return x;
 }
 
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value>(x:BoxedValue<Value>) -> BoxedValue<Value> {
+function box<Value>(x:BoxedValue<Value>) -> Expression<Value> {
   return x;
 }
 
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value>(x:MatrixJoinExpression<Value>) -> MatrixJoinExpression<Value> {
+function box<Value>(x:MatrixJoinExpression<Value[_,_]>) ->
+    Expression<Value[_,_]> {
   return x;
 }
 
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> MatrixSplitExpression<Value,Form> {
+function box<Value,Form>(x:MatrixSplitExpression<Value[_,_],Form>) ->
+    Expression<Value[_,_]> {
   return x;
 }
 
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value>(x:Random<Value>) -> Random<Value> {
+function box<Value>(x:Random<Value>) -> Expression<Value> {
   return x;
 }
 
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value>(x:VectorJoinExpression<Value>) -> VectorJoinExpression<Value> {
+function box<Value>(x:VectorJoinExpression<Value[_]>) ->
+    Expression<Value[_]> {
   return x;
 }
 
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value,Form>(x:VectorSplitExpression<Value,Form>) -> VectorSplitExpression<Value,Form> {
+function box<Value,Form>(x:VectorSplitExpression<Value[_],Form>) ->
+    Expression<Value[_]> {
   return x;
 }
 
 /**
  * Box a value.
  */
-function box(x:Boolean) -> BoxedValue<Boolean> {
+function box(x:Boolean) -> Expression<Boolean> {
   return construct<BoxedValue<Boolean>>(x);
 }
 
 /**
  * Box a value.
  */
-function box(x:Integer) -> BoxedValue<Integer> {
+function box(x:Integer) -> Expression<Integer> {
   return construct<BoxedValue<Integer>>(x);
 }
 
 /**
  * Box a value.
  */
-function box(x:Real) -> BoxedValue<Real> {
+function box(x:Real) -> Expression<Real> {
   return construct<BoxedValue<Real>>(x);
 }
 
 /**
  * Box a value.
  */
-function box<Type>(x:Type[_]) -> {
+function box<Type>(x:Type[_]) -> Expression<Type[_]> {
   return construct<BoxedValue<Type[_]>>(x);
 }
 
 /**
  * Box a value.
  */
-function box<Type>(x:Type[_,_]) -> {
+function box<Type>(x:Type[_,_]) -> Expression<Type[_,_]> {
   return construct<BoxedValue<Type[_,_]>>(x);
 }
 
@@ -97,7 +101,7 @@ function box<Type>(x:Type[_,_]) -> {
 function box<Form>(f:Form) -> {
   return box_form(f.eval(), f);
 }
-function box_form<Value,Form>(x:Value, f:Form) -> {
+function box_form<Value,Form>(x:Value, f:Form) -> Expression<Value> {
   return construct<BoxedForm<Value,Form>>(x, f);
 }
 

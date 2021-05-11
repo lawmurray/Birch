@@ -22,7 +22,7 @@ To build, use:
 
 To run, use:
 
-    ./run.sh
+    ./test.sh
 
 
 ## References
