@@ -543,7 +543,7 @@ workflows:
           matrix:
             parameters:
               os: [opensuse]
-              package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
+              package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - test-<< matrix.os >>
 
@@ -551,7 +551,7 @@ workflows:
           matrix:
             parameters:
               os: [opensuse]
-              package: [LinearGaussian,LinearRegression,MixedGaussian,PoissonGaussian,SIR,MultiObjectTracking,VectorBorneDisease]
+              package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - build_example-<< matrix.os >>-<< matrix.package >>
 
