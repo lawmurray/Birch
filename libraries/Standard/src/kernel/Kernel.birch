@@ -38,8 +38,8 @@ abstract class Kernel {
 
   override function read(buffer:Buffer) {
     super.read(buffer);
-    nmoves <-? buffer.get<Real>("nmoves");
-    nlags <-? buffer.get<Real>("nlags");
+    nmoves <-? buffer.get<Integer>("nmoves");
+    nlags <-? buffer.get<Integer>("nlags");
   }
   
   override function write(buffer:Buffer) {

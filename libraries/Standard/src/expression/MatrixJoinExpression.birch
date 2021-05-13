@@ -8,7 +8,7 @@ final class MatrixJoinExpression<Value>(x:Expression<Value>[_,_]) <
   /**
    * Arguments.
    */
-  x:Expression<Value>[_,_] <- x;
+  x:Expression<Value>[_,_]? <- x;
 
   override function isRandom() -> Boolean {
     return false;

@@ -32,6 +32,11 @@ final class Random<Value> < Expression<Value> {
   flagConstant:Boolean <- false;
 
   /**
+   * Generation label.
+   */
+  gen:Integer <- 0;
+
+  /**
    * Value assignment.
    */
   operator <- x:Value {
@@ -103,11 +108,15 @@ final class Random<Value> < Expression<Value> {
   }
   
   override function label(gen:Integer) {
-    //
+    if !flagConstant && this.gen == 0 {
+      this.gen <- gen;
+    }
   }
 
   override function constant(gen:Integer) {
-    //
+    if !flagConstant && this.gen < gen {
+      constant();
+    }
   }
 
   override function constant() {

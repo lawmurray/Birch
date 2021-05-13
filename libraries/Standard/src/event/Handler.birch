@@ -157,7 +157,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleFactor<Arg>(w:Arg) {
     if delayExpressions {
-      this.w <- this.w + global.eval(w);
+      this.w <- this.w + global.peek(w);
       if π? {
         π <- box(π! + w);
       } else {
@@ -239,9 +239,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Evaluate the log-posterior.
    */
-  function eval() -> Real {
+  function peek() -> Real {
     if π? {
-      return π!.eval();
+      return π!.peek();
     } else {
       return 0.0;
     }
@@ -270,7 +270,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       let iter1 <- r1!.walk();
       while iter1.hasNext() {
         let v <- iter1.next();
-        x[i] <- v.eval();
+        x[i] <- v.peek();
         i <- i + 1;
       }
     }
@@ -279,7 +279,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       while iter2.hasNext() {
         let v <- iter2.next();
         let m <- i + v.size() - 1;
-        x[i..m] <- v.eval();
+        x[i..m] <- v.peek();
         i <- m + 1;
       }
     }
@@ -288,7 +288,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       while iter3.hasNext() {
         let v <- iter3.next();
         let m <- i + v.size() - 1;
-        x[i..m] <- vec(v.eval());
+        x[i..m] <- vec(v.peek());
         i <- m + 1;
       }
     }
@@ -386,7 +386,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    * See also: [Expression](../Expression/)
    */
   function label(gen:Integer) {
-    π!.label(gen);
+    if π? {
+      π!.label(gen);
+    }
   }
 
   /**
@@ -395,7 +397,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    * See also: [Expression](../Expression/)
    */
   function constant(gen:Integer) {
-    π!.constant(gen);
+    if π? {
+      π!.constant(gen);
+    }
   }
 
   function arg(x:Random<Boolean>) {

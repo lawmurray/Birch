@@ -25,7 +25,19 @@ class ParticleSampler {
   }
 
   /**
-   * Draw a sample.
+   * Step a sample.
+   *
+   * - filter: Particle filter.
+   * - t: The step number, beginning at 1.
+   * - input: Input buffer.
+   * - κ: Markov kernel.
+   */
+  function sample(filter:ParticleFilter, t:Integer, input:Buffer, κ:Kernel) {
+    filter.filter(t, input, κ);
+  }
+
+  /**
+   * Finalize a sample.
    */
   function draw(filter:ParticleFilter) -> (Model, Real) {
     return (filter.x[filter.b].m, filter.lnormalize);

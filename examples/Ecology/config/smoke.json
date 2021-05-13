@@ -2,13 +2,18 @@
   "model": {
     "class": "EcologyModel"
   },
+  "kernel": {
+    "scale": 0.001,
+    "nmoves": 2,
+    "nlags": 2
+  },
   "filter": {
-    "nparticles": 16,
-    "nsteps": 10
+    "nparticles": 8,
+    "autodiff": true
   },
   "sampler": {
-    "nsamples": 3
+    "nsamples": 1
   },
   "input": "input/sparrow.json",
-  "output": "output/smoke.json"
+  "output": "output/sparrow.json"
 }

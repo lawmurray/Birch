@@ -19,6 +19,10 @@
  *   `filter.class` in the config file, which in turn overrides the default
  *   of [ParticleFilter](../ParticleFilter).
  *
+ * - `--kernel`: Name of the kernel class. If used, overrides
+ *   `kernel.class` in the config file, which in turn overrides the default
+ *   of [LangevinKernel](../LangevinKernel).
+ *
  * - `--nsamples`: Number of samples to draw. If used, this overrides
  *   `nsamples` in the config file, which in turn overrides `sampler.nsamples`
  *   (deprecated) in the config file, which in turn overrides the default of
@@ -43,6 +47,7 @@ program sample(
     model:String?,
     sampler:String?,
     filter:String?,
+    kernel:String?,
     nsamples:Integer?,
     nsteps:Integer?,
     input:String?,
@@ -106,6 +111,16 @@ program sample(
         "filter.class in the config file, or --filter on the command " +
         "line, and should derive from ParticleFilter.");
   }
+
+  /* kernel */
+  kernelBuffer:Buffer;
+  kernelBuffer <-? configBuffer.get("kernel");
+  if kernel? {
+    kernelBuffer.set("class", kernel!);
+  } else if !kernelBuffer.get("class")? {
+    kernelBuffer.set("class", "LangevinKernel");
+  }
+  let theKernel <- make<Kernel>(kernelBuffer);
 
   /* number of samples */
   if !nsamples? {
@@ -205,7 +220,11 @@ program sample(
       } else {
         buffer <- make_buffer();
       }
-      theSampler!.sample(theFilter!, t, buffer);
+      if theKernel? {
+        theSampler!.sample(theFilter!, t, buffer, theKernel!);
+      } else {
+        theSampler!.sample(theFilter!, t, buffer);
+      }
 
       /* preserve diagnostics */
       if outputWriter? {

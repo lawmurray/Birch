@@ -71,13 +71,14 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   final override function reval() -> Value {
     if f? {
       if visitCount == 0 {
+        assert !d?;
         x <- global.reval(f!);
       }
       visitCount <- visitCount + 1;
       if visitCount >= evalCount {
         assert visitCount == evalCount || evalCount == 0;
         // ^ can have visitCount > evalCount = 0 if eval() has never been
-        //   called on this object, typically because it is root expression
+        //   called on this object, typically because it is a root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
         visitCount <- 0;  // reset for next time
@@ -89,15 +90,17 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   final override function grad(d:Value) {
     if f? {
       if visitCount == 0 {
+        assert !this.d?;
         this.d <- d;  // start accumulation
       } else {
+        assert this.d?;
         this.d <- this.d! + d;
       }
       visitCount <- visitCount + 1;
       if visitCount >= evalCount {
         assert visitCount == evalCount || evalCount == 0;
         // ^ can have visitCount > evalCount = 0 if eval() has never been
-        //   called on this object, typically because it is root expression
+        //   called on this object, typically because it is a root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
         global.grad(f!, this.d!);  // upstream gradients all accumulated, propagate
@@ -117,8 +120,6 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   final override function constant(gen:Integer) {
     if f? && this.gen < gen {
       constant();
-    } else {
-      global.constant(f!, gen);
     }
   }
 

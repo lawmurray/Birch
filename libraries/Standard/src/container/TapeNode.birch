@@ -1,7 +1,7 @@
 /*
  * Tape node.
  */
-acyclic class TapeNode<Type>(x:Type) {
+class TapeNode<Type>(x:Type) {
   next:TapeNode<Type>?;
   x:Type <- x;
 }

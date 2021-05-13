@@ -15,6 +15,10 @@
  *   `filter.class` in the config file, which in turn overrides the default
  *   of [ParticleFilter](../ParticleFilter).
  *
+ * - `--kernel`: Name of the kernel class. If used, overrides
+ *   `kernel.class` in the config file, which in turn overrides the default
+ *   of [LangevinKernel](../LangevinKernel).
+ *
  * - `--nsteps`: Number of steps to take. If used, this overrides `nsteps` in
  *   the config file, which in turn overrides `filter.nsteps` (deprecated) in
  *   the config file, which in turn overrides the number of steps derived from
@@ -39,6 +43,7 @@ program filter(
     seed:Integer?,
     model:String?,
     filter:String?,
+    kernel:String?,
     nsteps:Integer?,
     nforecasts:Integer?,
     input:String?,
@@ -87,6 +92,16 @@ program filter(
         "filter.class in the config file, or --filter on the command " +
         "line, and should derive from ParticleFilter.");
   }
+
+  /* kernel */
+  kernelBuffer:Buffer;
+  kernelBuffer <-? configBuffer.get("kernel");
+  if kernel? {
+    kernelBuffer.set("class", kernel!);
+  } else if !kernelBuffer.get("class")? {
+    kernelBuffer.set("class", "LangevinKernel");
+  }
+  let theKernel <- make<Kernel>(kernelBuffer);
 
   /* number of steps */
   if !nsteps? {
@@ -151,6 +166,8 @@ program filter(
     /* start or step filter */
     if t == 0 {
       theFilter!.filter(theModel!, filterBuffer);
+    } else if theKernel? {
+      theFilter!.filter(t, filterBuffer, theKernel!);
     } else {
       theFilter!.filter(t, filterBuffer);
     }

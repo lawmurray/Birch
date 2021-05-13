@@ -10,11 +10,6 @@
  */
 class ParticleFilter {
   /**
-   * Kernel for move steps.
-   */
-  κ:Kernel?;
-
-  /**
    * Particles.
    */
   x:Particle[_];
@@ -81,17 +76,22 @@ class ParticleFilter {
   delayed:Boolean <- true;
 
   /**
+   * Should automatic differentiation be used?
+   */
+  autodiff:Boolean <- false;
+
+  /**
    * Create a particle of the type required for this filter.
    */
   function particle(model:Model) -> Particle {
-    return construct<Particle>(model, delayed, false);
+    return construct<Particle>(model, delayed, autodiff);
   }
 
   /**
    * Start filter.
    *
    * - model: Model.
-   * - input: Optional input buffer.
+   * - input: Input buffer.
    */
   function filter(model:Model, input:Buffer) {
     x <- global.copy(particle(model), nparticles);
@@ -109,11 +109,25 @@ class ParticleFilter {
   /**
    * Step filter.
    *
-   * - t: The step number, beginning at 1.
-   * - input: Optional input buffer.
+   * - t: Step number, beginning at 1.
+   * - input: Input buffer.
    */
   function filter(t:Integer, input:Buffer) {
     resample(t);
+    simulate(t, input);
+    reduce();
+  }
+
+  /**
+   * Step filter.
+   *
+   * - t: Step number, beginning at 1.
+   * - input: Input buffer.
+   * - κ: Markov kernel.
+   */
+  function filter(t:Integer, input:Buffer, κ:Kernel) {
+    resample(t);
+    move(t, κ);
     simulate(t, input);
     reduce();
   }
@@ -174,7 +188,6 @@ class ParticleFilter {
       w <- vector(0.0, nparticles);
       copy();
       collect();
-      move(t);
     } else {
       /* normalize weights to sum to nparticles */
       a <- iota(1, nparticles);
@@ -209,13 +222,14 @@ class ParticleFilter {
   /**
    * Move particles during resampling.
    *
-   * - t: The step number.
+   * - t: Step number.
+   * - κ: Markov kernel.
    */
-  function move(t:Integer) {
-    if κ? {
+  function move(t:Integer, κ:Kernel) {
+    if ess <= trigger*nparticles {
       let α <- vector(0.0, nparticles);  // acceptance rates for each particle
       parallel for n in 1..nparticles {
-        α[n] <- κ!.apply(t, x[n]);
+        α[n] <- κ.apply(t, x[n]);
       }
       raccepts <- sum(α)/nparticles;  // average acceptance rate
     }
@@ -225,5 +239,6 @@ class ParticleFilter {
     nparticles <-? buffer.get<Integer>("nparticles");
     trigger <-? buffer.get<Real>("trigger");
     delayed <-? buffer.get<Boolean>("delayed");
+    autodiff <-? buffer.get<Boolean>("autodiff");
   }
 }

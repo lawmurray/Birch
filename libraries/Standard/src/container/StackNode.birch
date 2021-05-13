@@ -1,7 +1,7 @@
 /*
  * Stack node.
  */
-acyclic class StackNode<Type>(x:Type) {
+class StackNode<Type>(x:Type) {
   next:StackNode<Type>?;
   x:Type <- x;
 }

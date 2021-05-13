@@ -15,47 +15,54 @@ class LangevinKernel < Kernel {
   scale:Real <- 1.0;
 
   override function apply(t:Integer, π:Particle) -> Real {
-    let δ <- scale/pow(min(t, nlags), 3);
-
     /* apply lag */
     π.label(t);
     π.constant(t - nlags);
 
-    /* initial state */
-    let x <- π.args();
-    let p <- π.eval();
-    let d <- π.grad();
-    let μ <- x + d*δ;
-    let Σ <- diagonal(2.0*δ, length(x));
+    if nmoves > 0 {
+      /* scale */
+      let δ <- scale/pow(min(t, nlags), 3);
 
-    /* moves */
-    let naccepts <- 0;
-    let accept <- false;
-    for n in 1..nmoves {
-      /* proposed state */
-      let x' <- simulate_multivariate_gaussian(μ, Σ);
-      let p' <- π.move(x');
-      let d' <- π.grad();
-      let μ' <- x' + d'*δ;
+      /* initial state */
+      let x <- π.args();
+      let p <- π.peek();
+      let d <- π.grad();
+      let μ <- x + d*δ;
+      let Σ <- diagonal(2.0*δ, length(x));
 
-      /* accept/reject */
-      let q <- logpdf_multivariate_gaussian(x, μ', Σ);
-      let q' <- logpdf_multivariate_gaussian(x', μ, Σ);      
-      accept <- simulate_uniform(0.0, 1.0) <= p' - p + q - q';
-      if accept {
-        naccepts <- naccepts + 1;
-        x <- x';
-        p <- p';
-        d <- d';
-        μ <- μ';
+      /* moves */
+      let naccepts <- 0;
+      let accept <- false;
+      for n in 1..nmoves {
+        /* proposed state */
+        let x' <- simulate_multivariate_gaussian(μ, Σ);
+        let p' <- π.move(x');
+        let d' <- π.grad();
+        let μ' <- x' + d'*δ;
+
+        /* proposal correction */
+        let q <- logpdf_multivariate_gaussian(x, μ', Σ);
+        let q' <- logpdf_multivariate_gaussian(x', μ, Σ);      
+
+        /* accept/reject */
+        accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + q - q';
+        if accept {
+          naccepts <- naccepts + 1;
+          x <- x';
+          p <- p';
+          d <- d';
+          μ <- μ';
+        }
       }
+      if !accept {
+        /* if last proposal was not accepted, restore correct arguments,
+        * otherwise already correct */
+        π.move(x);
+      }
+      return scalar<Real>(naccepts)/nmoves;
+    } else {
+      return 0.0;
     }
-    if !accept {
-      /* if last proposal was not accepted, restore correct arguments,
-       * otherwise already correct */
-      π.move(x);
-    }
-    return scalar<Real>(naccepts)/nmoves;
   }
 
   override function read(buffer:Buffer) {

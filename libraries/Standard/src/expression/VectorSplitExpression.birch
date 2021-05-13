@@ -9,8 +9,10 @@ final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
   function grad(d:Real, i:Integer) {
     if this.f? {
       if this.visitCount == 0 {
+        assert !this.d?;
         this.d <- vector(0.0, this.length());
       }
+      assert this.d?;
       this.d![i] <- this.d![i] + d;
       this.visitCount <- this.visitCount + 1;
       if this.visitCount >= this.evalCount {
@@ -19,8 +21,8 @@ final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        global.grad(this.f!, this.d!);      // upstream gradients all accumulated, propagate
-        this.d <- nil;         // clear intermediate gradients to save memory
+        global.grad(this.f!, this.d!);  // upstream gradients accumulated
+        this.d <- nil;  // clear intermediate gradients to save memory
         this.visitCount <- 0;  // reset for next time
       }
     }

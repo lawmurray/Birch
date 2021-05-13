@@ -19,8 +19,8 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Evaluate the log-posterior.
    */
-  function eval() -> Real {
-    return h.eval();
+  function peek() -> Real {
+    return h.peek();
   }
 
   /**
