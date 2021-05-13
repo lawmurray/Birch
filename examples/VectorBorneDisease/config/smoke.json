@@ -7,7 +7,7 @@
     "nsteps": 10   
   },
   "sampler": {
-    "nsamples": 3
+    "nsamples": 1
   },
   "input": "input/yap_dengue.json"
 }

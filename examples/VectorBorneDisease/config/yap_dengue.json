@@ -4,10 +4,10 @@
   },
   "filter": {
     "class": "AliveParticleFilter",
-    "nparticles": 256
+    "nparticles": 1024
   },
   "sampler": {
-    "nsamples": 3
+    "nsamples": 1
   },
   "input": "input/yap_dengue.json",
   "output": "output/yap_dengue.json"
