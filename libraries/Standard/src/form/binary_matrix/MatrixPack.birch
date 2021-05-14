@@ -3,17 +3,12 @@ struct MatrixPackFunction {
     return pack(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    let r1 <- rows(l);
-    let c1 <- columns(l);
-    return d[1..r1, 1..c1];
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
     let r1 <- rows(l);
     let c1 <- columns(l);
     let c2 <- columns(r);
-    return d[1..r1, (c1 + 1)..(c1 + c2)];
+    return (d[1..r1, 1..c1], d[1..r1, (c1 + 1)..(c1 + c2)]);
   }
 }
 struct MatrixPack<Left,Right> = Binary<MatrixPackFunction,Left,Right>;

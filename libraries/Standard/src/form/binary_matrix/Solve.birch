@@ -3,12 +3,11 @@ struct SolveFunction {
     return solve(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return outer(solve(transpose(l), -d), solve(l, r));
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return solve(transpose(l), d);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    let dl <- outer(solve(transpose(l), -d), solve(l, r));
+    let dr <- solve(transpose(l), d);
+    return (dl, dr);
   }
 }
 struct Solve<Left,Right> = Binary<SolveFunction,Left,Right>;

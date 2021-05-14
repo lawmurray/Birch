@@ -3,17 +3,12 @@ struct MatrixStackFunction {
     return stack(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    let r1 <- rows(l);
-    let c1 <- columns(l);
-    return d[1..r1, 1..c1];
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
     let r1 <- rows(l);
     let r2 <- rows(r);
     let c1 <- columns(l);
-    return d[(r1 + 1)..(r1 + r2), 1..c1];
+    return (d[1..r1,1..c1], d[(r1 + 1)..(r1 + r2),1..c1]);
   }
 }
 struct MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;

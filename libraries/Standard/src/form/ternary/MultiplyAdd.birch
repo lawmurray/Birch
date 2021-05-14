@@ -1,18 +1,12 @@
 struct MultiplyAddFunction {
-function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
+  function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue,
+      m:MiddleValue, r:RightValue) -> {
     return multiply_add(l, m, r);
   }
 
-function gradLeft<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return outer(d, m);
-  }
-
-function gradMiddle<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return inner(l, d);
-  }
-
-function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return d;
+  function grad<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient,
+      l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return (outer(d, m), inner(l, d), d);
   }
 }
 struct MultiplyAdd<Left,Middle,Right> = Ternary<MultiplyAddFunction,Left,Middle,Right>;

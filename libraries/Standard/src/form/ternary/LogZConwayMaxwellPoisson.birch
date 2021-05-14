@@ -3,26 +3,20 @@ struct LogZConwayMaxwellPoissonFunction {
     return logz_conway_maxwell_poisson(λ, ν, n);
   }
 
-  function gradLeft<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
+  function grad<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
       n:Arg3) -> {
     let z <- vector_lambda(\(x:Integer) -> {
           return log(x) + x*log(λ) - ν*lgamma(x + 1);
         }, n);
-    return d*exp(log(λ) - log_sum_exp(z));
-  }
+    let dl <- d*exp(log(λ) - log_sum_exp(z));
 
-  function gradMiddle<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
-      n:Arg3) -> {
-    let z <- 0.0;
+    let Z <- 0.0;
     for x in 1..n {
-      z <- z + lgamma(x + 1)*exp(x*log(λ) - ν*lgamma(x + 1));
+      Z <- Z + lgamma(x + 1)*exp(x*log(λ) - ν*lgamma(x + 1));
     }
-    return -d/z;
-  }
+    let dm <- -d/Z;
 
-  function gradRight<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
-      n:Arg3) -> {
-    return 0.0;
+    return (dl, dm, 0.0);
   }
 }
 struct LogZConwayMaxwellPoisson<Left,Middle,Right> = Ternary<

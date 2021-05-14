@@ -1,14 +1,11 @@
 struct CopySignFunction {  
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return copysign(l, r);
   }
   
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return if_then_else(copysign(l, r) == l, d, -d);
-  }
-
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return 0.0;
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (if_then_else(copysign(l, r) == l, d, -d), 0.0);
   }
 }
 struct CopySign<Left,Right> = Binary<CopySignFunction,Left,Right>;

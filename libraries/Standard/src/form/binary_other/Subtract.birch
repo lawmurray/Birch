@@ -3,12 +3,9 @@ struct SubtractFunction {
     return l - r;
   }
   
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return d;
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return -d;
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (d, -d);
   }
 }
 struct Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;

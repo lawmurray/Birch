@@ -34,8 +34,9 @@ struct Binary<Function,Left,Right>(l:Left, r:Right) {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l, f.gradLeft(d, global.peek(l), global.peek(r)));
-    global.grad(r, f.gradRight(d, global.peek(l), global.peek(r)));
+    let (dl, dr) <- f.grad(d, global.peek(l), global.peek(r));
+    global.grad(l, dl);
+    global.grad(r, dr);
   }
 
   function label(gen:Integer) {

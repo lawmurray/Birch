@@ -3,28 +3,49 @@ struct MultiplyFunction {
     return l*r;
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return trace(outer(d, r));
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (trace(outer(d, r)), trace(inner(l, d)));
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_], r:RightValue) -> {
-    return outer(d, r);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue[_]) -> {
+    return (trace(outer(d, r)), inner(l, d));
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_,_], r:RightValue) -> {
-    return outer(d, r);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue[_,_]) -> {
+    return (trace(outer(d, r)), inner(l, d));
   }
 
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return trace(inner(l, d));
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue) -> {
+    return (outer(d, r), trace(inner(l, d)));
   }
 
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue[_]) -> {
-    return inner(l, d);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue[_]) -> {
+    return (outer(d, r), inner(l, d));
   }
 
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue[_,_]) -> {
-    return inner(l, d);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue[_,_]) -> {
+    return (outer(d, r), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
+      l:LeftValue[_,_], r:RightValue) -> {
+    return (outer(d, r), trace(inner(l, d)));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
+      l:LeftValue[_,_], r:RightValue[_]) -> {
+    return (outer(d, r), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
+      l:LeftValue[_,_], r:RightValue[_,_]) -> {
+    return (outer(d, r), inner(l, d));
   }
 }
 struct Multiply<Left,Right> = Binary<MultiplyFunction,Left,Right>;

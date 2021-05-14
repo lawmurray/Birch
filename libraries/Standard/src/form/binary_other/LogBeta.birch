@@ -1,14 +1,11 @@
 struct LogBetaFunction {  
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return lbeta(l, r);
   }
   
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return d*(digamma(l) + digamma(l + r));
-  }
-
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return d*(digamma(r) + digamma(l + r));
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (d*(digamma(l) + digamma(l + r)), d*(digamma(r) + digamma(l + r)));
   }
 }
 struct LogBeta<Left,Right> = Binary<LogBetaFunction,Left,Right>;

@@ -1,18 +1,12 @@
 struct DotAddFunction {  
-function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
+  function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue,
+      m:MiddleValue, r:RightValue) -> {
     return dot_add(l, m, r);
   }
 
-function gradLeft<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return m*d;
-  }
-
-function gradMiddle<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return outer(l, d);
-  }
-
-function gradRight<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient, l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return d;
+  function grad<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient,
+      l:LeftValue, m:MiddleValue, r:RightValue) -> {
+    return (m*d, outer(l, d), d);
   }
 }
 struct DotAdd<Left,Middle,Right> = Ternary<DotAddFunction,Left,Middle,Right>;

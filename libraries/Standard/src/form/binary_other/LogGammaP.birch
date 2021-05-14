@@ -3,16 +3,13 @@ struct LogGammaPFunction {
     return lgamma(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
     let y <- 0.0;
     for i in 1..r {
       y <- y + digamma(l + 0.5*(1 - i));
     }
-    return d*y;
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return 0.0;
+    return (d*y, 0.0);
   }
 }
 struct LogGammaP<Left,Right> = Binary<LogGammaPFunction,Left,Right>;

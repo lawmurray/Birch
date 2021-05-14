@@ -3,12 +3,9 @@ struct DotFunction {
     return dot(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return r*d;
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return outer(l, d);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (r*d, outer(l, d));
   }
 }
 struct Dot<Left,Right> = Binary<DotFunction,Left,Right>;

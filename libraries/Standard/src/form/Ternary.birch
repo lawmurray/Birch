@@ -39,9 +39,11 @@ struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   }
 
   function grad<Gradient>(d:Gradient) {
-    global.grad(l, f.gradLeft(d, global.peek(l), global.peek(m), global.peek(r)));
-    global.grad(m, f.gradMiddle(d, global.peek(l), global.peek(m), global.peek(r)));
-    global.grad(r, f.gradRight(d, global.peek(l), global.peek(m), global.peek(r)));
+    let (dl, dm, dr) <- f.grad(d, global.peek(l), global.peek(m),
+        global.peek(r));
+    global.grad(l, dl);
+    global.grad(m, dm);
+    global.grad(r, dr);
   }
 
   function label(gen:Integer) {

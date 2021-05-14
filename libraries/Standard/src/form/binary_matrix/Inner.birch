@@ -3,12 +3,9 @@ struct InnerFunction {
     return inner(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return outer(r, d);
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-		return l*d;
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (outer(r, d), l*d);
   }
 }
 struct Inner<Left,Right> = Binary<InnerFunction,Left,Right>;

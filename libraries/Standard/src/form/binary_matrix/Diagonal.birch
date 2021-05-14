@@ -3,12 +3,9 @@ struct DiagonalFunction {
     return diagonal(l, r);
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return trace(d);
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return 0.0;
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (trace(d), 0.0);
   }
 }
 struct Diagonal<Left,Right> = Binary<DiagonalFunction,Left,Right>;

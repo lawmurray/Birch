@@ -1,18 +1,16 @@
 struct PowFunction {  
-function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
     return pow(l, r);
   }
 
-function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return d*r*pow(l, r - 1.0);
-  }
-
-function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    let dl <- d*r*pow(l, r - 1.0);
+    let dr <- 0.0;
     if l > 0.0 {
-      return d*pow(l, r)*log(l);
-    } else {
-      return 0.0;
+      dr <- d*pow(l, r)*log(l);
     }
+    return (dl, dr);
   }
 }
 struct Pow<Left,Right> = Binary<PowFunction,Left,Right>;

@@ -3,12 +3,9 @@ struct DivideFunction {
     return l/r;
   }
 
-  function gradLeft<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return d/r;
-  }
-
-  function gradRight<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue, r:RightValue) -> {
-    return -trace(inner(d, l))/pow(r, 2.0);
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (d/r, -trace(inner(d, l))/pow(r, 2.0));
   }
 }
 struct Divide<Left,Right> = Binary<DivideFunction,Left,Right>;
