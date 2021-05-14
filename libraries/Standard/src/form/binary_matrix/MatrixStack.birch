@@ -5,6 +5,26 @@ struct MatrixStackFunction {
 
   function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
       r:RightValue) -> {
+    return (d[1], d[2]);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue) -> {
+    return (d[1..(length(d) - 1)], d[length(d)]);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue[_]) -> {
+    return (d[1], d[2..length(d)]);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue[_]) -> {
+    return (d[1..length(l)], d[(length(l) + 1)..length(d)]);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_,_],
+      r:RightValue[_,_]) -> {
     let r1 <- rows(l);
     let r2 <- rows(r);
     let c1 <- columns(l);
@@ -19,6 +39,30 @@ struct MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;
  */
 function stack<Left,Right>(l:Left, r:Right) -> {
   return construct<MatrixStack<Left,Right>>(l, r);
+}
+
+/**
+ * Stack two scalars atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack(x:Real, y:Real) -> Real[_] {
+  return [x, y];
+}
+
+/**
+ * Stack two scalars atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack(x:Integer, y:Integer) -> Integer[_] {
+  return [x, y];
+}
+
+/**
+ * Stack two scalars atop one another (i.e. append them) to create a
+ * new vector.
+ */
+function stack(x:Boolean, y:Boolean) -> Boolean[_] {
+  return [x, y];
 }
 
 /**

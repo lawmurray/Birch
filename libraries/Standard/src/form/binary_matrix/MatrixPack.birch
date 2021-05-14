@@ -5,6 +5,16 @@ struct MatrixPackFunction {
 
   function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
       r:RightValue) -> {
+    return (d[1,1], d[1,2]);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue[_]) -> {
+    return (column(d, 1), column(d, 2));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_,_],
+      r:RightValue[_,_]) -> {
     let r1 <- rows(l);
     let c1 <- columns(l);
     let c2 <- columns(r);
@@ -19,6 +29,41 @@ struct MatrixPack<Left,Right> = Binary<MatrixPackFunction,Left,Right>;
  */
 function pack<Left,Right>(l:Left, r:Right) -> {
   return construct<MatrixPack<Left,Right>>(l, r);
+}
+
+/**
+ * Pack two scalars next to one another as a row to create a new matrix.
+ */
+function pack(x:Real, y:Real) -> Real[_,_] {
+  return [[x, y]];
+}
+
+/**
+ * Pack two scalars next to one another as a row to create a new matrix.
+ */
+function pack(x:Integer, y:Integer) -> Integer[_,_] {
+  return [[x, y]];
+}
+
+/**
+ * Pack two scalars next to one another as a row to create a new matrix.
+ */
+function pack(x:Boolean, y:Boolean) -> Boolean[_,_] {
+  return [[x, y]];
+}
+
+/**
+ * Pack two vectors next to one another as columns of a new matrix.
+ */
+function pack<Type>(x:Type[_], y:Type[_]) -> Type[_,_] {
+  assert length(x) == length(y);
+  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
+        if j == 1 {
+          return x[i];
+        } else {
+          return y[i];
+        }
+      }, length(x), 2);
 }
 
 /**

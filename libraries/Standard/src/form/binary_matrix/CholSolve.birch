@@ -5,10 +5,10 @@ struct CholSolveFunction {
 
   function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
       r:RightValue) -> {
-    let dl <- fldl(outer(cholsolve(l, -d), cholsolve(l, r)));
+    let x <- cholsolve(l, d);
+    let y <- cholsolve(l, r);
+    return (fldl(outer(-x, y)), x);
     // ^ only lower triangle of l used
-    let dr <- cholsolve(l, d);
-    return (dl, dr);
   }
 }
 struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;
