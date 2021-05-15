@@ -27,7 +27,7 @@ function cholsolve<Left,Right>(l:Left, r:Right) -> {
  */
 function cholsolve(l:Real[_,_], r:Real[_]) -> Real[_] {
   cpp{{
-  return l.toEigen().llt().solve(r.toEigen()).eval();
+  return l.toEigen().llt().solve(r.toEigen());
   }}
 }
 
@@ -37,6 +37,6 @@ function cholsolve(l:Real[_,_], r:Real[_]) -> Real[_] {
  */
 function cholsolve(l:Real[_,_], r:Real[_,_]) -> Real[_,_] {
   cpp{{
-  return l.toEigen().llt().solve(r.toEigen()).eval();
+  return l.toEigen().llt().solve(r.toEigen());
   }}
 }
