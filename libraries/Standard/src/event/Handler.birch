@@ -94,7 +94,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   function handleSimulate<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
     x.assume(p);
-    return handleDelaySimulate(x);
+    handleDelaySimulate(x);
+    return x;
   }
 
   /**
@@ -127,7 +128,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   function handleObserve<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
     x.assume(p);
-    return handleDelayObserve(x);
+    handleDelayObserve(x);
+    return x;
   }
 
   /**
@@ -172,35 +174,31 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    * Handle a delayed simulation event.
    *
    * - x: Random.
-   *
-   * Returns: `x`.
    */
-  function handleDelaySimulate<Value>(x:Random<Value>) -> Random<Value> {
+  function handleDelaySimulate<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
     if delayExpressions && p.supportsLazy() {
       x.move(p.simulateLazy()!);
       arg(x);
     } else {
-      x <- p.simulate();
+      x.move(p.simulate());
     }
-    return x;
+    x.p <- nil;
   }
 
   /**
    * Handle a delayed observation event.
    *
    * - x: Random.
-   *
-   * Returns: `x`.
    */
-  function handleDelayObserve<Value>(x:Random<Value>) -> Random<Value> {
+  function handleDelayObserve<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
     if delayExpressions && p.supportsLazy() {
       handleFactor(p.logpdfLazy(x)!);
     } else {
       handleFactor(p.logpdf(x.value()));
     }
-    return x;
+    x.p <- nil;
   }
 
   /**
@@ -507,7 +505,6 @@ function argSize<Value>(o:Tape<Random<Value>>) -> Integer {
       n <- n + o[i].size();
       i <- i + 1;
     } else {
-      stderr.print("erase\n");
       o.erase(i);
     }
   }

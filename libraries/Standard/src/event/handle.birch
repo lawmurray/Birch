@@ -152,22 +152,18 @@ function handle_factor<Arg>(w:Arg) {
  * Handle delayed simulate event.
  *
  * - x: Random.
- *
- * Returns: `x`.
  */
-function handle_delay_simulate<Value>(x:Random<Value>) -> Random<Value> {
-  return get_handler().handleDelaySimulate<Value>(x);
+function handle_delay_simulate<Value>(x:Random<Value>) {
+  get_handler().handleDelaySimulate<Value>(x);
 }
 
 /*
  * Handle delayed observe event.
  *
  * - x: Random.
- *
- * Returns: `x`.
  */
-function handle_delay_observe<Value>(x:Random<Value>) -> Random<Value> {
-  return get_handler().handleDelayObserve<Value>(x);
+function handle_delay_observe<Value>(x:Random<Value>) {
+  get_handler().handleDelayObserve<Value>(x);
 }
 
 /*
