@@ -22,14 +22,6 @@ function box<Value>(x:BoxedValue<Value>) -> Expression<Value> {
 /**
  * Box an already-boxed expression (identity operation).
  */
-function box<Value>(x:MatrixJoinExpression<Value[_,_]>) ->
-    Expression<Value[_,_]> {
-  return x;
-}
-
-/**
- * Box an already-boxed expression (identity operation).
- */
 function box<Value,Form>(x:MatrixSplitExpression<Value[_,_],Form>) ->
     Expression<Value[_,_]> {
   return x;
@@ -39,14 +31,6 @@ function box<Value,Form>(x:MatrixSplitExpression<Value[_,_],Form>) ->
  * Box an already-boxed expression (identity operation).
  */
 function box<Value>(x:Random<Value>) -> Expression<Value> {
-  return x;
-}
-
-/**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value>(x:VectorJoinExpression<Value[_]>) ->
-    Expression<Value[_]> {
   return x;
 }
 

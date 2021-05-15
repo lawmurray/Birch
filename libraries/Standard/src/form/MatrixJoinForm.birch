@@ -1,74 +1,53 @@
 /**
- * Boxed and joined matrix expression.
+ * Boxed and joined matrix of expressions.
  *
  * - Value: Element type.
  */
-final class MatrixJoinExpression<Value>(x:Expression<Value>[_,_]) <
-    Expression<Value[_,_]> {
+struct MatrixJoinForm<Value>(x:Expression<Value>[_,_]) {
   /**
    * Arguments.
    */
   x:Expression<Value>[_,_]? <- x;
 
-  override function isRandom() -> Boolean {
-    return false;
-  }
-
-  override function isConstant() -> Boolean {
-    return transform_reduce(x, true, \(a:Boolean, b:Boolean) -> {
-          return a && b;
-        }, \(x':Expression<Value>) -> {
-          return x'.isConstant();
-        });
-  }
-
-  override function rows() -> Integer {
-    return global.rows(x);
-  }
-
-  override function columns() -> Integer {
-    return global.columns(x);
-  }
-
-  override function value() -> Value[_,_] {
+  function value() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.value(x');
         });
   }
 
-  override function peek() -> Value[_,_] {
+  function peek() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.peek(x');
         });
   }
 
-  override function eval() -> Value[_,_] {
+  function eval() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.eval(x');
         });
   }
 
-  override function reval() -> Value[_,_] {
+  function reval() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.reval(x');
         });
   }
   
-  override function grad(d:Value[_,_]) {
+  function grad(d:Value[_,_]) {
     for_each(x, d, \(x':Expression<Value>, d':Value) {
           global.grad(x', d');
         });
   }
 
-  override function label(gen:Integer) {
+  function label(gen:Integer) {
     for_each(x, \(x':Expression<Value>) { global.label(x', gen); });
   }
 
-  override function constant(gen:Integer) {
+  function constant(gen:Integer) {
     for_each(x, \(x':Expression<Value>) { global.constant(x', gen); });
   }
 
-  override function constant() {
+  function constant() {
     for_each(x, \(x':Expression<Value>) { global.constant(x'); });
   }
 }
@@ -77,5 +56,5 @@ final class MatrixJoinExpression<Value>(x:Expression<Value>[_,_]) <
  * Convert a matrix of expressions into a matrix expression.
  */
 function join<Value>(x:Expression<Value>[_,_]) -> Expression<Value[_,_]> {
-  return construct<MatrixJoinExpression<Value>>(x);
+  return box(construct<MatrixJoinForm<Value>>(x));
 }

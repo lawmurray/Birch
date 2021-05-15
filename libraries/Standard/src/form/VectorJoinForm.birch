@@ -1,74 +1,53 @@
 /**
- * Boxed and joined vector expression.
+ * Boxed and joined vector of expressions.
  *
  * - Value: Element type.
  */
-final class VectorJoinExpression<Value>(x:Expression<Value>[_]) <
-    Expression<Value[_]> {
+struct VectorJoinForm<Value>(x:Expression<Value>[_]) {
   /**
    * Arguments.
    */
   x:Expression<Value>[_] <- x;
 
-  override function isRandom() -> Boolean {
-    return false;
-  }
-
-  override function isConstant() -> Boolean {
-    return transform_reduce(x, true, \(a:Boolean, b:Boolean) -> {
-          return a && b;
-        }, \(x':Expression<Value>) -> {
-          return x'.isConstant();
-        });
-  }
-
-  override function rows() -> Integer {
-    return global.rows(x);
-  }
-
-  override function columns() -> Integer {
-    return 1;
-  }
-
-  override function value() -> Value[_] {
+  function value() -> Value[_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.value(x');
         });
   }
 
-  override function peek() -> Value[_] {
+  function peek() -> Value[_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.peek(x');
         });
   }
 
-  override function eval() -> Value[_] {
+  function eval() -> Value[_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.eval(x');
         });
   }
 
-  override function reval() -> Value[_] {
+  function reval() -> Value[_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.reval(x');
         });
   }
   
-  override function grad(d:Value[_]) {
+  function grad(d:Value[_]) {
     for_each(x, d, \(x':Expression<Value>, d':Value) {
           global.grad(x', d');
         });
   }
 
-  override function label(gen:Integer) {
+  function label(gen:Integer) {
     for_each(x, \(x':Expression<Value>) { global.label(x', gen); });
   }
 
-  override function constant(gen:Integer) {
+  function constant(gen:Integer) {
     for_each(x, \(x':Expression<Value>) { global.constant(x', gen); });
   }
 
-  override function constant() {
+  function constant() {
     for_each(x, \(x':Expression<Value>) { global.constant(x'); });
   }
 }
@@ -77,5 +56,5 @@ final class VectorJoinExpression<Value>(x:Expression<Value>[_]) <
  * Convert a vector of expressions into a vector expression.
  */
 function join<Value>(x:Expression<Value>[_]) -> Expression<Value[_]> {
-  return construct<VectorJoinExpression<Value>>(x);
+  return box(construct<VectorJoinForm<Value>>(x));
 }
