@@ -3,16 +3,16 @@
     "class": "EcologyModel"
   },
   "kernel": {
-    "scale": 0.001,
-    "nmoves": 4,
-    "nlags": 4
+    "scale": 0.0001,
+    "nmoves": 5,
+    "nlags": 5
   },
   "filter": {
-    "nparticles": 32,
+    "nparticles": 128,
     "autodiff": true
   },
   "sampler": {
-    "nsamples": 10
+    "nsamples": 20
   },
   "input": "input/sparrow.json",
   "output": "output/sparrow.json"

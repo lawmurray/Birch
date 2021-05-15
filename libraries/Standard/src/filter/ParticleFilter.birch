@@ -226,13 +226,11 @@ class ParticleFilter {
    * - κ: Markov kernel.
    */
   function move(t:Integer, κ:Kernel) {
-    if ess <= trigger*nparticles {
-      let α <- vector(0.0, nparticles);  // acceptance rates for each particle
-      parallel for n in 1..nparticles {
-        α[n] <- κ.apply(t, x[n]);
-      }
-      raccepts <- sum(α)/nparticles;  // average acceptance rate
+    let α <- vector(0.0, nparticles);  // acceptance rates for each particle
+    parallel for n in 1..nparticles {
+      α[n] <- κ.apply(t, x[n]);
     }
+    raccepts <- sum(α)/nparticles;  // average acceptance rate
   }
 
   override function read(buffer:Buffer) {

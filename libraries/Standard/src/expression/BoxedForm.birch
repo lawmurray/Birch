@@ -118,8 +118,12 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function constant(gen:Integer) {
-    if f? && this.gen < gen {
-      constant();
+    if f? {
+      if this.gen < gen {
+        constant();
+      } else {
+        global.constant(f!, gen);
+      }
     }
   }
 
