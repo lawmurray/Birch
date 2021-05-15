@@ -393,7 +393,7 @@ public:
       buffer(nullptr),
       isView(false) {
     allocate();
-    toEigen() = o;
+    toEigen().noalias() = o;
   }
 
   /**
@@ -405,7 +405,7 @@ public:
       buffer(nullptr),
       isView(false) {
     allocate();
-    toEigen() = o;
+    toEigen().noalias() = o;
   }
 
   /**
