@@ -28,7 +28,7 @@ struct MatrixPack<Left,Right> = Binary<MatrixPackFunction,Left,Right>;
  * new matrix.
  */
 function pack<Left,Right>(l:Left, r:Right) -> {
-  return construct<MatrixPack<Left,Right>>(l, r);
+  return box(construct<MatrixPack<Left,Right>>(l, r));
 }
 
 /**

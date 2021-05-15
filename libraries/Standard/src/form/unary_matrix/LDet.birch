@@ -13,7 +13,7 @@ struct LDet<Middle> = Unary<LDetFunction,Middle>;
  * Log-determinant of a matrix.
  */
 function ldet<Middle>(m:Middle) -> {
-  return construct<LDet<Middle>>(m);
+  return box(construct<LDet<Middle>>(m));
 }
 
 /**

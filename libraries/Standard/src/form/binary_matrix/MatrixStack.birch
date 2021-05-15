@@ -38,7 +38,7 @@ struct MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;
  * new matrix.
  */
 function stack<Left,Right>(l:Left, r:Right) -> {
-  return construct<MatrixStack<Left,Right>>(l, r);
+  return box(construct<MatrixStack<Left,Right>>(l, r));
 }
 
 /**

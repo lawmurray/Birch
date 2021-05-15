@@ -13,7 +13,7 @@ struct Transpose<Middle> = Unary<TransposeFunction,Middle>;
  * Matrix transpose.
  */
 function transpose<Middle>(m:Middle) -> {
-  return construct<Transpose<Middle>>(m);
+  return box(construct<Transpose<Middle>>(m));
 }
 
 /**

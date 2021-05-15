@@ -18,7 +18,7 @@ struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;
  * positive-definite matrix. The solution is via the Cholesky factorization.
  */
 function cholsolve<Left,Right>(l:Left, r:Right) -> {
-  return construct<CholSolve<Left,Right>>(l, r);
+  return box(construct<CholSolve<Left,Right>>(l, r));
 }
 
 /**

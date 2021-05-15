@@ -16,7 +16,7 @@ struct Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
  * Solve a system of equations.
  */
 function solve<Left,Right>(l:Left, r:Right) -> {
-  return construct<Solve<Left,Right>>(l, r);
+  return box(construct<Solve<Left,Right>>(l, r));
 }
 
 /**

@@ -11,6 +11,13 @@ struct InnerFunction {
 struct Inner<Left,Right> = Binary<InnerFunction,Left,Right>;
 
 /**
+ * Inner product.
+ */
+function inner<Left,Right>(l:Left, r:Right) -> {
+  return box(construct<Inner<Left,Right>>(l, r));
+}
+
+/**
  * Inner product of an argument with itself.
  */
 function inner<Middle>(m:Middle) -> {
@@ -57,13 +64,6 @@ function inner(X:Integer[_,_]) -> Integer[_,_] {
  */
 function inner(X:Real[_,_]) -> Real[_,_] {
   return inner(X, X);
-}
-
-/**
- * Inner product.
- */
-function inner<Left,Right>(l:Left, r:Right) -> {
-  return construct<Inner<Left,Right>>(l, r);
 }
 
 /**

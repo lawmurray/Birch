@@ -16,7 +16,7 @@ struct CholInv<Middle> = Unary<CholInvFunction,Middle>;
  * factorization.
  */
 function cholinv<Middle>(m:Middle) -> {
-  return construct<CholInv<Middle>>(m);
+  return box(construct<CholInv<Middle>>(m));
 }
 
 /**

@@ -14,7 +14,7 @@ struct Inv<Middle> = Unary<InvFunction,Middle>;
  * Inverse of a matrix.
  */
 function inv<Middle>(m:Middle) -> {
-  return construct<Inv<Middle>>(m);
+  return box(construct<Inv<Middle>>(m));
 }
 
 /**

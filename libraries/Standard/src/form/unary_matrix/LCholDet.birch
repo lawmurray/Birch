@@ -15,7 +15,7 @@ struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;
  * factorization.
  */
 function lcholdet<Middle>(m:Middle) -> {
-  return construct<LCholDet<Middle>>(m);
+  return box(construct<LCholDet<Middle>>(m));
 }
 
 /**

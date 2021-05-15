@@ -11,6 +11,13 @@ struct OuterFunction {
 struct Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
 
 /**
+ * Outer product.
+ */
+function outer<Left,Right>(l:Left, r:Right) -> {
+  return box(construct<Outer<Left,Right>>(l, r));
+}
+
+/**
  * Outer product of an argument with itself.
  */
 function outer<Middle>(m:Middle) -> {
@@ -57,13 +64,6 @@ function outer(X:Integer[_,_]) -> Integer[_,_] {
  */
 function outer(X:Real[_,_]) -> Real[_,_] {
   return outer(X, X);
-}
-
-/**
- * Outer product.
- */
-function outer<Left,Right>(l:Left, r:Right) -> {
-  return construct<Outer<Left,Right>>(l, r);
 }
 
 /**

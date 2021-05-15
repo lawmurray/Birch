@@ -21,7 +21,7 @@ struct Trace<Middle> = Unary<TraceFunction,Middle>;
  * Trace.
  */
 function trace<Middle>(m:Middle) -> {
-  return construct<Trace<Middle>>(m);
+  return box(construct<Trace<Middle>>(m));
 }
 
 /**
