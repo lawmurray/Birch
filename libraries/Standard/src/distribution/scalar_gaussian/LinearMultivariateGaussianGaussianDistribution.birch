@@ -82,23 +82,24 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
 
 function LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     μ:Arg2, Σ:Arg3, c:Arg4, s2:Arg5) -> {
-  return construct<LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
-      Arg5>>(a, μ, Σ, c, s2);
+  return construct<LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,
+      Arg3,Arg4,Arg5>>(a, μ, Σ, c, s2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Arg3) -> Distribution<Real> {
-  μ.m.prune();
-  if μ.m.hasMultivariateGaussian() {
-    let (m, S) <- μ.m.getMultivariateGaussian();
-    let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, μ.r, σ2);
-    μ.m.graft(p);
+  μ.l.r.prune();
+  if μ.l.r.hasMultivariateGaussian() {
+    let (m, S) <- μ.l.r.getMultivariateGaussian();
+    let p <- LinearMultivariateGaussianGaussian(μ.l.l, m, S, μ.r, σ2);
+    μ.l.r.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<DotAdd<Arg1,Random<Real[_]>,Arg2>,Arg3>>(μ, σ2);
+    return construct<GaussianDistribution<Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
+        Arg3>>(μ, σ2);
   }
 }
 

@@ -88,17 +88,17 @@ function LinearMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
 /**
  * Create matrix Gaussian distribution.
  */
-function MatrixGaussian<Arg1,Arg2,Arg3>(
-    M:MultiplyAdd<Arg1,Random<Real[_,_]>,Arg2>, U:Arg3,
-    V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  M.m.prune();
-  if M.m.hasMatrixNormalInverseWishart() && M.m.isGrandChildOf(V) {
-    let (N, Λ, α, β) <- M.m.getMatrixNormalInverseWishart();
-    let p <- LinearMatrixNormalInverseWishartMatrixGaussian(M.l, N, Λ, α, β,
+function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Multiply<Arg1,
+    Random<Real[_,_]>>,Arg2>, U:Arg3, V:Random<Real[_,_]>) ->
+    Distribution<Real[_,_]> {
+  M.l.r.prune();
+  if M.l.r.hasMatrixNormalInverseWishart() && M.l.r.isGrandChildOf(V) {
+    let (N, Λ, α, β) <- M.l.r.getMatrixNormalInverseWishart();
+    let p <- LinearMatrixNormalInverseWishartMatrixGaussian(M.l.l, N, Λ, α, β,
         M.r, U);
-    M.m.graft(p, 1);
+    M.l.r.graft(p, 1);
     V.graftReplace(p, 2);
-    M.m.join(V);
+    M.l.r.join(V);
     return p;
   } else {
     V.prune();
@@ -109,8 +109,8 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(
       V.graft(p);
       return p;
     } else {
-      return construct<MatrixGaussianDistribution<MultiplyAdd<Arg1,Random<Real[_,_]>,Arg2>,
-          Arg3,Random<Real[_,_]>>>(M, U, V);
+      return construct<MatrixGaussianDistribution<Add<Multiply<Arg1,
+          Random<Real[_,_]>>,Arg2>,Arg3,Random<Real[_,_]>>>(M, U, V);
     }
   }
 }

@@ -107,17 +107,3 @@ operator (x:Real[_,_] - y:Real[_,_]) -> Real[_,_] {
   return x.toEigen().operator-(y.toEigen());
   }}
 }
-
-/**
- * Subtraction.
- */
-operator<Left,Middle,Right> (l:Multiply<Left,Middle> - r:Right) -> {
-  return multiply_add(l.l, l.r, -r);
-}
-
-/**
- * Subtraction.
- */
-operator<Left,Middle,Right> (l:Dot<Left,Middle> - r:Right) -> {
-  return dot_add(l.l, l.r, -r);
-}

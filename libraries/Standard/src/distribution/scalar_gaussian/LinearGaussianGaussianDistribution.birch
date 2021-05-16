@@ -88,17 +88,17 @@ function LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:MultiplyAdd<Arg1,Random<Real>,Arg2>,
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
     σ2:Arg3) -> Distribution<Real> {
-  μ.m.prune();
-  if μ.m.hasGaussian() {
-    let (m, s2) <- μ.m.getGaussian();
-    let p <- LinearGaussianGaussian(μ.l, m, s2, μ.r, σ2);
-    μ.m.graft(p);
+  μ.l.r.prune();
+  if μ.l.r.hasGaussian() {
+    let (m, s2) <- μ.l.r.getGaussian();
+    let p <- LinearGaussianGaussian(μ.l.l, m, s2, μ.r, σ2);
+    μ.l.r.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<MultiplyAdd<Arg1,Random<Real>,Arg2>,Arg3>>(μ,
-        σ2);
+    return construct<GaussianDistribution<Add<Multiply<Arg1,Random<Real>>,
+        Arg2>,Arg3>>(μ, σ2);
   }
 }
 
@@ -110,7 +110,7 @@ function Gaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real>>, σ2:Arg2) ->
   if μ.r.hasGaussian() {
     μ.r.prune();
     let (m, s2) <- μ.r.getGaussian();
-    let p <- LinearGaussianGaussian(μ.l, m, s2, 0.0, σ2);
+    let p <- LinearGaussianGaussian(μ.l.l, m, s2, 0.0, σ2);
     μ.r.graft(p);
     return p;
   } else {

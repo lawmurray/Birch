@@ -99,7 +99,7 @@ function LinearMultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
+function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Random<Real>) -> Distribution<Real> {
   return Gaussian(μ, 1.0*σ2);
 }
@@ -107,7 +107,7 @@ function Gaussian<Arg1,Arg2>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Multiply<Random<Real>,Arg3>) -> Distribution<Real> {
   return Gaussian(μ, σ2.r*σ2.l);
 }
@@ -115,16 +115,16 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Multiply<Arg3,Random<Real>>) -> Distribution<Real> {
-  μ.m.prune();
-  if μ.m.hasMultivariateNormalInverseGamma() && μ.m.isGrandChildOf(σ2.r) {
-    let (ν, Λ, α, β) <- μ.m.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l, ν, Λ, α, β,
+  μ.l.r.prune();
+  if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
+    let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
+    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l.l, ν, Λ, α, β,
         μ.r, σ2.l);
-    μ.m.graft(p, 1);
+    μ.l.r.graft(p, 1);
     σ2.r.graftReplace(p, 2);
-    μ.m.join(σ2.r);
+    μ.l.r.join(σ2.r);
     return p;
   } else {
     σ2.r.prune();
@@ -133,14 +133,14 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
       let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
       σ2.r.graft(p);
       return p;
-    } else if μ.m.hasMultivariateGaussian() {
-      let (m, S) <- μ.m.getMultivariateGaussian();
-      let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, μ.r, σ2);
-      μ.m.graft(p);
+    } else if μ.l.r.hasMultivariateGaussian() {
+      let (m, S) <- μ.l.r.getMultivariateGaussian();
+      let p <- LinearMultivariateGaussianGaussian(μ.l.l, m, S, μ.r, σ2);
+      μ.l.r.graft(p);
       return p;
     } else {
-      return construct<GaussianDistribution<DotAdd<Arg1,Random<Real[_]>,Arg2>,
-          Multiply<Arg3,Random<Real>>>>(μ, σ2);
+      return construct<GaussianDistribution<Add<Dot<Arg1,Random<Real[_]>>,
+          Arg2>,Multiply<Arg3,Random<Real>>>>(μ, σ2);
     }
   }
 }
@@ -148,24 +148,25 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
+function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Multiply<Random<Real>,Random<Real>>) -> Distribution<Real> {
-  μ.m.prune();
-  if μ.m.hasMultivariateNormalInverseGamma() && μ.m.isGrandChildOf(σ2.r) {
-    let (ν, Λ, α, β) <- μ.m.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l, ν, Λ, α, β,
+  μ.l.r.prune();
+  if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
+    let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
+    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l.l, ν, Λ, α, β,
         μ.r, σ2.l);
-    μ.m.graft(p, 1);
+    μ.l.r.graft(p, 1);
     σ2.r.graftReplace(p, 2);
-    μ.m.join(σ2.r);
+    μ.l.r.join(σ2.r);
     return p;
-  } else if μ.m.hasMultivariateNormalInverseGamma() && μ.m.isGrandChildOf(σ2.l) {
-    let (ν, Λ, α, β) <- μ.m.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l, ν, Λ, α, β,
+  } else if μ.l.r.hasMultivariateNormalInverseGamma() &&
+      μ.l.r.isGrandChildOf(σ2.l) {
+    let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
+    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l.l, ν, Λ, α, β,
         μ.r, σ2.r);
-    μ.m.graft(p, 1);
+    μ.l.r.graft(p, 1);
     σ2.l.graftReplace(p, 2);
-    μ.m.join(σ2.l);
+    μ.l.r.join(σ2.l);
     return p;
   } else {
     σ2.l.prune();
@@ -180,14 +181,14 @@ function Gaussian<Arg1,Arg2>(μ:DotAdd<Arg1,Random<Real[_]>,Arg2>,
       let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
       σ2.r.graft(p);
       return p;
-    } else if μ.m.hasMultivariateGaussian() {
-      let (m, S) <- μ.m.getMultivariateGaussian();
-      let p <- LinearMultivariateGaussianGaussian(μ.l, m, S, μ.r, σ2);
-      μ.m.graft(p);
+    } else if μ.l.r.hasMultivariateGaussian() {
+      let (m, S) <- μ.l.r.getMultivariateGaussian();
+      let p <- LinearMultivariateGaussianGaussian(μ.l.l, m, S, μ.r, σ2);
+      μ.l.r.graft(p);
       return p;
     } else {
-      return construct<GaussianDistribution<DotAdd<Arg1,Random<Real[_]>,Arg2>,
-          Multiply<Random<Real>,Random<Real>>>>(μ, σ2);
+      return construct<GaussianDistribution<Add<Dot<Arg1,Random<Real[_]>>,
+          Arg2>,Multiply<Random<Real>,Random<Real>>>>(μ, σ2);
     }
   }
 }
