@@ -3,12 +3,11 @@ struct LessThanFunction {
     return l < r;
   }
   
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
+  function grad<Gradient>(d:Gradient) -> {
     return (0.0, 0.0);
   }
 }
-struct LessThan<Left,Right> = Binary<LessThanFunction,Left,Right>;
+struct LessThan<Left,Right> = Linear<LessThanFunction,Left,Right>;
 
 /**
  * Less-than.
