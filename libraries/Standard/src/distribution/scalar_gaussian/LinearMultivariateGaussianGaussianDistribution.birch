@@ -103,6 +103,14 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   }
 }
 
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
+    Distribution<Real> {
+  return Gaussian(μ + 0.0, σ2);
+}
+
 /*
  * Simulate a Gaussian variate with linear transformation of Gaussian prior on
  * the mean.
