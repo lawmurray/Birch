@@ -57,6 +57,16 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
     return vectorize();
   }
 
+  override function backwardGrad() {
+    assert !y.hasValue();
+    y.eval();
+    assert !X.hasValue();
+    X.eval();
+    assert !V.hasValue();
+    // ^ currently can't do finite difference gradient estimates on symmetric
+    //   matrices
+  }
+
   function marginal() -> Distribution<Real[_]> {
     return y.getDistribution();
   }
@@ -95,5 +105,8 @@ program test_pdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
 program test_grad_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
-  test_grad(m, N, backward);
+  if !backward {
+    warn("forward order not supported, switching to backward order");
+  }
+  test_grad(m, N, true);
 }

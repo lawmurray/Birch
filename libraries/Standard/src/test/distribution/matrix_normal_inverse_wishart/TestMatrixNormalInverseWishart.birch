@@ -39,6 +39,14 @@ class TestMatrixNormalInverseWishart < TestModel {
     return vectorize();
   }
 
+  override function backwardGrad() {
+    assert !X.hasValue();
+    X.eval();
+    assert !Σ.hasValue();
+    // ^ currently can't do finite difference gradient estimates on symmetric
+    //   matrices
+  }
+
   function marginal() -> Distribution<Real[_,_]> {
     return X.getDistribution();
   }
@@ -74,5 +82,8 @@ program test_pdf_matrix_normal_inverse_wishart(N:Integer <- 10000,
 program test_grad_matrix_normal_inverse_wishart(N:Integer <- 1000,
     backward:Boolean <- false) {
   m:TestMatrixNormalInverseWishart;
-  test_grad(m, N, backward);
+  if !backward {
+    warn("forward order not supported, switching to backward order");
+  }
+  test_grad(m, N, true);
 }

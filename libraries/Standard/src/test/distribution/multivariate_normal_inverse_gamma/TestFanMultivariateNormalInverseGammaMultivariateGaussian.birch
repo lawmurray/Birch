@@ -21,7 +21,7 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
     μ_0 <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
     Σ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-    
+
     Σ <- outer(Σ) + diagonal(1.0e-2, n);
     Ψ <- outer(Ψ) + diagonal(1.0e-2, n);
   }

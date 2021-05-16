@@ -63,6 +63,20 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
     return vectorize();
   }
 
+  override function backwardGrad() {
+    assert !Y5.hasValue();
+    Y5.eval();
+    Y4.eval();
+    Y3.eval();
+    Y2.eval();
+    Y1.eval();
+    assert !X.hasValue();
+    X.eval();
+    assert !Σ.hasValue();
+    // ^ currently can't do finite difference gradient estimates on symmetric
+    //   matrices
+  }
+
   function marginal() -> Distribution<Real[_,_]> {
     return Y5.getDistribution();
   }
@@ -98,7 +112,8 @@ program test_conjugacy_fan_matrix_normal_inverse_wishart_matrix_gaussian(
 }
 
 program test_pdf_fan_matrix_normal_inverse_wishart_matrix_gaussian(
-    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
+    lazy:Boolean <- false) {
   m:TestFanMatrixNormalInverseWishartMatrixGaussian;
   m.initialize();
   m.simulate();
@@ -108,5 +123,8 @@ program test_pdf_fan_matrix_normal_inverse_wishart_matrix_gaussian(
 program test_grad_fan_matrix_normal_inverse_wishart_matrix_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
   m:TestFanMatrixNormalInverseWishartMatrixGaussian;
-  test_grad(m, N, backward);
+  if !backward {
+    warn("forward order not supported, switching to backward order");
+  }
+  test_grad(m, N, true);
 }

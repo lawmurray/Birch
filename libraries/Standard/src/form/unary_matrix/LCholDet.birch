@@ -4,8 +4,7 @@ struct LCholDetFunction {
   }
 
   function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return fldl(d*cholinv(m));
-    // ^ only lower triangle of m used
+    return d*cholinv(m);
   }
 }
 struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;

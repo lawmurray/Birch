@@ -37,8 +37,3 @@ class TestWishart < TestModel {
     return p*p;
   }
 }
-
-program test_grad_wishart(N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestWishart;
-  test_grad(m, N, backward);
-}

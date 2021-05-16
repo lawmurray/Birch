@@ -2,7 +2,7 @@
 set -eov pipefail
 
 N1=10000  # for cdf tests
-N2=50     # for gradient tests
+N2=1000   # for gradient tests
 N3=10000  # for pdf tests
 N4=10000  # for conjugacy tests
 

@@ -7,8 +7,7 @@ struct CholSolveFunction {
       r:RightValue) -> {
     let x <- cholsolve(l, d);
     let y <- cholsolve(l, r);
-    return (fldl(outer(-x, y)), x);
-    // ^ only lower triangle of l used
+    return (outer(-x, y), x);
   }
 }
 struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;

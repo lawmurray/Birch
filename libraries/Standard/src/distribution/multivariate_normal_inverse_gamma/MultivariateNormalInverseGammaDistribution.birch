@@ -32,8 +32,8 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
-    Λ:Arg2, α:Arg3, β:Arg4) < Distribution<Real[_]> {
+final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
+    ν:Arg1, Λ:Arg2, α:Arg3, β:Arg4) < Distribution<Real[_]> {
   /**
    * Precision times mean.
    */
@@ -106,8 +106,8 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:A
 
 function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, Λ:Arg2,
     α:Arg3, β:Arg4) -> {
-  return construct<MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, Λ,
-      α, β);
+  return construct<MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,
+      Arg4>>(ν, Λ, α, β);
 }
 
 /**

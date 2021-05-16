@@ -201,6 +201,6 @@ function update_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let μ <- cholsolve(Λ, ν);
   let μ' <- cholsolve(Λ', ν');
   let α' <- α + 0.5*n;
-  let β' <- β + 0.5*dot(x, z) + 0.5*dot(μ, ν) - 0.5*dot(μ', ν');
+  let β' <- β + 0.5*(dot(x, z) + dot(μ, ν) - dot(μ', ν'));
   return MultivariateNormalInverseGamma(ν', Λ', α', β');
 }

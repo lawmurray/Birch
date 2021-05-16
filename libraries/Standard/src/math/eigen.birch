@@ -61,38 +61,6 @@ function triu(X:Real[_,_]) -> Real[_,_] {
 }
 
 /**
- * "Fold" a matrix into its lower triangle. The transpose of the strictly
- * upper triangle is added to the lower triangle and becomes zero.
- */
-function fldl(X:Real[_,_]) -> Real[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> {
-        if i == j {
-          return X[i,j];
-        } else if j < i {
-          return X[i,j] + X[j,i];
-        } else {
-          return 0.0;
-        }
-      }, rows(X), columns(X));
-}
-
-/**
- * "Fold" a matrix into its upper triangle. The transpose of the strictly
- * lower triangle is added to the upper triangle and becomes zero.
- */
-function fldu(X:Real[_,_]) -> Real[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> {
-        if i == j {
-          return X[i,j];
-        } else if j > i {
-          return X[i,j] + X[j,i];
-        } else {
-          return 0.0;
-        }
-      }, rows(X), columns(X));
-}
-
-/**
  * Hadamard (element-wise) vector product.
  */
 function hadamard<Type>(x:Type[_], y:Type[_]) -> Type[_] {
