@@ -9,13 +9,13 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test
   let h <- 1.0e-5;  // interval width for finite difference estimate
-  let γ <- 1.0e-4;  // acceptable failure rate
-  let ε <- 2.0e-2;  // relative error threshold for fail
+  let γ <- 1.0e-3;  // acceptable failure rate
+  let ε <- 1.0e-2;  // relative error threshold for fail
 
   // ^ the pass criterion is that 100*(1 - γ) percent of gradients computed
   //   are within 100*ε percent of the finite difference approximation; e.g.
-  //   with γ = 1.0e-4 and ε = 2.0e-2, that "99.99% of gradients computed are
-  //   within 2% of the finite difference approximation"
+  //   with γ = 1.0e-3 and ε = 1.0e-2, that "99.9% of gradients computed are
+  //   within 1% of the finite difference approximation"
 
   parallel for n in 1..N {
     let handler <- construct<Handler>(backward, true);
