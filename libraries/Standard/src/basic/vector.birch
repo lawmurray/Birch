@@ -22,7 +22,7 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
 /**
  * Create vector filled with a given value.
  */
-function vector<Type>(x:Type, length:Integer) -> {
+function vector<Type>(x:Type, length:Integer) -> Type[_] {
   cpp{{
   return libbirch::make_array_from_value<Type>(libbirch::make_shape(length),
       x);
