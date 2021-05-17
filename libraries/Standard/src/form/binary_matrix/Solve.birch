@@ -10,13 +10,13 @@ struct SolveFunction {
     return (dl, dr);
   }
 }
-struct Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
+struct Solve<Left,Right> = BinaryMemoized<SolveFunction,Left,Right>;
 
 /**
  * Solve a system of equations.
  */
 function solve<Left,Right>(l:Left, r:Right) -> {
-  return box(construct<Solve<Left,Right>>(l, r));
+  return construct<Solve<Left,Right>>(l, r);
 }
 
 /**

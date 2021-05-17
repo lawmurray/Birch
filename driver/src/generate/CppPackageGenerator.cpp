@@ -135,15 +135,13 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* classes */
-    for (auto o : sortedClasses) {
-      if (!o->isAlias()) {
-        auxDeclaration << o;
-      }
-    }
-
     /* global variables */
     for (auto o : globals) {
+      auxDeclaration << o;
+    }
+
+    /* programs */
+    for (auto o : programs) {
       auxDeclaration << o;
     }
 
@@ -162,25 +160,10 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* programs */
-    for (auto o : programs) {
-      auxDeclaration << o;
-    }
-
-    /* generic function and operator definitions */
-    for (auto o : functions) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-    for (auto o : binaries) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-    for (auto o : unaries) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
+    /* classes */
+    for (auto o : sortedClasses) {
+      if (!o->isAlias()) {
+        auxDeclaration << o;
       }
     }
 
@@ -203,6 +186,22 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
+    /* generic function and operator definitions */
+    for (auto o : functions) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : binaries) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : unaries) {
+      if (o->isGeneric()) {
+        auxDefinition << o;
+      }
+    }
     line("}\n");  // close namespace
     line("#endif");
   }

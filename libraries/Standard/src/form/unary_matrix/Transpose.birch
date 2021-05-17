@@ -7,13 +7,13 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return transpose(d);
   }
 }
-struct Transpose<Middle> = Unary<TransposeFunction,Middle>;
+struct Transpose<Middle> = UnaryMemoized<TransposeFunction,Middle>;
 
 /**
  * Matrix transpose.
  */
 function transpose<Middle>(m:Middle) -> {
-  return box(construct<Transpose<Middle>>(m));
+  return construct<Transpose<Middle>>(m);
 }
 
 /**

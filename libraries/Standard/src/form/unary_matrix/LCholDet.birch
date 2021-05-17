@@ -7,14 +7,14 @@ struct LCholDetFunction {
     return d*cholinv(m);
   }
 }
-struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;
+struct LCholDet<Middle> = UnaryMemoized<LCholDetFunction,Middle>;
 
 /**
  * Log-determinant of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
 function lcholdet<Middle>(m:Middle) -> {
-  return box(construct<LCholDet<Middle>>(m));
+  return construct<LCholDet<Middle>>(m);
 }
 
 /**

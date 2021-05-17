@@ -1,0 +1,69 @@
+/*
+ * Function form with one argument.
+ */
+struct UnaryMemoized<Function,Middle>(m:Middle) {
+  /**
+   * Function.
+   */
+  f:Function;
+
+  /**
+   * Argument.
+   */
+  m:Middle <- m;
+
+  hpp{{
+  /**
+   * Memoized result. This is declared with C++ as Birch does not provide an
+   * equivalent to the decltype() operator, and we do not wish to evaluate the
+   * form in order to determine the result type at the time of construction;
+   * doing so could, for example, force the realization of Random objects that
+   * could otherwise be marginalized out, e.g. in `A*x + c`, where `x` is
+   * Random.
+   */
+  std::optional<decltype(f->compute(birch::value(m)))> x;
+  }}
+
+  function value() -> {
+    if !x? {
+      x <- f.compute(global.value(m));
+    }
+    return x!;
+  }
+
+  function peek() -> {
+    if !x? {
+      x <- f.compute(global.peek(m));
+    }
+    return x!;
+  }
+
+  function eval() -> {
+    x <- nil;  // to (possibly) free memory before recursion
+    x <- f.compute(global.eval(m));
+    return x!;
+  }
+
+  function reval() -> {
+    x <- nil;  // to (possibly) free memory before recursion
+    x <- f.compute(global.reval(m));
+    return x!;
+  }
+
+  function grad<Gradient>(d:Gradient) {
+    global.grad(m, f.grad(d, global.peek(m)));
+  }
+
+  function label(gen:Integer) {
+    global.label(m, gen);
+  }
+
+  function constant(gen:Integer) {
+    global.constant(m, gen);
+  }
+
+  function constant() {
+    x <- nil;
+    global.constant(m);
+  }
+}

@@ -8,13 +8,13 @@ struct OuterFunction {
     return (d*r, inner(d, l));
   }
 }
-struct Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
+struct Outer<Left,Right> = BinaryMemoized<OuterFunction,Left,Right>;
 
 /**
  * Outer product.
  */
 function outer<Left,Right>(l:Left, r:Right) -> {
-  return box(construct<Outer<Left,Right>>(l, r));
+  return construct<Outer<Left,Right>>(l, r);
 }
 
 /**

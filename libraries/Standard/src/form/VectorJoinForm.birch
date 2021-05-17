@@ -53,8 +53,8 @@ struct VectorJoinForm<Value>(x:Expression<Value>[_]) {
 }
 
 /**
- * Convert a vector of expressions into a vector expression.
+ * Convert a vector of expressions into a vector form.
  */
-function join<Value>(x:Expression<Value>[_]) -> Expression<Value[_]> {
+function join<Value>(x:Expression<Value>[_]) -> {
   return box(construct<VectorJoinForm<Value>>(x));
 }

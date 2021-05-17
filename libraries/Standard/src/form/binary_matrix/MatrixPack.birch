@@ -21,14 +21,14 @@ struct MatrixPackFunction {
     return (d[1..r1, 1..c1], d[1..r1, (c1 + 1)..(c1 + c2)]);
   }
 }
-struct MatrixPack<Left,Right> = Binary<MatrixPackFunction,Left,Right>;
+struct MatrixPack<Left,Right> = BinaryMemoized<MatrixPackFunction,Left,Right>;
 
 /**
  * Pack two matrices next to one another (i.e. append rows) to create a
  * new matrix.
  */
 function pack<Left,Right>(l:Left, r:Right) -> {
-  return box(construct<MatrixPack<Left,Right>>(l, r));
+  return construct<MatrixPack<Left,Right>>(l, r);
 }
 
 /**

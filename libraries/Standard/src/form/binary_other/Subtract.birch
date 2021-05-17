@@ -7,7 +7,7 @@ struct SubtractFunction {
     return (d, -d);
   }
 }
-struct Subtract<Left,Right> = Linear<SubtractFunction,Left,Right>;
+struct Subtract<Left,Right> = LinearMemoized<SubtractFunction,Left,Right>;
 
 /**
  * Subtraction.

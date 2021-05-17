@@ -8,13 +8,13 @@ struct InnerFunction {
     return (outer(r, d), l*d);
   }
 }
-struct Inner<Left,Right> = Binary<InnerFunction,Left,Right>;
+struct Inner<Left,Right> = BinaryMemoized<InnerFunction,Left,Right>;
 
 /**
  * Inner product.
  */
 function inner<Left,Right>(l:Left, r:Right) -> {
-  return box(construct<Inner<Left,Right>>(l, r));
+  return construct<Inner<Left,Right>>(l, r);
 }
 
 /**

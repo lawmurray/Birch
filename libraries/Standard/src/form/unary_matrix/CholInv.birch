@@ -8,14 +8,14 @@ struct CholInvFunction {
     return -m1*d*m1;
   }
 }
-struct CholInv<Middle> = Unary<CholInvFunction,Middle>;
+struct CholInv<Middle> = UnaryMemoized<CholInvFunction,Middle>;
 
 /**
  * Inverse of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
 function cholinv<Middle>(m:Middle) -> {
-  return box(construct<CholInv<Middle>>(m));
+  return construct<CholInv<Middle>>(m);
 }
 
 /**

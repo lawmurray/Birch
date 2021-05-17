@@ -1,0 +1,80 @@
+/*
+ * Function form with two arguments, where the value of those arguments is not
+ * required in the propagation of derivatives.
+ */
+struct LinearMemoized<Function,Left,Right>(l:Left, r:Right) {
+  /**
+   * Function.
+   */
+  f:Function;
+
+  /**
+   * Left argument.
+   */
+  l:Left <- l;
+
+  /**
+   * Right argument.
+   */
+  r:Right <- r;
+
+  hpp{{
+  /**
+   * Memoized result. This is declared with C++ as Birch does not provide an
+   * equivalent to the decltype() operator, and we do not wish to evaluate the
+   * form in order to determine the result type at the time of construction;
+   * doing so could, for example, force the realization of Random objects that
+   * could otherwise be marginalized out, e.g. in `A*x + c`, where `x` is
+   * Random.
+   */
+  std::optional<decltype(f->compute(birch::value(l), birch::value(r)))> x;
+  }}
+
+  function value() -> {
+    if !x? {
+      x <- f.compute(global.value(l), global.value(r));
+    }
+    return x!;
+  }
+
+  function peek() -> {
+    if !x? {
+      x <- f.compute(global.peek(l), global.peek(r));
+    }
+    return x!;
+  }
+
+  function eval() -> {
+    x <- nil;  // to (possibly) free memory before recursion
+    x <- f.compute(global.eval(l), global.eval(r));
+    return x!;
+  }
+
+  function reval() -> {
+    x <- nil;  // to (possibly) free memory before recursion
+    x <- f.compute(global.reval(l), global.reval(r));
+    return x!;
+  }
+
+  function grad<Gradient>(d:Gradient) {
+    let (dl, dr) <- f.grad(d);
+    global.grad(l, dl);
+    global.grad(r, dr);
+  }
+
+  function label(gen:Integer) {
+    global.label(l, gen);
+    global.label(r, gen);
+  }
+
+  function constant(gen:Integer) {
+    global.constant(l, gen);
+    global.constant(r, gen);
+  }
+
+  function constant() {
+    x <- nil;
+    global.constant(l);
+    global.constant(r);
+  }
+}

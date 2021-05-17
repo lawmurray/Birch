@@ -10,14 +10,14 @@ struct CholSolveFunction {
     return (outer(-x, y), x);
   }
 }
-struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;
+struct CholSolve<Left,Right> = BinaryMemoized<CholSolveFunction,Left,Right>;
 
 /**
  * Solve a system of equations where the left argument is a symmetric
  * positive-definite matrix. The solution is via the Cholesky factorization.
  */
 function cholsolve<Left,Right>(l:Left, r:Right) -> {
-  return box(construct<CholSolve<Left,Right>>(l, r));
+  return construct<CholSolve<Left,Right>>(l, r);
 }
 
 /**

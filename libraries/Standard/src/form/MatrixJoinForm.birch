@@ -53,8 +53,8 @@ struct MatrixJoinForm<Value>(x:Expression<Value>[_,_]) {
 }
 
 /**
- * Convert a matrix of expressions into a matrix expression.
+ * Convert a matrix of expressions into a matrix form.
  */
-function join<Value>(x:Expression<Value>[_,_]) -> Expression<Value[_,_]> {
+function join<Value>(x:Expression<Value>[_,_]) -> {
   return box(construct<MatrixJoinForm<Value>>(x));
 }

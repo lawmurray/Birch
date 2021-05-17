@@ -48,7 +48,7 @@ struct MultiplyFunction {
     return (outer(d, r), inner(l, d));
   }
 }
-struct Multiply<Left,Right> = Binary<MultiplyFunction,Left,Right>;
+struct Multiply<Left,Right> = BinaryMemoized<MultiplyFunction,Left,Right>;
 
 /**
  * Multiplication.
