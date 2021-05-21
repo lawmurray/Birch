@@ -18,6 +18,7 @@ function make<Type>() -> Type? {
 /**
  * Make an object, with the class given as a string.
  *
+ *   - Type: Base type, which may be Object.
  *   - name: Name of the class.
  *
  * Returns: An optional with a value if successful, or no value if not
@@ -25,7 +26,7 @@ function make<Type>() -> Type? {
  *
  * The make will not succeed if the class has initialization parameters.
  */
-function make(name:String) -> Object? {
+function make<Type>(name:String) -> Type? {
   result:Object?;
   symbol:String <- "make_" + name + "_";
   cpp{{
@@ -35,11 +36,7 @@ function make(name:String) -> Object? {
     result = Object(reinterpret_cast<make_t*>(addr)());
   }
   }}
-  if !result? {
-    warn("could not make object of type " + name +
-        "; class may not exist or may require initialization arguments.");
-  }
-  return result;
+  return Type?(result);
 }
 
 /**
@@ -60,7 +57,7 @@ function make(buffer:Buffer) -> Object? {
   result:Object?;
   let className <- buffer.get<String>("class");
   if className? {
-    result <- make(className!);
+    result <- make<Object>(className!);
   }
   if result? {
     result!.read(buffer);
@@ -90,7 +87,7 @@ function make<Type>(buffer:Buffer) -> Type? {
   result:Type?;
   let className <- buffer.get<String>("class");
   if className? {
-    result <- Type?(make(className!));
+    result <- make<Type>(className!);
   } else {
     result <- make<Type>();
   }

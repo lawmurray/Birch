@@ -124,6 +124,40 @@ std::optional<T> make_optional(Args&&... args) {
 }
 
 /**
+ * Make a value or object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
+    std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return T(std::forward<Args>(args)...);
+}
+
+/**
+ * Make a value or object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
+    !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return std::nullopt;
+}
+
+/**
  * Identity cast of anything.
  */
 template<class To, class From,
@@ -152,9 +186,21 @@ std::optional<To> cast(const From& from) {
  */
 template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
+    std::is_constructible<To,From>::value &&
     (!is_pointer<To>::value || !is_pointer<From>::value),int> = 0>
 std::optional<To> cast(const From& from) {
-  return static_cast<To>(from);
+  return To(from);
+}
+
+/**
+ * Non-identity cast of a non-pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same<To,From>::value &&
+    !std::is_constructible<To,From>::value &&
+    (!is_pointer<To>::value || !is_pointer<From>::value),int> = 0>
+std::optional<To> cast(const From& from) {
+  return std::nullopt;
 }
 
 /**
