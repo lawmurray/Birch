@@ -675,7 +675,7 @@ void birch::CppGenerator::visit(const TypeList* o) {
 }
 
 void birch::CppGenerator::visit(const DeducedType* o) {
-  middle("auto");
+  middle("decltype(auto)");
 }
 
 std::string birch::CppGenerator::getIndex(const Statement* o) {
