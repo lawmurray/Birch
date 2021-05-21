@@ -58,10 +58,10 @@ void birch::CppGenerator::visit(const Literal<const char*>* o) {
 void birch::CppGenerator::visit(const Parentheses* o) {
   auto stripped = o->strip();
   if (stripped->isTuple()) {
-    if (inReturn) {
-      middle("std::make_tuple");
-    } else {
+    if (inAssign) {
       middle("std::tie");
+    } else {
+      middle("std::make_tuple");
     }
   }
   middle('(' << stripped << ')');
@@ -108,19 +108,27 @@ void birch::CppGenerator::visit(const UnaryCall* o) {
 }
 
 void birch::CppGenerator::visit(const Assign* o) {
-  if (o->left->isMembership()) {
-    ++inAssign;
-  }
+  ++inAssign;
   if (*o->name == "<-?") {
-    line("libbirch::optional_assign(" << o->left << ", " << o->right << ");");
+    start("libbirch::optional_assign(" << o->left << ", ");
+    --inAssign;
+    finish(o->right << ");");
   } else if (*o->name == "<~") {
-    line(o->left << "= handle_simulate(" << o->right << ");");
+    start(o->left << "= handle_simulate(");
+    --inAssign;
+    finish(o->right << ");");
   } else if (*o->name == "~>") {
-    line("handle_observe(" << o->left << ", " << o->right << ");");
+    start("handle_observe(" << o->left << ", ");
+    --inAssign;
+    finish(o->right << ");");
   } else if (*o->name == "~") {
-    line("handle_assume(" << o->left << ", " << o->right << ");");
+    start("handle_assume(" << o->left << ", ");
+    --inAssign;
+    finish(o->right << ");");
   } else {
-    middle(o->left << " = " << o->right);
+    middle(o->left << " = ");
+    --inAssign;
+    middle(o->right);
   }
 }
 
@@ -168,9 +176,7 @@ void birch::CppGenerator::visit(const Member* o) {
   } else if (o->left->isSuper()) {
     middle("this->base_type_::");
   } else {
-    middle(o->left);
-    inAssign = 0;
-    middle("->");
+    middle(o->left << "->");
   }
   ++inMember;
   middle(o->right);
