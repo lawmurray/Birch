@@ -165,39 +165,35 @@ public:
   void decShared_() {
     assert(numShared_() > 0);
 
-    if (isHead_()) {
-      if (r_.load() == a_) {
-        /* last external reference about to be removed, remainder are internal
-         * to the biconnected component */
-        biconnected_collect(this);
-        r_.decrement();
-        destroy_();
+    /* first set the BUFFERED flag so that this call is uniquely responsible
+    * for registering this object as a possible root, if necessary */
+    auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
+
+    /* decrement reference count */
+    auto r = --r_;
+
+    if (old & HEAD && r == a_ - 1) {
+      /* last external reference about to be removed, remainder are internal
+       * to the biconnected component */
+      biconnected_collect(this);
+    }
+    if (r == 0) {
+      /* destroy, and as long as haven't been previously buffered, can
+        * deallocate too */
+      destroy_();
+      if (!(old & BUFFERED) || old & ACYCLIC || old & HEAD) {
+        /* hasn't been previously buffered, or is acyclic, so can
+         * immediately deallocate */
         deallocate_();
       } else {
-        r_.decrement();
+        /* has been previously buffered, so deallocation must be deferred
+         * until collection, but certainly not a possible root, as has just
+         * been destroyed */
+        f_.maskAnd(~POSSIBLE_ROOT);
       }
-    } else {
-      /* first set the BUFFERED flag so that this call is uniquely responsible
-      * for registering this object as a possible root */
-      auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
-      if (--r_ == 0) {
-        /* destroy, and as long as haven't been previously buffered, can
-         * deallocate too */
-        destroy_();
-        if (!(old & BUFFERED) || old & ACYCLIC) {
-          /* hasn't been previously buffered, or is acyclic, so can
-           * immediately deallocate */
-          deallocate_();
-        } else {
-          /* has been previously buffered, so deallocation must be deferred
-           * until collection, but certainly not a possible root, as has just
-           * been destroyed */
-          f_.maskAnd(~POSSIBLE_ROOT);
-        }
-      } else if (!(old & BUFFERED) && !(old & ACYCLIC)) {
-        /* not already registered as a possible root, and not acyclic */
-        register_possible_root(this);
-      }
+    } else if (!(old & BUFFERED) && !(old & ACYCLIC) && !(old & HEAD)) {
+      /* not already registered as a possible root, and not acyclic */
+      register_possible_root(this);
     }
   }
 
