@@ -160,9 +160,16 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
+    /* structs */
+    for (auto o : sortedClasses) {
+      if (o->has(STRUCT) && !o->isAlias()) {
+        auxDeclaration << o;
+      }
+    }
+
     /* classes */
     for (auto o : sortedClasses) {
-      if (!o->isAlias()) {
+      if (!o->has(STRUCT) && !o->isAlias()) {
         auxDeclaration << o;
       }
     }
