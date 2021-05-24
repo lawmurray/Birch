@@ -9,8 +9,6 @@
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
 
-#include <iostream>
-
 namespace libbirch {
 /**
  * Flags used for cycle collection as in @ref Bacon2001
@@ -153,7 +151,7 @@ public:
   }
 
   /**
-   * Increment the shared r.
+   * Increment the shared reference count.
    */
   void incShared_() {
     r_.increment();

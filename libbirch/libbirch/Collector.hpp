@@ -67,7 +67,7 @@ public:
 
 template<class T, class F>
 void libbirch::Collector::visit(Array<T,F>& o) {
-  if (!std::is_arithmetic<T>::value) {
+  if (!std::is_trivially_copyable<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {

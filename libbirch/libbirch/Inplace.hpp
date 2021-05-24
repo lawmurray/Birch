@@ -31,10 +31,7 @@ public:
    * Default constructor. Constructs a new referent using the default
    * constructor.
    */
-  Inplace() :
-      o() {
-    //
-  }
+  Inplace() = default;
 
   /**
    * Constructor. Constructs a new object with the given arguments. The

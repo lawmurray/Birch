@@ -9,6 +9,8 @@
 #include "libbirch/type.hpp"
 #include "libbirch/Shape.hpp"
 #include "libbirch/Iterator.hpp"
+#include "libbirch/ArrayControl.hpp"
+#include "libbirch/Lock.hpp"
 #include "libbirch/Eigen.hpp"
 
 namespace libbirch {
@@ -34,7 +36,9 @@ public:
   Array() :
       shape(),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     assert(shape.volume() == 0);
   }
 
@@ -46,7 +50,9 @@ public:
   Array(const F& shape) :
       shape(shape),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     initialize();
   }
@@ -63,7 +69,9 @@ public:
   Array(const F& shape, Args&&... args) :
       shape(shape),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     initialize(std::forward<Args>(args)...);
   }
@@ -78,9 +86,11 @@ public:
   Array(const std::initializer_list<T>& values) :
       shape(values.size()),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
-    std::uninitialized_copy(values.begin(), values.end(), begin());
+    std::uninitialized_copy(values.begin(), values.end(), beginInternal());
   }
 
   /**
@@ -93,9 +103,11 @@ public:
   Array(const std::initializer_list<std::initializer_list<T>>& values) :
       shape(values.size(), values.begin()->size()),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
-    auto ptr = buf();
+    auto ptr = buffer;
     for (auto row : values) {
       for (auto value : row) {
         new (ptr++) T(value);
@@ -113,10 +125,12 @@ public:
   Array(const L& l, const F& shape) :
       shape(shape),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     int64_t n = 0;
-    for (auto iter = begin(); iter != end(); ++iter) {
+    for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
       new (&*iter) T(l(n++));
     }
   }
@@ -125,11 +139,19 @@ public:
    * Copy constructor.
    */
   Array(const Array& o) :
-      shape(o.shape.compact()),
+      shape(),
       buffer(nullptr),
-      isView(false) {
-    allocate();
-    uninitialized_copy(o);
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
+    if (o.isView || !std::is_trivially_copyable<T>::value) {
+      shape = o.shape.compact();
+      allocate();
+      uninitialized_copy(o);
+    } else {
+      shape = o.shape;
+      std::tie(control, buffer) = o.share();
+    }
   }
 
   /**
@@ -140,7 +162,9 @@ public:
   Array(const Array<U,G>& o) :
       shape(o.shape.compact()),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     uninitialized_copy(o);
   }
@@ -226,14 +250,27 @@ public:
    * "row major" order).
    */
   Iterator<T,F> begin() {
-    return Iterator<T,F>(buf(), shape);
+    elementize();
+    return Iterator<T,F>(buffer, shape);
   }
-  Iterator<T,F> begin() const {
-    return Iterator<T,F>(buf(), shape);
-  }
+
+  /**
+   * Iterator pointing to one past the last element.
+   */
   Iterator<T,F> end() {
-    return begin() + size();
+    return begin() + size();  // elementize() called by begin()
   }
+
+  /**
+   * Iterator pointing to the first element.
+   */
+  Iterator<T,F> begin() const {
+    return Iterator<T,F>(buffer, shape);
+  }
+
+  /**
+   * Iterator pointing to one past the last element.
+   */
   Iterator<T,F> end() const {
     return begin() + size();
   }
@@ -249,21 +286,23 @@ public:
    */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   auto slice(const V& slice) {
-    return Array<T,decltype(shape(slice))>(shape(slice), buffer,
-        shape.serial(slice));
-  }
-  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
-  auto slice(const V& slice) const {
-    return Array<T,decltype(shape(slice))>(shape(slice), buffer,
-        shape.serial(slice));
+    elementize();
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer +
+        shape.serial(slice), true);
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
   auto& slice(const V& slice) {
-    return *(buf() + shape.serial(slice));
+    elementize();
+    return *(buffer + shape.serial(slice));
+  }
+  template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
+  const auto slice(const V& slice) const {
+    return Array<T,decltype(shape(slice))>(shape(slice), buffer +
+        shape.serial(slice), false);
   }
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
   auto slice(const V& slice) const {
-    return *(buf() + shape.serial(slice));
+    return *(buffer + shape.serial(slice));
   }
 
   /**
@@ -290,7 +329,7 @@ public:
    */
   template<class U, class G>
   bool operator==(const Array<U,G>& o) const {
-    return std::equal(begin(), end(), o.begin());
+    return std::equal(beginInternal(), endInternal(), o.beginInternal());
   }
   template<class U, class G>
   bool operator!=(const Array<U,G>& o) const {
@@ -322,6 +361,7 @@ public:
     static_assert(F::count() == 1, "can only enlarge one-dimensional arrays");
     assert(!isView);
 
+    elementize();
     auto n = size();
     auto s = F(n + 1);
     if (!buffer) {
@@ -329,8 +369,8 @@ public:
       swap(tmp);
     } else {
       buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
-      std::memmove((void*)(buf() + i + 1), (void*)(buf() + i), (n - i)*sizeof(T));
-      new (buf() + i) T(x);
+      std::memmove((void*)(buffer + i + 1), (void*)(buffer + i), (n - i)*sizeof(T));
+      new (buffer + i) T(x);
       shape = s;
     }
   }
@@ -348,15 +388,16 @@ public:
     assert(len > 0);
     assert(size() >= len);
 
+    elementize();
     auto n = size();
     auto s = F(n - len);
     if (s.size() == 0) {
       release();
     } else {
       for (int j = i; j < i + len; ++j) {
-        buf()[j].~T();
+        buffer[j].~T();
       }
-      std::memmove((void*)(buf() + i), (void*)(buf() + i + len), (n - len - i)*sizeof(T));
+      std::memmove((void*)(buffer + i), (void*)(buffer + i + len), (n - len - i)*sizeof(T));
       buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
     }
     shape = s;
@@ -374,13 +415,13 @@ public:
 
   template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
   auto toEigen() {
-    return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
+    return eigen_type(buffer, rows(), cols(), eigen_stride_type(rowStride(),
         colStride()));
   }
 
   template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
   auto toEigen() const {
-    return eigen_type(buf(), rows(), cols(), eigen_stride_type(rowStride(),
+    return eigen_type(buffer, rows(), cols(), eigen_stride_type(rowStride(),
         colStride()));
   }
 
@@ -391,7 +432,9 @@ public:
   Array(const Eigen::MatrixBase<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     toEigen().noalias() = o;
   }
@@ -403,7 +446,9 @@ public:
   Array(const Eigen::DiagonalWrapper<EigenType>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     toEigen().noalias() = o;
   }
@@ -415,7 +460,9 @@ public:
   Array(const Eigen::TriangularView<EigenType,Mode>& o) :
       shape(o.rows(), o.cols()),
       buffer(nullptr),
-      isView(false) {
+      control(nullptr),
+      isView(false),
+      isElementWise(false) {
     allocate();
     toEigen() = o;
   }
@@ -457,18 +504,41 @@ private:
   /**
    * Constructor for views.
    */
-  Array(const F& shape, T* buffer, int64_t offset) :
+  Array(const F& shape, T* buffer, bool isElementWise) :
       shape(shape),
-      buffer(buffer + offset),
-      isView(true) {
+      buffer(buffer),
+      control(nullptr),
+      isView(true),
+      isElementWise(isElementWise) {
     //
   }
 
   /**
-   * Raw pointer to underlying buffer.
+   * Iterator for use internally, avoiding elementize().
    */
-  T* buf() const {
-    return buffer;
+  Iterator<T,F> beginInternal() {
+    return Iterator<T,F>(buffer, shape);
+  }
+
+  /**
+   * Iterator for use internally, avoiding elementize().
+   */
+  Iterator<T,F> endInternal() {
+    return beginInternal() + size();
+  }
+
+  /**
+   * Iterator for use internally, avoiding elementize().
+   */
+  Iterator<T,F> beginInternal() const {
+    return Iterator<T,F>(buffer, shape);
+  }
+
+  /**
+   * Iterator for use internally, avoiding elementize().
+   */
+  Iterator<T,F> endInternal() const {
+    return beginInternal() + size();
   }
 
   /**
@@ -479,31 +549,94 @@ private:
     assert(!o.isView);
     std::swap(shape, o.shape);
     std::swap(buffer, o.buffer);
+    std::swap(control, o.control);
+    std::swap(isElementWise, o.isElementWise);
   }
 
   /**
-   * Allocate memory for array, leaving uninitialized.
+   * Allocate memory for this, leaving uninitialized.
    */
   void allocate() {
     assert(!buffer);
-    size_t bytes = volume()*sizeof(T);
-    if (bytes > 0) {
-      buffer = (T*)std::malloc(bytes);
-    }
+    buffer = (T*)std::malloc(volume()*sizeof(T));
   }
 
   /**
-   * Deallocate memory of array.
+   * Share the buffer of this array.
+   * 
+   * @return A pair giving pointers to the control block and buffer.
    */
-  void release() {
-    if (!isView) {
-      size_t bytes = volume()*sizeof(T);
-      if (bytes > 0) {
-        std::destroy(begin(), end());
-        std::free(buffer);
-        buffer = nullptr;
+  std::pair<ArrayControl*,T*> share() {
+    assert(!isView);
+    if (buffer) {
+      if (control) {
+        control->incShared_();
+      } else if (isElementWise) {
+        /* can't share, create a new buffer instead */
+        ArrayControl* control = nullptr;
+        T* buffer = (T*)std::malloc(size()*sizeof(T));
+        std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+        return std::make_pair(control, buffer);
+      } else {
+        lock.set();
+        if (!control) {
+          control = new ArrayControl(2);
+        } else {
+          control->incShared_();
+        }
+        lock.unset();
       }
     }
+    return std::make_pair(control, buffer);
+  }
+
+  /**
+   * Share the buffer of this array.
+   * 
+   * @return A pair giving pointers to the control block and buffer.
+   */
+  std::pair<ArrayControl*,T*> share() const {
+    return const_cast<Array<T,F>*>(this)->share();
+  }
+
+  /**
+   * Prepare this array for element-wise writes. If the buffer is currently
+   * shared, a new buffer is created as a copy of the existing buffer.
+   */
+  void elementize() {
+    assert(!isView);
+    if (!isElementWise) {
+      lock.set();
+      if (!isElementWise) {
+        if (control) {
+          /* buffer may be shared, copy into new buffer to allow element-wise
+           * write */
+          T* buffer = (T*)std::malloc(size()*sizeof(T));
+          std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+          release();
+          this->buffer = buffer;
+        }
+        isElementWise = true;
+      }
+      lock.unset();
+    }
+    assert(!control);
+  }
+
+  /**
+   * Release the buffer of this array, deallocating it if this is the last
+   * reference to it.
+   */
+  void release() {
+    if (!isView && (!control || control->decShared_() == 0)) {
+      std::destroy(beginInternal(), endInternal());
+      std::free(buffer);
+      delete control;
+    }
+    buffer = nullptr;
+    control = nullptr;
+    isView = false;
+    isElementWise = false;
   }
 
   /**
@@ -513,8 +646,8 @@ private:
    */
   template<class ... Args, std::enable_if_t<std::is_constructible<T,Args...>::value,int> = 0>
   void initialize(Args&&... args) {
-    auto iter = begin();
-    auto last = end();
+    auto iter = beginInternal();
+    auto last = endInternal();
     for (; iter != last; ++iter) {
       new (&*iter) T(std::forward<Args>(args)...);
     }
@@ -526,9 +659,9 @@ private:
   template<class U>
   void copy(const U& o) {
     auto n = std::min(size(), o.size());
-    auto begin1 = o.begin();
+    auto begin1 = o.beginInternal();
     auto end1 = begin1 + n;
-    auto begin2 = begin();
+    auto begin2 = beginInternal();
     auto end2 = begin2 + n;
     if (inside(begin1, end1, begin2)) {
       std::copy_backward(begin1, end1, end2);
@@ -543,12 +676,8 @@ private:
   template<class U>
   void uninitialized_copy(const U& o) {
     auto n = std::min(size(), o.size());
-    auto begin1 = o.begin();
-    auto end1 = begin1 + n;
-    auto begin2 = begin();
-    for (; begin1 != end1; ++begin1, ++begin2) {
-      new (&*begin2) T(*begin1);
-    }
+    std::uninitialized_copy(o.beginInternal(), o.beginInternal() + n,
+        beginInternal());
   }
 
   /**
@@ -557,15 +686,30 @@ private:
   F shape;
 
   /**
-   * Buffer.
+   * Buffer containing elements.
    */
   T* buffer;
+
+  /**
+   * Control block for sharing buffer.
+   */
+  ArrayControl* control;
 
   /**
    * Is this a view of another array? A view has stricter assignment
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
+
+  /**
+   * Are element-wise writes available for this array?
+   */
+  bool isElementWise;
+
+  /**
+   * Lock for operations requiring mutual exclusion.
+   */
+  Lock lock;
 };
 
 /**

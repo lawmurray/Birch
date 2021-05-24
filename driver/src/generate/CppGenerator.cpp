@@ -410,7 +410,7 @@ void birch::CppGenerator::visit(const Program* o) {
         line("case '?':");
         in();
         genSourceLine(o->loc);
-        line("error(String(\"unrecognized option --\") + String(argv_[::optind - 1]));");
+        line("error(String(\"unrecognized option \") + String(argv_[::optind - 1]));");
         out();
 
         genSourceLine(o->loc);
