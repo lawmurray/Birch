@@ -160,56 +160,32 @@ function from_string<Value>(s:String) -> Value {
 /**
  * Lexical comparison.
  */
-operator (x:String > y:String) -> Boolean {
-  cpp{{
-  return x.compare(y) > 0;
-  }}
-}
+operator (x:String > y:String) -> Boolean;
 
 /**
  * Lexical comparison.
  */
-operator (x:String < y:String) -> Boolean {
-  cpp{{
-  return x.compare(y) < 0;
-  }}
-}
+operator (x:String < y:String) -> Boolean;
 
 /**
  * Lexical comparison.
  */
-operator (x:String >= y:String) -> Boolean {
-  cpp{{
-  return x.compare(y) >= 0;
-  }}
-}
+operator (x:String >= y:String) -> Boolean;
 
 /**
  * Lexical comparison.
  */
-operator (x:String <= y:String) -> Boolean {
-  cpp{{
-  return x.compare(y) <= 0;
-  }}
-}
+operator (x:String <= y:String) -> Boolean;
 
 /**
  * Equality comparison.
  */
-operator (x:String == y:String) -> Boolean {
-  cpp{{
-  return x.compare(y) == 0;
-  }}
-}
+operator (x:String == y:String) -> Boolean;
 
 /**
  * Equality comparison.
  */
-operator (x:String != y:String) -> Boolean {
-  cpp{{
-  return x.compare(y) != 0;
-  }}
-}
+operator (x:String != y:String) -> Boolean;
 
 /**
  * String concatenation.

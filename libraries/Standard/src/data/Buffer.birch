@@ -1,3 +1,7 @@
+hpp{{
+#include <unordered_map>
+}}
+
 /**
  * Data in memory.
  *
@@ -17,7 +21,7 @@
  * and `get()` member functions. Construct and iterate through arrays (in the
  * JSON sense) using the `push()` and `walk()` member functions.
  */
-class Buffer {
+final class Buffer {
   /*
    * The various values a buffer may take. These work as follows:
    *
@@ -49,6 +53,13 @@ class Buffer {
   matrixReal:Real[_,_]?;
   matrixInteger:Integer[_,_]?;
   matrixBoolean:Boolean[_,_]?;
+
+  hpp{{
+  /**
+   * Map for fast lookup of keys, in lieu of proper dictionary implementation.
+   */
+  std::unordered_map<String,Buffer> map;
+  }}
 
   /**
    * Is the value nil?
@@ -88,6 +99,9 @@ class Buffer {
     matrixReal <- nil;
     matrixInteger <- nil;
     matrixBoolean <- nil;
+    cpp{{
+    map.clear();
+    }}
   }
 
   /**
@@ -129,6 +143,9 @@ class Buffer {
     values:Buffer[_];
     this.keys <- keys;
     this.values <- values;
+    cpp{{
+    map.clear();
+    }}
   }
 
   /**
@@ -292,11 +309,18 @@ class Buffer {
    */
   function get(key:String) -> Buffer? {
     if keys? {
-      for i in 1..length(keys!) {
-        if keys![i] == key {
-          return values![i];
-        }
+      cpp{{
+      auto iter = map.find(key);
+      if (iter != map.end()) {
+        return iter->second;
       }
+      }}
+      // let len <- length(keys!);
+      // for i in 1..len {
+      //   if keys![i] == key {
+      //     return values![i];
+      //   }
+      // }
     }
     return nil;
   }
@@ -312,6 +336,15 @@ class Buffer {
     setNil();
     this.keys <- keys;
     this.values <- values;
+    cpp{{
+    map.clear();
+    }}
+    let len <- length(keys);
+    for i in 1..len {
+      cpp{{
+      map.insert(std::make_pair(keys(i - 1), values(i - 1)));
+      }}
+    }
   }
 
   /**
@@ -392,6 +425,9 @@ class Buffer {
       keys <- stack(keys!, key);
       values <- stack(values!, x);
     }
+    cpp{{
+    map.insert(std::make_pair(key, x));
+    }}
   }
 
   /**
