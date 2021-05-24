@@ -170,7 +170,7 @@ public:
   /**
    * Value assignment.
    */
-  template<class U>
+  template<class U, std::enable_if_t<!std::is_base_of<T,U>::value,int> = 0>
   Shared<T>& operator=(const U& o) {
     *get() = o;
     return *this;
@@ -179,7 +179,7 @@ public:
   /**
    * Value assignment.
    */
-  template<class U>
+  template<class U, std::enable_if_t<!std::is_base_of<T,U>::value,int> = 0>
   const Shared<T>& operator=(const U& o) const {
     *get() = o;
     return *this;
