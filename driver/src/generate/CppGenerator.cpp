@@ -200,11 +200,7 @@ void birch::CppGenerator::visit(const Nil* o) {
 }
 
 void birch::CppGenerator::visit(const Parameter* o) {
-  if (inConstructor) {
-    middle(o->type << ' ' << o->name);
-  } else {
-    middle("const " << o->type << "& " << o->name);
-  }
+  middle("const " << o->type << "& " << o->name);
   if (!o->value->isEmpty()) {
     middle(" = " << o->value);
   }
