@@ -10,12 +10,12 @@ final class Multi < Model {
   /**
    * Current tracks.
    */
-  x:Tape<Track>;
+  x:Array<Track>;
 
   /**
    * Current observations.
    */
-  y:Tape<Real[_]>;
+  y:Array<Real[_]>;
 
   /**
    * All tracks up to current time.
@@ -25,11 +25,11 @@ final class Multi < Model {
   /**
    * All clutter observations up to current time.
    */
-  yAll:Tape<Tape<Real[_]>>;
+  yAll:Tape<Array<Real[_]>>;
 
   override function simulate(t:Integer) {
     /* move current objects */
-    x':Tape<Track>;  // new current set of tracks
+    x':Array<Track>;  // new current set of tracks
     let iter <- x.walk();
     while iter.hasNext() {
       let track <- iter.next();
@@ -108,7 +108,6 @@ final class Multi < Model {
   }
 
   override function read(t:Integer, buffer:Buffer) {
-    y <- construct<Tape<Real[_]>>();
     buffer.get(y);
   }
 
