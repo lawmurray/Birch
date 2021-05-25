@@ -32,7 +32,7 @@
 /* otherwise the default is to disable the OpenMP implementation at this
  * stage, as unfortunately seeing segfaults in recent versions on macOS;
  * further review required */
-#define LIBBIRCH_ATOMIC_OPENMP 0
+#define LIBBIRCH_ATOMIC_OPENMP 1
 #endif
 
 #if !LIBBIRCH_ATOMIC_OPENMP
@@ -68,14 +68,14 @@ public:
    * Load the value, atomically.
    */
   T load() const {
-    T value;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic read seq_cst
+    T value;
+    #pragma omp atomic read acquire
     value = this->value;
-    #else
-    value = this->value.load();
-    #endif
     return value;
+    #else
+    return this->value.load(std::memory_order_acquire);
+    #endif
   }
 
   /**
@@ -83,10 +83,10 @@ public:
    */
   void store(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic write seq_cst
+    #pragma omp atomic write release
     this->value = value;
     #else
-    this->value.store(value);
+    this->value.store(value, std::memory_order_release);
     #endif
   }
 
@@ -98,17 +98,17 @@ public:
    * @return Old value.
    */
   T exchange(const T& value) {
-    T old;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T old;
+    #pragma omp atomic capture acq_rel
     {
       old = this->value;
       this->value = value;
     }
-    #else
-    old = this->value.exchange(value);
-    #endif
     return old;
+    #else
+    return this->value.exchange(value, std::memory_order_acq_rel);
+    #endif
   }
 
   /**
@@ -120,17 +120,17 @@ public:
    * @return Previous value.
    */
   T exchangeAnd(const T& value) {
-    T old;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T old;
+    #pragma omp atomic capture acq_rel
     {
       old = this->value;
       this->value &= value;
     }
-    #else
-    old = this->value.fetch_and(value);
-    #endif
     return old;
+    #else
+    return this->value.fetch_and(value, std::memory_order_acq_rel);
+    #endif
   }
 
   /**
@@ -142,17 +142,17 @@ public:
    * @return Previous value.
    */
   T exchangeOr(const T& value) {
-    T old;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T old;
+    #pragma omp atomic capture acq_rel
     {
       old = this->value;
       this->value |= value;
     }
-    #else
-    old = this->value.fetch_or(value);
-    #endif
     return old;
+    #else
+    return this->value.fetch_or(value, std::memory_order_acq_rel);
+    #endif
   }
 
   /**
@@ -162,9 +162,11 @@ public:
    */
   void maskAnd(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update seq_cst
-    #endif
+    #pragma omp atomic update relaxed
     this->value &= value;
+    #else
+    this->value.fetch_and(value, std::memory_order_relaxed);
+    #endif
   }
 
   /**
@@ -174,54 +176,10 @@ public:
    */
   void maskOr(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update seq_cst
-    #endif
+    #pragma omp atomic update relaxed
     this->value |= value;
-  }
-
-  /**
-   * Set to the minimum of the current value and the given value.
-   * 
-   * @attention The OpenMP implementation is thread-safe for multiple threads
-   * calling min() simultaneously, but not for interleaving of other
-   * operations, for which external synchronization is required.
-   */
-  void min(const T& value) {
-    #if LIBBIRCH_ATOMIC_OPENMP
-    T x = value;
-    T y = load();
-    while (x < y) {
-      y = exchange(x);
-      std::swap(x, y);
-    }
     #else
-    T expected = std::numeric_limits<T>::max();
-    while (value < expected) {
-      this->value.compare_exchange_weak(expected, value);
-    }
-    #endif
-  }
-
-  /**
-   * Set to the maximum of the current value and the given value.
-   * 
-   * @attention The OpenMP implementation is thread-safe for multiple threads
-   * calling max() simultaneously, but not for interleaving of other
-   * operations, for which external synchronization is required.
-   */
-  void max(const T& value) {
-    #if LIBBIRCH_ATOMIC_OPENMP
-    T x = value;
-    T y = load();
-    while (x > y) {
-      y = exchange(x);
-      std::swap(x, y);
-    }
-    #else
-    T expected = std::numeric_limits<T>::min();
-    while (value > expected) {
-      this->value.compare_exchange_weak(expected, value);
-    }
+    this->value.fetch_or(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -231,9 +189,11 @@ public:
    */
   void increment() {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update seq_cst
-    #endif
+    #pragma omp atomic update relaxed
     ++value;
+    #else
+    value.fetch_add(1, std::memory_order_relaxed);
+    #endif
   }
 
   /**
@@ -242,9 +202,11 @@ public:
    */
   void decrement() {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update seq_cst
-    #endif
+    #pragma omp atomic update relaxed
     --value;
+    #else
+    value.fetch_sub(1, std::memory_order_relaxed);
+    #endif
   }
 
   /**
@@ -253,9 +215,11 @@ public:
   template<class U>
   void add(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update seq_cst
-    #endif
+    #pragma omp atomic update relaxed
     this->value += value;
+    #else
+    this->value.fetch_add(value, std::memory_order_relaxed);
+    #endif
   }
 
   /**
@@ -265,65 +229,97 @@ public:
   template<class U>
   void subtract(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update seq_cst
-    #endif
+    #pragma omp atomic update relaxed
     this->value -= value;
+    #else
+    this->value.fetch_sub(value, std::memory_order_relaxed);
+    #endif
   }
 
   template<class U>
   T operator+=(const U& value) {
-    T result;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
-    #endif
-    result = this->value += value;
+    T result;
+    #pragma omp atomic capture acq_rel
+    {
+      this->value += value;
+      result = this->value;
+    }
     return result;
+    #else
+    return this->value.fetch_add(value, std::memory_order_acq_rel) + value;
+    #endif
   }
 
   template<class U>
   T operator-=(const U& value) {
-    T result;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
-    #endif
-    result = this->value -= value;
+    T result;
+    #pragma omp atomic capture acq_rel
+    {
+      this->value -= value;
+      result = this->value;
+    }
     return result;
+    #else
+    return this->value.fetch_sub(value, std::memory_order_acq_rel) - value;
+    #endif
   }
 
   T operator++() {
-    T value;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T result;
+    #pragma omp atomic capture acq_rel
+    {
+      ++this->value;
+      result = this->value;
+    }
+    return result;
+    #else
+    return this->value.fetch_add(1, std::memory_order_acq_rel) + 1;
     #endif
-    value = ++this->value;
-    return value;
   }
 
   T operator++(int) {
-    T value;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T result;
+    #pragma omp atomic capture acq_rel
+    {
+      result = this->value;
+      ++this->value;
+    }
+    return result;
+    #else
+    return this->value.fetch_add(1, std::memory_order_acq_rel);
     #endif
-    value = this->value++;
-    return value;
   }
 
   T operator--() {
-    T value;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T result;
+    #pragma omp atomic capture acq_rel
+    {
+      --this->value;
+      result = this->value;
+    }
+    return result;
+    #else
+    return this->value.fetch_sub(1, std::memory_order_acq_rel) - 1;
     #endif
-    value = --this->value;
-    return value;
   }
 
   T operator--(int) {
-    T value;
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic capture seq_cst
+    T result;
+    #pragma omp atomic capture acq_rel
+    {
+      result = this->value;
+      --this->value;
+    }
+    return result;
+    #else
+    return this->value.fetch_sub(1, std::memory_order_acq_rel);
     #endif
-    value = this->value--;
-    return value;
   }
 
 private:
