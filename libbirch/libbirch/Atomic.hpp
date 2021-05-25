@@ -70,11 +70,11 @@ public:
   T load() const {
     #if LIBBIRCH_ATOMIC_OPENMP
     T value;
-    #pragma omp atomic read acquire
+    #pragma omp atomic read relaxed
     value = this->value;
     return value;
     #else
-    return this->value.load(std::memory_order_acquire);
+    return this->value.load(std::memory_order_relaxed);
     #endif
   }
 
@@ -83,10 +83,10 @@ public:
    */
   void store(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic write release
+    #pragma omp atomic write relaxed
     this->value = value;
     #else
-    this->value.store(value, std::memory_order_release);
+    this->value.store(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -100,14 +100,14 @@ public:
   T exchange(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       old = this->value;
       this->value = value;
     }
     return old;
     #else
-    return this->value.exchange(value, std::memory_order_acq_rel);
+    return this->value.exchange(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -122,14 +122,14 @@ public:
   T exchangeAnd(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       old = this->value;
       this->value &= value;
     }
     return old;
     #else
-    return this->value.fetch_and(value, std::memory_order_acq_rel);
+    return this->value.fetch_and(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -144,14 +144,14 @@ public:
   T exchangeOr(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       old = this->value;
       this->value |= value;
     }
     return old;
     #else
-    return this->value.fetch_or(value, std::memory_order_acq_rel);
+    return this->value.fetch_or(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -240,14 +240,14 @@ public:
   T operator+=(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       this->value += value;
       result = this->value;
     }
     return result;
     #else
-    return this->value.fetch_add(value, std::memory_order_acq_rel) + value;
+    return this->value.fetch_add(value, std::memory_order_relaxed) + value;
     #endif
   }
 
@@ -255,70 +255,70 @@ public:
   T operator-=(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       this->value -= value;
       result = this->value;
     }
     return result;
     #else
-    return this->value.fetch_sub(value, std::memory_order_acq_rel) - value;
+    return this->value.fetch_sub(value, std::memory_order_relaxed) - value;
     #endif
   }
 
   T operator++() {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       ++this->value;
       result = this->value;
     }
     return result;
     #else
-    return this->value.fetch_add(1, std::memory_order_acq_rel) + 1;
+    return this->value.fetch_add(1, std::memory_order_relaxed) + 1;
     #endif
   }
 
   T operator++(int) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       result = this->value;
       ++this->value;
     }
     return result;
     #else
-    return this->value.fetch_add(1, std::memory_order_acq_rel);
+    return this->value.fetch_add(1, std::memory_order_relaxed);
     #endif
   }
 
   T operator--() {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       --this->value;
       result = this->value;
     }
     return result;
     #else
-    return this->value.fetch_sub(1, std::memory_order_acq_rel) - 1;
+    return this->value.fetch_sub(1, std::memory_order_relaxed) - 1;
     #endif
   }
 
   T operator--(int) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture acq_rel
+    #pragma omp atomic capture relaxed
     {
       result = this->value;
       --this->value;
     }
     return result;
     #else
-    return this->value.fetch_sub(1, std::memory_order_acq_rel);
+    return this->value.fetch_sub(1, std::memory_order_relaxed);
     #endif
   }
 
