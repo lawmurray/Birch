@@ -20,12 +20,12 @@ final class Multi < Model {
   /**
    * All tracks up to current time.
    */
-  xAll:Tape<Track>;
+  xAll:Array<Track>;
 
   /**
    * All clutter observations up to current time.
    */
-  yAll:Tape<Array<Real[_]>>;
+  yAll:Array<Array<Real[_]>>;
 
   override function simulate(t:Integer) {
     /* move current objects */
