@@ -59,10 +59,10 @@ void libbirch::collect() {
     int size = 0;
     for (int i = 0; i < (int)possible_roots.size(); ++i) {
       auto o = possible_roots[i];
-      if (o->isPossibleRoot_()) {
-        possible_roots[size++] = o;
-      } else if (o->numShared_() == 0) {
+      if (o->numShared_() == 0) {
         o->deallocate_();  // deallocation was deferred until now
+      } else if (o->isPossibleRoot_()) {
+        possible_roots[size++] = o;
       } else {
         o->unbuffer_();  // not a root, mark as no longer in the buffer
       }

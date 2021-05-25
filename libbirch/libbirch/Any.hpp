@@ -163,31 +163,21 @@ public:
   void decShared_() {
     assert(numShared_() > 0);
 
-    /* first set the BUFFERED flag so that this call is uniquely responsible
-    * for registering this object as a possible root, if necessary */
+    auto r = --r_;
     auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
 
-    /* decrement reference count */
-    auto r = --r_;
-
-    if (old & HEAD && r == a_ - 1) {
+    if ((old & HEAD) && r == a_ - 1) {
       /* last external reference about to be removed, remainder are internal
-       * to the biconnected component */
+       * to the biconnected component; can collect the whole biconnected
+       * component now */
       biconnected_collect(this);
     }
     if (r == 0) {
-      /* destroy, and as long as haven't been previously buffered, can
-        * deallocate too */
       destroy_();
       if (!(old & BUFFERED) || old & ACYCLIC || old & HEAD) {
-        /* hasn't been previously buffered, or is acyclic, so can
-         * immediately deallocate */
+        /* hasn't been previously buffered, is acyclic, or is the head of a
+         * biconnected component, and so can be immediately deallocated */
         deallocate_();
-      } else {
-        /* has been previously buffered, so deallocation must be deferred
-         * until collection, but certainly not a possible root, as has just
-         * been destroyed */
-        f_.maskAnd(~POSSIBLE_ROOT);
       }
     } else if (!(old & BUFFERED) && !(old & ACYCLIC) && !(old & HEAD)) {
       /* not already registered as a possible root, and not acyclic */
