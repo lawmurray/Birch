@@ -114,4 +114,14 @@ private:
    */
   T o;
 };
+
+template<class T>
+struct is_pointer<Inplace<T>> {
+  static const bool value = true;
+};
+
+template<class T>
+struct unwrap_pointer<Inplace<T>> {
+  using type = T;
+};
 }

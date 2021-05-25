@@ -43,10 +43,6 @@
     return #Name; \
   } \
   \
-  virtual int size_() const override { \
-    return sizeof(*this); \
-  } \
-  \
   virtual Name* copy_() const override { \
     return new Name(*this); \
   }

@@ -43,6 +43,18 @@ libbirch::Any*& libbirch::Memo::get(Any* key) {
   return values[i];
 }
 
+int libbirch::Memo::hash(Any* key) const {
+  assert(nentries > 0);
+  return static_cast<int>(reinterpret_cast<size_t>(key) >> 6ull)
+      & (nentries - 1);
+}
+
+int libbirch::Memo::crowd() const {
+  /* the table is considered crowded if more than three-quarters of its
+   * entries are occupied */
+  return (nentries >> 1) + (nentries >> 2);
+}
+
 void libbirch::Memo::rehash() {
   /* save previous table */
   auto nentries1 = nentries;

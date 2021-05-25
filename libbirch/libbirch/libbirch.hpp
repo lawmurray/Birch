@@ -135,7 +135,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
-    std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+    std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
 }
@@ -152,7 +152,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
-    !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+    !std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
 }

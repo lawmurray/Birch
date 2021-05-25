@@ -63,6 +63,7 @@ nobase_include_HEADERS = \
   libbirch/type.hpp
 
 COMMON_SOURCES =  \
+  libbirch/Any.cpp \
   libbirch/BiconnectedCollector.cpp \
   libbirch/BiconnectedCopier.cpp \
   libbirch/BiconnectedMemo.cpp \

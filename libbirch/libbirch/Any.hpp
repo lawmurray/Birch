@@ -74,116 +74,57 @@ public:
   /**
    * Constructor.
    */
-  Any() :
-      r_(0),
-      a_(0),
-      l_(std::numeric_limits<int>::max()),
-      h_(0),
-      p_(-1),
-      f_(0) {
-    //
-  }
+  Any();
 
   /**
    * Copy constructor.
    */
-  Any(const Any& o) :
-      r_(0),
-      a_(0),
-      l_(std::numeric_limits<int>::max()),
-      h_(0),
-      p_(-1),
-      f_(o.f_.load() & ACYCLIC) {
-    //
-  }
+  Any(const Any& o);
 
   /**
    * Destructor.
    */
-  virtual ~Any() {
-    assert(r_.load() == 0);
-  }
+  virtual ~Any();
 
   /**
    * New operator.
    */
-  void* operator new(std::size_t size) {
-    /* object destruction and deallocation are separated; an explicit call to
-     * the destructor is used to destroy, and std::free() used to deallocate,
-     * so std::malloc() should be used to allocate; using the default operator
-     * new can result in a double free, as reported by valgrind */
-    return std::malloc(size);
-  }
+  void* operator new(std::size_t size);
 
   /**
    * Delete operator.
    */
-  void operator delete(void* ptr) {
-    std::free(ptr);
-  }
+  void operator delete(void* ptr);
 
   /**
    * Assignment operator.
    */
-  Any& operator=(const Any&) {
-    return *this;
-  }
+  Any& operator=(const Any&);
 
   /**
    * Destroy.
    */
-  void destroy_() {
-    this->~Any();
-  }
+  void destroy_();
 
   /**
    * Deallocate.
    */
-  void deallocate_() {
-    std::free(this);
-  }
+  void deallocate_();
 
   /**
    * Reference count.
    */
-  int numShared_() const {
-    return r_.load();
-  }
+  int numShared_() const;
 
   /**
    * Increment the shared reference count.
    */
-  void incShared_() {
-    r_.increment();
-  }
+  void incShared_();
 
   /**
    * Decrement the shared reference count.
    */
-  void decShared_() {
-    assert(numShared_() > 0);
-
-    auto r = --r_;
-    auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
-
-    if ((old & HEAD) && r == a_ - 1) {
-      /* last external reference about to be removed, remainder are internal
-       * to the biconnected component; can collect the whole biconnected
-       * component now */
-      biconnected_collect(this);
-    }
-    if (r == 0) {
-      destroy_();
-      if (!(old & BUFFERED) || old & ACYCLIC || old & HEAD) {
-        /* hasn't been previously buffered, is acyclic, or is the head of a
-         * biconnected component, and so can be immediately deallocated */
-        deallocate_();
-      }
-    } else if (!(old & BUFFERED) && !(old & ACYCLIC) && !(old & HEAD)) {
-      /* not already registered as a possible root, and not acyclic */
-      register_possible_root(this);
-    }
-  }
+  void decShared_();
 
   /**
    * Decrement the shared count for an object that will remain reachable. The
@@ -191,102 +132,64 @@ public:
    * The object will not be destroyed, and will not be registered as a
    * possible root for cycle collection.
    */
-  void decSharedReachable_() {
-    assert(numShared_() > 0);
-    r_.decrement();
-  }
+  void decSharedReachable_();
 
   /**
    * Decrement the shared count during collection of a biconnected component,
    * where the caller is responsible for destruction and deallocation, if
    * necessary.
    */
-  void decSharedBiconnected_() {
-    assert(numShared_() > 0);
-    if (--r_ == 0) {
-      destroy_();
-      deallocate_();
-    }
-  }
+  void decSharedBiconnected_();
 
   /**
    * Is there only one pointer (of any type) to this object?
    */
-  bool isUnique_() const {
-    return numShared_() == 1;
-  }
+  bool isUnique_() const;
 
   /**
    * Is there only one pointer (of any type) to this biconnected component?
    */
-  bool isUniqueHead_() const {
-    assert(isHead_());
-    return numShared_() == a_;
-  }
+  bool isUniqueHead_() const;
 
   /**
    * Is this object of an acyclic class?
    */
-  bool isAcyclic_() const {
-    return f_.load() & ACYCLIC;
-  }
+  bool isAcyclic_() const;
 
   /**
    * Is this object the possible root of a cycle?
    */
-  bool isPossibleRoot_() const {
-    return f_.load() & POSSIBLE_ROOT;
-  }
+  bool isPossibleRoot_() const;
 
   /**
    * Is the head flag set?
    */
-  bool isHead_() const {
-    return f_.load() & HEAD;
-  }
+  bool isHead_() const;
 
   /**
    * Set the acyclic flag.
    */
-  void acyclic_() {
-    f_.maskOr(ACYCLIC);
-  }
+  void acyclic_();
 
   /**
    * Set the head flag.
    */
-  void head_() {
-    assert(r_.load() == a_);
-    f_.maskOr(HEAD);
-  }
+  void head_();
 
   /**
    * Unset the head flag.
    */
-  void unhead_() {
-    f_.maskAnd(~(HEAD|BUFFERED|POSSIBLE_ROOT));
-  }
-
+  void unhead_();
+  
   /**
    * Unset buffer flag.
    */
-  void unbuffer_() {
-    f_.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
-  }
+  void unbuffer_();
 
   /**
    * Get the class name.
    */
-  virtual const char* getClassName_() const {
-    return "Any";
-  }
-
-  /**
-   * Size of the object.
-   */
-  virtual int size_() const {
-    return sizeof(Any);
-  }
+  virtual const char* getClassName_() const;
 
   /**
    * Shallow copy the object.
@@ -379,4 +282,95 @@ private:
    */
   Atomic<int16_t> f_;
 };
+}
+
+inline libbirch::Any::~Any() {
+  assert(r_.load() == 0);
+}
+
+inline void* libbirch::Any::operator new(std::size_t size) {
+  /* object destruction and deallocation are separated; an explicit call to
+    * the destructor is used to destroy, and std::free() used to deallocate,
+    * so std::malloc() should be used to allocate; using the default operator
+    * new can result in a double free, as reported by valgrind */
+  return std::malloc(size);
+}
+
+inline void libbirch::Any::operator delete(void* ptr) {
+  std::free(ptr);
+}
+
+inline libbirch::Any& libbirch::Any::operator=(const Any&) {
+  return *this;
+}
+
+inline void libbirch::Any::destroy_() {
+  this->~Any();
+}
+
+inline void libbirch::Any::deallocate_() {
+  std::free(this);
+}
+
+inline int libbirch::Any::numShared_() const {
+  return r_.load();
+}
+
+inline void libbirch::Any::incShared_() {
+  r_.increment();
+}
+
+inline void libbirch::Any::decSharedReachable_() {
+  assert(numShared_() > 0);
+  r_.decrement();
+}
+
+inline void libbirch::Any::decSharedBiconnected_() {
+  assert(numShared_() > 0);
+  if (--r_ == 0) {
+    destroy_();
+    deallocate_();
+  }
+}
+
+inline bool libbirch::Any::isUnique_() const {
+  return numShared_() == 1;
+}
+
+inline bool libbirch::Any::isUniqueHead_() const {
+  assert(isHead_());
+  return numShared_() == a_;
+}
+
+inline bool libbirch::Any::isAcyclic_() const {
+  return f_.load() & ACYCLIC;
+}
+
+inline bool libbirch::Any::isPossibleRoot_() const {
+  return f_.load() & POSSIBLE_ROOT;
+}
+
+inline bool libbirch::Any::isHead_() const {
+  return f_.load() & HEAD;
+}
+
+inline void libbirch::Any::acyclic_() {
+  f_.maskOr(ACYCLIC);
+}
+
+inline void libbirch::Any::head_() {
+  assert(r_.load() == a_);
+  f_.maskOr(HEAD);
+}
+
+inline void libbirch::Any::unhead_() {
+  f_.maskAnd(~(HEAD|BUFFERED|POSSIBLE_ROOT));
+}
+
+inline void libbirch::Any::unbuffer_() {
+  f_.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
+}
+
+inline const char* libbirch::Any::getClassName_() const {
+  return "Any";
 }
