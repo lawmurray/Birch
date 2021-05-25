@@ -6,34 +6,16 @@
 /**
  * @def LIBBIRCH_ATOMIC_OPENMP
  *
- * Set to true for libbirch::Atomic to be based on std::atomic, or false to
- * use OpenMP instead.
+ * Set to true for libbirch::Atomic use OpenMP, or false to use std::atomic.
  *
  * The advantage of the OpenMP implementation is assured memory model
  * consistency and the organic disabling of atomics when OpenMP, and thus
  * multithreading, is disabled (this can improve performance significantly for
  * single threading). The disadvantage is that OpenMP atomics do not support
- * compare-and-swap/compare-and-exchange, only swap/exchange, which requires
- * some clunkier client code, especially for read-write locks.
- *
- * The alternative implementation use std::atomic.
- *
- * Atomic provides the default constructor, copy and move constructors, copy
- * and move assignment operators, in order to be trivially copyable and so
- * a mappable type for the purposes of OpenMP. These constructors and
- * operators *do not* behave atomically, however.
+ * compare-and-swap/compare-and-exchange, only swap/exchange, which can
+ * require some clunkier client code, especially for read-write locks.
  */
-#ifndef _OPENMP
-/* this looks like it's backwards, but when OpenMP is disabled, enabling the
- * OpenMP implementation has the effect of replacing atomic operations with
- * regular operations, which is faster */
- #define LIBBIRCH_ATOMIC_OPENMP 1
-#else
-/* otherwise the default is to disable the OpenMP implementation at this
- * stage, as unfortunately seeing segfaults in recent versions on macOS;
- * further review required */
 #define LIBBIRCH_ATOMIC_OPENMP 1
-#endif
 
 #if !LIBBIRCH_ATOMIC_OPENMP
 #include <atomic>
