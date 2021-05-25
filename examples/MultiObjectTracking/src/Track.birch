@@ -18,12 +18,12 @@ final class Track(s:Integer, θ:Global) < Model {
   /**
    * Hidden states.
    */
-  x:Tape<Random<Real[_]>>;
+  x:Array<Random<Real[_]>>;
 
   /**
    * Observations.
    */
-  y:Tape<Random<Real[_]>>;
+  y:Array<Random<Real[_]>>;
   
   override function simulate(t:Integer) {
     if t == 1 {
