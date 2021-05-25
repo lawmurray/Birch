@@ -13,6 +13,9 @@ final class Array<Type> {
    * Reference to an element.
    */
   operator [i:Integer] -> Type {
+    while length(values) < i {
+      pushBack();
+    }
     return values[i];
   }
 
@@ -44,6 +47,9 @@ final class Array<Type> {
    * - i: Position.
    */
   function get(i:Integer) -> Type {
+    while length(values) < i {
+      pushBack();
+    }
     return values[i];
   }
 
@@ -54,7 +60,14 @@ final class Array<Type> {
    * - x: Value.
    */
   function set(i:Integer, x:Type) {
-    values[i] <- x;
+    while length(values) < i - i {
+      pushBack();
+    }
+    if length(values) == i - 1 {
+      pushBack(x);
+    } else {
+      values[i] <- x;
+    }
   }
 
   /**
