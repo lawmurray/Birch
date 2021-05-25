@@ -90,7 +90,7 @@ auto make_array_from_lambda(const F& shape, const L& l) {
 }
 
 /**
- * Make a value or object.
+ * Make a shared object.
  *
  * @tparam T Type.
  * @tparam Args Argument types.
@@ -107,7 +107,7 @@ std::optional<T> make_optional(Args&&... args) {
 }
 
 /**
- * Make a value or object.
+ * Make a shared object.
  *
  * @tparam T Type.
  * @tparam Args Argument types.
@@ -118,6 +118,40 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<is_pointer<T>::value &&
+    !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return std::nullopt;
+}
+
+/**
+ * Make an inplace object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<is_inplace<T>::value &&
+    std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return T(std::forward<Args>(args)...);
+}
+
+/**
+ * Make an inplace object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<is_inplace<T>::value &&
     !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -135,7 +169,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
-    std::is_constructible<T,Args...>::value,int> = 0>
+    !is_inplace<T>::value && std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
 }
@@ -152,13 +186,13 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<!is_pointer<T>::value &&
-    !std::is_constructible<T,Args...>::value,int> = 0>
+    !is_inplace<T>::value && !std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
 }
 
 /**
- * Identity cast of anything.
+ * Cast of anything to itelf.
  */
 template<class To, class From,
     std::enable_if_t<std::is_same<To,From>::value,int> = 0>
@@ -167,7 +201,7 @@ std::optional<To> cast(const From& from) {
 }
 
 /**
- * Non-identity cast of a pointer.
+ * Cast of a pointer.
  */
 template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
@@ -182,7 +216,7 @@ std::optional<To> cast(const From& from) {
 }
 
 /**
- * Non-identity cast of a non-pointer.
+ * Cast of a non-pointer.
  */
 template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&

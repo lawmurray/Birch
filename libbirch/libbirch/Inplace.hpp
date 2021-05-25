@@ -116,12 +116,12 @@ private:
 };
 
 template<class T>
-struct is_pointer<Inplace<T>> {
+struct is_inplace<Inplace<T>> {
   static const bool value = true;
 };
 
 template<class T>
-struct unwrap_pointer<Inplace<T>> {
+struct unwrap_inplace<Inplace<T>> {
   using type = T;
 };
 }
