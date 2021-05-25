@@ -70,7 +70,7 @@ public:
   T load() const {
     #if LIBBIRCH_ATOMIC_OPENMP
     T value;
-    #pragma omp atomic read relaxed
+    #pragma omp atomic read
     value = this->value;
     return value;
     #else
@@ -83,7 +83,7 @@ public:
    */
   void store(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic write relaxed
+    #pragma omp atomic write
     this->value = value;
     #else
     this->value.store(value, std::memory_order_relaxed);
@@ -100,7 +100,7 @@ public:
   T exchange(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       old = this->value;
       this->value = value;
@@ -122,7 +122,7 @@ public:
   T exchangeAnd(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       old = this->value;
       this->value &= value;
@@ -144,7 +144,7 @@ public:
   T exchangeOr(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       old = this->value;
       this->value |= value;
@@ -162,7 +162,7 @@ public:
    */
   void maskAnd(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update relaxed
+    #pragma omp atomic update
     this->value &= value;
     #else
     this->value.fetch_and(value, std::memory_order_relaxed);
@@ -176,7 +176,7 @@ public:
    */
   void maskOr(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update relaxed
+    #pragma omp atomic update
     this->value |= value;
     #else
     this->value.fetch_or(value, std::memory_order_relaxed);
@@ -189,7 +189,7 @@ public:
    */
   void increment() {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update relaxed
+    #pragma omp atomic update
     ++value;
     #else
     value.fetch_add(1, std::memory_order_relaxed);
@@ -202,7 +202,7 @@ public:
    */
   void decrement() {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update relaxed
+    #pragma omp atomic update
     --value;
     #else
     value.fetch_sub(1, std::memory_order_relaxed);
@@ -215,7 +215,7 @@ public:
   template<class U>
   void add(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update relaxed
+    #pragma omp atomic update
     this->value += value;
     #else
     this->value.fetch_add(value, std::memory_order_relaxed);
@@ -229,7 +229,7 @@ public:
   template<class U>
   void subtract(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update relaxed
+    #pragma omp atomic update
     this->value -= value;
     #else
     this->value.fetch_sub(value, std::memory_order_relaxed);
@@ -240,7 +240,7 @@ public:
   T operator+=(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       this->value += value;
       result = this->value;
@@ -255,7 +255,7 @@ public:
   T operator-=(const U& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       this->value -= value;
       result = this->value;
@@ -269,7 +269,7 @@ public:
   T operator++() {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       ++this->value;
       result = this->value;
@@ -283,7 +283,7 @@ public:
   T operator++(int) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       result = this->value;
       ++this->value;
@@ -297,7 +297,7 @@ public:
   T operator--() {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       --this->value;
       result = this->value;
@@ -311,7 +311,7 @@ public:
   T operator--(int) {
     #if LIBBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture relaxed
+    #pragma omp atomic capture
     {
       result = this->value;
       --this->value;
