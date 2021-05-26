@@ -26,9 +26,9 @@ namespace libbirch {
  *   - *acyclic* maps to *green*,
  *   - *buffered* maps to *purple*,
  *   - *marked* maps to *gray*,
- *   - *scanned* and *reachable* together map to *black* (both on) or
+ *   - *scanned* and *reached* together map to *black* (both on) or
  *     *white* (first on, second off),
- *   - *collected* is set once a white object has been destroyed.
+ *   - *collected* is set once a *white* object has been destroyed.
  *
  * The use of these flags also resolves some thread safety issues that can
  * otherwise exist during the scan operation, when coloring an object white

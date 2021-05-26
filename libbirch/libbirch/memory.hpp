@@ -15,6 +15,13 @@ namespace libbirch {
 void register_possible_root(Any* o);
 
 /**
+ * Attempt to deregister an object with the cycle collector. The operation is
+ * optional and only performed if it can be done efficiently, such as if the
+ * object is the most-recently registered.
+ */
+void deregister_possible_root(Any* o);
+
+/**
  * Register an object with the cycle collector as unreachable.
  */
 void register_unreachable(Any* o);

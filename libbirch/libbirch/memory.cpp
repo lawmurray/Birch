@@ -28,20 +28,15 @@ static thread_local std::vector<libbirch::Any*> unreachables;
 static thread_local bool biconnected_flag = false;
 
 void libbirch::register_possible_root(Any* o) {
-  /* take the opportunity to perform some maintenance; recently added objects
-   * are often eligible for removal */
-  while (!possible_roots.empty()) {
-    auto o = possible_roots.back();
-    if (o->numShared_() == 0) {
-      o->deallocate_();
-    } else if (!o->isPossibleRoot_()) {
-      o->unbuffer_();
-    } else {
-      break;
-    }
-    possible_roots.pop_back();
-  }
   possible_roots.push_back(o);
+}
+
+void libbirch::deregister_possible_root(Any* o) {
+  assert(o->numShared_() == 0);
+  if (!possible_roots.empty() && possible_roots.back() == o) {
+    possible_roots.pop_back();
+    o->deallocate_();
+  }
 }
 
 void libbirch::register_unreachable(Any* o) {

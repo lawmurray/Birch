@@ -31,19 +31,24 @@ void libbirch::Any::decShared_() {
 
   if ((old & HEAD) && r == a_ - 1) {
     /* last external reference about to be removed, remainder are internal
-      * to the biconnected component; can collect the whole biconnected
-      * component now */
+     * to the biconnected component; can collect the whole biconnected
+     * component now */
     biconnected_collect(this);
   }
   if (r == 0) {
     destroy_();
-    if (!(old & BUFFERED) || old & ACYCLIC || old & HEAD) {
-      /* hasn't been previously buffered, is acyclic, or is the head of a
-        * biconnected component, and so can be immediately deallocated */
+    if (old & BUFFERED && !(old & ACYCLIC) && !(old & HEAD)) {
+      /* this is currently registered as a possible root, attempt to
+       * simultaneously deregister and deallocate it */
+      deregister_possible_root(this);
+    } else {
+      /* otherwise, this is not currently registered as a possible root, and
+       * can be deallocated immediately */
       deallocate_();
     }
   } else if (!(old & BUFFERED) && !(old & ACYCLIC) && !(old & HEAD)) {
-    /* not already registered as a possible root, and not acyclic */
+    /* not already registered as a possible root, and not acyclic nor a bridge
+     * head, so register as possible root of cycle */
     register_possible_root(this);
   }
 }
