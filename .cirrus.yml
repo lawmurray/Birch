@@ -3,11 +3,11 @@ env:
   LDFLAGS: -L/usr/local/lib
   PREFIX: ${CIRRUS_WORKING_DIR}/project
   PATH: ${PREFIX}/bin:${PATH}
+  BIRCH_MODE: debug
+  OMP_NUM_THREADS: 4
   MODE_FLAGS: '--enable-debug --disable-test --disable-release'
   LIBRARY_BIRCH_FLAGS: '--unit=unity --arch=native --jobs=4 --enable-verbose'
-  LIBRARY_OMP_NUM_THREADS: 8
   EXAMPLE_BIRCH_FLAGS: '--unit=unity --arch=native --jobs=2 --enable-verbose'
-  EXAMPLE_OMP_NUM_THREADS: 2
 
 task:
   name: FreeBSD
@@ -25,7 +25,7 @@ task:
     - make install
   driver_smoke_script:
     - cd driver
-    - env BIRCH_MODE=debug OMP_NUM_THREADS=${LIBRARY_OMP_NUM_THREADS} bash ./smoke.sh
+    - bash ./smoke.sh
   libbirch_build_script:
     - cd libbirch
     - ./bootstrap
@@ -34,19 +34,16 @@ task:
     - make install
   birch-standard_build_script:
     - cd libraries/Standard
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS}
-    - birch install
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
   birch-standard_smoke_script:
     - cd libraries/Standard
-    - env BIRCH_MODE=debug bash ./smoke.sh
+    - bash ./smoke.sh
   birch-cairo_build_script:
     - cd libraries/Cairo
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS}
-    - birch install
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
   birch-sqlite_build_script:
     - cd libraries/SQLite
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS}
-    - birch install
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
   upload_cache_script:
     - tar -czvf cache.tar.gz -C "$PREFIX" .
     - curl -s -X POST --data-binary @cache.tar.gz http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO}
@@ -66,11 +63,10 @@ example_task_template: &EXAMPLE_TASK_TEMPLATE
     - pkg install -y automake bash bison boost-libs eigen libtool libyaml ${PACKAGES}
   build_script:
     - cd "examples/${EXAMPLE}"
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${EXAMPLE_BIRCH_FLAGS}
-    - birch install
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${EXAMPLE_BIRCH_FLAGS} || cat config.log
   smoke_script:
     - cd "examples/${EXAMPLE}"
-    - env BIRCH_MODE=debug OMP_NUM_THREADS=${EXAMPLE_OMP_NUM_THREADS} bash ./smoke.sh
+    - bash ./smoke.sh
 
 task:
   name: FreeBSD LinearGaussian
