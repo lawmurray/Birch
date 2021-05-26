@@ -52,9 +52,9 @@ task:
 example_task_template: &EXAMPLE_TASK_TEMPLATE
   depends_on: FreeBSD
   freebsd_instance:
-    image_family: freebsd-12-1
-    cpu: 2
-    memory: 4G
+    image_family: freebsd-12-2
+    cpu: 4
+    memory: 8G
   download_cache_script:
     - curl http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO} -o cache.tar.gz
     - mkdir -p "${PREFIX}"
