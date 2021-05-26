@@ -4,9 +4,9 @@ env:
   PREFIX: ${CIRRUS_WORKING_DIR}/project
   PATH: ${PREFIX}/bin:${PATH}
   MODE_FLAGS: '--enable-debug --disable-test --disable-release'
-  LIBRARY_BIRCH_FLAGS: '--unit=dir --arch=native --jobs=4 --enable-verbose'
+  LIBRARY_BIRCH_FLAGS: '--unit=unity --arch=native --jobs=4 --enable-verbose'
   LIBRARY_OMP_NUM_THREADS: 8
-  EXAMPLE_BIRCH_FLAGS: '--unit=dir --arch=native --jobs=2 --enable-verbose'
+  EXAMPLE_BIRCH_FLAGS: '--unit=unity --arch=native --jobs=2 --enable-verbose'
   EXAMPLE_OMP_NUM_THREADS: 2
 
 task:
