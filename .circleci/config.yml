@@ -86,7 +86,7 @@ commands:
               then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
-                echo "export PATH=/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
+                echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
               fi
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
