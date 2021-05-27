@@ -6,7 +6,7 @@
 /**
  * @def LIBBIRCH_ATOMIC_OPENMP
  *
- * Set to true for libbirch::Atomic use OpenMP, or false to use std::atomic.
+ * Set to 1 for libbirch::Atomic use OpenMP, or 0 to use std::atomic.
  *
  * The advantage of the OpenMP implementation is assured memory model
  * consistency and the organic disabling of atomics when OpenMP, and thus
@@ -15,7 +15,13 @@
  * compare-and-swap/compare-and-exchange, only swap/exchange, which can
  * require some clunkier client code, especially for read-write locks.
  */
+#ifdef __APPLE__
+/* on Mac, OpenMP atomics appear to cause crashes when release mode is
+ * enabled */
+#define LIBBIRCH_ATOMIC_OPENMP 0
+#else
 #define LIBBIRCH_ATOMIC_OPENMP 1
+#endif
 
 #if !LIBBIRCH_ATOMIC_OPENMP
 #include <atomic>
