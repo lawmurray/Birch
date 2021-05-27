@@ -68,7 +68,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
       SMOKE: test
-      TEST: release  # BIRCH_MODE for running test.sh scripts
+      TEST: release
       HOMEBREW: 1
       CODECOV: 1  # upload coverage results to Codecov
     working_directory: /Users/distiller/project/mac
@@ -414,9 +414,9 @@ jobs:
           dir: libraries
           package: SQLite
       - persist_to_workspace:
-          root: .
+          root: ..
           paths:
-            - '*'
+            - << parameters.os >>
       - end_if_pull_request
       - codecov
       - slack
@@ -428,7 +428,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: .
+          at: ..
       - environment
       - test_package:
           dir: libraries
@@ -446,15 +446,15 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: .
+          at: ..
       - environment
       - build_package:
           dir: examples
           package: << parameters.package >>
       - persist_to_workspace:
-          root: .
+          root: ..
           paths:
-            - examples/<< parameters.package >>
+            - << parameters.os >>/examples/<< parameters.package >>
       - end_if_pull_request
       - codecov
       - slack
@@ -469,7 +469,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - attach_workspace:
-          at: .
+          at: ..
       - environment
       - test_package:
           dir: examples
@@ -482,7 +482,7 @@ jobs:
     steps:
       - end_if_pull_request
       - attach_workspace:
-          at: .
+          at: ..
       - environment
       - git_identity
       - osc_identity
