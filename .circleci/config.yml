@@ -66,8 +66,11 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
-      SMOKE: debug
+      MODE_FLAGS: "--disable-debug --enable-test --enable-release"
+      SMOKE: test
+      TEST: release  # BIRCH_MODE for running test.sh scripts
       HOMEBREW: 1
+      CODECOV: 1  # upload coverage results to Codecov
     working_directory: /Users/distiller/project/mac
     # ^ hard-coding different home directory for Mac here, discovered with SSH
 
@@ -410,14 +413,10 @@ jobs:
       - build_package:
           dir: libraries
           package: SQLite
-      - when:
-         condition:
-           equal: [ opensuse, << parameters.os >> ]
-         steps:
-           - persist_to_workspace:
-              root: .
-              paths:
-                - '*'
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
       - end_if_pull_request
       - codecov
       - slack
@@ -531,7 +530,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              os: [opensuse]
+              os: [opensuse,mac]
           requires:
             - build-opensuse
             - build-mac
@@ -542,7 +541,7 @@ workflows:
       - build_example:
           matrix:
             parameters:
-              os: [opensuse]
+              os: [opensuse,mac]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - test-<< matrix.os >>
@@ -550,7 +549,7 @@ workflows:
       - test_example:
           matrix:
             parameters:
-              os: [opensuse]
+              os: [opensuse,mac]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - build_example-<< matrix.os >>-<< matrix.package >>
