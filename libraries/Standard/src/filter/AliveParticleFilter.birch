@@ -56,16 +56,19 @@ class AliveParticleFilter < ParticleFilter {
      * particles are not exchangeable for all resamplers) */
     w[simulate_uniform_int(1, nparticles)] <- -inf;
   }
-  
+
   override function resample(t:Integer) {
     /* proceed as though no resample, so just normalize weights, and let
      * propagate handle the rest */
     a <- iota(1, nparticles);
     w <- w - vector(lsum - log(nparticles), nparticles);
   }
-  
+
   override function reduce() {
     super.reduce();
     npropagations <- sum(p);
+    if npropagations > 0 {
+      lnormalize <- lnormalize + log(nparticles) - log(npropagations-1);
+    }
   }
 }
