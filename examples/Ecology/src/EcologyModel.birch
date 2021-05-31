@@ -17,14 +17,14 @@ class EcologyModel < Model {
    */
   y:Tape<Random<Real>>;
 
-  function simulate() {
+  override function simulate() {
     q ~ InverseGamma(2.5, 2.5);
     r ~ InverseGamma(2.5, 2.5);
     b ~ MultivariateGaussian(vector(1.0, 2), identity(2)*q);
     c ~ Gaussian(1.0, 2.0);
   }
 
-  function simulate(t:Integer) {
+  override function simulate(t:Integer) {
     if t == 1 {
       x[t] ~ Gaussian(3.5, 0.1);
     } else {
@@ -44,25 +44,25 @@ class EcologyModel < Model {
     y[t] ~ Gaussian(exp(x[t]), r);
   }
 
-  function read(buffer:Buffer) {
+  override function read(buffer:Buffer) {
     b <-? buffer.get<Real[_]>("b");
     c <-? buffer.get<Real>("c");
     q <-? buffer.get<Real>("q");
     r <-? buffer.get<Real>("r");
   }
 
-  function read(t:Integer, buffer:Buffer) {
+  override function read(t:Integer, buffer:Buffer) {
     y[t] <-? buffer.get<Real>();
   }
 
-  function write(buffer:Buffer) {
+  override function write(buffer:Buffer) {
     buffer.set("b", b);
     buffer.set("c", c);
     buffer.set("q", q);
     buffer.set("r", r);
   }
 
-  function write(t:Integer, buffer:Buffer) {
+  override function write(t:Integer, buffer:Buffer) {
     buffer.set(x[t]);
   }
 }
