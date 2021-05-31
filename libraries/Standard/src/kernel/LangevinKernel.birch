@@ -28,21 +28,36 @@ class LangevinKernel < Kernel {
       let p <- π.peek();
       let d <- π.grad();
       let μ <- x + d*δ;
-      let Σ <- diagonal(2.0*δ, length(x));
+      let σ2 <- 2.0*δ;
 
       /* moves */
       let naccepts <- 0;
       let accept <- false;
       for n in 1..nmoves {
         /* proposed state */
-        let x' <- simulate_multivariate_gaussian(μ, Σ);
+        let x' <- transform(μ,
+            \(μ:Real) -> {
+              return simulate_gaussian(μ, σ2);
+            });
         let p' <- π.move(x');
         let d' <- π.grad();
         let μ' <- x' + d'*δ;
 
         /* proposal correction */
-        let q <- logpdf_multivariate_gaussian(x, μ', Σ);
-        let q' <- logpdf_multivariate_gaussian(x', μ, Σ);      
+        let q <- transform_reduce(x, μ', 0.0,
+            \(a:Real, b:Real) -> {
+              return a + b;
+            },
+            \(x:Real, μ':Real) -> {
+              return logpdf_gaussian(x, μ', σ2);
+            });
+        let q' <- transform_reduce(x', μ, 0.0,
+            \(a:Real, b:Real) -> {
+              return a + b;
+            },
+            \(x':Real, μ:Real) -> {
+              return logpdf_gaussian(x', μ, σ2);
+            });
 
         /* accept/reject */
         accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + q - q';
