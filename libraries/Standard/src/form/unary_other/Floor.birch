@@ -1,0 +1,26 @@
+struct FloorFunction {
+  function compute<Value>(m:Value) -> {
+    return floor(m);
+  }
+
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return 0.0;
+  }
+}
+struct Floor<Middle> = Unary<FloorFunction,Middle>;
+
+/**
+ * Round to largest integer value not greater than argument.
+ */
+function floor<Middle>(m:Middle) -> {
+  return construct<Floor<Middle>>(m);
+}
+
+/**
+ * Round to largest integer value not greater than argument.
+ */
+function floor(x:Real) -> Real {
+  cpp {{
+  return std::floor(x);
+  }}
+}

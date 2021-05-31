@@ -1,9 +1,9 @@
 struct AbsFunction {
-function compute<Value>(m:Value) -> {
+  function compute<Value>(m:Value) -> {
     return abs(m);
   }
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return copysign(d, m);
   }
 }

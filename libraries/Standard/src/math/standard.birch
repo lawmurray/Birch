@@ -1,31 +1,4 @@
 /**
- * Round to smallest integer value not less than x.
- */
-function ceil(x:Real) -> Real {
-  cpp {{
-  return ::ceil(x);
-  }}
-}
-
-/**
- * Round to largest integer value not greater than x.
- */
-function floor(x:Real) -> Real {
-  cpp {{
-  return ::floor(x);
-  }}
-}
-
-/**
- * Round to integer value.
- */
-function round(x:Real) -> Real {
-  cpp {{
-  return ::round(x);
-  }}
-}
-
-/**
  * Error function.
  */
 function erf(x:Real) -> Real {
