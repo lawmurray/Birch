@@ -22,6 +22,12 @@ void register_possible_root(Any* o);
 void deregister_possible_root(Any* o);
 
 /**
+ * Is the object in this thread's possible root list? Useful for debugging
+ * purposes.
+ */
+bool contains_possible_root(Any* o);
+
+/**
  * Register an object with the cycle collector as unreachable.
  */
 void register_unreachable(Any* o);

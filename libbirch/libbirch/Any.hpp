@@ -364,7 +364,7 @@ inline void libbirch::Any::head_() {
 }
 
 inline void libbirch::Any::unhead_() {
-  f_.maskAnd(~(HEAD|BUFFERED|POSSIBLE_ROOT));
+  f_.maskAnd(~HEAD);
 }
 
 inline void libbirch::Any::unbuffer_() {

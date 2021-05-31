@@ -39,6 +39,11 @@ void libbirch::deregister_possible_root(Any* o) {
   }
 }
 
+bool libbirch::contains_possible_root(Any* o) {
+  return std::find(possible_roots.begin(), possible_roots.end(), o) !=
+      possible_roots.end();
+}
+
 void libbirch::register_unreachable(Any* o) {
   unreachables.push_back(o);
 }
@@ -157,6 +162,9 @@ void libbirch::collect() {
       o->deallocate_();
     }
   }
+
+  assert(possible_roots.empty());
+  assert(unreachables.empty());
 }
 
 bool libbirch::biconnected_copy(const bool toggle) {

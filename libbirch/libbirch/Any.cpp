@@ -37,16 +37,17 @@ void libbirch::Any::decShared_() {
   }
   if (r == 0) {
     destroy_();
-    if (old & BUFFERED && !(old & ACYCLIC) && !(old & HEAD)) {
+    if (old & BUFFERED && !(old & ACYCLIC)) {
       /* this is currently registered as a possible root, attempt to
        * simultaneously deregister and deallocate it */
       deregister_possible_root(this);
     } else {
       /* otherwise, this is not currently registered as a possible root, and
        * can be deallocated immediately */
+      assert(!contains_possible_root(this));
       deallocate_();
     }
-  } else if (!(old & BUFFERED) && !(old & ACYCLIC) && !(old & HEAD)) {
+  } else if (!(old & BUFFERED) && !(old & ACYCLIC)) {
     /* not already registered as a possible root, and not acyclic nor a bridge
      * head, so register as possible root of cycle */
     register_possible_root(this);
