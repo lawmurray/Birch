@@ -20,7 +20,7 @@ function to_string(x:Boolean) -> String {
 function to_string(x:Real) -> String {
   cpp{{
   std::stringstream buf;
-  if (isfinite(x) && x == floor(x)) {
+  if (x == (int64_t)x) {
     buf << (int64_t)x << ".0";
   } else {
     buf << std::scientific << std::setprecision(14) << x;
