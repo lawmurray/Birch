@@ -28,11 +28,14 @@ function resample_multinomial(w:Real[_]) -> Integer[_] {
  * Exponentiate and sum a vector, return the logarithm of the sum.
  */
 function log_sum_exp(x:Real[_]) -> Real {
-  assert length(x) > 0;
-  let mx <- max(x);
-  let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
-      \(x:Real) -> { return nan_exp(x - mx); });
-  return mx + log(r);
+  if length(x) > 0 {
+    let mx <- max(x);
+    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+        \(x:Real) -> { return nan_exp(x - mx); });
+    return mx + log(r);
+  } else {
+    return -inf;
+  }
 }
 
 /**
@@ -60,12 +63,15 @@ function nan_exp(x:Real) -> Real {
  * one.
  */
 function norm_exp(x:Real[_]) -> Real[_] {
-  assert length(x) > 0;
-  let mx <- max(x);
-  let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
-      \(x:Real) -> { return nan_exp(x - mx); });
-  let W <- mx + log(r);
-  return transform(x, \(x:Real) -> { return nan_exp(x - W); });
+  if length(x) == 0 {
+    return x;
+  } else {
+    let mx <- max(x);
+    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+        \(x:Real) -> { return nan_exp(x - mx); });
+    let W <- mx + log(r);
+    return transform(x, \(x:Real) -> { return nan_exp(x - W); });
+  }
 }
 
 /**
@@ -73,13 +79,17 @@ function norm_exp(x:Real[_]) -> Real[_] {
  */
 function cumulative_ancestor(W:Real[_]) -> Integer {
   let N <- length(W);
-  assert W[N] > 0.0;
-  let u <- simulate_uniform(0.0, W[N]);
-  let n <- 1;
-  while W[n] < u {
-    n <- n + 1;
+  if N > 0 {
+    assert W[N] > 0.0;
+    let u <- simulate_uniform(0.0, W[N]);
+    let n <- 1;
+    while W[n] < u {
+      n <- n + 1;
+    }
+    return n;
+  } else {
+    return 0;
   }
-  return n;
 }
 
 /**
