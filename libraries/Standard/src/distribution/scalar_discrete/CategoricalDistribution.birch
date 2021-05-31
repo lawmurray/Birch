@@ -146,7 +146,7 @@ function cdf_categorical(x:Integer, ρ:Real[_], Z:Real) -> Real {
  * Quantile of a categorical variate.
  *
  * - P: The cumulative probability.
- * - ρ: Unnormalized category probabilities.
+ * - ρ: Normalized category probabilities.
  *
  * Return: the quantile.
  */
