@@ -24,6 +24,7 @@ class Inplace {
   friend class Bridger;
   friend class Copier;
   friend class BiconnectedCopier;
+  friend class Destroyer;
 public:
   using value_type = T;
 

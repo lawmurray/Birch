@@ -160,6 +160,11 @@
   void accept_(libbirch::BiconnectedCopier& visitor_) override { \
     base_type_::accept_(visitor_); \
     visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::Destroyer& visitor_) override { \
+    base_type_::accept_(visitor_); \
+    visitor_.visit(__VA_ARGS__); \
   }
 
 /**
@@ -201,6 +206,10 @@
   } \
   \
   void accept_(libbirch::BiconnectedCopier& visitor_) override { \
+    return base_type_::accept_(visitor_); \
+  } \
+  \
+  void accept_(libbirch::Destroyer& visitor_) override { \
     return base_type_::accept_(visitor_); \
   }
 
@@ -260,6 +269,10 @@
   \
   void accept_(libbirch::BiconnectedCopier& visitor_) { \
     visitor_.visit(__VA_ARGS__); \
+  } \
+  \
+  void accept_(libbirch::Destroyer& visitor_) { \
+    visitor_.visit(__VA_ARGS__); \
   }
 
 /**
@@ -283,7 +296,8 @@
   } \
   \
   void accept_(libbirch::Copier& visitor_) {} \
-  void accept_(libbirch::BiconnectedCopier& visitor_) {}
+  void accept_(libbirch::BiconnectedCopier& visitor_) {} \
+  void accept_(libbirch::Destroyer& visitor_) {}
 
 #include "libbirch/Marker.hpp"
 #include "libbirch/Scanner.hpp"
@@ -294,3 +308,4 @@
 #include "libbirch/Bridger.hpp"
 #include "libbirch/Copier.hpp"
 #include "libbirch/BiconnectedCopier.hpp"
+#include "libbirch/Destroyer.hpp"

@@ -35,6 +35,7 @@ nobase_include_HEADERS = \
   libbirch/Bridger.hpp \
   libbirch/Collector.hpp \
   libbirch/Copier.hpp \
+  libbirch/Destroyer.hpp \
   libbirch/docs.hpp \
   libbirch/Dimension.hpp \
   libbirch/Eigen.hpp \

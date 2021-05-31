@@ -2,6 +2,7 @@
  * @file
  */
 #include "libbirch/Any.hpp"
+#include "libbirch/Destroyer.hpp"
 
 libbirch::Any::Any() :
     r_(0),
@@ -21,6 +22,11 @@ libbirch::Any::Any(const Any& o) :
     p_(-1),
     f_(o.f_.load() & ACYCLIC) {
   //
+}
+
+void libbirch::Any::destroy_() {
+  Destroyer v;
+  this->accept_(v);
 }
 
 void libbirch::Any::decShared_() {
@@ -58,7 +64,7 @@ void libbirch::Any::decSharedBiconnected_() {
   assert(numShared_() > 0);
 
   auto r = --r_;
-  auto old = f_.load();
+  auto old = f_.exchangeOr(BUFFERED|POSSIBLE_ROOT);
 
   if (r == 0) {
     destroy_();

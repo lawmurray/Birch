@@ -21,4 +21,5 @@ class Copier;
 class Memo;
 class BiconnectedCopier;
 class BiconnectedMemo;
+class Destroyer;
 }

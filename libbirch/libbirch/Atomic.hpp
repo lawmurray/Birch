@@ -37,7 +37,7 @@ template<class T>
 class Atomic {
 public:
   /**
-   * Default constructor. Initializes the value, not necessarily atomically.
+   * Default constructor.
    */
   Atomic() = default;
 
@@ -62,7 +62,7 @@ public:
     value = this->value;
     return value;
     #else
-    return this->value.load(std::memory_order_seq_cst);
+    return this->value.load(std::memory_order_relaxed);
     #endif
   }
 
@@ -74,7 +74,7 @@ public:
     #pragma omp atomic write
     this->value = value;
     #else
-    this->value.store(value, std::memory_order_seq_cst);
+    this->value.store(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -95,7 +95,7 @@ public:
     }
     return old;
     #else
-    return this->value.exchange(value, std::memory_order_seq_cst);
+    return this->value.exchange(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -117,7 +117,7 @@ public:
     }
     return old;
     #else
-    return this->value.fetch_and(value, std::memory_order_seq_cst);
+    return this->value.fetch_and(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -139,7 +139,7 @@ public:
     }
     return old;
     #else
-    return this->value.fetch_or(value, std::memory_order_seq_cst);
+    return this->value.fetch_or(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -153,7 +153,7 @@ public:
     #pragma omp atomic update
     this->value &= value;
     #else
-    this->value.fetch_and(value, std::memory_order_seq_cst);
+    this->value.fetch_and(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -167,7 +167,7 @@ public:
     #pragma omp atomic update
     this->value |= value;
     #else
-    this->value.fetch_or(value, std::memory_order_seq_cst);
+    this->value.fetch_or(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -180,7 +180,7 @@ public:
     #pragma omp atomic update
     ++value;
     #else
-    value.fetch_add(1, std::memory_order_seq_cst);
+    value.fetch_add(1, std::memory_order_relaxed);
     #endif
   }
 
@@ -193,7 +193,7 @@ public:
     #pragma omp atomic update
     --value;
     #else
-    value.fetch_sub(1, std::memory_order_seq_cst);
+    value.fetch_sub(1, std::memory_order_relaxed);
     #endif
   }
 
@@ -206,7 +206,7 @@ public:
     #pragma omp atomic update
     this->value += value;
     #else
-    this->value.fetch_add(value, std::memory_order_seq_cst);
+    this->value.fetch_add(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -220,7 +220,7 @@ public:
     #pragma omp atomic update
     this->value -= value;
     #else
-    this->value.fetch_sub(value, std::memory_order_seq_cst);
+    this->value.fetch_sub(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -235,7 +235,7 @@ public:
     }
     return result;
     #else
-    return this->value.fetch_add(value, std::memory_order_seq_cst) + value;
+    return this->value.fetch_add(value, std::memory_order_relaxed) + value;
     #endif
   }
 
@@ -250,7 +250,7 @@ public:
     }
     return result;
     #else
-    return this->value.fetch_sub(value, std::memory_order_seq_cst) - value;
+    return this->value.fetch_sub(value, std::memory_order_relaxed) - value;
     #endif
   }
 
@@ -264,7 +264,7 @@ public:
     }
     return result;
     #else
-    return this->value.fetch_add(1, std::memory_order_seq_cst) + 1;
+    return this->value.fetch_add(1, std::memory_order_relaxed) + 1;
     #endif
   }
 
@@ -278,7 +278,7 @@ public:
     }
     return result;
     #else
-    return this->value.fetch_add(1, std::memory_order_seq_cst);
+    return this->value.fetch_add(1, std::memory_order_relaxed);
     #endif
   }
 
@@ -292,7 +292,7 @@ public:
     }
     return result;
     #else
-    return this->value.fetch_sub(1, std::memory_order_seq_cst) - 1;
+    return this->value.fetch_sub(1, std::memory_order_relaxed) - 1;
     #endif
   }
 
@@ -306,7 +306,7 @@ public:
     }
     return result;
     #else
-    return this->value.fetch_sub(1, std::memory_order_seq_cst);
+    return this->value.fetch_sub(1, std::memory_order_relaxed);
     #endif
   }
 

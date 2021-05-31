@@ -68,6 +68,7 @@ class Any {
   friend class Memo;
   friend class BiconnectedCopier;
   friend class BiconnectedMemo;
+  friend class Destroyer;
 public:
   using this_type_ = Any;
 
@@ -85,16 +86,6 @@ public:
    * Destructor.
    */
   virtual ~Any();
-
-  /**
-   * New operator.
-   */
-  void* operator new(std::size_t size);
-
-  /**
-   * Delete operator.
-   */
-  void operator delete(void* ptr);
 
   /**
    * Assignment operator.
@@ -234,6 +225,10 @@ public:
     //
   }
 
+  virtual void accept_(Destroyer& visitor) {
+    //
+  }
+
 private:
   /**
    * Reference count.
@@ -288,28 +283,12 @@ inline libbirch::Any::~Any() {
   assert(r_.load() == 0);
 }
 
-inline void* libbirch::Any::operator new(std::size_t size) {
-  /* object destruction and deallocation are separated; an explicit call to
-    * the destructor is used to destroy, and std::free() used to deallocate,
-    * so std::malloc() should be used to allocate; using the default operator
-    * new can result in a double free, as reported by valgrind */
-  return std::malloc(size);
-}
-
-inline void libbirch::Any::operator delete(void* ptr) {
-  std::free(ptr);
-}
-
 inline libbirch::Any& libbirch::Any::operator=(const Any&) {
   return *this;
 }
 
-inline void libbirch::Any::destroy_() {
-  this->~Any();
-}
-
 inline void libbirch::Any::deallocate_() {
-  std::free(this);
+  delete this;
 }
 
 inline int libbirch::Any::numShared_() const {
