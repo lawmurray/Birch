@@ -325,14 +325,6 @@ inline void libbirch::Any::decSharedReachable_() {
   r_.decrement();
 }
 
-inline void libbirch::Any::decSharedBiconnected_() {
-  assert(numShared_() > 0);
-  if (--r_ == 0) {
-    destroy_();
-    deallocate_();
-  }
-}
-
 inline bool libbirch::Any::isUnique_() const {
   return numShared_() == 1;
 }

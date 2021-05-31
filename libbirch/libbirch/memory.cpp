@@ -28,6 +28,7 @@ static thread_local std::vector<libbirch::Any*> unreachables;
 static thread_local bool biconnected_flag = false;
 
 void libbirch::register_possible_root(Any* o) {
+  assert(!contains_possible_root(o));
   possible_roots.push_back(o);
 }
 

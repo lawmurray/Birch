@@ -53,3 +53,24 @@ void libbirch::Any::decShared_() {
     register_possible_root(this);
   }
 }
+
+void libbirch::Any::decSharedBiconnected_() {
+  assert(numShared_() > 0);
+
+  auto r = --r_;
+  auto old = f_.load();
+
+  if (r == 0) {
+    destroy_();
+    if (old & BUFFERED && !(old & ACYCLIC)) {
+      /* this is currently registered as a possible root, attempt to
+       * simultaneously deregister and deallocate it */
+      deregister_possible_root(this);
+    } else {
+      /* otherwise, this is not currently registered as a possible root, and
+       * can be deallocated immediately */
+      assert(!contains_possible_root(this));
+      deallocate_();
+    }
+  }
+}
