@@ -50,7 +50,6 @@ void libbirch::Any::decShared_() {
     } else {
       /* otherwise, this is not currently registered as a possible root, and
        * can be deallocated immediately */
-      assert(!contains_possible_root(this));
       deallocate_();
     }
   } else if (!(old & BUFFERED) && !(old & ACYCLIC) && !(old & HEAD)) {
@@ -75,7 +74,6 @@ void libbirch::Any::decSharedBiconnected_() {
     } else {
       /* otherwise, this is not currently registered as a possible root, and
        * can be deallocated immediately */
-      assert(!contains_possible_root(this));
       deallocate_();
     }
   }
