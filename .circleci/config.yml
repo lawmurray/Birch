@@ -67,12 +67,14 @@ executors:
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
+      OPENMP_FLAGS: "--disable-openmp -Xpreprocessor -fopenmp"
+      # ^ matches arguments used by birch driver program, see internal docs
       SMOKE: test
       TEST: release
       HOMEBREW: 1
       CODECOV: 1  # upload coverage results to Codecov
     working_directory: /Users/distiller/project/mac
-    # ^ hard-coding different home directory for Mac here, discovered with SSH
+    # ^ hard-coding different home directory for Mac, discovered with SSH
 
 commands:
 
@@ -165,7 +167,7 @@ commands:
               cd << parameters.package >>
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $MODE_FLAGS $OPENMP_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
 
