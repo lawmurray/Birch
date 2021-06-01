@@ -75,25 +75,41 @@ stable. Clone it:
 
     git clone https://github.com/lawmurray/Birch.git
 
-Install the driver by running, from within the `driver/` directory:
+and change to the `Birch` directory:
 
-    ./bootstrap
-    ./configure
-    make
-    sudo make install
+    cd Birch
 
-Install LibBirch by running, from within the `libbirch/` directory:
+Then proceed as follows. Note special instructions for Mac in step 2. In
+addition, on Mac, you can typically omit `sudo` from these commands.
 
-    ./bootstrap
-    ./configure --enable-debug --enable-release
-    make
-    sudo make install
+1. Install the driver by running, from within the `driver/` directory:
 
-Install the standard library by running, from within the `libraries/Standard/`
-directory:
+       ./bootstrap
+       ./configure
+       make
+       sudo make install
 
-    birch build --enable-debug --enable-release
-    sudo birch install
+2. Install LibBirch by running, from within the `libbirch/` directory:
+
+       ./bootstrap
+       ./configure --enable-debug --enable-release
+       make
+       sudo make install
+
+   On Mac, use the following `configure` line instead:
+
+       ./configure --enable-debug --enable-release --disable-openmp CPPFLAGS="-Xpreprocessor -fopenmp"
+
+   Despite the apparently conflicting options, this will *enable*
+   multithreading with OpenMP (specifically, it disables the standard check in
+   the `configure` script, which fails on Mac, but then adds the required
+   flags).
+
+3. Install the standard library by running, from within the
+   `libraries/Standard/` directory:
+
+       birch build --enable-debug --enable-release
+       sudo birch install
 
 This constitutes a basic install with both *debug* (unoptimized, with
 debugging information) and *release* (optimized, without debugging
