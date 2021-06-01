@@ -445,7 +445,7 @@ jobs:
       - end_if_pull_request
       - slack
 
-  build_example:
+  example:
     parameters: 
       os:
         type: string
@@ -460,30 +460,11 @@ jobs:
       - build_package:
           dir: examples
           package: << parameters.package >>
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>/examples/<< parameters.package >>
-      - end_if_pull_request
-      - codecov
-      - slack
-
-  test_example:
-    parameters: 
-      os:
-        type: string
-      package:
-        description: Name of package (e.g. LinearRegression)
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment
       - test_package:
           dir: examples
           package: << parameters.package >>
       - end_if_pull_request
+      - codecov
       - slack
 
   deploy:
@@ -541,13 +522,9 @@ workflows:
             parameters:
               os: [opensuse,mac]
           requires:
-            - build-opensuse
-            - build-mac
-            - build-debian
-            - build-fedora
-            - build-alpine
+            - build
 
-      - build_example:
+      - example:
           matrix:
             parameters:
               os: [opensuse,mac]
@@ -555,18 +532,10 @@ workflows:
           requires:
             - test-<< matrix.os >>
 
-      - test_example:
-          matrix:
-            parameters:
-              os: [opensuse,mac]
-              package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
-          requires:
-            - build_example-<< matrix.os >>-<< matrix.package >>
-
       - deploy:
           filters:
             branches:
               only:
                 - master
           requires:
-            - test_example
+            - example
