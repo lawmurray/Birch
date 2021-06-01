@@ -416,10 +416,16 @@ jobs:
       - build_package:
           dir: libraries
           package: SQLite
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
+      - when:
+          condition:
+            or:
+              - equal: [ opensuse, << parameters.os >> ]
+              - equal: [ mac, << parameters.os >> ]
+          steps:
+            - persist_to_workspace:
+                root: ..
+                paths:
+                  - << parameters.os >>
       - end_if_pull_request
       - codecov
       - slack
