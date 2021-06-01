@@ -67,7 +67,8 @@ executors:
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
-      OPENMP_FLAGS: "--disable-openmp -Xpreprocessor -fopenmp"
+      LIB_FLAGS: "--disable-openmp"
+      CPPFLAGS: "-Xpreprocessor -fopenmp"
       # ^ matches arguments used by birch driver program, see internal docs
       SMOKE: test
       TEST: release
@@ -167,7 +168,7 @@ commands:
               cd << parameters.package >>
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS $OPENMP_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $MODE_FLAGS $LIB_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
 
