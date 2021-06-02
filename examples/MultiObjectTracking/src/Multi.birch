@@ -108,7 +108,7 @@ final class Multi < Model {
   }
 
   override function read(t:Integer, buffer:Buffer) {
-    buffer.get(y);
+    y <-? buffer.get<Array<Real[_]>>();
   }
 
   override function read(buffer:Buffer) {
