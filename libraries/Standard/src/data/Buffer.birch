@@ -57,8 +57,10 @@ final class Buffer {
   hpp{{
   /**
    * Map for fast lookup of keys, in lieu of proper dictionary implementation.
+   * Maps string to indices into the values array, rather than directly to the
+   * Buffer elements, as otherwise LibBirch visitors will miss these pointers.
    */
-  std::unordered_map<String,Buffer> map;
+  std::unordered_map<String,int> map;
   }}
 
   /**
@@ -308,20 +310,12 @@ final class Buffer {
    * Return: An optional with a value if the entry exists, otherwise no value.
    */
   function get(key:String) -> Buffer? {
-    if keys? {
-      cpp{{
-      auto iter = map.find(key);
-      if (iter != map.end()) {
-        return iter->second;
-      }
-      }}
-      // let len <- length(keys!);
-      // for i in 1..len {
-      //   if keys![i] == key {
-      //     return values![i];
-      //   }
-      // }
+    cpp{{
+    auto iter = map.find(key);
+    if (iter != map.end()) {
+      return values.value()(iter->second);
     }
+    }}
     return nil;
   }
 
@@ -342,7 +336,7 @@ final class Buffer {
     let len <- length(keys);
     for i in 1..len {
       cpp{{
-      map.insert(std::make_pair(keys(i), values(i)));
+      map.insert(std::make_pair(keys(i), i));
       }}
     }
   }
@@ -426,7 +420,7 @@ final class Buffer {
       values <- stack(values!, x);
     }
     cpp{{
-    map.insert(std::make_pair(key, x));
+    map.insert(std::make_pair(key, length(values.value())));
     }}
   }
 
