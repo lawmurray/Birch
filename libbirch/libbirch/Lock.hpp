@@ -36,14 +36,14 @@ public:
    */
   void set() {
     /* spin, setting the lock true until its old value comes back false */
-    while (lock.exchange(true));
+    while (lock.exchangeLock(true));
   }
 
   /**
    * Release exclusive use.
    */
   void unset() {
-    lock.store(false);
+    lock.storeLock(false);
   }
 
 private:
