@@ -1,7 +1,7 @@
 /**
  * Global parameters.
  */
-final class Global {
+struct Global {
   /**
    * Lower bound of domain of interest.
    */
@@ -57,7 +57,7 @@ final class Global {
    */
   τ:Real;
   
-  override function read(buffer:Buffer) {
+  function read(buffer:Buffer) {
     l <-? buffer.get<Real>("l");
     u <-? buffer.get<Real>("u");
     d <-? buffer.get<Real>("d");
@@ -71,7 +71,7 @@ final class Global {
     τ <-? buffer.get<Real>("τ");
   }
   
-  override function write(buffer:Buffer) {
+  function write(buffer:Buffer) {
     buffer.set("l", l);
     buffer.set("u", u);
     buffer.set("d", d);
