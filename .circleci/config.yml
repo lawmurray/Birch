@@ -66,14 +66,13 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --enable-release"
+      MODE_FLAGS: "--enable-debug --disable-test --enable-release"
       LIB_FLAGS: "--disable-openmp"
       CPPFLAGS: "-Xpreprocessor -fopenmp"
       # ^ matches arguments used by birch driver program, see internal docs
-      SMOKE: test
+      SMOKE: debug
       TEST: release
       HOMEBREW: 1
-      CODECOV: 1  # upload coverage results to Codecov
     working_directory: /Users/distiller/project/mac
     # ^ hard-coding different home directory for Mac, discovered with SSH
 
