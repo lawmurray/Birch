@@ -68,11 +68,8 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --enable-release"
       LIB_FLAGS: "--disable-openmp"
-      CPPFLAGS: "-Xpreprocessor -fopenmp"
-      # ^ matches arguments used by birch driver program, see internal docs
       SMOKE: debug
       TEST: release
-      HOMEBREW: 1
     working_directory: /Users/distiller/project/mac
     # ^ hard-coding different home directory for Mac, discovered with SSH
 
@@ -80,16 +77,31 @@ commands:
 
   environment:
     description: Preparing environment
+    parameters: 
+      os:
+        type: string
     steps:
+      - when:
+          condition:
+            equal: [ mac, << parameters.os >> ]
+          steps:
+            - restore_cache:
+                key: homebrew
+            - run:
+                name: Homebrew
+                command: |
+                    brew --cache
+                    HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
+                    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
+                    echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
+                    echo "export CPPFLAGS=\"-Xpreprocessor -fopenmp\"" >> $BASH_ENV
+            - save_cache:
+                key: homebrew
+                paths:
+                  - /Users/distiller/Library/Caches/Homebrew
       - run:
-          name: Environment
+          name: Environment variables
           command: |
-              if [[ -n "$HOMEBREW" ]]
-              then
-                HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
-                HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
-                echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-              fi
               echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
@@ -402,7 +414,8 @@ jobs:
     executor: << parameters.os >>
     steps:
       - checkout
-      - environment
+      - environment:
+          os: << parameters.os >>
       - driver
       - build_library:
           package: libbirch
@@ -437,7 +450,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ..
-      - environment
+      - environment:
+          os: << parameters.os >>
       - test_package:
           dir: libraries
           package: Standard
@@ -455,7 +469,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ..
-      - environment
+      - environment:
+          os: << parameters.os >>
       - build_package:
           dir: examples
           package: << parameters.package >>
@@ -467,12 +482,16 @@ jobs:
       - slack
 
   deploy:
-    executor: opensuse
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
     steps:
       - end_if_pull_request
       - attach_workspace:
           at: ..
-      - environment
+      - environment:
+          os: << parameters.os >>
       - git_identity
       - osc_identity
       - deploy_obs_package:
@@ -532,6 +551,7 @@ workflows:
             - test-<< matrix.os >>
 
       - deploy:
+          os: opensuse
           filters:
             branches:
               only:
