@@ -82,9 +82,9 @@ void libbirch::Scanner::visit(Inplace<T>& o) {
 
 template<class T>
 void libbirch::Scanner::visit(Shared<T>& o) {
-  if (!o.b) {
+  if (!o.a && !o.b) {
     Any* o1 = o.load();
-    if (o1 && !o1->isAcyclic_()) {
+    if (o1) {
       visit(o1);
     }
   }

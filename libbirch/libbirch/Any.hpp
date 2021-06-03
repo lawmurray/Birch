@@ -11,19 +11,16 @@
 
 namespace libbirch {
 /**
- * Flags used for cycle collection as in @ref Bacon2001
- * "Bacon & Rajan (2001)", replacing the colors described there. The reason
- * is to ensure that both the bookkeeping required during normal execution
- * can be multithreaded, and likewise that the operations required during
- * cycle collection can be multithreaded. The basic principle to ensure this
- * is that flags can be safely set during normal execution (with atomic
- * operations), but should only be unset with careful consideration of
- * thread safety.
+ * Flags used for bridge finding and cycle collection. For cycle collection,
+ * they mostly correspond to the colors in @ref Bacon2001 "Bacon & Rajan
+ * (2001)" but behave slightly differently to permit multithreading. The basic
+ * principle to ensure this is that flags can be safely set during normal
+ * execution (with atomic operations), but should only be unset with careful
+ * consideration of thread safety.
  *
- * Notwithstanding, the flags do map to colors in @ref Bacon2001
- * "Bacon & Rajan (2001)":
+ * The flags map to colors in @ref Bacon2001 "Bacon & Rajan (2001)" as
+ * follows:
  *
- *   - *acyclic* maps to *green*,
  *   - *buffered* maps to *purple*,
  *   - *marked* maps to *gray*,
  *   - *scanned* and *reached* together map to *black* (both on) or
@@ -34,17 +31,17 @@ namespace libbirch {
  * otherwise exist during the scan operation, when coloring an object white
  * (eligible for collection) then later recoloring it black (reachable); the
  * sequencing of this coloring can become problematic with multiple threads.
+ * 
+ * Acyclic objects are handled via separate mechanism, but map to *green*.
  */
-enum Flag : int16_t {
-  ACYCLIC = (1 << 0),
-  BUFFERED = (1 << 1),
+enum Flag : int8_t {
+  BUFFERED = (1 << 0),
+  POSSIBLE_ROOT = (1 << 1),
   MARKED = (1 << 2),
   SCANNED = (1 << 3),
   REACHED = (1 << 4),
   COLLECTED = (1 << 5),
-  POSSIBLE_ROOT = (1 << 6),
-  CLAIMED = (1 << 7),
-  HEAD = (1 << 8)
+  CLAIMED = (1 << 6)
 };
 
 /**
@@ -119,61 +116,49 @@ public:
 
   /**
    * Decrement the shared count for an object that will remain reachable. The
-   * caller asserts that the object will remain reachable after the operation.
-   * The object will not be destroyed, and will not be registered as a
-   * possible root for cycle collection.
+   * object will not be destroyed, and will not be registered as a possible
+   * root for cycle collection.
    */
   void decSharedReachable_();
 
   /**
-   * Decrement the shared count during collection of a biconnected component,
-   * where the caller is responsible for destruction and deallocation, if
-   * necessary.
+   * Decrement the shared count during collection of a biconnected component.
    */
   void decSharedBiconnected_();
 
   /**
-   * Is there only one pointer (of any type) to this object?
+   * Decrement the shared count for a bridge edge.
+   */
+  void decSharedBridge_();
+
+  /**
+   * Decrement the shared count for an acyclic edge.
+   */
+  void decSharedAcyclic_();
+
+  /**
+   * Is there only one reference to this object?
    */
   bool isUnique_() const;
 
   /**
-   * Is there only one pointer (of any type) to this biconnected component?
+   * Is there only one external reference to this object, assuming that it is
+   * the head node of a biconnected component?
    */
   bool isUniqueHead_() const;
 
   /**
    * Is this object of an acyclic class?
    */
-  bool isAcyclic_() const;
+  virtual bool isAcyclic_() const;
 
   /**
    * Is this object the possible root of a cycle?
    */
   bool isPossibleRoot_() const;
-
-  /**
-   * Is the head flag set?
-   */
-  bool isHead_() const;
-
-  /**
-   * Set the acyclic flag.
-   */
-  void acyclic_();
-
-  /**
-   * Set the head flag.
-   */
-  void head_();
-
-  /**
-   * Unset the head flag.
-   */
-  void unhead_();
   
   /**
-   * Unset buffer flag.
+   * Unset buffered flag.
    */
   void unbuffer_();
 
@@ -236,10 +221,9 @@ private:
   Atomic<int> r_;
 
   /**
-   * Account of references, used for bridge finding and cycle collection. For
-   * the head of a biconnected component (i.e. HEAD flag is set), this is the
-   * number of internal references to the object in its biconnected component,
-   * plus one for the original bridge edge.
+   * Account of references, used for bridge finding. For the head of a
+   * biconnected component (i.e. HEAD flag is set), this is the number of
+   * internal references to the object, plus one for the bridge edge.
    */
   int a_;
 
@@ -275,7 +259,7 @@ private:
   /**
    * Bitfield containing flags, used for bridge finding and cycle collection.
    */
-  Atomic<int16_t> f_;
+  Atomic<int8_t> f_;
 };
 }
 
@@ -309,33 +293,15 @@ inline bool libbirch::Any::isUnique_() const {
 }
 
 inline bool libbirch::Any::isUniqueHead_() const {
-  assert(isHead_());
   return numShared_() == a_;
 }
 
 inline bool libbirch::Any::isAcyclic_() const {
-  return f_.load() & ACYCLIC;
+  return false;
 }
 
 inline bool libbirch::Any::isPossibleRoot_() const {
   return f_.load() & POSSIBLE_ROOT;
-}
-
-inline bool libbirch::Any::isHead_() const {
-  return f_.load() & HEAD;
-}
-
-inline void libbirch::Any::acyclic_() {
-  f_.maskOr(ACYCLIC);
-}
-
-inline void libbirch::Any::head_() {
-  assert(r_.load() == a_);
-  f_.maskOr(HEAD);
-}
-
-inline void libbirch::Any::unhead_() {
-  f_.maskAnd(~HEAD);
 }
 
 inline void libbirch::Any::unbuffer_() {

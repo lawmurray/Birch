@@ -80,12 +80,11 @@ void libbirch::BiconnectedCollector::visit(Inplace<T>& o) {
 
 template<class T>
 void libbirch::BiconnectedCollector::visit(Shared<T>& o) {
-  if (!o.b) {
+  if (!o.a && !o.b) {
     Any* o1 = o.load();
-    if (o1 && !o1->isAcyclic_()) {
-      o.store(nullptr);
+    if (o1) {
       visit(o1);
-      o1->decSharedBiconnected_();
+      o.releaseBiconnected();
     }
   }
 }

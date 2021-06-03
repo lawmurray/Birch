@@ -75,6 +75,7 @@ public:
    */
   Shared(T* ptr, const bool b = false) :
       ptr(pack(ptr)),
+      a(ptr->isAcyclic_()),
       b(b) {
     if (ptr) {
       ptr->incShared_();
@@ -84,7 +85,7 @@ public:
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) : ptr(o.ptr), b(o.b) {
+  Shared(const Shared& o) : ptr(o.ptr), a(o.a), b(o.b) {
     if (ptr) {
       if (biconnected_copy()) {
         if (b) {
@@ -95,6 +96,7 @@ public:
       } else {
         if (b) {
           store(o.get());  // copy next biconnected component
+          b = false;
         }
         unpack(ptr)->incShared_();
       }
@@ -106,15 +108,20 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) :
-      Shared(o.get(), false) {
-    //
+      ptr(pack(o.get())),
+      a(o.a),
+      b(false) {
+    if (ptr) {
+      unpack(ptr)->incShared_();
+    }
   }
 
   /**
    * Move constructor.
    */
-  Shared(Shared&& o) : ptr(o.ptr), b(o.b) {
-    o.ptr = pack(nullptr);
+  Shared(Shared&& o) : ptr(o.ptr), a(o.a), b(o.b) {
+    o.store(nullptr);
+    o.a = false;
     o.b = false;
   }
 
@@ -122,8 +129,9 @@ public:
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) : ptr(o.ptr), b(o.b) {
-    o.ptr = pack(nullptr);
+  Shared(Shared<U>&& o) : ptr(o.ptr), a(o.a), b(o.b) {
+    o.store(nullptr);
+    o.a = false;
     o.b = false;
   }
 
@@ -138,7 +146,7 @@ public:
    * Copy assignment.
    */
   Shared& operator=(const Shared& o) {
-    replace(o.get());
+    replace(o);
     return *this;
   }
 
@@ -147,7 +155,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(const Shared<U>& o) {
-    replace(o.get());
+    replace(o);
     return *this;
   }
 
@@ -155,7 +163,7 @@ public:
    * Move assignment.
    */
   Shared& operator=(Shared&& o) {
-    exchange(std::move(o));
+    replace(std::move(o));
     return *this;
   }
 
@@ -164,7 +172,7 @@ public:
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared& operator=(Shared<U>&& o) {
-    exchange(std::move(o));
+    replace(std::move(o));
     return *this;
   }
 
@@ -193,7 +201,7 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return unpack(ptr) != nullptr;
+    return ptr != 0;
   }
 
   /**
@@ -244,50 +252,110 @@ public:
   }
 
   /**
-   * Exchange with another.
+   * Replace.
    */
   template<class U>
-  void exchange(Shared<U>&& o) {
-    auto old = ptr;
-    ptr = o.ptr;
-    b = o.b;
-    o.store(nullptr);
-    if (old) {
-      if (ptr == old) {
-        unpack(old)->decSharedReachable_();
-      } else {
-        unpack(old)->decShared_();
-      }
-    }
-  }
+  void replace(const Shared<U>& o) {
+    auto ptr = unpack(this->ptr);
+    auto a = this->a;
+    auto b = this->b;
 
-  /**
-   * Replace. Sets the raw pointer to a new value and returns the previous
-   * value.
-   */
-  void replace(T* ptr) {
+    /* when duplicating a pointer, may need to trigger a biconnected copy */
+    auto ptr1 = o.get();
+    if (ptr1) {
+      ptr1->incShared_();
+    }
+
+    this->ptr = pack(ptr1);
+    this->a = o.a;
+    this->b = false;  // if it was a bridge, now copied
+
     if (ptr) {
-      ptr->incShared_();
-    }
-    auto old = unpack(this->ptr);
-    store(ptr);
-    if (old) {
-      if (ptr == old) {
-        old->decSharedReachable_();
+      if (ptr == ptr1) {
+        ptr->decSharedReachable_();
+      } else if (a) {
+        ptr->decSharedAcyclic_();
+      } else if (b) {
+        ptr->decSharedBridge_();
       } else {
-        old->decShared_();
+        ptr->decShared_();
       }
     }
   }
 
   /**
-   * Release. Sets the raw pointer to null and returns the previous value.
+   * Replace.
+   */
+  template<class U>
+  void replace(Shared<U>&& o) {
+    auto ptr = unpack(this->ptr);
+    auto a = this->a;
+    auto b = this->b;
+
+    this->ptr = o.ptr;
+    this->a = o.a;
+    this->b = o.b;
+
+    if (ptr) {
+      if (ptr == unpack(this->ptr)) {
+        ptr->decSharedReachable_();
+      } else if (a) {
+        ptr->decSharedAcyclic_();
+      } else if (b) {
+        ptr->decSharedBridge_();
+      } else {
+        ptr->decShared_();
+      }
+    }
+
+    o.ptr = 0;
+    o.a = false;
+    o.b = false;
+  }
+
+  /**
+   * Release the referent.
    */
   void release() {
-    auto old = ptr;
-    store(nullptr);
-    if (old) {
-      unpack(old)->decShared_();
+    auto ptr = unpack(this->ptr);
+    auto a = this->a;
+    auto b = this->b;
+
+    this->ptr = 0;
+    this->a = false;
+    this->b = false;
+
+    if (ptr) {
+      if (a) {
+        ptr->decSharedAcyclic_();
+      } else if (b) {
+        ptr->decSharedBridge_();
+      } else {
+        ptr->decShared_();
+      }
+    }
+  }
+
+  /**
+   * Release the referent, during collection of a biconnected component.
+   */
+  void releaseBiconnected() {
+    auto ptr = unpack(this->ptr);
+    auto a = this->a;
+    auto b = this->b;
+
+    this->ptr = 0;
+    this->a = false;
+    this->b = false;
+
+    if (ptr) {
+      if (a) {
+        ptr->decSharedAcyclic_();
+      } else if (b) {
+        ptr->decSharedBridge_();
+      } else {
+        ptr->decSharedBiconnected_();
+      }
     }
   }
 
@@ -341,7 +409,6 @@ private:
    */
   void store(T* ptr) {
     this->ptr = pack(ptr);
-    this->b = false;
   }
 
   /**
@@ -361,10 +428,15 @@ private:
   /**
    * Raw pointer.
    */
-  int64_t ptr:(8*sizeof(int64_t) - 1);
+  int64_t ptr:(8*sizeof(int64_t) - 2);
 
   /**
-   * Is this a bridge?
+   * Is this an acyclic edge?
+   */
+  bool a:1;
+
+  /**
+   * Is this a bridge edge?
    */
   bool b:1;
 };
@@ -389,22 +461,22 @@ template<class T>
 T* libbirch::Shared<T>::get() {
   T* o = unpack(ptr);
   if (b) {
-    if (!o->isUniqueHead_()) {
-      // ^ no need to copy for last external reference
-
-      /* the copy is of a biconnected component here, used the optimized
-       * BiconnectedCopier for this */
+    if (!o->isUniqueHead_()) {  // last reference optimization
+      /* copy biconnected component */
       assert(!biconnected_copy());
       biconnected_copy(true);
       assert(biconnected_copy());
       o = static_cast<T*>(BiconnectedCopier(o).visit(static_cast<Any*>(o)));
       biconnected_copy(true);
       assert(!biconnected_copy());
-      replace(o);
-    } else {
-      o->unhead_();
-      b = false;
+
+      /* replace pointer */
+      o->incShared_();
+      auto old = unpack(ptr);
+      ptr = pack(o);
+      old->decSharedBridge_();
     }
+    b = false;  // no longer a bridge
   }
   return o;
 }

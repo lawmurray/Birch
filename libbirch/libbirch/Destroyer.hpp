@@ -76,7 +76,5 @@ void libbirch::Destroyer::visit(Inplace<T>& o) {
 
 template<class T>
 void libbirch::Destroyer::visit(Shared<T>& o) {
-  if (!o.b) {
-    o.release();
-  }
+  o.release();
 }

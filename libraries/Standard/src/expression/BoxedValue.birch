@@ -1,7 +1,7 @@
 /**
  * Boxed value.
  */
-acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {  
+final acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {  
   /**
    * Constant value.
    */

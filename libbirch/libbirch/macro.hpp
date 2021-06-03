@@ -78,6 +78,19 @@
   LIBBIRCH_VIRTUAL(Name, Base)
 
 /**
+ * @def LIBBIRCH_ACYCLIC_CLASS
+ *
+ * Use in place of LIBBIRCH_CLASS when the containing class is acyclic.
+ */
+#define LIBBIRCH_ACYCLIC_CLASS(Name, Base...) \
+  LIBBIRCH_THIS(Name) \
+  LIBBIRCH_BASE(Base) \
+  LIBBIRCH_VIRTUAL(Name, Base) \
+  virtual bool isAcyclic_() const override { \
+    return true; \
+  }
+
+/**
  * @def LIBBIRCH_ABSTRACT_CLASS
  *
  * Use in place of LIBBIRCH_CLASS when the containing class is abstract.

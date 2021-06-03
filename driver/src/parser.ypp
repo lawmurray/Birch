@@ -577,10 +577,11 @@ slice_operator_declaration
     ;
 
 class_annotation
-    : ABSTRACT  { $$ = birch::ABSTRACT; }
-    | FINAL     { $$ = birch::FINAL; }
-    | ACYCLIC   { $$ = birch::ACYCLIC; }
-    |           { $$ = birch::NONE; }
+    : ABSTRACT       { $$ = birch::ABSTRACT; }
+    | FINAL          { $$ = birch::FINAL; }
+    | ACYCLIC        { $$ = birch::ACYCLIC; }
+    | FINAL ACYCLIC  { $$ = birch::Annotation(birch::FINAL|birch::ACYCLIC); }
+    |                { $$ = birch::NONE; }
     ;
 
 class_declaration

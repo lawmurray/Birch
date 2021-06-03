@@ -55,6 +55,8 @@ void birch::CppClassGenerator::visit(const Class* o) {
         start("LIBBIRCH_STRUCT");
       } else if (o->has(ABSTRACT)) {
         start("LIBBIRCH_ABSTRACT_CLASS");
+      } else if (o->has(ACYCLIC)) {
+        start("LIBBIRCH_ACYCLIC_CLASS");
       } else {
         start("LIBBIRCH_CLASS");
       }
@@ -153,11 +155,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
       }
       finish(" {");
       in();
-      if (o->has(ACYCLIC)) {
-        line("this->libbirch::Any::acyclic_();");
-      } else {
-        line("//");
-      }
+      line("//");
       out();
       line("}\n");
     }

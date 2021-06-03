@@ -87,9 +87,8 @@ void libbirch::Copier::visit(Inplace<T>& o) {
 template<class T>
 void libbirch::Copier::visit(Shared<T>& o) {
   if (!o.b) {
-    Any* w = o.load();
-    Any* u = visit(w);
-    T* v = static_cast<T*>(u);
+    Any* u = o.load();
+    T* v = static_cast<T*>(visit(u));
     v->incShared_();
     o.store(v);
   }
