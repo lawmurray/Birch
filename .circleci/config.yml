@@ -91,6 +91,7 @@ commands:
                 name: Homebrew
                 command: |
                     brew --cache
+                    HOMEBREW_NO_AUTO_UPDATE=1 brew remove node tcl-tk  # avoids these being unnecessarily updated as dependents later
                     HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
                     HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
                     echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
