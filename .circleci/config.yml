@@ -558,8 +558,7 @@ workflows:
               only:
                 - master
           requires:
-            - example-opensuse
-            - example-mac
+            - example
             - build-debian
             - build-fedora
             - build-alpine
