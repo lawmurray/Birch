@@ -151,7 +151,11 @@ function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
  */
 function p_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real[_] {
   let log_λ <- log(λ);
-  return norm_exp(vector_lambda(\(x:Integer) -> {
-        return if_then_else(x == 1, 0.0, (x - 1)*log_λ - ν*lgamma(x));
-      }, n + 1));
+  let log_xf <- 0.0;  // accumulator of log(x!)
+  z:Real[n + 1];
+  for x in 1..(n + 1) {
+    z[x] <- (x - 1)*log_λ - ν*log_xf;
+    log_xf <- log_xf + log(x);
+  }
+  return norm_exp(z);
 }

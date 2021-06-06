@@ -17,15 +17,23 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
   u:Arg2 <- u;
 
   override function supportsLazy() -> Boolean {
-    return false;
+    return true;
   }
 
   override function simulate() -> Real {
     return simulate_uniform(value(l), value(u));
   }
-  
+
+  override function simulateLazy() -> Real? {
+    return simulate_uniform(peek(l), peek(u));
+  }
+
   override function logpdf(x:Real) -> Real {
     return logpdf_uniform(x, value(l), value(u));
+  }
+
+  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+    return box(logpdf_uniform(x, l, u));
   }
 
   override function cdf(x:Real) -> Real? {
@@ -80,13 +88,8 @@ function simulate_uniform(l:Real, u:Real) -> Real {
  *
  * Returns: the log probability density.
  */
-function logpdf_uniform(x:Real, l:Real, u:Real) -> Real {
-  assert l <= u;
-  if x >= l && x <= u {
-    return -log(u - l);
-  } else {
-    return -inf;
-  }
+function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
+  return if_then_else(l <= x, if_then_else(x <= u, -log(u - l), -inf), -inf);
 }
 
 /*

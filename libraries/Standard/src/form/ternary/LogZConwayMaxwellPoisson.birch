@@ -5,18 +5,25 @@ struct LogZConwayMaxwellPoissonFunction {
 
   function grad<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
       n:Arg3) -> {
-    let z <- vector_lambda(\(x:Integer) -> {
-          return log(x) + x*log(λ) - ν*lgamma(x + 1);
-        }, n);
-    let dl <- d*exp(log(λ) - log_sum_exp(z));
-
-    let Z <- 0.0;
+    let log_λ <- log(λ);
+    let μ <- pow(λ, 1.0/ν);  // mode
+    let mx <- μ*log_λ - ν*lgamma(μ + 1);  // renormalizer
+    let log_xf <- 0.0;  // accumulator of log(x!)
+    let z <- 0.0;
+    let Z <- exp(-mx);  // for x == 0
+    let dλ <- 0.0;
+    let dν <- 0.0;
     for x in 1..n {
-      Z <- Z + lgamma(x + 1)*exp(x*log(λ) - ν*lgamma(x + 1));
+      log_xf <- log_xf + log(x);
+      z <- exp(x*log_λ - ν*log_xf - mx);
+      Z <- Z + z;
+      dλ <- dλ + x*z;
+      dν <- dν + log_xf*z;
     }
-    let dm <- -d/Z;
+    dλ <- d*dλ/(λ*Z);
+    dν <- -d*dν/Z;
 
-    return (dl, dm, 0.0);
+    return (dλ, dν, 0.0);
   }
 }
 struct LogZConwayMaxwellPoisson<Left,Middle,Right> = Ternary<
@@ -42,8 +49,20 @@ function logz_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -
  */
 function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   let log_λ <- log(λ);
-  let z <- vector_lambda(\(x:Integer) -> {
-        return if_then_else(x == 1, 0.0, (x - 1)*log_λ - ν*lgamma(x));
-      }, n + 1);
-  return log_sum_exp(z);
+
+  /* to avoid taking exp() of large negative values, normalize each term in
+   * this sum using the maximum term, which is the unnormalized log
+   * probability at the mode; this is similar to log_sum_exp() */
+  let μ <- pow(λ, 1.0/ν);  // mode
+  let mx <- μ*log_λ - ν*lgamma(μ + 1);  // max unnormalized log probability
+
+  /* sum renormalized terms */
+  let log_xf <- 0.0;  // accumulator of log(x!)
+  let Z <- exp(-mx);  // for x == 0
+  for x in 1..n {
+    log_xf <- log_xf + log(x);
+    Z <- Z + exp(x*log_λ - ν*log_xf - mx);
+  }
+
+  return mx + log(Z);
 }

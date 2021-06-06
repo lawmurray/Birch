@@ -5,7 +5,7 @@ struct LogBetaFunction {
   
   function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
       r:RightValue) -> {
-    return (d*(digamma(l) + digamma(l + r)), d*(digamma(r) + digamma(l + r)));
+    return (d*(digamma(l) - digamma(l + r)), d*(digamma(r) - digamma(l + r)));
   }
 }
 struct LogBeta<Left,Right> = Binary<LogBetaFunction,Left,Right>;

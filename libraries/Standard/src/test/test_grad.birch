@@ -32,7 +32,9 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
 
     /* compute gradient */
     let x <- handler.args();
+    assert length(x) > 0;
     let d <- handler.grad();
+    assert length(d) == length(x);
 
     /* compare with finite difference estimates */
     for i in 1..rows(x) {

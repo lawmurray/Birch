@@ -10,28 +10,28 @@ struct LessThanFunction {
 struct LessThan<Left,Right> = Linear<LessThanFunction,Left,Right>;
 
 /**
- * Less-than.
+ * Less than.
  */
 operator<Left,Right> (l:Left < r:Right) -> {
   return construct<LessThan<Left,Right>>(l, r);
 }
 
 /**
- * Less-than.
+ * Less than.
  */
 operator (l:Integer < r:Integer) -> Boolean;
 
 /**
- * Less-than.
+ * Less than.
  */
 operator (l:Real < r:Real) -> Boolean;
 
 /**
- * Less-than.
+ * Less than.
  */
 operator (l:Integer < r:Real) -> Boolean;
 
 /**
- * Less-than.
+ * Less than.
  */
 operator (l:Real < r:Integer) -> Boolean;

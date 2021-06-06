@@ -69,7 +69,7 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
 function simulate_beta_bernoulli(α:Real, β:Real) -> Boolean {
   assert 0.0 < α;
   assert 0.0 < β;
-  return simulate_bernoulli(simulate_beta(α, β));
+  return simulate_bernoulli(α/(α + β));
 }
 
 /*

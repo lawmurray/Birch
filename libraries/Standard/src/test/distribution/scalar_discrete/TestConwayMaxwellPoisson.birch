@@ -8,7 +8,7 @@ class TestConwayMaxwellPoisson < TestModel {
     λ ~ Uniform(0.5, 100.0);
     ν ~ Uniform(0.5, 2.0);
     let P <- simulate_uniform(0.5, 0.95);
-    n <- quantile_conway_maxwell_poisson(P, eval(λ), eval(ν), 1000) + 1;
+    n <- quantile_conway_maxwell_poisson(P, eval(λ), eval(ν), 10000) + 1;
   }
 
   override function simulate() {

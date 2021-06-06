@@ -103,7 +103,7 @@ function simulate_gamma_poisson(k:Real, θ:Real) -> Integer {
  */
 function logpdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   let ρ <- 1.0/(θ + 1.0);
-  return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
+  return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1.0, x);
 }
 
 /*
