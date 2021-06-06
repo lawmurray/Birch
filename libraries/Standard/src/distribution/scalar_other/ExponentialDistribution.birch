@@ -77,7 +77,7 @@ function simulate_exponential(λ:Real) -> Real {
  * Returns: the log probability density.
  */
 function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
-  return if_then_else(x < 0.0, -inf, log(λ) - λ*x);
+  return if_then_else(0.0 <= x, log(λ) - λ*x, -inf);
 }
 
 /*
@@ -90,11 +90,7 @@ function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
  */
 function cdf_exponential(x:Real, λ:Real) -> Real {
   assert 0.0 < λ;
-  if x <= 0.0 {
-    return 0.0;
-  } else {
-    return -expm1(-λ*x);
-  }
+  return if_then_else(0.0 < x, -expm1(-λ*x), 0.0);
 }
 
 /*

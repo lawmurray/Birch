@@ -86,8 +86,8 @@ function simulate_weibull(k:Real, λ:Real) -> Real {
  * Returns: the log probability density.
  */
 function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
-  return if_then_else(x < 0.0, -inf, log(k) + (k - 1.0)*log(x) -
-      k*log(λ) - pow(x/λ, k));
+  return if_then_else(0.0 < x, log(k) + (k - 1.0)*log(x) - k*log(λ) -
+      pow(x/λ, k), -inf);
 }
 
 /*
@@ -102,11 +102,7 @@ function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
 function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
-  if (x >= 0) {
-    return -expm1(-pow(x/λ, k));
-  } else {
-    return 0;
-  }
+  return if_then_else(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
 }
 
 /*

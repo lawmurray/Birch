@@ -99,8 +99,7 @@ function simulate_lomax(λ:Real, α:Real) -> Real {
  * Return: the log probability density.
  */
 function logpdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
-  return if_then_else(x < 0.0, -inf, log(α) - log(λ) -
-      (α + 1.0)*log1p(x/λ));
+  return if_then_else(0.0 <= x, log(α) - log(λ) - (α + 1.0)*log1p(x/λ), -inf);
 }
 
 /*
@@ -129,11 +128,7 @@ function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
 function cdf_lomax(x:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
-  if x <= 0.0 {
-    return 0.0;
-  } else {
-    return 1.0 - pow((1.0 + x/λ), -α);
-  }
+  return if_then_else(0.0 < x, 1.0 - pow((1.0 + x/λ), -α), 0.0);
 }
 
 /*

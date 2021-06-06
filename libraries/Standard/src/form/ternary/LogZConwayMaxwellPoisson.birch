@@ -6,7 +6,7 @@ struct LogZConwayMaxwellPoissonFunction {
   function grad<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
       n:Arg3) -> {
     let log_λ <- log(λ);
-    let μ <- pow(λ, 1.0/ν);  // mode
+    let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
     let mx <- μ*log_λ - ν*lgamma(μ + 1);  // renormalizer
     let log_xf <- 0.0;  // accumulator of log(x!)
     let z <- 0.0;
@@ -53,7 +53,7 @@ function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   /* to avoid taking exp() of large negative values, normalize each term in
    * this sum using the maximum term, which is the unnormalized log
    * probability at the mode; this is similar to log_sum_exp() */
-  let μ <- pow(λ, 1.0/ν);  // mode
+  let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
   let mx <- μ*log_λ - ν*lgamma(μ + 1);  // max unnormalized log probability
 
   /* sum renormalized terms */
