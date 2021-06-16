@@ -98,8 +98,6 @@ program filter(
   kernelBuffer <-? configBuffer.get("kernel");
   if kernel? {
     kernelBuffer.set("class", kernel!);
-  } else if !kernelBuffer.get("class")? {
-    kernelBuffer.set("class", "LangevinKernel");
   }
   let theKernel <- make<Kernel>(kernelBuffer);
 
@@ -209,7 +207,7 @@ program filter(
       outputBuffer.set("forecast", forecastBuffer);
       outputWriter!.push(outputBuffer);
     }
-    if !quiet {
+    if !quiet && nsteps? {
       bar.update((t + 1.0)/(nsteps! + 1.0));
     }    
     t <- t + 1;

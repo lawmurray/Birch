@@ -117,8 +117,6 @@ program sample(
   kernelBuffer <-? configBuffer.get("kernel");
   if kernel? {
     kernelBuffer.set("class", kernel!);
-  } else if !kernelBuffer.get("class")? {
-    kernelBuffer.set("class", "LangevinKernel");
   }
   let theKernel <- make<Kernel>(kernelBuffer);
 
