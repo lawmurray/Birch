@@ -52,7 +52,7 @@ public:
    * Value assignment.
    */
   template<class U>
-  Shared<T>& operator=(const U& o) {
+  Inplace<T>& operator=(const U& o) {
     this->o = o;
     return *this;
   }
@@ -61,7 +61,7 @@ public:
    * Value assignment.
    */
   template<class U>
-  const Shared<T>& operator=(const U& o) const {
+  const Inplace<T>& operator=(const U& o) const {
     return const_cast<Inplace<T>*>(this)->operator=(o);
   }
 
