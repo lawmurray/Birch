@@ -112,7 +112,7 @@ final class Multi < Model {
   }
 
   override function read(buffer:Buffer) {
-    buffer.get(θ);
+    θ <-? buffer.get<Global>();
   }
 
   override function write(buffer:Buffer) {
