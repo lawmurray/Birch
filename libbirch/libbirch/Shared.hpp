@@ -48,6 +48,7 @@ public:
    * Default constructor. Constructs a new referent using the default
    * constructor.
    */
+  template<class U = T, std::enable_if_t<std::is_default_constructible<U>::value,int> = 0>
   Shared() :
       Shared(new T(), false) {
     //
