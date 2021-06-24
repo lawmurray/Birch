@@ -48,7 +48,6 @@ public:
    * Default constructor. Constructs a new referent using the default
    * constructor.
    */
-  template<class U = T, std::enable_if_t<std::is_default_constructible<U>::value,int> = 0>
   Shared() :
       Shared(new T(), false) {
     //
@@ -62,7 +61,7 @@ public:
    * @note [`std::optional`](https://en.cppreference.com/w/cpp/utility/optional/)
    * behaves similarly with regard to [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place).
    */
-  template<class... Args, std::enable_if_t<std::is_constructible<T,Args...>::value,int> = 0>
+  template<class... Args>
   Shared(std::in_place_t, Args&&... args) :
       Shared(new T(std::forward<Args>(args)...), false) {
     //
