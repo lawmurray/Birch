@@ -7,12 +7,10 @@ manifest:
     - src/*/*/*/*.birch
     - src/*/*/*/*/*.birch
   other:
-    - birch.yml
-    - mkdocs.yml
     - LICENSE
     - README.md
-    - smoke.sh
-    - test.sh
+    - birch.yml
+    - mkdocs.yml
 require:
   header:
     - eigen3/Eigen/Dense

@@ -65,7 +65,7 @@ public:
    * @param shape Shape.
    * @param args Constructor arguments.
    */
-  template<class... Args, std::enable_if_t<std::is_constructible<T,Args...>::value,int> = 0>
+  template<class... Args>
   Array(const F& shape, Args&&... args) :
       shape(shape),
       buffer(nullptr),

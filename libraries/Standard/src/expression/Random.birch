@@ -347,6 +347,13 @@ final class Random<Value> < Expression<Value> {
   }
 }
 
+// instantiated class Random<Boolean>;
+// instantiated class Random<Integer>;
+// instantiated class Random<Integer[_]>;
+// instantiated class Random<Real>;
+// instantiated class Random<Real[_]>;
+// instantiated class Random<Real[_,_]>;
+
 /**
  * Create a Random.
  */

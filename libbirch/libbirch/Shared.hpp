@@ -62,7 +62,7 @@ public:
    * @note [`std::optional`](https://en.cppreference.com/w/cpp/utility/optional/)
    * behaves similarly with regard to [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place).
    */
-  template<class... Args>
+  template<class... Args, std::enable_if_t<std::is_constructible<T,Args...>::value,int> = 0>
   Shared(std::in_place_t, Args&&... args) :
       Shared(new T(std::forward<Args>(args)...), false) {
     //

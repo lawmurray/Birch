@@ -226,6 +226,13 @@ abstract class Expression<Value> < Delay {
   }
 }
 
+// instantiated class Expression<Boolean>;
+// instantiated class Expression<Integer>;
+// instantiated class Expression<Integer[_]>;
+// instantiated class Expression<Real>;
+// instantiated class Expression<Real[_]>;
+// instantiated class Expression<Real[_,_]>;
+
 function length<Type>(x:Type) -> Integer {
   return x.length();
 }

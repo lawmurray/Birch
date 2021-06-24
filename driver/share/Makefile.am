@@ -18,11 +18,11 @@ COMMON_CXXFLAGS = -Wall \
     -include PACKAGE_TARNAME.hpp
 # ^ Boost long double functions can cause issues with valgrind
 
-libPACKAGE_CANONICAL_NAME_debug_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline
+libPACKAGE_CANONICAL_NAME_debug_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O -g -flto
 libPACKAGE_CANONICAL_NAME_debug_la_LIBADD = $(DEBUG_LIBS)
 libPACKAGE_CANONICAL_NAME_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libPACKAGE_CANONICAL_NAME_test_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O0 -g -fno-inline --coverage
+libPACKAGE_CANONICAL_NAME_test_la_CXXFLAGS = $(COMMON_CXXFLAGS) -O -g -flto --coverage
 libPACKAGE_CANONICAL_NAME_test_la_LIBADD = $(TEST_LIBS)
 libPACKAGE_CANONICAL_NAME_test_la_SOURCES = $(COMMON_SOURCES)
 

@@ -67,6 +67,9 @@ final class ScaledMultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2
   }
 }
 
+// instantiated class ScaledMultivariateGaussianMultivariateGaussianDistribution<
+//     Real[_,_],Real[_],Real[_,_],Real[_,_]>;
+
 function ScaledMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4>(
     A:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
   return construct<ScaledMultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,

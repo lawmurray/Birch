@@ -140,11 +140,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* programs */
-    for (auto o : programs) {
-      auxDeclaration << o;
-    }
-
     /* functions */
     for (auto o : functions) {
       auxDeclaration << o;
@@ -172,6 +167,11 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       if (!o->has(STRUCT) && !o->isAlias()) {
         auxDeclaration << o;
       }
+    }
+
+    /* programs */
+    for (auto o : programs) {
+      auxDeclaration << o;
     }
 
     /* generic class type definitions, generic member definitions */

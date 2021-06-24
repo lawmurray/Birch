@@ -1,6 +1,7 @@
 # Birch Standard Library
 
-Provides the basic functionality needed by most Birch programs, such as standard math, linear algebra, probability distributions, and I/O.
+Provides the basic functionality needed by most Birch programs, such as
+standard math, linear algebra, probability distributions, and I/O.
 
 
 ## License
@@ -17,6 +18,4 @@ To build and install, use:
     birch build
     birch install
 
-To test, use:
-
-    ./test.sh
+The tests for the standard library are in the separate package `StandardTest`, to reduce build time and install size.

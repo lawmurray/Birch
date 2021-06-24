@@ -11,7 +11,11 @@ namespace birch {
 struct inherits {
   bool operator()(const Class* a, const Class* b) {
     auto base = dynamic_cast<const NamedType*>(a->base);
-    return base && *base->name == *b->name;
+    if (base) {
+      return *b->name == *base->name;
+    } else {
+      return *b->name == "Object";
+    }
   }
 };
 }
