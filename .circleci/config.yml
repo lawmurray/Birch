@@ -10,7 +10,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
       SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
       TEST: release  # BIRCH_MODE for running test.sh scripts
