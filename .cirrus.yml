@@ -39,10 +39,10 @@ task:
     - bash ./smoke.sh
   birch-cairo_build_script:
     - cd libraries/Cairo
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
   birch-sqlite_build_script:
     - cd libraries/SQLite
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
   upload_cache_script:
     - tar -czvf cache.tar.gz -C "$PREFIX" .
     - curl -s -X POST --data-binary @cache.tar.gz http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO}
