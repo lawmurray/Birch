@@ -1,0 +1,99 @@
+/*
+ * Compare two empirical distributions for the purposes of tests.
+ *
+ * - x1: First empirical distribution.
+ * - x2: Second empirical distribution.
+ *
+ * Return: Did the test pass?
+ */
+function pass(x1:Real[_], x2:Real[_]) -> Boolean {
+  assert length(x1) == length(x2);
+
+  let N <- length(x1);
+  let ε <- 2.0/sqrt(N);
+
+  /* normalise onto the interval [0,1] */
+  let mn <- min(min(x1), min(x2));
+  let mx <- max(max(x1), max(x2));
+  let z1 <- (x1 - vector(mn, N))/(mx - mn);
+  let z2 <- (x2 - vector(mn, N))/(mx - mn);
+
+  /* compute distance and suggested pass threshold */
+  let δ <- wasserstein(z1, z2);
+  if 10 < N && !(δ <= ε) {  // careful of nans
+    stderr.print("***failed***, " + δ + " > " + ε + "\n");
+    return false;
+  }
+  return true;
+}
+
+/*
+ * Compare two empirical distributions for the purposes of tests.
+ *
+ * - X1: First empirical distribution.
+ * - X2: Second empirical distribution.
+ *
+ * Return: Did the test pass?
+ */
+function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
+  assert rows(X1) == rows(X2);
+  assert columns(X1) == columns(X2);
+
+  let R <- rows(X1);
+  let C <- columns(X1);
+  let failed <- 0;
+  let tests <- 0;
+  let ε <- 2.0/sqrt(R);
+
+  /* compare marginals using 1-Wasserstein distance */
+  for c in 1..C {
+    /* project onto a random unit vector for univariate comparison */
+    let x1 <- X1[1..R,c];
+    let x2 <- X2[1..R,c];
+
+    /* normalise onto the interval [0,1] */
+    let mn <- min(min(x1), min(x2));
+    let mx <- max(max(x1), max(x2));
+    let z1 <- (x1 - vector(mn, R))/(mx - mn);
+    let z2 <- (x2 - vector(mn, R))/(mx - mn);
+
+    /* compute distance and suggested pass threshold */
+    let δ <- wasserstein(z1, z2);
+    if 10 < R && !(δ <= ε) {  // careful of nans
+      failed <- failed + 1;
+      stderr.print("***failed*** on component " + c + ", " + δ + " > " + ε + "\n");
+    }
+    tests <- tests + 1;
+  }
+
+  /* project onto random unit vectors and compute the univariate
+   * 1-Wasserstein distance, repeating as many times as there are
+   * dimensions */
+  for c in 1..C {
+    /* project onto a random unit vector for univariate comparison */
+    let u <- vector_lambda(\(i:Integer) -> {
+          return simulate_gaussian(0.0, 1.0);
+        }, C);
+    u <- u/sqrt(dot(u));
+    let x1 <- X1*u;
+    let x2 <- X2*u;
+
+    /* normalise onto the interval [0,1] */
+    let mn <- min(min(x1), min(x2));
+    let mx <- max(max(x1), max(x2));
+    let z1 <- (x1 - vector(mn, R))/(mx - mn);
+    let z2 <- (x2 - vector(mn, R))/(mx - mn);
+
+    /* compute distance and suggested pass threshold */
+    let δ <- wasserstein(z1, z2);
+    if 10 < R && !(δ <= ε) {  // careful of nans
+      failed <- failed + 1;
+      stderr.print("***failed*** on random projection, " + δ + " > " + ε + "\n");
+    }
+    tests <- tests + 1;
+  }
+  if failed > 0 {
+    stderr.print("***failed*** " + failed + " of " + tests + " comparisons\n");
+  }
+  return failed == 0;
+}

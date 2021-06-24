@@ -1,0 +1,33 @@
+struct AtanFunction {
+function compute<Value>(m:Value) -> {
+    return atan(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return d/(1.0 + pow(m, 2.0));
+  }
+}
+struct Atan<Middle> = Unary<AtanFunction,Middle>;
+
+/**
+ * Arc tangent.
+ */
+function atan<Middle>(m:Middle) -> {
+  return construct<Atan<Middle>>(m);
+}
+
+/**
+ * Arc cosine.
+ */
+function atan(m:Integer) -> Real {
+  return atan(scalar<Real>(m));
+}
+
+/**
+ * Arc cosine.
+ */
+function atan(m:Real) -> Real {
+  cpp {{
+  return std::atan(m);
+  }}
+}

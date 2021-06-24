@@ -1,0 +1,92 @@
+/**
+ * Langevin Markov kernel, with Metropolis adjustment.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Kernel <|-- LangevinKernel
+ *    link Kernel "../Kernel/"
+ *    link LangevinKernel "../LangevinKernel/"
+ * ```
+ */
+class LangevinKernel < Kernel {
+  /**
+   * Scale of each move.
+   */
+  scale:Real <- 1.0;
+
+  override function apply(t:Integer, π:Particle) -> Real {
+    /* apply lag */
+    π.label(t);
+    π.constant(t - nlags);
+
+    if nmoves > 0 {
+      /* scale */
+      let δ <- scale/pow(min(t, nlags), 3);
+
+      /* initial state */
+      let x <- π.args();
+      let p <- π.peek();
+      let d <- π.grad();
+      let μ <- x + d*δ;
+      let σ2 <- 2.0*δ;
+
+      /* moves */
+      let naccepts <- 0;
+      let accept <- false;
+      for n in 1..nmoves {
+        /* proposed state */
+        let x' <- transform(μ,
+            \(μ:Real) -> {
+              return simulate_gaussian(μ, σ2);
+            });
+        let p' <- π.move(x');
+        let d' <- π.grad();
+        let μ' <- x' + d'*δ;
+
+        /* proposal correction */
+        let q <- transform_reduce(x, μ', 0.0,
+            \(a:Real, b:Real) -> {
+              return a + b;
+            },
+            \(x:Real, μ':Real) -> {
+              return logpdf_gaussian(x, μ', σ2);
+            });
+        let q' <- transform_reduce(x', μ, 0.0,
+            \(a:Real, b:Real) -> {
+              return a + b;
+            },
+            \(x':Real, μ:Real) -> {
+              return logpdf_gaussian(x', μ, σ2);
+            });
+
+        /* accept/reject */
+        accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + q - q';
+        if accept {
+          naccepts <- naccepts + 1;
+          x <- x';
+          p <- p';
+          d <- d';
+          μ <- μ';
+        }
+      }
+      if !accept {
+        /* if last proposal was not accepted, restore correct arguments,
+        * otherwise already correct */
+        π.move(x);
+      }
+      return scalar<Real>(naccepts)/nmoves;
+    } else {
+      return 0.0;
+    }
+  }
+
+  override function read(buffer:Buffer) {
+    super.read(buffer);
+    scale <-? buffer.get<Real>("scale");
+  }
+  
+  override function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("scale", scale);
+  }
+}

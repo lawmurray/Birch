@@ -1,0 +1,203 @@
+/**
+ * Base class for objects supporting delayed sampling.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Delay <|-- Expression
+ *    Delay <|-- Distribution
+ *    Expression <|-- Random
+ *
+ *    link Delay "../Delay/"
+ *    link Expression "../Expression/"
+ *    link Random "../Random/"
+ * ```
+ *
+ * Classes derived from Delay support delayed sampling. Ostensibly this
+ * includes all Distribution and Expression classes, although among Expression
+ * classes only Random actually implements the interface.
+ *
+ * ### Design & Implementation
+ *
+ * The $M$-path for delayed sampling is kept as a singly-linked list of Delay
+ * objects directed from root to leaf along the $M$-path. While all objects in
+ * the path are ostensibly of abstract type Delay, they are alternately of
+ * concrete type Random and Distribution (`R*` denotes a Random object, `D*` a
+ * Distribution object):
+ *
+ * ```mermaid
+ * graph LR
+ *    R1((R1)) --> D2((D2)) --> R2((R2)) --> D3((D3))
+ * ```
+ *
+ * The root is necessarily of type Random, but the leaf may be of either type
+ * Distribution (as above) or, if a Random has been associated with that
+ * Distribution, of type Random. In the latter case the final node is
+ * doubly-linked:
+ *
+ * ```mermaid
+ * graph LR
+ *    R1((R1)) --> D2((D2)) --> R2((R2)) --> D3((D3)) --> R3((R3))
+ *    R3((R3)) .-> D3
+ * ```
+ *
+ * While, if the leaf node is of type Random, it has a backward link to its
+ * associated Distribution, note that all other nodes of type Random only have
+ * a forward link to the distribution associated with their child node on the
+ * $M$-path.
+ *
+ * User code maintains external references to the Random objects, but
+ * typically not the Distribution objects. Delayed sampling operations are
+ * triggered by the use of these references.
+ *
+ * !!! tip
+ *     One advantage of this arrangement is that variable elimination
+ *     naturally occurs as a result of garbage collection. Once no references
+ *     remain to a Random that is the root of an $M$-path it is collected,
+ *     usually along with the next Distribution in the list. Not only has it
+ *     then been *marginalized out* in establishing the $M$-path, but it has
+ *     now been *eliminated* as the program has discarded it without it ever
+ *     being sampled.
+ *
+ * Events on the list are triggered by user operations on the Random objects,
+ * to which the user code maintains references.
+ *
+ * The *graft* operation occurs when the leaf node is a Random, and that
+ * Random enters the construction of a new Distribution object in a form that
+ * allows it to be marginalized out. The Distribution is appened to the list
+ * and the existing backward link remove:
+ *
+ * ```mermaid
+ * graph LR
+ *    R1((R1)) --> D2((D2)) --> R2((R2)) --> D3((D3)) --> R3((R3)) --> D4((D4))
+ * ```
+ *
+ * If a Random is subsequently associated with the Distribution it is added as
+ * before:
+ *
+ * ```mermaid
+ * graph LR
+ *    R1((R1)) --> D2((D2)) --> R2((R2)) --> D3((D3)) --> R3((R3)) --> D4((D4)) --> R4((R4))
+ *    R4((R4)) .-> D4
+ * ```
+ *
+ * If a Random leaf node must be *realized* it simply simulates a value from
+ * its associated distribution and removes its backward link:
+ *
+ * ```mermaid
+ * graph LR
+ *    R1((R1)) --> D2((D2)) --> R2((R2)) --> D3((D3)) --> R3((R3)) --> D4((D4)) --> R4
+ * ```
+ *
+ *
+ * ```mermaid
+ * graph LR
+ *    R1((R1)) --> D2((D2)) --> R2((R2)) --> D3((D3)) --> R3((R3)) --> D4((D4'))
+ * ```
+ */
+abstract class Delay {
+  /**
+   * Child node on the $M$-path.
+   */
+  child:Delay?;
+
+  /**
+   * Co-parent node on the $M$-path. This is used only for peculiar cases to
+   * establish joint distributions over two or more Randoms, such as for the
+   * normal-inverse-gamma distribution.
+   */
+  coparent:Delay?;
+
+  /**
+   * If a co-parent, the number of this among those co-parents.
+   */
+  n:Integer <- 1;
+
+  /**
+   * Extend the $M$-path below this.
+   *
+   * - node: Node to become the child of this.
+   */
+  function graft(node:Delay) {
+    assert !child?;
+    this.child <- node;
+  }
+
+  /**
+   * Extend the $M$-path below this.
+   *
+   * - node: Node to become the child of this.
+   * - n: Where `node` is grafted to multiple parents, the number of this
+   *   among those parents.
+   */
+  function graft(node:Delay, n:Integer) {
+    assert !child?;
+    this.n <- n;
+    this.child <- node;
+  }
+
+  /**
+   * Replace an existing $M$-path below this.
+   *
+   * - node: Node to become the child of this.
+   */
+  function graftReplace(node:Delay) {
+    assert child?;
+    this.child <- node;
+  }
+
+  /**
+   * Replace an existing $M$-path below this.
+   *
+   * - node: Node to become the child of this.
+   * - n: Where `node` is grafted to multiple parents, the number of this
+   *   among those parents.
+   */
+  function graftReplace(node:Delay, n:Integer) {
+    assert child?;
+    this.n <- n;
+    this.child <- node;
+  }
+
+  /**
+   * Prune the $M$-path from below this.
+   *
+   * Return: If this is a Random node, then this. If this is a Distribution
+   * node, then the updated Distribution for the first parent, which is now
+   * the leaf of the $M$-path.
+   */
+  function prune() -> Delay {
+    assert !child?;  // otherwise prune() should have been overridden
+    return this;
+  }
+
+  /**
+   * Prune the $M$-path from below this.
+   *
+   * Return: If this is a Random node, then this. If this is a Distribution
+   * node, then the updated Distribution for the `n`th parent, which is now
+   * the leaf of the $M$-path.
+   */
+  function prune(n:Integer) -> Delay {
+    assert n == 1;  // otherwise prune(Integer) should have been overridden
+    return prune();
+  }
+
+  /**
+   * Is this the grandchild of `node` on the $M$-path.
+   */  
+  function isGrandChildOf(node:Delay) -> Boolean {
+    return node.child? && node.child!.child? && node.child!.child! == this;
+  }
+
+  /**
+   * Join this with another node to become coparents on the $M$-path.  This is
+   * used only for peculiar cases to establish joint distributions over two or
+   * more Randoms, such as for the normal-inverse-gamma distribution.
+   */
+  function join(node:Delay) {
+    assert !coparent?;
+    assert !node.coparent?;
+    coparent <- node;
+    node.coparent <- this;
+  }
+}

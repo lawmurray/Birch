@@ -1,0 +1,29 @@
+/**
+ * Find bridges in the reachable graph. Must be followed by copy().
+ */
+function bridge<Type>(o:Type) {
+  cpp{{
+  o.bridge();
+  }}
+}
+
+/**
+ * Deep copy. May be preceded by bridge() for a lazy copy, otherwise will
+ * perform an eager copy.
+ */
+function copy<Type>(o:Type) -> Type {
+  cpp{{
+  return o.copy();
+  }}
+}
+
+/**
+ * Deep copy multiple times to construct an array. May be preceded by bridge()
+ * for lazy copies, otherwise will perform eager copies.
+ *
+ * - o: Source object.
+ * - length: Length of vector.
+ */
+function copy<Type>(o:Type, length:Integer) -> Type[_] {
+  return vector_lambda(\(i:Integer) -> { return copy(o); }, length);
+}

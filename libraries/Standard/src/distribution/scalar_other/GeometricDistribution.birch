@@ -1,0 +1,6 @@
+/**
+ * Create a Geometric distribution
+ */
+function Geometric<Arg>(ρ:Arg) -> {
+  return NegativeBinomial(1, ρ);
+}

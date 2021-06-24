@@ -1,0 +1,52 @@
+class TestStudent < TestModel {
+  x:Random<Real>;
+  k:Random<Real>;
+  μ:Random<Real>;
+  σ2:Random<Real>;
+
+  override function initialize() {
+    k ~ Uniform(2.0, 10.0);  // > 2.0 for finite variance
+    μ ~ Uniform(-10.0, 10.0);
+    σ2 ~ Uniform(0.0, 10.0);
+  }
+
+  override function simulate() {
+    x ~ Student(k, μ, σ2);
+  }
+
+  override function forward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  override function backward() -> Real[_] {
+    return [x.eval()];
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_student_t(N:Integer <- 10000, B:Integer <- 100,
+    S:Integer <- 5, lazy:Boolean <- false) {
+  m:TestStudent;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_cdf_student_t(N:Integer <- 10000) {
+  m:TestStudent;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
+}
+
+program test_grad_student_t(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestStudent;
+  test_grad(m, N, backward);
+}

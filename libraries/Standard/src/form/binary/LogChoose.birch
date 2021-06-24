@@ -1,0 +1,70 @@
+struct LogChooseFunction {  
+  function compute<LeftValue,RightValue>(n:LeftValue, k:RightValue) -> {
+    return lchoose(n, k);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, n:LeftValue,
+      k:RightValue) -> {
+    dn:Real;
+    dk:Real;
+    if k == 0.0 || k == n {
+      dn <- 0.0;
+      dk <- 0.0;
+    } else if k == 1.0 || k == n - 1 {
+      dn <- 1.0/n;
+      dk <- 0.0;
+    } else if k < n - k {
+      dn <- -digamma(n - k + 1.0) + digamma(n + 1.0);
+      dk <- -1.0/k - digamma(k) + digamma(n - k + 1.0);
+    } else {
+      dn <- -1.0/(n - k) - digamma(n - k) + digamma(n + 1.0);
+      dk <- 1.0/(n - k) - digamma(k + 1.0) + digamma(n - k);
+    }
+    return (d*dn, d*dk);
+  }
+}
+struct LogChoose<Left,Right> = Binary<LogChooseFunction,Left,Right>;
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose<Left,Right>(n:Left, k:Right) -> {
+  return construct<LogChoose<Left,Right>>(n, k);
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(n:Integer, k:Integer) -> Real {
+  return lchoose(scalar<Real>(n), scalar<Real>(k));
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(n:Real, k:Real) -> Real {
+  // based on the Boost binomial_coefficient implementation
+  if k == 0.0 || k == n {
+    return 0.0;
+  } else if k == 1.0 || k == n - 1 {
+    return log(n);
+  } else if k < n - k {
+    return -log(k) - lbeta(k, n - k + 1.0);
+  } else {
+    return -log(n - k) - lbeta(k + 1.0, n - k);
+  }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(n:Integer, k:Real) -> Real {
+  return lchoose(scalar<Real>(n), k);
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(n:Real, k:Integer) -> Real {
+  return lchoose(n, scalar<Real>(k));
+}

@@ -1,0 +1,63 @@
+struct NegateFunction {
+  function compute<Value>(m:Value) -> {
+    return -m;
+  }
+
+  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return -d;
+  }
+}
+struct Negate<Middle> = Unary<NegateFunction,Middle>;
+
+/**
+ * Negation.
+ */
+operator<Middle> (-m:Middle) -> {
+  return construct<Negate<Middle>>(m);
+}
+
+/**
+ * Negation.
+ */
+operator (-x:Integer) -> Integer;
+
+/**
+ * Negation.
+ */
+operator (-x:Real) -> Real;
+
+/**
+ * Negation.
+ */
+operator (-x:Integer[_]) -> Integer[_] {
+  cpp{{
+  return x.toEigen().operator-();
+  }}
+}
+
+/**
+ * Negation.
+ */
+operator (-x:Real[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().operator-();
+  }}
+}
+
+/**
+ * Negation.
+ */
+operator (-X:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return X.toEigen().operator-();
+  }}
+}
+
+/**
+ * Negation.
+ */
+operator (-X:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().operator-();
+  }}
+}

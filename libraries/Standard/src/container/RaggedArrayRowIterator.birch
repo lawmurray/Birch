@@ -1,0 +1,32 @@
+/*
+ * Iterator over the rows of a RaggedArray.
+ *
+ * - o: Container.
+ */
+final class RaggedArrayRowIterator<Type>(o:RaggedArray<Type>) <
+    Iterator<Type[_]> {
+  /**
+   * Container.
+   */
+  o:RaggedArray<Type> <- o;
+  
+  /**
+   * Current row index.
+   */
+  i:Integer <- 0;
+
+  /**
+   * Is there a next element?
+   */
+  override function hasNext() -> Boolean {
+    return i < o.size();
+  }
+
+  /**
+   * Get the next element.
+   */
+  override function next() -> Type[_] {
+    i <- i + 1;
+    return o.get(i);
+  }
+}

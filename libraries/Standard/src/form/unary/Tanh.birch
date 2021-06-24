@@ -1,0 +1,42 @@
+struct TanhFunction {
+function compute<Value>(m:Value) -> {
+    return tanh(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return transform(d, m, \(d:Real, m:Real) -> Real {
+          return d*(1.0 + pow(tanh(m), 2.0));
+        });
+  }
+}
+struct Tanh<Middle> = Unary<TanhFunction,Middle>;
+
+/**
+ * Tanh.
+ */
+function tanh<Middle>(m:Middle) -> {
+  return construct<Tanh<Middle>>(m);
+}
+
+/**
+ * Tanh scalar.
+ */
+function tanh(m:Real) -> Real {
+  cpp{{
+  return std::tanh(m);
+  }}
+}
+
+/**
+ * Tanh vector.
+ */
+function tanh(m:Real[_]) -> Real[_] {
+  return transform(m, \(x:Real) -> Real { return tanh(x); });
+}
+
+/**
+ * Tanh matrix.
+ */
+function tanh(m:Real[_,_]) -> Real[_,_] {
+  return transform(m, \(x:Real) -> Real { return tanh(x); });
+}

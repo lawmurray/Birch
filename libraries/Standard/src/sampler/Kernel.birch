@@ -1,0 +1,50 @@
+/**
+ * Markov kernel.
+ *
+ * ```mermaid
+ * classDiagram
+ *    Kernel <|-- LangevinKernel
+ *    link Kernel "../Kernel/"
+ *    link LangevinKernel "../LangevinKernel/"
+ * ```
+ *
+ * A Kernel is applied to a Particle. It applies an invariant update to the
+ * Random objects encountered in the execution of that particle, as though
+ * probabilistic events had been handled this way *post hoc*. Mathematically,
+ * these Random objects constitute a sample from some target distribution. A
+ * Kernel object represents a Markov kernel that is applied to the sample to
+ * update it in a manner invariant to that target distribution.
+ */
+abstract class Kernel {
+  /**
+   * Number of moves.
+   */
+  nmoves:Integer <- 1;
+
+  /**
+   * Number of lag steps.
+   */
+  nlags:Integer <- 0;
+
+  /**
+   * Apply the kernel.
+   *
+   * - t: Step number.
+   * - π: Particle.
+   *
+   * Returns: Acceptance rate.
+   */
+  abstract function apply(t:Integer, π:Particle) -> Real;
+
+  override function read(buffer:Buffer) {
+    super.read(buffer);
+    nmoves <-? buffer.get<Integer>("nmoves");
+    nlags <-? buffer.get<Integer>("nlags");
+  }
+  
+  override function write(buffer:Buffer) {
+    super.write(buffer);
+    buffer.set("nmoves", nmoves);
+    buffer.set("nlags", nlags);
+  }
+}

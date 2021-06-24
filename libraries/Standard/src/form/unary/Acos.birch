@@ -1,0 +1,33 @@
+struct AcosFunction {
+function compute<Value>(m:Value) -> {
+    return acos(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return -d/sqrt(1.0 - pow(m, 2.0));
+  }
+}
+struct Acos<Middle> = Unary<AcosFunction,Middle>;
+
+/**
+ * Arc cosine.
+ */
+function acos<Middle>(m:Middle) -> {
+  return construct<Acos<Middle>>(m);
+}
+
+/**
+ * Arc cosine.
+ */
+function acos(m:Integer) -> Real {
+  return acos(scalar<Real>(m));
+}
+
+/**
+ * Arc cosine.
+ */
+function acos(m:Real) -> Real {
+  cpp {{
+  return std::acos(m);
+  }}
+}

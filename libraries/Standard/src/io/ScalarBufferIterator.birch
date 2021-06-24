@@ -1,0 +1,21 @@
+/*
+ * Iterator over a scalar, wrapped in a [Buffer](../Buffer) object.
+ *
+ * - x: Values.
+ */
+final class ScalarBufferIterator<Type>(x:Type) < Iterator<Buffer> {
+  /**
+   * Scalar.
+   */
+  x:Type? <- x;
+
+  override function hasNext() -> Boolean {
+    return this.x?;
+  }
+
+  override function next() -> Buffer {
+    let x' <- this.x!;
+    this.x <- nil;
+    return make_buffer(x');
+  }
+}

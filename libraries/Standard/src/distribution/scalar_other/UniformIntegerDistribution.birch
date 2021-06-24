@@ -1,0 +1,123 @@
+cpp{{
+#include <boost/math/distributions/uniform.hpp>
+}}
+
+/**
+ * Uniform integer distribution.
+ */
+final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
+    BoundedDiscreteDistribution {
+  /**
+   * Lower bound.
+   */
+  l:Arg1 <- l;
+
+  /**
+   * Upper bound.
+   */
+  u:Arg2 <- u;
+
+  override function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  override function simulate() -> Integer {
+    return simulate_uniform_int(value(l), value(u));
+  }
+
+  override function logpdf(x:Integer) -> Real {
+    return logpdf_uniform_int(x, value(l), value(u));
+  }
+
+  override function cdf(x:Integer) -> Real? {
+    return cdf_uniform_int(x, value(l), value(u));
+  }
+
+  override function quantile(P:Real) -> Integer? {
+    return quantile_uniform_int(P, value(l), value(u));
+  }
+  
+  override function lower() -> Integer? {
+    return value(l);
+  }
+  
+  override function upper() -> Integer? {
+    return value(u);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "UniformInteger");
+    buffer.set("l", value(l));
+    buffer.set("u", value(u));
+  }
+}
+
+/**
+ * Create uniform distribution over integers.
+ */
+function UniformInteger<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
+  return construct<UniformIntegerDistribution<Arg1,Arg2>>(l, u);
+}
+
+/*
+ * Simulate a uniform distribution on an integer range.
+ *
+ * - l: Lower bound of range.
+ * - u: Upper bound of range.
+ */
+function simulate_uniform_int(l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  cpp{{
+  return std::uniform_int_distribution<Integer>(l, u)(rng);
+  }}
+}
+
+/*
+ * Observe an integer uniform variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+  if x >= l && x <= u {
+    return -log1p(u - l);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * CDF of a uniform integer variate.
+ *
+ * - x: The variate.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_uniform_int(x:Integer, l:Integer, u:Integer) -> Real {
+  if x < l {
+    return 0.0;
+  } else if x > u {
+    return 1.0;
+  } else {
+    return (x - l + 1.0)/(u - l + 1.0);
+  }
+}
+
+/*
+ * Quantile of a uniform integer distribution.
+ *
+ * - P: The cumulative probability.
+ * - l: Lower bound of interval.
+ * - u: Upper bound of interval.
+ *
+ * Return: the quantile.
+ */
+function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
+  assert l <= u;
+  return l + scalar<Integer>(P*(u - l));
+}

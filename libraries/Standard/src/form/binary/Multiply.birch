@@ -1,0 +1,358 @@
+struct MultiplyFunction {  
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return l*r;
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (trace(outer(d, r)), trace(inner(l, d)));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue[_]) -> {
+    return (trace(outer(d, r)), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue[_,_]) -> {
+    return (trace(outer(d, r)), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue) -> {
+    return (outer(d, r), trace(inner(l, d)));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue[_]) -> {
+    return (outer(d, r), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
+      r:RightValue[_,_]) -> {
+    return (outer(d, r), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
+      l:LeftValue[_,_], r:RightValue) -> {
+    return (outer(d, r), trace(inner(l, d)));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
+      l:LeftValue[_,_], r:RightValue[_]) -> {
+    return (outer(d, r), inner(l, d));
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
+      l:LeftValue[_,_], r:RightValue[_,_]) -> {
+    return (outer(d, r), inner(l, d));
+  }
+}
+struct Multiply<Left,Right> = BinaryMemoized<MultiplyFunction,Left,Right>;
+
+/**
+ * Multiplication.
+ */
+operator<Left,Right> (l:Left*r:Right) -> Multiply<Left,Right> {
+  return construct<Multiply<Left,Right>>(l, r);
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer*y:Integer) -> Integer;
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer*y:Real) -> Real;
+
+/**
+ * Multiplication.
+ */
+operator (x:Real*y:Integer) -> Real;
+
+/**
+ * Multiplication.
+ */
+operator (x:Real*y:Real) -> Real;
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer*y:Integer[_]) -> Integer[_] {
+  cpp{{
+  return y.toEigen().operator*(x);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer*y:Real[_]) -> Real[_] {
+  return scalar<Real>(x)*y;
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real*y:Integer[_]) -> Real[_] {
+  cpp{{
+  return y.toEigen().cast<Real>().operator*(x);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real*y:Real[_]) -> Real[_] {
+  cpp{{
+  return y.toEigen().operator*(x);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer[_]*y:Integer) -> Integer[_] {
+  cpp{{
+  return x.toEigen().operator*(y);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer[_]*y:Real) -> Real[_] {
+  cpp{{
+  return x.toEigen().cast<Real>().operator*(y);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real[_]*y:Integer) -> Real[_] {
+  return x*scalar<Real>(y);
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real[_]*y:Real) -> Real[_] {
+  cpp{{
+  return x.toEigen().operator*(y);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer[_]*y:Integer[_]) -> Integer[_] {
+  cpp{{
+  return x.toEigen().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer[_]*y:Real[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().cast<Real>().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real[_]*y:Integer[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().operator*(y.toEigen().cast<Real>());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real[_]*y:Real[_]) -> Real[_] {
+  cpp{{
+  return x.toEigen().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer*y:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return y.toEigen().operator*(x);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer*y:Real[_,_]) -> Real[_,_] {
+  return scalar<Real>(x)*y;
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real*y:Integer[_,_]) -> Real[_,_] {
+  cpp{{
+  return y.toEigen().cast<Real>().operator*(x);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real*y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return y.toEigen().operator*(x);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer[_,_]*y:Integer) -> Integer[_,_] {
+  cpp{{
+  return x.toEigen().operator*(y);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Integer[_,_]*y:Real) -> Real[_,_] {
+  cpp{{
+  return x.toEigen().cast<Real>().operator*(y);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real[_,_]*y:Integer) -> Real[_,_] {
+  return x*scalar<Real>(y);
+}
+
+/**
+ * Multiplication.
+ */
+operator (x:Real[_,_]*y:Real) -> Real[_,_] {
+  cpp{{
+  return x.toEigen().operator*(y);
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Integer[_,_]*y:Integer[_]) -> Integer[_] {
+  cpp{{
+  return X.toEigen().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Integer[_,_]*y:Real[_]) -> Real[_] {
+  cpp{{
+  return X.toEigen().cast<Real>().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Real[_,_]*y:Integer[_]) -> Real[_] {
+  cpp{{
+  return X.toEigen().operator*(y.toEigen().cast<Real>());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Real[_,_]*y:Real[_]) -> Real[_] {
+  cpp{{
+  return X.toEigen().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Integer[_]*y:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return X.toEigen().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Integer[_]*y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().cast<Real>().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Real[_]*y:Integer[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().operator*(y.toEigen().cast<Real>());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Real[_]*y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().operator*(y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Integer[_,_]*Y:Integer[_,_]) -> Integer[_,_] {
+  cpp{{
+  return X.toEigen().operator*(Y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Integer[_,_]*Y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().cast<Real>().operator*(Y.toEigen());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Real[_,_]*Y:Integer[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().operator*(Y.toEigen().cast<Real>());
+  }}
+}
+
+/**
+ * Multiplication.
+ */
+operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_] {
+  cpp{{
+  return X.toEigen().operator*(Y.toEigen());
+  }}
+}

@@ -1,0 +1,88 @@
+/**
+ * Particle for use with ParticleFilter.
+ *
+ * - m: Model.
+ * - delaySampling: Enable delayed sampling.
+ * - delayExpressions: Enable delayed expressions.
+ */
+class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
+  /**
+   * State.
+   */
+  m:Model <- m;
+
+  /**
+   * Event handler.
+   */
+  h:Handler(delaySampling, delayExpressions);
+
+  /**
+   * Evaluate the log-posterior.
+   */
+  function peek() -> Real {
+    return h.peek();
+  }
+
+  /**
+   * Get value of real arguments.
+   */
+  function args() -> Real[_] {
+    return h.args();
+  }
+
+  /**
+   * Compute the gradient with respect to real arguments.
+   */
+  function grad() -> Real[_] {
+    return h.grad();
+  }
+
+  /**
+   * Move the particle.
+   */
+  function move(x:Real[_]) -> Real {
+    return h.move(x);
+  }
+
+  /**
+   * Label generations.
+   *
+   * See also: [Expression](../Expression/)
+   */
+  function label(gen:Integer) {
+    h.label(gen);
+  }
+
+  /**
+   * Prune generations.
+   *
+   * See also: [Expression](../Expression/)
+   */
+  function constant(gen:Integer) {
+    h.constant(gen);
+  }
+
+  override function read(buffer:Buffer) {
+    with h {
+      m.read(buffer);
+    }
+  }
+
+  override function write(buffer:Buffer) {
+    with h {
+      m.write(buffer);
+    }
+  }
+
+  override function read(t:Integer, buffer:Buffer) {
+    with h {
+      m.read(t, buffer);
+    }
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    with h {
+      m.write(t, buffer);
+    }
+  }
+}

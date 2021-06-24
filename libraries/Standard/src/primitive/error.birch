@@ -1,0 +1,18 @@
+/**
+ * Output an error message and exit.
+ *
+ * - msg: The message.
+ */
+function error(msg:String) {
+  stderr.print("error: " + msg + "\n");
+  cpp{{
+  std::exit(EXIT_FAILURE);
+  }}
+}
+
+/**
+ * Output a warning message.
+ */
+function warn(msg:String) {
+  stderr.print("warning: " + msg + "\n");
+}

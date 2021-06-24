@@ -1,0 +1,19 @@
+name: StandardTest
+description:
+manifest:
+  source:
+    - src/*.birch
+    - src/*/*.birch
+    - src/*/*/*.birch
+    - src/*/*/*/*.birch
+    - src/*/*/*/*/*.birch
+  other:
+    - LICENSE
+    - README.md
+    - birch.yml
+    - mkdocs.yml
+    - smoke.sh
+    - test.sh
+require:
+  package:
+    - Standard

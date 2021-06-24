@@ -1,0 +1,33 @@
+struct ExpFunction {
+function compute<Value>(m:Value) -> {
+    return exp(m);
+  }
+
+function grad<Gradient,Value>(d:Gradient, m:Value) -> {
+    return d*exp(m);
+  }
+}
+struct Exp<Middle> = Unary<ExpFunction,Middle>;
+
+/**
+ * Exponential.
+ */
+function exp<Middle>(m:Middle) -> {
+  return construct<Exp<Middle>>(m);
+}
+
+/**
+ * Exponential.
+ */
+function exp(m:Integer) -> Real {
+  return exp(scalar<Real>(m));
+}
+
+/**
+ * Exponential.
+ */
+function exp(m:Real) -> Real {
+  cpp {{
+  return std::exp(m);
+  }}
+}

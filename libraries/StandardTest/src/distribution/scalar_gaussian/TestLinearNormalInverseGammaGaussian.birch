@@ -1,0 +1,83 @@
+class TestLinearNormalInverseGammaGaussian < TestModel {
+  σ2:Random<Real>;
+  μ:Random<Real>;
+  x:Random<Real>;
+
+  a:Random<Real>;
+  μ_0:Random<Real>;
+  a2:Random<Real>;
+  α:Random<Real>;
+  β:Random<Real>;
+  c:Random<Real>;
+  s2:Random<Real>;
+
+  override function initialize() {
+    a ~ Uniform(-2.0, 2.0);
+    μ_0 ~ Uniform(-10.0, 10.0);
+    a2 ~ Uniform(0.1, 2.0);
+    α ~ Uniform(2.1, 10.0);
+    β ~ Uniform(0.1, 10.0);
+    c ~ Uniform(-10.0, 10.0);
+    s2 ~ Uniform(0.1, 10.0);
+  }
+
+  override function simulate() {
+    σ2 ~ InverseGamma(α, β);
+    μ ~ Gaussian(μ_0, a2*σ2);
+    x ~ Gaussian(a*μ + c, s2*σ2);
+  }
+
+  override function forward() -> Real[_] {
+    y:Real[3];
+    y[1] <- σ2.eval();
+    y[2] <- μ.eval();
+    y[3] <- x.eval();
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    y:Real[3];
+    assert !x.hasValue();
+    y[3] <- x.eval();
+    assert !μ.hasValue();
+    y[2] <- μ.eval();
+    assert !σ2.hasValue();
+    y[1] <- σ2.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 3;
+  }
+}
+
+program test_conjugacy_linear_normal_inverse_gamma_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearNormalInverseGammaGaussian;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000,
+    B:Integer <- 100, S:Integer <- 5, lazy:Boolean <- false) {
+  m:TestLinearNormalInverseGammaGaussian;
+  m.initialize();
+  m.simulate();
+  test_pdf(m.marginal(), N, B, S, lazy);
+}
+
+program test_cdf_linear_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
+  m:TestLinearNormalInverseGammaGaussian;
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
+}
+
+program test_grad_linear_normal_inverse_gamma_gaussian(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestLinearNormalInverseGammaGaussian;
+  test_grad(m, N, backward);
+}
