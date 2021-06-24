@@ -10,7 +10,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=1 --enable-verbose"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
       SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
       TEST: release  # BIRCH_MODE for running test.sh scripts
@@ -25,7 +25,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
       SMOKE: debug
     working_directory: /root/project/ubuntu
 
@@ -35,7 +35,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
       SMOKE: debug
     working_directory: /root/project/debian
 
@@ -45,7 +45,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
       SMOKE: debug
     working_directory: /root/project/fedora
 
@@ -55,7 +55,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=3 --enable-verbose"
       SMOKE: debug
     working_directory: /root/project/alpine
 
@@ -65,7 +65,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=6 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --enable-release"
       LIB_FLAGS: "--disable-openmp"
       SMOKE: debug
@@ -192,13 +192,17 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
+      extra:
+        description: Extra build flags for birch
+        type: string
+        default: ""
     steps:
       - run:
           name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS
+              birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS << parameters.extra >>
       - run:
           name: Smoke test << parameters.package >> package
           command: |
@@ -424,6 +428,10 @@ jobs:
           package: Standard
       - build_package:
           dir: libraries
+          package: StandardTest
+          extra: --unit=file  # needed to avoid exhausting memory
+      - build_package:
+          dir: libraries
           package: Cairo
       - build_package:
           dir: libraries
@@ -454,7 +462,7 @@ jobs:
           os: << parameters.os >>
       - test_package:
           dir: libraries
-          package: Standard
+          package: StandardTest
       - end_if_pull_request
       - slack
 
