@@ -143,9 +143,14 @@ private:
   std::string arch;
 
   /**
-   * Compilation unit (unity, dir, or file).
+   * Compilation unit ("unity", "dir", or "file").
    */
   std::string unit;
+
+  /**
+   * Run mode ("debug", "test", or "release").
+   */
+  std::string mode;
 
   /**
    * Number of jobs for parallel build. If zero, a reasonable value is

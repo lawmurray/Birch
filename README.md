@@ -92,13 +92,13 @@ addition, on Mac, you can typically omit `sudo` from these commands.
 2. Install LibBirch by running, from within the `libbirch/` directory:
 
        ./bootstrap
-       ./configure --enable-debug --enable-release
+       ./configure
        make
        sudo make install
 
    On Mac, use the following `configure` line instead:
 
-       ./configure --enable-debug --enable-release --disable-openmp CPPFLAGS="-Xpreprocessor -fopenmp"
+       ./configure --disable-openmp CPPFLAGS="-Xpreprocessor -fopenmp"
 
    Despite the apparently conflicting options, this will *enable*
    multithreading with OpenMP (specifically, it disables the standard check in
@@ -108,7 +108,7 @@ addition, on Mac, you can typically omit `sudo` from these commands.
 3. Install the standard library by running, from within the
    `libraries/Standard/` directory:
 
-       birch build --enable-debug --enable-release
+       birch build
        sudo birch install
 
 This constitutes a basic install with both *debug* (unoptimized, with

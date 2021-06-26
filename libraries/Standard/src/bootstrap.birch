@@ -3,6 +3,8 @@
  *
  *     birch bootstrap
  *
- * Creates the build system for the package.
+ * !!! tip
+ *     Usually one just calls [build](../build), which calls `bootstrap`
+ *     implicitly.
  */
 program bootstrap();

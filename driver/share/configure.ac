@@ -33,7 +33,7 @@ AC_ARG_ENABLE([release],
   yes) release=true ;;
   no)  release=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-release]) ;;
-esac],[release=false])
+esac],[release=true])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
 # Programs

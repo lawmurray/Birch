@@ -26,6 +26,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/ubuntu
 
@@ -36,6 +37,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/debian
 
@@ -46,6 +48,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/fedora
 
@@ -56,6 +59,7 @@ executors:
       OMP_NUM_THREADS: 2
       MAKE_FLAGS: "-j4"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/alpine
 

@@ -14,10 +14,11 @@ birch::Driver::Driver(int argc, char** argv) :
     packageName("Untitled"),
     packageVersion("unversioned"),
     unit("dir"),
+    mode("debug"),
     jobs(std::thread::hardware_concurrency()),
     test(false),
     debug(true),
-    release(false),
+    release(true),
     staticLib(false),
     sharedLib(true),
     openmp(true),
@@ -29,6 +30,7 @@ birch::Driver::Driver(int argc, char** argv) :
     newConfigure(false),
     newMake(false) {
   /* environment */
+  char* BIRCH_UNIT = getenv("BIRCH_UNIT");
   char* BIRCH_MODE = getenv("BIRCH_MODE");
   char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
   char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
@@ -36,31 +38,17 @@ birch::Driver::Driver(int argc, char** argv) :
   char* BIRCH_LIBRARY_PATH = getenv("BIRCH_LIBRARY_PATH");
   std::string input;
 
-  /* mode */
-  if (BIRCH_MODE) {
-    if (strcmp(BIRCH_MODE, "test") == 0) {
-      test = true;
-      debug = false;
-      release = false;
-    } else if (strcmp(BIRCH_MODE, "debug") == 0) {
-      test = false;
-      debug = true;
-      release = false;
-    } else if (strcmp(BIRCH_MODE, "release") == 0) {
-      test = false;
-      debug = false;
-      release = true;
-    }
+  if (BIRCH_UNIT) {
+    unit = BIRCH_UNIT;
   }
-
-  /* prefix */
-  if (prefix.empty()) {
-    #ifdef PREFIX
-    prefix = STRINGIFY(PREFIX);
-    #endif
-    if (BIRCH_PREFIX) {
-      prefix = BIRCH_PREFIX;
-    }
+  if (BIRCH_MODE) {
+    mode = BIRCH_MODE;
+  }
+  #ifdef PREFIX
+  prefix = STRINGIFY(PREFIX);
+  #endif
+  if (BIRCH_PREFIX) {
+    prefix = BIRCH_PREFIX;
   }
 
   /* share dirs */
@@ -171,6 +159,7 @@ birch::Driver::Driver(int argc, char** argv) :
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "arch", required_argument, 0, ARCH_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
+      { "mode", required_argument, 0, MODE_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-test", no_argument, 0, ENABLE_TEST_ARG },
       { "disable-test", no_argument, 0, DISABLE_TEST_ARG },
@@ -216,6 +205,9 @@ birch::Driver::Driver(int argc, char** argv) :
       break;
     case UNIT_ARG:
       unit = optarg;
+      break;
+    case MODE_ARG:
+      mode = optarg;
       break;
     case JOBS_ARG:
       jobs = atoi(optarg);
@@ -302,6 +294,9 @@ birch::Driver::Driver(int argc, char** argv) :
   if (unit != "unity" && unit != "dir" && unit != "file") {
     throw DriverException("--unit must be unity, dir, or file.");
   }
+  if (mode != "debug" && mode != "test" && mode != "release") {
+    throw DriverException("--mode must be debug, test, or release.");
+  }
 }
 
 void birch::Driver::run(const std::string& prog,
@@ -318,12 +313,12 @@ void birch::Driver::run(const std::string& prog,
 
   /* name of the shared library file we expect to find */
   auto name = "lib" + tar(packageName);
-  if (test) {
-    name += "-test";  
-  } else if (debug) {
-    name += "-debug";
-  } else if (release) {
+  if (mode.compare("test") == 0) {
+    name += "-test";
+  } else if (mode.compare("release") == 0) {
     // no suffix
+  } else {
+    name += "-debug";
   }
   fs::path so = name;
   #ifdef __APPLE__
@@ -427,20 +422,20 @@ void birch::Driver::configure() {
     }
 
     /* configure options */
-    if (release) {
-      options << " --enable-release";
+    if (debug) {
+      options << " --enable-debug";
     } else {
-      options << " --disable-release";
+      options << " --disable-debug";
     }
     if (test) {
       options << " --enable-test";
     } else {
       options << " --disable-test";
     }
-    if (debug) {
-      options << " --enable-debug";
+    if (release) {
+      options << " --enable-release";
     } else {
-      options << " --disable-debug";
+      options << " --disable-release";
     }
     if (staticLib) {
       options << " --enable-static";
@@ -857,7 +852,10 @@ void birch::Driver::help() {
       std::cout << "Build the package up to the given stage (in order: bootstrap, configure, build," << std::endl;
       std::cout << "install)." << std::endl;
       std::cout << std::endl;
-      std::cout << "Basic options:" << std::endl;
+      std::cout << "Options:" << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --mode (default `debug`, valid values `debug`, `test`, `release`):" << std::endl;
+      std::cout << "  Set the mode of the build to run." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-debug / --disable-debug (default enabled):" << std::endl;
       std::cout << "  Enable/disable debug mode build." << std::endl;
@@ -865,7 +863,7 @@ void birch::Driver::help() {
       std::cout << "  --enable-test / --disable-test (default disabled):" << std::endl;
       std::cout << "  Enable/disable test mode build." << std::endl;
       std::cout << std::endl;
-      std::cout << "  --enable-release / --disable-release (default disabled):" << std::endl;
+      std::cout << "  --enable-release / --disable-release (default enabled):" << std::endl;
       std::cout << "  Enable/disable release mode build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
@@ -880,8 +878,12 @@ void birch::Driver::help() {
       std::cout << "  --enable-verbose / --disable-verbose (default disabled):" << std::endl;
       std::cout << "  Show all compiler output." << std::endl;
       std::cout << std::endl;
-      std::cout << "  --prefix (default imputed): Installation prefix. Defaults to the same prefix" << std::endl;
-      std::cout << "  used when installing the birch driver program." << std::endl;
+      std::cout << "  --unit (default `dir`, valid values `unity`, `dir`, `file`):" << std::endl;
+      std::cout << "  Set the compile unit to use when transpiling Birch to C++." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --prefix (default imputed):" << std::endl;
+      std::cout << "  Installation prefix. Defaults to the same prefix used when installing the birch" << std::endl;
+      std::cout << "  driver program." << std::endl;
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
