@@ -11,15 +11,16 @@
 #include "src/primitive/system.hpp"
 
 birch::CppPackageGenerator::CppPackageGenerator(std::ostream& base,
-    const int level, const bool header) :
-    CppGenerator(base, level, header, false) {
+    const int level, const bool header, const bool includeInlines,
+    const bool includeLines) :
+    CppGenerator(base, level, header, includeInlines, includeLines) {
   //
 }
 
 void birch::CppPackageGenerator::visit(const Package* o) {
   /* auxiliary generators */
-  CppGenerator auxDeclaration(base, level, true, true);
-  CppGenerator auxDefinition(base, level, false, true);
+  CppGenerator auxDeclaration(base, level, true, true, includeLines);
+  CppGenerator auxDefinition(base, level, false, true, includeLines);
 
   /* gather important objects */
   Gatherer<Basic> basics;
@@ -175,7 +176,8 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         auxDefinition << o;
       } else {
         /* just generic members of the class */
-        CppClassGenerator auxMember(base, level, false, true, o);
+        CppClassGenerator auxMember(base, level, false, true, includeLines,
+            o);
 
         Gatherer<MemberFunction> memberFunctions;
          o->accept(&memberFunctions);

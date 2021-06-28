@@ -13,8 +13,8 @@ namespace birch {
  */
 class CppPackageGenerator: public CppGenerator {
 public:
-  CppPackageGenerator(std::ostream& base, const int level = 0,
-      const bool header = true);
+  CppPackageGenerator(std::ostream& base, const int level, const bool header,
+      const bool includeInline, const bool includeLines);
 
   using CppGenerator::visit;
 

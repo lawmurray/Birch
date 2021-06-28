@@ -8,15 +8,14 @@
 
 birch::CppClassGenerator::CppClassGenerator(std::ostream& base,
     const int level, const bool header, const bool includeInline,
-    const Class* currentClass) :
-    CppGenerator(base, level, header, includeInline),
+    const bool includeLines, const Class* currentClass) :
+    CppGenerator(base, level, header, includeInline, includeLines),
     currentClass(currentClass) {
   //
 }
 
 void birch::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
-    currentClass = o;
     Gatherer<MemberFunction> memberFunctions;
     Gatherer<MemberVariable> memberVariables;
     o->accept(&memberFunctions);

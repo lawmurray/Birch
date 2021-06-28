@@ -43,13 +43,13 @@ void birch::Compiler::parse() {
   compiler = nullptr;
 }
 
-void birch::Compiler::gen() {
+void birch::Compiler::gen(const bool includeLines) {
   std::stringstream stream;
   std::string tarName = tar(package->name);
   fs::path path = fs::path(tarName);
 
-  CppPackageGenerator hppOutput(stream, 0, true);
-  CppGenerator cppOutput(stream, 0, false, false);
+  CppPackageGenerator hppOutput(stream, 0, true, false, includeLines);
+  CppGenerator cppOutput(stream, 0, false, false, includeLines);
 
   /* single *.hpp header for whole package */
   stream.str("");

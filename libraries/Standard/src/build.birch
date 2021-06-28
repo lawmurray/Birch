@@ -33,7 +33,8 @@
  *     compiler notes.
  *
  *   - `--enable-translate` / `--disable-translate` (default enabled):
- *     Enable/disable translation of C++ compiler messages.
+ *     Enable/disable translation of C++ error messages and line numbers to
+ *     Birch error messages and line numbers.
  *
  *   - `--enable-verbose` / `--disable-verbose` (default disabled):
  *     Enable/disable verbose reporting.

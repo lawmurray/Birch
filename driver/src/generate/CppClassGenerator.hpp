@@ -13,9 +13,9 @@ namespace birch {
  */
 class CppClassGenerator: public CppGenerator {
 public:
-  CppClassGenerator(std::ostream& base, const int level = 0,
-      const bool header = false, const bool generic = false,
-      const Class* currentClass = nullptr);
+  CppClassGenerator(std::ostream& base, const int level, const bool header,
+      const bool includeInline, const bool includeLines,
+      const Class* currentClass);
 
   using CppGenerator::visit;
 

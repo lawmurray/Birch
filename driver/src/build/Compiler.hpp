@@ -30,8 +30,10 @@ public:
 
   /**
    * Generate output code for all input files.
+   * 
+   * @param includeLines Include #line annotations?
    */
-  void gen();
+  void gen(const bool includeLines);
 
   /**
    * Set the root statement of the current file.

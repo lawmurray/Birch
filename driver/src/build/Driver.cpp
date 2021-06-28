@@ -1147,7 +1147,7 @@ void birch::Driver::setup() {
 void birch::Driver::transpile() {
   Compiler compiler(createPackage(), unit);
   compiler.parse();
-  compiler.gen();
+  compiler.gen(translate);
 }
 
 void birch::Driver::target(const std::string& cmd) {

@@ -7,10 +7,11 @@
 #include "src/primitive/string.hpp"
 
 birch::CppGenerator::CppGenerator(std::ostream& base, const int level,
-    const bool header, const bool includeInline) :
+    const bool header, const bool includeInline, const bool includeLines) :
     IndentableGenerator(base, level),
     header(header),
     includeInline(includeInline),
+    includeLines(includeLines),
     inAssign(0),
     inGlobal(0),
     inConstructor(0),
@@ -516,7 +517,8 @@ void birch::CppGenerator::visit(const Basic* o) {
 
 void birch::CppGenerator::visit(const Class* o) {
   if (includeInline || !o->isGeneric()) {
-    CppClassGenerator auxClass(base, level, header, includeInline);
+    CppClassGenerator auxClass(base, level, header, includeInline,
+        includeLines, o);
     auxClass << o;
   }
 }
@@ -690,9 +692,11 @@ void birch::CppGenerator::genDoc(const Location* loc) {
 }
 
 void birch::CppGenerator::genSourceLine(const Location* loc) {
-  auto line = loc->firstLine;
-  auto file = loc->file->path;
-  line("#line " << line << " \"" << file << "\"");
+  if (includeLines) {
+    auto line = loc->firstLine;
+    auto file = loc->file->path;
+    line("#line " << line << " \"" << file << "\"");
+  }
 }
 
 std::string birch::CppGenerator::genIndex(const Statement* o) {

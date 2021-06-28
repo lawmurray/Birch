@@ -21,9 +21,10 @@ public:
    * @param level Indentation level.
    * @param header Output header instead of source?
    * @param includeInline Include inline classes and functions?
+   * @param includeLines Include #line annotations?
    */
-  CppGenerator(std::ostream& base, const int level = 0,
-      const bool header = false, const bool includeInline = false);
+  CppGenerator(std::ostream& base, const int level, const bool header,
+      const bool includeInline, const bool includeLines);
 
   using IndentableGenerator::visit;
 
@@ -137,6 +138,11 @@ protected:
    * Include inline classes and functions?
    */
   bool includeInline;
+
+  /**
+   * Include #line annotations?
+   */
+  bool includeLines;
 
   /**
    * Are we on the left side of an assignment statement?
