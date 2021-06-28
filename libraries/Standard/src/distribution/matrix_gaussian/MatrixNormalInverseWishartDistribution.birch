@@ -74,10 +74,6 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(N:Arg1, 
   }
 }
 
-// instantiated class MatrixNormalInverseWishartDistribution<
-//     Expression<Real[_,_]>,Expression<Real[_,_]>,Expression<Real[_,_]>,
-//     Expression<Real>>;
-
 function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1, Λ:Arg2,
     Ψ:Arg3, k:Arg4) -> {
   return construct<MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>>(N, Λ, Ψ,

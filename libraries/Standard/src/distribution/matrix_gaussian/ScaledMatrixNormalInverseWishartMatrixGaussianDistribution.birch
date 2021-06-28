@@ -70,10 +70,6 @@ final class ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2
   }
 }
 
-// instantiated class ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<
-//     Expression<Real[_,_]>,Expression<Real[_,_]>,Expression<Real[_,_]>,
-//     Expression<Real[_,_]>,Expression<Real>,Expression<Real[_,_]>>;
-
 function ScaledMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, U:Arg6) -> {
   return construct<ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,

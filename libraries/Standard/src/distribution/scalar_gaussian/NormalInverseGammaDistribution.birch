@@ -106,9 +106,6 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   }
 }
 
-// instantiated class NormalInverseGammaDistribution<Expression<Real>,
-//     Expression<Real>,Expression<Real>,Expression<Real>>;
-
 function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
     β:Arg4) -> {
   return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ,

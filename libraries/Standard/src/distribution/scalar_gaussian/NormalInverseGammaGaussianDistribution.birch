@@ -71,9 +71,6 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(
   }
 }
 
-// instantiated class NormalInverseGammaGaussianDistribution<Expression<Real>,
-//     Expression<Real>,Expression<Real>,Expression<Real>,Expression<Real>>;
-
 function NormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
     α:Arg3, β:Arg4, s2:Arg5) -> {
   return construct<NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,

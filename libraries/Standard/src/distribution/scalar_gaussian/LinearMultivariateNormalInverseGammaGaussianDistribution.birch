@@ -89,10 +89,6 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
   }
 }
 
-// instantiated class LinearMultivariateNormalInverseGammaGaussianDistribution<
-//     Expression<Real[_]>,Expression<Real[_]>,Expression<Real[_,_]>,
-//     Expression<Real>,Expression<Real>,Expression<Real>,Expression<Real>>;
-
 function LinearMultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
     s2:Arg7) -> {
