@@ -3,11 +3,12 @@ struct AddFunction {
     return l + r;
   }
   
-  function grad<Gradient>(d:Gradient) -> {
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
     return (d, d);
   }
 }
-struct Add<Left,Right> = LinearMemoized<AddFunction,Left,Right>;
+struct Add<Left,Right> = Binary<AddFunction,Left,Right>;
 
 /**
  * Addition.

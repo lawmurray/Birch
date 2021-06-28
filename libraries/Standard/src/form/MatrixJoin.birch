@@ -1,39 +1,39 @@
 /**
- * Boxed and joined vector of expressions.
+ * Boxed and joined matrix of expressions.
  *
  * - Value: Element type.
  */
-struct VectorJoinForm<Value>(x:Expression<Value>[_]) {
+struct MatrixJoin<Value>(x:Expression<Value>[_,_]) {
   /**
    * Arguments.
    */
-  x:Expression<Value>[_] <- x;
+  x:Expression<Value>[_,_]? <- x;
 
-  function value() -> Value[_] {
+  function value() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.value(x');
         });
   }
 
-  function peek() -> Value[_] {
+  function peek() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.peek(x');
         });
   }
 
-  function eval() -> Value[_] {
+  function eval() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.eval(x');
         });
   }
 
-  function reval() -> Value[_] {
+  function reval() -> Value[_,_] {
     return transform(x, \(x':Expression<Value>) -> {
           return global.reval(x');
         });
   }
   
-  function grad(d:Value[_]) {
+  function grad(d:Value[_,_]) {
     for_each(x, d, \(x':Expression<Value>, d':Value) {
           global.grad(x', d');
         });
@@ -53,8 +53,8 @@ struct VectorJoinForm<Value>(x:Expression<Value>[_]) {
 }
 
 /**
- * Convert a vector of expressions into a vector form.
+ * Convert a matrix of expressions into a matrix form.
  */
-function join<Value>(x:Expression<Value>[_]) -> {
-  return box(construct<VectorJoinForm<Value>>(x));
+function join<Value>(x:Expression<Value>[_,_]) -> {
+  return box(construct<MatrixJoin<Value>>(x));
 }

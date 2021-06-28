@@ -10,7 +10,7 @@ struct CholSolveFunction {
     return (outer(-x, y), x);
   }
 }
-struct CholSolve<Left,Right> = BinaryMemoized<CholSolveFunction,Left,Right>;
+struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;
 
 /**
  * Solve a system of equations where the left argument is a symmetric

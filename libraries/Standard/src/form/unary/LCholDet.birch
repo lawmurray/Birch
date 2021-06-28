@@ -7,7 +7,7 @@ struct LCholDetFunction {
     return d*cholinv(m);
   }
 }
-struct LCholDet<Middle> = UnaryMemoized<LCholDetFunction,Middle>;
+struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;
 
 /**
  * Log-determinant of a symmetric positive-definite matrix via the Cholesky

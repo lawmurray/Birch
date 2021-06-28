@@ -31,7 +31,7 @@ struct MatrixStackFunction {
     return (d[1..r1,1..c1], d[(r1 + 1)..(r1 + r2),1..c1]);
   }
 }
-struct MatrixStack<Left,Right> = BinaryMemoized<MatrixStackFunction,Left,Right>;
+struct MatrixStack<Left,Right> = Binary<MatrixStackFunction,Left,Right>;
 
 /**
  * Stack two matrices atop one another (i.e. append columns) to create a

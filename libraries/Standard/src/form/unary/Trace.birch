@@ -15,7 +15,7 @@ struct TraceFunction {
     return diagonal(d, global.rows(m));
   }
 }
-struct Trace<Middle> = UnaryMemoized<TraceFunction,Middle>;
+struct Trace<Middle> = Unary<TraceFunction,Middle>;
 
 /**
  * Trace.

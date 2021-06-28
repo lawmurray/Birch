@@ -8,7 +8,7 @@ struct DotFunction {
     return (r*d, outer(l, d));
   }
 }
-struct Dot<Left,Right> = BinaryMemoized<DotFunction,Left,Right>;
+struct Dot<Left,Right> = Binary<DotFunction,Left,Right>;
 
 /**
  * Dot product.

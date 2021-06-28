@@ -8,7 +8,7 @@ struct DivideFunction {
     return (d/r, -trace(inner(d, l))/pow(r, 2.0));
   }
 }
-struct Divide<Left,Right> = BinaryMemoized<DivideFunction,Left,Right>;
+struct Divide<Left,Right> = Binary<DivideFunction,Left,Right>;
 
 /**
  * Division.

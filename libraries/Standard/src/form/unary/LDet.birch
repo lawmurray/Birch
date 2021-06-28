@@ -7,7 +7,7 @@ function grad<Gradient,Value>(d:Gradient, m:Value) -> {
     return d*inv(transpose(m));
   }
 }
-struct LDet<Middle> = UnaryMemoized<LDetFunction,Middle>;
+struct LDet<Middle> = Unary<LDetFunction,Middle>;
 
 /**
  * Log-determinant of a matrix.

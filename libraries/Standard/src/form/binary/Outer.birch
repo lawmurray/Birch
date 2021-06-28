@@ -8,7 +8,7 @@ struct OuterFunction {
     return (d*r, inner(d, l));
   }
 }
-struct Outer<Left,Right> = BinaryMemoized<OuterFunction,Left,Right>;
+struct Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
 
 /**
  * Outer product.

@@ -10,7 +10,7 @@ struct SolveFunction {
     return (dl, dr);
   }
 }
-struct Solve<Left,Right> = BinaryMemoized<SolveFunction,Left,Right>;
+struct Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
 
 /**
  * Solve a system of equations.
