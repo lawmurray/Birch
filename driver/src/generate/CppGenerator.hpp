@@ -112,9 +112,9 @@ protected:
   void genInit(const T* o);
 
   /**
-   * Generate the name of a loop index.
+   * Generate a documentation comment.
    */
-  virtual std::string getIndex(const Statement* o);
+  void genDoc(const Location* loc);
 
   /**
    * Generate macro to update line source line only. This does not generate
@@ -122,6 +122,11 @@ protected:
    * lists.
    */
   void genSourceLine(const Location* loc);
+
+  /**
+   * Generate the name of a loop index.
+   */
+  std::string genIndex(const Statement* o);
 
   /**
    * Output header instead of source?
@@ -210,6 +215,7 @@ void birch::CppGenerator::genInit(const T* o) {
 template<class ObjectType>
 void birch::CppGenerator::genTemplateParams(const ObjectType* o) {
   if (!o->typeParams->isEmpty()) {
+    genSourceLine(o->loc);
     start("template<");
     for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
         ++iter) {

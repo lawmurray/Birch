@@ -23,7 +23,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
     o->accept(&memberVariables);
 
     if (header) {
-      genSourceLine(o->loc);
+      genDoc(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       if (o->has(STRUCT)) {
@@ -111,7 +111,6 @@ void birch::CppClassGenerator::visit(const Class* o) {
 
     /* constructor */
     if (!header) {
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start(o->name << '_');
@@ -191,6 +190,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
 
 void birch::CppClassGenerator::visit(const MemberVariable* o) {
   if (header) {
+    genDoc(o->loc);
     line(o->type << ' ' << o->name << ';');
   }
 }
@@ -199,7 +199,7 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
   if ((includeInline || !o->isGeneric()) && (!o->braces->isEmpty() ||
       (header && o->has(ABSTRACT)))) {
     if (header) {
-      genSourceLine(o->loc);
+      genDoc(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("");
@@ -207,9 +207,7 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
         middle("virtual ");
       }
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(currentClass);
-      genSourceLine(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
       start("");
@@ -242,16 +240,18 @@ void birch::CppClassGenerator::visit(const MemberFunction* o) {
 
 void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
   if (!o->braces->isEmpty()) {
-    start("");
+    genDoc(o->loc);
     if (header) {
+      genSourceLine(o->loc);
       if (!currentClass->has(FINAL)) {
-        genSourceLine(o->loc);
-        middle("virtual ");
+        start("virtual ");
+      } else {
+        start("");
       }
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
+      start("");
     }
     middle(currentClass->name << '_');
     genTemplateArgs(currentClass);
@@ -280,14 +280,15 @@ void birch::CppClassGenerator::visit(const AssignmentOperator* o) {
 
 void birch::CppClassGenerator::visit(const ConversionOperator* o) {
   if (!o->braces->isEmpty()) {
+    genDoc(o->loc);
     if (header) {
       genSourceLine(o->loc);
-      start("");
       if (!currentClass->has(FINAL)) {
-        middle("virtual ");
+        start("virtual ");
+      } else {
+        start("");
       }
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
       start(currentClass->name << '_');
@@ -311,14 +312,15 @@ void birch::CppClassGenerator::visit(const ConversionOperator* o) {
 
 void birch::CppClassGenerator::visit(const SliceOperator* o) {
   if (!o->braces->isEmpty()) {
+    genDoc(o->loc);
     if (header) {
       genSourceLine(o->loc);
-      start("");
       if (!currentClass->has(FINAL)) {
-        middle("virtual ");
+        start("virtual ");
+      } else {
+        start("");
       }
     } else {
-      genSourceLine(o->loc);
       genTemplateParams(currentClass);
       genSourceLine(o->loc);
       start("");

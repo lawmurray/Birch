@@ -232,6 +232,7 @@ void birch::CppGenerator::visit(const File* o) {
 
 void birch::CppGenerator::visit(const GlobalVariable* o) {
   ++inGlobal;
+  genDoc(o->loc);
   genSourceLine(o->loc);
   start("");
   if (header) {
@@ -272,7 +273,7 @@ void birch::CppGenerator::visit(const TupleVariable* o) {
 
 void birch::CppGenerator::visit(const Function* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
-    genSourceLine(o->loc);
+    genDoc(o->loc);
     genTemplateParams(o);
     genSourceLine(o->loc);
     start("");
@@ -298,6 +299,7 @@ void birch::CppGenerator::visit(const MemberFunction* o) {
 
 void birch::CppGenerator::visit(const Program* o) {
   if (!o->braces->isEmpty()) {
+    genDoc(o->loc);
     genSourceLine(o->loc);
     if (header) {
       line("extern \"C\" int " << o->name << "(int, char**);");
@@ -454,7 +456,7 @@ void birch::CppGenerator::visit(const Program* o) {
 
 void birch::CppGenerator::visit(const BinaryOperator* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
-    genSourceLine(o->loc);
+    genDoc(o->loc);
     genTemplateParams(o);
     genSourceLine(o->loc);
     start("");
@@ -484,7 +486,7 @@ void birch::CppGenerator::visit(const BinaryOperator* o) {
 
 void birch::CppGenerator::visit(const UnaryOperator* o) {
   if ((includeInline || !o->isGeneric()) && !o->braces->isEmpty()) {
-    genSourceLine(o->loc);
+    genDoc(o->loc);
     genTemplateParams(o);
     genSourceLine(o->loc);
     start(o->returnType << ' ');
@@ -557,7 +559,7 @@ void birch::CppGenerator::visit(const If* o) {
 }
 
 void birch::CppGenerator::visit(const For* o) {
-  auto index = getIndex(o->index);
+  auto index = genIndex(o->index);
   genSourceLine(o->loc);
   start("for (auto " << index << " = " << o->from << "; ");
   finish(index << " <= " << o->to << "; ++" << index << ") {");
@@ -568,7 +570,7 @@ void birch::CppGenerator::visit(const For* o) {
 }
 
 void birch::CppGenerator::visit(const Parallel* o) {
-  auto index = getIndex(o->index);
+  auto index = genIndex(o->index);
   genSourceLine(o->loc);
   line("#pragma omp parallel");
   line("{");
@@ -680,14 +682,21 @@ void birch::CppGenerator::visit(const DeducedType* o) {
   middle("decltype(auto)");
 }
 
-std::string birch::CppGenerator::getIndex(const Statement* o) {
-  auto index = dynamic_cast<const LocalVariable*>(o);
-  assert(index);
-  return sanitize(index->name->str());
+void birch::CppGenerator::genDoc(const Location* loc) {
+  if (!loc->doc.empty()) {
+    line("");
+    line("/**" << loc->doc << "*/");
+  }
 }
 
 void birch::CppGenerator::genSourceLine(const Location* loc) {
   auto line = loc->firstLine;
   auto file = loc->file->path;
   line("#line " << line << " \"" << file << "\"");
+}
+
+std::string birch::CppGenerator::genIndex(const Statement* o) {
+  auto index = dynamic_cast<const LocalVariable*>(o);
+  assert(index);
+  return sanitize(index->name->str());
 }
