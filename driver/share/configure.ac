@@ -78,6 +78,7 @@ if $release; then
 fi
 
 # Checks for headers
+AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])
