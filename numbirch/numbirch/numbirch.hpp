@@ -198,40 +198,6 @@ double sum(const int n, const double* x, const int incx);
 double sum(const int m, const int n, const double* A, const int ldA);
 
 /**
- * Vector trace (sum of elements).
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * 
- * @return Trace of the vector.
- */
-double trace(const int n, const double* x, const int incx);
-
-/**
- * Matrix trace (sum of elements on main diagonal).
- * 
- * @param m Number of rows.
- * @param n Number of columns.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * 
- * @return Trace of the matrix.
- */
-double trace(const int m, const int n, const double* A, const int ldA);
-
-/**
- * Vector dot product. Computes @f$x^\top x@f$, resulting in a scalar.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * 
- * @return Dot product.
- */
-double dot(const int n, const double* x, const int incx);
-
-/**
  * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
  * 
  * @param n Number of elements.
@@ -244,60 +210,6 @@ double dot(const int n, const double* x, const int incx);
  */
 double dot(const int n, const double* x, const int incx, const double* y,
     const int incy);
-
-/**
- * Vector-matrix dot product. Computes @f$y = (x^\top A)^\top@f$, resulting in
- * a vector.
- * 
- * @param m Number of elements of `y` and columns of `A`.
- * @param n Number of elements of `x` and rows of `A`.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param A Matrix.
- * @param ldA Rows stride of `A`.
- * @param[out] y Vector.
- * @param incy Element stride of `y`.
- */
-void dot(const int m, const int n, const double* x, const int incx,
-    const double* A, const int ldA, double* y, const int incy);
-
-/**
- * Vector inner product. Computes @f$y = x^\top x@f$, resulting in a vector of
- * length one.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param[out] y Vector.
- */
-void inner(const int n, const double* x, const int incx, double* y);
-
-/**
- * Matrix inner product. Computes @f$B = A^\top A@f$.
- * 
- * @param m Number of rows and columns of `B`, and columns of `A`.
- * @param n Number of rows of `A`.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
- */
-void inner(const int m, const int n, const double* A, const int ldA,
-    double* B, const int ldB);
-
-/**
- * Vector-vector inner product. Computes @f$z = x^\top y@f$, resulting in a
- * vector of length one.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Vector.
- * @param incy Element stride of `y`.
- * @param[out] z Vector.
- */
-void inner(const int n, const double* x, const int incx, const double* y,
-    const int incy, double* z);
 
 /**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
@@ -315,21 +227,6 @@ void inner(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy);
 
 /**
- * Vector-matrix inner product. Computes @f$B = x^\top A@f$, resulting in a
- * matrix of one row.
- * 
- * @param n Number of columns of `A`.
- * @param k Number of elements of `x` and rows of `A`.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * @param[out] B Matrix.
- */
-void inner(const int n, const int k, const double* x, const int incx,
-    const double* A, const int ldA, double* B);
-
-/**
  * Matrix-matrix inner product. Computes @f$C = A^\top B@f$.
  * 
  * @param m Number of rows of `C`, and columns of `A`.
@@ -344,31 +241,6 @@ void inner(const int n, const int k, const double* x, const int incx,
  */
 void inner(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
-
-/**
- * Vector outer product. Computes @f$A = xx^\top@f$.
- * 
- * @param n Number of rows and columns of `A`, and elements of `x`.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param[out] A Matrix.
- * @param ldA Row stride of `A`.
- */
-void outer(const int n, const double* x, const int incx, double* A,
-    const int ldA);
-
-/**
- * Matrix outer product. Computes @f$B = AA^\top@f$.
- * 
- * @param n Number of rows and columns of `B`, and rows of `A`.
- * @param k Number of columns of `A`.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
- */
-void outer(const int n, const int k, const double* A, const int ldA,
-    double* B, const int ldB);
 
 /**
  * Vector-vector outer product. Computes @f$A = xy^\top@f$.
@@ -488,14 +360,13 @@ void cholinv(const int n, const double* S, const int ldS, double* B,
 /**
  * Logarithm of the absolute value of the determinant of a matrix.
  * 
- * @param m Number of rows.
- * @param n Number of columns.
+ * @param n Number of rows and columns.
  * @param A Matrix.
  * @param ldA Row stride of `A`.
  * 
  * @return Logarithm of the absolute value of the determinant of `A`.
  */
-double ldet(const int m, const int n, const double* A, const int ldA);
+double ldet(const int n, const double* A, const int ldA);
 
 /**
  * Logarithm of the determinant of a matrix, via the Cholesky factorization.
@@ -511,18 +382,6 @@ double ldet(const int m, const int n, const double* A, const int ldA);
 double lcholdet(const int n, const double* S, const int ldS);
 
 /**
- * Vector transpose.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
- */
-void transpose(const int n, const double* x, const int incx, double* B,
-    const int ldB);
-
-/**
  * Matrix transpose.
  * 
  * @param m Number of rows.
@@ -534,5 +393,17 @@ void transpose(const int n, const double* x, const int incx, double* B,
  */
 void transpose(const int m, const int n, const double* A, const int ldA,
     double* B, const int ldB);
+
+/**
+ * Matrix trace.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Row stride of `A`.
+ * 
+ * @return Trace of the matrix.
+ */
+double trace(const int m, const int n, const double* A, const int ldA);
 
 }
