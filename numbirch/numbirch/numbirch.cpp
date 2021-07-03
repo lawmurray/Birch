@@ -104,6 +104,22 @@ void numbirch::mul(const int m, const int n, const int k, const double* A,
   C1.noalias() = A1*B1;
 }
 
+void numbirch::hadamard(const int n, const double* x, const int incx,
+    const double* y, const int incy, double* z, const int incz) {
+  auto x1 = make_eigen_vector(x, n, incx);
+  auto y1 = make_eigen_vector(y, n, incy);
+  auto z1 = make_eigen_vector(z, n, incz);
+  z1.noalias() = x1.cwiseProduct(y1);
+}
+
+void numbirch::hadamard(const int m, const int n, const double* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.cwiseProduct(B1);
+}
+
 void numbirch::div(const int n, const double* x, const int incx,
     const double y, double* z, const int incz) {
   auto x1 = make_eigen_vector(x, n, incx);
@@ -229,14 +245,22 @@ double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   return 2.0*S1.llt().matrixLLT().diagonal().array().log().sum();
 }
 
-void transpose(const int m, const int n, const double* A, const int ldA,
-    double* B, const int ldB) {
+void numbirch::chol(const int n, const double* S, const int ldS, double* L,
+    const int ldL) {
+  auto S1 = make_eigen_matrix(S, n, n, ldS);
+  auto L1 = make_eigen_matrix(L, n, n, ldL);
+  L1 = S1.llt().matrixL();
+}
+
+void numbirch::transpose(const int m, const int n, const double* A,
+    const int ldA, double* B, const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.noalias() = A1.transpose();
 }
 
-double trace(const int m, const int n, const double* A, const int ldA) {
+double numbirch::trace(const int m, const int n, const double* A,
+    const int ldA) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   return A1.trace();
 }

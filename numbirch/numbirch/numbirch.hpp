@@ -148,6 +148,35 @@ void mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
 
 /**
+ * Hadamard (element-wise) vector multiplication.
+ * 
+ * @param n Number of elements.
+ * @param x Vector.
+ * @param incx Element stride of `x`.
+ * @param y Vector.
+ * @param incy Element stride of `y`.
+ * @param[out] z Vector.
+ * @param incz Element stride of `z`.
+ */
+void hadamard(const int n, const double* x, const int incx, const double* y,
+    const int incy, double* z, const int incz);
+
+/**
+ * Hadamard (element-wise) matrix multiplication.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Row stride of `A`.
+ * @param B Matrix.
+ * @param ldB Row stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Row stride of `C`.
+ */
+void hadamard(const int m, const int n, const double* A, const int ldA,
+    const double* B, const int ldB, double* C, const int ldC);
+
+/**
  * Vector-scalar division.
  * 
  * @param n Number of elements.
@@ -380,6 +409,19 @@ double ldet(const int n, const double* A, const int ldA);
  * The determinant of a positive definite matrix is always positive.
  */
 double lcholdet(const int n, const double* S, const int ldS);
+
+/**
+ * Lower-triangular Cholesky factor of a symmetric positive definite matrix.
+ * Computes @f$L@f$ in @f$S = LL^\top@f$.
+ * 
+ * @param n Number of rows and columns.
+ * @param S Symmetric positive definite matrix.
+ * @param ldS Row stride of `S`.
+ * @param[out] L Matrix.
+ * @param ldL Row stride of `L`.
+ */
+void chol(const int n, const double* S, const int ldS, double* L,
+    const int ldL);
 
 /**
  * Matrix transpose.
