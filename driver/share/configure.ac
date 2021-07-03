@@ -37,8 +37,8 @@ esac],[release=true])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
 # Programs
-AC_PROG_CXXCPP
 AC_PROG_CXX
+AC_PROG_CXXCPP
 AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
@@ -63,7 +63,6 @@ AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
 # Checks for libraries
-AC_SEARCH_LIBS([dlopen], [dl], [], [])
 AC_CHECK_LIB([atomic], [main], [], [], [])
 AC_CHECK_LIB([stdc++fs], [main], [], [], [])
 AC_CHECK_LIB([omp], [main], [], [], [])
@@ -79,7 +78,6 @@ if $release; then
 fi
 
 # Checks for headers
-AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])

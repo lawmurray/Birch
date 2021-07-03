@@ -37,8 +37,8 @@ esac],[release=true])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
 # Programs
-AC_PROG_CXXCPP
 AC_PROG_CXX
+AC_PROG_CXXCPP
 AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
@@ -56,7 +56,6 @@ AC_OPENMP
 AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
 
 # Checks for libraries
-AC_SEARCH_LIBS([dlopen], [dl], [], [])
 AC_CHECK_LIB([atomic], [main], [], [], [])
 AC_CHECK_LIB([omp], [main], [], [], [])
 
