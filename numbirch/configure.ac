@@ -45,24 +45,6 @@ AC_ARG_ENABLE([dpcpp],
 esac],[dpcpp=false])
 AM_CONDITIONAL([DPCPP], [test x$dpcpp = xtrue])
 
-AC_ARG_ENABLE([cblas],
-[AS_HELP_STRING[--enable-cblas], [Use CBLAS and LAPACKE (the C interfaces to BLAS and LAPACK)]],
-[case "${enableval}" in
-  yes) cblas=true ;;
-  no)  cblas=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-cblas]) ;;
-esac],[cblas=true])
-AM_CONDITIONAL([CBLAS], [test x$cblas = xtrue])
-
-AC_ARG_ENABLE([eigen],
-[AS_HELP_STRING[--enable-eigen], [Use Eigen]],
-[case "${enableval}" in
-  yes) eigen=true ;;
-  no)  eigen=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-eigen]) ;;
-esac],[eigen=false])
-AM_CONDITIONAL([EIGEN], [test x$eigen = xtrue])
-
 # Programs
 if $dpcpp; then
   compilers=dpcpp
@@ -90,14 +72,7 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 if $dpcpp; then
   AX_CHECK_COMPILE_FLAG([-qmkl=sequential], [CXXFLAGS="$CXXFLAGS -qmkl=sequential"], [AC_MSG_ERROR([MKL not available])], [-Werror])
   AX_CHECK_COMPILE_FLAG([-fsycl], [CXXFLAGS="$CXXFLAGS -fsycl"], [AC_MSG_ERROR([SYCL not available])], [-Werror])
-fi
-if $cblas; then
-  AC_CHECK_HEADERS([cblas.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-  AC_CHECK_HEADERS([lapacke.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-  AC_SEARCH_LIBS([cblas_dgemm], [openblas cblas], [], [AC_MSG_ERROR([required CBLAS function not found])], [])
-  AC_SEARCH_LIBS([LAPACKE_dpotrf], [openblas lapacke], [], [AC_MSG_ERROR([required LAPACKE function not found])], [])
-fi
-if $eigen; then
+else
   AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 fi
 
