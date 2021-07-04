@@ -49,7 +49,7 @@ AM_CONDITIONAL([DPCPP], [test x$dpcpp = xtrue])
 if $dpcpp; then
   compilers=dpcpp
 else
-  compilers=[]
+  compilers=
 fi
 AC_PROG_CXX($compilers)
 AC_PROG_CXXCPP
