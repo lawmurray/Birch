@@ -1190,7 +1190,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxNotes("note:|required by|required from|\\[with.*?\\]", options);
 
   std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|unrecognized command-line option|^\\s*from|std::enable_if|At global scope:|type_traits", options);
-  std::regex rxNamespace("birch::|libbirch::", options);
+  std::regex rxNamespace("birch::|libbirch::|numbirch::", options);
   std::regex rxInternal("\\b(" + name + ")_\\b", options);
   std::regex rxCxxWords("\\b(?:virtual|class|const|typename|template(?= *<))\\b *", options);
   std::regex rxTemplateParameter("template parameter", options);
