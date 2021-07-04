@@ -91,8 +91,8 @@ void numbirch::mul(const int m, const int n, const double a, const double* B,
 void numbirch::mul(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto x1 = make_eigen_vector(x, m, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
+  auto x1 = make_eigen_vector(x, n, incx);
+  auto y1 = make_eigen_vector(y, m, incy);
   y1.noalias() = A1*x1;
 }
 
@@ -154,9 +154,9 @@ double numbirch::dot(const int n, const double* x, const int incx,
 
 void numbirch::inner(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto x1 = make_eigen_vector(x, m, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
+  auto A1 = make_eigen_matrix(A, n, m, ldA);
+  auto x1 = make_eigen_vector(x, n, incx);
+  auto y1 = make_eigen_vector(y, m, incy);
   y1.noalias() = A1.transpose()*x1;
 }
 
@@ -195,9 +195,9 @@ void numbirch::solve(const int n, const double* A, const int ldA, double* x,
 
 void numbirch::solve(const int m, const int n, const double* A, const int ldA,
     double* X, const int ldX, const double* Y, const int ldY) {
-  auto A1 = make_eigen_matrix(A, n, n, ldA);
-  auto X1 = make_eigen_matrix(X, n, n, ldX);
-  auto Y1 = make_eigen_matrix(Y, n, n, ldY);
+  auto A1 = make_eigen_matrix(A, m, m, ldA);
+  auto X1 = make_eigen_matrix(X, m, n, ldX);
+  auto Y1 = make_eigen_matrix(Y, m, n, ldY);
   X1.noalias() = A1.householderQr().solve(Y1);
 }
 
@@ -212,9 +212,9 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
 
 void numbirch::cholsolve(const int m, const int n, const double* S,
     const int ldS, double* X, const int ldX, const double* Y, const int ldY) {
-  auto S1 = make_eigen_matrix(S, n, n, ldS);
-  auto X1 = make_eigen_matrix(X, n, n, ldX);
-  auto Y1 = make_eigen_matrix(Y, n, n, ldY);
+  auto S1 = make_eigen_matrix(S, m, m, ldS);
+  auto X1 = make_eigen_matrix(X, m, n, ldX);
+  auto Y1 = make_eigen_matrix(Y, m, n, ldY);
   X1.noalias() = S1.llt().solve(Y1);
   ///@todo Use ldlt()?
 }
@@ -254,7 +254,7 @@ void numbirch::chol(const int n, const double* S, const int ldS, double* L,
 
 void numbirch::transpose(const int m, const int n, const double* A,
     const int ldA, double* B, const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto A1 = make_eigen_matrix(A, n, m, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.noalias() = A1.transpose();
 }

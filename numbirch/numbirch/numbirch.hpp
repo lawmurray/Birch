@@ -426,8 +426,8 @@ void chol(const int n, const double* S, const int ldS, double* L,
 /**
  * Matrix transpose.
  * 
- * @param m Number of rows.
- * @param n Number of columns.
+ * @param m Number of rows of `B` and columns of `A`.
+ * @param n Number of columns of `B` and rows of `A`.
  * @param A Matrix.
  * @param ldA Row stride of `A`.
  * @param[out] B Matrix.
