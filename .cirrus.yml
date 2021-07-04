@@ -30,6 +30,12 @@ task:
     - ./configure --prefix="${PREFIX}" ${MODE_FLAGS} || cat config.log
     - make -j4
     - make install
+  numbirch_build_script:
+    - cd numbirch
+    - ./bootstrap
+    - ./configure --prefix="${PREFIX}" ${MODE_FLAGS} || cat config.log
+    - make -j4
+    - make install
   birch-standard_build_script:
     - cd libraries/Standard
     - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
