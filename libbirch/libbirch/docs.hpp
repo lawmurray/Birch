@@ -2,11 +2,10 @@
  * @mainpage
  *
  * LibBirch is a C++ template library intended as a compile target for
- * probabilistic programming languages (PPLs). It provides basic types,
- * [Eigen](https://eigen.tuxfamily.org/) integration, and dynamic memory
- * management (reference counting, cycle collection, lazy deep copy). This is
- * particularly important for memory efficiency in PPLs using Sequential Monte
- * Carlo (SMC) and related methods for inference.
+ * probabilistic programming languages (PPLs). It provides basic types and
+ * dynamic memory management (reference counting, cycle collection, lazy deep
+ * copy). This is particularly important for memory efficiency in PPLs using
+ * Sequential Monte Carlo (SMC) and related methods for inference.
  *
  * LibBirch was developed primarily to support the [Birch](https://birch.sh)
  * probabilistic programming language, but may be useful for other purposes

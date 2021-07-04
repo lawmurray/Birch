@@ -7,7 +7,6 @@
 #include "libbirch/Stride.hpp"
 #include "libbirch/Index.hpp"
 #include "libbirch/Range.hpp"
-#include "libbirch/Eigen.hpp"
 
 namespace libbirch {
 /**
@@ -90,9 +89,6 @@ struct Dimension: public Length<length_value>, public Stride<stride_value> {
   template<class Dimension1>
   bool conforms(const Dimension1& o) const {
     return this->length == o.length;
-  }
-  bool conforms(const Eigen::Index rows) {
-    return this->length == rows;
   }
 
   /**

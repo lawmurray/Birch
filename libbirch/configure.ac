@@ -61,7 +61,6 @@ AC_CHECK_LIB([omp], [main], [], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -18,8 +18,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <cstddef>
-
-#include <eigen3/Eigen/Dense>
+#include <cstring>
 
 #ifdef HAVE_OMP_H
 #include <omp.h>

@@ -22,6 +22,7 @@ public:
    *
    * @param ptr Buffer.
    * @param shape F.
+   * @param serial Serialized index of first element.
    */
   Iterator(T* ptr, const F& shape, int64_t serial = 0) :
       shape(shape),

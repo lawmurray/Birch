@@ -11,7 +11,6 @@
 #include "libbirch/Iterator.hpp"
 #include "libbirch/ArrayControl.hpp"
 #include "libbirch/Lock.hpp"
-#include "libbirch/Eigen.hpp"
 
 namespace libbirch {
 /**
@@ -27,8 +26,6 @@ public:
   using this_type = Array<T,F>;
   using value_type = T;
   using shape_type = F;
-  using eigen_type = typename eigen_type<this_type>::type;
-  using eigen_stride_type = typename eigen_stride_type<this_type>::type;
 
   /**
    * Constructor.
@@ -79,7 +76,6 @@ public:
   /**
    * Constructor.
    *
-   * @param shape Shape.
    * @param values Values.
    */
   template<class G = F, std::enable_if_t<G::count() == 1,int> = 0>
@@ -96,7 +92,6 @@ public:
   /**
    * Constructor.
    *
-   * @param shape Shape.
    * @param values Values.
    */
   template<class G = F, std::enable_if_t<G::count() == 2,int> = 0>
@@ -210,35 +205,7 @@ public:
   }
 
   /**
-   * Copy assignment. For a view the shapes of the two arrays must
-   * conform, otherwise a resize is permitted.
-   */
-  void assign(const Array<T,F>& o) {
-    if (isView) {
-      assert(o.shape.conforms(shape) && "array sizes are different");
-      copy(o);
-    } else {
-      Array<T,F> tmp(o);
-      swap(tmp);
-    }
-  }
-
-  /**
-   * Number of elements.
-   */
-  auto size() const {
-    return shape.size();
-  }
-
-  /**
-   * Number of elements allocated.
-   */
-  auto volume() const {
-    return shape.volume();
-  }
-
-  /**
-   * @name Element access.
+   * @name Elements
    */
   ///@{
   /**
@@ -290,16 +257,28 @@ public:
     return Array<T,decltype(shape(slice))>(shape(slice), buffer +
         shape.serial(slice), true);
   }
+
+  /**
+   * @copydoc slice
+   */
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
   auto& slice(const V& slice) {
     elementize();
     return *(buffer + shape.serial(slice));
   }
+
+  /**
+   * @copydoc slice
+   */
   template<class V, std::enable_if_t<V::rangeCount() != 0,int> = 0>
   const auto slice(const V& slice) const {
     return Array<T,decltype(shape(slice))>(shape(slice), buffer +
         shape.serial(slice), false);
   }
+
+  /**
+   * @copydoc slice
+   */
   template<class V, std::enable_if_t<V::rangeCount() == 0,int> = 0>
   auto slice(const V& slice) const {
     return *(buffer + shape.serial(slice));
@@ -308,9 +287,9 @@ public:
   /**
    * Slice.
    *
-   * @tparam ...Args Slice argument types.
+   * @tparam Args Slice argument types.
    *
-   * @param args... Slice arguments.
+   * @param args Slice arguments.
    *
    * @return The resulting view or element.
    */
@@ -318,6 +297,10 @@ public:
   decltype(auto) operator()(Args&&... args) {
     return slice(make_slice(std::forward<Args>(args)...));
   }
+
+  /**
+   * @copydoc operator()()
+   */
   template<class... Args>
   decltype(auto) operator()(Args&&... args) const {
     return slice(make_slice(std::forward<Args>(args)...));
@@ -325,16 +308,57 @@ public:
   ///@}
 
   /**
-   * Compare.
+   * @name Size
    */
-  template<class U, class G>
-  bool operator==(const Array<U,G>& o) const {
-    return std::equal(beginInternal(), endInternal(), o.beginInternal());
+  ///@{
+  /**
+   * Number of elements.
+   */
+  auto size() const {
+    return shape.size();
   }
-  template<class U, class G>
-  bool operator!=(const Array<U,G>& o) const {
-    return !(*this == o);
+
+  /**
+   * Number of elements allocated.
+   */
+  auto volume() const {
+    return shape.volume();
   }
+
+  /**
+   * Number of rows. For a vector, this is the length.
+   */
+  auto rows() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return shape.length(0);
+  }
+
+  /**
+   * Number of columns. For a vector, this is 1.
+   */
+  auto columns() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return F::count() == 1 ? 1 : shape.length(1);
+  }
+
+  /**
+   * Stride between rows. For a vector this is the stride between elements,
+   * for a matrix this is the stride between rows.
+   */
+  auto rowStride() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return shape.stride(0);
+  }
+
+  /**
+   * Stride between columns. For a vector this is zero, for a matrix this is
+   * the stride between elements in each row.
+   */
+  auto colStride() const {
+    assert(1 <= F::count() && F::count() <= 2);
+    return F::count() == 1 ? 0 : shape.stride(1);
+  }
+  ///@}
 
   /**
    * @name Resize
@@ -405,98 +429,22 @@ public:
   ///@}
 
   /**
-   * @name Eigen integration
+   * @name Low-level
    */
   ///@{
-  template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
-  operator eigen_type() const {
-    return toEigen();
-  }
-
-  template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
-  auto toEigen() {
-    return eigen_type(buffer, rows(), cols(), eigen_stride_type(rowStride(),
-        colStride()));
-  }
-
-  template<class Check = T, std::enable_if_t<std::is_arithmetic<Check>::value,int> = 0>
-  auto toEigen() const {
-    return eigen_type(buffer, rows(), cols(), eigen_stride_type(rowStride(),
-        colStride()));
+  /**
+   * Direct access to the underlying buffer.
+   */
+  T* data() {
+    elementize();
+    return buffer;
   }
 
   /**
-   * Construct from Eigen Matrix expression.
+   * Direct access to the underlying buffer.
    */
-  template<class EigenType, std::enable_if_t<is_eigen_compatible<this_type,EigenType>::value,int> = 0>
-  Array(const Eigen::MatrixBase<EigenType>& o) :
-      shape(o.rows(), o.cols()),
-      buffer(nullptr),
-      control(nullptr),
-      isView(false),
-      isElementWise(false) {
-    allocate();
-    toEigen().noalias() = o;
-  }
-
-  /**
-   * Construct from Eigen DiagonalWrapper expression.
-   */
-  template<class EigenType, std::enable_if_t<is_diagonal_compatible<this_type,EigenType>::value,int> = 0>
-  Array(const Eigen::DiagonalWrapper<EigenType>& o) :
-      shape(o.rows(), o.cols()),
-      buffer(nullptr),
-      control(nullptr),
-      isView(false),
-      isElementWise(false) {
-    allocate();
-    toEigen().noalias() = o;
-  }
-
-  /**
-   * Construct from Eigen TriangularView expression.
-   */
-  template<class EigenType, unsigned Mode, std::enable_if_t<is_triangle_compatible<this_type,EigenType>::value,int> = 0>
-  Array(const Eigen::TriangularView<EigenType,Mode>& o) :
-      shape(o.rows(), o.cols()),
-      buffer(nullptr),
-      control(nullptr),
-      isView(false),
-      isElementWise(false) {
-    allocate();
-    toEigen() = o;
-  }
-
-  /**
-   * Number of rows. For a vectoor, this is the length.
-   */
-  auto rows() const {
-    assert(1 <= F::count() && F::count() <= 2);
-    return shape.length(0);
-  }
-
-  /**
-   * Number of columns. For a vector, this is 1.
-   */
-  auto cols() const {
-    assert(1 <= F::count() && F::count() <= 2);
-    return F::count() == 1 ? 1 : shape.length(1);
-  }
-
-  /**
-   * Stride between rows.
-   */
-  auto rowStride() const {
-    assert(1 <= F::count() && F::count() <= 2);
-    return F::count() == 1 ? shape.volume() : shape.stride(0);
-  }
-
-  /**
-   * Stride between columns.
-   */
-  auto colStride() const {
-    assert(1 <= F::count() && F::count() <= 2);
-    return F::count() == 1 ? shape.stride(0) : shape.stride(1);
+  const T* data() const {
+    return buffer;
   }
   ///@}
 
@@ -539,6 +487,20 @@ private:
    */
   Iterator<T,F> endInternal() const {
     return beginInternal() + size();
+  }
+
+  /**
+   * Copy assignment. For a view the shapes of the two arrays must
+   * conform, otherwise a resize is permitted.
+   */
+  void assign(const Array<T,F>& o) {
+    if (isView) {
+      assert(o.shape.conforms(shape) && "array sizes are different");
+      copy(o);
+    } else {
+      Array<T,F> tmp(o);
+      swap(tmp);
+    }
   }
 
   /**

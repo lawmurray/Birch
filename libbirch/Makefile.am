@@ -9,7 +9,7 @@ if RELEASE
 lib_LTLIBRARIES += libbirch.la
 endif
 
-AM_CPPFLAGS = -Wall -DEIGEN_NO_STATIC_ASSERT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
+AM_CPPFLAGS = -Wall
 
 libbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O -g -flto
 libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
@@ -38,7 +38,6 @@ nobase_include_HEADERS = \
   libbirch/Destroyer.hpp \
   libbirch/docs.hpp \
   libbirch/Dimension.hpp \
-  libbirch/Eigen.hpp \
   libbirch/external.hpp \
   libbirch/Index.hpp \
   libbirch/Inplace.hpp \
