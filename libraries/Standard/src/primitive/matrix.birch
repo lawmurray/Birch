@@ -1,3 +1,10 @@
+operator<Type> (X:Type[_,_] == Y:Type[_,_]) -> Boolean;
+operator<Type> (X:Type[_,_] != Y:Type[_,_]) -> Boolean;
+
+operator<Type> (+X:Type[_,_]) -> Type[_,_] {
+  return X;
+}
+
 /**
  * Convert vector to matrix with single row.
  */
@@ -111,7 +118,7 @@ function rows<Type>(x:Type[_,_]) -> Integer {
 
 function columns<Type>(x:Type[_,_]) -> Integer {
   cpp{{
-  return x.cols();
+  return x.columns();
   }}
 }
 

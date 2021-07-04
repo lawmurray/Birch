@@ -27,13 +27,6 @@ function trace<Middle>(m:Middle) -> {
 /**
  * Trace.
  */
-function trace(m:Integer) -> Integer {
-  return m;
-}
-
-/**
- * Trace.
- */
 function trace(m:Real) -> Real {
   return m;
 }
@@ -41,35 +34,15 @@ function trace(m:Real) -> Real {
 /**
  * Trace.
  */
-function trace(m:Integer[_]) -> Integer {
-  cpp{{
-  return m.toEigen().sum();
-  }}
+function trace(x:Real[_]) -> Real {
+  return sum(x);
 }
 
 /**
  * Trace.
  */
-function trace(m:Real[_]) -> Real {
+function trace(A:Real[_,_]) -> Real {
   cpp{{
-  return m.toEigen().sum();
-  }}
-}
-
-/**
- * Trace.
- */
-function trace(m:Integer[_,_]) -> Integer {
-  cpp{{
-  return m.toEigen().trace();
-  }}
-}
-
-/**
- * Trace.
- */
-function trace(m:Real[_,_]) -> Real {
-  cpp{{
-  return m.toEigen().trace();
+  return numbirch::trace(A.rows(), A.columns(), A.data(), A.rowStride());
   }}
 }

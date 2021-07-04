@@ -18,366 +18,104 @@ function outer<Left,Right>(l:Left, r:Right) -> {
 }
 
 /**
- * Outer product of an argument with itself.
- */
-function outer<Middle>(m:Middle) -> {
-  return outer(m, m);
-}
-
-/**
- * Outer product of a scalar with itself.
- */
-function outer(x:Integer) -> Integer {
-  return outer(x, x);
-}
-
-/**
- * Outer product of a scalar with itself.
- */
-function outer(x:Real) -> Real {
-  return outer(x, x);
-}
-
-/**
- * Outer product of a vector with itself.
- */
-function outer(x:Integer[_]) -> Integer[_,_] {
-  return outer(x, x);
-}
-
-/**
- * Outer product of a vector with itself.
- */
-function outer(x:Real[_]) -> Real[_,_] {
-  return outer(x, x);
-}
-
-/**
- * Outer product of a matrix with itself.
- */
-function outer(X:Integer[_,_]) -> Integer[_,_] {
-  return outer(X, X);
-}
-
-/**
- * Outer product of a matrix with itself.
- */
-function outer(X:Real[_,_]) -> Real[_,_] {
-  return outer(X, X);
-}
-
-/**
- * Outer product.
- */
-function outer(x:Integer, y:Integer) -> Integer {
-  return x*y;
-}
-
-/**
- * Outer product.
- */
-function outer(x:Integer, y:Real) -> Real {
-  return x*y;
-}
-
-/**
- * Outer product.
- */
-function outer(x:Real, y:Integer) -> Real {
-  return x*y;
-}
-
-/**
- * Outer product.
+ * Scalar product.
  */
 function outer(x:Real, y:Real) -> Real {
   return x*y;
 }
 
 /**
- * Outer product.
+ * Scalar product.
  */
-function outer(x:Integer, y:Integer[_]) -> Integer[_,_] {
-  cpp{{
-  return y.toEigen().transpose().operator*(x);
-  }}
+function outer(x:Integer, y:Real) -> Real {
+  return outer(scalar<Real>(x), y);
 }
 
 /**
- * Outer product.
+ * Scalar product.
  */
-function outer(x:Integer, y:Real[_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().transpose().operator*(x);
-  }}
+function outer(x:Real, y:Integer) -> Real {
+  return outer(x, scalar<Real>(y));
 }
 
 /**
- * Outer product.
- */
-function outer(x:Real, y:Integer[_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().cast<Real>().transpose().operator*(x);
-  }}
-}
-
-/**
- * Outer product.
+ * Scalar-vector outer product.
  */
 function outer(x:Real, y:Real[_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().transpose().operator*(x);
-  }}
+  return x*transpose(y);
 }
 
 /**
- * Outer product.
+ * Scalar-vector outer product.
  */
-function outer(x:Integer[_], y:Integer) -> Integer[_] {
-  cpp{{
-  return x.toEigen().operator*(y);
-  }}
+function outer(x:Integer, y:Real[_]) -> Real[_,_] {
+  return outer(scalar<Real>(x), y);
 }
 
 /**
- * Outer product.
- */
-function outer(x:Integer[_], y:Real) -> Real[_] {
-  cpp{{
-  return x.toEigen().cast<Real>().operator*(y);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Real[_], y:Integer) -> Real[_] {
-  cpp{{
-  return x.toEigen().cast<Real>().operator*(y);
-  }}
-}
-
-/**
- * Outer product.
+ * Scalar-vector product.
  */
 function outer(x:Real[_], y:Real) -> Real[_] {
-  cpp{{
-  return x.toEigen().operator*(y);
-  }}
+  return x*y;
 }
 
 /**
- * Outer product.
+ * Scalar-vector product.
  */
-function outer(x:Integer[_], y:Integer[_]) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().operator*(y.toEigen().transpose());
-  }}
+function outer(x:Real[_], y:Integer) -> Real[_] {
+  return outer(x, scalar<Real>(y));
 }
 
 /**
- * Outer product.
+ * Scalar-matrix outer product.
  */
-function outer(x:Integer[_], y:Real[_]) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().cast<Real>().operator*(y.toEigen().transpose());
-  }}
+function outer(x:Real, Y:Real[_,_]) -> Real[_,_] {
+  return x*transpose(Y);
 }
 
 /**
- * Outer product.
+ * Scalar-matrix outer product.
  */
-function outer(x:Real[_], y:Integer[_]) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().operator*(y.toEigen().cast<Real>().transpose());
-  }}
+function outer(x:Integer, Y:Real[_,_]) -> Real[_,_] {
+  return outer(scalar<Real>(x), Y);
 }
 
 /**
- * Outer product.
+ * Scalar-matrix product.
+ */
+function outer(X:Real[_,_], y:Real) -> Real[_,_] {
+  return X*y;
+}
+
+/**
+ * Scalar-matrix product.
+ */
+function outer(X:Real[_,_], y:Integer) -> Real[_,_] {
+  return outer(X, scalar<Real>(y));
+}
+
+/**
+ * Vector outer product.
  */
 function outer(x:Real[_], y:Real[_]) -> Real[_,_] {
+  z:Real[length(x), length(y)];
   cpp{{
-  return x.toEigen().operator*(y.toEigen().transpose());
+  numbirch::outer(x.rows(), y.rows(), x.data(), x.rowStride(), y.data(),
+      y.rowStride(), z.data(), z.rowStride());
   }}
+  return z;
 }
 
 /**
- * Outer product.
- */
-function outer(x:Integer, y:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return y.toEigen().transpose().operator*(x);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Integer, y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().transpose().operator*(x);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Real, y:Integer[_,_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().cast<Real>().transpose().operator*(x);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Real, y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().transpose().operator*(x);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Integer[_,_], y:Integer) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().operator*(y);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Integer[_,_], y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().cast<Real>().operator*(y);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Real[_,_], y:Integer) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().operator*(y);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(x:Real[_,_], y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().operator*(y);
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Integer[_,_], y:Integer[_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().operator*(y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Integer[_,_], y:Real[_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().cast<Real>().operator*(y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Real[_,_], y:Integer[_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().operator*(y.toEigen().cast<Real>().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Real[_,_], y:Real[_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().operator*(y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Integer[_], y:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().operator*(y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Integer[_], y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().cast<Real>().operator*(y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Real[_], y:Integer[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().operator*(y.toEigen().cast<Real>().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Real[_], y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().operator*(y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Integer[_,_], Y:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().operator*(Y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Integer[_,_], Y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().cast<Real>().operator*(Y.toEigen().transpose());
-  }}
-}
-
-/**
- * Outer product.
- */
-function outer(X:Real[_,_], Y:Integer[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().operator*(Y.toEigen().cast<Real>().transpose());
-  }}
-}
-
-/**
- * Outer product.
+ * Matrix outer product.
  */
 function outer(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+  assert columns(X) == columns(Y);
+
+  Z:Real[rows(X), rows(Y)];
   cpp{{
-  return X.toEigen().operator*(Y.toEigen().transpose());
+  numbirch::outer(Z.rows(), Z.columns(), X.columns(), X.data(), X.rowStride(),
+      Y.data(), Y.rowStride(), Z.data(), Z.rowStride());
   }}
+  return Z;
 }

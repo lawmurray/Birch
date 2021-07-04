@@ -29,35 +29,22 @@ operator (-x:Real) -> Real;
 /**
  * Negation.
  */
-operator (-x:Integer[_]) -> Integer[_] {
-  cpp{{
-  return x.toEigen().operator-();
-  }}
-}
-
-/**
- * Negation.
- */
 operator (-x:Real[_]) -> Real[_] {
+  y:Real[length(x)];
   cpp{{
-  return x.toEigen().operator-();
+  numbirch::neg(x.rows(), x.data(), x.rowStride(), y.data(), y.rowStride());
   }}
-}
-
-/**
- * Negation.
- */
-operator (-X:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().operator-();
-  }}
+  return y;
 }
 
 /**
  * Negation.
  */
 operator (-X:Real[_,_]) -> Real[_,_] {
+  Y:Real[rows(X), columns(X)];
   cpp{{
-  return X.toEigen().operator-();
+  numbirch::neg(X.rows(), X.columns(), X.data(), X.rowStride(), Y.data(),
+      Y.rowStride());
   }}
+  return Y;
 }

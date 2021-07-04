@@ -153,11 +153,11 @@ function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
 function update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, a:Arg2, N:Arg3, Λ:Arg4, Ψ:Arg5,
     k:Arg6) -> {
-  let Λ' <- Λ + outer(a);
+  let Λ' <- Λ + outer(a, a);
   let N' <- N + outer(a, x);
   let M <- cholsolve(Λ, N);
   let M' <- cholsolve(Λ', N');
-  let Ψ' <- Ψ + outer(x) + inner(M, N) - inner(M', N');
+  let Ψ' <- Ψ + outer(x, x) + inner(M, N) - inner(M', N');
   let k' <- k + 1.0;
   return MatrixNormalInverseWishart(N', Λ', Ψ', k');
 }

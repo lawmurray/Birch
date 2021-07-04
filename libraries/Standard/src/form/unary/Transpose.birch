@@ -19,20 +19,6 @@ function transpose<Middle>(m:Middle) -> {
 /**
  * Transpose of a scalar (identity operation).
  */
-function transpose(m:Boolean) -> Boolean {
-  return m;
-}
-
-/**
- * Transpose of a scalar (identity operation).
- */
-function transpose(m:Integer) -> Integer {
-  return m;
-}
-
-/**
- * Transpose of a scalar (identity operation).
- */
 function transpose(m:Real) -> Real {
   return m;
 }
@@ -40,53 +26,20 @@ function transpose(m:Real) -> Real {
 /**
  * Transpose of a vector into a matrix.
  */
-function transpose(x:Boolean[_]) -> Boolean[_,_] {
-  cpp{{
-  return x.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a vector into a matrix.
- */
-function transpose(x:Integer[_]) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a vector into a matrix.
- */
 function transpose(x:Real[_]) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a matrix.
- */
-function transpose(X:Boolean[_,_]) -> Boolean[_,_] {
-  cpp{{
-  return X.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a matrix.
- */
-function transpose(X:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().transpose();
-  }}
+  y:Real[1,length(x)];
+  y[1,1..length(x)] <- x;
+  return y;
 }
 
 /**
  * Transpose of a matrix.
  */
 function transpose(X:Real[_,_]) -> Real[_,_] {
+  Y:Real[columns(X), rows(X)];
   cpp{{
-  return X.toEigen().transpose();
+  numbirch::transpose(Y.rows(), Y.columns(), X.data(), X.rowStride(),
+      Y.data(), Y.rowStride());
   }}
+  return Y;
 }

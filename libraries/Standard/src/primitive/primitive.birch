@@ -211,7 +211,6 @@ function reduce<Type,Output,Lambda>(x:Type[_], init:Output, op:Lambda) ->
  */
 function reduce<Type,Output,Lambda>(X:Type[_,_], init:Output, op:Lambda) ->
     Output {
-  result:Type;
   cpp{{
   #ifdef __cpp_lib_parallel_algorithm
   return std::reduce(X.begin(), X.end(), init, op);

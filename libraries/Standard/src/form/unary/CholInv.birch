@@ -23,8 +23,10 @@ function cholinv<Middle>(m:Middle) -> {
  * factorization.
  */
 function cholinv(S:Real[_,_]) -> Real[_,_] {
+  B:Real[rows(S), columns(S)];
   cpp{{
-  return S.toEigen().llt().solve(libbirch::EigenMatrix<Real>::Identity(
-      rows(S), columns(S)));
+  numbirch::cholinv(S.rows(), S.data(), S.rowStride(), B.data(),
+      B.rowStride());
   }}
+  return B;
 }

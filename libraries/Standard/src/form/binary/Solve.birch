@@ -5,9 +5,8 @@ struct SolveFunction {
 
   function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
       r:RightValue) -> {
-    let dl <- outer(solve(transpose(l), -d), solve(l, r));
-    let dr <- solve(transpose(l), d);
-    return (dl, dr);
+    let l1 <- inv(l);
+    return (-l1*outer(d, r)*l1, inner(l1, d));
   }
 }
 struct Solve<Left,Right> = Binary<SolveFunction,Left,Right>;
@@ -22,17 +21,29 @@ function solve<Left,Right>(l:Left, r:Right) -> {
 /**
  * Solve a system of equations.
  */
-function solve(l:Real[_,_], r:Real[_]) -> Real[_] {
+function solve(A:Real[_,_], y:Real[_]) -> Real[_] {
+  assert rows(A) == columns(A);
+  assert rows(A) == length(y);
+
+  x:Real[length(y)];
   cpp{{
-  return l.toEigen().householderQr().solve(r.toEigen());
+  numbirch::solve(x.rows(), A.data(), A.rowStride(), x.data(),
+      x.rowStride(), y.data(), y.rowStride());
   }}
+  return x;
 }
 
 /**
  * Solve a system of equations.
  */
-function solve(l:Real[_,_], r:Real[_,_]) -> Real[_,_] {
+function solve(A:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+  assert rows(A) == columns(A);
+  assert rows(A) == rows(Y);
+
+  X:Real[rows(Y), columns(Y)];
   cpp{{
-  return l.toEigen().householderQr().solve(r.toEigen());
+  numbirch::solve(X.rows(), X.columns(), A.data(), A.rowStride(), X.data(),
+      X.rowStride(), Y.data(), Y.rowStride());
   }}
+  return X;
 }

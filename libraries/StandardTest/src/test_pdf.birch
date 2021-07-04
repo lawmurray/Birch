@@ -134,7 +134,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   let μ <- sum(x1)/N;
-  let σ2 <- dot(x1)/N - μ*μ;
+  let σ2 <- dot(x1, x1)/N - μ*μ;
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;
@@ -245,10 +245,10 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
   for n in 1..N {
     let x <- X1[n,1..D];
     μ <- μ + x;
-    Σ <- Σ + outer(x);
+    Σ <- Σ + outer(x, x);
   }
   μ <- μ/N;
-  Σ <- Σ/N - outer(μ);
+  Σ <- Σ/N - outer(μ, μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;
@@ -360,10 +360,10 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
   for n in 1..N {
     let x <- X1[n,1..R*C];
     μ <- μ + x;
-    Σ <- Σ + outer(x);
+    Σ <- Σ + outer(x, x);
   }
   μ <- μ/N;
-  Σ <- Σ/N - outer(μ);
+  Σ <- Σ/N - outer(μ, μ);
   
   /* scale this proposal to get a reasonable acceptance rate */
   let done <- false;

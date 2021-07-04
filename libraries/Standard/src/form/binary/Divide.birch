@@ -40,19 +40,13 @@ operator (x:Real/y:Real) -> Real;
 /**
  * Division.
  */
-operator (x:Integer[_]/y:Integer) -> Integer[_] {
+operator (x:Real[_]/y:Real) -> Real[_] {
+  z:Real[length(x)];
   cpp{{
-  return x.toEigen().operator/(y);
+  numbirch::div(x.rows(), x.data(), x.rowStride(), y, z.data(),
+      z.rowStride());
   }}
-}
-
-/**
- * Division.
- */
-operator (x:Integer[_]/y:Real) -> Real[_] {
-  cpp{{
-  return x.toEigen().cast<Real>().operator/(y);
-  }}
+  return z;
 }
 
 /**
@@ -65,42 +59,18 @@ operator (x:Real[_]/y:Integer) -> Real[_] {
 /**
  * Division.
  */
-operator (x:Real[_]/y:Real) -> Real[_] {
+operator (X:Real[_,_]/y:Real) -> Real[_,_] {
+  Z:Real[rows(X), columns(X)];
   cpp{{
-  return x.toEigen().operator/(y);
+  numbirch::div(X.rows(), X.columns(), X.data(), X.rowStride(), y, Z.data(),
+      Z.rowStride());
   }}
+  return Z;
 }
 
 /**
  * Division.
  */
-operator (x:Integer[_,_]/y:Integer) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().operator/(y);
-  }}
-}
-
-/**
- * Division.
- */
-operator (x:Integer[_,_]/y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().cast<Real>().operator/(y);
-  }}
-}
-
-/**
- * Division.
- */
-operator (x:Real[_,_]/y:Integer) -> Real[_,_] {
-  return x/scalar<Real>(y);
-}
-
-/**
- * Division.
- */
-operator (x:Real[_,_]/y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().operator/(y);
-  }}
+operator (X:Real[_,_]/y:Integer) -> Real[_,_] {
+  return X/scalar<Real>(y);
 }

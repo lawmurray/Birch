@@ -18,366 +18,134 @@ function inner<Left,Right>(l:Left, r:Right) -> {
 }
 
 /**
- * Inner product of an argument with itself.
- */
-function inner<Middle>(m:Middle) -> {
-  return inner(m, m);
-}
-
-/**
- * Inner product of a scalar with itself.
- */
-function inner(x:Integer) -> Integer {
-  return inner(x, x);
-}
-
-/**
- * Inner product of a scalar with itself.
- */
-function inner(x:Real) -> Real {
-  return inner(x, x);
-}
-
-/**
- * Inner product of a vector with itself.
- */
-function inner(x:Integer[_]) -> Integer[_] {
-  return inner(x, x);
-}
-
-/**
- * Inner product of a vector with itself.
- */
-function inner(x:Real[_]) -> Real[_] {
-  return inner(x, x);
-}
-
-/**
- * Inner product of a matrix with itself.
- */
-function inner(X:Integer[_,_]) -> Integer[_,_] {
-  return inner(X, X);
-}
-
-/**
- * Inner product of a matrix with itself.
- */
-function inner(X:Real[_,_]) -> Real[_,_] {
-  return inner(X, X);
-}
-
-/**
- * Inner product.
- */
-function inner(x:Integer, y:Integer) -> Integer {
-  return x*y;
-}
-
-/**
- * Inner product.
- */
-function inner(x:Integer, y:Real) -> Real {
-  return x*y;
-}
-
-/**
- * Inner product.
- */
-function inner(x:Real, y:Integer) -> Real {
-  return x*y;
-}
-
-/**
- * Inner product.
+ * Scalar product.
  */
 function inner(x:Real, y:Real) -> Real {
   return x*y;
 }
 
 /**
- * Inner product.
+ * Scalar product.
  */
-function inner(x:Integer, y:Integer[_]) -> Integer[_] {
-  cpp{{
-  return y.toEigen().operator*(x);
-  }}
+function inner(x:Integer, y:Real) -> Real {
+  return inner(scalar<Real>(x), y);
 }
 
 /**
- * Inner product.
+ * Scalar product.
  */
-function inner(x:Integer, y:Real[_]) -> Real[_] {
-  cpp{{
-  return y.toEigen().operator*(x);
-  }}
+function inner(x:Real, y:Integer) -> Real {
+  return inner(x, scalar<Real>(y));
 }
 
 /**
- * Inner product.
- */
-function inner(x:Real, y:Integer[_]) -> Real[_] {
-  cpp{{
-  return y.toEigen().cast<Real>().operator*(x);
-  }}
-}
-
-/**
- * Inner product.
+ * Scalar-vector product.
  */
 function inner(x:Real, y:Real[_]) -> Real[_] {
-  cpp{{
-  return y.toEigen().operator*(x);
-  }}
+  return x*y;
 }
 
 /**
- * Inner product.
+ * Scalar-vector inner product.
  */
-function inner(x:Integer[_], y:Integer) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y);
-  }}
+function inner(x:Integer, y:Real[_]) -> Real[_] {
+  return inner(scalar<Real>(x), y);
 }
 
 /**
- * Inner product.
- */
-function inner(x:Integer[_], y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().cast<Real>().transpose().operator*(y);
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Real[_], y:Integer) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().cast<Real>().transpose().operator*(y);
-  }}
-}
-
-/**
- * Inner product.
+ * Scalar-vector inner product.
  */
 function inner(x:Real[_], y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y);
-  }}
+  return transpose(x)*y;
 }
 
 /**
- * Inner product.
+ * Scalar-vector inner product.
  */
-function inner(x:Integer[_], y:Integer[_]) -> Integer[_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y.toEigen());
-  }}
+function inner(x:Real[_], y:Integer) -> Real[_,_] {
+  return inner(x, scalar<Real>(y));
 }
 
 /**
- * Inner product.
- */
-function inner(x:Integer[_], y:Real[_]) -> Real[_] {
-  cpp{{
-  return x.toEigen().cast<Real>().transpose().operator*(y.toEigen());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Real[_], y:Integer[_]) -> Real[_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y.toEigen().cast<Real>());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Real[_], y:Real[_]) -> Real[_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y.toEigen());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Integer, y:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return y.toEigen().operator*(x);
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Integer, y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().operator*(x);
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Real, y:Integer[_,_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().cast<Real>().operator*(x);
-  }}
-}
-
-/**
- * Inner product.
+ * Scalar-matrix inner product.
  */
 function inner(x:Real, y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return y.toEigen().operator*(x);
-  }}
+  return x*y;
 }
 
 /**
- * Inner product.
+ * Scalar-matrix inner product.
  */
-function inner(x:Integer[_,_], y:Integer) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y);
-  }}
+function inner(x:Integer, y:Real[_,_]) -> Real[_,_] {
+  return inner(scalar<Real>(x), y);
 }
 
 /**
- * Inner product.
- */
-function inner(x:Integer[_,_], y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().cast<Real>().transpose().operator*(y);
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(x:Real[_,_], y:Integer) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y);
-  }}
-}
-
-/**
- * Inner product.
+ * Scalar-matrix inner product.
  */
 function inner(x:Real[_,_], y:Real) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().transpose().operator*(y);
-  }}
+  return transpose(x)*y;
 }
 
 /**
- * Inner product.
+ * Scalar-matrix inner product.
  */
-function inner(X:Integer[_,_], y:Integer[_]) -> Integer[_] {
-  cpp{{
-  return X.toEigen().transpose().operator*(y.toEigen());
-  }}
+function inner(x:Real[_,_], y:Integer) -> Real[_,_] {
+  return inner(x, scalar<Real>(y));
 }
 
 /**
- * Inner product.
+ * Vector inner product.
  */
-function inner(X:Integer[_,_], y:Real[_]) -> Real[_] {
+function inner(x:Real[_], y:Real[_]) -> Real[_] {
+  assert length(x) == length(y);
+
+  z:Real[1];
   cpp{{
-  return X.toEigen().cast<Real>().transpose().operator*(y.toEigen());
+  numbirch::inner(1, x.rows(), x.data(), x.rowStride(), y.data(),
+      y.rowStride(), z.data(), z.rowStride());
   }}
+  return z;
 }
 
 /**
- * Inner product.
- */
-function inner(X:Real[_,_], y:Integer[_]) -> Real[_] {
-  cpp{{
-  return X.toEigen().transpose().operator*(y.toEigen().cast<Real>());
-  }}
-}
-
-/**
- * Inner product.
+ * Matrix-vector inner product.
  */
 function inner(X:Real[_,_], y:Real[_]) -> Real[_] {
+  assert rows(X) == length(y);
+  
+  z:Real[columns(X)];
   cpp{{
-  return X.toEigen().transpose().operator*(y.toEigen());
+  numbirch::inner(X.columns(), X.rows(), X.data(), X.rowStride(), y.data(),
+      y.rowStride(), z.data(), z.rowStride());
   }}
+  return z;
 }
 
 /**
- * Inner product.
+ * Vector-matrix inner product.
  */
-function inner(X:Integer[_], y:Integer[_,_]) -> Integer[_,_] {
+function inner(x:Real[_], Y:Real[_,_]) -> Real[_,_] {
+  assert length(x) == rows(Y);
+
+  Z:Real[1,columns(Y)];
   cpp{{
-  return X.toEigen().transpose().operator*(y.toEigen());
+  numbirch::inner(1, Z.columns(), x.rows(), x.data(), x.rowStride(),
+      Y.data(), Y.rowStride(), Z.data(), Z.rowStride());
   }}
+  return Z;
 }
 
 /**
- * Inner product.
- */
-function inner(X:Integer[_], y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().transpose().cast<Real>().operator*(y.toEigen());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(X:Real[_], y:Integer[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().transpose().operator*(y.toEigen().cast<Real>());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(X:Real[_], y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().transpose().operator*(y.toEigen());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(X:Integer[_,_], Y:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().transpose().operator*(Y.toEigen());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(X:Integer[_,_], Y:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().cast<Real>().transpose().operator*(Y.toEigen());
-  }}
-}
-
-/**
- * Inner product.
- */
-function inner(X:Real[_,_], Y:Integer[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().transpose().operator*(Y.toEigen().cast<Real>());
-  }}
-}
-
-/**
- * Inner product.
+ * Matrix inner product.
  */
 function inner(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+  assert rows(X) == rows(Y);
+
+  Z:Real[columns(X), columns(Y)];
   cpp{{
-  return X.toEigen().transpose().operator*(Y.toEigen());
+  numbirch::inner(Z.rows(), Z.columns(), X.rows(), X.data(), X.rowStride(),
+      Y.data(), Y.rowStride(), Z.data(), Z.rowStride());
   }}
+  return Z;
 }

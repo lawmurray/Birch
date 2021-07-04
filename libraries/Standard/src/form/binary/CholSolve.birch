@@ -5,9 +5,8 @@ struct CholSolveFunction {
 
   function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
       r:RightValue) -> {
-    let x <- cholsolve(l, d);
-    let y <- cholsolve(l, r);
-    return (outer(-x, y), x);
+    let l1 <- cholinv(l);
+    return (-l1*outer(d, r)*l1, inner(l1, d));
   }
 }
 struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;
@@ -21,21 +20,31 @@ function cholsolve<Left,Right>(l:Left, r:Right) -> {
 }
 
 /**
- * Solve a system of equations where the left argument is a symmetric
- * positive-definite matrix. The solution is via the Cholesky factorization.
+ * Solve a system of equations via the Cholesky factorization.
  */
-function cholsolve(l:Real[_,_], r:Real[_]) -> Real[_] {
+function cholsolve(S:Real[_,_], y:Real[_]) -> Real[_] {
+  assert rows(S) == columns(S);
+  assert rows(S) == length(y);
+
+  x:Real[length(y)];
   cpp{{
-  return l.toEigen().llt().solve(r.toEigen());
+  numbirch::cholsolve(x.rows(), S.data(), S.rowStride(), x.data(),
+      x.rowStride(), y.data(), y.rowStride());
   }}
+  return x;
 }
 
 /**
- * Solve a system of equations where the left argument is a symmetric
- * positive-definite matrix. The solution is via the Cholesky factorization.
+ * Solve a system of equations via the Cholesky factorization.
  */
-function cholsolve(l:Real[_,_], r:Real[_,_]) -> Real[_,_] {
+function cholsolve(S:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
+  assert rows(S) == columns(S);
+  assert rows(S) == rows(Y);
+
+  X:Real[rows(Y), columns(Y)];
   cpp{{
-  return l.toEigen().llt().solve(r.toEigen());
+  numbirch::cholsolve(X.rows(), X.columns(), S.data(), S.rowStride(),
+      X.data(), X.rowStride(), Y.data(), Y.rowStride());
   }}
+  return X;
 }

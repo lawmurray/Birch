@@ -27,49 +27,45 @@ function sum<Middle>(m:Middle) -> {
 /**
  * Sum scalar.
  */
-function sum(m:Integer) -> Integer {
-  return m;
+function sum(x:Integer) -> Integer {
+  return x;
 }
 
 /**
  * Sum scalar.
  */
-function sum(m:Real) -> Real {
-  return m;
+function sum(x:Real) -> Real {
+  return x;
 }
 
 /**
  * Sum vector.
  */
-function sum(m:Integer[_]) -> Integer {
-  cpp{{
-  return m.toEigen().sum();
-  }}
+function sum(x:Integer[_]) -> Integer {
+  return reduce(x, 0, \(x:Integer, y:Integer) -> { return x + y; });
+}
+
+/**
+ * Sum matrix.
+ */
+function sum(X:Integer[_,_]) -> Integer {
+  return reduce(X, 0, \(x:Integer, y:Integer) -> { return x + y; });
 }
 
 /**
  * Sum vector.
  */
-function sum(m:Real[_]) -> Real {
+function sum(x:Real[_]) -> Real {
   cpp{{
-  return m.toEigen().sum();
+  return numbirch::sum(x.rows(), x.data(), x.rowStride());
   }}
 }
 
 /**
  * Sum matrix.
  */
-function sum(m:Integer[_,_]) -> Integer {
+function sum(X:Real[_,_]) -> Real {
   cpp{{
-  return m.toEigen().sum();
-  }}
-}
-
-/**
- * Sum matrix.
- */
-function sum(m:Real[_,_]) -> Real {
-  cpp{{
-  return m.toEigen().sum();
+  return numbirch::sum(X.rows(), X.columns(), X.data(), X.rowStride());
   }}
 }

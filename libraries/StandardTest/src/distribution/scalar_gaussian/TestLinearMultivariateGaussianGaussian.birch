@@ -19,7 +19,7 @@ class TestLinearMultivariateGaussianGaussian < TestModel {
   }
 
   override function simulate() {
-    μ ~ MultivariateGaussian(m, outer(S));
+    μ ~ MultivariateGaussian(m, outer(S, S));
     x ~ Gaussian(dot(a, μ) + c, s2);
   }
 

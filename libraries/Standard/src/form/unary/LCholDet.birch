@@ -18,11 +18,11 @@ function lcholdet<Middle>(m:Middle) -> {
 }
 
 /**
- * Log-determinant of a matrix.
+ * Log-determinant of a symmetric positive-definite matrix via the Cholesky
+ * factorization.
  */
 function lcholdet(S:Real[_,_]) -> Real {
-  let L <- chol(S);
   cpp{{
-  return 2.0*L.toEigen().diagonal().array().log().sum();
+  return numbirch::lcholdet(S.rows(), S.data(), S.rowStride());
   }}
 }

@@ -74,7 +74,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     let u <- vector_lambda(\(i:Integer) -> {
           return simulate_gaussian(0.0, 1.0);
         }, C);
-    u <- u/sqrt(dot(u));
+    u <- u/sqrt(dot(u, u));
     let x1 <- X1*u;
     let x2 <- X2*u;
 

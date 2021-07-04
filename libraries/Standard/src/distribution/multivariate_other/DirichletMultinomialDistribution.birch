@@ -100,5 +100,5 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
 function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
     DirichletDistribution<Real[_]> {
   assert sum(x) == n;
-  return Dirichlet(α + x);
+  return Dirichlet(transform(x, α, \(x:Integer, α:Real) -> { return x + α; }));
 }

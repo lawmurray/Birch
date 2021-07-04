@@ -20,8 +20,10 @@ function inv<Middle>(m:Middle) -> {
 /**
  * Inverse of a matrix.
  */
-function inv(X:Real[_,_]) -> Real[_,_] {
+function inv(A:Real[_,_]) -> Real[_,_] {
+  B:Real[rows(A), columns(A)];
   cpp{{
-  return X.toEigen().inverse();
+  numbirch::inv(A.rows(), A.data(), A.rowStride(), B.data(), B.rowStride());
   }}
+  return B;
 }

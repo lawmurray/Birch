@@ -19,8 +19,8 @@ function ldet<Middle>(m:Middle) -> {
 /**
  * Log-determinant of a matrix.
  */
-function ldet(X:Real[_,_]) -> Real {
+function ldet(A:Real[_,_]) -> Real {
   cpp{{
-  return X.toEigen().householderQr().logAbsDeterminant();
+  return numbirch::ldet(A.rows(), A.data(), A.rowStride());
   }}
 }

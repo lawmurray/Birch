@@ -18,93 +18,13 @@ function dot<Left,Right>(l:Left, r:Right) -> {
 }
 
 /**
- * Dot product of vector with itself.
- */
-function dot<Middle>(m:Middle) -> {
-  return dot(m, m);
-}
-
-/**
- * Dot product of vector with itself.
- */
-function dot(x:Integer[_]) -> Integer {
-  cpp{{
-  return x.toEigen().squaredNorm();
-  }}
-}
-
-/**
- * Dot product of vector with itself.
- */
-function dot(x:Real[_]) -> Real {
-  cpp{{
-  return x.toEigen().squaredNorm();
-  }}
-}
-
-/**
- * Dot product of two vectors.
- */
-function dot(x:Integer[_], y:Integer[_]) -> Integer {
-  cpp{{
-  return x.toEigen().dot(y.toEigen());
-  }}
-}
-
-/**
- * Dot product of two vectors.
- */
-function dot(x:Integer[_], y:Real[_]) -> Real {
-  cpp{{
-  return x.toEigen().cast<Real>().dot(y.toEigen());
-  }}
-}
-
-/**
- * Dot product of two vectors.
- */
-function dot(x:Real[_], y:Integer[_]) -> Real {
-  cpp{{
-  return x.toEigen().dot(y.toEigen().cast<Real>());
-  }}
-}
-
-/**
  * Dot product of two vectors.
  */
 function dot(x:Real[_], y:Real[_]) -> Real {
+  assert length(x) == length(y);
   cpp{{
-  return x.toEigen().dot(y.toEigen());
-  }}
-}
-
-/**
- * Dot product of vector with columns of a matrix. The expression `dot(x, Y)`
- * is equivalent to `transpose(Y)*x`.
- */
-function dot(x:Integer[_], Y:Integer[_,_]) -> Integer[_] {
-  cpp{{
-  return Y.toEigen().transpose().operator*(x.toEigen());
-  }}
-}
-
-/**
- * Dot product of vector with columns of a matrix. The expression `dot(x, Y)`
- * is equivalent to `transpose(Y)*x`.
- */
-function dot(x:Integer[_], Y:Real[_,_]) -> Real[_] {
-  cpp{{
-  return Y.toEigen().transpose().operator*(x.toEigen().cast<Real>());
-  }}
-}
-
-/**
- * Dot product of vector with columns of a matrix. The expression `dot(x, Y)`
- * is equivalent to `transpose(Y)*x`.
- */
-function dot(x:Real[_], Y:Integer[_,_]) -> Real[_] {
-  cpp{{
-  return Y.toEigen().cast<Real>().transpose().operator*(x.toEigen());
+  return numbirch::dot(x.rows(), x.data(), x.rowStride(), y.data(),
+      y.rowStride());
   }}
 }
 
@@ -113,7 +33,12 @@ function dot(x:Real[_], Y:Integer[_,_]) -> Real[_] {
  * is equivalent to `transpose(Y)*x`.
  */
 function dot(x:Real[_], Y:Real[_,_]) -> Real[_] {
+  assert length(x) == rows(Y);
+
+  z:Real[columns(Y)];
   cpp{{
-  return Y.toEigen().transpose().operator*(x.toEigen());
+  numbirch::inner(Y.columns(), Y.rows(), Y.data(), Y.rowStride(), x.data(),
+      x.rowStride(), z.data(), z.rowStride());
   }}
+  return z;
 }

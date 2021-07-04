@@ -1,3 +1,10 @@
+operator<Type> (x:Type[_] == y:Type[_]) -> Boolean;
+operator<Type> (x:Type[_] != y:Type[_]) -> Boolean;
+
+operator<Type> (+x:Type[_]) -> Type[_] {
+  return x;
+}
+
 /**
  * Create a vector filled by a lambda function.
  *
