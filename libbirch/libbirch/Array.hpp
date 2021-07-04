@@ -51,7 +51,9 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    initialize();
+    if (!std::is_trivially_copyable<T>::value) {
+      initialize();
+    }
   }
 
   /**
