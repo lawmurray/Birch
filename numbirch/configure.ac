@@ -47,11 +47,9 @@ AM_CONDITIONAL([DPCPP], [test x$dpcpp = xtrue])
 
 # Programs
 if $dpcpp; then
-  compilers=dpcpp
-else
-  compilers=
+  CXX=dpcpp
 fi
-AC_PROG_CXX($compilers)
+AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
 
