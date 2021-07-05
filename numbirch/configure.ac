@@ -36,19 +36,25 @@ AC_ARG_ENABLE([release],
 esac],[release=true])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
-AC_ARG_ENABLE([dpcpp],
-[AS_HELP_STRING[--enable-dpcpp], [Use DPC++]],
+AC_ARG_ENABLE([oneapi],
+[AS_HELP_STRING[--enable-oneapi], [Use DPC++]],
 [case "${enableval}" in
-  yes) dpcpp=true ;;
-  no)  dpcpp=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-dpcpp]) ;;
-esac],[dpcpp=false])
-AM_CONDITIONAL([DPCPP], [test x$dpcpp = xtrue])
+  yes) oneapi=true ;;
+  no)  oneapi=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-oneapi]) ;;
+esac],[oneapi=false])
+AM_CONDITIONAL([ONEAPI], [test x$oneapi = xtrue])
+
+AC_ARG_ENABLE([cuda],
+[AS_HELP_STRING[--enable-cuda], [Use CUDA]],
+[case "${enableval}" in
+  yes) cuda=true ;;
+  no)  cuda=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-cuda]) ;;
+esac],[cuda=false])
+AM_CONDITIONAL([CUDA], [test x$cuda = xtrue])
 
 # Programs
-if $dpcpp; then
-  CXX=dpcpp
-fi
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
@@ -63,13 +69,12 @@ AC_HEADER_ASSERT
 AC_HEADER_STDBOOL
 AC_C_INLINE
 
-# Checks for compiler flags
-AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
-
 # Check for build specifics
-if $dpcpp; then
-  AX_CHECK_COMPILE_FLAG([-qmkl=sequential], [CXXFLAGS="$CXXFLAGS -qmkl=sequential"], [AC_MSG_ERROR([MKL not available])], [-Werror])
-  AX_CHECK_COMPILE_FLAG([-fsycl], [CXXFLAGS="$CXXFLAGS -fsycl"], [AC_MSG_ERROR([SYCL not available])], [-Werror])
+if $oneapi; then
+  AC_CHECK_PROG([DPCPP], [dpcpp], [dpcpp])
+fi
+if $cuda; then
+  AC_CHECK_PROG([NVCC], [nvcc], [nvcc])
 else
   AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 fi
