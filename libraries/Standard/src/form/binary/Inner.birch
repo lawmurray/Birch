@@ -56,7 +56,12 @@ function inner(x:Integer, y:Real[_]) -> Real[_] {
  * Scalar-vector inner product.
  */
 function inner(x:Real[_], y:Real) -> Real[_,_] {
-  return transpose(x)*y;
+  Z:Real[1,length(x)];
+  cpp{{
+  numbirch::transpose(Z.rows(), Z.columns(), y, x.data(), x.rowStride(),
+      Z.data(), Z.rowStride());
+  }}
+  return Z;
 }
 
 /**
@@ -84,7 +89,12 @@ function inner(x:Integer, y:Real[_,_]) -> Real[_,_] {
  * Scalar-matrix inner product.
  */
 function inner(x:Real[_,_], y:Real) -> Real[_,_] {
-  return transpose(x)*y;
+  Z:Real[columns(x),rows(x)];
+  cpp{{
+  numbirch::transpose(Z.rows(), Z.columns(), y, x.data(), x.rowStride(),
+      Z.data(), Z.rowStride());
+  }}
+  return Z;
 }
 
 /**

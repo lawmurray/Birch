@@ -4,8 +4,8 @@ function compute<Value>(m:Value) -> {
   }
 
 function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    let m1 <- transpose(inv(m));
-    return -m1*d*m1;
+    let m1 <- inv(m);
+    return -outer(inner(m1, d), m1);
   }
 }
 struct Inv<Middle> = Unary<InvFunction,Middle>;

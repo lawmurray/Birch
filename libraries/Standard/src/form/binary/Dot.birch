@@ -30,7 +30,7 @@ function dot(x:Real[_], y:Real[_]) -> Real {
 
 /**
  * Dot product of vector with columns of a matrix. The expression `dot(x, Y)`
- * is equivalent to `transpose(Y)*x`.
+ * is equivalent to `inner(Y, x)`.
  */
 function dot(x:Real[_], Y:Real[_,_]) -> Real[_] {
   assert length(x) == rows(Y);

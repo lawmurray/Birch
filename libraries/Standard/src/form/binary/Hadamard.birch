@@ -1,0 +1,45 @@
+struct HadamardFunction {  
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return hadamard(l, r);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (hadamard(d, r), hadamard(d, l));
+  }
+}
+struct Hadamard<Left,Right> = Binary<HadamardFunction,Left,Right>;
+
+/**
+ * Hadamard (element-wise) product.
+ */
+function hadamard<Left,Right>(l:Left, r:Right) -> Hadamard<Left,Right> {
+  return construct<Hadamard<Left,Right>>(l, r);
+}
+
+/**
+ * Hadamard (element-wise) vector product.
+ */
+function hadamard<Type>(x:Type[_], y:Type[_]) -> Type[_] {
+  assert length(x) == length(y);
+  z:Real[length(x)];
+  cpp{{
+  numbirch::hadamard(x.rows(), x.data(), x.rowStride(), y.data(),
+      y.rowStride(), z.data(), z.rowStride());
+  }}
+  return z;
+}
+
+/**
+ * Hadamard (element-wise) matrix product.
+ */
+function hadamard<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
+  assert rows(X) == rows(Y);
+  assert columns(X) == columns(Y);
+  Z:Real[rows(X), columns(X)];
+  cpp{{
+  numbirch::hadamard(X.rows(), X.columns(), X.data(), X.rowStride(),
+      Y.data(), Y.rowStride(), Z.data(), Z.rowStride());
+  }}
+  return Z;
+}

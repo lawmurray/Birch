@@ -27,9 +27,12 @@ function transpose(m:Real) -> Real {
  * Transpose of a vector into a matrix.
  */
 function transpose(x:Real[_]) -> Real[_,_] {
-  y:Real[1,length(x)];
-  y[1,1..length(x)] <- x;
-  return y;
+  Y:Real[1,length(x)];
+  cpp{{
+  numbirch::transpose(Y.rows(), Y.columns(), 1.0, x.data(), x.rowStride(),
+      Y.data(), Y.rowStride());
+  }}
+  return Y;
 }
 
 /**
@@ -38,7 +41,7 @@ function transpose(x:Real[_]) -> Real[_,_] {
 function transpose(X:Real[_,_]) -> Real[_,_] {
   Y:Real[columns(X), rows(X)];
   cpp{{
-  numbirch::transpose(Y.rows(), Y.columns(), X.data(), X.rowStride(),
+  numbirch::transpose(Y.rows(), Y.columns(), 1.0, X.data(), X.rowStride(),
       Y.data(), Y.rowStride());
   }}
   return Y;

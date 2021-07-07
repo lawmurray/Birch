@@ -1,0 +1,41 @@
+struct FrobeniusFunction {  
+  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
+    return frobenius(l, r);
+  }
+
+  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
+      r:RightValue) -> {
+    return (d*r, d*l);
+  }
+}
+struct Frobenius<Left,Right> = Binary<FrobeniusFunction,Left,Right>;
+
+/**
+ * Frobenius product.
+ */
+function frobenius<Left,Right>(l:Left, r:Right) -> Frobenius<Left,Right> {
+  return construct<Frobenius<Left,Right>>(l, r);
+}
+
+/**
+ * Frobenius vector product (same as dot product).
+ */
+function frobenius<Type>(x:Type[_], y:Type[_]) -> Type {
+  assert length(x) == length(y);
+  cpp{{
+  return numbirch::frobenius(x.rows(), x.data(), x.rowStride(), y.data(),
+      y.rowStride());
+  }}
+}
+
+/**
+ * Frobenius matrix product.
+ */
+function frobenius<Type>(X:Type[_,_], Y:Type[_,_]) -> Type {
+  assert rows(X) == rows(Y);
+  assert columns(X) == columns(Y);
+  cpp{{
+  return numbirch::frobenius(X.rows(), X.columns(), X.data(), X.rowStride(),
+      Y.data(), Y.rowStride());
+  }}
+}

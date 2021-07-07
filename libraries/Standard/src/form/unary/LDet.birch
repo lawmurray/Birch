@@ -4,7 +4,7 @@ function compute<Value>(m:Value) -> {
   }
 
 function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*inv(transpose(m));
+    return outer(d, inv(m));
   }
 }
 struct LDet<Middle> = Unary<LDetFunction,Middle>;
