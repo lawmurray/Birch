@@ -441,6 +441,20 @@ void chol(const int n, const double* S, const int ldS, double* L,
     const int ldL);
 
 /**
+ * Scalar-matrix product and transpose. Computes @f$B = xA^\top@f$.
+ * 
+ * @param m Number of rows of `B` and columns of `A`.
+ * @param n Number of columns of `B` and rows of `A`.
+ * @param x Scalar.
+ * @param A Matrix.
+ * @param ldA Row stride of `A`.
+ * @param[out] B Matrix.
+ * @param ldB Row stride of `B`.
+ */
+void transpose(const int m, const int n, const double x, const double* A,
+    const int ldA, double* B, const int ldB);
+
+/**
  * Matrix trace.
  * 
  * @param m Number of rows.

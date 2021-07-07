@@ -36,6 +36,20 @@ auto make_dpl_matrix(T* A, const int m, const int n, const int ldA) {
       });
 }
 
+template<class T>
+auto make_dpl_matrix_transpose(T* A, const int m, const int n,
+    const int ldA) {
+  return ranges::transform_view(ranges::iota_view(0, m*n), [=](int i) -> T& {
+        int c = i/m;
+        int r = i%m;
+        return A[r*ldA + c];
+      });
+}
+
+void numbirch::init() {
+  
+}
+
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
     const int incy) {
   auto x1 = make_dpl_vector(x, n, incx);
@@ -367,12 +381,21 @@ void numbirch::chol(const int n, const double* S, const int ldS, double* L,
       mkl::uplo::lower, n, ldL);
   auto scratchpad = (double*)sycl::malloc_device(scratchpad_size*
       sizeof(double), queue);
-
+  
+  ///@todo Zero upper triangle of L during copy
   mkl::blas::copy_batch(queue, n, S, 1, ldS, L, 1, ldL, n);
-
-  mkl::lapack::potrf(queue, mkl::uplo::lower, n, L, ldL, scratchpad, scratchpad_size);
+  mkl::lapack::potrf(queue, mkl::uplo::lower, n, L, ldL, scratchpad,
+      scratchpad_size);
 
   sycl::free(scratchpad, queue);
+}
+
+void numbirch::transpose(const int m, const int n, const double x,
+    const double* A, const int ldA, double* B, const int ldB) {
+  auto A1 = make_dpl_matrix_transpose(A, m, n, ldA);
+  auto B1 = make_dpl_matrix(B, m, n, ldB);
+  dpl::transform(dpl::execution::make_device_policy(queue),
+      A1.begin(), A1.end(), B1.begin(), [=](double a) { return x*a; });
 }
 
 double numbirch::trace(const int m, const int n, const double* A,

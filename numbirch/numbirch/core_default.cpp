@@ -28,6 +28,13 @@ auto make_eigen_matrix(T* A, const int m, const int n, const int ldA) {
   return EigenMatrixMap(A, m, n, EigenMatrixStride(ldA, 1));
 }
 
+void numbirch::init() {
+  /* older compiler versions that do not support thread-safe static local
+   * variable initialization require Eigen to initialize such variables before
+   * entering a parallel region */
+  Eigen::initParallel();
+}
+
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
     const int incy) {
   auto x1 = make_eigen_vector(x, n, incx);
@@ -257,6 +264,13 @@ void numbirch::chol(const int n, const double* S, const int ldS, double* L,
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto L1 = make_eigen_matrix(L, n, n, ldL);
   L1 = S1.llt().matrixL();
+}
+
+void numbirch::transpose(const int m, const int n, const double x,
+    const double* A, const int ldA, double* B, const int ldB) {
+  auto A1 = make_eigen_matrix(A, n, m, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.noalias() = x*A1.transpose();
 }
 
 double numbirch::trace(const int m, const int n, const double* A,
