@@ -28,8 +28,8 @@ void neg(const int n, const double* x, const int incx, double* y,
  * @param[out] B Matrix.
  * @param ldB Row stride of `B`.
  */
-void neg(const int m, const int n, const double* A, const int ldA,
-    double* B, const int ldB);
+void neg(const int m, const int n, const double* A, const int ldA, double* B,
+    const int ldB);
 
 /**
  * Vector addition.
@@ -90,6 +90,35 @@ void sub(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
 
 /**
+ * Hadamard (element-wise) vector multiplication.
+ * 
+ * @param n Number of elements.
+ * @param x Vector.
+ * @param incx Element stride of `x`.
+ * @param y Vector.
+ * @param incy Element stride of `y`.
+ * @param[out] z Vector.
+ * @param incz Element stride of `z`.
+ */
+void hadamard(const int n, const double* x, const int incx, const double* y,
+    const int incy, double* z, const int incz);
+
+/**
+ * Hadamard (element-wise) matrix multiplication.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Row stride of `A`.
+ * @param B Matrix.
+ * @param ldB Row stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Row stride of `C`.
+ */
+void hadamard(const int m, const int n, const double* A, const int ldA,
+    const double* B, const int ldB, double* C, const int ldC);
+
+/**
  * Scalar-vector multiplication.
  * 
  * @param n Number of elements.
@@ -146,35 +175,6 @@ void mul(const int m, const int n, const double* A, const int ldA,
  */
 void mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
-
-/**
- * Hadamard (element-wise) vector multiplication.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Vector.
- * @param incy Element stride of `y`.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void hadamard(const int n, const double* x, const int incx, const double* y,
-    const int incy, double* z, const int incz);
-
-/**
- * Hadamard (element-wise) matrix multiplication.
- * 
- * @param m Number of rows.
- * @param n Number of columns.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * @param B Matrix.
- * @param ldB Row stride of `B`.
- * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
- */
-void hadamard(const int m, const int n, const double* A, const int ldA,
-    const double* B, const int ldB, double* C, const int ldC);
 
 /**
  * Vector-scalar division.
@@ -239,6 +239,23 @@ double sum(const int m, const int n, const double* A, const int ldA);
  */
 double dot(const int n, const double* x, const int incx, const double* y,
     const int incy);
+
+/**
+ * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
+ * \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}@f$,
+ * resulting in a scalar.
+ * 
+ * @param m Number of rows of `A` and `B`.
+ * @param n Number of columns of `A` and `B`.
+ * @param A Matrix.
+ * @param ldA Row stride of `A`.
+ * @param B Matrix.
+ * @param ldB Row stride of `B`.
+ * 
+ * @return Frobenius product.
+ */
+double frobenius(const int m, const int n, const double* A, const int ldA,
+    const double* B, const int ldB);
 
 /**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
@@ -387,7 +404,7 @@ void cholinv(const int n, const double* S, const int ldS, double* B,
     const int ldB);
 
 /**
- * Logarithm of the absolute value of the determinant of a matrix.
+ * Logarithm of the absolute value of the determinant of a square matrix.
  * 
  * @param n Number of rows and columns.
  * @param A Matrix.
@@ -422,19 +439,6 @@ double lcholdet(const int n, const double* S, const int ldS);
  */
 void chol(const int n, const double* S, const int ldS, double* L,
     const int ldL);
-
-/**
- * Matrix transpose.
- * 
- * @param m Number of rows of `B` and columns of `A`.
- * @param n Number of columns of `B` and rows of `A`.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
- */
-void transpose(const int m, const int n, const double* A, const int ldA,
-    double* B, const int ldB);
 
 /**
  * Matrix trace.

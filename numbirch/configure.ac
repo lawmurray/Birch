@@ -54,13 +54,31 @@ AC_ARG_ENABLE([cuda],
 esac],[cuda=false])
 AM_CONDITIONAL([CUDA], [test x$cuda = xtrue])
 
+AC_ARG_ENABLE([default],
+[AS_HELP_STRING[--enable-default], [Use default]],
+[case "${enableval}" in
+  yes) default=true ;;
+  no)  default=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-default]) ;;
+esac],[default=true])
+
 # Programs
-AC_PROG_CXX
+if $oneapi; then
+  compilers=[dpcpp]
+else
+  if $cuda; then
+    compilers=[nvcc]
+  else
+    compilers=
+  fi
+fi
+
+AC_PROG_CXX($compilers)
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
 
-AC_DISABLE_STATIC
-AC_ENABLE_SHARED
+#AC_DISABLE_STATIC
+#AC_ENABLE_SHARED
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
@@ -71,12 +89,14 @@ AC_C_INLINE
 
 # Check for build specifics
 if $oneapi; then
-  AC_CHECK_PROG([DPCPP], [dpcpp], [dpcpp])
-fi
-if $cuda; then
-  AC_CHECK_PROG([NVCC], [nvcc], [nvcc])
+  AC_CHECK_HEADERS([CL/sycl.hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([oneapi/mkl.hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 else
-  AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  if $cuda; then
+    AC_CHECK_HEADERS([cublas.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  else
+    AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  fi
 fi
 
 AC_CONFIG_FILES([Makefile])
