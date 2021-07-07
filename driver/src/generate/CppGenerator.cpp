@@ -435,6 +435,10 @@ void birch::CppGenerator::visit(const Program* o) {
         line("}\n");
       }
 
+      /* initialization */
+      genSourceLine(o->loc);
+      line("numbirch::init();\n");
+
       /* body of program */
       *this << o->braces;
 
