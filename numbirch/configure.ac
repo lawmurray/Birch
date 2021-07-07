@@ -64,16 +64,14 @@ esac],[default=true])
 
 # Programs
 if $oneapi; then
-  compilers=[dpcpp]
+  CXX=dpcpp
 else
   if $cuda; then
-    compilers=[nvcc]
-  else
-    compilers=
+    CXX=nvcc
   fi
 fi
 
-AC_PROG_CXX($compilers)
+AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
 
