@@ -10,18 +10,21 @@ lib_LTLIBRARIES += libnumbirch.la
 endif
 
 AM_CPPFLAGS = 
-DP_CXXFLAGS = -qmkl=sequential -fsycl -Wno-unused-command-line-argument
-NV_CXXFLAGS = 
+AM_CXXFLAGS = 
+AM_LDFLAGS = 
 
 COMMON_SOURCES =
 if ONEAPI
-  COMMON_SOURCES += numbirch/core_oneapi.cpp
+  AM_CPPFLAGS +=
+  AM_CXXFLAGS += -qmkl=sequential -Wno-unused-command-line-argument
+  AM_LDFLAGS += -lmkl_tbb_thread -lmkl_core -qmkl=sequential
+  COMMON_SOURCES += numbirch/numbirch_oneapi.cpp
 else
 if CUDA
-  COMMON_SOURCES += numbirch/core_cuda.cu
+  COMMON_SOURCES += numbirch/numbirch_cuda.cu
 else
   AM_CPPFLAGS += -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
-  COMMON_SOURCES += numbirch/core_default.cpp
+  COMMON_SOURCES += numbirch/numbirch_default.cpp
 endif
 endif
 
@@ -38,8 +41,7 @@ libnumbirch_la_SOURCES = $(COMMON_SOURCES)
 include_HEADERS = \
   numbirch/numbirch.hpp
 
-nobase_include_HEADERS = \
-  numbirch/core.hpp
+nobase_include_HEADERS =
 
 dist_noinst_DATA =  \
   Doxyfile \

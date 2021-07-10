@@ -35,6 +35,18 @@ void numbirch::init() {
   Eigen::initParallel();
 }
 
+void* numbirch::malloc(const size_t size) {
+  return std::malloc(size);
+}
+
+void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
+  return std::realloc(ptr, newsize);
+}
+
+void numbirch::free(void* ptr) {
+  std::free(ptr);
+}
+
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
     const int incy) {
   auto x1 = make_eigen_vector(x, n, incx);

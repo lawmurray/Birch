@@ -64,19 +64,18 @@ esac],[default=true])
 
 # Programs
 if $oneapi; then
-  CXX=dpcpp
+  CXX=./dpcpp_wrapper
 else
   if $cuda; then
     CXX=nvcc
   fi
 fi
-
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
 
-#AC_DISABLE_STATIC
-#AC_ENABLE_SHARED
+AC_DISABLE_STATIC
+AC_ENABLE_SHARED
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
@@ -87,13 +86,12 @@ AC_C_INLINE
 
 # Check for build specifics
 if $oneapi; then
-  AC_CHECK_HEADERS([CL/sycl.hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-  AC_CHECK_HEADERS([oneapi/mkl.hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  echo
 else
   if $cuda; then
     AC_CHECK_HEADERS([cublas.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
   else
-    AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
   fi
 fi
 
