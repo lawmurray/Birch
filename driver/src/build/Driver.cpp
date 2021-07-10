@@ -335,7 +335,10 @@ void birch::Driver::run(const std::string& prog,
   prog_t* fcn;
 
   auto path = find(libDirs, so);
-  handle = dlopen(path.c_str(), RTLD_NOW);
+  handle = dlopen(path.c_str(), RTLD_NOW|RTLD_GLOBAL);
+  // ^ RTLD_GLOBAL required to avoid missing symbols when dlopen() in turn
+  //   loads NumBirch shared library, which in turn loads various Intel oneAPI
+  //   shared libraries
   msg = dlerror();
   if (handle == NULL) {
     std::stringstream buf;
