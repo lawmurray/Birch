@@ -29,8 +29,8 @@ function transpose(m:Real) -> Real {
 function transpose(x:Real[_]) -> Real[_,_] {
   Y:Real[1,length(x)];
   cpp{{
-  numbirch::transpose(Y.rows(), Y.columns(), 1.0, x.data(), x.rowStride(),
-      Y.data(), Y.rowStride());
+  numbirch::transpose(Y.rows(), Y.columns(), 1.0, x.data(), x.stride(),
+      Y.data(), Y.stride());
   }}
   return Y;
 }
@@ -41,8 +41,8 @@ function transpose(x:Real[_]) -> Real[_,_] {
 function transpose(X:Real[_,_]) -> Real[_,_] {
   Y:Real[columns(X), rows(X)];
   cpp{{
-  numbirch::transpose(Y.rows(), Y.columns(), 1.0, X.data(), X.rowStride(),
-      Y.data(), Y.rowStride());
+  numbirch::transpose(Y.rows(), Y.columns(), 1.0, X.data(), X.stride(),
+      Y.data(), Y.stride());
   }}
   return Y;
 }

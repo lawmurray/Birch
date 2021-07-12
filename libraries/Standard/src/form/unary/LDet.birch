@@ -21,6 +21,6 @@ function ldet<Middle>(m:Middle) -> {
  */
 function ldet(A:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::ldet(A.rows(), A.data(), A.rowStride());
+  return numbirch::ldet(A.rows(), A.data(), A.stride());
   }}
 }

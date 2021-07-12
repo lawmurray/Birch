@@ -20,7 +20,7 @@ template<class T>
 auto make_eigen_matrix(T* A, const int m, const int n, const int ldA) {
   using EigenMatrixStride = Eigen::Stride<Eigen::Dynamic,1>;
   using EigenMatrix = Eigen::Matrix<typename std::remove_const<T>::type,
-      Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor,Eigen::Dynamic,
+      Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor,Eigen::Dynamic,
       Eigen::Dynamic>;
   using EigenMatrixMap = Eigen::Map<typename std::conditional<
       std::is_const<T>::value,const EigenMatrix,EigenMatrix>::type,
@@ -257,7 +257,7 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto B1 = make_eigen_matrix(B, n, n, ldB);
   B1.noalias() = S1.llt().solve(Eigen::Matrix<double,Eigen::Dynamic,
-      Eigen::Dynamic,Eigen::RowMajor>::Identity(n, n));
+      Eigen::Dynamic,Eigen::ColMajor>::Identity(n, n));
   ///@todo Use ldlt()?
 }
 

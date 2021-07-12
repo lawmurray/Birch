@@ -23,6 +23,6 @@ function lcholdet<Middle>(m:Middle) -> {
  */
 function lcholdet(S:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::lcholdet(S.rows(), S.data(), S.rowStride());
+  return numbirch::lcholdet(S.rows(), S.data(), S.stride());
   }}
 }

@@ -168,7 +168,7 @@ void birch::CppGenerator::visit(const Span* o) {
 }
 
 void birch::CppGenerator::visit(const Range* o) {
-  middle("libbirch::make_range(" << o->left << ", " << o->right <<')');
+  middle("std::make_pair(" << o->left << ", " << o->right << ')');
 }
 
 void birch::CppGenerator::visit(const Member* o) {
@@ -651,7 +651,7 @@ void birch::CppGenerator::visit(const EmptyType* o) {
 }
 
 void birch::CppGenerator::visit(const ArrayType* o) {
-  middle("libbirch::DefaultArray<" << o->single << ',' << o->depth() << '>');
+  middle("libbirch::Array<" << o->single << ',' << o->depth() << '>');
 }
 
 void birch::CppGenerator::visit(const TupleType* o) {

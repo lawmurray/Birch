@@ -83,8 +83,8 @@ operator (x:Real*y:Real) -> Real;
 operator (x:Real*y:Real[_]) -> Real[_] {
   z:Real[length(y)];
   cpp{{
-  numbirch::mul(y.rows(), x, y.data(), y.rowStride(), z.data(),
-      z.rowStride());
+  numbirch::mul(y.rows(), x, y.data(), y.stride(), z.data(),
+      z.stride());
   }}
   return z;
 }
@@ -116,8 +116,8 @@ operator (x:Real[_]*y:Integer) -> Real[_] {
 operator (x:Real*Y:Real[_,_]) -> Real[_,_] {
   Z:Real[rows(Y), columns(Y)];
   cpp{{
-  numbirch::mul(Y.rows(), Y.columns(), x, Y.data(), Y.rowStride(), Z.data(),
-      Z.rowStride());
+  numbirch::mul(Y.rows(), Y.columns(), x, Y.data(), Y.stride(), Z.data(),
+      Z.stride());
   }}
   return Z;
 }
@@ -151,8 +151,8 @@ operator (X:Real[_,_]*y:Real[_]) -> Real[_] {
 
   z:Real[rows(X)];
   cpp{{
-  numbirch::mul(X.rows(), X.columns(), X.data(), X.rowStride(), y.data(),
-      y.rowStride(), z.data(), z.rowStride());
+  numbirch::mul(X.rows(), X.columns(), X.data(), X.stride(), y.data(),
+      y.stride(), z.data(), z.stride());
   }}
   return z;
 }
@@ -165,8 +165,8 @@ operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_] {
 
   Z:Real[rows(X), columns(Y)];
   cpp{{
-  numbirch::mul(Z.rows(), Z.columns(), X.columns(), X.data(), X.rowStride(),
-      Y.data(), Y.rowStride(), Z.data(), Z.rowStride());
+  numbirch::mul(Z.rows(), Z.columns(), X.columns(), X.data(), X.stride(),
+      Y.data(), Y.stride(), Z.data(), Z.stride());
   }}
   return Z;
 }

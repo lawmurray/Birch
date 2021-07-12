@@ -57,7 +57,7 @@ function sum(X:Integer[_,_]) -> Integer {
  */
 function sum(x:Real[_]) -> Real {
   cpp{{
-  return numbirch::sum(x.rows(), x.data(), x.rowStride());
+  return numbirch::sum(x.rows(), x.data(), x.stride());
   }}
 }
 
@@ -66,6 +66,6 @@ function sum(x:Real[_]) -> Real {
  */
 function sum(X:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::sum(X.rows(), X.columns(), X.data(), X.rowStride());
+  return numbirch::sum(X.rows(), X.columns(), X.data(), X.stride());
   }}
 }

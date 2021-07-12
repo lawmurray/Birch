@@ -19,12 +19,30 @@
 
 namespace libbirch {
 /**
+ * Make a vector shape.
+ *
+ * @ingroup libbirch
+ */
+inline ArrayShape<1> make_shape(const int n) {
+  return ArrayShape<1>(n);
+}
+
+/**
+ * Make a matrix shape.
+ *
+ * @ingroup libbirch
+ */
+inline ArrayShape<2> make_shape(const int m, const int n) {
+  return ArrayShape<2>(m, n);
+}
+
+/**
  * Make an array and assign a value to it.
  *
  * @ingroup libbirch
  *
  * @tparam T Value type.
- * @tparam F Shape type.
+ * @tparam D Number of dimensions.
  * @tparam Value Initial value type.
  *
  * @param shape Shape.
@@ -32,9 +50,9 @@ namespace libbirch {
  *
  * @return The array.
  */
-template<class T, class F, class Value>
-auto make_array_from_value(const F& shape, const Value& value) {
-  return Array<T,F>(shape, value);
+template<class T, int D, class Value>
+auto make_array_from_value(const ArrayShape<D>& shape, const Value& value) {
+  return Array<T,D>(shape, value);
 }
 
 /**
@@ -50,7 +68,7 @@ auto make_array_from_value(const F& shape, const Value& value) {
  */
 template<class T>
 auto make_array_from_sequence(const std::initializer_list<T>& values) {
-  return Array<T,typename DefaultShape<1>::type>(values);
+  return Array<T,1>(values);
 }
 
 /**
@@ -67,7 +85,7 @@ auto make_array_from_sequence(const std::initializer_list<T>& values) {
 template<class T>
 auto make_array_from_sequence(
       const std::initializer_list<std::initializer_list<T>>& values) {
-  return Array<T,typename DefaultShape<2>::type>(values);
+  return Array<T,2>(values);
 }
 
 /**
@@ -75,7 +93,7 @@ auto make_array_from_sequence(
  *
  * @ingroup libbirch
  *
- * @tparam F Shape type.
+ * @tparam D Number of dimensions.
  * @tparam L Lambda type.
  *
  * @param l Lambda called to construct each element.
@@ -83,9 +101,9 @@ auto make_array_from_sequence(
  *
  * @return The array.
  */
-template<class F, class L>
-auto make_array_from_lambda(const F& shape, const L& l) {
-  return Array<decltype(l(0)),F>(l, shape);
+template<int D, class L>
+auto make_array_from_lambda(const ArrayShape<D>& shape, const L& l) {
+  return Array<decltype(l(0)),D>(l, shape);
 }
 
 /**

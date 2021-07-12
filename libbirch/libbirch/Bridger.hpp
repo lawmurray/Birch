@@ -53,8 +53,8 @@ public:
     }
   }
 
-  template<class T, class F>
-  std::tuple<int,int,int,int> visit(const int j, const int k, Array<T,F>& o);
+  template<class T, int D>
+  std::tuple<int,int,int,int> visit(const int j, const int k, Array<T,D>& o);
 
   template<class T>
   std::tuple<int,int,int,int> visit(const int j, const int k, Inplace<T>& o);
@@ -71,8 +71,8 @@ public:
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 
-template<class T, class F>
-std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, Array<T,F>& o) {
+template<class T, int D>
+std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k, Array<T,D>& o) {
   int l = MAX, h = 0, m = 0, n = 0, l1, h1, m1, n1;
   if (!std::is_trivially_copyable<T>::value) {
     auto iter = o.begin();

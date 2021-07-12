@@ -1,4 +1,8 @@
-#include "numbirch/core.hpp"
+/**
+ * @file
+ * 
+ * NumBirch interface.
+ */
 
 #include <cstddef>
 

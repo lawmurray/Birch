@@ -28,6 +28,8 @@ nobase_include_HEADERS = \
   libbirch/Any.hpp \
   libbirch/Array.hpp \
   libbirch/ArrayControl.hpp \
+  libbirch/ArrayIterator.hpp \
+  libbirch/ArrayShape.hpp \
   libbirch/Atomic.hpp \
   libbirch/BiconnectedCollector.hpp \
   libbirch/BiconnectedCopier.hpp \
@@ -37,28 +39,19 @@ nobase_include_HEADERS = \
   libbirch/Copier.hpp \
   libbirch/Destroyer.hpp \
   libbirch/docs.hpp \
-  libbirch/Dimension.hpp \
   libbirch/external.hpp \
-  libbirch/Index.hpp \
   libbirch/Inplace.hpp \
   libbirch/internal.hpp \
-  libbirch/Iterator.hpp \
-  libbirch/Length.hpp \
   libbirch/Lock.hpp \
   libbirch/Marker.hpp \
   libbirch/macro.hpp \
   libbirch/Memo.hpp \
   libbirch/memory.hpp \
   libbirch/mutable.hpp \
-  libbirch/Offset.hpp \
-  libbirch/Range.hpp \
   libbirch/Reacher.hpp \
   libbirch/Scanner.hpp \
-  libbirch/Shape.hpp \
   libbirch/Shared.hpp \
-  libbirch/Slice.hpp \
   libbirch/Spanner.hpp \
-  libbirch/Stride.hpp \
   libbirch/thread.hpp \
   libbirch/type.hpp
 

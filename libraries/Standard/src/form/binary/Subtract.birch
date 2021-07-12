@@ -45,8 +45,8 @@ operator (x:Real[_] - y:Real[_]) -> Real[_] {
 
   z:Real[length(x)];
   cpp{{
-  numbirch::sub(x.rows(), x.data(), x.rowStride(), y.data(), y.rowStride(),
-      z.data(), z.rowStride());
+  numbirch::sub(x.rows(), x.data(), x.stride(), y.data(), y.stride(),
+      z.data(), z.stride());
   }}
   return z;
 }
@@ -60,8 +60,8 @@ operator (X:Real[_,_] - Y:Real[_,_]) -> Real[_,_] {
 
   Z:Real[rows(X), columns(X)];
   cpp{{
-  numbirch::sub(X.rows(), X.columns(), X.data(), X.rowStride(), Y.data(),
-      Y.rowStride(), Z.data(), Z.rowStride());
+  numbirch::sub(X.rows(), X.columns(), X.data(), X.stride(), Y.data(),
+      Y.stride(), Z.data(), Z.stride());
   }}
   return Z;
 }

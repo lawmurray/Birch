@@ -6,7 +6,7 @@ function chol(S:Real[_,_]) -> Real[_,_] {
   assert rows(S) == columns(S);
   L:Real[rows(S),columns(S)];
   cpp{{
-  numbirch::chol(S.rows(), S.data(), S.rowStride(), L.data(), L.rowStride());
+  numbirch::chol(S.rows(), S.data(), S.stride(), L.data(), L.stride());
   }}
   return L;
 }

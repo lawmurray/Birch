@@ -89,10 +89,14 @@ function identity(length:Integer) -> Real[_,_] {
  */
 function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
-  /* wrap λ in another lambda function to translate 0-based serial (row-wise)
-   * indices into 1-based row/column indices */
+  /* wrap λ in another lambda function to translate 0-based serial indices
+   * into 1-based row/column indices */
   return libbirch::make_array_from_lambda(libbirch::make_shape(rows,
-      columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1); });
+      columns), [&](int64_t s) {
+        int j = s/rows;
+        int i = s - j*rows;
+        return λ(i + 1, j + 1);
+      });
   }}
 }
 

@@ -14,7 +14,7 @@
 using namespace cl;
 using namespace oneapi;
 
-namespace blas = mkl::blas::row_major;
+namespace blas = mkl::blas::col_major;
 
 /**
  * Thread-local SYCL queue.
@@ -41,7 +41,7 @@ auto make_dpl_matrix(T* A, const int m, const int n, const int ldA) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T& {
         int c = i/m;
-        int r = i%m;
+        int r = i - c*m;
         return A[r + c*ldA];
       });
 }
@@ -52,7 +52,7 @@ auto make_dpl_matrix_transpose(T* A, const int m, const int n,
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T& {
         int r = i/n;
-        int c = i%n;
+        int c = i - r*n;
         return A[r * c*ldA];
       });
 }
@@ -62,9 +62,9 @@ auto make_dpl_matrix_lower(const T* A, const int m, const int n,
     const int ldA) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T {
-        int r = i/m;
-        int c = i%m;
-        return c <= r ? A[r*ldA + c] : 0.0;
+        int c = i/m;
+        int r = i - c*m;
+        return c <= r ? A[r + c*ldA] : 0.0;
       });
 }
 

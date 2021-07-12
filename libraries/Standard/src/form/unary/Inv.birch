@@ -23,7 +23,7 @@ function inv<Middle>(m:Middle) -> {
 function inv(A:Real[_,_]) -> Real[_,_] {
   B:Real[rows(A), columns(A)];
   cpp{{
-  numbirch::inv(A.rows(), A.data(), A.rowStride(), B.data(), B.rowStride());
+  numbirch::inv(A.rows(), A.data(), A.stride(), B.data(), B.stride());
   }}
   return B;
 }

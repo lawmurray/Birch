@@ -1203,10 +1203,8 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxInteger("\\blong (?:long|int)\\b", options);
   std::regex rxBoolean("\\bbool\\b", options);
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
-  std::regex rxVector("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *>", options);
-  std::regex rxVector2("DefaultArray<(" + type + "), *1>", options);
-  std::regex rxMatrix("Array<(" + type + "), *Shape<Dimension<(?:0, *0)?>, Shape<Dimension<(?:0, *0)?>, *EmptyShape *> *> *>", options);
-  std::regex rxMatrix2("DefaultArray<(" + type + "), *2>", options);
+  std::regex rxVector("Array<(" + type + "), *1 *>", options);
+  std::regex rxMatrix("Array<(" + type + "), *2 *>", options);
   std::regex rxInplace("Inplace<(" + type + ") *>", options);
   std::regex rxShared("Shared<(" + type + ") *>", options);
   std::regex rxOptional("std::optional<(" + type + ") *>", options);
@@ -1259,9 +1257,7 @@ void birch::Driver::target(const std::string& cmd) {
 
         /* replace some types */
         str = std::regex_replace(str, rxVector, "$1[_]");
-        str = std::regex_replace(str, rxVector2, "$1[_]");
         str = std::regex_replace(str, rxMatrix, "$1[_,_]");
-        str = std::regex_replace(str, rxMatrix2, "$1[_,_]");
         str = std::regex_replace(str, rxConstRef, "$1");
         str = std::regex_replace(str, rxThis, "this.");
         str = std::regex_replace(str, rxAka, "");

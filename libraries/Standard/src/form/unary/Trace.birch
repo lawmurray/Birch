@@ -43,6 +43,6 @@ function trace(x:Real[_]) -> Real {
  */
 function trace(A:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::trace(A.rows(), A.columns(), A.data(), A.rowStride());
+  return numbirch::trace(A.rows(), A.columns(), A.data(), A.stride());
   }}
 }

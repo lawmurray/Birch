@@ -46,8 +46,8 @@ public:
     }
   }
 
-  template<class T, class F>
-  void visit(Array<T,F>& o);
+  template<class T, int D>
+  void visit(Array<T,D>& o);
 
   template<class T>
   void visit(Inplace<T>& o);
@@ -64,8 +64,8 @@ public:
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 
-template<class T, class F>
-void libbirch::Reacher::visit(Array<T,F>& o) {
+template<class T, int D>
+void libbirch::Reacher::visit(Array<T,D>& o) {
   if (!std::is_trivially_copyable<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
