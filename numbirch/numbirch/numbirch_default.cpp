@@ -232,8 +232,9 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto x1 = make_eigen_vector(x, n, incx);
   auto y1 = make_eigen_vector(y, n, incy);
-  x1.noalias() = S1.llt().solve(y1);
-  ///@todo Use ldlt()?
+  auto llt = S1.llt();
+  assert(llt.info() == Eigen::Success);
+  x1.noalias() = llt.solve(y1);
 }
 
 void numbirch::cholsolve(const int m, const int n, const double* S,
@@ -241,8 +242,9 @@ void numbirch::cholsolve(const int m, const int n, const double* S,
   auto S1 = make_eigen_matrix(S, m, m, ldS);
   auto X1 = make_eigen_matrix(X, m, n, ldX);
   auto Y1 = make_eigen_matrix(Y, m, n, ldY);
-  X1.noalias() = S1.llt().solve(Y1);
-  ///@todo Use ldlt()?
+  auto llt = S1.llt();
+  assert(llt.info() == Eigen::Success);
+  X1.noalias() = llt.solve(Y1);
 }
 
 void numbirch::inv(const int n, const double* A, const int ldA, double* B,
@@ -256,9 +258,10 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
     const int ldB) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto B1 = make_eigen_matrix(B, n, n, ldB);
-  B1.noalias() = S1.llt().solve(Eigen::Matrix<double,Eigen::Dynamic,
+  auto llt = S1.llt();
+  assert(llt.info() == Eigen::Success);
+  B1.noalias() = llt.solve(Eigen::Matrix<double,Eigen::Dynamic,
       Eigen::Dynamic,Eigen::ColMajor>::Identity(n, n));
-  ///@todo Use ldlt()?
 }
 
 double numbirch::ldet(const int n, const double* A, const int ldA) {
@@ -268,14 +271,18 @@ double numbirch::ldet(const int n, const double* A, const int ldA) {
 
 double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
-  return 2.0*S1.llt().matrixLLT().diagonal().array().log().sum();
+  auto llt = S1.llt();
+  assert(llt.info() == Eigen::Success);
+  return 2.0*llt.matrixLLT().diagonal().array().log().sum();
 }
 
 void numbirch::chol(const int n, const double* S, const int ldS, double* L,
     const int ldL) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto L1 = make_eigen_matrix(L, n, n, ldL);
-  L1 = S1.llt().matrixL();
+  auto llt = S1.llt();
+  assert(llt.info() == Eigen::Success);
+  L1 = llt.matrixL();
 }
 
 void numbirch::transpose(const int m, const int n, const double x,

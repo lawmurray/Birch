@@ -112,8 +112,8 @@ function inner(x:Real[_], y:Real[_]) -> Real[_] {
 
   z:Real[1];
   cpp{{
-  numbirch::inner(1, x.rows(), x.data(), x.stride(), y.data(),
-      y.stride(), z.data(), z.stride());
+  numbirch::mul(1, x.rows(), x.data(), x.stride(), y.data(), y.stride(),
+      z.data(), z.stride());
   }}
   return z;
 }
@@ -126,7 +126,7 @@ function inner(X:Real[_,_], y:Real[_]) -> Real[_] {
   
   z:Real[columns(X)];
   cpp{{
-  numbirch::inner(X.columns(), X.rows(), X.data(), X.stride(), y.data(),
+  numbirch::inner(z.rows(), X.rows(), X.data(), X.stride(), y.data(),
       y.stride(), z.data(), z.stride());
   }}
   return z;
@@ -140,7 +140,7 @@ function inner(x:Real[_], Y:Real[_,_]) -> Real[_,_] {
 
   Z:Real[1,columns(Y)];
   cpp{{
-  numbirch::inner(1, Z.columns(), x.rows(), x.data(), x.stride(),
+  numbirch::mul(Z.rows(), Z.columns(), x.rows(), x.data(), x.stride(),
       Y.data(), Y.stride(), Z.data(), Z.stride());
   }}
   return Z;

@@ -108,12 +108,12 @@ function outer(X:Real[_,_], y:Integer) -> Real[_,_] {
  * Vector outer product.
  */
 function outer(x:Real[_], y:Real[_]) -> Real[_,_] {
-  z:Real[length(x), length(y)];
+  Z:Real[length(x), length(y)];
   cpp{{
-  numbirch::outer(x.rows(), y.rows(), x.data(), x.stride(), y.data(),
-      y.stride(), z.data(), z.stride());
+  numbirch::outer(Z.rows(), Z.columns(), x.data(), x.stride(), y.data(),
+      y.stride(), Z.data(), Z.stride());
   }}
-  return z;
+  return Z;
 }
 
 /**

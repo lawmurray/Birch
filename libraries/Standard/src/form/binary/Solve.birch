@@ -27,8 +27,8 @@ function solve(A:Real[_,_], y:Real[_]) -> Real[_] {
 
   x:Real[length(y)];
   cpp{{
-  numbirch::solve(x.rows(), A.data(), A.stride(), x.data(),
-      x.stride(), y.data(), y.stride());
+  numbirch::solve(x.rows(), A.data(), A.stride(), x.data(), x.stride(),
+      y.data(), y.stride());
   }}
   return x;
 }

@@ -25,8 +25,7 @@ function cholinv<Middle>(m:Middle) -> {
 function cholinv(S:Real[_,_]) -> Real[_,_] {
   B:Real[rows(S), columns(S)];
   cpp{{
-  numbirch::cholinv(S.rows(), S.data(), S.stride(), B.data(),
-      B.stride());
+  numbirch::cholinv(S.rows(), S.data(), S.stride(), B.data(), B.stride());
   }}
   return B;
 }

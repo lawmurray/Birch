@@ -23,8 +23,7 @@ function dot<Left,Right>(l:Left, r:Right) -> {
 function dot(x:Real[_], y:Real[_]) -> Real {
   assert length(x) == length(y);
   cpp{{
-  return numbirch::dot(x.rows(), x.data(), x.stride(), y.data(),
-      y.stride());
+  return numbirch::dot(x.rows(), x.data(), x.stride(), y.data(), y.stride());
   }}
 }
 
@@ -37,7 +36,7 @@ function dot(x:Real[_], Y:Real[_,_]) -> Real[_] {
 
   z:Real[columns(Y)];
   cpp{{
-  numbirch::inner(Y.columns(), Y.rows(), Y.data(), Y.stride(), x.data(),
+  numbirch::inner(z.rows(), Y.rows(), Y.data(), Y.stride(), x.data(),
       x.stride(), z.data(), z.stride());
   }}
   return z;

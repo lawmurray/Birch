@@ -43,8 +43,7 @@ operator (x:Real/y:Real) -> Real;
 operator (x:Real[_]/y:Real) -> Real[_] {
   z:Real[length(x)];
   cpp{{
-  numbirch::div(x.rows(), x.data(), x.stride(), y, z.data(),
-      z.stride());
+  numbirch::div(x.rows(), x.data(), x.stride(), y, z.data(), z.stride());
   }}
   return z;
 }
