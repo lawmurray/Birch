@@ -31,19 +31,23 @@ public:
     //
   }
 
-  auto& operator*() {
+  reference operator[](const difference_type n) {
+    return *(buffer + shape.offset(n));
+  }
+
+  reference operator*() {
     return *get();
   }
 
-  auto& operator*() const {
+  reference operator*() const {
     return *get();
   }
 
-  auto operator->() {
+  pointer operator->() {
     return get();
   }
 
-  auto operator->() const {
+  pointer operator->() const {
     return get();
   }
 
@@ -71,28 +75,28 @@ public:
     return pos > o.pos;
   }
 
-  int64_t operator-(const ArrayIterator& o) const {
+  difference_type operator-(const ArrayIterator& o) const {
     return pos - o.pos;
   }
 
-  ArrayIterator& operator+=(const int64_t i) {
+  ArrayIterator& operator+=(const difference_type i) {
     pos += i;
     return *this;
   }
 
-  ArrayIterator operator+(const int64_t i) const {
+  ArrayIterator operator+(const difference_type i) const {
     ArrayIterator result(*this);
     result += i;
     return result;
   }
 
-  ArrayIterator operator-(const int64_t i) const {
+  ArrayIterator operator-(const difference_type i) const {
     ArrayIterator result(*this);
     result -= i;
     return result;
   }
 
-  ArrayIterator& operator-=(const int64_t i) {
+  ArrayIterator& operator-=(const difference_type i) {
     pos -= i;
     return *this;
   }
@@ -147,6 +151,6 @@ protected:
   /**
    * Position.
    */
-  int64_t pos;
+  difference_type pos;
 };
 }
