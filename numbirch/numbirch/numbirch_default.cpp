@@ -109,6 +109,20 @@ void numbirch::hadamard(const int m, const int n, const double* A,
   C1.noalias() = A1.cwiseProduct(B1);
 }
 
+void numbirch::div(const int n, const double* x, const int incx,
+    const double y, double* z, const int incz) {
+  auto x1 = make_eigen_vector(x, n, incx);
+  auto z1 = make_eigen_vector(z, n, incz);
+  z1.noalias() = x1/y;
+}
+
+void numbirch::div(const int m, const int n, const double* A, const int ldA,
+    const double b, double* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1/b;
+}
+
 void numbirch::mul(const int n, const double x, const double* y,
     const int incy, double* z, const int incz) {
   auto y1 = make_eigen_vector(y, n, incy);
@@ -137,20 +151,6 @@ void numbirch::mul(const int m, const int n, const int k, const double* A,
   auto B1 = make_eigen_matrix(B, k, n, ldB);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1*B1;
-}
-
-void numbirch::div(const int n, const double* x, const int incx,
-    const double y, double* z, const int incz) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto z1 = make_eigen_vector(z, n, incz);
-  z1.noalias() = x1/y;
-}
-
-void numbirch::div(const int m, const int n, const double* A, const int ldA,
-    const double b, double* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1/b;
 }
 
 double numbirch::sum(const int n, const double* x, const int incx) {

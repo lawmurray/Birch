@@ -175,6 +175,33 @@ void hadamard(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
 
 /**
+ * Vector-scalar division.
+ * 
+ * @param n Number of elements.
+ * @param x Vector.
+ * @param incx Element stride of `x`.
+ * @param y Scalar.
+ * @param[out] z Vector.
+ * @param incz Element stride of `z`.
+ */
+void div(const int n, const double* x, const int incx, const double y,
+    double* z, const int incz);
+
+/**
+ * Matrix-scalar division.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Row stride of `A`.
+ * @param b Matrix.
+ * @param[out] C Matrix.
+ * @param ldC Row stride of `C`.
+ */
+void div(const int m, const int n, const double* A, const int ldA,
+    const double b, double* C, const int ldC);
+
+/**
  * Scalar-vector multiplication.
  * 
  * @param n Number of elements.
@@ -231,33 +258,6 @@ void mul(const int m, const int n, const double* A, const int ldA,
  */
 void mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
-
-/**
- * Vector-scalar division.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Scalar.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void div(const int n, const double* x, const int incx, const double y,
-    double* z, const int incz);
-
-/**
- * Matrix-scalar division.
- * 
- * @param m Number of rows.
- * @param n Number of columns.
- * @param A Matrix.
- * @param ldA Row stride of `A`.
- * @param b Matrix.
- * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
- */
-void div(const int m, const int n, const double* A, const int ldA,
-    const double b, double* C, const int ldC);
 
 /**
  * Vector sum of elements.
