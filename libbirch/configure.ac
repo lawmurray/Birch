@@ -43,13 +43,11 @@ AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
 AC_ENABLE_SHARED
-AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
 # Checks for basic things
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
-AC_HEADER_STDBOOL
-AC_C_INLINE
 AC_OPENMP
 
 # Checks for compiler flags

@@ -76,17 +76,17 @@ AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
 AC_ENABLE_SHARED
-AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 LT_INIT([dlopen,pic-only])
 
 # Checks for basic things
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
-AC_HEADER_STDBOOL
-AC_C_INLINE
+AC_OPENMP
 
 # Check for build specifics
 if $oneapi; then
-  echo
+  AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_LIB([omp], [main], [], [], [])
 else
   if $cuda; then
     AC_CHECK_HEADERS([cublas.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
