@@ -52,7 +52,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
 
     let δ <- abs(C - P);
     let ε <- 2.0/sqrt(N);
-    if 10 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
+    if 100 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
       failed <- true;
       stderr.print("***failed*** on step " + n + ", " + δ + " > " + ε + "\n");
     }

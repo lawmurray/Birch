@@ -20,7 +20,7 @@ function pass(x1:Real[_], x2:Real[_]) -> Boolean {
 
   /* compute distance and suggested pass threshold */
   let δ <- wasserstein(z1, z2);
-  if 10 < N && !(δ <= ε) {  // careful of nans
+  if 100 < N && !(δ <= ε) {  // careful of nans
     stderr.print("***failed***, " + δ + " > " + ε + "\n");
     return false;
   }
@@ -59,7 +59,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
 
     /* compute distance and suggested pass threshold */
     let δ <- wasserstein(z1, z2);
-    if 10 < R && !(δ <= ε) {  // careful of nans
+    if 100 < R && !(δ <= ε) {  // careful of nans
       failed <- failed + 1;
       stderr.print("***failed*** on component " + c + ", " + δ + " > " + ε + "\n");
     }
@@ -86,7 +86,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
 
     /* compute distance and suggested pass threshold */
     let δ <- wasserstein(z1, z2);
-    if 10 < R && !(δ <= ε) {  // careful of nans
+    if 100 < R && !(δ <= ε) {  // careful of nans
       failed <- failed + 1;
       stderr.print("***failed*** on random projection, " + δ + " > " + ε + "\n");
     }

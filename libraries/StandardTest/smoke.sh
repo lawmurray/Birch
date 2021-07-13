@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eov pipefail
 
-N=4
-B=4
+N=100
+B=100
 S=0
 
 eval "`grep -r "program test_basic_" src     | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1/"                                | sort`"

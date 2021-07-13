@@ -28,12 +28,12 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
     q <- π.pdf(false);
   }
   let δ <- abs(p - scalar<Real>(k)/N);
-  if 10 < N && !(δ <= ε) {  // careful of nans
+  if 100 < N && !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on true, " + δ + " > " + ε + "\n");
   }
   δ <- abs(q - scalar<Real>(N - k)/N);
-  if 10 < N && !(δ <= ε) {  // careful of nans
+  if 100 < N && !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on false, " + δ + " > " + ε + "\n");
   }
@@ -103,7 +103,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     }
     let δ <- abs(p - scalar<Real>(count[x - from! + 1])/N);
     let ε <- 5.0/sqrt(N);
-    if 10 < N && !(δ <= ε) {  // careful of nans
+    if 100 < N && !(δ <= ε) {  // careful of nans
       failed <- true;
       stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
     }
@@ -169,9 +169,9 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
       }
     }
     //stderr.print("trial acceptance rate: " + a + "\n");
-    if a < 0.4 {
+    if 100 < N && a < 0.4 {
       σ2 <- 0.5*σ2;
-    } else if a > 0.5 {
+    } else if 100 < N && a > 0.5 {
       σ2 <- 1.5*σ2;
     } else {
       done <- true;
@@ -283,9 +283,9 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
       }
     }
     //stderr.print("trial acceptance rate: " + a + "\n");
-    if a < 0.2 {
+    if 100 < N && a < 0.2 {
       Σ <- 0.5*Σ;
-    } else if a > 0.25 {
+    } else if 100 < N && a > 0.25 {
       Σ <- 1.5*Σ;
     } else {
       done <- true;
@@ -394,9 +394,9 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
       }
     }
     //stderr.print("trial acceptance rate: " + a + "\n");
-    if a < 0.2 {
+    if 100 < N && a < 0.2 {
       Σ <- 0.5*Σ;
-    } else if a > 0.25 {
+    } else if 100 < N && a > 0.25 {
       Σ <- 1.5*Σ;
     } else {
       done <- true;
