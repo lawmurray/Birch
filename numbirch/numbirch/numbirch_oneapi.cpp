@@ -10,6 +10,7 @@
 #include <oneapi/dpl/async>
 #include <oneapi/mkl.hpp>
 #include <CL/sycl.hpp>
+#include <omp.h>
 
 using namespace cl;
 using namespace oneapi;
@@ -18,17 +19,14 @@ namespace blas = mkl::blas::column_major;
 namespace lapack = mkl::lapack;
 
 /**
- * Thread-local SYCL queue.
+ * Global SYCL queue.
  */
-static thread_local auto queue =
-    sycl::queue(sycl::device(sycl::host_selector()),
-    sycl::property::queue::in_order);
+static auto queue = sycl::queue(sycl::device(sycl::host_selector()));
 
 /**
- * Thread-local oneDPL policy.
+ * Global oneDPL policy.
  */
-static thread_local auto policy =
-    dpl::execution::make_device_policy(queue);
+static auto policy = dpl::execution::make_device_policy(queue);
 
 template<class T>
 auto make_dpl_vector(T* x, const int n, const int incx) {
@@ -70,8 +68,23 @@ auto make_dpl_matrix_lower(const T* A, const int m, const int n,
       });
 }
 
+template<class T>
+auto make_dpl_matrix_symmetric(const T* A, const int m, const int n,
+    const int ldA) {
+  return dpl::experimental::ranges::transform_view(
+      dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T {
+        int c = i/m;
+        int r = i - c*m;
+        return c <= r ? A[r + c*ldA] : A[c + r*ldA];
+      });
+}
+
 void numbirch::init() {
-  //
+  // #pragma omp parallel num_threads(omp_get_max_threads())
+  // {
+  //   queue = sycl::queue(sycl::device(sycl::host_selector()));
+  //   policy = dpl::execution::make_device_policy(queue);
+  // }
 }
 
 void* numbirch::malloc(const size_t size) {
@@ -416,15 +429,28 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
       mkl::uplo::lower, n, ldB);
   auto scratchpad_size = std::max(scratchpad_size1, scratchpad_size2);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
+  auto A = sycl::malloc_shared<double>(n*n, queue);
+  auto ldA = n;
 
   /* invert via Cholesky factorization */
-  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, B, 1, ldB, n);
-  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, B, ldB, scratchpad,
+  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, A, 1, ldA, n);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, A, ldA, scratchpad,
       scratchpad_size, {evt1});
-  auto evt3 = lapack::potri(queue, mkl::uplo::lower, n, B, ldB, scratchpad,
+  auto evt3 = lapack::potri(queue, mkl::uplo::lower, n, A, ldA, scratchpad,
       scratchpad_size, {evt2});
-  evt3.wait();
 
+  /* potri only modifies the lower triangle of A, whereas caller expects the
+   * whole symmetric matrix (at least for now); copy that into B */
+  auto A1 = make_dpl_matrix_symmetric(A, n, n, ldA);
+  auto B1 = make_dpl_matrix(B, n, n, ldB);
+  // auto evt4 = dpl::experimental::copy_async(policy, A1.begin(), A1.end(),
+  //    B1.begin(), evt3);
+  // evt4.wait();
+  // ^ compile errors as of Intel oneDPL 2021.4.0
+  evt3.wait();
+  dpl::copy(policy, A1.begin(), A1.end(), B1.begin());
+
+  sycl::free(A, queue);
   sycl::free(scratchpad, queue);
 }
 

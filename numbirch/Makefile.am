@@ -17,7 +17,7 @@ COMMON_SOURCES =
 if ONEAPI
   AM_CPPFLAGS += -Wno-deprecated-declarations -Wno-unused-command-line-argument
   AM_CXXFLAGS += -qmkl=sequential
-  AM_LDFLAGS += -lmkl_tbb_thread -lmkl_core -qmkl=sequential
+  AM_LDFLAGS += -qmkl=sequential
   COMMON_SOURCES += numbirch/numbirch_oneapi.cpp
 else
 if CUDA
