@@ -16,8 +16,8 @@ AM_LDFLAGS =
 COMMON_SOURCES =
 if ONEAPI
   AM_CPPFLAGS += -Wno-deprecated-declarations -Wno-unused-command-line-argument
-  AM_CXXFLAGS += -qmkl=sequential
-  AM_LDFLAGS += -qmkl=sequential
+  AM_CXXFLAGS += -qmkl -fsycl-unnamed-lambda
+  AM_LDFLAGS += $(AM_CXXFLAGS)
   COMMON_SOURCES += numbirch/numbirch_oneapi.cpp
 else
 if CUDA

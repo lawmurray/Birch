@@ -18,18 +18,13 @@ using namespace oneapi;
 namespace blas = mkl::blas::column_major;
 namespace lapack = mkl::lapack;
 
-/**
- * Global SYCL queue.
- */
-static auto queue = sycl::queue(sycl::device(sycl::host_selector()));
-
-/**
- * Global oneDPL policy.
- */
+static auto device = sycl::device(sycl::gpu_selector());
+static auto context = sycl::context(device);
+static auto queue = sycl::queue(context, device);
 static auto policy = dpl::execution::make_device_policy(queue);
 
 template<class T>
-auto make_dpl_vector(T* x, const int n, const int incx) {
+static auto make_dpl_vector(T* x, const int n, const int incx) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, n), [=](int i) -> T& {
         return x[i*incx];
@@ -37,7 +32,7 @@ auto make_dpl_vector(T* x, const int n, const int incx) {
 }
 
 template<class T>
-auto make_dpl_matrix(T* A, const int m, const int n, const int ldA) {
+static auto make_dpl_matrix(T* A, const int m, const int n, const int ldA) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T& {
         int c = i/m;
@@ -47,7 +42,7 @@ auto make_dpl_matrix(T* A, const int m, const int n, const int ldA) {
 }
 
 template<class T>
-auto make_dpl_matrix_transpose(T* A, const int m, const int n,
+static auto make_dpl_matrix_transpose(T* A, const int m, const int n,
     const int ldA) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T& {
@@ -58,33 +53,29 @@ auto make_dpl_matrix_transpose(T* A, const int m, const int n,
 }
 
 template<class T>
-auto make_dpl_matrix_lower(const T* A, const int m, const int n,
+static auto make_dpl_matrix_lower(const T* A, const int m, const int n,
     const int ldA) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T {
         int c = i/m;
         int r = i - c*m;
-        return c <= r ? A[r + c*ldA] : 0.0;
+        return (c <= r) ? A[r + c*ldA] : 0.0;
       });
 }
 
 template<class T>
-auto make_dpl_matrix_symmetric(const T* A, const int m, const int n,
+static auto make_dpl_matrix_symmetric(const T* A, const int m, const int n,
     const int ldA) {
   return dpl::experimental::ranges::transform_view(
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T {
         int c = i/m;
         int r = i - c*m;
-        return c <= r ? A[r + c*ldA] : A[c + r*ldA];
+        return A[(c <= r) ? (r + c*ldA) : (c + r*ldA)];
       });
 }
 
 void numbirch::init() {
-  // #pragma omp parallel num_threads(omp_get_max_threads())
-  // {
-  //   queue = sycl::queue(sycl::device(sycl::host_selector()));
-  //   policy = dpl::execution::make_device_policy(queue);
-  // }
+  //
 }
 
 void* numbirch::malloc(const size_t size) {
@@ -93,8 +84,8 @@ void* numbirch::malloc(const size_t size) {
 
 void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
   char* src = (char*)ptr;
-  char* dst = sycl::malloc_shared<char>(newsize, queue);
-  dpl::copy(policy, src, src + std::min(oldsize, newsize), dst);
+  char* dst = (char*)sycl::malloc_shared(newsize, queue);
+  queue.memcpy(dst, src, std::min(oldsize, newsize));
   sycl::free(ptr, queue);
   return dst;
 }
@@ -244,10 +235,12 @@ double numbirch::sum(const int m, const int n, const double* A,
 
 double numbirch::dot(const int n, const double* x, const int incx,
     const double* y, const int incy) {
-  double z;
-  auto evt = blas::dot(queue, n, x, incx, y, incy, &z);
+  auto z = sycl::malloc_shared<double>(1, queue);
+  auto evt = blas::dot(queue, n, x, incx, y, incy, z);
   evt.wait();
-  return z;
+  auto res = z[0];
+  sycl::free(z, queue);
+  return res;
 }
 
 double numbirch::frobenius(const int m, const int n, const double* A,
@@ -358,16 +351,17 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   if (incx > 1) {
     x1 = sycl::malloc_shared<double>(n, queue);
   }
+  int incx1 = 1;
 
   /* solve via Cholesky factorization */
   auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, LLT, 1, ldLLT, n);
   auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, LLT, ldLLT,
       scratchpad, scratchpad_size, {evt1});
-  auto evt3 = blas::copy(queue, n, y, incy, x1, 1);
+  auto evt3 = blas::copy(queue, n, y, incy, x1, incx1);
   auto evt4 = lapack::potrs(queue, mkl::uplo::lower, n, 1, LLT, ldLLT,
       x1, n, scratchpad, scratchpad_size, {evt2, evt3});
   if (incx > 1) {
-    auto evt5 = blas::copy(queue, n, x1, 1, x, incx, {evt4});
+    auto evt5 = blas::copy(queue, n, x1, incx1, x, incx, {evt4});
     evt5.wait();
     sycl::free(x1, queue);
   } else {

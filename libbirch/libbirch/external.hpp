@@ -23,3 +23,7 @@
 #ifdef HAVE_OMP_H
 #include <omp.h>
 #endif
+
+#ifdef HAVE_NUMBIRCH_HPP
+#include <numbirch.hpp>
+#endif

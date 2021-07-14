@@ -6,7 +6,7 @@
 #include <eigen3/Eigen/Dense>
 
 template<class T>
-auto make_eigen_vector(T* x, const int n, const int incx) {
+static auto make_eigen_vector(T* x, const int n, const int incx) {
   using EigenVectorStride = Eigen::Stride<1,Eigen::Dynamic>;
   using EigenVector = Eigen::Matrix<typename std::remove_const<T>::type,
       Eigen::Dynamic,1,Eigen::ColMajor,Eigen::Dynamic,1>;
@@ -17,7 +17,7 @@ auto make_eigen_vector(T* x, const int n, const int incx) {
 }
 
 template<class T>
-auto make_eigen_matrix(T* A, const int m, const int n, const int ldA) {
+static auto make_eigen_matrix(T* A, const int m, const int n, const int ldA) {
   using EigenMatrixStride = Eigen::Stride<Eigen::Dynamic,1>;
   using EigenMatrix = Eigen::Matrix<typename std::remove_const<T>::type,
       Eigen::Dynamic,Eigen::Dynamic,Eigen::ColMajor,Eigen::Dynamic,
