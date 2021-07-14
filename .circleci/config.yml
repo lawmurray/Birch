@@ -422,9 +422,9 @@ jobs:
           os: << parameters.os >>
       - driver
       - build_library:
-          package: libbirch
-      - build_library:
           package: numbirch
+      - build_library:
+          package: libbirch
       - build_package:
           dir: libraries
           package: Standard
@@ -507,9 +507,9 @@ jobs:
       - deploy_obs_package:
           package: driver
       - deploy_obs_package:
-          package: libbirch
-      - deploy_obs_package:
           package: numbirch
+      - deploy_obs_package:
+          package: libbirch
       - deploy_obs_package:
           dir: libraries
           package: Standard
@@ -523,9 +523,9 @@ jobs:
       - deploy_brew_package:
           package: driver
       - deploy_brew_package:
-          package: libbirch
-      - deploy_brew_package:
           package: numbirch
+      - deploy_brew_package:
+          package: libbirch
       - deploy_brew_package:
           dir: libraries
           package: Standard

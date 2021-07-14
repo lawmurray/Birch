@@ -24,14 +24,14 @@ task:
     - make -j4
     - make install
     - bash ./smoke.sh
-  libbirch_build_script:
-    - cd libbirch
+  numbirch_build_script:
+    - cd numbirch
     - ./bootstrap
     - ./configure --prefix="${PREFIX}" ${MODE_FLAGS} || cat config.log
     - make -j4
     - make install
-  numbirch_build_script:
-    - cd numbirch
+  libbirch_build_script:
+    - cd libbirch
     - ./bootstrap
     - ./configure --prefix="${PREFIX}" ${MODE_FLAGS} || cat config.log
     - make -j4
