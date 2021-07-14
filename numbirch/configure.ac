@@ -67,7 +67,7 @@ if $oneapi; then
   CXX=./dpcpp_wrapper
 else
   if $cuda; then
-    CXX=nvcc
+    CXX=./nvcc_wrapper
   fi
 fi
 AC_PROG_CXX
@@ -89,7 +89,9 @@ if $oneapi; then
   AC_CHECK_LIB([omp], [main], [], [], [])
 else
   if $cuda; then
-    AC_CHECK_HEADERS([cublas.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_LIB([omp], [main], [], [], [])
+    AC_CHECK_LIB([cublas], [main], [], [], [])
   else
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
   fi

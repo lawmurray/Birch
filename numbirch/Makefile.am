@@ -21,17 +21,23 @@ if ONEAPI
   COMMON_SOURCES += numbirch/numbirch_oneapi.cpp
 else
 if CUDA
-  COMMON_SOURCES += numbirch/numbirch_cuda.cu
+  AM_CXXFLAGS += -x cu
+  COMMON_SOURCES += numbirch/numbirch_cuda.cpp
 else
   AM_CPPFLAGS += -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += numbirch/numbirch_default.cpp
 endif
 endif
 
-libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O -g
+#
+# Notes on compiler differences:
+#   - nvcc does not support -O without a number, must be e.g. -O1
+#
+
+libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
 libnumbirch_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O -g --coverage
+libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
 libnumbirch_test_la_SOURCES = $(COMMON_SOURCES)
 
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
