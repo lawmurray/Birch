@@ -234,14 +234,14 @@ public:
    */
   ArrayIterator<T,D> end() {
     elementize();
-    return ArrayIterator<T,D>(buffer, shape) + size();
+    return ArrayIterator<T,D>(buffer, shape).operator+(size());
   }
 
   /**
    * @copydoc end()
    */
   ArrayIterator<T,D> end() const {
-    return ArrayIterator<T,D>(buffer, shape) + size();
+    return ArrayIterator<T,D>(buffer, shape).operator+(size());
   }
 
   /**
@@ -418,14 +418,14 @@ private:
    * Iterator for use internally, avoiding elementize().
    */
   ArrayIterator<T,D> endInternal() {
-    return ArrayIterator<T,D>(buffer, shape) + size();
+    return ArrayIterator<T,D>(buffer, shape).operator+(size());
   }
 
   /**
    * @copydoc endInternal()
    */
   ArrayIterator<T,D> endInternal() const {
-    return ArrayIterator<T,D>(buffer, shape) + size();
+    return ArrayIterator<T,D>(buffer, shape).operator+(size());
   }
 
   /**
