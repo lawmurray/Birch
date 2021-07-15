@@ -1,13 +1,13 @@
 env:
-  CPPFLAGS: -I/usr/local/include
-  LDFLAGS: -L/usr/local/lib
   PREFIX: ${CIRRUS_WORKING_DIR}/project
   PATH: ${PREFIX}/bin:${PATH}
+  CPLUS_INCLUDE_PATH: ${PREFIX}/include:${CPLUS_INCLUDE_PATH}
+  LD_LIBRARY_PATH: ${PREFIX}/lib:${LD_LIBRARY_PATH}
+  LIBRARY_PATH: ${PREFIX}/lib:${LIBRARY_PATH}
   BIRCH_MODE: debug
   OMP_NUM_THREADS: 4
   MODE_FLAGS: '--enable-debug --disable-test --disable-release'
-  LIBRARY_BIRCH_FLAGS: '--unit=unity --arch=native --jobs=4 --enable-verbose'
-  EXAMPLE_BIRCH_FLAGS: '--unit=unity --arch=native --jobs=2 --enable-verbose'
+  BIRCH_FLAGS: '--unit=unity --arch=native --jobs=4 --enable-verbose'
 
 task:
   name: FreeBSD
@@ -38,17 +38,17 @@ task:
     - make install
   birch-standard_build_script:
     - cd libraries/Standard
-    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
   birch-standard_test_build_script:
     - cd libraries/StandardTest
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
     - bash ./smoke.sh
   birch-cairo_build_script:
     - cd libraries/Cairo
-    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
   birch-sqlite_build_script:
     - cd libraries/SQLite
-    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${LIBRARY_BIRCH_FLAGS} || cat config.log
+    - birch install --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
   upload_cache_script:
     - tar -czvf cache.tar.gz -C "$PREFIX" .
     - curl -s -X POST --data-binary @cache.tar.gz http://${CIRRUS_HTTP_CACHE_HOST}/birch-${CIRRUS_OS}-${CIRRUS_CHANGE_IN_REPO}
@@ -68,7 +68,7 @@ example_task_template: &EXAMPLE_TASK_TEMPLATE
     - pkg install -y automake bash bison boost-libs eigen libtool libyaml ${PACKAGES}
   build_script:
     - cd "examples/${EXAMPLE}"
-    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${EXAMPLE_BIRCH_FLAGS} || cat config.log
+    - birch build --prefix="${PREFIX}" ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
     - bash ./smoke.sh
 
 task:
