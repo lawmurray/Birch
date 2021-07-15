@@ -36,19 +36,19 @@ task:
   birch-standard_build_script:
     - cd libraries/Standard
     - birch build ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
-    - sudo birch install || cat config.log
-  birch-standard_test_build_script:
-    - cd libraries/StandardTest
-    - birch build ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
-    - sudo birch install || cat config.log
+    - sudo make install
   birch-cairo_build_script:
     - cd libraries/Cairo
     - birch build ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
-    - sudo birch install || cat config.log
+    - sudo make install
   birch-sqlite_build_script:
     - cd libraries/SQLite
     - birch build ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
-    - sudo birch install || cat config.log
+    - sudo make install
+  birch-standard_test_build_script:
+    - cd libraries/StandardTest
+    - birch build ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
+    - bash ./smoke.sh
   LinearRegression_build_script:
     - cd examples/LinearRegression
     - birch build ${MODE_FLAGS} ${BIRCH_FLAGS} || cat config.log
