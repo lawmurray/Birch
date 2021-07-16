@@ -597,9 +597,9 @@ private:
   void copy(const U& o) {
     auto n = std::min(size(), o.size());
     auto begin1 = o.beginInternal();
-    auto end1 = begin1 + n;
+    auto end1 = begin1.operator+(n);
     auto begin2 = beginInternal();
-    auto end2 = begin2 + n;
+    auto end2 = begin2.operator+(n);
     if (begin1 <= begin2 && begin2 < end1) {
       std::copy_backward(begin1, end1, end2);
     } else {
@@ -613,8 +613,10 @@ private:
   template<class U>
   void uninitialized_copy(const U& o) {
     auto n = std::min(size(), o.size());
-    std::uninitialized_copy(o.beginInternal(), o.beginInternal() + n,
-        beginInternal());
+    auto begin1 = o.beginInternal();
+    auto end1 = begin1.operator+(n);
+    auto begin2 = beginInternal();
+    std::uninitialized_copy(begin1, end1, begin2);
   }
 
   /**
