@@ -18,7 +18,15 @@ static thread_local cudaStream_t stream = cudaStreamPerThread;
 static thread_local cublasHandle_t cublasHandle;
 static thread_local cusolverDnHandle_t cusolverDnHandle;
 static thread_local cusolverDnParams_t cusolverDnParams;
-static auto policy = thrust::device;
+static thread_local auto policy = thrust::device;
+
+/*
+ * Thrust support for lambda functions has some limitations as of CUDA 11.4.
+ * In particular the cnvcc ommand-line option --extended-lambda may be
+ * necessary, and even with that the use of lambda functions within functions
+ * with deduced return types is not supported. For this reason we use functors
+ * instead of lambda functions, declared below.
+ */
 
 template<class T>
 struct VectorElementFunctor : public thrust::unary_function<int,T&> {
@@ -27,11 +35,10 @@ struct VectorElementFunctor : public thrust::unary_function<int,T&> {
       incx(incx) {
     //
   }
-
-  __host__ __device__ T& operator()(const int i) {
+  __host__ __device__
+  T& operator()(const int i) {
     return x[i*incx];
   }
-
   T* x;
   int incx;
 };
@@ -44,13 +51,12 @@ struct MatrixElementFunctor : public thrust::unary_function<int,T&> {
       ldA(ldA) {
     //
   }
-
-  __host__ __device__ T& operator()(const int i) {
+  __host__ __device__
+  T& operator()(const int i) {
     int c = i/m;
     int r = i - c*m;
     return A[r + c*ldA];
   }
-
   T* A;
   int m;
   int ldA;
@@ -64,13 +70,12 @@ struct MatrixTransposeElementFunctor : public thrust::unary_function<int,T&> {
       ldA(ldA) {
     //
   }
-
-  __host__ __device__ T& operator()(const int i) {
+  __host__ __device__
+  T& operator()(const int i) {
     int c = i/m;
     int r = i - c*m;
     return A[c + r*ldA];
   }
-
   T* A;
   int m;
   int ldA;
@@ -84,13 +89,12 @@ struct MatrixLowerElementFunctor : public thrust::unary_function<int,T> {
       ldA(ldA) {
     //
   }
-
-  __host__ __device__ T operator()(const int i) {
+  __host__ __device__
+  T operator()(const int i) {
     int c = i/m;
     int r = i - c*m;
     return (c <= r) ? A[r + c*ldA] : 0.0;
   }
-
   const T* A;
   int m;
   int ldA;
@@ -104,13 +108,12 @@ struct MatrixSymmetricElementFunctor : public thrust::unary_function<int,T> {
       ldA(ldA) {
     //
   }
-
-  __host__ __device__ T operator()(const int i) {
+  __host__ __device__
+  T operator()(const int i) {
     int c = i/m;
     int r = i - c*m;
     return A[(c <= r) ? (r + c*ldA) : (c + r*ldA)];
   }
-
   const T* A;
   int m;
   int ldA;
@@ -122,13 +125,12 @@ struct MatrixIdentityElementFunctor : public thrust::unary_function<int,T> {
       m(m) {
     //
   }
-
-  __host__ __device__ T operator()(const int i) const {
+  __host__ __device__
+  T operator()(const int i) const {
     int c = i/m;
     int r = i - c*m;
     return (r == c) ? 1.0 : 0.0;
   }
-
   int m;
 };
 
@@ -138,11 +140,10 @@ struct ScalarMultiplyFunctor : public thrust::unary_function<T,T> {
       a(a) {
     //
   }
-
-  __host__ __device__ T operator()(const T x) const {
+  __host__ __device__
+  T operator()(const T x) const {
     return x*a;
   }
-
   T a;
 };
 
@@ -152,42 +153,47 @@ struct ScalarDivideFunctor : public thrust::unary_function<T,T> {
       a(a) {
     //
   }
-
-  __host__ __device__ T operator()(const T x) const {
+  __host__ __device__
+  T operator()(const T x) const {
     return x/a;
   }
-
   T a;
 };
 
 template<class T = double>
 struct LogAbsFunctor : public thrust::unary_function<T,T> {
-  __host__ __device__ T operator()(const T x) const {
+  __host__ __device__
+  T operator()(const T x) const {
     return std::log(std::abs(x));
   }
 };
 
 template<class T = double>
 struct LogFunctor : public thrust::unary_function<T,T> {
-  __host__ __device__ T operator()(const T x) const {
+  __host__ __device__
+  T operator()(const T x) const {
     return std::log(x);
   }
 };
 
+/*
+ * Simplified handling of pairs of iterators that define a range of a Thrust
+ * vector or matrix.
+ */
+
 template<class Iterator>
 struct ThrustRange {
-  ThrustRange(Iterator first, Iterator second) : first(first), second(second) {
+  ThrustRange(Iterator first, Iterator second) :
+      first(first),
+      second(second) {
     //
   }
-
   auto begin() {
     return first;
   }
-
   auto end() {
     return second;
   }
-
   Iterator first;
   Iterator second;
 };
@@ -196,6 +202,11 @@ template<class Iterator>
 static auto make_thrust_range(Iterator first, Iterator second) {
   return ThrustRange<Iterator>(first, second);
 }
+
+/*
+ * Factory functions for creating Thrust vectors and matrices of various
+ * types.
+ */
 
 template<class T>
 static auto make_thrust_vector(T* x, const int n, const int incx) {
@@ -206,7 +217,8 @@ static auto make_thrust_vector(T* x, const int n, const int incx) {
 }
 
 template<class T>
-static auto make_thrust_matrix(T* A, const int m, const int n, const int ldA) {
+static auto make_thrust_matrix(T* A, const int m, const int n,
+    const int ldA) {
   auto begin = thrust::make_transform_iterator(
     thrust::make_counting_iterator(0),
     MatrixElementFunctor<T>(A, m, ldA));
@@ -248,36 +260,40 @@ static auto make_thrust_matrix_identity(const int m, const int n) {
   return make_thrust_range(begin, begin + m*n);
 }
 
+/*
+ * NumBirch implementation.
+ */
+
 void numbirch::init() {
   cublasCreate(&cublasHandle);
   cublasSetStream(cublasHandle, stream);
+
   cusolverDnCreate(&cusolverDnHandle);
-  cusolverDnSetStream(cusolverDnHandle, stream);
   cusolverDnCreateParams(&cusolverDnParams);
+  cusolverDnSetStream(cusolverDnHandle, stream);
 }
 
 void term() {
-  cublasDestroy(cublasHandle);
-  cusolverDnDestroy(cusolverDnHandle);
   cusolverDnDestroyParams(cusolverDnParams);
+  cusolverDnDestroy(cusolverDnHandle);
+  cublasDestroy(cublasHandle);
 }
 
 void* numbirch::malloc(const size_t size) {
-  void* ptr;
+  void* ptr = nullptr;
   cudaMallocAsync(&ptr, size, stream);
+  cudaStreamSynchronize(stream);
   return ptr;
 }
 
 void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
   void* src = ptr;
-  void* dst;
+  void* dst = nullptr;
   size_t n = std::min(oldsize, newsize);
-
   cudaMallocAsync(&dst, newsize, stream);
   cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream);
   cudaStreamSynchronize(stream);
   cudaFreeAsync(src, stream);
-
   return dst;
 }
 
@@ -432,13 +448,10 @@ double numbirch::sum(const int m, const int n, const double* A,
 
 double numbirch::dot(const int n, const double* x, const int incx,
     const double* y, const int incy) {
-  double* z;
-  cudaMallocAsync(&z, sizeof(double), stream);
-  cublasDdot(cublasHandle, n, x, incx, y, incy, z);
+  double z = 0.0;
+  cublasDdot(cublasHandle, n, x, incx, y, incy, &z);
   cudaStreamSynchronize(stream);
-  auto res = z[0];
-  cudaFreeAsync(z, stream);
-  return res;
+  return z;
 }
 
 double numbirch::frobenius(const int m, const int n, const double* A,
