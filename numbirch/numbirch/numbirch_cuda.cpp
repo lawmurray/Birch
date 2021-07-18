@@ -14,6 +14,39 @@
 #include <thrust/iterator/transform_iterator.h>
 #include <thrust/async/copy.h>
 
+/**
+ * @def CUDA_CHECK
+ * 
+ * Call a cuda* function and assert success.
+ */
+#define CUDA_CHECK(call) \
+    { \
+      cudaError_t err = call; \
+      assert(err == cudaSuccess); \
+    }
+
+/**
+ * @def CUBLAS_CHECK
+ * 
+ * Call a cublas* function and assert success.
+ */
+#define CUBLAS_CHECK(call) \
+    { \
+      cublasStatus_t err = call; \
+      assert(err == CUBLAS_STATUS_SUCCESS); \
+    }
+
+/**
+ * @def CUSOLVER_CHECK
+ * 
+ * Call a cusolver* function and assert success.
+ */
+#define CUSOLVER_CHECK(call) \
+    { \
+      cusolverStatus_t err = call; \
+      assert(err == CUSOLVER_STATUS_SUCCESS); \
+    }
+
 static thread_local cudaStream_t stream = cudaStreamPerThread;
 static thread_local cublasHandle_t cublasHandle;
 static thread_local cusolverDnHandle_t cusolverDnHandle;
@@ -265,24 +298,24 @@ static auto make_thrust_matrix_identity(const int m, const int n) {
  */
 
 void numbirch::init() {
-  cublasCreate(&cublasHandle);
-  cublasSetStream(cublasHandle, stream);
+  CUBLAS_CHECK(cublasCreate(&cublasHandle));
+  CUBLAS_CHECK(cublasSetStream(cublasHandle, stream));
 
-  cusolverDnCreate(&cusolverDnHandle);
-  cusolverDnCreateParams(&cusolverDnParams);
-  cusolverDnSetStream(cusolverDnHandle, stream);
+  CUSOLVER_CHECK(cusolverDnCreate(&cusolverDnHandle));
+  CUSOLVER_CHECK(cusolverDnCreateParams(&cusolverDnParams));
+  CUSOLVER_CHECK(cusolverDnSetStream(cusolverDnHandle, stream));
 }
 
 void term() {
-  cusolverDnDestroyParams(cusolverDnParams);
-  cusolverDnDestroy(cusolverDnHandle);
-  cublasDestroy(cublasHandle);
+  CUSOLVER_CHECK(cusolverDnDestroyParams(cusolverDnParams));
+  CUSOLVER_CHECK(cusolverDnDestroy(cusolverDnHandle));
+  CUBLAS_CHECK(cublasDestroy(cublasHandle));
 }
 
 void* numbirch::malloc(const size_t size) {
   void* ptr = nullptr;
-  cudaMallocAsync(&ptr, size, stream);
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaMallocAsync(&ptr, size, stream));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   return ptr;
 }
 
@@ -290,29 +323,29 @@ void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
   void* src = ptr;
   void* dst = nullptr;
   size_t n = std::min(oldsize, newsize);
-  cudaMallocAsync(&dst, newsize, stream);
-  cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream);
-  cudaStreamSynchronize(stream);
-  cudaFreeAsync(src, stream);
+  CUDA_CHECK(cudaMallocAsync(&dst, newsize, stream));
+  CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
+  CUDA_CHECK(cudaFreeAsync(src, stream));
   return dst;
 }
 
 void numbirch::free(void* ptr) {
-  cudaFreeAsync(ptr, stream);
+  CUDA_CHECK(cudaFreeAsync(ptr, stream));
 }
 
 void numbirch::copy(const int n, const double* x, const int incx, double* y,
     const int incy) {
-  cudaMemcpy2DAsync(y, incy*sizeof(double), x, incx*sizeof(double),
-      n*sizeof(double), 1, cudaMemcpyDefault, stream);
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaMemcpy2DAsync(y, incy*sizeof(double), x, incx*sizeof(double),
+      n*sizeof(double), 1, cudaMemcpyDefault, stream));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::copy(const int m, const int n, const double* A, const int ldA,
     double* B, const int ldB) {
-  cudaMemcpy2DAsync(B, ldB*sizeof(double), A, ldA*sizeof(double),
-      m*sizeof(double), n, cudaMemcpyDefault, stream);
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaMemcpy2DAsync(B, ldB*sizeof(double), A, ldA*sizeof(double),
+      m*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
@@ -421,18 +454,18 @@ void numbirch::mul(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
   double a = 1.0;
   double b = 0.0;
-  cublasDgemv(cublasHandle, CUBLAS_OP_N, m, n, &a, A, ldA, x, incx, &b, y,
-      incy);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDgemv(cublasHandle, CUBLAS_OP_N, m, n, &a, A, ldA, x, 
+      incx, &b, y, incy));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
   double a = 1.0;
   double b = 0.0;
-  cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k, &a, A, ldA, B,
-      ldB, &b, C, ldC);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
+      &a, A, ldA, B, ldB, &b, C, ldC));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 double numbirch::sum(const int n, const double* x, const int incx) {
@@ -449,8 +482,8 @@ double numbirch::sum(const int m, const int n, const double* A,
 double numbirch::dot(const int n, const double* x, const int incx,
     const double* y, const int incy) {
   double z = 0.0;
-  cublasDdot(cublasHandle, n, x, incx, y, incy, &z);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDdot(cublasHandle, n, x, incx, y, incy, &z));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   return z;
 }
 
@@ -465,18 +498,18 @@ void numbirch::inner(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
   double a = 1.0;
   double b = 0.0;
-  cublasDgemv(cublasHandle, CUBLAS_OP_T, n, m, &a, A, ldA, x, incx, &b, y,
-      incy);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDgemv(cublasHandle, CUBLAS_OP_T, n, m, &a, A, ldA, x,
+      incx, &b, y, incy));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::inner(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
   double a = 1.0;
   double b = 0.0;
-  cublasDgemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, k, &a, A, ldA, B,
-      ldB, &b, C, ldC);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, k,
+      &a, A, ldA, B, ldB, &b, C, ldC));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::outer(const int m, const int n, const double* x,
@@ -488,18 +521,18 @@ void numbirch::outer(const int m, const int n, const double* x,
    * while the second is not */
   double a = 1.0;
   double b = 0.0;
-  cublasDgemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, 1, &a, x, incx,
-      y, incy, &b, A, ldA);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, 1,
+      &a, x, incx, y, incy, &b, A, ldA));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::outer(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
   double a = 1.0;
   double b = 0.0;
-  cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T, m, n, k, &a, A, ldA, B,
-      ldB, &b, C, ldC);
-  cudaStreamSynchronize(stream);
+  CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T, m, n, k,
+      &a, A, ldA, B, ldB, &b, C, ldC));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::solve(const int n, const double* A, const int ldA, double* x,
@@ -510,41 +543,44 @@ void numbirch::solve(const int n, const double* A, const int ldA, double* x,
   int info = 0;
   double* x1 = x;
 
-  cudaMallocAsync(&ipiv, sizeof(int64_t)*std::max(1, n), stream);
-  cudaMallocAsync(&LU, sizeof(double)*std::max(1, n*n), stream);
+  CUDA_CHECK(cudaMallocAsync(&ipiv, sizeof(int64_t)*std::max(1, n), stream));
+  CUDA_CHECK(cudaMallocAsync(&LU, sizeof(double)*std::max(1, n*n), stream));
   if (incx > 1) {
-    cudaMallocAsync(&x1, sizeof(double)*n, stream);
+    CUDA_CHECK(cudaMallocAsync(&x1, sizeof(double)*n, stream));
   }
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXgetrf_bufferSize(cusolverDnHandle, cusolverDnParams, n, n,
-      CUDA_R_64F, LU, ldLU, CUDA_R_64F, &bufferOnDeviceSize,
-      &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, n, n, CUDA_R_64F, LU, ldLU, CUDA_R_64F,
+      &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via LU factorization with partial pivoting */
-  cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n, CUDA_R_64F, LU,
-      ldLU, ipiv, CUDA_R_64F, bufferOnDevice, bufferOnDeviceSize,
-      bufferOnHost, bufferOnHostSize, &info);
-  cublasDcopy(cublasHandle, n, y, incy, x1, 1);
-  cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams, CUBLAS_OP_N, n, 1,
-     CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, x1, n, &info);
+  CUDA_CHECK(cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
+    n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
+      CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, bufferOnDevice,
+      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info));
+  CUBLAS_CHECK(cublasDcopy(cublasHandle, n, y, incy, x1, 1));
+  CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_OP_N, n, 1, CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, x1, n,
+      &info));
   if (incx > 1) {
-    cublasDcopy(cublasHandle, n, x1, 1, x, incx);
+    CUBLAS_CHECK(cublasDcopy(cublasHandle, n, x1, 1, x, incx));
   }
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
   if (incx > 1) {
-    cudaFreeAsync(x1, stream);
+    CUDA_CHECK(cudaFreeAsync(x1, stream));
   }
-  cudaFreeAsync(LU, stream);
-  cudaFreeAsync(ipiv, stream);
+  CUDA_CHECK(cudaFreeAsync(LU, stream));
+  CUDA_CHECK(cudaFreeAsync(ipiv, stream));
 }
 
 void numbirch::solve(const int m, const int n, const double* A, const int ldA,
@@ -554,33 +590,36 @@ void numbirch::solve(const int m, const int n, const double* A, const int ldA,
   int ldLU = m;
   int info = 0;
 
-  cudaMallocAsync(&ipiv, sizeof(int64_t)*std::min(m, n), stream);
-  cudaMallocAsync(&LU, sizeof(double)*std::max(1, m*m), stream);
+  CUDA_CHECK(cudaMallocAsync(&ipiv, sizeof(int64_t)*std::min(m, n), stream));
+  CUDA_CHECK(cudaMallocAsync(&LU, sizeof(double)*std::max(1, m*m), stream));
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXgetrf_bufferSize(cusolverDnHandle, cusolverDnParams, m, m,
-      CUDA_R_64F, LU, ldLU, CUDA_R_64F, &bufferOnDeviceSize,
-      &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, m, m, CUDA_R_64F, LU, ldLU, CUDA_R_64F,
+      &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via LU factorization with partial pivoting */
-  cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n, CUDA_R_64F, LU,
-      ldLU, ipiv, CUDA_R_64F, bufferOnDevice, bufferOnDeviceSize,
-      bufferOnHost, bufferOnHostSize, &info);
-  cudaMemcpy2DAsync(X, ldX*sizeof(double), Y, ldX*sizeof(double),
-    m*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams, CUBLAS_OP_N, m, n,
-     CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, X, ldX, &info);
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
+    n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
+      CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, bufferOnDevice,
+      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info));
+  CUDA_CHECK(cudaMemcpy2DAsync(X, ldX*sizeof(double), Y, ldX*sizeof(double),
+    m*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_OP_N, m, n, CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, X, ldX,
+      &info));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
-  cudaFreeAsync(LU, stream);
-  cudaFreeAsync(ipiv, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
+  CUDA_CHECK(cudaFreeAsync(LU, stream));
+  CUDA_CHECK(cudaFreeAsync(ipiv, stream));
 }
 
 void numbirch::cholsolve(const int n, const double* S, const int ldS,
@@ -590,39 +629,43 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   int info = 0;
   double* x1 = x;
 
-  cudaMallocAsync(&LLT, sizeof(double)*std::max(1, n*n), stream);
+  CUDA_CHECK(cudaMallocAsync(&LLT, sizeof(double)*std::max(1, n*n), stream));
   if (incx > 1) {
-    cudaMallocAsync(&x1, sizeof(double)*n, stream);
+    CUDA_CHECK(cudaMallocAsync(&x1, sizeof(double)*n, stream));
   }
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXpotrf_bufferSize(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
-      &bufferOnDeviceSize, &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT,
+      CUDA_R_64F, &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via Cholesky factorization */
-  cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S, ldS*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, bufferOnDevice,
-      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info);
-  cublasDcopy(cublasHandle, n, y, incy, x1, 1);
-  cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      n, 1, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, x1, n, &info);
+  CUDA_CHECK(cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S,
+      ldS*sizeof(double), n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
+      bufferOnDevice, bufferOnDeviceSize, bufferOnHost, bufferOnHostSize,
+      &info));
+  CUBLAS_CHECK(cublasDcopy(cublasHandle, n, y, incy, x1, 1));
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, n, 1, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, x1,
+      n, &info));
   if (incx > 1) {
-    cublasDcopy(cublasHandle, n, x1, 1, x, incx);
+    CUBLAS_CHECK(cublasDcopy(cublasHandle, n, x1, 1, x, incx));
   }
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
   if (incx > 1) {
-    cudaFreeAsync(x1, stream);
+    CUDA_CHECK(cudaFreeAsync(x1, stream));
   }
-  cudaFreeAsync(LLT, stream);
+  CUDA_CHECK(cudaFreeAsync(LLT, stream));
 }
 
 void numbirch::cholsolve(const int m, const int n, const double* S,
@@ -631,31 +674,35 @@ void numbirch::cholsolve(const int m, const int n, const double* S,
   int ldLLT = m;
   int info = 0;
 
-  cudaMallocAsync(&LLT, sizeof(double)*std::max(1, m*m), stream);
+  CUDA_CHECK(cudaMallocAsync(&LLT, sizeof(double)*std::max(1, m*m), stream));
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXpotrf_bufferSize(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, m, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
-      &bufferOnDeviceSize, &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, m, CUDA_R_64F, LLT, ldLLT,
+      CUDA_R_64F, &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via Cholesky factorization */
-  cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S, ldS*sizeof(double),
-    m*sizeof(double), m, cudaMemcpyDefault, stream);
-  cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      m, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, bufferOnDevice,
-      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info);
-  cudaMemcpy2DAsync(X, ldX*sizeof(double), Y, ldX*sizeof(double),
-    m*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      m, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, X, ldX, &info);
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S,
+      ldS*sizeof(double), m*sizeof(double), m, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, m, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
+      bufferOnDevice, bufferOnDeviceSize, bufferOnHost, bufferOnHostSize,
+      &info));
+  CUDA_CHECK(cudaMemcpy2DAsync(X, ldX*sizeof(double), Y, ldX*sizeof(double),
+    m*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, m, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, X,
+      ldX, &info));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
-  cudaFreeAsync(LLT, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
+  CUDA_CHECK(cudaFreeAsync(LLT, stream));
 }
 
 void numbirch::inv(const int n, const double* A, const int ldA, double* B,
@@ -665,34 +712,37 @@ void numbirch::inv(const int n, const double* A, const int ldA, double* B,
   int ldLU = n;
   int info = 0;
 
-  cudaMallocAsync(&ipiv, sizeof(int64_t)*n, stream);
-  cudaMallocAsync(&LU, sizeof(double)*std::max(1, n*n), stream);
+  CUDA_CHECK(cudaMallocAsync(&ipiv, sizeof(int64_t)*n, stream));
+  CUDA_CHECK(cudaMallocAsync(&LU, sizeof(double)*std::max(1, n*n), stream));
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXgetrf_bufferSize(cusolverDnHandle, cusolverDnParams, n, n,
-      CUDA_R_64F, LU, ldLU, CUDA_R_64F, &bufferOnDeviceSize,
-      &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, n, n, CUDA_R_64F, LU, ldLU, CUDA_R_64F,
+      &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via LU factorization with partial pivoting */
-  cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);  
-  cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n, CUDA_R_64F, LU,
-      ldLU, ipiv, CUDA_R_64F, bufferOnDevice, bufferOnDeviceSize,
-      bufferOnHost, bufferOnHostSize, &info);
+  CUDA_CHECK(cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
+      n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
+      CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, bufferOnDevice,
+      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info));
   auto B1 = make_thrust_matrix(B, n, n, ldB);
   auto I = make_thrust_matrix_identity(n, n);
   thrust::async::copy(policy, I.begin(), I.end(), B1.begin());
-  cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams, CUBLAS_OP_N, n, n,
-     CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, B, ldB, &info);
-  cudaStreamSynchronize(stream);
+  CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_OP_N, n, n, CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, B, ldB,
+      &info));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
-  cudaFreeAsync(LU, stream);
-  cudaFreeAsync(ipiv, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
+  CUDA_CHECK(cudaFreeAsync(LU, stream));
+  CUDA_CHECK(cudaFreeAsync(ipiv, stream));
 }
 
 void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
@@ -701,32 +751,36 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
   int ldLLT = n;
   int info = 0;
 
-  cudaMallocAsync(&LLT, sizeof(double)*std::max(1, n*n), stream);
+  CUDA_CHECK(cudaMallocAsync(&LLT, sizeof(double)*std::max(1, n*n), stream));
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXpotrf_bufferSize(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
-      &bufferOnDeviceSize, &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT,
+      CUDA_R_64F, &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via Cholesky factorization */
-  cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S, ldS*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, bufferOnDevice,
-      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info);
+  CUDA_CHECK(cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S,
+      ldS*sizeof(double), n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
+      bufferOnDevice, bufferOnDeviceSize, bufferOnHost, bufferOnHostSize,
+      &info));
   auto B1 = make_thrust_matrix(B, n, n, ldB);
   auto I = make_thrust_matrix_identity(n, n);
   thrust::async::copy(policy, I.begin(), I.end(), B1.begin());
-  cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      n, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, B, ldB, &info);
-  cudaStreamSynchronize(stream);
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, n, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, B,
+      ldB, &info));
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
-  cudaFreeAsync(LLT, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
+  CUDA_CHECK(cudaFreeAsync(LLT, stream));
 }
 
 double numbirch::ldet(const int n, const double* A, const int ldA) {
@@ -735,22 +789,24 @@ double numbirch::ldet(const int n, const double* A, const int ldA) {
   int ldLU = n;
   int info = 0;
 
-  cudaMallocAsync(&ipiv, sizeof(int64_t)*n, stream);
-  cudaMallocAsync(&LU, sizeof(double)*std::max(1, n*n), stream);
+  CUDA_CHECK(cudaMallocAsync(&ipiv, sizeof(int64_t)*n, stream));
+  CUDA_CHECK(cudaMallocAsync(&LU, sizeof(double)*std::max(1, n*n), stream));
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXgetrf_bufferSize(cusolverDnHandle, cusolverDnParams, n, n,
-      CUDA_R_64F, LU, ldLU, CUDA_R_64F, &bufferOnDeviceSize,
-      &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, n, n, CUDA_R_64F, LU, ldLU, CUDA_R_64F,
+      &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* LU factorization with partial pivoting */
-  cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);  
-  cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n, CUDA_R_64F, LU,
-      ldLU, ipiv, CUDA_R_64F, bufferOnDevice, bufferOnDeviceSize,
-      bufferOnHost, bufferOnHostSize, &info);
+  CUDA_CHECK(cudaMemcpy2DAsync(LU, ldLU*sizeof(double), A, ldA*sizeof(double),
+      n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
+      CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, bufferOnDevice,
+      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info));
 
   /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
    * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
@@ -762,13 +818,13 @@ double numbirch::ldet(const int n, const double* A, const int ldA) {
   double ldet = thrust::transform_reduce(policy, d.begin(), d.end(),
       LogAbsFunctor<double>(), 0.0, thrust::plus<double>());
 
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
-  cudaFreeAsync(LU, stream);
-  cudaFreeAsync(ipiv, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
+  CUDA_CHECK(cudaFreeAsync(LU, stream));
+  CUDA_CHECK(cudaFreeAsync(ipiv, stream));
 
   return ldet;
 }
@@ -778,21 +834,24 @@ double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   int ldLLT = n;
   int info = 0;
 
-  cudaMallocAsync(&LLT, sizeof(double)*std::max(1, n*n), stream);
+  CUDA_CHECK(cudaMallocAsync(&LLT, sizeof(double)*std::max(1, n*n), stream));
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXpotrf_bufferSize(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
-      &bufferOnDeviceSize, &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT,
+      CUDA_R_64F, &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* solve via Cholesky factorization */
-  cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S, ldS*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream);
-  cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, bufferOnDevice,
-      bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info);
+  CUDA_CHECK(cudaMemcpy2DAsync(LLT, ldLLT*sizeof(double), S,
+      ldS*sizeof(double), n*sizeof(double), n, cudaMemcpyDefault, stream));
+  CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F,
+      bufferOnDevice, bufferOnDeviceSize, bufferOnHost, bufferOnHostSize,
+      &info));
 
   /* log-determinant is twice the sum of logarithms of elements on the main
    * diagonal, all of which should be positive */
@@ -800,12 +859,12 @@ double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   double ldet = 2.0*thrust::transform_reduce(policy, d.begin(), d.end(),
       LogFunctor<double>(), 0.0, thrust::plus<double>());
 
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
-  cudaFreeAsync(LLT, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
+  CUDA_CHECK(cudaFreeAsync(LLT, stream));
 
   return ldet;
 }
@@ -815,26 +874,29 @@ void numbirch::chol(const int n, const double* S, const int ldS, double* L,
   int info = 0;
 
   size_t bufferOnDeviceSize = 0, bufferOnHostSize = 0;
-  cusolverDnXpotrf_bufferSize(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
-      &bufferOnDeviceSize, &bufferOnHostSize);
-  void *bufferOnDevice, *bufferOnHost;
-  cudaMallocAsync(&bufferOnDevice, sizeof(double)*bufferOnDeviceSize, stream);
-  cudaMallocAsync(&bufferOnHost, sizeof(double)*bufferOnHostSize, stream);
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL,
+      CUDA_R_64F, &bufferOnDeviceSize, &bufferOnHostSize));
+  void *bufferOnDevice = nullptr, *bufferOnHost = nullptr;
+  CUDA_CHECK(cudaMallocAsync(&bufferOnDevice,
+      sizeof(double)*bufferOnDeviceSize, stream));
+  CUDA_CHECK(cudaMallocAsync(&bufferOnHost,
+      sizeof(double)*bufferOnHostSize, stream));
 
   /* copy lower triangle, and zero upper triangle */
   auto S1 = make_thrust_matrix_lower(S, n, n, ldS);
   auto L1 = make_thrust_matrix(L, n, n, ldL);
   thrust::async::copy(policy, S1.begin(), S1.end(), L1.begin());
-  cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
-      n, CUDA_R_64F, L, ldL, CUDA_R_64F, bufferOnDevice, bufferOnDeviceSize,
-      bufferOnHost, bufferOnHostSize, &info);
+  CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
+      bufferOnDevice, bufferOnDeviceSize, bufferOnHost, bufferOnHostSize,
+      &info));
 
-  cudaStreamSynchronize(stream);
+  CUDA_CHECK(cudaStreamSynchronize(stream));
   assert(info == 0);
 
-  cudaFreeAsync(bufferOnHost, stream);
-  cudaFreeAsync(bufferOnDevice, stream);
+  CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
+  CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
 }
 
 void numbirch::transpose(const int m, const int n, const double x,
