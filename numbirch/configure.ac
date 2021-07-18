@@ -90,8 +90,19 @@ if $oneapi; then
 else
   if $cuda; then
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([cusolverDn.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/execution_policy.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/copy.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/transform.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/transform_reduce.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/inner_product.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/iterator/counting_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([thrust/iterator/transform_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+
     AC_CHECK_LIB([omp], [main], [], [], [])
     AC_CHECK_LIB([cublas], [main], [], [], [])
+    AC_CHECK_LIB([cublasLt], [main], [], [], [])
+    AC_CHECK_LIB([cusolver], [main], [], [], [])
   else
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
   fi
