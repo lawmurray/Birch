@@ -5,13 +5,14 @@
 
 #include <cublas_v2.h>
 #include <cusolverDn.h>
+
 #include <thrust/execution_policy.h>
-#include <thrust/copy.h>
 #include <thrust/transform.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/inner_product.h>
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/iterator/transform_iterator.h>
+#include <thrust/async/copy.h>
 
 static thread_local cudaStream_t stream = cudaStreamPerThread;
 static thread_local cublasHandle_t cublasHandle;
@@ -669,7 +670,7 @@ void numbirch::inv(const int n, const double* A, const int ldA, double* B,
       bufferOnHost, bufferOnHostSize, &info);
   auto B1 = make_thrust_matrix(B, n, n, ldB);
   auto I = make_thrust_matrix_identity(n, n);
-  thrust::copy(policy, I.begin(), I.end(), B1.begin());
+  thrust::async::copy(policy, I.begin(), I.end(), B1.begin());
   cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams, CUBLAS_OP_N, n, n,
      CUDA_R_64F, LU, ldLU, ipiv, CUDA_R_64F, B, ldB, &info);
   cudaStreamSynchronize(stream);
@@ -704,7 +705,7 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
       bufferOnDeviceSize, bufferOnHost, bufferOnHostSize, &info);
   auto B1 = make_thrust_matrix(B, n, n, ldB);
   auto I = make_thrust_matrix_identity(n, n);
-  thrust::copy(policy, I.begin(), I.end(), B1.begin());
+  thrust::async::copy(policy, I.begin(), I.end(), B1.begin());
   cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
       n, n, CUDA_R_64F, LLT, ldLLT, CUDA_R_64F, B, ldB, &info);
   cudaStreamSynchronize(stream);
@@ -811,7 +812,7 @@ void numbirch::chol(const int n, const double* S, const int ldS, double* L,
   /* copy lower triangle, and zero upper triangle */
   auto S1 = make_thrust_matrix_lower(S, n, n, ldS);
   auto L1 = make_thrust_matrix(L, n, n, ldL);
-  thrust::copy(policy, S1.begin(), S1.end(), L1.begin());
+  thrust::async::copy(policy, S1.begin(), S1.end(), L1.begin());
   cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams, CUBLAS_FILL_MODE_LOWER,
       n, CUDA_R_64F, L, ldL, CUDA_R_64F, bufferOnDevice, bufferOnDeviceSize,
       bufferOnHost, bufferOnHostSize, &info);
