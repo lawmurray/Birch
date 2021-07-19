@@ -84,9 +84,10 @@ AC_HEADER_ASSERT
 AC_OPENMP
 
 # Check for build specifics
+AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
+AC_CHECK_LIB([omp], [main], [], [], [])
 if $oneapi; then
-  AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
-  AC_CHECK_LIB([omp], [main], [], [], [])
+  echo;
 else
   if $cuda; then
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
