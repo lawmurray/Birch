@@ -59,9 +59,9 @@ void copy(const int n, const double* x, const int incx, double* y,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  */
 void copy(const int m, const int n, const double* A, const int ldA, double* B,
     const int ldB);
@@ -84,9 +84,9 @@ void neg(const int n, const double* x, const int incx, double* y,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  */
 void neg(const int m, const int n, const double* A, const int ldA, double* B,
     const int ldB);
@@ -111,11 +111,11 @@ void add(const int n, const double* x, const int incx, const double* y,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void add(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
@@ -140,11 +140,11 @@ void sub(const int n, const double* x, const int incx, const double* y,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void sub(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
@@ -169,11 +169,11 @@ void hadamard(const int n, const double* x, const int incx, const double* y,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void hadamard(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
@@ -197,10 +197,10 @@ void div(const int n, const double* x, const int incx, const double y,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param b Matrix.
  * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void div(const int m, const int n, const double* A, const int ldA,
     const double b, double* C, const int ldC);
@@ -225,9 +225,9 @@ void mul(const int n, const double x, const double* y, const int incy,
  * @param n Number of columns.
  * @param a Scalar.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void mul(const int m, const int n, const double a, const double* B,
     const int ldB, double* C, const int ldC);
@@ -238,7 +238,7 @@ void mul(const int m, const int n, const double a, const double* B,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param x Vector.
  * @param incx Element stride of `x`.
  * @param[out] y Vector.
@@ -254,14 +254,45 @@ void mul(const int m, const int n, const double* A, const int ldA,
  * @param n Number of columns of `B` and `C`.
  * @param k Number of columns of `A` and rows of `B`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param[out] C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+
+/**
+ * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
+ * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
+ * 
+ * @param n Number of rows and columns of `S`, and elements of `x` and `y`.
+ * @param S Symmetric positive definite matrix.
+ * @param ldS Column stride of `S`.
+ * @param x Vector.
+ * @param incx Element stride of `x`.
+ * @param[out] y Vector.
+ * @param incy Element stride of `y`.
+ */
+void cholmul(const int n, const double* S, const int ldS, const double* x,
+    const int incx, double* y, const int incy);
+
+/**
+ * Lower-triangular Cholesky factor of a matrix multiplied by a matrix.
+ * Computes @f$C = LB@f$, where @f$S = LL^\top@f$.
+ * 
+ * @param m Number of rows of `S` and `C`.
+ * @param n Number of columns of `B` and `C`.
+ * @param S Symmetric positive definite matrix.
+ * @param ldS Column stride of `S`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+void cholmul(const int m, const int n, const double* S, const int ldS,
+    const double* B, const int ldB, double* C, const int ldC);
 
 /**
  * Vector sum of elements.
@@ -280,7 +311,7 @@ double sum(const int n, const double* x, const int incx);
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * 
  * @return Sum of elements of the matrix.
  */
@@ -308,9 +339,9 @@ double dot(const int n, const double* x, const int incx, const double* y,
  * @param m Number of rows of `A` and `B`.
  * @param n Number of columns of `A` and `B`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * 
  * @return Frobenius product.
  */
@@ -323,7 +354,7 @@ double frobenius(const int m, const int n, const double* A, const int ldA,
  * @param m Number of elements of `y` and columns of `A`.
  * @param n Number of elements of `x` and rows of `A`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param x Vector.
  * @param incx Element stride of `x`.
  * @param[out] y Vector.
@@ -339,11 +370,11 @@ void inner(const int m, const int n, const double* A, const int ldA,
  * @param n Number of columns of `C` and columns of `B`.
  * @param k Number of rows of `A` and rows of `B`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void inner(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
@@ -358,7 +389,7 @@ void inner(const int m, const int n, const int k, const double* A,
  * @param y Vector.
  * @param incy Element stride of `y`.
  * @param[out] A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  */
 void outer(const int m, const int n, const double* x, const int incx,
     const double* y, const int incy, double* A, const int ldA);
@@ -370,21 +401,37 @@ void outer(const int m, const int n, const double* x, const int incx,
  * @param n Number of columns of `C` and rows of `B`.
  * @param k Number of columns of `A` and columns of `B`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  * @param C Matrix.
- * @param ldC Row stride of `C`.
+ * @param ldC Column stride of `C`.
  */
 void outer(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+
+/**
+ * Outer product of matrix and lower-triangular Cholesky factor of another
+ * matrix. Computes @f$C = AL^\top@f$, where @f$S = LL^\top@f$.
+ * 
+ * @param m Number of rows of `C`, and rows of `A`.
+ * @param n Number of columns of `C` and rows of `S`.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param S Symmetric positive definite matrix.
+ * @param ldS Column stride of `S`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+void cholouter(const int m, const int n, const double* A, const int ldA,
+    const double* S, const int ldS, double* C, const int ldC);
 
 /**
  * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.
  * 
  * @param n Number of elements of `x`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param[out] x Vector.
  * @param incx Element stride of `x`.
  * @param y Vector.
@@ -399,11 +446,11 @@ void solve(const int n, const double* A, const int ldA, double* x,
  * @param m Number of rows of `X`.
  * @param n Number of columns of `X`.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param[out] X Matrix.
- * @param ldX Row stride of `X`.
+ * @param ldX Column stride of `X`.
  * @param Y Matrix.
- * @param ldY Row stride of `Y`.
+ * @param ldY Column stride of `Y`.
  */
 void solve(const int m, const int n, const double* A, const int ldA,
     double* X, const int ldX, const double* Y, const int ldY);
@@ -414,7 +461,7 @@ void solve(const int m, const int n, const double* A, const int ldA,
  * 
  * @param n Number of elements of `x`.
  * @param S Symmetric positive definite matrix.
- * @param ldS Row stride of `S`.
+ * @param ldS Column stride of `S`.
  * @param[out] x Vector.
  * @param incx Element stride of `x`.
  * @param y Vector.
@@ -430,11 +477,11 @@ void cholsolve(const int n, const double* S, const int ldS, double* x,
  * @param m Number of rows of `X`.
  * @param n Number of columns of `X`.
  * @param S Symmetric positive definite matrix.
- * @param ldS Row stride of `S`.
+ * @param ldS Column stride of `S`.
  * @param[out] X Matrix.
- * @param ldX Row stride of `X`.
+ * @param ldX Column stride of `X`.
  * @param Y Matrix.
- * @param ldY Row stride of `Y`.
+ * @param ldY Column stride of `Y`.
  */
 void cholsolve(const int m, const int n, const double* S, const int ldS,
     double* X, const int ldX, const double* Y, const int ldY);
@@ -444,9 +491,9 @@ void cholsolve(const int m, const int n, const double* S, const int ldS,
  * 
  * @param n Number of rows and columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  */
 void inv(const int n, const double* A, const int ldA, double* B,
     const int ldB);
@@ -456,9 +503,9 @@ void inv(const int n, const double* A, const int ldA, double* B,
  * 
  * @param n Number of rows and columns.
  * @param S Symmetric positive definite matrix.
- * @param ldS Row stride of `S`.
+ * @param ldS Column stride of `S`.
  * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  */
 void cholinv(const int n, const double* S, const int ldS, double* B,
     const int ldB);
@@ -468,7 +515,7 @@ void cholinv(const int n, const double* S, const int ldS, double* B,
  * 
  * @param n Number of rows and columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * 
  * @return Logarithm of the absolute value of the determinant of `A`.
  */
@@ -479,7 +526,7 @@ double ldet(const int n, const double* A, const int ldA);
  * 
  * @param n Number of rows and columns.
  * @param S Symmetric positive definite matrix.
- * @param ldS Row stride of `S`.
+ * @param ldS Column stride of `S`.
  * 
  * @return Logarithm of the determinant of `S`.
  * 
@@ -488,28 +535,15 @@ double ldet(const int n, const double* A, const int ldA);
 double lcholdet(const int n, const double* S, const int ldS);
 
 /**
- * Lower-triangular Cholesky factor of a symmetric positive definite matrix.
- * Computes @f$L@f$ in @f$S = LL^\top@f$.
- * 
- * @param n Number of rows and columns.
- * @param S Symmetric positive definite matrix.
- * @param ldS Row stride of `S`.
- * @param[out] L Matrix.
- * @param ldL Row stride of `L`.
- */
-void chol(const int n, const double* S, const int ldS, double* L,
-    const int ldL);
-
-/**
  * Scalar-matrix product and transpose. Computes @f$B = xA^\top@f$.
  * 
  * @param m Number of rows of `B` and columns of `A`.
  * @param n Number of columns of `B` and rows of `A`.
  * @param x Scalar.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * @param[out] B Matrix.
- * @param ldB Row stride of `B`.
+ * @param ldB Column stride of `B`.
  */
 void transpose(const int m, const int n, const double x, const double* A,
     const int ldA, double* B, const int ldB);
@@ -520,7 +554,7 @@ void transpose(const int m, const int n, const double x, const double* A,
  * @param m Number of rows.
  * @param n Number of columns.
  * @param A Matrix.
- * @param ldA Row stride of `A`.
+ * @param ldA Column stride of `A`.
  * 
  * @return Trace of the matrix.
  */

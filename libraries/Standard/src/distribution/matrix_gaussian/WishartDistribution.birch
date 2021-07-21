@@ -67,7 +67,7 @@ function simulate_wishart(Ψ:Real[_,_], k:Real) -> Real[_,_] {
           return 0.0;
         }
       }, p, p);
-  let S <- chol(Ψ)*A;
+  let S <- cholmul(Ψ, A);
   return outer(S, S);
 }
 

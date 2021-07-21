@@ -81,7 +81,7 @@ function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
   let Z <- matrix_lambda(\(i:Integer, j:Integer) -> Real {
         return simulate_gaussian(0.0, 1.0);
       }, N, P);
-  return M + outer(chol(U)*Z, chol(V));
+  return M + cholouter(cholmul(U, Z), V);
 }
 
 /*

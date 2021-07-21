@@ -337,7 +337,7 @@ public:
       Array<T,D> tmp(s, x);
       swap(tmp);
     } else {
-      #ifdef HAVE_NUMBIRCH_HPP
+      #if HAVE_NUMBIRCH_HPP
       buffer = (T*)numbirch::realloc((void*)buffer, shape.volume()*sizeof(T),
           s.volume()*sizeof(T));
       #else
@@ -374,7 +374,7 @@ public:
       }
       std::memmove((void*)(buffer + i), (void*)(buffer + i + len),
           (n - len - i)*sizeof(T));
-      #ifdef HAVE_NUMBIRCH_HPP
+      #if HAVE_NUMBIRCH_HPP
       buffer = (T*)numbirch::realloc((void*)buffer, shape.volume()*sizeof(T),
           s.volume()*sizeof(T));
       #else
@@ -478,7 +478,7 @@ private:
    */
   void allocate() {
     assert(!buffer);
-    #ifdef HAVE_NUMBIRCH_HPP
+    #if HAVE_NUMBIRCH_HPP
     buffer = (T*)numbirch::malloc(volume()*sizeof(T));
     #else
     buffer = (T*)std::malloc(volume()*sizeof(T));
@@ -498,10 +498,10 @@ private:
       } else if (isElementWise) {
         /* can't share, create a new buffer instead */
         ArrayControl* control = nullptr;
-        #ifdef HAVE_NUMBIRCH_HPP
-        T* buffer = (T*)numbirch::malloc(size()*sizeof(T));
+        #if HAVE_NUMBIRCH_HPP
+        T* buffer = (T*)numbirch::malloc(volume()*sizeof(T));
         #else
-        T* buffer = (T*)std::malloc(size()*sizeof(T));
+        T* buffer = (T*)std::malloc(volume()*sizeof(T));
         #endif
         std::uninitialized_copy(beginInternal(), endInternal(), buffer);
         return std::make_pair(control, buffer);
@@ -539,10 +539,10 @@ private:
         if (control) {
           /* buffer may be shared, copy into new buffer to allow element-wise
            * write */
-          #ifdef HAVE_NUMBIRCH_HPP
-          T* buffer = (T*)numbirch::malloc(size()*sizeof(T));
+          #if HAVE_NUMBIRCH_HPP
+          T* buffer = (T*)numbirch::malloc(volume()*sizeof(T));
           #else
-          T* buffer = (T*)std::malloc(size()*sizeof(T));
+          T* buffer = (T*)std::malloc(volume()*sizeof(T));
           #endif
           std::uninitialized_copy(beginInternal(), endInternal(), buffer);
           release();
@@ -562,7 +562,7 @@ private:
   void release() {
     if (!isView && (!control || control->decShared_() == 0)) {
       std::destroy(beginInternal(), endInternal());
-      #ifdef HAVE_NUMBIRCH_HPP
+      #if HAVE_NUMBIRCH_HPP
       numbirch::free((void*)buffer);
       #else
       std::free(buffer);

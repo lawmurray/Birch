@@ -69,7 +69,7 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
   let z <- vector_lambda(\(i:Integer) -> Real {
         return simulate_gaussian(0.0, 1.0);
       }, n);
-  return μ + chol(Σ)*z;
+  return μ + cholmul(Σ, z);
 }
 
 /*

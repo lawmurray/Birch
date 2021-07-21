@@ -83,8 +83,8 @@ void* numbirch::malloc(const size_t size) {
 }
 
 void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
-  char* src = (char*)ptr;
-  char* dst = (char*)sycl::malloc_shared(newsize, queue);
+  void* src = ptr;
+  void* dst = sycl::malloc_shared(newsize, queue);
   queue.memcpy(dst, src, std::min(oldsize, newsize));
   sycl::free(ptr, queue);
   return dst;
@@ -222,6 +222,53 @@ void numbirch::mul(const int m, const int n, const int k, const double* A,
   evt.wait();
 }
 
+void numbirch::cholmul(const int n, const double* S, const int ldS,
+    const double* x, const int incx, double* y, const int incy) {
+  auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
+      mkl::uplo::lower, n, ldS);
+  auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
+  auto L = sycl::malloc_shared<double>(n*n, queue);
+  auto ldL = n;
+
+  /* Cholesky factorization */
+  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, L, 1, ldL, n);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, L, ldL, scratchpad,
+      scratchpad_size, {evt1});
+
+  /* multiply */
+  auto evt3 = blas::copy(queue, n, x, incx, y, incy);
+  auto evt4 = blas::trmv(queue, mkl::uplo::lower, mkl::transpose::N,
+      mkl::diag::N, n, L, ldL, y, incy, {evt2, evt3});
+  evt4.wait();
+
+  sycl::free(L, queue);
+  sycl::free(scratchpad, queue);
+}
+
+void numbirch::cholmul(const int m, const int n, const double* S,
+    const int ldS, const double* B, const int ldB, double* C, const int ldC) {
+  auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
+      mkl::uplo::lower, m, ldS);
+  auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
+  auto L = sycl::malloc_shared<double>(m*m, queue);
+  auto ldL = m;
+
+  /* Cholesky factorization */
+  auto evt1 = blas::copy_batch(queue, m, S, 1, ldS, L, 1, ldL, m);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, m, L, ldL, scratchpad,
+      scratchpad_size, {evt1});
+
+  /* multiply */
+  auto evt3 = blas::copy_batch(queue, m, B, 1, ldB, C, 1, ldC, n);
+  auto evt4 = blas::trmm(queue, mkl::side::left, mkl::uplo::lower,
+      mkl::transpose::N, mkl::diag::N, m, n, 1.0, L, ldL, C, ldC,
+      {evt2, evt3});
+  evt4.wait();
+
+  sycl::free(L, queue);
+  sycl::free(scratchpad, queue);
+}
+
 double numbirch::sum(const int n, const double* x, const int incx) {
   auto x1 = make_dpl_vector(x, n, incx);
   return dpl::reduce(policy, x1.begin(), x1.end());
@@ -284,25 +331,49 @@ void numbirch::outer(const int m, const int n, const int k, const double* A,
   evt.wait();
 }
 
+void numbirch::cholouter(const int m, const int n, const double* A,
+    const int ldA, const double* S, const int ldS, double* C, const int ldC) {
+  auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
+      mkl::uplo::lower, n, ldS);
+  auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
+  auto L = sycl::malloc_shared<double>(n*n, queue);
+  auto ldL = n;
+
+  /* Cholesky factorization */
+  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, L, 1, ldL, n);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, L, ldL, scratchpad,
+      scratchpad_size, {evt1});
+
+  /* multiply */
+  auto evt3 = blas::copy_batch(queue, m, A, 1, ldA, C, 1, ldC, n);
+  auto evt4 = blas::trmm(queue, mkl::side::right, mkl::uplo::lower,
+      mkl::transpose::T, mkl::diag::N, m, n, 1.0, L, ldL, C, ldC,
+      {evt2, evt3});
+  evt4.wait();
+
+  sycl::free(L, queue);
+  sycl::free(scratchpad, queue);
+}
+
 void numbirch::solve(const int n, const double* A, const int ldA, double* x,
     const int incx, const double* y, const int incy) {
   auto scratchpad_size = lapack::getrf_scratchpad_size<double>(queue, n,
       n, ldA);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
   auto ipiv = sycl::malloc_shared<int64_t>(std::max(1, n), queue);
-  auto LU = sycl::malloc_shared<double>(std::max(1, n*n), queue);
-  auto ldLU = n;
+  auto L = sycl::malloc_shared<double>(std::max(1, n*n), queue);
+  auto ldL = n;
   double* x1 = x;
   if (incx > 1) {
     x1 = sycl::malloc_shared<double>(n, queue);
   }
 
-  /* solve via LU factorization with partial pivoting */
-  auto evt1 = blas::copy_batch(queue, n, A, 1, ldA, LU, 1, ldLU, n);
-  auto evt2 = lapack::getrf(queue, n, n, LU, ldLU, ipiv, scratchpad,
+  /* solve via L factorization with partial pivoting */
+  auto evt1 = blas::copy_batch(queue, n, A, 1, ldA, L, 1, ldL, n);
+  auto evt2 = lapack::getrf(queue, n, n, L, ldL, ipiv, scratchpad,
       scratchpad_size, {evt1});
   auto evt3 = blas::copy(queue, n, y, incy, x1, 1);
-  auto evt4 = lapack::getrs(queue, mkl::transpose::N, n, n, LU, ldLU,
+  auto evt4 = lapack::getrs(queue, mkl::transpose::N, n, n, L, ldL,
       ipiv, x1, n, scratchpad, scratchpad_size, {evt2, evt3});
   if (incx > 1) {
     auto evt5 = blas::copy(queue, n, x1, 1, x, incx, {evt4});
@@ -312,7 +383,7 @@ void numbirch::solve(const int n, const double* A, const int ldA, double* x,
     evt4.wait();
   }
 
-  sycl::free(LU, queue);
+  sycl::free(L, queue);
   sycl::free(ipiv, queue);
   sycl::free(scratchpad, queue);
 }
@@ -323,19 +394,19 @@ void numbirch::solve(const int m, const int n, const double* A, const int ldA,
       m, ldA);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
   auto ipiv = sycl::malloc_shared<int64_t>(std::max(1, m), queue);
-  auto LU = sycl::malloc_shared<double>(std::max(1, m*m), queue);
-  auto ldLU = m;
+  auto L = sycl::malloc_shared<double>(std::max(1, m*m), queue);
+  auto ldL = m;
 
-  /* solve via LU factorization with partial pivoting */
-  auto evt1 = blas::copy_batch(queue, m, A, 1, ldA, LU, 1, ldLU, m);
-  auto evt2 = lapack::getrf(queue, m, m, LU, ldLU, ipiv, scratchpad,
+  /* solve via L factorization with partial pivoting */
+  auto evt1 = blas::copy_batch(queue, m, A, 1, ldA, L, 1, ldL, m);
+  auto evt2 = lapack::getrf(queue, m, m, L, ldL, ipiv, scratchpad,
       scratchpad_size, {evt1});
   auto evt3 = blas::copy_batch(queue, m, Y, 1, ldY, X, 1, ldX, n);
-  auto evt4 = lapack::getrs(queue, mkl::transpose::N, m, n, LU, ldLU,
+  auto evt4 = lapack::getrs(queue, mkl::transpose::N, m, n, L, ldL,
       ipiv, X, ldX, scratchpad, scratchpad_size, {evt2, evt3});
   evt4.wait();
 
-  sycl::free(LU, queue);
+  sycl::free(L, queue);
   sycl::free(ipiv, queue);
   sycl::free(scratchpad, queue);
 }
@@ -345,8 +416,8 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
       mkl::uplo::lower, n, ldS);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
-  auto LLT = sycl::malloc_shared<double>(n*n, queue);
-  auto ldLLT = n;
+  auto L = sycl::malloc_shared<double>(n*n, queue);
+  auto ldL = n;
   double* x1 = x;
   if (incx > 1) {
     x1 = sycl::malloc_shared<double>(n, queue);
@@ -354,11 +425,11 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   int incx1 = 1;
 
   /* solve via Cholesky factorization */
-  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, LLT, 1, ldLLT, n);
-  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, LLT, ldLLT,
+  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, L, 1, ldL, n);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, L, ldL,
       scratchpad, scratchpad_size, {evt1});
   auto evt3 = blas::copy(queue, n, y, incy, x1, incx1);
-  auto evt4 = lapack::potrs(queue, mkl::uplo::lower, n, 1, LLT, ldLLT,
+  auto evt4 = lapack::potrs(queue, mkl::uplo::lower, n, 1, L, ldL,
       x1, n, scratchpad, scratchpad_size, {evt2, evt3});
   if (incx > 1) {
     auto evt5 = blas::copy(queue, n, x1, incx1, x, incx, {evt4});
@@ -368,7 +439,7 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
     evt4.wait();
   }
 
-  sycl::free(LLT, queue);
+  sycl::free(L, queue);
   sycl::free(scratchpad, queue);
 }
 
@@ -377,19 +448,19 @@ void numbirch::cholsolve(const int m, const int n, const double* S,
   auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
       mkl::uplo::lower, m, ldS);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
-  auto LLT = sycl::malloc_shared<double>(m*m, queue);
-  auto ldLLT = m;
+  auto L = sycl::malloc_shared<double>(m*m, queue);
+  auto ldL = m;
 
   /* solve via Cholesky factorization */
-  auto evt1 = blas::copy_batch(queue, m, S, 1, ldS, LLT, 1, ldLLT, m);
-  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, m, LLT, ldLLT,
+  auto evt1 = blas::copy_batch(queue, m, S, 1, ldS, L, 1, ldL, m);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, m, L, ldL,
       scratchpad, scratchpad_size, {evt1});
   auto evt3 = blas::copy_batch(queue, m, Y, 1, ldY, X, 1, ldX, n);
-  auto evt4 = lapack::potrs(queue, mkl::uplo::lower, m, n, LLT, ldLLT, X,
+  auto evt4 = lapack::potrs(queue, mkl::uplo::lower, m, n, L, ldL, X,
       ldX, scratchpad, scratchpad_size, {evt2, evt3});
   evt4.wait();
 
-  sycl::free(LLT, queue);
+  sycl::free(L, queue);
   sycl::free(scratchpad, queue);
 }
 
@@ -403,7 +474,7 @@ void numbirch::inv(const int n, const double* A, const int ldA, double* B,
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
   auto ipiv = sycl::malloc_shared<int64_t>(std::max(1, n), queue);
 
-  /* invert via LU factorization with partial pivoting */
+  /* invert via L factorization with partial pivoting */
   auto evt1 = blas::copy_batch(queue, n, A, 1, ldA, B, 1, ldB, n);
   auto evt2 = lapack::getrf(queue, n, n, B, ldB, ipiv, scratchpad,
       scratchpad_size, {evt1});
@@ -453,27 +524,27 @@ double numbirch::ldet(const int n, const double* A, const int ldA) {
       n, ldA);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
   auto ipiv = sycl::malloc_shared<int64_t>(std::max(1, n), queue);
-  auto LU = sycl::malloc_shared<double>(std::max(1, n*n), queue);
-  auto ldLU = n;
+  auto L = sycl::malloc_shared<double>(std::max(1, n*n), queue);
+  auto ldL = n;
 
-  /* LU factorization with partial pivoting */
-  auto evt1 = blas::copy_batch(queue, n, A, 1, ldA, LU, 1, ldLU, n);
-  auto evt2 = lapack::getrf(queue, n, n, LU, ldLU, ipiv, scratchpad,
+  /* L factorization with partial pivoting */
+  auto evt1 = blas::copy_batch(queue, n, A, 1, ldA, L, 1, ldL, n);
+  auto evt2 = lapack::getrf(queue, n, n, L, ldL, ipiv, scratchpad,
       scratchpad_size, {evt1});
 
-  /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
+  /* the L factorization is with partial pivoting, which means $|A| = (-1)^p
    * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
    * we're taking the logarithm of its absolute value, so can ignore the first
    * term, and the second term is just 1 as $L$ has a unit diagonal; just need
    * $|U|$ here; the logarithm of its absolute value is just the sum of the
    * logarithms of the absolute values of elements on the main diagonal */
-  auto d = make_dpl_vector(LU, n, ldLU + 1);  // diagonal of LU
+  auto d = make_dpl_vector(L, n, ldL + 1);  // diagonal of L
   auto logabs = [](double x) { return std::log(std::abs(x)); };
   auto ldet = dpl::experimental::transform_reduce_async(policy, d.begin(),
       d.end(), 0.0, dpl::plus<double>(), logabs, evt2);
   ldet.wait();
 
-  sycl::free(LU, queue);
+  sycl::free(L, queue);
   sycl::free(ipiv, queue);
   sycl::free(scratchpad, queue);
 
@@ -484,47 +555,27 @@ double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
       mkl::uplo::lower, n, ldS);
   auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
-  auto LLT = sycl::malloc_shared<double>(n*n, queue);
-  auto ldLLT = n;
+  auto L = sycl::malloc_shared<double>(n*n, queue);
+  auto ldL = n;
 
   /* Cholesky factorization */
-  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, LLT, 1, ldLLT, n);
-  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, LLT, ldLLT,
+  auto evt1 = blas::copy_batch(queue, n, S, 1, ldS, L, 1, ldL, n);
+  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, L, ldL,
       scratchpad, scratchpad_size, {evt1});
 
   /* log-determinant is twice the sum of logarithms of elements on the main
    * diagonal, all of which should be positive; the 2.0 is multiplied in by
    * the return statement below */
-  auto d = make_dpl_vector(LLT, n, ldLLT + 1);  // diagonal of LLT
+  auto d = make_dpl_vector(L, n, ldL + 1);  // diagonal of L
   auto log = [](double x) { return std::log(x); };
   auto half_ldet = dpl::experimental::transform_reduce_async(policy,
       d.begin(), d.end(), 0.0, dpl::plus<double>(), log, evt2);
   half_ldet.wait();
 
-  sycl::free(LLT, queue);
+  sycl::free(L, queue);
   sycl::free(scratchpad, queue);
 
   return 2.0*half_ldet.get();
-}
-
-void numbirch::chol(const int n, const double* S, const int ldS, double* L,
-    const int ldL) {
-  auto scratchpad_size = lapack::potrf_scratchpad_size<double>(queue,
-      mkl::uplo::lower, n, ldL);
-  auto scratchpad = sycl::malloc_shared<double>(scratchpad_size, queue);
-
-  /* copy lower triangle, and zero upper triangle */
-  auto S1 = make_dpl_matrix_lower(S, n, n, ldS);
-  auto L1 = make_dpl_matrix(L, n, n, ldL);
-  //auto evt1 = dpl::experimental::copy_async(policy, S1.begin(), S1.end(),
-  //    L1.begin());
-  // ^ compile errors as of Intel oneDPL 2021.4.0
-  dpl::copy(policy, S1.begin(), S1.end(), L1.begin());
-  auto evt2 = lapack::potrf(queue, mkl::uplo::lower, n, L, ldL,
-      scratchpad, scratchpad_size);
-  evt2.wait();
-
-  sycl::free(scratchpad, queue);
 }
 
 void numbirch::transpose(const int m, const int n, const double x,
