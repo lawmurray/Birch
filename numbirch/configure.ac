@@ -64,9 +64,11 @@ esac],[default=true])
 
 # Programs
 if $oneapi; then
+  CC=./dpcpp_wrapper
   CXX=./dpcpp_wrapper
 else
   if $cuda; then
+    CC=./nvcc_wrapper
     CXX=./nvcc_wrapper
   fi
 fi
@@ -81,13 +83,19 @@ LT_INIT([dlopen,pic-only])
 # Checks for basic things
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
+
+# OpenMP checks, -fiopenmp is for the Intel compiler and library, check first
+AX_CHECK_COMPILE_FLAG([-fiopenmp], [CXXFLAGS="$CXXFLAGS -fiopenmp"], [], [-Werror])
 AC_OPENMP
+AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
+AC_SEARCH_LIBS([omp_get_max_threads], [omp])
+
+# Checks for compiler flags
+AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
 
 # Check for build specifics
-AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
-AC_CHECK_LIB([omp], [main], [], [], [])
 if $oneapi; then
-  echo;
+  echo
 else
   if $cuda; then
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
@@ -100,7 +108,6 @@ else
     AC_CHECK_HEADERS([thrust/iterator/counting_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([thrust/iterator/transform_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 
-    AC_CHECK_LIB([omp], [main], [], [], [])
     AC_CHECK_LIB([cublas], [main], [], [], [])
     AC_CHECK_LIB([cublasLt], [main], [], [], [])
     AC_CHECK_LIB([cusolver], [main], [], [], [])
