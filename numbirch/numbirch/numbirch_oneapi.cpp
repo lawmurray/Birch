@@ -79,19 +79,22 @@ void numbirch::init() {
 }
 
 void* numbirch::malloc(const size_t size) {
-  return sycl::malloc_shared(size, queue);
+  void* ptr = sycl::malloc_shared(size, queue);
+  queue.wait();
+  return ptr;
 }
 
 void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
-  void* src = ptr;
   void* dst = sycl::malloc_shared(newsize, queue);
-  queue.memcpy(dst, src, std::min(oldsize, newsize));
+  queue.memcpy(dst, ptr, std::min(oldsize, newsize));
   sycl::free(ptr, queue);
+  queue.wait();
   return dst;
 }
 
 void numbirch::free(void* ptr) {
   sycl::free(ptr, queue);
+  queue.wait();
 }
 
 void numbirch::copy(const int n, const double* x, const int incx, double* y,

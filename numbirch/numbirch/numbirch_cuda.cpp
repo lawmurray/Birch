@@ -583,8 +583,7 @@ double numbirch::frobenius(const int m, const int n, const double* A,
     const int ldA, const double* B, const int ldB) {
   auto A1 = make_thrust_matrix(A, m, n, ldA);
   auto B1 = make_thrust_matrix(B, m, n, ldB);
-  return thrust::inner_product(policy, A1.begin(),
-      A1.end(), B1.begin(), 0.0);
+  return thrust::inner_product(policy, A1.begin(), A1.end(), B1.begin(), 0.0);
 }
 
 void numbirch::inner(const int m, const int n, const double* A, const int ldA,
