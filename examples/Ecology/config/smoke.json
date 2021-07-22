@@ -3,6 +3,7 @@
     "class": "EcologyModel"
   },
   "kernel": {
+    "class": "LangevinKernel",
     "scale": 0.001,
     "nmoves": 2,
     "nlags": 2
