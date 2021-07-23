@@ -153,8 +153,6 @@ void numbirch::mul(const int m, const int n, const int k, const double* A,
   C1.noalias() = A1*B1;
 }
 
-#include <iostream>
-
 void numbirch::cholmul(const int n, const double* S, const int ldS,
     const double* x, const int incx, double* y, const int incy) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
@@ -242,8 +240,9 @@ void numbirch::cholouter(const int m, const int n, const double* A,
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   auto ldlt = S1.ldlt();
   //assert(ldlt.info() == Eigen::Success);
-  C1.noalias() = A1*ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*
-      ldlt.matrixU()*ldlt.transpositionsP();
+  C1.noalias() = (ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
+      (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*
+      A1.transpose()))).transpose();
 }
 
 void numbirch::solve(const int n, const double* A, const int ldA, double* x,
