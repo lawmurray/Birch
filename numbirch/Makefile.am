@@ -21,7 +21,7 @@ if ONEAPI
   COMMON_SOURCES += numbirch/numbirch_oneapi.cpp
 else
 if CUDA
-  AM_CXXFLAGS += -x cu -arch=sm_75 -ccbin=gcc-10 -Xcompiler="-Wno-unused-result"
+  AM_CXXFLAGS += -x cu -arch=sm_75 -Xcompiler="-Wno-unused-result"
   COMMON_SOURCES += numbirch/numbirch_cuda.cpp
 else
   AM_CPPFLAGS += -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
