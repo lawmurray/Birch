@@ -207,6 +207,7 @@ commands:
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
               birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS << parameters.extra >>
+          no_output_timeout: 20m
       - run:
           name: Smoke test << parameters.package >> package
           command: |
