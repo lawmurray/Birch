@@ -152,10 +152,13 @@ final class Tape<Type> {
    * Insert a new default-constructed element at the front and return it.
    */
   function pushFront() -> Type {
-    rewind();
-    behind <- construct<TapeNode<Type>>(construct<Type>());
-    behindCount <- behindCount + 1;
-    return behind!.x;
+    let x <- make<Type>();
+    if x? {
+      pushFront(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
   }
 
   /**
@@ -173,10 +176,13 @@ final class Tape<Type> {
    * Insert a new default-constructed element at the back and return it.
    */
   function pushBack() -> Type {
-    fastForward();
-    ahead <- construct<TapeNode<Type>>(construct<Type>());
-    aheadCount <- aheadCount + 1;
-    return ahead!.x;
+    let x <- make<Type>();
+    if x? {
+      pushBack(x!);
+    } else {
+      error("not default constructible");
+    }
+    return x!;
   }
 
   /**
