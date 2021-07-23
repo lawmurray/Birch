@@ -26,6 +26,12 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   gen:Integer <- 0;
 
   /**
+   * Maximum generation label with which constant(Integer) has been called.
+   * This is used to truncate recursions.
+   */
+  genMax:Integer <- 0;
+
+  /**
    * Number of times `eval()` has been called.
    */
   evalCount:Integer <- 0;
@@ -118,7 +124,8 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function constant(gen:Integer) {
-    if f? {
+    if f? && gen > genMax {
+      genMax <- gen;
       if this.gen < gen {
         constant();
       } else {
@@ -133,6 +140,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
       f <- nil;
       d <- nil;
       gen <- 0;
+      genMax <- 0;
       evalCount <- 0;
       visitCount <- 0;
     }
