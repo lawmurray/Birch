@@ -571,6 +571,9 @@ void birch::CppGenerator::visit(const For* o) {
 void birch::CppGenerator::visit(const Parallel* o) {
   auto index = genIndex(o->index);
   genSourceLine(o->loc);
+  line("#if HAVE_NUMBIRCH_HPP");
+  line("numbirch::wait();");
+  line("#endif");
   line("#pragma omp parallel");
   line("{");
   in();
@@ -587,6 +590,9 @@ void birch::CppGenerator::visit(const Parallel* o) {
   *this << o->braces->strip();
   out();
   line("}");
+  line("#if HAVE_NUMBIRCH_HPP");
+  line("numbirch::wait();");
+  line("#endif");
   out();
   line("}");
 }

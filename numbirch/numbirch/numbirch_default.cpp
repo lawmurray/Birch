@@ -47,6 +47,10 @@ void numbirch::free(void* ptr) {
   std::free(ptr);
 }
 
+void numbirch::wait() {
+  //
+}
+
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
     const int incy) {
   auto x1 = make_eigen_vector(x, n, incx);

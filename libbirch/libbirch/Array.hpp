@@ -31,7 +31,8 @@ public:
       control(nullptr),
       shape(),
       isView(false),
-      isElementWise(false) {
+      isElementWise(false),
+      isBorrowed(false) {
     assert(shape.volume() == 0);
   }
 
@@ -45,7 +46,8 @@ public:
       control(nullptr),
       shape(shape),
       isView(false),
-      isElementWise(false) {
+      isElementWise(false),
+      isBorrowed(false) {
     allocate();
     if (!std::is_trivially_copyable<T>::value) {
       initialize();
@@ -66,7 +68,8 @@ public:
       control(nullptr),
       shape(shape),
       isView(false),
-      isElementWise(false) {
+      isElementWise(false),
+      isBorrowed(false) {
     allocate();
     initialize(std::forward<Args>(args)...);
   }
@@ -82,7 +85,8 @@ public:
       control(nullptr),
       shape(values.size()),
       isView(false),
-      isElementWise(false) {
+      isElementWise(false),
+      isBorrowed(false) {
     allocate();
     std::uninitialized_copy(values.begin(), values.end(), beginInternal());
   }
@@ -98,7 +102,8 @@ public:
       control(nullptr),
       shape(values.size(), values.begin()->size()),
       isView(false),
-      isElementWise(false) {
+      isElementWise(false),
+      isBorrowed(false) {
     allocate();
     int64_t t = 0;
     for (auto row : values) {
@@ -120,7 +125,8 @@ public:
       control(nullptr),
       shape(shape),
       isView(false),
-      isElementWise(false) {
+      isElementWise(false),
+      isBorrowed(false) {
     allocate();
     int64_t n = 0;
     for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
@@ -136,25 +142,24 @@ public:
       control(nullptr),
       shape(shape),
       isView(true),
-      isElementWise(isElementWise) {
+      isElementWise(isElementWise),
+      isBorrowed(false) {
     //
   }
 
   /**
    * Copy constructor.
    */
-  Array(const Array& o) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(o.shape),
-      isView(false),
-      isElementWise(false) {
-    if (o.isView || !std::is_trivially_copyable<T>::value) {
+  Array(const Array& o) : Array() {
+    if (!o.isView && std::is_trivially_copyable<T>::value) {
+      shape = o.shape;
+      isBorrowed = o.isBorrowed;
+      std::tie(control, buffer) = o.share();
+    } else {
+      shape = o.shape;
       compact();
       allocate();
       uninitialized_copy(o);
-    } else {
-      std::tie(control, buffer) = o.share();
     }
   }
 
@@ -163,12 +168,8 @@ public:
    */
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible<U,T>::value,int> = 0>
-  Array(const Array<U,E>& o) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(o.shape),
-      isView(false),
-      isElementWise(false) {
+  Array(const Array<U,E>& o) : Array() {
+    shape = o.shape;
     compact();
     allocate();
     uninitialized_copy(o);
@@ -181,6 +182,7 @@ public:
     if (!o.isView) {
       swap(o);
     } else {
+      shape = o.shape;
       compact();
       allocate();
       uninitialized_copy(o);
@@ -226,6 +228,7 @@ public:
    * @copydoc begin()
    */
   ArrayIterator<T,D> begin() const {
+    synchronize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -233,15 +236,14 @@ public:
    * Iterator to one past the last element.
    */
   ArrayIterator<T,D> end() {
-    elementize();
-    return ArrayIterator<T,D>(buffer, shape).operator+(size());
+    return begin().operator+(size());
   }
 
   /**
    * @copydoc end()
    */
   ArrayIterator<T,D> end() const {
-    return ArrayIterator<T,D>(buffer, shape).operator+(size());
+    return begin().operator+(size());
   }
 
   /**
@@ -270,6 +272,7 @@ public:
    */
   template<class... Args>
   decltype(auto) operator()(Args&&... args) const {
+    synchronize();
     return shape.slice(buffer, false, std::forward<Args>(args)...);
   }
 
@@ -307,6 +310,22 @@ public:
    */
   int stride() const {
     return shape.stride();
+  }
+
+  /**
+   * Underlying buffer.
+   */
+  T* data() {
+    elementize();
+    isBorrowed = true;
+    return buffer;
+  }
+
+  /**
+   * Underlying buffer.
+   */
+  const T* data() const {
+    return buffer;
   }
 
   /**
@@ -384,26 +403,12 @@ public:
     shape = s;
   }
 
-  /**
-   * Underlying buffer.
-   */
-  T* data() {
-    elementize();
-    return buffer;
-  }
-
-  /**
-   * Uderlying buffer.
-   */
-  const T* data() const {
-    return buffer;
-  }
-
 private:
   /**
    * Iterator for use internally, avoiding elementize().
    */
   ArrayIterator<T,D> beginInternal() {
+    synchronize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -411,6 +416,7 @@ private:
    * @copydoc beginInternal()
    */
   ArrayIterator<T,D> beginInternal() const {
+    synchronize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -418,14 +424,14 @@ private:
    * Iterator for use internally, avoiding elementize().
    */
   ArrayIterator<T,D> endInternal() {
-    return ArrayIterator<T,D>(buffer, shape).operator+(size());
+    return beginInternal().operator+(size());
   }
 
   /**
    * @copydoc endInternal()
    */
   ArrayIterator<T,D> endInternal() const {
-    return ArrayIterator<T,D>(buffer, shape).operator+(size());
+    return beginInternal().operator+(size());
   }
 
   /**
@@ -452,6 +458,7 @@ private:
     std::swap(buffer, o.buffer);
     std::swap(control, o.control);
     std::swap(isElementWise, o.isElementWise);
+    std::swap(isBorrowed, o.isBorrowed);
   }
 
   /**
@@ -528,11 +535,14 @@ private:
   }
 
   /**
-   * Prepare this array for element-wise writes. If the buffer is currently
-   * shared, a new buffer is created as a copy of the existing buffer.
+   * Prepare for element-wise writes. If the buffer is currently borrowed,
+   * this requires synchronization with the device to ensure correct
+   * sequencing of writes. If the buffer is currently shared, a new buffer is
+   * created as a copy of the existing buffer.
    */
   void elementize() {
     assert(!isView);
+    synchronize();
     if (!isElementWise) {
       lock.set();
       if (!isElementWise) {
@@ -556,12 +566,28 @@ private:
   }
 
   /**
+   * Prepare for element-wise reads. If the buffer is currently borrowed, this
+   * requires synchronization with the device to ensure that all writes are
+   * completed before the reads. 
+   */
+  void synchronize() const {
+    if (isBorrowed) {
+      #if HAVE_NUMBIRCH_HPP
+      numbirch::wait();
+      #endif
+      const_cast<Array<T,D>*>(this)->isBorrowed = false;
+    }
+  }
+
+  /**
    * Release the buffer of this array, deallocating it if this is the last
    * reference to it.
    */
   void release() {
     if (!isView && (!control || control->decShared_() == 0)) {
-      std::destroy(beginInternal(), endInternal());
+      if (!std::is_trivially_copyable<T>::value) {
+        std::destroy(beginInternal(), endInternal());
+      }
       #if HAVE_NUMBIRCH_HPP
       numbirch::free((void*)buffer);
       #else
@@ -573,6 +599,7 @@ private:
     control = nullptr;
     isView = false;
     isElementWise = false;
+    isBorrowed = false;
   }
 
   /**
@@ -644,6 +671,12 @@ private:
    * Are element-wise writes available for this array?
    */
   bool isElementWise;
+
+  /**
+   * Has the buffer been borrowed by a device? If so, the next access to the
+   * elements of the buffer will require synchronization with that device.
+   */
+  bool isBorrowed;
 
   /**
    * Lock for operations requiring mutual exclusion.

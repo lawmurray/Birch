@@ -42,6 +42,12 @@ void* realloc(void* ptr, size_t oldsize, size_t newsize);
 void free(void* ptr);
 
 /**
+ * Synchronize with the device. This waits for all operations to complete for
+ * the current thread.
+ */
+void wait();
+
+/**
  * Vector copy.
  * 
  * @param n Number of elements.

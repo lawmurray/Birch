@@ -97,6 +97,10 @@ void numbirch::free(void* ptr) {
   queue.wait();
 }
 
+void numbirch::wait() {
+  queue.wait();
+}
+
 void numbirch::copy(const int n, const double* x, const int incx, double* y,
     const int incy) {
   auto x1 = make_dpl_vector(x, n, incx);

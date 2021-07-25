@@ -438,18 +438,20 @@ void numbirch::free(void* ptr) {
   }
 }
 
+void numbirch::wait() {
+  CUDA_CHECK(cudaStreamSynchronize(stream));
+}
+
 void numbirch::copy(const int n, const double* x, const int incx, double* y,
     const int incy) {
   CUDA_CHECK(cudaMemcpy2DAsync(y, incy*sizeof(double), x, incx*sizeof(double),
       sizeof(double), n, cudaMemcpyDefault, stream));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::copy(const int m, const int n, const double* A, const int ldA,
     double* B, const int ldB) {
   CUDA_CHECK(cudaMemcpy2DAsync(B, ldB*sizeof(double), A, ldA*sizeof(double),
       m*sizeof(double), n, cudaMemcpyDefault, stream));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
@@ -558,14 +560,12 @@ void numbirch::mul(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
   CUBLAS_CHECK(cublasDgemv(cublasHandle, CUBLAS_OP_N, m, n, one, A, ldA, x, 
       incx, zero, y, incy));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
   CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
       one, A, ldA, B, ldB, zero, C, ldC));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::cholmul(const int n, const double* S, const int ldS,
@@ -594,9 +594,6 @@ void numbirch::cholmul(const int n, const double* S, const int ldS,
   CUBLAS_CHECK(cublasDcopy(cublasHandle, n, x, incx, y, incy));
   CUBLAS_CHECK(cublasDtrmv(cublasHandle, CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N,
       CUBLAS_DIAG_NON_UNIT, n, L, ldL, y, incy));
-
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -630,9 +627,6 @@ void numbirch::cholmul(const int m, const int n, const double* S,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, m, n, one, L,
       ldL, B, ldB, C, ldC));
 
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
-
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
   CUDA_CHECK(cudaFreeAsync(L, stream));
@@ -651,12 +645,11 @@ double numbirch::sum(const int m, const int n, const double* A,
 
 double numbirch::dot(const int n, const double* x, const int incx,
     const double* y, const int incy) {
-  double* z = nullptr;
-  CUDA_CHECK(cudaMallocManaged(&z, sizeof(double)));
+  double* z = (double*)malloc(sizeof(double));
   CUBLAS_CHECK(cublasDdot(cublasHandle, n, x, incx, y, incy, z));
   CUDA_CHECK(cudaStreamSynchronize(stream));
   double result = *z;
-  CUDA_CHECK(cudaFree(z));
+  free(z);
   return result;
 }
 
@@ -671,14 +664,12 @@ void numbirch::inner(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
   CUBLAS_CHECK(cublasDgemv(cublasHandle, CUBLAS_OP_T, n, m, one, A, ldA, x,
       incx, zero, y, incy));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::inner(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
   CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, k,
       one, A, ldA, B, ldB, zero, C, ldC));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::outer(const int m, const int n, const double* x,
@@ -690,14 +681,12 @@ void numbirch::outer(const int m, const int n, const double* x,
    * while the second is not */
   CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, 1,
       one, x, incx, y, incy, zero, A, ldA));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::outer(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
   CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T, m, n, k,
       one, A, ldA, B, ldB, zero, C, ldC));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void numbirch::cholouter(const int m, const int n, const double* A,
@@ -726,9 +715,6 @@ void numbirch::cholouter(const int m, const int n, const double* A,
   CUBLAS_CHECK(cublasDtrmm(cublasHandle, CUBLAS_SIDE_RIGHT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, m, n, one, L,
       ldL, A, ldA, C, ldC));
-
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -768,8 +754,6 @@ void numbirch::solve(const int n, const double* A, const int ldA, double* x,
   if (incx > 1) {
     CUBLAS_CHECK(cublasDcopy(cublasHandle, n, x1, 1, x, incx));
   }
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -807,8 +791,6 @@ void numbirch::solve(const int m, const int n, const double* A, const int ldA,
   CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_OP_N, m, n, CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, X, ldX,
       info));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -848,8 +830,6 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   if (incx > 1) {
     CUBLAS_CHECK(cublasDcopy(cublasHandle, n, x1, 1, x, incx));
   }
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -885,8 +865,6 @@ void numbirch::cholsolve(const int m, const int n, const double* S,
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, m, n, CUDA_R_64F, L, ldL, CUDA_R_64F, X,
       ldX, info));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -925,8 +903,6 @@ void numbirch::inv(const int n, const double* A, const int ldA, double* B,
   CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_OP_N, n, n, CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, B, ldB,
       info));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -965,8 +941,6 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, n, n, CUDA_R_64F, L, ldL, CUDA_R_64F, B,
       ldB, info));
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
@@ -1005,9 +979,6 @@ double numbirch::ldet(const int n, const double* A, const int ldA) {
   double ldet = thrust::transform_reduce(policy, d.begin(), d.end(),
       LogAbsFunctor<double>(), 0.0, thrust::plus<double>());
 
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
-
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
   CUDA_CHECK(cudaFreeAsync(L, stream));
@@ -1042,9 +1013,6 @@ double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   auto d = make_thrust_vector(L, n, ldL + 1);  // diagonal of L
   double ldet = 2.0*thrust::transform_reduce(policy, d.begin(), d.end(),
       LogFunctor<double>(), 0.0, thrust::plus<double>());
-
-  CUDA_CHECK(cudaStreamSynchronize(stream));
-  assert(*info == 0);
 
   CUDA_CHECK(cudaFreeAsync(bufferOnHost, stream));
   CUDA_CHECK(cudaFreeAsync(bufferOnDevice, stream));
