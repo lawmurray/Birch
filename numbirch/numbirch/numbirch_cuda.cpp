@@ -3,17 +3,16 @@
  */
 #include "numbirch/numbirch.hpp"
 
+#include <omp.h>
 #include <cublas_v2.h>
 #include <cusolverDn.h>
-
 #include <thrust/execution_policy.h>
 #include <thrust/transform.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/inner_product.h>
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/iterator/transform_iterator.h>
-
-#include <omp.h>
+#include <jemalloc/jemalloc.h>
 
 /**
  * @def CUDA_SYNC
@@ -21,7 +20,7 @@
  * If true, all CUDA calls are synchronous, which can be helpful to determine
  * precisely which call causes an error.
  */
-#define CUDA_SYNC 1
+#define CUDA_SYNC 0
 
 /**
  * @def CUDA_CHECK
@@ -68,6 +67,7 @@
       } \
     }
 
+static thread_local int device = 0;
 static thread_local cudaStream_t stream = cudaStreamPerThread;
 static thread_local cublasHandle_t cublasHandle;
 static thread_local cusolverDnHandle_t cusolverDnHandle;
@@ -77,6 +77,11 @@ static thread_local auto policy = thrust::cuda::par.on(stream);
 
 static double* one = nullptr;
 static double* zero = nullptr;
+
+static thread_local unsigned arena = 0;
+static thread_local unsigned tcache = 0;
+static thread_local int flags = 0;
+
 /*
  * Thrust support for lambda functions has some limitations as of CUDA 11.4.
  * In particular the cnvcc ommand-line option --extended-lambda may be
@@ -295,12 +300,63 @@ static auto make_thrust_matrix_symmetric(const T* A, const int m, const int n,
 }
 
 /*
+ * Jemalloc custom extent hooks for CUDA memory arenas.
+ */
+
+void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
+    size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
+  if (!new_addr) {
+    if (*commit) {
+      CUDA_CHECK(cudaMallocHost(&new_addr, size));
+    } else {
+      CUDA_CHECK(cudaMallocManaged(&new_addr, size));
+    }
+  }
+  if (*zero) {
+    CUDA_CHECK(cudaMemset(new_addr, 0, size));
+  }
+  return new_addr;
+}
+
+bool cuda_dalloc(extent_hooks_t *extent_hooks, void *addr, size_t size,
+    bool committed, unsigned arena_ind) {
+  if (committed) {
+    CUDA_CHECK(cudaFreeHost(addr));
+  } else {
+    CUDA_CHECK(cudaFree(addr));
+  }
+  return false;
+}
+
+void cuda_destroy(extent_hooks_t *extent_hooks, void *addr, size_t size,
+    bool committed, unsigned arena_ind) {
+  if (committed) {
+    CUDA_CHECK(cudaFreeHost(addr));
+  } else {
+    CUDA_CHECK(cudaFree(addr));
+  }
+}
+
+static extent_hooks_t hooks = {
+  cuda_alloc,
+  cuda_dalloc,
+  cuda_destroy,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr
+};
+
+/*
  * NumBirch implementation.
  */
 
 void numbirch::init() {
   double one1 = 1.0;
   double zero1 = 0.0;
+
   CUDA_CHECK(cudaMalloc(&one, sizeof(double)));
   CUDA_CHECK(cudaMalloc(&zero, sizeof(double)));  
   CUBLAS_CHECK(cublasSetVector(1, sizeof(double), &one1, 1, one, 1));
@@ -308,6 +364,8 @@ void numbirch::init() {
 
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
+    CUDA_CHECK(cudaGetDevice(&device));
+
     CUBLAS_CHECK(cublasCreate(&cublasHandle));
     CUBLAS_CHECK(cublasSetStream(cublasHandle, stream));
     CUBLAS_CHECK(cublasSetPointerMode(cublasHandle,
@@ -321,7 +379,28 @@ void numbirch::init() {
     CUDA_CHECK(cudaMemsetAsync(info, 0, sizeof(int), stream));
   }
 
-  CUDA_CHECK(cudaDeviceSynchronize());
+  /* jemalloc setup */
+  bool flag = false;
+  int ret = mallctl("background_thread", nullptr, nullptr, &flag,
+      sizeof(flag));
+  assert(ret == 0);
+
+  #pragma omp parallel num_threads(omp_get_max_threads())
+  {
+    /* create new arena */
+    void* hooks1 = &hooks;
+    size_t size = sizeof(arena);
+    int ret = mallctl("arenas.create", &arena, &size, &hooks1,
+        sizeof(hooks1));
+    assert(ret == 0);
+
+    /* create new thread cache */
+    size = sizeof(tcache);
+    ret = mallctl("tcache.create", &tcache, &size, nullptr, 0);
+    assert(ret == 0);
+
+    flags = MALLOCX_ARENA(arena)|MALLOCX_TCACHE(tcache)|MALLOCX_ALIGN(128);
+  }
 }
 
 void term() {
@@ -338,23 +417,25 @@ void term() {
 }
 
 void* numbirch::malloc(const size_t size) {
-  void* ptr = nullptr;
-  CUDA_CHECK(cudaMallocManaged(&ptr, size));
-  return ptr;
+  assert(arena > 0);
+  return size == 0 ? nullptr : mallocx(size, flags);
 }
 
 void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
-  void* dst = nullptr;
-  void* src = ptr;
-  size_t n = std::min(oldsize, newsize);
-  CUDA_CHECK(cudaMallocManaged(&dst, newsize));
-  CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
-  CUDA_CHECK(cudaFree(src));
-  return dst;
+  assert(arena > 0);
+  if (newsize > 0) {
+    return rallocx(ptr, newsize, flags);
+  } else {
+    free(ptr);
+    return nullptr;
+  }
 }
 
 void numbirch::free(void* ptr) {
-  CUDA_CHECK(cudaFree(ptr));
+  assert(arena > 0);
+  if (ptr) {
+    dallocx(ptr, flags);
+  }
 }
 
 void numbirch::copy(const int n, const double* x, const int incx, double* y,

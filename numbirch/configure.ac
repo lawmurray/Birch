@@ -107,10 +107,12 @@ else
     AC_CHECK_HEADERS([thrust/inner_product.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([thrust/iterator/counting_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([thrust/iterator/transform_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([jemalloc/jemalloc.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 
-    AC_CHECK_LIB([cublas], [main], [], [], [])
-    AC_CHECK_LIB([cublasLt], [main], [], [], [])
-    AC_CHECK_LIB([cusolver], [main], [], [], [])
+    AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([cublasLt], [main], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([jemalloc], [malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   else
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
   fi

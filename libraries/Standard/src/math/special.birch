@@ -399,7 +399,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
   let flag1 <- true;
   let k <- 1;
   while (k <= K && flag1) {
-    ck <- IGAM_ASYMPTOTIC_SERIES_D[k,1];
+    ck <- IGAM_ASYMPTOTIC_SERIES_D(k,1);
     let flag2 <- true;
     let n <- 2;
     while (n <= N && flag2) {
@@ -407,7 +407,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
         etapow[n] <- η * etapow[n-1];
         maxpow <- maxpow + 1;
       }
-      ckterm <- IGAM_ASYMPTOTIC_SERIES_D[k, n] * etapow[n];
+      ckterm <- IGAM_ASYMPTOTIC_SERIES_D(k, n) * etapow[n];
       ck <- ck + ckterm;
       if (abs(ckterm) < MACHEP * abs(ck)) {
         flag2 <- false;
@@ -433,16 +433,7 @@ function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
 }
 
 function lanczos_sum_expg_scaled(x:Real) -> Real {
-  return ratevl(x, LANCZOS_SUM_EXPG_SCALED_NUM,
-      length(LANCZOS_SUM_EXPG_SCALED_NUM) - 1,
-      LANCZOS_SUM_EXPG_SCALED_DENOM,
-      length(LANCZOS_SUM_EXPG_SCALED_DENOM) - 1);
-}
-
-function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_],
-    N:Integer) -> Real {
   dir:Integer;
-
   y:Real;
   let absx <- abs(x);
   let pind <- 1;
@@ -452,7 +443,7 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_],
     /* Evaluate as a polynomial in 1/x. */
     dir <- -1;
     // point at the last element
-    pind <- M + 1;
+    pind <- 13;
     y <- 1.0 / x;
   } else {
 
@@ -466,29 +457,29 @@ function ratevl(x:Real, num:Real[_], M:Integer, denom:Real[_],
   // breaks in the loop below
 
   // get the value of the first/last element depending on the abs(x)
-  let num_ans <- num[pind];
+  let num_ans <- LANCZOS_SUM_EXPG_SCALED_NUM(pind);
   pind <- pind + dir;
-  for i in 2..(M+1) {
-    num_ans <- (num_ans * y) + num[pind];
+  for i in 2..13 {
+    num_ans <- (num_ans * y) + LANCZOS_SUM_EXPG_SCALED_NUM(pind);
     pind <- pind + dir;
   }
 
   /* Evaluate the denominator */
   if (absx > 1.0) {
-    pind <- N + 1;
+    pind <- 13;
   } else {
     pind <- 1;
   }
 
-  let denom_ans <- denom[pind];
+  let denom_ans <- LANCZOS_SUM_EXPG_SCALED_DENOM(pind);
   pind <- pind + dir;
-  for i in 2..(N+1) {
-    denom_ans <- denom_ans * y + denom[pind];
+  for i in 2..13 {
+    denom_ans <- denom_ans * y + LANCZOS_SUM_EXPG_SCALED_DENOM(pind);
     pind <- pind + dir;
   }
 
   if (absx > 1.0) {
-    let i <- N - M;
+    let i <- 0;
     return pow(x, i) * num_ans / denom_ans;
   } else {
     return num_ans / denom_ans;

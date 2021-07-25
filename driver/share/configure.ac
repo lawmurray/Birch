@@ -62,16 +62,16 @@ AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
 if $debug; then
-  AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lnumbirch-debug"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])], [$DEBUG_LIBS])
+  AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lnumbirch-debug"], [AC_MSG_ERROR([required library not found])], [$DEBUG_LIBS])
 fi
 if $test; then
-  AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="$TEST_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="$TEST_LIBS -lnumbirch-test"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="$TEST_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])], [$TEST_LIBS])
+  AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="$TEST_LIBS -lnumbirch-test"], [AC_MSG_ERROR([required library not found])], [$TEST_LIBS])
 fi
 if $release; then
-  AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])], [$RELEASE_LIBS])
+  AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])], [$RELEASE_LIBS])
 fi
 
 # Checks for libraries
