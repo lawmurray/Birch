@@ -97,8 +97,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
   if x < 0 {
     return 0.0;
   } else {
-    let k <- x + 1.0;
-    return upper_inc_gamma(k, λ);
+    return gamma_q(x + 1, λ);
   }
 }
 

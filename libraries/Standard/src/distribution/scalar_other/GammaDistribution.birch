@@ -110,7 +110,7 @@ function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
 function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
-  return if_then_else(0.0 < x, lower_inc_gamma(k, x/θ), 0.0);
+  return if_then_else(0.0 < x, gamma_p(k, x/θ), 0.0);
 }
 
 /*

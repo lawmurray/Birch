@@ -1,5 +1,8 @@
 cpp{{
 #include <boost/math/special_functions/digamma.hpp>
+#include <boost/math/special_functions/gamma.hpp>
+#include <boost/math/special_functions/beta.hpp>
+#include <boost/math/special_functions/binomial.hpp>
 }}
 
 /**
@@ -24,81 +27,47 @@ function gamma(x:Real, p:Integer) -> Real {
 }
 
 /**
+ * Digamma function (derivative of `lgamma`).
+ */
+function digamma(x:Real) -> Real {
+  cpp{{
+  return boost::math::digamma(x);
+  }}
+}
+
+/**
+ * Regularized lower incomplete gamma function.
+ */
+function gamma_p(a:Real, x:Real) -> Real {
+  cpp{{
+  return boost::math::gamma_p(a, x);
+  }}
+}
+
+/**
+ * Regularized upper incomplete gamma function.
+ */
+function gamma_q(a:Real, x:Real) -> Real {
+  cpp{{
+  return boost::math::gamma_q(a, x);
+  }}
+}
+
+/**
  * Beta function.
  */
 function beta(x:Real, y:Real) -> Real {
-  return (gamma(x) * gamma(y)) / (gamma(x + y));
+  cpp{{
+  return boost::math::beta(x, y);
+  }}
 }
 
 /**
  * Incomplete beta function.
  */
 function ibeta(a:Real, b:Real, x:Real) -> Real {
-  if (x < 0.0 || x > 1.0) {
-    return inf;
-  }
-  // whenever x < (a + 1) / (a + b + 2) -- CF converges
-  if (x > ((a + 1.0)/(a + b + 2.0))) {
-    return 1.0 - ibeta(b, a, 1.0 - x);
-  }
-
-  // stop represents the value when Lentz's algorithm has converged
-  let STOP <- 1.0e-8;
-
-  // TINY is to represent a very small floating point number
-  let TINY <- 1.0e-30;
-
-  let lbeta_ab <- lgamma(a) + lgamma(b) - lgamma(a + b);
-  let front <- exp(log(x)*a + log(1.0 - x)*b - lbeta_ab) / a;
-
-  // setup for Lentz's algorithm
-  let f <- 1.0;
-  let c <- 1.0;
-  let d <- 0.0;
-  let numerator <- 0.0;
-
-  for i in 0..200 {
-    let m <- i/2;
-
-    if (i == 0) {
-      numerator <- 1.0;
-    } else if (mod(i, 2) == 0) {
-      numerator <- (m * (b - m)*x) / ((a + 2.0*m - 1.0) * (a + 2.0*m));
-    } else {
-      numerator <- -((a + m) * (a + b + m) * x)/((a + 2.0*m)*(a + 2.0*m + 1.0));
-    }
-
-    d <- 1.0 + numerator * d;
-    if abs(d) < TINY {
-      d <- TINY;
-    }
-    d <- 1.0 / d;
-
-    c <- 1.0 + numerator / c;
-
-    if abs(c) < TINY {
-      c <- TINY;
-    }
-
-    let cd <- c*d;
-
-    // NOTE: Does *= work?
-    f <- f * cd;
-
-    if abs(1.0 - cd) < STOP {
-      return front * (f - 1.0);
-    }
-  }
-
-  return inf; // did not converge
-}
-
-/**
- * Digamma function (derivative of `lgamma`).
- */
-function digamma(x:Real) -> Real {
-  cpp {{
-  return boost::math::digamma(x);
+  cpp{{
+  return boost::math::ibeta(a, b, x);
   }}
 }
 
@@ -106,382 +75,15 @@ function digamma(x:Real) -> Real {
  * Binomial coefficient.
  */
 function choose(x:Integer, y:Integer) -> Real {
-  assert 0 <= x;
-  assert 0 <= y;
-  assert x >= y;
-
-  if (y == 0) {
-    return 1.0;
-  } else {
-    // see Boost binomial_coefficient function for this implementation
-    return 1.0/(y*beta(y, x - y + 1));
-  }
-}
-
-/**
- * Binomial coefficient.
- */
-function choose(x:Real, y:Real) -> Real {
   assert 0.0 <= x;
   assert 0.0 <= y;
   assert x >= y;
 
-  if (y == 0.0) {
+  if y == 0.0 {
     return 1.0;
   } else {
-    // see Boost binomial_coefficient function for this implementation
-    return 1.0/(y*beta(y, x - y + 1.0));
-  }
-}
-
-function lower_inc_gamma(a:Real, x:Real) -> Real {
-  // implementation based on SciPy
-  assert x >= 0.0;
-  assert a >= 0.0;
-  IGAM_SMALL:Real <- 20;
-  IGAM_LARGE:Real <- 200;
-  IGAM_SMALLRATIO:Real <- 0.3;
-  IGAM_LARGERATIO:Real <- 4.5;
-
-  absxma_a:Real;
-
-  if (a == 0.0) {
-    return 1.0;
-    if (x > 0.0) {
-      return 1.0;
-    } else {
-      return nan;
-    }
-  } else if (x == 0.0) {
-    return 0.0;
-  } else if (isinf(a)) {
-    if (isinf(x)) {
-      return nan;
-    }
-    return 0.0;
-  } else if (isinf(x)) {
-    return 1.0;
-  }
-
-  absxma_a <- abs(x - a) / a;
-  if ((a > IGAM_SMALL) && (a < IGAM_LARGE) && (absxma_a < IGAM_SMALLRATIO)) {
-    return asymptotic_series(a, x, 1);
-  } else if ((a > IGAM_LARGE) && (absxma_a < IGAM_LARGERATIO / sqrt(a))) {
-    return asymptotic_series(a, x, 1);
-  }
-
-  if ((x > 1.0) && (x > a)) {
-    return (1.0 - upper_inc_gamma(a, x));
-  }
-
-  return igam_series(a, x);
-}
-
-function upper_inc_gamma(a:Real, x:Real) -> Real {
-  assert x >= 0.0;
-  assert a >= 0.0;
-  IGAM_SMALL:Real <- 20;
-  IGAM_LARGE:Real <- 200;
-  IGAM_SMALLRATIO:Real <- 0.3;
-  IGAM_LARGERATIO:Real <- 4.5;
-
-  absxma_a:Real;
-
-  if (a == 0.0) {
-    if (x > 0.0) {
-      return 0.0;
-    } else {
-      return nan;
-    }
-
-  } else if (x == 0.0) {
-    return 1.0;
-  } else if (isinf(a)) {
-    if (isinf(x)) {
-      return nan;
-    }
-    return 1.0;
-  } else if (isinf(x)) {
-    return 0.0;
-  }
-
-  /* Asymptotic regime where a ~ x; based on Boost */
-  absxma_a <- abs(x - a) / a;
-  if ((a > IGAM_SMALL) && (a < IGAM_LARGE) && (absxma_a < IGAM_SMALLRATIO)) {
-    // the last parameter is a boolean term whether it's LINVGAM or UPPINVGAM
-    return asymptotic_series(a, x, 0);
-  } else if ((a > IGAM_LARGE) && (absxma_a < IGAM_LARGERATIO / sqrt(a))) {
-    return asymptotic_series(a, x, 0);
-  }
-
-  if (x > 1.1) {
-    if (x < a) {
-      return 1.0 - igam_series(a, x);
-    } else {
-      return igamc_continued_fraction(a, x);
-    }
-  } else if (x <= 0.5) {
-    if (-0.4 / log(x) < a) {
-      return 1.0 - igam_series(a, x);
-    } else {
-      return igamc_series(a, x);
-    }
-  } else {
-    if (x * 1.1 < a) {
-      return 1.0 - igam_series(a, x);
-    } else {
-      return igamc_series(a, x);
-    }
-  }
-}
-
-function igam_fac(a:Real, x:Real) -> Real {
-  let IGAM_MAXLOG <- 709.782712893383996732;
-  let IGAM_LANCZOS_G <- 6.024680040776729583740234375;
-
-  if (abs(a - x) > 0.4 * abs(a)) {
-    let ax <- a * log(x) - x - lgamma(a);
-    if (ax < -IGAM_MAXLOG) {
-      return 0.0;
-    }
-    return exp(ax);
-  }
-
-  let fac <- a + IGAM_LANCZOS_G - 0.5;
-  let res <- sqrt(fac / exp(1.0)) / lanczos_sum_expg_scaled(a);
-
-  if ((a < 200.0) && (x < 200.0)) {
-    res <- res * exp(a - x) * pow(x / fac, a);
-  } else {
-    let num <- x - a - IGAM_LANCZOS_G + 0.5;
-    // changed log1pmx to this
-    res <- res * exp(a * (log1p(num / fac) - x) + x * (0.5 - IGAM_LANCZOS_G) / fac);
-  }
-  return res;
-}
-
-function igamc_continued_fraction(a:Real, x:Real) -> Real {
-  let IGAM_BIG <- 4.503599627370496e15;
-  let IGAM_BIGINV <- 2.22044604925031308085e-16;
-  let ax <- igam_fac(a, x);
-  if (ax == 0.0) {
-    return 0.0;
-  }
-
-  /* continued fraction */
-  let y <- 1.0 - a;
-  let z <- x + y + 1.0;
-  let c <- 0.0;
-  let pkm2 <- 1.0;
-  let qkm2 <- x;
-  let pkm1 <- x + 1.0;
-  let qkm1 <- z * x;
-  let ans <- pkm1 / qkm1;
-
-  let flag <- true;
-  let i <- 0;
-  let t <- 0.0;
-  let r <- 0.0;
-  while(i <= 2000 && flag) {
-    c <- c + 1.0;
-    y <- y + 1.0;
-    z <- z + 2.0;
-    let yc <- y * c;
-    let pk <- pkm1 * z - pkm2 * yc;
-    let qk <- qkm1 * z - qkm2 * yc;
-    if (qk != 0.0) {
-      r <- pk / qk;
-      t <- abs((ans - r) / r);
-      ans <- r;
-    } else {
-      t <- 1.0;
-    }
-
-    pkm2 <- pkm1;
-    pkm1 <- pk;
-    qkm2 <- qkm1;
-    qkm1 <- qk;
-    if (abs(pk) > IGAM_BIG) {
-      pkm2 <- pkm2 * IGAM_BIGINV;
-      pkm1 <- pkm1 * IGAM_BIGINV;
-      qkm2 <- qkm2 * IGAM_BIGINV;
-      qkm1 <- qkm1 * IGAM_BIGINV;
-    }
-    if (t <= MACHEP) {
-      flag <- false;
-    }
-    i <- i + 1;
-  }
-
-  return (ans * ax);
-}
-
-function igam_series(a:Real, x:Real) -> Real {
-  let ax <- igam_fac(a, x);
-  if (ax == 0.0) {
-    return 0.0;
-  }
-
-  /* power series */
-  let r <- a;
-  let c <- 1.0;
-  let ans <- 1.0;
-  let flag <- true;
-  let i <- 0;
-  while (i <= 2000 && flag) {
-    r <-  r + 1.0;
-    c <- c * (x / r);
-    ans <- ans + c;
-    if (c <= MACHEP * ans) {
-      flag <- false;
-    }
-    i <- i + 1;
-  }
-  return (ans * ax / a);
-}
-
-function igamc_series(a:Real, x:Real) -> Real {
-  let fac <- 1.0;
-  let sum <- 0.0;
-  term:Real;
-  logx:Real;
-
-  let n <- 1;
-  let flag <- true;
-  while (n <= 2000 && flag) {
-    fac <- fac * (-x / n);
-    term <- fac / (a + n);
-    sum <- sum + term;
-    if (abs(term) <= MACHEP * abs(sum)) {
-      flag <- false;
-    }
-    n <- n + 1;
-  }
-
-  logx <- log(x);
-  term <- -expm1(a * logx - lgamma(a + 1.0));
-  return term - exp(a * logx - lgamma(a)) * sum;
-}
-
-function asymptotic_series(a:Real, x:Real, func:Integer) -> Real {
-    let K <- 25; // from igam.h
-    let N <- 25;
-    let sgn <- 0;
-    let maxpow <- 0;
-    let λ <- x / a;
-    let σ <- (x - a) / a;
-    η:Real;
-    res:Real;
-    ck:Real;
-    ckterm:Real;
-    term:Real;
-    absterm:Real;
-    let absoldterm <- inf;
-    etapow:Real[N];
-    etapow[1] <- 1;
-    let tot <- 0.0;
-    let afac <-1.0;
-
-  if (func == 1) {
-    sgn <- -1;
-  } else {
-    sgn <- 1;
-  }
-
-  if (λ > 1.0) {
-    η <- sqrt(-2.0 * (log1p(σ) - σ));
-  } else if (λ < 1) {
-    η <- -sqrt(-2.0 * (log1p(σ) - σ));
-  } else {
-    η <- 0.0;
-  }
-  res <- 0.5 * erfc(sgn * η * sqrt(a / 2.0));
-  let flag1 <- true;
-  let k <- 1;
-  while (k <= K && flag1) {
-    ck <- IGAM_ASYMPTOTIC_SERIES_D(k,1);
-    let flag2 <- true;
-    let n <- 2;
-    while (n <= N && flag2) {
-      if (n > maxpow) {
-        etapow[n] <- η * etapow[n-1];
-        maxpow <- maxpow + 1;
-      }
-      ckterm <- IGAM_ASYMPTOTIC_SERIES_D(k, n) * etapow[n];
-      ck <- ck + ckterm;
-      if (abs(ckterm) < MACHEP * abs(ck)) {
-        flag2 <- false;
-      }
-      n <- n + 1;
-    }
-    term <- ck * afac;
-    absterm <- abs(term);
-    if (absterm > absoldterm) {
-      flag1 <- false;
-    }
-    tot <- tot + term;
-    if (absterm < (MACHEP * abs(tot))) {
-      flag1 <- false;
-    }
-    absoldterm <- absterm;
-    afac <- afac / a;
-    k <- k + 1;
-  }
-  res <- res + sgn * exp(-0.5 * a * η * η) * tot / sqrt(2.0 * π * a);
-
-  return res;
-}
-
-function lanczos_sum_expg_scaled(x:Real) -> Real {
-  dir:Integer;
-  y:Real;
-  let absx <- abs(x);
-  let pind <- 1;
-
-  if (absx > 1.0) {
-
-    /* Evaluate as a polynomial in 1/x. */
-    dir <- -1;
-    // point at the last element
-    pind <- 13;
-    y <- 1.0 / x;
-  } else {
-
-    // point at the first element
-    dir <- 1;
-    pind <- 1;
-    y <- x;
-  }
-
-  /* Evaluate the numerator */
-  // breaks in the loop below
-
-  // get the value of the first/last element depending on the abs(x)
-  let num_ans <- LANCZOS_SUM_EXPG_SCALED_NUM(pind);
-  pind <- pind + dir;
-  for i in 2..13 {
-    num_ans <- (num_ans * y) + LANCZOS_SUM_EXPG_SCALED_NUM(pind);
-    pind <- pind + dir;
-  }
-
-  /* Evaluate the denominator */
-  if (absx > 1.0) {
-    pind <- 13;
-  } else {
-    pind <- 1;
-  }
-
-  let denom_ans <- LANCZOS_SUM_EXPG_SCALED_DENOM(pind);
-  pind <- pind + dir;
-  for i in 2..13 {
-    denom_ans <- denom_ans * y + LANCZOS_SUM_EXPG_SCALED_DENOM(pind);
-    pind <- pind + dir;
-  }
-
-  if (absx > 1.0) {
-    let i <- 0;
-    return pow(x, i) * num_ans / denom_ans;
-  } else {
-    return num_ans / denom_ans;
+    cpp{{
+    return boost::math::binomial_coefficient<double>(x, y);
+    }}
   }
 }

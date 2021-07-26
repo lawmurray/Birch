@@ -37,7 +37,7 @@ function logpdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
  */
 function cdf_chi_squared(x:Real, ν:Real) -> Real {
   assert 0.0 < ν;
-  return lower_inc_gamma(0.5*ν, 0.5*x) / tgamma(0.5*ν);
+  return gamma_p(0.5*ν, 0.5*x);
 }
 
 /*

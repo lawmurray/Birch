@@ -106,7 +106,7 @@ function logpdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
 function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;
-  return if_then_else(0.0 < x, upper_inc_gamma(α, β/x), 0.0);
+  return if_then_else(0.0 < x, gamma_q(α, β/x), 0.0);
 }
 
 /*
