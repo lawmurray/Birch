@@ -49,7 +49,7 @@ public:
       isElementWise(false),
       isBorrowed(false) {
     allocate();
-    if (!std::is_trivially_copyable<T>::value) {
+    if (!std::is_trivial<T>::value) {
       initialize();
     }
   }
@@ -151,8 +151,9 @@ public:
    * Copy constructor.
    */
   Array(const Array& o) : Array() {
-    if (!o.isView && std::is_trivially_copyable<T>::value) {
+    if (!o.isView && std::is_trivial<T>::value) {
       shape = o.shape;
+      compact();
       isBorrowed = o.isBorrowed;
       std::tie(control, buffer) = o.share();
     } else {
@@ -317,7 +318,9 @@ public:
    */
   T* data() {
     elementize();
+    #if HAVE_NUMBIRCH_HPP
     isBorrowed = true;
+    #endif
     return buffer;
   }
 
@@ -357,11 +360,13 @@ public:
       swap(tmp);
     } else {
       #if HAVE_NUMBIRCH_HPP
-      buffer = (T*)numbirch::realloc((void*)buffer, shape.volume()*sizeof(T),
-          s.volume()*sizeof(T));
-      #else
-      buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
+      if (std::is_trivial<T>::value) {
+        buffer = (T*)numbirch::realloc((void*)buffer,s.volume()*sizeof(T));
+      } else
       #endif
+      {
+        buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
+      }
       std::memmove((void*)(buffer + i + 1), (void*)(buffer + i),
           (n - i)*sizeof(T));
       new (buffer + i) T(x);
@@ -388,17 +393,17 @@ public:
     if (s.size() == 0) {
       release();
     } else {
-      for (int j = i; j < i + len; ++j) {
-        buffer[j].~T();
-      }
+      std::destroy(buffer + i, buffer + i + len);
       std::memmove((void*)(buffer + i), (void*)(buffer + i + len),
           (n - len - i)*sizeof(T));
       #if HAVE_NUMBIRCH_HPP
-      buffer = (T*)numbirch::realloc((void*)buffer, shape.volume()*sizeof(T),
-          s.volume()*sizeof(T));
-      #else
-      buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
+      if (std::is_trivial<T>::value) {
+        buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
+      } else
       #endif
+      {
+        buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
+      }
     }
     shape = s;
   }
@@ -486,10 +491,13 @@ private:
   void allocate() {
     assert(!buffer);
     #if HAVE_NUMBIRCH_HPP
-    buffer = (T*)numbirch::malloc(volume()*sizeof(T));
-    #else
-    buffer = (T*)std::malloc(volume()*sizeof(T));
+    if (std::is_trivial<T>::value) {
+      buffer = (T*)numbirch::malloc(volume()*sizeof(T));
+    } else
     #endif
+    {
+      buffer = (T*)std::malloc(volume()*sizeof(T));
+    }
   }
 
   /**
@@ -505,12 +513,19 @@ private:
       } else if (isElementWise) {
         /* can't share, create a new buffer instead */
         ArrayControl* control = nullptr;
+        T* buffer = nullptr;
         #if HAVE_NUMBIRCH_HPP
-        T* buffer = (T*)numbirch::malloc(volume()*sizeof(T));
-        #else
-        T* buffer = (T*)std::malloc(volume()*sizeof(T));
+        if (std::is_trivial<T>::value) {
+          buffer = (T*)numbirch::malloc(size()*sizeof(T));
+          numbirch::memcpy(buffer, shape.width()*sizeof(T), this->buffer,
+              shape.stride()*sizeof(T), shape.width()*sizeof(T),
+              shape.height());
+        } else
         #endif
-        std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+        {
+          buffer = (T*)std::malloc(size()*sizeof(T));
+          std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+        }
         return std::make_pair(control, buffer);
       } else {
         lock.set();
@@ -549,13 +564,21 @@ private:
         if (control) {
           /* buffer may be shared, copy into new buffer to allow element-wise
            * write */
+          T* buffer = nullptr;
           #if HAVE_NUMBIRCH_HPP
-          T* buffer = (T*)numbirch::malloc(volume()*sizeof(T));
-          #else
-          T* buffer = (T*)std::malloc(volume()*sizeof(T));
+          if (std::is_trivial<T>::value) {
+            buffer = (T*)numbirch::malloc(size()*sizeof(T));
+            numbirch::memcpy(buffer, shape.width()*sizeof(T), this->buffer,
+                shape.stride()*sizeof(T), shape.width()*sizeof(T),
+                shape.height());
+          } else
           #endif
-          std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+          {
+            buffer = (T*)std::malloc(size()*sizeof(T));
+            std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+          }
           release();
+          compact();
           this->buffer = buffer;
         }
         isElementWise = true;
@@ -571,12 +594,12 @@ private:
    * completed before the reads. 
    */
   void synchronize() const {
+    #if HAVE_NUMBIRCH_HPP
     if (isBorrowed) {
-      #if HAVE_NUMBIRCH_HPP
       numbirch::wait();
-      #endif
       const_cast<Array<T,D>*>(this)->isBorrowed = false;
     }
+    #endif
   }
 
   /**
@@ -585,14 +608,15 @@ private:
    */
   void release() {
     if (!isView && (!control || control->decShared_() == 0)) {
-      if (!std::is_trivially_copyable<T>::value) {
-        std::destroy(beginInternal(), endInternal());
-      }
       #if HAVE_NUMBIRCH_HPP
-      numbirch::free((void*)buffer);
-      #else
-      std::free(buffer);
+      if (std::is_trivial<T>::value) {
+        numbirch::free((void*)buffer);
+      } else
       #endif
+      {
+        std::destroy(beginInternal(), endInternal());
+        std::free((void*)buffer);
+      }
       delete control;
     }
     buffer = nullptr;
@@ -620,30 +644,50 @@ private:
   /**
    * Assign from another array.
    */
-  template<class U>
-  void copy(const U& o) {
-    auto n = std::min(size(), o.size());
-    auto begin1 = o.beginInternal();
-    auto end1 = begin1.operator+(n);
-    auto begin2 = beginInternal();
-    auto end2 = begin2.operator+(n);
-    if (begin1 <= begin2 && begin2 < end1) {
-      std::copy_backward(begin1, end1, end2);
-    } else {
-      std::copy(begin1, end1, begin2);
+  template<class U, int E, std::enable_if_t<D == E &&
+      std::is_convertible<U,T>::value,int> = 0>
+  void copy(const Array<U,E>& o) {
+    #if HAVE_NUMBIRCH_HPP
+    if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
+      numbirch::memcpy(buffer, shape.stride()*sizeof(T), o.buffer,
+          o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
+          shape.height());
+    } else
+    #endif
+    {
+      auto n = std::min(size(), o.size());
+      auto begin1 = o.beginInternal();
+      auto end1 = begin1.operator+(n);
+      auto begin2 = beginInternal();
+      auto end2 = begin2.operator+(n);
+      if (begin1 <= begin2 && begin2 < end1) {
+        std::copy_backward(begin1, end1, end2);
+      } else {
+        std::copy(begin1, end1, begin2);
+      }
     }
   }
 
   /**
    * Copy from another array.
    */
-  template<class U>
-  void uninitialized_copy(const U& o) {
-    auto n = std::min(size(), o.size());
-    auto begin1 = o.beginInternal();
-    auto end1 = begin1.operator+(n);
-    auto begin2 = beginInternal();
-    std::uninitialized_copy(begin1, end1, begin2);
+  template<class U, int E, std::enable_if_t<D == E &&
+      std::is_convertible<U,T>::value,int> = 0>
+  void uninitialized_copy(const Array<U,E>& o) {
+    #if HAVE_NUMBIRCH_HPP
+    if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
+      numbirch::memcpy(buffer, shape.stride()*sizeof(T), o.buffer,
+          o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
+          shape.height());
+    } else
+    #endif
+    {
+      auto n = std::min(size(), o.size());
+      auto begin1 = o.beginInternal();
+      auto end1 = begin1.operator+(n);
+      auto begin2 = beginInternal();
+      std::uninitialized_copy(begin1, end1, begin2);
+    }
   }
 
   /**

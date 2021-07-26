@@ -29,7 +29,7 @@ public:
   }
 
   int64_t size() const {
-    return int64_t(inc)*n;
+    return n;
   }
 
   int64_t volume() const {
@@ -46,6 +46,14 @@ public:
 
   int stride() const {
     return inc;
+  }
+
+  int width() const {
+    return 1;
+  }
+
+  int height() const {
+    return n;
   }
 
   bool conforms(const ArrayShape<1>& o) const {
@@ -152,6 +160,14 @@ public:
 
   int stride() const {
     return ld;
+  }
+
+  int width() const {
+    return m;
+  }
+
+  int height() const {
+    return n;
   }
 
   bool conforms(const ArrayShape<2>& o) const {

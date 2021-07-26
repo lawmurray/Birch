@@ -70,7 +70,7 @@ private:
 
 template<class T, int D>
 void libbirch::Copier::visit(Array<T,D>& o) {
-  if (!std::is_trivially_copyable<T>::value) {
+  if (!std::is_trivial<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {

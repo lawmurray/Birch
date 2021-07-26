@@ -307,7 +307,11 @@ static auto make_thrust_matrix_symmetric(const T* A, const int m, const int n,
 void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
   if (!new_addr) {
-    CUDA_CHECK(cudaMallocManaged(&new_addr, size));
+    if (*commit) {
+      CUDA_CHECK(cudaMallocHost(&new_addr, size));
+    } else {
+      CUDA_CHECK(cudaMallocManaged(&new_addr, size));
+    }
   }
   if (*zero) {
     CUDA_CHECK(cudaMemset(new_addr, 0, size));
@@ -317,13 +321,21 @@ void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
 
 bool cuda_dalloc(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind) {
-  CUDA_CHECK(cudaFree(addr));
+  if (committed) {
+    CUDA_CHECK(cudaFreeHost(addr));
+  } else {
+    CUDA_CHECK(cudaFree(addr));
+  }
   return false;
 }
 
 void cuda_destroy(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind) {
-  CUDA_CHECK(cudaFree(addr));
+  if (committed) {
+    CUDA_CHECK(cudaFreeHost(addr));
+  } else {
+    CUDA_CHECK(cudaFree(addr));
+  }
 }
 
 static extent_hooks_t hooks = {
@@ -388,7 +400,7 @@ void numbirch::init() {
     ret = mallctl("tcache.create", &tcache, &size, nullptr, 0);
     assert(ret == 0);
 
-    flags = MALLOCX_ARENA(arena)|MALLOCX_TCACHE(tcache)|MALLOCX_ALIGN(128);
+    flags = MALLOCX_ARENA(arena)|MALLOCX_TCACHE(tcache)|MALLOCX_ALIGN(16);
   }
 }
 
@@ -410,10 +422,10 @@ void* numbirch::malloc(const size_t size) {
   return size == 0 ? nullptr : mallocx(size, flags);
 }
 
-void* numbirch::realloc(void* ptr, size_t oldsize, size_t newsize) {
+void* numbirch::realloc(void* ptr, const size_t size) {
   assert(arena > 0);
-  if (newsize > 0) {
-    return rallocx(ptr, newsize, flags);
+  if (size > 0) {
+    return rallocx(ptr, size, flags);
   } else {
     free(ptr);
     return nullptr;
@@ -427,20 +439,14 @@ void numbirch::free(void* ptr) {
   }
 }
 
+void numbirch::memcpy(void* dst, const size_t dpitch, const void* src,
+    const size_t spitch, const size_t width, const size_t height) {
+  CUDA_CHECK(cudaMemcpy2DAsync(dst, dpitch, src, spitch, width, height,
+      cudaMemcpyDefault, stream));
+}
+
 void numbirch::wait() {
   CUDA_CHECK(cudaStreamSynchronize(stream));
-}
-
-void numbirch::copy(const int n, const double* x, const int incx, double* y,
-    const int incy) {
-  CUDA_CHECK(cudaMemcpy2DAsync(y, incy*sizeof(double), x, incx*sizeof(double),
-      sizeof(double), n, cudaMemcpyDefault, stream));
-}
-
-void numbirch::copy(const int m, const int n, const double* A, const int ldA,
-    double* B, const int ldB) {
-  CUDA_CHECK(cudaMemcpy2DAsync(B, ldB*sizeof(double), A, ldA*sizeof(double),
-      m*sizeof(double), n, cudaMemcpyDefault, stream));
 }
 
 void numbirch::neg(const int n, const double* x, const int incx, double* y,
@@ -547,9 +553,9 @@ void numbirch::mul(const int m, const int n, const double a, const double* B,
 
 void numbirch::mul(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
-  CUDA_CHECK(cudaMemPrefetchAsync(A, n*ldA*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(y, m*incy*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(A, n*ldA*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(y, m*incy*sizeof(double), device, stream));
 
   CUBLAS_CHECK(cublasDgemv(cublasHandle, CUBLAS_OP_N, m, n, one, A, ldA, x, 
       incx, zero, y, incy));
@@ -557,9 +563,9 @@ void numbirch::mul(const int m, const int n, const double* A, const int ldA,
 
 void numbirch::mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
-  CUDA_CHECK(cudaMemPrefetchAsync(A, k*ldA*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(B, n*ldB*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(C, n*ldC*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(A, k*ldA*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(B, n*ldB*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(C, n*ldC*sizeof(double), device, stream));
 
   CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
       one, A, ldA, B, ldB, zero, C, ldC));
@@ -570,9 +576,9 @@ void numbirch::cholmul(const int n, const double* S, const int ldS,
   double* L = nullptr;
   int ldL = n;
 
-  CUDA_CHECK(cudaMemPrefetchAsync(S, n*ldS*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(y, n*incy*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(S, n*ldS*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(y, n*incy*sizeof(double), device, stream));
 
   CUDA_CHECK(cudaMallocAsync(&L, sizeof(double)*std::max(1, n*n), stream));
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
@@ -606,9 +612,9 @@ void numbirch::cholmul(const int m, const int n, const double* S,
   double* L = nullptr;
   int ldL = m;
 
-  CUDA_CHECK(cudaMemPrefetchAsync(S, m*ldS*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(B, n*ldB*sizeof(double), device, stream));
-  CUDA_CHECK(cudaMemPrefetchAsync(C, n*ldC*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(S, m*ldS*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(B, n*ldB*sizeof(double), device, stream));
+  // CUDA_CHECK(cudaMemPrefetchAsync(C, n*ldC*sizeof(double), device, stream));
 
   CUDA_CHECK(cudaMallocAsync(&L, sizeof(double)*std::max(1, m*m), stream));
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;

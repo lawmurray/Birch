@@ -21,18 +21,17 @@ void init();
  * 
  * @return New allocation.
  */
-void* malloc(size_t size);
+void* malloc(const size_t size);
 
 /**
  * Reallocate memory.
  * 
  * @param ptr Existing allocation.
- * @param oldsize Size of existing allocation.
- * @param newsize Size of resized allocation.
+ * @param size New size of allocation.
  * 
  * @return Resized allocation.
  */
-void* realloc(void* ptr, size_t oldsize, size_t newsize);
+void* realloc(void* ptr, const size_t size);
 
 /**
  * Free allocation.
@@ -48,29 +47,17 @@ void free(void* ptr);
 void wait();
 
 /**
- * Vector copy.
+ * Batch copy.
  * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param[out] y Vector.
- * @param incy Element stride of `y`.
+ * @param[out] dst Destination.
+ * @param dpitch Stride between batches of `dst`, in bytes.
+ * @param src Source.
+ * @param spitch Stride between batches of `src`, in bytes.
+ * @param width Width of each batch, in bytes.
+ * @param height Number of batches.
  */
-void copy(const int n, const double* x, const int incx, double* y,
-    const int incy);
-
-/**
- * Matrix copy.
- * 
- * @param m Number of rows.
- * @param n Number of columns.
- * @param A Matrix.
- * @param ldA Column stride of `A`.
- * @param[out] B Matrix.
- * @param ldB Column stride of `B`.
- */
-void copy(const int m, const int n, const double* A, const int ldA, double* B,
-    const int ldB);
+void memcpy(void* dst, const size_t dpitch, const void* src,
+    const size_t spitch, const size_t width, const size_t height);
 
 /**
  * Vector negation.

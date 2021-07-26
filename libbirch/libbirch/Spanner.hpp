@@ -72,7 +72,7 @@ template<class T, int D>
 std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     Array<T,D>& o) {
   int l = i, h = i, m = 0, l1, h1, m1;
-  if (!std::is_trivially_copyable<T>::value) {
+  if (!std::is_trivial<T>::value) {
     auto iter = o.begin();
     auto last = o.end();
     for (; iter != last; ++iter) {
