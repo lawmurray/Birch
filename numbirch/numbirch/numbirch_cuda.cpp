@@ -10,6 +10,7 @@
 #include <thrust/transform.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/inner_product.h>
+#include <thrust/async/transform.h>
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/iterator/transform_iterator.h>
 #include <jemalloc/jemalloc.h>
@@ -306,11 +307,7 @@ static auto make_thrust_matrix_symmetric(const T* A, const int m, const int n,
 void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
   if (!new_addr) {
-    if (*commit) {
-      CUDA_CHECK(cudaMallocHost(&new_addr, size));
-    } else {
-      CUDA_CHECK(cudaMallocManaged(&new_addr, size));
-    }
+    CUDA_CHECK(cudaMallocManaged(&new_addr, size));
   }
   if (*zero) {
     CUDA_CHECK(cudaMemset(new_addr, 0, size));
@@ -320,21 +317,13 @@ void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
 
 bool cuda_dalloc(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind) {
-  if (committed) {
-    CUDA_CHECK(cudaFreeHost(addr));
-  } else {
-    CUDA_CHECK(cudaFree(addr));
-  }
+  CUDA_CHECK(cudaFree(addr));
   return false;
 }
 
 void cuda_destroy(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind) {
-  if (committed) {
-    CUDA_CHECK(cudaFreeHost(addr));
-  } else {
-    CUDA_CHECK(cudaFree(addr));
-  }
+  CUDA_CHECK(cudaFree(addr));
 }
 
 static extent_hooks_t hooks = {
@@ -458,16 +447,16 @@ void numbirch::neg(const int n, const double* x, const int incx, double* y,
     const int incy) {
   auto x1 = make_thrust_vector(x, n, incx);
   auto y1 = make_thrust_vector(y, n, incy);
-  thrust::transform(policy, x1.begin(), x1.end(),
-      y1.begin(), thrust::negate<double>());
+  thrust::async::transform(policy, x1.begin(), x1.end(), y1.begin(),
+      thrust::negate<double>());
 }
 
 void numbirch::neg(const int m, const int n, const double* A, const int ldA,
     double* B, const int ldB) {
   auto A1 = make_thrust_matrix(A, m, n, ldA);
   auto B1 = make_thrust_matrix(B, m, n, ldB);
-  thrust::transform(policy, A1.begin(), A1.end(),
-      B1.begin(), thrust::negate<double>());
+  thrust::transform(policy, A1.begin(), A1.end(), B1.begin(),
+      thrust::negate<double>());
 }
 
 void numbirch::add(const int n, const double* x, const int incx,
@@ -475,8 +464,8 @@ void numbirch::add(const int n, const double* x, const int incx,
   auto x1 = make_thrust_vector(x, n, incx);
   auto y1 = make_thrust_vector(y, n, incy);
   auto z1 = make_thrust_vector(z, n, incz);
-  thrust::transform(policy, x1.begin(), x1.end(),
-      y1.begin(), z1.begin(), thrust::plus<double>());
+  thrust::transform(policy, x1.begin(), x1.end(), y1.begin(),
+      z1.begin(), thrust::plus<double>());
 }
 
 void numbirch::add(const int m, const int n, const double* A, const int ldA,
@@ -484,8 +473,8 @@ void numbirch::add(const int m, const int n, const double* A, const int ldA,
   auto A1 = make_thrust_matrix(A, m, n, ldA);
   auto B1 = make_thrust_matrix(B, m, n, ldB);
   auto C1 = make_thrust_matrix(C, m, n, ldC);
-  thrust::transform(policy, A1.begin(), A1.end(),
-      B1.begin(), C1.begin(), thrust::plus<double>());
+  thrust::transform(policy, A1.begin(), A1.end(), B1.begin(),
+      C1.begin(), thrust::plus<double>());
 }
 
 void numbirch::sub(const int n, const double* x, const int incx,
@@ -493,8 +482,8 @@ void numbirch::sub(const int n, const double* x, const int incx,
   auto x1 = make_thrust_vector(x, n, incx);
   auto y1 = make_thrust_vector(y, n, incy);
   auto z1 = make_thrust_vector(z, n, incz);
-  thrust::transform(policy, x1.begin(), x1.end(),
-      y1.begin(), z1.begin(), thrust::minus<double>());
+  thrust::transform(policy, x1.begin(), x1.end(), y1.begin(), z1.begin(),
+      thrust::minus<double>());
 }
 
 void numbirch::sub(const int m, const int n, const double* A, const int ldA,
@@ -502,8 +491,8 @@ void numbirch::sub(const int m, const int n, const double* A, const int ldA,
   auto A1 = make_thrust_matrix(A, m, n, ldA);
   auto B1 = make_thrust_matrix(B, m, n, ldB);
   auto C1 = make_thrust_matrix(C, m, n, ldC);
-  thrust::transform(policy, A1.begin(), A1.end(),
-      B1.begin(), C1.begin(), thrust::minus<double>());
+  thrust::transform(policy, A1.begin(), A1.end(), B1.begin(), C1.begin(),
+      thrust::minus<double>());
 }
 
 void numbirch::hadamard(const int n, const double* x, const int incx,
@@ -511,8 +500,8 @@ void numbirch::hadamard(const int n, const double* x, const int incx,
   auto x1 = make_thrust_vector(x, n, incx);
   auto y1 = make_thrust_vector(y, n, incy);
   auto z1 = make_thrust_vector(z, n, incz);
-  thrust::transform(policy, x1.begin(), x1.end(),
-      y1.begin(), z1.begin(), thrust::multiplies<double>());
+  thrust::transform(policy, x1.begin(), x1.end(), y1.begin(), z1.begin(),
+      thrust::multiplies<double>());
 }
 
 void numbirch::hadamard(const int m, const int n, const double* A,
@@ -520,50 +509,58 @@ void numbirch::hadamard(const int m, const int n, const double* A,
   auto A1 = make_thrust_matrix(A, m, n, ldA);
   auto B1 = make_thrust_matrix(B, m, n, ldB);
   auto C1 = make_thrust_matrix(C, m, n, ldC);
-  thrust::transform(policy, A1.begin(), A1.end(),
-      B1.begin(), C1.begin(), thrust::multiplies<double>());
+  thrust::transform(policy, A1.begin(), A1.end(), B1.begin(), C1.begin(),
+      thrust::multiplies<double>());
 }
 
 void numbirch::div(const int n, const double* x, const int incx,
     const double y, double* z, const int incz) {
   auto x1 = make_thrust_vector(x, n, incx);
   auto z1 = make_thrust_vector(z, n, incz);
-  thrust::transform(policy, x1.begin(), x1.end(),
-      z1.begin(), ScalarDivideFunctor(y));
+  thrust::async::transform(policy, x1.begin(), x1.end(), z1.begin(),
+      ScalarDivideFunctor(y));
 }
 
 void numbirch::div(const int m, const int n, const double* A, const int ldA,
     const double b, double* C, const int ldC) {
   auto A1 = make_thrust_matrix(A, m, n, ldA);
   auto C1 = make_thrust_matrix(C, m, n, ldC);
-  thrust::transform(policy, A1.begin(), A1.end(),
-      C1.begin(), ScalarDivideFunctor(b));
+  thrust::async::transform(policy, A1.begin(), A1.end(), C1.begin(),
+      ScalarDivideFunctor(b));
 }
 
 void numbirch::mul(const int n, const double x, const double* y,
     const int incy, double* z, const int incz) {
   auto y1 = make_thrust_vector(y, n, incy);
   auto z1 = make_thrust_vector(z, n, incz);
-  thrust::transform(policy, y1.begin(), y1.end(),
-      z1.begin(), ScalarMultiplyFunctor(x));
+  thrust::async::transform(policy, y1.begin(), y1.end(), z1.begin(),
+      ScalarMultiplyFunctor(x));
 }
 
 void numbirch::mul(const int m, const int n, const double a, const double* B,
     const int ldB, double* C, const int ldC) {
   auto B1 = make_thrust_matrix(B, m, n, ldB);
   auto C1 = make_thrust_matrix(C, m, n, ldC);
-  thrust::transform(policy, B1.begin(), B1.end(),
-      C1.begin(), ScalarMultiplyFunctor(a));
+  thrust::transform(policy, B1.begin(), B1.end(), C1.begin(),
+      ScalarMultiplyFunctor(a));
 }
 
 void numbirch::mul(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy) {
+  CUDA_CHECK(cudaMemPrefetchAsync(A, n*ldA*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(y, m*incy*sizeof(double), device, stream));
+
   CUBLAS_CHECK(cublasDgemv(cublasHandle, CUBLAS_OP_N, m, n, one, A, ldA, x, 
       incx, zero, y, incy));
 }
 
 void numbirch::mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC) {
+  CUDA_CHECK(cudaMemPrefetchAsync(A, k*ldA*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(B, n*ldB*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(C, n*ldC*sizeof(double), device, stream));
+
   CUBLAS_CHECK(cublasDgemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
       one, A, ldA, B, ldB, zero, C, ldC));
 }
@@ -572,6 +569,10 @@ void numbirch::cholmul(const int n, const double* S, const int ldS,
     const double* x, const int incx, double* y, const int incy) {
   double* L = nullptr;
   int ldL = n;
+
+  CUDA_CHECK(cudaMemPrefetchAsync(S, n*ldS*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(y, n*incy*sizeof(double), device, stream));
 
   CUDA_CHECK(cudaMallocAsync(&L, sizeof(double)*std::max(1, n*n), stream));
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
@@ -604,6 +605,10 @@ void numbirch::cholmul(const int m, const int n, const double* S,
     const int ldS, const double* B, const int ldB, double* C, const int ldC) {
   double* L = nullptr;
   int ldL = m;
+
+  CUDA_CHECK(cudaMemPrefetchAsync(S, m*ldS*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(B, n*ldB*sizeof(double), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(C, n*ldC*sizeof(double), device, stream));
 
   CUDA_CHECK(cudaMallocAsync(&L, sizeof(double)*std::max(1, m*m), stream));
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
@@ -1025,7 +1030,7 @@ void numbirch::transpose(const int m, const int n, const double x,
     const double* A, const int ldA, double* B, const int ldB) {
   auto A1 = make_thrust_matrix_transpose(A, m, n, ldA);
   auto B1 = make_thrust_matrix(B, m, n, ldB);
-  thrust::transform(policy, A1.begin(), A1.end(), B1.begin(),
+  thrust::async::transform(policy, A1.begin(), A1.end(), B1.begin(),
       ScalarMultiplyFunctor(x));
 }
 
