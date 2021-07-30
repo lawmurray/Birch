@@ -151,13 +151,11 @@ public:
    * Copy constructor.
    */
   Array(const Array& o) : Array() {
+    shape = o.shape;
     if (!o.isView && std::is_trivial<T>::value) {
-      shape = o.shape;
-      compact();
-      isBorrowed = o.isBorrowed;
       std::tie(control, buffer) = o.share();
+      isBorrowed = true;
     } else {
-      shape = o.shape;
       compact();
       allocate();
       uninitialized_copy(o);
@@ -508,9 +506,7 @@ private:
   std::pair<ArrayControl*,T*> share() {
     assert(!isView);
     if (buffer) {
-      if (control) {
-        control->incShared_();
-      } else if (isElementWise) {
+      if (isElementWise) {
         /* can't share, create a new buffer instead */
         ArrayControl* control = nullptr;
         T* buffer = nullptr;
@@ -527,12 +523,14 @@ private:
           std::uninitialized_copy(beginInternal(), endInternal(), buffer);
         }
         return std::make_pair(control, buffer);
+      } else if (control) {
+        control->incShared_();
       } else {
         lock.set();
-        if (!control) {
-          control = new ArrayControl(2);
-        } else {
+        if (control) {  // another thread may have created in the meantime
           control->incShared_();
+        } else {
+          control = new ArrayControl(2);
         }
         lock.unset();
       }
@@ -550,41 +548,40 @@ private:
   }
 
   /**
-   * Prepare for element-wise writes. If the buffer is currently borrowed,
-   * this requires synchronization with the device to ensure correct
-   * sequencing of writes. If the buffer is currently shared, a new buffer is
-   * created as a copy of the existing buffer.
+   * Prepare for element-wise writes. If the buffer is currently shared, a new
+   * buffer is created as a copy of the existing buffer.
    */
   void elementize() {
     assert(!isView);
-    synchronize();
     if (!isElementWise) {
       lock.set();
       if (!isElementWise) {
         if (control) {
           /* buffer may be shared, copy into new buffer to allow element-wise
            * write */
-          T* buffer = nullptr;
+          T* buf = nullptr;
           #if HAVE_NUMBIRCH_HPP
           if (std::is_trivial<T>::value) {
-            buffer = (T*)numbirch::malloc(size()*sizeof(T));
-            numbirch::memcpy(buffer, shape.width()*sizeof(T), this->buffer,
+            buf = (T*)numbirch::malloc(size()*sizeof(T));
+            numbirch::memcpy(buf, shape.width()*sizeof(T), buffer,
                 shape.stride()*sizeof(T), shape.width()*sizeof(T),
                 shape.height());
+            isBorrowed = true;
           } else
           #endif
           {
-            buffer = (T*)std::malloc(size()*sizeof(T));
-            std::uninitialized_copy(beginInternal(), endInternal(), buffer);
+            buf = (T*)std::malloc(size()*sizeof(T));
+            std::uninitialized_copy(beginInternal(), endInternal(), buf);
           }
           release();
           compact();
-          this->buffer = buffer;
+          buffer = buf;
         }
         isElementWise = true;
       }
       lock.unset();
     }
+    synchronize();
     assert(!control);
   }
 

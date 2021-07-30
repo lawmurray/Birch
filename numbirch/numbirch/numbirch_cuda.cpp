@@ -73,11 +73,11 @@ static thread_local cudaStream_t stream = cudaStreamPerThread;
 static thread_local cublasHandle_t cublasHandle;
 static thread_local cusolverDnHandle_t cusolverDnHandle;
 static thread_local cusolverDnParams_t cusolverDnParams;
-static thread_local int* info = nullptr;
 static thread_local auto policy = thrust::cuda::par.on(stream);
 
 static double* one = nullptr;
 static double* zero = nullptr;
+static int* info = nullptr;
 
 static thread_local unsigned arena = 0;
 static thread_local unsigned tcache = 0;
@@ -307,11 +307,7 @@ static auto make_thrust_matrix_symmetric(const T* A, const int m, const int n,
 void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
   if (!new_addr) {
-    if (*commit) {
-      CUDA_CHECK(cudaMallocHost(&new_addr, size));
-    } else {
-      CUDA_CHECK(cudaMallocManaged(&new_addr, size));
-    }
+    CUDA_CHECK(cudaMallocManaged(&new_addr, size));
   }
   if (*zero) {
     CUDA_CHECK(cudaMemset(new_addr, 0, size));
@@ -321,21 +317,13 @@ void* cuda_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
 
 bool cuda_dalloc(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind) {
-  if (committed) {
-    CUDA_CHECK(cudaFreeHost(addr));
-  } else {
-    CUDA_CHECK(cudaFree(addr));
-  }
+  CUDA_CHECK(cudaFree(addr));
   return false;
 }
 
 void cuda_destroy(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind) {
-  if (committed) {
-    CUDA_CHECK(cudaFreeHost(addr));
-  } else {
-    CUDA_CHECK(cudaFree(addr));
-  }
+  CUDA_CHECK(cudaFree(addr));
 }
 
 static extent_hooks_t hooks = {
@@ -375,9 +363,6 @@ void numbirch::init() {
     CUSOLVER_CHECK(cusolverDnCreate(&cusolverDnHandle));
     CUSOLVER_CHECK(cusolverDnSetStream(cusolverDnHandle, stream));
     CUSOLVER_CHECK(cusolverDnCreateParams(&cusolverDnParams));
-
-    CUDA_CHECK(cudaMallocManaged(&info, sizeof(int)));
-    CUDA_CHECK(cudaMemsetAsync(info, 0, sizeof(int), stream));
   }
 
   /* jemalloc setup */
@@ -400,14 +385,13 @@ void numbirch::init() {
     ret = mallctl("tcache.create", &tcache, &size, nullptr, 0);
     assert(ret == 0);
 
-    flags = MALLOCX_ARENA(arena)|MALLOCX_TCACHE(tcache)|MALLOCX_ALIGN(16);
+    flags = MALLOCX_ARENA(arena)|MALLOCX_TCACHE(tcache)|MALLOCX_ALIGN(128);
   }
 }
 
 void term() {
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
-    CUDA_CHECK(cudaFree(info));
     CUSOLVER_CHECK(cusolverDnDestroyParams(cusolverDnParams));
     CUSOLVER_CHECK(cusolverDnDestroy(cusolverDnHandle));
     CUBLAS_CHECK(cublasDestroy(cublasHandle));
