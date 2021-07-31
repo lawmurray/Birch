@@ -18,7 +18,7 @@ if ONEAPI
   AM_CPPFLAGS += -Wno-deprecated-declarations -Wno-unused-command-line-argument
   AM_CXXFLAGS += -qmkl -fsycl-unnamed-lambda
   AM_LDFLAGS += $(AM_CXXFLAGS)
-  COMMON_SOURCES += numbirch/oneapit/numbirch.cpp
+  COMMON_SOURCES += numbirch/oneapi/numbirch.cpp
 else
 if CUDA
   AM_CXXFLAGS += -x cu -arch=sm_75 -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
