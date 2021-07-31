@@ -100,13 +100,6 @@ else
   if $cuda; then
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([cusolverDn.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/execution_policy.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/copy.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/transform_reduce.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/inner_product.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/async/transform.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/iterator/counting_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([thrust/iterator/transform_iterator.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([jemalloc/jemalloc.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
 
     AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
