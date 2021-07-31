@@ -308,8 +308,7 @@ void numbirch::cholmul(const int n, const double* S, const int ldS,
   void *bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S, ldS*sizeof(double),
-      n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
@@ -341,8 +340,7 @@ void numbirch::cholmul(const int m, const int n, const double* S,
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S, ldS*sizeof(double),
-      m*sizeof(double), m, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), m*sizeof(double), m);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, m, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
@@ -427,8 +425,7 @@ void numbirch::cholouter(const int m, const int n, const double* A,
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S, ldS*sizeof(double),
-      n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
@@ -461,8 +458,7 @@ void numbirch::solve(const int n, const double* A, const int ldA, double* x,
   void *bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* solve via L factorization with partial pivoting */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), A, ldA*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), A, ldA*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
       CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, bufferOnDevice,
       bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes, info));
@@ -496,13 +492,11 @@ void numbirch::solve(const int m, const int n, const double* A, const int ldA,
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* solve via L factorization with partial pivoting */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), A, ldA*sizeof(double),
-    n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), A, ldA*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
       CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, bufferOnDevice,
       bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes, info));
-  CUDA_CHECK(cudaMemcpy2DAsync(X, ldX*sizeof(double), Y, ldY*sizeof(double),
-    m*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(X, ldX*sizeof(double), Y, ldY*sizeof(double), m*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_OP_N, m, n, CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, X, ldX,
       info));
@@ -529,8 +523,7 @@ void numbirch::cholsolve(const int n, const double* S, const int ldS,
   void *bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* solve via Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S,
-      ldS*sizeof(double), n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
@@ -563,14 +556,12 @@ void numbirch::cholsolve(const int m, const int n, const double* S,
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* solve via Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S,
-      ldS*sizeof(double), m*sizeof(double), m, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), m*sizeof(double), m);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, m, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
       info));
-  CUDA_CHECK(cudaMemcpy2DAsync(X, ldX*sizeof(double), Y, ldY*sizeof(double),
-    m*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(X, ldX*sizeof(double), Y, ldY*sizeof(double), m*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, m, n, CUDA_R_64F, L, ldL, CUDA_R_64F, X,
       ldX, info));
@@ -593,8 +584,7 @@ void numbirch::inv(const int n, const double* A, const int ldA, double* B,
   void *bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* L factorization with partial pivoting */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), A, ldA*sizeof(double),
-      n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), A, ldA*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
       CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, bufferOnDevice,
       bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes, info));
@@ -626,8 +616,7 @@ void numbirch::cholinv(const int n, const double* S, const int ldS, double* B,
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S,
-      ldS*sizeof(double), n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
@@ -660,8 +649,7 @@ double numbirch::ldet(const int n, const double* A, const int ldA) {
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* L factorization with partial pivoting */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), A, ldA*sizeof(double),
-      n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), A, ldA*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n, n,
       CUDA_R_64F, L, ldL, ipiv, CUDA_R_64F, bufferOnDevice,
       bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes, info));
@@ -695,8 +683,7 @@ double numbirch::lcholdet(const int n, const double* S, const int ldS) {
   void* bufferOnHost = device_malloc(bufferOnHostBytes);
 
   /* solve via Cholesky factorization */
-  CUDA_CHECK(cudaMemcpy2DAsync(L, ldL*sizeof(double), S,
-      ldS*sizeof(double), n*sizeof(double), n, cudaMemcpyDefault, stream));
+  memcpy(L, ldL*sizeof(double), S, ldS*sizeof(double), n*sizeof(double), n);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, n, CUDA_R_64F, L, ldL, CUDA_R_64F,
       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
