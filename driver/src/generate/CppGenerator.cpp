@@ -442,8 +442,11 @@ void birch::CppGenerator::visit(const Program* o) {
       /* body of program */
       *this << o->braces;
 
+      /* termination */
       genSourceLine(o->loc);
       line("libbirch::collect();");
+      genSourceLine(o->loc);
+      line("numbirch::term();\n");
       genSourceLine(o->loc);
       line("return 0;");
       out();

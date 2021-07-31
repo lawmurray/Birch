@@ -3,6 +3,7 @@
  * 
  * NumBirch interface.
  */
+#pragma once
 
 #include <cstddef>
 
@@ -13,6 +14,11 @@ namespace numbirch {
  * computations.
  */
 void init();
+
+/**
+ * Terminate NumBirch.
+ */
+void term();
 
 /**
  * Allocate memory.
@@ -41,12 +47,6 @@ void* realloc(void* ptr, const size_t size);
 void free(void* ptr);
 
 /**
- * Synchronize with the device. This waits for all operations to complete for
- * the current thread.
- */
-void wait();
-
-/**
  * Batch copy.
  * 
  * @param[out] dst Destination.
@@ -58,6 +58,12 @@ void wait();
  */
 void memcpy(void* dst, const size_t dpitch, const void* src,
     const size_t spitch, const size_t width, const size_t height);
+
+/**
+ * Synchronize with the device. This waits for all operations to complete for
+ * the current thread.
+ */
+void wait();
 
 /**
  * Vector negation.
