@@ -67,8 +67,8 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    atomize();
     if (!std::is_trivial<T>::value) {
+      atomize();
       initialize();
     }
   }
