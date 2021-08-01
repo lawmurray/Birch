@@ -21,8 +21,8 @@ struct is_index {
 
 template<class Arg>
 struct is_index<Arg> {
-  static const bool value = std::is_integral<typename std::remove_cv<
-      typename std::remove_reference<Arg>::type>::type>::value;
+  static const bool value = std::is_integral<
+      typename std::decay<Arg>::type>::value;
 };
 
 template<class Arg, class... Args>
