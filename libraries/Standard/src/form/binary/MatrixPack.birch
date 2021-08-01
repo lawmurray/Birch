@@ -57,13 +57,11 @@ function pack(x:Boolean, y:Boolean) -> Boolean[_,_] {
  */
 function pack<Type>(x:Type[_], y:Type[_]) -> Type[_,_] {
   assert length(x) == length(y);
-  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-        if j == 1 {
-          return x[i];
-        } else {
-          return y[i];
-        }
-      }, length(x), 2);
+  let R <- length(x);
+  Z:Type[R,2];
+  Z[1..R,1] <- x;
+  Z[1..R,2] <- y;
+  return Z;
 }
 
 /**
@@ -75,11 +73,8 @@ function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
   let R <- rows(l);
   let C1 <- columns(l);
   let C2 <- columns(r);
-  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-        if j <= C1 {
-          return l[i,j];
-        } else {
-          return r[i,j - C1];
-        }
-      }, R, C1 + C2);
+  Z:Type[R,C1 + C2];
+  Z[1..R,1..C1] <- l;
+  Z[1..R,(C1 + 1)..(C1 + C2)] <- r;
+  return Z;
 }

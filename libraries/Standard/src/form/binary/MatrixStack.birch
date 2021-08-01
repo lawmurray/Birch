@@ -72,13 +72,10 @@ function stack(x:Boolean, y:Boolean) -> Boolean[_] {
 function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
   let l1 <- length(x);
   let l2 <- length(y);
-  return vector_lambda(\(i:Integer) -> Type {
-        if i <= l1 {
-          return x[i];
-        } else {
-          return y[i - l1];
-        }
-      }, l1 + l2);
+  z:Type[l1 + l2];
+  z[1..l1] <- x;
+  z[(l1 + 1)..(l1 + l2)] <- y;
+  return z;
 }
 
 /**
@@ -87,13 +84,10 @@ function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
  */
 function stack<Type>(x:Type[_], y:Type) -> Type[_] {
   let l1 <- length(x);
-  return vector_lambda(\(i:Integer) -> Type {
-        if i <= l1 {
-          return x[i];
-        } else {
-          return y;
-        }
-      }, l1 + 1);
+  z:Type[l1 + 1];
+  z[1..l1] <- x;
+  z[l1 + 1] <- y;
+  return z;
 }
 
 /**
@@ -102,13 +96,10 @@ function stack<Type>(x:Type[_], y:Type) -> Type[_] {
  */
 function stack<Type>(x:Type, y:Type[_]) -> Type[_] {
   let l2 <- length(y);
-  return vector_lambda(\(i:Integer) -> Type {
-        if i <= 1 {
-          return x;
-        } else {
-          return y[i - 1];
-        }
-      }, 1 + l2);
+  z:Type[1 + l2];
+  z[2..(1 + l2)] <- y;
+  z[1] <- x;
+  return z;
 }
 
 /**
@@ -120,11 +111,8 @@ function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
   let R1 <- rows(X);
   let R2 <- rows(Y);
   let C <- columns(X);
-  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-        if i <= R1 {
-          return X[i,j];
-        } else {
-          return Y[i - R1,j];
-        }
-      }, R1 + R2, C);
+  Z:Type[R1 + R2, C];
+  Z[1..R1,1..C] <- X;
+  Z[(R1 + 1)..(R1 + R2),1..C] <- Y;
+  return Z;
 }

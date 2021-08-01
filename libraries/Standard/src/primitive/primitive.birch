@@ -143,8 +143,9 @@ function transform<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
     f:Lambda) -> {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
-  return matrix_lambda(\(i:Integer, j:Integer) -> { return f(X[i,j], Y[i,j]); },
-      rows(X), columns(X));
+  return matrix_lambda(\(i:Integer, j:Integer) -> {
+        return f(X[i,j], Y[i,j]);
+      }, rows(X), columns(X));
 }
 
 /**
