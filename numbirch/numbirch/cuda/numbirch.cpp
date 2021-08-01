@@ -17,7 +17,7 @@ static thread_local cudaStream_t stream = cudaStreamPerThread;
 static thread_local cublasHandle_t cublasHandle;
 static thread_local cusolverDnHandle_t cusolverDnHandle;
 static thread_local cusolverDnParams_t cusolverDnParams;
-
+static thread_local void* cublasWorkspace = nullptr;
 static double* one = nullptr;
 static double* zero = nullptr;
 static int* info = nullptr;
@@ -207,11 +207,17 @@ void numbirch::init() {
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUDA_CHECK(cudaGetDevice(&device));
+    CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 
+    size_t size = 1 << 21; // 4 MB as recommended in CUBLAS docs
     CUBLAS_CHECK(cublasCreate(&cublasHandle));
     CUBLAS_CHECK(cublasSetStream(cublasHandle, stream));
+    CUDA_CHECK(cudaMalloc(&cublasWorkspace, size));
+    CUBLAS_CHECK(cublasSetWorkspace(cublasHandle, cublasWorkspace, size));
     CUBLAS_CHECK(cublasSetPointerMode(cublasHandle,
         CUBLAS_POINTER_MODE_DEVICE));
+    CUBLAS_CHECK(cublasSetAtomicsMode(cublasHandle,
+        CUBLAS_ATOMICS_ALLOWED));
 
     CUSOLVER_CHECK(cusolverDnCreate(&cusolverDnHandle));
     CUSOLVER_CHECK(cusolverDnSetStream(cusolverDnHandle, stream));
@@ -233,6 +239,8 @@ void numbirch::term() {
     CUSOLVER_CHECK(cusolverDnDestroyParams(cusolverDnParams));
     CUSOLVER_CHECK(cusolverDnDestroy(cusolverDnHandle));
     CUBLAS_CHECK(cublasDestroy(cublasHandle));
+    CUDA_CHECK(cudaFree(cublasWorkspace));
+    CUDA_CHECK(cudaStreamDestroy(stream));
   }
   CUDA_CHECK(cudaFree(zero));
   CUDA_CHECK(cudaFree(one));
