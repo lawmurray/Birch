@@ -66,15 +66,14 @@ public:
 
   template<class T>
   auto slice(T* buffer, const std::pair<int,int>& range) const {
-    assert(range.first <= range.second && "invalid range");
     assert(1 <= range.first && range.first <= n && "start of range out of bounds");
-    assert(1 <= range.second && range.second <= n && "end of range out of bounds");
+    assert(range.second <= n && "end of range out of bounds");
 
     using U = typename std::remove_const<T>::type;
     U* buf = const_cast<U*>(buffer);
 
     int i = range.first;
-    int len = range.second - range.first + 1;
+    int len = std::max(0, range.second - range.first + 1);
 
     return Array<U,1>(buf + (i - 1)*int64_t(inc), ArrayShape<1>(len, inc));
   }
@@ -207,21 +206,18 @@ public:
   template<class T>
   auto slice(T* buffer, const std::pair<int,int>& rows,
      const std::pair<int,int>& cols) const {
-    assert(rows.first <= rows.second && "invalid row range");
     assert(1 <= rows.first && rows.first <= m && "start of row range out of bounds");
-    assert(1 <= rows.second && rows.second <= m && "end of row range out of bounds");
-
-    assert(cols.first <= cols.second && "invalid column range");
+    assert(rows.second <= m && "end of row range out of bounds");
     assert(1 <= cols.first && cols.first <= n && "start of column range out of bounds");
-    assert(1 <= cols.second && cols.second <= n && "end of column range out of bounds");
+    assert(cols.second <= n && "end of column range out of bounds");
 
     using U = typename std::remove_const<T>::type;
     U* buf = const_cast<U*>(buffer);
 
     int i = rows.first;
-    int r = rows.second - rows.first + 1;
+    int r = std::max(0, rows.second - rows.first + 1);
     int j = cols.first;
-    int c = cols.second - cols.first + 1;
+    int c = std::max(0, cols.second - cols.first + 1);
 
     return Array<U,2>(buf + (i - 1) + int64_t(ld)*(j - 1),
         ArrayShape<2>(r, c, ld));
@@ -229,17 +225,15 @@ public:
 
   template<class T>
   auto slice(T* buffer, const std::pair<int,int>& rows, const int j) const {
-    assert(rows.first <= rows.second && "invalid row range");
     assert(1 <= rows.first && rows.first <= m && "start of row range out of bounds");
-    assert(1 <= rows.second && rows.second <= m && "end of row range out of bounds");
-
+    assert(rows.second <= m && "end of row range out of bounds");
     assert(1 <= j && j <= n && "column index out of bounds");
 
     using U = typename std::remove_const<T>::type;
     U* buf = const_cast<U*>(buffer);
 
     int i = rows.first;
-    int r = rows.second - rows.first + 1;
+    int r = std::max(0, rows.second - rows.first + 1);
 
     return Array<U,1>(buf + (i - 1) + int64_t(ld)*(j - 1),
         ArrayShape<1>(r, 1));
@@ -248,16 +242,14 @@ public:
   template<class T>
   auto slice(T* buffer, const int i, const std::pair<int,int>& cols) const {
     assert(1 <= i && i <= m && "row index out of bounds");
-
-    assert(cols.first <= cols.second && "invalid column range");
     assert(1 <= cols.first && cols.first <= n && "start of column range out of bounds");
-    assert(1 <= cols.second && cols.second <= n && "end of column range out of bounds");
+    assert(cols.second <= n && "end of column range out of bounds");
 
     using U = typename std::remove_const<T>::type;
     U* buf = const_cast<U*>(buffer);
 
     int j = cols.first;
-    int c = cols.second - cols.first + 1;
+    int c = std::max(0, cols.second - cols.first + 1);
 
     return Array<U,1>(buf + (i - 1) + int64_t(ld)*(j - 1),
         ArrayShape<1>(c, ld));
