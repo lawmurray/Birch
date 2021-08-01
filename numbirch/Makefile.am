@@ -34,10 +34,10 @@ endif
 #   - nvcc does not support -O without a number, must be e.g. -O1
 #
 
-libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
+libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -G
 libnumbirch_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
+libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -G --coverage
 libnumbirch_test_la_SOURCES = $(COMMON_SOURCES)
 
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
