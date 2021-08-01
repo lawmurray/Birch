@@ -26,6 +26,11 @@ void term();
  * @param bytes Number of bytes to allocate.
  * 
  * @return New allocation.
+ * 
+ * @attention malloc() may return memory that is still in use but that will be
+ * safely available by the time it is used again by NumBirch. To safely use
+ * the allocation outside of NumBirch, one should use wait() either before or
+ * after the call to malloc() to ensure that the memory is no longer in use.
  */
 void* malloc(const size_t size);
 
@@ -36,6 +41,13 @@ void* malloc(const size_t size);
  * @param size New size of allocation.
  * 
  * @return Resized allocation.
+ * 
+ * @attention If there may be outstanding writes to the existing allocation,
+ * one should call wait() before calling realloc(). realloc() may return
+ * memory that is still in use but that will be safely available by the time
+ * it is used again by NumBirch. To safely use the allocation outside of
+ * NumBirch, one should use wait() either before or after the call to
+ * realloc() to ensure that the memory is no longer in use.
  */
 void* realloc(void* ptr, const size_t size);
 

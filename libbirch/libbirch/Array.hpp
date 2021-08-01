@@ -50,6 +50,7 @@ public:
       isBorrowed(false) {
     allocate();
     if (!std::is_trivial<T>::value) {
+      synchronize();
       initialize();
     }
   }
@@ -71,6 +72,7 @@ public:
       isElementWise(false),
       isBorrowed(false) {
     allocate();
+    synchronize();
     initialize(std::forward<Args>(args)...);
   }
 
@@ -88,6 +90,7 @@ public:
       isElementWise(false),
       isBorrowed(false) {
     allocate();
+    synchronize();
     std::uninitialized_copy(values.begin(), values.end(), beginInternal());
   }
 
@@ -105,6 +108,7 @@ public:
       isElementWise(false),
       isBorrowed(false) {
     allocate();
+    synchronize();
     int64_t t = 0;
     for (auto row : values) {
       for (auto x : row) {
@@ -128,6 +132,7 @@ public:
       isElementWise(false),
       isBorrowed(false) {
     allocate();
+    synchronize();
     int64_t n = 0;
     for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
       new (&*iter) T(l(n++));
@@ -137,13 +142,14 @@ public:
   /**
    * View constructor.
    */
-  Array(const shape_type& shape, T* buffer, bool isElementWise) :
+  Array(const shape_type& shape, T* buffer, bool isElementWise,
+      bool isBorrowed) :
       buffer(buffer),
       control(nullptr),
       shape(shape),
       isView(true),
       isElementWise(isElementWise),
-      isBorrowed(false) {
+      isBorrowed(isBorrowed) {
     //
   }
 
@@ -153,8 +159,7 @@ public:
   Array(const Array& o) : Array() {
     shape = o.shape;
     if (!o.isView && std::is_trivial<T>::value) {
-      std::tie(control, buffer) = o.share();
-      isBorrowed = true;
+      std::tie(control, buffer, isBorrowed) = o.share();
     } else {
       compact();
       allocate();
@@ -220,6 +225,7 @@ public:
    */
   ArrayIterator<T,D> begin() {
     elementize();
+    synchronize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -263,7 +269,9 @@ public:
   template<class... Args>
   decltype(auto) operator()(Args&&... args) {
     elementize();
-    return shape.slice(buffer, true, std::forward<Args>(args)...);
+    synchronize();
+    return shape.slice(data(), isElementWise, isBorrowed,
+        std::forward<Args>(args)...);
   }
 
   /**
@@ -272,7 +280,8 @@ public:
   template<class... Args>
   decltype(auto) operator()(Args&&... args) const {
     synchronize();
-    return shape.slice(buffer, false, std::forward<Args>(args)...);
+    return shape.slice(data(), isElementWise, isBorrowed,
+        std::forward<Args>(args)...);
   }
 
   /**
@@ -316,16 +325,15 @@ public:
    */
   T* data() {
     elementize();
-    #if HAVE_NUMBIRCH_HPP
-    isBorrowed = true;
-    #endif
+    borrow();
     return buffer;
   }
 
   /**
-   * Underlying buffer.
+   * @copydoc data()
    */
   const T* data() const {
+    borrow();
     return buffer;
   }
 
@@ -350,16 +358,17 @@ public:
     static_assert(D == 1, "insert() supports only one-dimensional arrays");
     assert(!isView);
 
-    elementize();
     auto n = size();
     ArrayShape<1> s(n + 1);
     if (!buffer) {
       Array<T,D> tmp(s, x);
       swap(tmp);
     } else {
+      elementize();
+      synchronize();
       #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
-        buffer = (T*)numbirch::realloc((void*)buffer,s.volume()*sizeof(T));
+        buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
       } else
       #endif
       {
@@ -385,12 +394,13 @@ public:
     assert(len > 0);
     assert(size() >= len);
 
-    elementize();
     auto n = size();
     ArrayShape<1> s(n - len);
     if (s.size() == 0) {
       release();
     } else {
+      elementize();
+      synchronize();
       std::destroy(buffer + i, buffer + i + len);
       std::memmove((void*)(buffer + i), (void*)(buffer + i + len),
           (n - len - i)*sizeof(T));
@@ -408,10 +418,9 @@ public:
 
 private:
   /**
-   * Iterator for use internally, avoiding elementize().
+   * Iterator for use internally, avoiding elementize() or synchronize().
    */
   ArrayIterator<T,D> beginInternal() {
-    synchronize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -419,12 +428,11 @@ private:
    * @copydoc beginInternal()
    */
   ArrayIterator<T,D> beginInternal() const {
-    synchronize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
   /**
-   * Iterator for use internally, avoiding elementize().
+   * Iterator for use internally, avoiding elementize() or synchronize().
    */
   ArrayIterator<T,D> endInternal() {
     return beginInternal().operator+(size());
@@ -435,6 +443,38 @@ private:
    */
   ArrayIterator<T,D> endInternal() const {
     return beginInternal().operator+(size());
+  }
+
+  /**
+   * Flag underlying buffer as borrowed.
+   */
+  void borrow() {
+    #if HAVE_NUMBIRCH_HPP
+    isBorrowed = true;
+    #endif
+  }
+
+  /**
+   * @copydoc borrow()
+   */
+  void borrow() const {
+    const_cast<Array*>(this)->borrow();
+  }
+
+  /**
+   * Flag underlying buffer as no longer borrowed.
+   */
+  void unborrow() {
+    #if HAVE_NUMBIRCH_HPP
+    isBorrowed = false;
+    #endif
+  }
+
+  /**
+   * @copydoc unborrow()
+   */
+  void unborrow() const {
+    const_cast<Array*>(this)->unborrow();
   }
 
   /**
@@ -491,6 +531,7 @@ private:
     #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value) {
       buffer = (T*)numbirch::malloc(volume()*sizeof(T));
+      borrow();
     } else
     #endif
     {
@@ -501,19 +542,21 @@ private:
   /**
    * Share the buffer of this array.
    * 
-   * @return A pair giving pointers to the control block and buffer.
+   * @return A triple giving pointers to the control block and buffer, and
+   * the `isBorrowed` flag.
    */
-  std::pair<ArrayControl*,T*> share() {
+  std::tuple<ArrayControl*,T*,bool> share() {
     assert(!isView);
+    auto control = this->control;
+    auto buffer = this->buffer;
+
     if (buffer) {
       if (isElementWise) {
         /* can't share, create a new buffer instead */
-        ArrayControl* control = nullptr;
-        T* buffer = nullptr;
         #if HAVE_NUMBIRCH_HPP
         if (std::is_trivial<T>::value) {
           buffer = (T*)numbirch::malloc(size()*sizeof(T));
-          numbirch::memcpy(buffer, shape.width()*sizeof(T), this->buffer,
+          numbirch::memcpy(buffer, shape.width()*sizeof(T), data(),
               shape.stride()*sizeof(T), shape.width()*sizeof(T),
               shape.height());
         } else
@@ -522,7 +565,6 @@ private:
           buffer = (T*)std::malloc(size()*sizeof(T));
           std::uninitialized_copy(beginInternal(), endInternal(), buffer);
         }
-        return std::make_pair(control, buffer);
       } else if (control) {
         control->incShared_();
       } else {
@@ -531,20 +573,19 @@ private:
           control->incShared_();
         } else {
           control = new ArrayControl(2);
+          this->control = control;
         }
         lock.unset();
       }
     }
-    return std::make_pair(control, buffer);
+    return std::make_tuple(control, buffer, isBorrowed);
   }
 
   /**
-   * Share the buffer of this array.
-   * 
-   * @return A pair giving pointers to the control block and buffer.
+   * @copydoc share()
    */
-  std::pair<ArrayControl*,T*> share() const {
-    return const_cast<Array<T,D>*>(this)->share();
+  std::tuple<ArrayControl*,T*,bool> share() const {
+    return const_cast<Array*>(this)->share();
   }
 
   /**
@@ -566,7 +607,7 @@ private:
             numbirch::memcpy(buf, shape.width()*sizeof(T), buffer,
                 shape.stride()*sizeof(T), shape.width()*sizeof(T),
                 shape.height());
-            isBorrowed = true;
+            borrow();
           } else
           #endif
           {
@@ -581,7 +622,6 @@ private:
       }
       lock.unset();
     }
-    synchronize();
     assert(!control);
   }
 
@@ -592,9 +632,9 @@ private:
    */
   void synchronize() const {
     #if HAVE_NUMBIRCH_HPP
-    if (isBorrowed) {
+    if (std::is_trivial<T>::value && isBorrowed) {
       numbirch::wait();
-      const_cast<Array<T,D>*>(this)->isBorrowed = false;
+      unborrow();
     }
     #endif
   }
@@ -646,7 +686,7 @@ private:
   void copy(const Array<U,E>& o) {
     #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
-      numbirch::memcpy(buffer, shape.stride()*sizeof(T), o.buffer,
+      numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
           o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
           shape.height());
     } else
@@ -673,7 +713,7 @@ private:
   void uninitialized_copy(const Array<U,E>& o) {
     #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
-      numbirch::memcpy(buffer, shape.stride()*sizeof(T), o.buffer,
+      numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
           o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
           shape.height());
     } else
