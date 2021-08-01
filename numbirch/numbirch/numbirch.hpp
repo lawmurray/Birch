@@ -426,7 +426,8 @@ void outer(const int m, const int n, const int k, const double* A,
  * matrix. Computes @f$C = AL^\top@f$, where @f$S = LL^\top@f$.
  * 
  * @param m Number of rows of `C`, and rows of `A`.
- * @param n Number of columns of `C` and rows of `S`.
+ * @param n Number of columns of `C`, columns of `A`, and rows and columns of
+ * `S`.
  * @param A Matrix.
  * @param ldA Column stride of `A`.
  * @param S Symmetric positive definite matrix.
