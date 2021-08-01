@@ -11,6 +11,26 @@
 
 namespace libbirch {
 /**
+ * Are all argument types integral? This is used to determine whether a slice
+ * will return a view of an array, or a single element.
+ */
+template<class... Args>
+struct is_index {
+  //
+};
+
+template<class Arg>
+struct is_index<Arg> {
+  static const bool value = std::is_integral<typename std::remove_cv<
+      typename std::remove_reference<Arg>::type>::type>::value;
+};
+
+template<class Arg, class... Args>
+struct is_index<Arg,Args...> {
+  static const bool value = is_index<Arg>::value && is_index<Args...>::value;
+};
+
+/**
  * Array.
  *
  * @tparam T Value type.
@@ -31,8 +51,7 @@ public:
       control(nullptr),
       shape(),
       isView(false),
-      isElementWise(false),
-      isBorrowed(false) {
+      isElementWise(false) {
     assert(shape.volume() == 0);
   }
 
@@ -46,11 +65,10 @@ public:
       control(nullptr),
       shape(shape),
       isView(false),
-      isElementWise(false),
-      isBorrowed(false) {
+      isElementWise(false) {
     allocate();
+    atomize();
     if (!std::is_trivial<T>::value) {
-      synchronize();
       initialize();
     }
   }
@@ -69,10 +87,9 @@ public:
       control(nullptr),
       shape(shape),
       isView(false),
-      isElementWise(false),
-      isBorrowed(false) {
+      isElementWise(false) {
     allocate();
-    synchronize();
+    atomize();
     initialize(std::forward<Args>(args)...);
   }
 
@@ -87,10 +104,9 @@ public:
       control(nullptr),
       shape(values.size()),
       isView(false),
-      isElementWise(false),
-      isBorrowed(false) {
+      isElementWise(false) {
     allocate();
-    synchronize();
+    atomize();
     std::uninitialized_copy(values.begin(), values.end(), beginInternal());
   }
 
@@ -105,10 +121,9 @@ public:
       control(nullptr),
       shape(values.size(), values.begin()->size()),
       isView(false),
-      isElementWise(false),
-      isBorrowed(false) {
+      isElementWise(false) {
     allocate();
-    synchronize();
+    atomize();
     int64_t t = 0;
     for (auto row : values) {
       for (auto x : row) {
@@ -129,10 +144,9 @@ public:
       control(nullptr),
       shape(shape),
       isView(false),
-      isElementWise(false),
-      isBorrowed(false) {
+      isElementWise(false) {
     allocate();
-    synchronize();
+    atomize();
     int64_t n = 0;
     for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
       new (&*iter) T(l(n++));
@@ -142,14 +156,12 @@ public:
   /**
    * View constructor.
    */
-  Array(const shape_type& shape, T* buffer, bool isElementWise,
-      bool isBorrowed) :
+  Array(T* buffer, const shape_type& shape) :
       buffer(buffer),
       control(nullptr),
       shape(shape),
       isView(true),
-      isElementWise(isElementWise),
-      isBorrowed(isBorrowed) {
+      isElementWise(false) {
     //
   }
 
@@ -159,10 +171,11 @@ public:
   Array(const Array& o) : Array() {
     shape = o.shape;
     if (!o.isView && std::is_trivial<T>::value) {
-      std::tie(control, buffer, isBorrowed) = o.share();
+      std::tie(control, buffer, isElementWise) = o.share();
     } else {
       compact();
       allocate();
+      crystallize();
       uninitialized_copy(o);
     }
   }
@@ -176,6 +189,7 @@ public:
     shape = o.shape;
     compact();
     allocate();
+    crystallize();
     uninitialized_copy(o);
   }
 
@@ -189,6 +203,7 @@ public:
       shape = o.shape;
       compact();
       allocate();
+      crystallize();
       uninitialized_copy(o);
     }
   }
@@ -224,8 +239,8 @@ public:
    * Iterator to the first element.
    */
   ArrayIterator<T,D> begin() {
-    elementize();
-    synchronize();
+    own();
+    atomize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -233,7 +248,7 @@ public:
    * @copydoc begin()
    */
   ArrayIterator<T,D> begin() const {
-    synchronize();
+    atomize();
     return ArrayIterator<T,D>(buffer, shape);
   }
 
@@ -266,22 +281,56 @@ public:
    * than 0-based, as Array is used directly from Birch, in which arrays use
    * 1-based indexing, rather than C++, in which arrays use 0-based indexing.
    */
-  template<class... Args>
-  decltype(auto) operator()(Args&&... args) {
-    elementize();
-    synchronize();
-    return shape.slice(data(), isElementWise, isBorrowed,
-        std::forward<Args>(args)...);
+  template<class... Args, std::enable_if_t<!is_index<Args...>::value,int> = 0>
+  auto operator()(Args&&... args) {
+    own();
+    crystallize();
+    return shape.slice(buffer, std::forward<Args>(args)...);
   }
 
   /**
    * @copydoc operator()()
    */
-  template<class... Args>
-  decltype(auto) operator()(Args&&... args) const {
-    synchronize();
-    return shape.slice(data(), isElementWise, isBorrowed,
-        std::forward<Args>(args)...);
+  template<class... Args, std::enable_if_t<!is_index<Args...>::value,int> = 0>
+  auto operator()(Args&&... args) const {
+    crystallize();
+    return shape.slice(buffer, std::forward<Args>(args)...);
+  }
+
+  /**
+   * @copydoc operator()()
+   */
+  template<class... Args, std::enable_if_t<is_index<Args...>::value,int> = 0>
+  decltype(auto) operator()(Args&&... args) {
+    own();
+    atomize();
+    return shape.slice(buffer, std::forward<Args>(args)...);
+  }
+
+  /**
+   * @copydoc operator()()
+   */
+  template<class... Args, std::enable_if_t<is_index<Args...>::value,int> = 0>
+  auto operator()(Args&&... args) const {
+    atomize();
+    return shape.slice(buffer, std::forward<Args>(args)...);
+  }
+
+  /**
+   * Underlying buffer.
+   */
+  T* data() {
+    own();
+    crystallize();
+    return buffer;
+  }
+
+  /**
+   * @copydoc data()
+   */
+  const T* data() const {
+    crystallize();
+    return buffer;
   }
 
   /**
@@ -321,23 +370,6 @@ public:
   }
 
   /**
-   * Underlying buffer.
-   */
-  T* data() {
-    elementize();
-    borrow();
-    return buffer;
-  }
-
-  /**
-   * @copydoc data()
-   */
-  const T* data() const {
-    borrow();
-    return buffer;
-  }
-
-  /**
    * For a one-dimensional array, push an element onto the end. This increases
    * the array size by one.
    *
@@ -361,11 +393,11 @@ public:
     auto n = size();
     ArrayShape<1> s(n + 1);
     if (!buffer) {
-      Array<T,D> tmp(s, x);
+      Array tmp(s, x);
       swap(tmp);
     } else {
-      elementize();
-      synchronize();
+      own();
+      atomize();
       #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
         buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
@@ -399,8 +431,8 @@ public:
     if (s.size() == 0) {
       release();
     } else {
-      elementize();
-      synchronize();
+      own();
+      atomize();
       std::destroy(buffer + i, buffer + i + len);
       std::memmove((void*)(buffer + i), (void*)(buffer + i + len),
           (n - len - i)*sizeof(T));
@@ -418,7 +450,7 @@ public:
 
 private:
   /**
-   * Iterator for use internally, avoiding elementize() or synchronize().
+   * Iterator for use internally.
    */
   ArrayIterator<T,D> beginInternal() {
     return ArrayIterator<T,D>(buffer, shape);
@@ -432,7 +464,7 @@ private:
   }
 
   /**
-   * Iterator for use internally, avoiding elementize() or synchronize().
+   * Iterator for use internally.
    */
   ArrayIterator<T,D> endInternal() {
     return beginInternal().operator+(size());
@@ -446,47 +478,33 @@ private:
   }
 
   /**
-   * Flag underlying buffer as borrowed.
-   */
-  void borrow() {
-    #if HAVE_NUMBIRCH_HPP
-    isBorrowed = true;
-    #endif
-  }
-
-  /**
-   * @copydoc borrow()
-   */
-  void borrow() const {
-    const_cast<Array*>(this)->borrow();
-  }
-
-  /**
-   * Flag underlying buffer as no longer borrowed.
-   */
-  void unborrow() {
-    #if HAVE_NUMBIRCH_HPP
-    isBorrowed = false;
-    #endif
-  }
-
-  /**
-   * @copydoc unborrow()
-   */
-  void unborrow() const {
-    const_cast<Array*>(this)->unborrow();
-  }
-
-  /**
    * Copy assignment. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
    */
-  void assign(const Array<T,D>& o) {
+  void assign(const Array& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      copy(o);
+      #if HAVE_NUMBIRCH_HPP
+      if (std::is_trivial<T>::value) {
+        numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
+            o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
+            shape.height());
+      } else
+      #endif
+      {
+        auto n = std::min(size(), o.size());
+        auto begin1 = o.beginInternal();
+        auto end1 = begin1.operator+(n);
+        auto begin2 = beginInternal();
+        auto end2 = begin2.operator+(n);
+        if (begin1 <= begin2 && begin2 < end1) {
+          std::copy_backward(begin1, end1, end2);
+        } else {
+          std::copy(begin1, end1, begin2);
+        }
+      }
     } else {
-      Array<T,D> tmp(o);
+      Array tmp(o);
       swap(tmp);
     }
   }
@@ -494,14 +512,13 @@ private:
   /**
    * Swap with another array.
    */
-  void swap(Array<T,D>& o) {
+  void swap(Array& o) {
     assert(!isView);
     assert(!o.isView);
     std::swap(shape, o.shape);
     std::swap(buffer, o.buffer);
     std::swap(control, o.control);
     std::swap(isElementWise, o.isElementWise);
-    std::swap(isBorrowed, o.isBorrowed);
   }
 
   /**
@@ -528,10 +545,12 @@ private:
    */
   void allocate() {
     assert(!buffer);
+    assert(!control);
+    assert(!isElementWise);
+
     #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value) {
       buffer = (T*)numbirch::malloc(volume()*sizeof(T));
-      borrow();
     } else
     #endif
     {
@@ -540,32 +559,15 @@ private:
   }
 
   /**
-   * Share the buffer of this array.
+   * Share the buffer.
    * 
-   * @return A triple giving pointers to the control block and buffer, and
-   * the `isBorrowed` flag.
+   * @return A pair giving pointers to the control block and buffer.
    */
   std::tuple<ArrayControl*,T*,bool> share() {
     assert(!isView);
-    auto control = this->control;
-    auto buffer = this->buffer;
 
     if (buffer) {
-      if (isElementWise) {
-        /* can't share, create a new buffer instead */
-        #if HAVE_NUMBIRCH_HPP
-        if (std::is_trivial<T>::value) {
-          buffer = (T*)numbirch::malloc(size()*sizeof(T));
-          numbirch::memcpy(buffer, shape.width()*sizeof(T), data(),
-              shape.stride()*sizeof(T), shape.width()*sizeof(T),
-              shape.height());
-        } else
-        #endif
-        {
-          buffer = (T*)std::malloc(size()*sizeof(T));
-          std::uninitialized_copy(beginInternal(), endInternal(), buffer);
-        }
-      } else if (control) {
+      if (control) {
         control->incShared_();
       } else {
         lock.set();
@@ -573,12 +575,11 @@ private:
           control->incShared_();
         } else {
           control = new ArrayControl(2);
-          this->control = control;
         }
         lock.unset();
       }
     }
-    return std::make_tuple(control, buffer, isBorrowed);
+    return std::make_tuple(control, buffer, isElementWise);
   }
 
   /**
@@ -589,17 +590,15 @@ private:
   }
 
   /**
-   * Prepare for element-wise writes. If the buffer is currently shared, a new
-   * buffer is created as a copy of the existing buffer.
+   * Ensure that the buffer is not shared, copying it if necessary. That the
+   * buffer is shared is indicated by the presence of a control block.
    */
-  void elementize() {
-    assert(!isView);
-    if (!isElementWise) {
+  void own() {
+    if (control) {
+      assert(!isView);
       lock.set();
-      if (!isElementWise) {
-        if (control) {
-          /* buffer may be shared, copy into new buffer to allow element-wise
-           * write */
+      if (control) {  // another thread may have cleared in the meantime
+        if (control->numShared_() > 1) {
           T* buf = nullptr;
           #if HAVE_NUMBIRCH_HPP
           if (std::is_trivial<T>::value) {
@@ -607,7 +606,7 @@ private:
             numbirch::memcpy(buf, shape.width()*sizeof(T), buffer,
                 shape.stride()*sizeof(T), shape.width()*sizeof(T),
                 shape.height());
-            borrow();
+            crystallize();
           } else
           #endif
           {
@@ -616,9 +615,12 @@ private:
           }
           release();
           compact();
-          buffer = buf;
+          this->buffer = buf;
+        } else {
+          /* last reference */
+          delete control;
+          control = nullptr;
         }
-        isElementWise = true;
       }
       lock.unset();
     }
@@ -626,22 +628,45 @@ private:
   }
 
   /**
-   * Prepare for element-wise reads. If the buffer is currently borrowed, this
-   * requires synchronization with the device to ensure that all writes are
-   * completed before the reads. 
+   * Prepare for block-wise access. This allows asynchronous read or write by
+   * a device.
    */
-  void synchronize() const {
-    #if HAVE_NUMBIRCH_HPP
-    if (std::is_trivial<T>::value && isBorrowed) {
-      numbirch::wait();
-      unborrow();
-    }
-    #endif
+  void crystallize() {
+    isElementWise = false;
   }
 
   /**
-   * Release the buffer of this array, deallocating it if this is the last
-   * reference to it.
+   * @copydoc crystallize()
+   */
+  void crystallize() const {
+    const_cast<Array*>(this)->crystallize();
+  }
+
+  /**
+   * Prepare for element-wise access. If the array is currently prepared for
+   * block-wise access, this requires synchronization with the device to
+   * ensure that all asynchronous reads and writes have completed.
+   */
+  void atomize() {
+    if (!isElementWise) {
+      #if HAVE_NUMBIRCH_HPP
+      if (std::is_trivial<T>::value) {
+        numbirch::wait();
+      }
+      #endif
+      isElementWise = true;
+    }
+  }
+
+  /**
+   * @copydoc atomize()
+   */
+  void atomize() const {
+    const_cast<Array*>(this)->atomize();
+  }
+
+  /**
+   * Release the buffer, deallocating if this is the last reference to it.
    */
   void release() {
     if (!isView && (!control || control->decShared_() == 0)) {
@@ -660,7 +685,6 @@ private:
     control = nullptr;
     isView = false;
     isElementWise = false;
-    isBorrowed = false;
   }
 
   /**
@@ -675,33 +699,6 @@ private:
     auto last = endInternal();
     for (; iter != last; ++iter) {
       new (&*iter) T(std::forward<Args>(args)...);
-    }
-  }
-
-  /**
-   * Assign from another array.
-   */
-  template<class U, int E, std::enable_if_t<D == E &&
-      std::is_convertible<U,T>::value,int> = 0>
-  void copy(const Array<U,E>& o) {
-    #if HAVE_NUMBIRCH_HPP
-    if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
-      numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
-          o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
-          shape.height());
-    } else
-    #endif
-    {
-      auto n = std::min(size(), o.size());
-      auto begin1 = o.beginInternal();
-      auto end1 = begin1.operator+(n);
-      auto begin2 = beginInternal();
-      auto end2 = begin2.operator+(n);
-      if (begin1 <= begin2 && begin2 < end1) {
-        std::copy_backward(begin1, end1, end2);
-      } else {
-        std::copy(begin1, end1, begin2);
-      }
     }
   }
 
@@ -749,15 +746,10 @@ private:
   bool isView;
 
   /**
-   * Are element-wise writes available for this array?
+   * Is the array prepared for element-wise access? If false, the array is
+   * prepared for block-wise access.
    */
   bool isElementWise;
-
-  /**
-   * Has the buffer been borrowed by a device? If so, the next access to the
-   * elements of the buffer will require synchronization with that device.
-   */
-  bool isBorrowed;
 
   /**
    * Lock for operations requiring mutual exclusion.

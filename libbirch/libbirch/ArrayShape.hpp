@@ -65,8 +65,7 @@ public:
   }
 
   template<class T>
-  auto slice(T* buffer, const bool isElementWise, const bool isBorrowed,
-      const std::pair<int,int>& range) const {
+  auto slice(T* buffer, const std::pair<int,int>& range) const {
     assert(range.first <= range.second && "invalid range");
     assert(1 <= range.first && range.first <= n && "start of range out of bounds");
     assert(1 <= range.second && range.second <= n && "end of range out of bounds");
@@ -77,13 +76,11 @@ public:
     int i = range.first;
     int len = range.second - range.first + 1;
 
-    return Array<U,1>(ArrayShape<1>(len, inc), buf + (i - 1)*int64_t(inc),
-        isElementWise, isBorrowed);
+    return Array<U,1>(buf + (i - 1)*int64_t(inc), ArrayShape<1>(len, inc));
   }
 
   template<class T>
-  T& slice(T* buffer, const bool isElementWise, const bool isBorrowed,
-      const int i) const {
+  T& slice(T* buffer, const int i) const {
     assert(1 <= i && i <= n && "index out of bounds");
     return buffer[(i - 1)*int64_t(inc)];
   }
@@ -208,8 +205,8 @@ public:
   }
 
   template<class T>
- auto slice(T* buffer, const bool isElementWise, const bool isBorrowed,
-      const std::pair<int,int>& rows, const std::pair<int,int>& cols) const {
+  auto slice(T* buffer, const std::pair<int,int>& rows,
+     const std::pair<int,int>& cols) const {
     assert(rows.first <= rows.second && "invalid row range");
     assert(1 <= rows.first && rows.first <= m && "start of row range out of bounds");
     assert(1 <= rows.second && rows.second <= m && "end of row range out of bounds");
@@ -226,13 +223,12 @@ public:
     int j = cols.first;
     int c = cols.second - cols.first + 1;
 
-    return Array<U,2>(ArrayShape<2>(r, c, ld), buf + (i - 1) +
-        int64_t(ld)*(j - 1), isElementWise, isBorrowed);
+    return Array<U,2>(buf + (i - 1) + int64_t(ld)*(j - 1),
+        ArrayShape<2>(r, c, ld));
   }
 
   template<class T>
-  auto slice(T* buffer, const bool isElementWise, const bool isBorrowed,
-      const std::pair<int,int>& rows, const int j) const {
+  auto slice(T* buffer, const std::pair<int,int>& rows, const int j) const {
     assert(rows.first <= rows.second && "invalid row range");
     assert(1 <= rows.first && rows.first <= m && "start of row range out of bounds");
     assert(1 <= rows.second && rows.second <= m && "end of row range out of bounds");
@@ -245,13 +241,12 @@ public:
     int i = rows.first;
     int r = rows.second - rows.first + 1;
 
-    return Array<U,1>(ArrayShape<1>(r, 1), buf + (i - 1) +
-        int64_t(ld)*(j - 1), isElementWise, isBorrowed);
+    return Array<U,1>(buf + (i - 1) + int64_t(ld)*(j - 1),
+        ArrayShape<1>(r, 1));
   }
 
   template<class T>
-  auto slice(T* buffer, const bool isElementWise, const bool isBorrowed,
-      const int i, const std::pair<int,int>& cols) const {
+  auto slice(T* buffer, const int i, const std::pair<int,int>& cols) const {
     assert(1 <= i && i <= m && "row index out of bounds");
 
     assert(cols.first <= cols.second && "invalid column range");
@@ -264,13 +259,12 @@ public:
     int j = cols.first;
     int c = cols.second - cols.first + 1;
 
-    return Array<U,1>(ArrayShape<1>(c, ld), buf + (i - 1) +
-        int64_t(ld)*(j - 1), isElementWise, isBorrowed);
+    return Array<U,1>(buf + (i - 1) + int64_t(ld)*(j - 1),
+        ArrayShape<1>(c, ld));
   }
 
   template<class T>
-  T& slice(T* buffer, const bool isElementWise, const bool isBorrowed,
-      const int i, const int j) const {
+  T& slice(T* buffer, const int i, const int j) const {
     assert(1 <= i && i <= m && "row index out of bounds");
     assert(1 <= j && j <= n && "column index out of bounds");
     return buffer[(i - 1) + int64_t(ld)*(j - 1)];
