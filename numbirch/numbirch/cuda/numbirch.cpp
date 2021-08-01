@@ -207,6 +207,7 @@ void numbirch::init() {
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUDA_CHECK(cudaGetDevice(&device));
+    CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferL1));
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 
     size_t size = 1 << 21; // 4 MB as recommended in CUBLAS docs
