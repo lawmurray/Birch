@@ -15,17 +15,28 @@ AM_LDFLAGS =
 
 COMMON_SOURCES =
 if ONEAPI
-  AM_CPPFLAGS += -Wno-deprecated-declarations -Wno-unused-command-line-argument
+  AM_CPPFLAGS += -DBACKEND_ONEAPI -Wno-deprecated-declarations -Wno-unused-command-line-argument
   AM_CXXFLAGS += -qmkl -fsycl-unnamed-lambda
   AM_LDFLAGS += $(AM_CXXFLAGS)
-  COMMON_SOURCES += numbirch/oneapi/numbirch.cpp
+  COMMON_SOURCES += \
+      numbirch/oneapi/numbirch.cpp \
+      numbirch/numbirch.cpp
 else
 if CUDA
+  AM_CXXFLAGS += -DBACKEND_CUDA
   AM_CXXFLAGS += -x cu -arch=sm_75 -G -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
-  COMMON_SOURCES += numbirch/cuda/numbirch.cpp
+  COMMON_SOURCES += \
+      numbirch/jemalloc/jemalloc.cpp \
+      numbirch/cuda/cuda.cpp \
+      numbirch/cuda/cublas.cpp \
+      numbirch/cuda/cusolver.cpp \
+      numbirch/cuda/numbirch.cpp \
+      numbirch/numbirch.cpp
 else
-  AM_CPPFLAGS += -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
-  COMMON_SOURCES += numbirch/default/numbirch.cpp
+  AM_CPPFLAGS += -DBACKEND_DEFAULT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
+  COMMON_SOURCES += \
+      numbirch/default/numbirch.cpp \
+      numbirch/numbirch.cpp
 endif
 endif
 

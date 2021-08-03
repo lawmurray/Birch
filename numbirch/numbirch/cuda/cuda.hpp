@@ -1,28 +1,24 @@
 /**
  * @file
  * 
- * Some common macros for CUDA.
+ * CUDA boilerplate.
  */
 #pragma once
 
-/**
- * @def CUDA_SYNC
- * 
+#include <cassert>
+
+/*
  * If true, all CUDA calls are synchronous, which can be helpful to determine
  * precisely which call causes an error.
  */
 #define CUDA_SYNC 0
 
-/**
- * @def CUDA_PREFERRED_BLOCK_SIZE
- * 
+/*
  * Preferred thread block size for CUDA kernels.
  */
 #define CUDA_PREFERRED_BLOCK_SIZE 512
 
-/**
- * @def CUDA_CHECK
- * 
+/*
  * Call a cuda* function and assert success.
  */
 #define CUDA_CHECK(call) \
@@ -35,172 +31,24 @@
       } \
     }
 
-/**
- * @def CUBLAS_CHECK
- * 
- * Call a cublas* function and assert success.
+namespace numbirch {
+
+extern thread_local int device;
+extern thread_local cudaStream_t stream;
+
+/*
+ * Initialize CUDA integrations. This should be called during init() by the
+ * backend.
  */
-#define CUBLAS_CHECK(call) \
-    { \
-      cublasStatus_t err = call; \
-      assert(err == CUBLAS_STATUS_SUCCESS); \
-      if (CUDA_SYNC) { \
-        cudaError_t err = cudaStreamSynchronize(stream); \
-        assert(err == cudaSuccess); \
-      } \
-    }
+void cuda_init();
 
-/**
- * @def CUSOLVER_CHECK
- * 
- * Call a cusolver* function and assert success.
+/*
+ * Terminate CUDA integrations. This should be called during term() by the
+ * backend.
  */
-#define CUSOLVER_CHECK(call) \
-    { \
-      cusolverStatus_t err = call; \
-      assert(err == CUSOLVER_STATUS_SUCCESS); \
-      if (CUDA_SYNC) { \
-        cudaError_t err = cudaStreamSynchronize(stream); \
-        assert(err == cudaSuccess); \
-      } \
-    }
+void cuda_term();
 
-template<class T>
-struct vector_element_functor {
-  vector_element_functor(T* x, int incx) :
-      x(x),
-      incx(incx) {
-    //
-  }
-  __host__ __device__
-  T operator()(const int i) const {
-    return x[i*incx];
-  }
-  T* x;
-  int incx;
-};
-
-template<class T>
-struct matrix_element_functor {
-  matrix_element_functor(T* A, int m, int ldA) :
-      A(A),
-      m(m),
-      ldA(ldA) {
-    //
-  }
-  __host__ __device__
-  T operator()(const int i) const {
-    int c = i/m;
-    int r = i - c*m;
-    return A[r + c*ldA];
-  }
-  T* A;
-  int m;
-  int ldA;
-};
-
-template<class T>
-struct matrix_transpose_element_functor {
-  matrix_transpose_element_functor(T* A, int m, int ldA) :
-      A(A),
-      m(m),
-      ldA(ldA) {
-    //
-  }
-  __host__ __device__
-  T operator()(const int i) const {
-    int r = i/m;
-    int c = i - r*m;
-    return A[r + c*ldA];
-  }
-  T* A;
-  int m;
-  int ldA;
-};
-
-template<class T = double>
-struct negate_functor {
-  __host__ __device__
-  T operator()(const T x) const {
-    return -x;
-  }
-};
-
-template<class T = double>
-struct plus_functor {
-  __host__ __device__
-  T operator()(const T x, const T y) const {
-    return x + y;
-  }
-};
-
-template<class T = double>
-struct minus_functor {
-  __host__ __device__
-  T operator()(const T x, const T y) const {
-    return x - y;
-  }
-};
-
-template<class T = double>
-struct multiplies_functor {
-  __host__ __device__
-  T operator()(const T x, const T y) const {
-    return x*y;
-  }
-};
-
-template<class T = double>
-struct divides_functor {
-  __host__ __device__
-  T operator()(const T x, const T y) const {
-    return x/y;
-  }
-};
-
-template<class T = double>
-struct scalar_multiplies_functor {
-  scalar_multiplies_functor(T a) :
-      a(a) {
-    //
-  }
-  __host__ __device__
-  T operator()(const T x) const {
-    return x*a;
-  }
-  T a;
-};
-
-template<class T = double>
-struct scalar_divides_functor {
-  scalar_divides_functor(T a) :
-      a(a) {
-    //
-  }
-  __host__ __device__
-  T operator()(const T x) const {
-    return x/a;
-  }
-  T a;
-};
-
-template<class T = double>
-struct log_abs_functor {
-  __host__ __device__
-  T operator()(const T x) const {
-    return std::log(std::abs(x));
-  }
-};
-
-template<class T = double>
-struct log_functor {
-  __host__ __device__
-  T operator()(const T x) const {
-    return std::log(x);
-  }
-};
-
-/**
+/*
  * Configure thread block size for a vector transformation.
  */
 inline dim3 make_block(const int n) {
@@ -211,7 +59,7 @@ inline dim3 make_block(const int n) {
   return block;
 }
 
-/**
+/*
  * Configure thread block size for a matrix transformation.
  */
 inline dim3 make_block(const int m, const int n) {
@@ -222,7 +70,7 @@ inline dim3 make_block(const int m, const int n) {
   return block;
 }
 
-/**
+/*
  * Configure grid size for a vector transformation.
  */
 inline dim3 make_grid(const int n) {
@@ -234,7 +82,7 @@ inline dim3 make_grid(const int n) {
   return grid;
 }
 
-/**
+/*
  * Configure grid size for a matrix transformation.
  */
 inline dim3 make_grid(const int m, const int n) {
@@ -244,4 +92,6 @@ inline dim3 make_grid(const int m, const int n) {
   grid.y = (m + block.y - 1)/block.y;
   grid.z = 1;
   return grid;
+}
+
 }

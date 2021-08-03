@@ -23,7 +23,7 @@ void term();
 /**
  * Allocate memory.
  * 
- * @param bytes Number of bytes to allocate.
+ * @param size Number of bytes to allocate.
  * 
  * @return New allocation.
  * 
@@ -88,6 +88,8 @@ void wait();
  */
 void neg(const int n, const double* x, const int incx, double* y,
     const int incy);
+void neg(const int n, const float* x, const int incx, float* y,
+    const int incy);
 
 /**
  * Matrix negation.
@@ -100,6 +102,8 @@ void neg(const int n, const double* x, const int incx, double* y,
  * @param ldB Column stride of `B`.
  */
 void neg(const int m, const int n, const double* A, const int ldA, double* B,
+    const int ldB);
+void neg(const int m, const int n, const float* A, const int ldA, float* B,
     const int ldB);
 
 /**
@@ -115,6 +119,8 @@ void neg(const int m, const int n, const double* A, const int ldA, double* B,
  */
 void add(const int n, const double* x, const int incx, const double* y,
     const int incy, double* z, const int incz);
+void add(const int n, const float* x, const int incx, const float* y,
+    const int incy, float* z, const int incz);
 
 /**
  * Matrix addition.
@@ -130,6 +136,8 @@ void add(const int n, const double* x, const int incx, const double* y,
  */
 void add(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
+void add(const int m, const int n, const float* A, const int ldA,
+    const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Vector subtraction.
@@ -144,6 +152,8 @@ void add(const int m, const int n, const double* A, const int ldA,
  */
 void sub(const int n, const double* x, const int incx, const double* y,
     const int incy, double* z, const int incz);
+void sub(const int n, const float* x, const int incx, const float* y,
+    const int incy, float* z, const int incz);
 
 /**
  * Matrix subtraction.
@@ -159,6 +169,8 @@ void sub(const int n, const double* x, const int incx, const double* y,
  */
 void sub(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
+void sub(const int m, const int n, const float* A, const int ldA,
+    const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Hadamard (element-wise) vector multiplication.
@@ -173,6 +185,8 @@ void sub(const int m, const int n, const double* A, const int ldA,
  */
 void hadamard(const int n, const double* x, const int incx, const double* y,
     const int incy, double* z, const int incz);
+void hadamard(const int n, const float* x, const int incx, const float* y,
+    const int incy, float* z, const int incz);
 
 /**
  * Hadamard (element-wise) matrix multiplication.
@@ -188,6 +202,8 @@ void hadamard(const int n, const double* x, const int incx, const double* y,
  */
 void hadamard(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
+void hadamard(const int m, const int n, const float* A, const int ldA,
+    const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Vector-scalar division.
@@ -201,6 +217,8 @@ void hadamard(const int m, const int n, const double* A, const int ldA,
  */
 void div(const int n, const double* x, const int incx, const double y,
     double* z, const int incz);
+void div(const int n, const float* x, const int incx, const float y,
+    float* z, const int incz);
 
 /**
  * Matrix-scalar division.
@@ -215,6 +233,8 @@ void div(const int n, const double* x, const int incx, const double y,
  */
 void div(const int m, const int n, const double* A, const int ldA,
     const double b, double* C, const int ldC);
+void div(const int m, const int n, const float* A, const int ldA,
+    const float b, float* C, const int ldC);
 
 /**
  * Scalar-vector multiplication.
@@ -228,6 +248,8 @@ void div(const int m, const int n, const double* A, const int ldA,
  */
 void mul(const int n, const double x, const double* y, const int incy,
     double* z, const int incz);
+void mul(const int n, const float x, const float* y, const int incy,
+    float* z, const int incz);
 
 /**
  * Scalar-matrix multiplication.
@@ -242,6 +264,8 @@ void mul(const int n, const double x, const double* y, const int incy,
  */
 void mul(const int m, const int n, const double a, const double* B,
     const int ldB, double* C, const int ldC);
+void mul(const int m, const int n, const float a, const float* B,
+    const int ldB, float* C, const int ldC);
 
 /**
  * Matrix-vector multiplication. Computes @f$y = Ax@f$.
@@ -257,6 +281,8 @@ void mul(const int m, const int n, const double a, const double* B,
  */
 void mul(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy);
+void mul(const int m, const int n, const float* A, const int ldA,
+    const float* x, const int incx, float* y, const int incy);
 
 /**
  * Matrix-matrix multiplication. Computes @f$C = AB@f$.
@@ -273,6 +299,8 @@ void mul(const int m, const int n, const double* A, const int ldA,
  */
 void mul(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+void mul(const int m, const int n, const int k, const float* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
@@ -288,6 +316,8 @@ void mul(const int m, const int n, const int k, const double* A,
  */
 void cholmul(const int n, const double* S, const int ldS, const double* x,
     const int incx, double* y, const int incy);
+void cholmul(const int n, const float* S, const int ldS, const float* x,
+    const int incx, float* y, const int incy);
 
 /**
  * Lower-triangular Cholesky factor of a matrix multiplied by a matrix.
@@ -304,6 +334,8 @@ void cholmul(const int n, const double* S, const int ldS, const double* x,
  */
 void cholmul(const int m, const int n, const double* S, const int ldS,
     const double* B, const int ldB, double* C, const int ldC);
+void cholmul(const int m, const int n, const float* S, const int ldS,
+    const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Vector sum of elements.
@@ -315,6 +347,7 @@ void cholmul(const int m, const int n, const double* S, const int ldS,
  * @return Sum of elements of the vector.
  */
 double sum(const int n, const double* x, const int incx);
+float sum(const int n, const float* x, const int incx);
 
 /**
  * Matrix sum of elements.
@@ -327,6 +360,7 @@ double sum(const int n, const double* x, const int incx);
  * @return Sum of elements of the matrix.
  */
 double sum(const int m, const int n, const double* A, const int ldA);
+float sum(const int m, const int n, const float* A, const int ldA);
 
 /**
  * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
@@ -340,6 +374,8 @@ double sum(const int m, const int n, const double* A, const int ldA);
  * @return Dot product.
  */
 double dot(const int n, const double* x, const int incx, const double* y,
+    const int incy);
+float dot(const int n, const float* x, const int incx, const float* y,
     const int incy);
 
 /**
@@ -358,6 +394,8 @@ double dot(const int n, const double* x, const int incx, const double* y,
  */
 double frobenius(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB);
+float frobenius(const int m, const int n, const float* A, const int ldA,
+    const float* B, const int ldB);
 
 /**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
@@ -373,6 +411,8 @@ double frobenius(const int m, const int n, const double* A, const int ldA,
  */
 void inner(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy);
+void inner(const int m, const int n, const float* A, const int ldA,
+    const float* x, const int incx, float* y, const int incy);
 
 /**
  * Matrix-matrix inner product. Computes @f$C = A^\top B@f$.
@@ -389,6 +429,8 @@ void inner(const int m, const int n, const double* A, const int ldA,
  */
 void inner(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+void inner(const int m, const int n, const int k, const float* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Vector-vector outer product. Computes @f$A = xy^\top@f$.
@@ -404,6 +446,8 @@ void inner(const int m, const int n, const int k, const double* A,
  */
 void outer(const int m, const int n, const double* x, const int incx,
     const double* y, const int incy, double* A, const int ldA);
+void outer(const int m, const int n, const float* x, const int incx,
+    const float* y, const int incy, float* A, const int ldA);
 
 /**
  * Matrix-matrix outer product. Computes @f$C = AB^\top@f$.
@@ -420,6 +464,8 @@ void outer(const int m, const int n, const double* x, const int incx,
  */
 void outer(const int m, const int n, const int k, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+void outer(const int m, const int n, const int k, const float* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
 
 /**
  * Outer product of matrix and lower-triangular Cholesky factor of another
@@ -437,6 +483,8 @@ void outer(const int m, const int n, const int k, const double* A,
  */
 void cholouter(const int m, const int n, const double* A, const int ldA,
     const double* S, const int ldS, double* C, const int ldC);
+void cholouter(const int m, const int n, const float* A, const int ldA,
+    const float* S, const int ldS, float* C, const int ldC);
 
 /**
  * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.
@@ -451,6 +499,8 @@ void cholouter(const int m, const int n, const double* A, const int ldA,
  */
 void solve(const int n, const double* A, const int ldA, double* x,
     const int incx, const double* y, const int incy);
+void solve(const int n, const float* A, const int ldA, float* x,
+    const int incx, const float* y, const int incy);
 
 /**
  * Matrix-matrix solve. Solves for @f$X@f$ in @f$AX = Y@f$.
@@ -466,6 +516,8 @@ void solve(const int n, const double* A, const int ldA, double* x,
  */
 void solve(const int m, const int n, const double* A, const int ldA,
     double* X, const int ldX, const double* Y, const int ldY);
+void solve(const int m, const int n, const float* A, const int ldA,
+    float* X, const int ldX, const float* Y, const int ldY);
 
 /**
  * Matrix-vector solve, via the Cholesky factorization. Solves for @f$x@f$ in
@@ -481,6 +533,8 @@ void solve(const int m, const int n, const double* A, const int ldA,
  */
 void cholsolve(const int n, const double* S, const int ldS, double* x,
     const int incx, const double* y, const int incy);
+void cholsolve(const int n, const float* S, const int ldS, float* x,
+    const int incx, const float* y, const int incy);
 
 /**
  * Matrix-matrix solve, via the Cholesky factorization. Solves for @f$X@f$ in
@@ -497,6 +551,8 @@ void cholsolve(const int n, const double* S, const int ldS, double* x,
  */
 void cholsolve(const int m, const int n, const double* S, const int ldS,
     double* X, const int ldX, const double* Y, const int ldY);
+void cholsolve(const int m, const int n, const float* S, const int ldS,
+    float* X, const int ldX, const float* Y, const int ldY);
 
 /**
  * Inverse of a square matrix.
@@ -508,6 +564,8 @@ void cholsolve(const int m, const int n, const double* S, const int ldS,
  * @param ldB Column stride of `B`.
  */
 void inv(const int n, const double* A, const int ldA, double* B,
+    const int ldB);
+void inv(const int n, const float* A, const int ldA, float* B,
     const int ldB);
 
 /**
@@ -521,6 +579,8 @@ void inv(const int n, const double* A, const int ldA, double* B,
  */
 void cholinv(const int n, const double* S, const int ldS, double* B,
     const int ldB);
+void cholinv(const int n, const float* S, const int ldS, float* B,
+    const int ldB);
 
 /**
  * Logarithm of the absolute value of the determinant of a square matrix.
@@ -532,6 +592,7 @@ void cholinv(const int n, const double* S, const int ldS, double* B,
  * @return Logarithm of the absolute value of the determinant of `A`.
  */
 double ldet(const int n, const double* A, const int ldA);
+float ldet(const int n, const float* A, const int ldA);
 
 /**
  * Logarithm of the determinant of a matrix, via the Cholesky factorization.
@@ -545,6 +606,7 @@ double ldet(const int n, const double* A, const int ldA);
  * The determinant of a positive definite matrix is always positive.
  */
 double lcholdet(const int n, const double* S, const int ldS);
+float lcholdet(const int n, const float* S, const int ldS);
 
 /**
  * Scalar-matrix product and transpose. Computes @f$B = xA^\top@f$.
@@ -559,6 +621,8 @@ double lcholdet(const int n, const double* S, const int ldS);
  */
 void transpose(const int m, const int n, const double x, const double* A,
     const int ldA, double* B, const int ldB);
+void transpose(const int m, const int n, const float x, const float* A,
+    const int ldA, float* B, const int ldB);
 
 /**
  * Matrix trace.
@@ -571,5 +635,6 @@ void transpose(const int m, const int n, const double x, const double* A,
  * @return Trace of the matrix.
  */
 double trace(const int m, const int n, const double* A, const int ldA);
+float trace(const int m, const int n, const float* A, const int ldA);
 
 }
