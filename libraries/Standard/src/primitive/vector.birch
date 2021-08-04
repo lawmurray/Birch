@@ -22,7 +22,7 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   /* wrap λ in another lambda function to translate 0-based indices into
    * 1-based indices */
   return libbirch::make_array_from_lambda(libbirch::make_shape(length),
-        [&](int64_t i) { return λ(i + 1); });
+        [&](Integer i) { return λ(i + 1); });
   }}
 }
 

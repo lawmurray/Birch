@@ -3,6 +3,10 @@
  */
 type Boolean;
 
+hpp{{
+using Boolean = bool;
+}}
+
 /*
  * Operators
  */

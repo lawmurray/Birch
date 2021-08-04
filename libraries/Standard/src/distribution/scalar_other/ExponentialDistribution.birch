@@ -104,6 +104,7 @@ function cdf_exponential(x:Real, λ:Real) -> Real {
 function quantile_exponential(P:Real, λ:Real) -> Real {
   assert 0.0 < λ;
   cpp{{
-  return boost::math::quantile(boost::math::exponential_distribution<>(λ), P);
+  return boost::math::quantile(boost::math::exponential_distribution<Real>(λ),
+      P);
   }}
 }

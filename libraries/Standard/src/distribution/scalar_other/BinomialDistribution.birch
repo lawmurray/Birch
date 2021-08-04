@@ -128,6 +128,7 @@ function quantile_binomial(P:Real, n:Integer, ρ:Real) -> Integer {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return boost::math::quantile(boost::math::binomial_distribution<>(n, ρ), P);
+  return boost::math::quantile(boost::math::binomial_distribution<Real>(n, ρ),
+      P);
   }}
 }

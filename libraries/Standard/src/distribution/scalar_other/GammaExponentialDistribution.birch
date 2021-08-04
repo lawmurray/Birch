@@ -144,6 +144,7 @@ function quantile_lomax(P:Real, λ:Real, α:Real) -> Real {
   assert 0.0 < λ;
   assert 0.0 < α;
   cpp{{
-  return boost::math::quantile(boost::math::pareto_distribution<>(λ, α), P) - λ;
+  return boost::math::quantile(boost::math::pareto_distribution<Real>(λ, α),
+      P) - λ;
   }}
 }

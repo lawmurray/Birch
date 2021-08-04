@@ -136,6 +136,6 @@ function quantile_beta(P:Real, α:Real, β:Real) -> Real {
   assert 0.0 < α;
   assert 0.0 < β;  
   cpp{{
-  return boost::math::quantile(boost::math::beta_distribution<>(α, β), P);
+  return boost::math::quantile(boost::math::beta_distribution<Real>(α, β), P);
   }}
 }

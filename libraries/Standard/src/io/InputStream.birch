@@ -70,9 +70,13 @@ struct InputStream {
   function scanReal() -> Real? {
     assert file?;
     x:Real?;
+    y:Real;
     cpp{{
-    double y;  // ensure fscanf gets exactly the type it expects
+    #ifdef BIRCH_SINGLE
+    auto res = ::fscanf(this->file.value(), "%f", &y);
+    #else
     auto res = ::fscanf(this->file.value(), "%lf", &y);
+    #endif
     if (res == 1) {
       x = y;
     } 

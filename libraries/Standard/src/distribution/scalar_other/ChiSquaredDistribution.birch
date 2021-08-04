@@ -51,6 +51,7 @@ function cdf_chi_squared(x:Real, ν:Real) -> Real {
 function quantile_chi_squared(P:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return boost::math::quantile(boost::math::chi_squared_distribution<>(ν), P);
+  return boost::math::quantile(boost::math::chi_squared_distribution<Real>(ν),
+      P);
   }}
 }

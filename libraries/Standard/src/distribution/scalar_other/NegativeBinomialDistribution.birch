@@ -124,7 +124,7 @@ function quantile_negative_binomial(P:Real, k:Integer, ρ:Real) -> Integer {
   assert 0 < k;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return boost::math::quantile(boost::math::negative_binomial_distribution<>(
-      k, ρ), P);
+  return boost::math::quantile(boost::math::negative_binomial_distribution<
+      Real>(k, ρ), P);
   }}
 }

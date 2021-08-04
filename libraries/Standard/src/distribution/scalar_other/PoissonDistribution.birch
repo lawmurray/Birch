@@ -112,6 +112,7 @@ function cdf_poisson(x:Integer, λ:Real) -> Real {
 function quantile_poisson(P:Real, λ:Real) -> Integer {
   assert 0.0 <= λ;
   cpp{{
-  return boost::math::quantile(boost::math::poisson_distribution<>(λ), P);
+  return boost::math::quantile(boost::math::poisson_distribution<Real>(λ),
+      P);
   }}
 }

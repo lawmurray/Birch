@@ -118,6 +118,7 @@ function quantile_weibull(P:Real, k:Real, λ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < λ;
   cpp{{
-  return boost::math::quantile(boost::math::weibull_distribution<>(k, λ), P);
+  return boost::math::quantile(boost::math::weibull_distribution<Real>(k, λ),
+      P);
   }}
 }

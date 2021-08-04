@@ -1,7 +1,18 @@
 /**
- * 64-bit (double precision) floating point.
+ * Real value. By default this represented by a 64-bit double-precision
+ * floating-point value. If `--enable-single` is used when building the
+ * package, and `--precision=single` used when calling `birch`, this is
+ * instead represented by a 32-bit single-precision floating-point value.
  */
 type Real;
+
+hpp{{
+#ifdef BIRCH_SINGLE
+using Real = float;
+#else
+using Real = double;
+#endif
+}}
 
 /*
  * Operators

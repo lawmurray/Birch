@@ -153,6 +153,11 @@ private:
   std::string mode;
 
   /**
+   * Floating point precision run mode ("single" or "double").
+   */
+  std::string precision;
+
+  /**
    * Number of jobs for parallel build. If zero, a reasonable value is
    * determined from the environment.
    */
@@ -172,6 +177,11 @@ private:
    * Enable release build?
    */
   bool release;
+
+  /**
+   * Enable single-precision builds?
+   */
+  bool single;
 
   /**
    * Enable static library?

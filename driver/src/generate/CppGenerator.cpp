@@ -44,11 +44,11 @@ void birch::CppGenerator::visit(const Literal<int64_t>* o) {
 
 void birch::CppGenerator::visit(const Literal<double>* o) {
   if (o->str == "nan") {
-    middle("std::numeric_limits<double>::quiet_NaN()");
+    middle("std::numeric_limits<Real>::quiet_NaN()");
   } else if (o->str == "inf") {
-    middle("std::numeric_limits<double>::infinity()");
+    middle("std::numeric_limits<Real>::infinity()");
   } else {
-    middle(o->str);
+    middle("Real(" << o->str << ')');
   }
 }
 

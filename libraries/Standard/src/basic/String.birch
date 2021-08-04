@@ -3,6 +3,10 @@
  */
 type String;
 
+hpp{{
+using String = std::string;
+}}
+
 /**
  * Convert to string.
  */
@@ -15,7 +19,7 @@ function to_string(x:Boolean) -> String {
 }
 
 /**
- * Convert double-precision floating point number to string.
+ * Convert to string.
  */
 function to_string(x:Real) -> String {
   cpp{{

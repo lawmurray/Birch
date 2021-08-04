@@ -126,6 +126,7 @@ function quantile_gamma(P:Real, k:Real, θ:Real) -> Real {
   assert 0.0 < k;
   assert 0.0 < θ;
   cpp{{
-  return boost::math::quantile(boost::math::gamma_distribution<>(k, θ), P);
+  return boost::math::quantile(boost::math::gamma_distribution<Real>(k, θ),
+      P);
   }}
 }

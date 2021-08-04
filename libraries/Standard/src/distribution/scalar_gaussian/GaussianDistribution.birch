@@ -78,7 +78,7 @@ function simulate_gaussian(μ:Real, σ2:Real) -> Real {
     return μ;
   } else {
     cpp{{
-    return std::normal_distribution<Real>(μ, std::sqrt(σ2))(rng);
+    return std::normal_distribution<Real>(μ, sqrt(σ2))(rng);
     }}
   }
 }
@@ -122,6 +122,7 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
 function quantile_gaussian(P:Real, μ:Real, σ2:Real) -> Real {
   assert 0.0 < σ2;
   cpp{{
-  return boost::math::quantile(boost::math::normal_distribution<>(μ, ::sqrt(σ2)), P);
+  return boost::math::quantile(boost::math::normal_distribution<Real>(μ,
+      sqrt(σ2)), P);
   }}
 }

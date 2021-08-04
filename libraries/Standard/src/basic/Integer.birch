@@ -1,7 +1,11 @@
 /**
- * 64-bit signed integer.
+ * Signed integer. This is represented with a 32-bit signed integer.
  */
 type Integer;
+
+hpp{{
+using Integer = int;
+}}
 
 /*
  * Operators

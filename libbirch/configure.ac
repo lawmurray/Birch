@@ -16,7 +16,6 @@ AC_ARG_ENABLE([debug],
   no)  debug=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
 esac],[debug=true])
-AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
 
 AC_ARG_ENABLE([test],
 [AS_HELP_STRING[--enable-test], [Build test library]],
@@ -25,7 +24,6 @@ AC_ARG_ENABLE([test],
   no)  test=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-test]) ;;
 esac],[test=false])
-AM_CONDITIONAL([TEST], [test x$test = xtrue])
 
 AC_ARG_ENABLE([release],
 [AS_HELP_STRING[--enable-release], [Build release library]],
@@ -34,6 +32,9 @@ AC_ARG_ENABLE([release],
   no)  release=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-release]) ;;
 esac],[release=true])
+
+AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
+AM_CONDITIONAL([TEST], [test x$test = xtrue])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
 # Programs
@@ -57,18 +58,22 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 AC_CHECK_LIB([atomic], [main], [], [], [])
 
 if $debug; then
-  AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lnumbirch-debug"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="-lnumbirch-debug"], [AC_MSG_ERROR([required library not found])])
 fi
 if $test; then
-  AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="$TEST_LIBS -lnumbirch-test"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="-lnumbirch-test"], [AC_MSG_ERROR([required library not found])])
 fi
 if $release; then
-  AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="-lnumbirch"], [AC_MSG_ERROR([required library not found])])
 fi
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([numbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
+
+AC_SUBST([DEBUG_LIBS])
+AC_SUBST([TEST_LIBS])
+AC_SUBST([RELEASE_LIBS])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

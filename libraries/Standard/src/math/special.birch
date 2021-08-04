@@ -83,7 +83,7 @@ function choose(x:Integer, y:Integer) -> Real {
     return 1.0;
   } else {
     cpp{{
-    return boost::math::binomial_coefficient<double>(x, y);
+    return boost::math::binomial_coefficient<Real>(x, y);
     }}
   }
 }

@@ -15,10 +15,12 @@ birch::Driver::Driver(int argc, char** argv) :
     packageVersion("unversioned"),
     unit("dir"),
     mode("debug"),
+    precision("double"),
     jobs(std::thread::hardware_concurrency()),
     test(false),
     debug(true),
     release(true),
+    single(true),
     staticLib(false),
     sharedLib(true),
     openmp(true),
@@ -32,6 +34,7 @@ birch::Driver::Driver(int argc, char** argv) :
   /* environment */
   char* BIRCH_UNIT = getenv("BIRCH_UNIT");
   char* BIRCH_MODE = getenv("BIRCH_MODE");
+  char* BIRCH_PRECISION = getenv("BIRCH_PRECISION");
   char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
   char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
   char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
@@ -43,6 +46,9 @@ birch::Driver::Driver(int argc, char** argv) :
   }
   if (BIRCH_MODE) {
     mode = BIRCH_MODE;
+  }
+  if (BIRCH_PRECISION) {
+    precision = BIRCH_PRECISION;
   }
   #ifdef PREFIX
   prefix = STRINGIFY(PREFIX);
@@ -129,6 +135,7 @@ birch::Driver::Driver(int argc, char** argv) :
     PREFIX_ARG,
     ARCH_ARG,
     MODE_ARG,
+    PRECISION_ARG,
     UNIT_ARG,
     ENABLE_DEBUG_ARG,
     DISABLE_DEBUG_ARG,
@@ -136,6 +143,8 @@ birch::Driver::Driver(int argc, char** argv) :
     DISABLE_TEST_ARG,
     ENABLE_RELEASE_ARG,
     DISABLE_RELEASE_ARG,
+    ENABLE_SINGLE_ARG,
+    DISABLE_SINGLE_ARG,
     ENABLE_STATIC_ARG,
     DISABLE_STATIC_ARG,
     ENABLE_SHARED_ARG,
@@ -160,6 +169,7 @@ birch::Driver::Driver(int argc, char** argv) :
       { "arch", required_argument, 0, ARCH_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
       { "mode", required_argument, 0, MODE_ARG },
+      { "precision", required_argument, 0, PRECISION_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-test", no_argument, 0, ENABLE_TEST_ARG },
       { "disable-test", no_argument, 0, DISABLE_TEST_ARG },
@@ -167,6 +177,8 @@ birch::Driver::Driver(int argc, char** argv) :
       { "disable-debug", no_argument, 0, DISABLE_DEBUG_ARG },
       { "enable-release", no_argument, 0, ENABLE_RELEASE_ARG },
       { "disable-release", no_argument, 0, DISABLE_RELEASE_ARG },
+      { "enable-single", no_argument, 0, ENABLE_SINGLE_ARG },
+      { "disable-single", no_argument, 0, DISABLE_SINGLE_ARG },
       { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
@@ -209,6 +221,9 @@ birch::Driver::Driver(int argc, char** argv) :
     case MODE_ARG:
       mode = optarg;
       break;
+    case PRECISION_ARG:
+      precision = optarg;
+      break;
     case JOBS_ARG:
       jobs = atoi(optarg);
       break;
@@ -229,6 +244,12 @@ birch::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_RELEASE_ARG:
       release = false;
+      break;
+    case ENABLE_SINGLE_ARG:
+      single = true;
+      break;
+    case DISABLE_SINGLE_ARG:
+      single = false;
       break;
     case ENABLE_STATIC_ARG:
       staticLib = true;
@@ -297,6 +318,9 @@ birch::Driver::Driver(int argc, char** argv) :
   if (mode != "debug" && mode != "test" && mode != "release") {
     throw DriverException("--mode must be debug, test, or release.");
   }
+  if (precision != "single" && precision != "double") {
+    throw DriverException("--precision must be single or double.");
+  }
 }
 
 void birch::Driver::run(const std::string& prog,
@@ -319,6 +343,9 @@ void birch::Driver::run(const std::string& prog,
     // no suffix
   } else {
     name += "-debug";
+  }
+  if (precision.compare("single") == 0) {
+    name += "-single";
   }
   fs::path so = name;
   #ifdef __APPLE__
@@ -439,6 +466,11 @@ void birch::Driver::configure() {
       options << " --enable-release";
     } else {
       options << " --disable-release";
+    }
+    if (single) {
+      options << " --enable-single";
+    } else {
+      options << " --disable-single";
     }
     if (staticLib) {
       options << " --enable-static";
@@ -594,9 +626,15 @@ void birch::Driver::clean() {
   fs::remove("lib" + canonicalName + "_test_la-" + tarName + ".lo");
   fs::remove("lib" + canonicalName + "_debug_la-" + tarName + ".lo");
   fs::remove("lib" + canonicalName + "_la" + tarName + ".lo");
+  fs::remove("lib" + canonicalName + "_test_single_la-" + tarName + ".lo");
+  fs::remove("lib" + canonicalName + "_debug_single_la-" + tarName + ".lo");
+  fs::remove("lib" + canonicalName + "_single_la" + tarName + ".lo");
   fs::remove("lib" + tarName + "-test.la");
   fs::remove("lib" + tarName + "-debug.la");
   fs::remove("lib" + tarName + ".la");
+  fs::remove("lib" + tarName + "-test-single.la");
+  fs::remove("lib" + tarName + "-debug-single.la");
+  fs::remove("lib" + tarName + "-single.la");
   fs::remove(tarName + ".birch");
   fs::remove(tarName + ".cpp");
   fs::remove(tarName + ".hpp");
@@ -860,6 +898,9 @@ void birch::Driver::help() {
       std::cout << "  --mode (default `debug`, valid values `debug`, `test`, `release`):" << std::endl;
       std::cout << "  Set the mode of the build to run." << std::endl;
       std::cout << std::endl;
+      std::cout << "  --precision (default `double`, valid values `single`, `double`):" << std::endl;
+      std::cout << "  Set the floating point precision of the build to run." << std::endl;
+      std::cout << std::endl;
       std::cout << "  --enable-debug / --disable-debug (default enabled):" << std::endl;
       std::cout << "  Enable/disable debug mode build." << std::endl;
       std::cout << std::endl;
@@ -868,6 +909,9 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "  --enable-release / --disable-release (default enabled):" << std::endl;
       std::cout << "  Enable/disable release mode build." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --enable-single / --disable-single (default disabled):" << std::endl;
+      std::cout << "  Enable/disable floating point single precision build." << std::endl;
       std::cout << std::endl;
       std::cout << "  --enable-warnings / --disable-warnings (default enabled):" << std::endl;
       std::cout << "  Enable/disable compiler warnings." << std::endl;
@@ -1063,6 +1107,15 @@ void birch::Driver::setup() {
     configureStream << "if $release; then\n";
     configureStream << "  AC_CHECK_LIB([" << tarName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
     configureStream << "fi\n";
+    configureStream << "if $test && $single; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-test-single], [main], [TEST_SINGLE_LIBS=\"$TEST_SINGLE_LIBS -l" << tarName << "-test-single\"], [AC_MSG_ERROR([required library not found.])], [$TEST_SINGLE_LIBS])\n";
+    configureStream << "fi\n";
+    configureStream << "if $debug && $single; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug-single], [main], [DEBUG_SINGLE_LIBS=\"$DEBUG_SINGLE_LIBS -l" << tarName << "-debug-single\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_SINGLE_LIBS])\n";
+    configureStream << "fi\n";
+    configureStream << "if $release && $single; then\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-single], [main], [RELEASE_SINGLE_LIBS=\"$RELEASE_SINGLE_LIBS -l" << tarName << "-single\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_SINGLE_LIBS])\n";
+    configureStream << "fi\n";
   }
 
   /* required programs */
@@ -1077,6 +1130,9 @@ void birch::Driver::setup() {
   configureStream << "AC_SUBST([DEBUG_LIBS])\n";
   configureStream << "AC_SUBST([TEST_LIBS])\n";
   configureStream << "AC_SUBST([RELEASE_LIBS])\n";
+  configureStream << "AC_SUBST([DEBUG_SINGLE_LIBS])\n";
+  configureStream << "AC_SUBST([TEST_SINGLE_LIBS])\n";
+  configureStream << "AC_SUBST([RELEASE_SINGLE_LIBS])\n";
   configureStream << "\n";
   configureStream << "AC_CONFIG_FILES([Makefile])\n";
   configureStream << "AC_OUTPUT\n";
@@ -1199,8 +1255,8 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxTemplateParameter("template parameter", options);
   std::regex rxTemplateArgument("template argument", options);
   std::regex rxTypeDeduction("before deduction of ‘’", options);
-  std::regex rxReal("\\bdouble\\b", options);
-  std::regex rxInteger("\\blong (?:long|int)\\b", options);
+  std::regex rxReal("\\b(?:float|double)\\b", options);
+  std::regex rxInteger("\\b(?:long )?(?:long|int)\\b", options);
   std::regex rxBoolean("\\bbool\\b", options);
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
   std::regex rxVector("Array<(" + type + "), *1 *>", options);
@@ -1250,7 +1306,7 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxTypeDeduction, "before deduction of return type");
 
         /* convert back some types */
-        str = std::regex_replace(str, rxReal, "Real");
+        //str = std::regex_replace(str, rxReal, "Real");
         str = std::regex_replace(str, rxInteger, "Integer");
         str = std::regex_replace(str, rxBoolean, "Boolean");
         str = std::regex_replace(str, rxString, "String");

@@ -168,7 +168,8 @@ function cdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
 function quantile_student_t(P:Real, ν:Real) -> Real {
   assert 0.0 < ν;
   cpp{{
-  return boost::math::quantile(boost::math::students_t_distribution<>(ν), P);
+  return boost::math::quantile(boost::math::students_t_distribution<Real>(ν),
+      P);
   }}
 }
 
