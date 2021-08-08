@@ -175,7 +175,6 @@ public:
     } else {
       compact();
       allocate();
-      crystallize();
       uninitialized_copy(o);
     }
   }
@@ -189,7 +188,6 @@ public:
     shape = o.shape;
     compact();
     allocate();
-    crystallize();
     uninitialized_copy(o);
   }
 
@@ -203,7 +201,6 @@ public:
       shape = o.shape;
       compact();
       allocate();
-      crystallize();
       uninitialized_copy(o);
     }
   }
@@ -397,10 +394,11 @@ public:
       swap(tmp);
     } else {
       own();
-      atomize();
       #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
+        crystallize();
         buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
+        atomize();
       } else
       #endif
       {
@@ -438,6 +436,7 @@ public:
           (n - len - i)*sizeof(T));
       #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
+        crystallize();
         buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
       } else
       #endif
@@ -486,6 +485,7 @@ private:
       assert(conforms(o) && "array sizes are different");
       #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
+        crystallize();
         numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
             o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
             shape.height());
@@ -550,6 +550,7 @@ private:
 
     #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value) {
+      crystallize();
       buffer = (T*)numbirch::malloc(volume()*sizeof(T));
     } else
     #endif
@@ -565,19 +566,16 @@ private:
    */
   std::tuple<ArrayControl*,T*,bool> share() {
     assert(!isView);
-
-    if (buffer) {
-      if (control) {
+    if (control) {
+      control->incShared_();
+    } else if (buffer) {
+      lock.set();
+      if (control) {  // another thread may have created in the meantime
         control->incShared_();
       } else {
-        lock.set();
-        if (control) {  // another thread may have created in the meantime
-          control->incShared_();
-        } else {
-          control = new ArrayControl(2);
-        }
-        lock.unset();
+        control = new ArrayControl(2);
       }
+      lock.unset();
     }
     return std::make_tuple(control, buffer, isElementWise);
   }
@@ -598,15 +596,19 @@ private:
       assert(!isView);
       lock.set();
       if (control) {  // another thread may have cleared in the meantime
-        if (control->numShared_() > 1) {
+        if (control->numShared_() == 1) {
+          /* last reference */
+          delete control;
+          control = nullptr;
+        } else {
           T* buf = nullptr;
           #if HAVE_NUMBIRCH_HPP
           if (std::is_trivial<T>::value) {
+            crystallize();
             buf = (T*)numbirch::malloc(size()*sizeof(T));
             numbirch::memcpy(buf, shape.width()*sizeof(T), buffer,
                 shape.stride()*sizeof(T), shape.width()*sizeof(T),
                 shape.height());
-            crystallize();
           } else
           #endif
           {
@@ -616,15 +618,10 @@ private:
           release();
           compact();
           this->buffer = buf;
-        } else {
-          /* last reference */
-          delete control;
-          control = nullptr;
         }
       }
       lock.unset();
     }
-    assert(!control);
   }
 
   /**
@@ -710,6 +707,7 @@ private:
   void uninitialized_copy(const Array<U,E>& o) {
     #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
+      crystallize();
       numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
           o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
           shape.height());
