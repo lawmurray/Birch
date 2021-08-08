@@ -45,7 +45,6 @@ void term() {
   cusolver_term();
   cublas_term();
   cuda_term();
-  CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 void memcpy(void* dst, const size_t dpitch, const void* src,

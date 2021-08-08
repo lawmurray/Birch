@@ -14,11 +14,6 @@
 #define CUDA_SYNC 0
 
 /*
- * Preferred thread block size for CUDA kernels.
- */
-#define CUDA_PREFERRED_BLOCK_SIZE 512
-
-/*
  * Call a cuda* function and assert success.
  */
 #define CUDA_CHECK(call) \
@@ -35,6 +30,11 @@ namespace numbirch {
 
 extern thread_local int device;
 extern thread_local cudaStream_t stream;
+
+/*
+ * Preferred thread block size for CUDA kernels.
+ */
+static const int CUDA_PREFERRED_BLOCK_SIZE = 512;
 
 /*
  * Initialize CUDA integrations. This should be called during init() by the
@@ -65,7 +65,7 @@ inline dim3 make_block(const int n) {
 inline dim3 make_block(const int m, const int n) {
   dim3 block;
   block.x = std::min(m, CUDA_PREFERRED_BLOCK_SIZE);
-  block.y = CUDA_PREFERRED_BLOCK_SIZE/block.x;
+  block.y = std::min(n, CUDA_PREFERRED_BLOCK_SIZE/(int)block.x);
   block.z = 1;
   return block;
 }

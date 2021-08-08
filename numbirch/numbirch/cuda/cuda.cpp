@@ -6,7 +6,7 @@
 namespace numbirch {
 
 thread_local int device = 0;
-thread_local cudaStream_t stream = cudaStreamPerThread;
+thread_local cudaStream_t stream = 0;
 
 void cuda_init() {
   #pragma omp parallel
@@ -20,7 +20,10 @@ void cuda_init() {
 void cuda_term() {
   #pragma omp parallel
   {
-    CUDA_CHECK(cudaStreamDestroy(stream));
+    /* don't use CUDA_CHECK here, because it tries to use stream after
+     * destruction when CUDA_SYNC is true */
+    cudaError_t err = cudaStreamDestroy(stream);
+    assert(err == cudaSuccess);
   }
 }
 

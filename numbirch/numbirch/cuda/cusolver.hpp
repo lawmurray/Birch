@@ -23,41 +23,26 @@
       } \
     }
 
+/*
+ * Call a cusolver* function and assert success, on both return code and info
+ * code.
+ */
+#define CUSOLVER_CHECK_INFO(call) \
+    { \
+      cusolverStatus_t err = call; \
+      assert(err == CUSOLVER_STATUS_SUCCESS); \
+      if (CUDA_SYNC) { \
+        cudaError_t err = cudaStreamSynchronize(stream); \
+        assert(err == cudaSuccess); \
+        assert(*info == 0); \
+      } \
+    }
+
 namespace numbirch {
 
 extern thread_local cusolverDnHandle_t cusolverDnHandle;
 extern thread_local cusolverDnParams_t cusolverDnParams;
-
-/*
- * Scalars.
- */
-extern double* oneD;
-extern double* zeroD;
-extern float* oneS;
-extern float* zeroS;
-
-/*
- * Info flag.
- */
-static int* info = nullptr;
-
-/*
- * cuSOLVER scalar access for single and double precision.
- */
-template<class T>
-struct scalar {
-  //
-};
-template<>
-struct scalar<double> {
-  static constexpr double*& one = oneD;
-  static constexpr double*& zero = zeroD;
-};
-template<>
-struct scalar<float> {
-  static constexpr float*& one = oneS;
-  static constexpr float*& zero = zeroS;
-};
+extern thread_local int* info;
 
 /*
  * cuSOLVER requirements for single and double precision.

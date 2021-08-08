@@ -54,6 +54,32 @@ struct cublas<float> {
 };
 
 /*
+ * Scalars.
+ */
+extern double* oneD;
+extern double* zeroD;
+extern float* oneS;
+extern float* zeroS;
+
+/*
+ * Scalar access for single and double precision.
+ */
+template<class T>
+struct scalar {
+  //
+};
+template<>
+struct scalar<double> {
+  static constexpr double*& one = oneD;
+  static constexpr double*& zero = zeroD;
+};
+template<>
+struct scalar<float> {
+  static constexpr float*& one = oneS;
+  static constexpr float*& zero = zeroS;
+};
+
+/*
  * Initialize cuBLAS integrations. This should be called during init() by the
  * backend.
  */

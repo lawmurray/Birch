@@ -252,9 +252,9 @@ void cholsolve(const int n, const T* S, const int ldS, T* x, const int incx,
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto x1 = make_eigen_vector(x, n, incx);
   auto y1 = make_eigen_vector(y, n, incy);
-  auto llt = S1.llt();
-  assert(llt.info() == Eigen::Success);
-  x1.noalias() = llt.solve(y1);
+  auto ldlt = S1.ldlt();
+  assert(ldlt.info() == Eigen::Success);
+  x1.noalias() = ldlt.solve(y1);
 }
 
 template<class T>
@@ -263,9 +263,9 @@ void cholsolve(const int m, const int n, const T* S, const int ldS, T* X,
   auto S1 = make_eigen_matrix(S, m, m, ldS);
   auto X1 = make_eigen_matrix(X, m, n, ldX);
   auto Y1 = make_eigen_matrix(Y, m, n, ldY);
-  auto llt = S1.llt();
-  assert(llt.info() == Eigen::Success);
-  X1.noalias() = llt.solve(Y1);
+  auto ldlt = S1.ldlt();
+  assert(ldlt.info() == Eigen::Success);
+  X1.noalias() = ldlt.solve(Y1);
 }
 
 template<class T>
@@ -279,9 +279,9 @@ template<class T>
 void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto B1 = make_eigen_matrix(B, n, n, ldB);
-  auto llt = S1.llt();
-  assert(llt.info() == Eigen::Success);
-  B1.noalias() = llt.solve(Eigen::Matrix<T,Eigen::Dynamic,
+  auto ldlt = S1.ldlt();
+  assert(ldlt.info() == Eigen::Success);
+  B1.noalias() = ldlt.solve(Eigen::Matrix<T,Eigen::Dynamic,
       Eigen::Dynamic,Eigen::ColMajor>::Identity(n, n));
 }
 

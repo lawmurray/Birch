@@ -61,6 +61,11 @@ unsigned make_tcache() {
 }
 
 void numbirch::jemalloc_init() {
+  bool background_thread = false;
+  [[maybe_unused]] int ret = mallctl("background_thread", nullptr, nullptr,
+      &background_thread, sizeof(background_thread));
+  assert(ret == 0);
+
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     /* shared arena setup */
@@ -93,6 +98,11 @@ void* numbirch::realloc(void* ptr, const size_t size) {
 }
 
 void numbirch::free(void* ptr) {
+  /// @todo Actually need to wait on the stream associated with the arena
+  /// where this allocation was made, and only if its a different thread to
+  /// this one, lest it is reused by the associated thread before this thread
+  /// has finished any asynchronous work
+  wait();
   if (ptr) {
     dallocx(ptr, shared_flags);
   }
