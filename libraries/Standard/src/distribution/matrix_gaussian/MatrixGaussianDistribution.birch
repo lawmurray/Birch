@@ -99,6 +99,6 @@ function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
   let n <- rows(X);
   let p <- columns(X);
   let Z <- X - M;
-  return -0.5*(frobenius(Z*cholinv(V), cholsolve(U, Z)) +
-      n*p*log(2.0*π) + n*lcholdet(V) + p*lcholdet(U));
+  return -0.5*(frobenius(Z*cholinv(V), cholsolve(U, Z)) + n*p*log(2.0*π) +
+      n*lcholdet(V) + p*lcholdet(U));
 }
