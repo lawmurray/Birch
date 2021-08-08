@@ -1,7 +1,7 @@
 /**
  * @file
  * 
- * Generic implementation of interface for CUDA.
+ * CUDA implementation of generic functions.
  */
 #pragma once
 

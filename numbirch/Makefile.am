@@ -16,15 +16,17 @@ AM_LDFLAGS =
 COMMON_SOURCES =
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI -Wno-deprecated-declarations -Wno-unused-command-line-argument
-  AM_CXXFLAGS += -qmkl -fsycl-unnamed-lambda
+  AM_CXXFLAGS += -fsycl -qmkl
   AM_LDFLAGS += $(AM_CXXFLAGS)
   COMMON_SOURCES += \
+      numbirch/jemalloc/jemalloc.cpp \
       numbirch/oneapi/numbirch.cpp \
+      numbirch/oneapi/sycl.cpp \
       numbirch/numbirch.cpp
 else
 if CUDA
   AM_CXXFLAGS += -DBACKEND_CUDA
-  AM_CXXFLAGS += -x cu -arch=sm_75 -G -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
+  AM_CXXFLAGS += -x cu -G -arch=sm_75 -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
   COMMON_SOURCES += \
       numbirch/jemalloc/jemalloc.cpp \
       numbirch/cuda/cuda.cpp \

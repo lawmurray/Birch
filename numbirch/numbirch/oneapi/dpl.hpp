@@ -5,11 +5,17 @@
  */
 #pragma once
 
+#include "numbirch/oneapi/sycl.hpp"
+
 #include <oneapi/dpl/execution>
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/numeric>
 #include <oneapi/dpl/ranges>
 #include <oneapi/dpl/async>
+
+namespace dpl = oneapi::dpl;
+
+namespace numbirch {
 
 template<class T>
 static auto make_dpl_vector(T* x, const int n, const int incx) {
@@ -60,4 +66,6 @@ static auto make_dpl_matrix_symmetric(const T* A, const int m, const int n,
         int r = i - c*m;
         return A[(c <= r) ? (r + c*ldA) : (c + r*ldA)];
       });
+}
+
 }
