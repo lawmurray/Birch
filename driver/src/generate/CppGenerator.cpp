@@ -687,7 +687,7 @@ void birch::CppGenerator::visit(const TypeList* o) {
 }
 
 void birch::CppGenerator::visit(const DeducedType* o) {
-  middle("decltype(auto)");
+  middle("auto");
 }
 
 void birch::CppGenerator::genDoc(const Location* loc) {
