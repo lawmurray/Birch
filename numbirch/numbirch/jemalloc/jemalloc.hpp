@@ -50,4 +50,23 @@ bool extent_dalloc(extent_hooks_t *extent_hooks, void *addr, size_t size,
  */
 void extent_destroy(extent_hooks_t *extent_hooks, void *addr, size_t size,
     bool committed, unsigned arena_ind);
+
+/*
+ * Custom alloc() extent hook. This is implemented by the specific backend.
+ */
+void* device_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
+    size_t size, size_t alignment, bool *zero, bool *commit,
+    unsigned arena_ind);
+
+/*
+ * Custom dalloc() extent hook. This is implemented by the specific backend.
+ */
+bool device_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind);
+
+/*
+ * Custom destroy() extent hook. This is implemented by the specific backend.
+ */
+void device_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind);
 }

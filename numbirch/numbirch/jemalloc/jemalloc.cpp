@@ -41,21 +41,35 @@ static extent_hooks_t hooks = {
   nullptr
 };
 
-unsigned make_arena() {
+/**
+ * Custom extent hooks structure.
+ */
+static extent_hooks_t device_hooks = {
+  numbirch::device_extent_alloc,
+  numbirch::device_extent_dalloc,
+  numbirch::device_extent_destroy,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr
+};
+
+unsigned make_arena(extent_hooks_t* hooks) {
+  [[maybe_unused]] int ret;
   unsigned arena = 0;
-  void* hooks1 = &hooks;
   size_t size = sizeof(arena);
-  [[maybe_unused]] int ret = mallctl("arenas.create", &arena, &size, &hooks1,
-      sizeof(hooks1));
+  ret = mallctl("arenas.create", &arena, &size, &hooks, sizeof(hooks));
   assert(ret == 0);
   return arena;
 }
 
 unsigned make_tcache() {
+  [[maybe_unused]] int ret;
   unsigned tcache = 0;
   size_t size = sizeof(tcache);
-  [[maybe_unused]] int ret = mallctl("tcache.create", &tcache, &size, nullptr,
-      0);
+  ret = mallctl("tcache.create", &tcache, &size, nullptr, 0);
   assert(ret == 0);
   return tcache;
 }
@@ -69,12 +83,12 @@ void numbirch::jemalloc_init() {
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     /* shared arena setup */
-    shared_arena = make_arena();
+    shared_arena = make_arena(&hooks);
     shared_tcache = make_tcache();
     shared_flags = MALLOCX_ARENA(shared_arena)|MALLOCX_TCACHE(shared_tcache);
 
     /* device arena setup */
-    device_arena = make_arena();
+    device_arena = make_arena(&device_hooks);
     device_tcache = make_tcache();
     device_flags = MALLOCX_ARENA(device_arena)|MALLOCX_TCACHE(device_tcache);
   }
@@ -92,7 +106,7 @@ void* numbirch::realloc(void* ptr, const size_t size) {
   if (size > 0) {
     return rallocx(ptr, size, shared_flags);
   } else {
-    free(ptr);
+    dallocx(ptr, shared_flags);
     return nullptr;
   }
 }
