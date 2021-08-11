@@ -26,6 +26,22 @@ static thread_local unsigned device_arena = 0;
 static thread_local unsigned device_tcache = 0;
 static thread_local int device_flags = 0;
 
+/*
+ * Disable retention of extents by jemalloc. This is critical as the custom
+ * extent hooks for any particular backend will typically allocate physical
+ * rather than virtual memory, which should not be retained.
+ * 
+ * This particular global variable likely has no effect, but is included here
+ * for documentation. The `birch` driver program is linked to libjemalloc.so
+ * in order to load it prior to any shared libraries for Birch packages, and
+ * because of thread-local storage (TLS) issues when loading libjemalloc.so
+ * via dlopen()---directly or indirectly (e.g. package shared library linked
+ * to libnumbirch.so, linked to libjemalloc.so). Consequently, this global
+ * variable is repeated in the `birch` driver program itself; that version
+ * is the one that actually as an effect.
+ */
+const char* malloc_conf = "retain:false";
+
 /**
  * Custom extent hooks structure.
  */
@@ -75,6 +91,7 @@ unsigned make_tcache() {
 }
 
 void numbirch::jemalloc_init() {
+  /* disable background threads */
   bool background_thread = false;
   [[maybe_unused]] int ret = mallctl("background_thread", nullptr, nullptr,
       &background_thread, sizeof(background_thread));
