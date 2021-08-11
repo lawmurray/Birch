@@ -173,6 +173,35 @@ void sub(const int m, const int n, const float* A, const int ldA,
     const float* B, const int ldB, float* C, const int ldC);
 
 /**
+ * Linear combination of matrices.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param a Coefficient on `A`.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Coefficient on `B`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param c Coefficient on `C`.
+ * @param C Matrix.
+ * @param ldC Column stride of `C`.
+ * @param d Coefficient on `D`.
+ * @param D Matrix.
+ * @param ldD Column stride of `D`.
+ * @param[out] E Matrix.
+ * @param ldE Column stride of `E`.
+ */
+void combine(const int m, const int n, const double a, const double* A,
+    const int ldA, const double b, const double* B, const int ldB,
+    const double c, const double* C, const int ldC, const double d,
+    const double* D, const int ldD, double* E, const int ldE);
+void combine(const int m, const int n, const float a, const float* A,
+    const int ldA, const float b, const float* B, const int ldB,
+    const float c, const float* C, const int ldC, const float d,
+    const float* D, const int ldD, float* E, const int ldE);
+
+/**
  * Hadamard (element-wise) vector multiplication.
  * 
  * @param n Number of elements.

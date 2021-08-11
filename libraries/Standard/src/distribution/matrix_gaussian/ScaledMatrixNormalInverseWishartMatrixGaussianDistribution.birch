@@ -99,8 +99,8 @@ function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>,
       V.graft(p);
       return p;
     } else {
-      return construct<MatrixGaussianDistribution<Multiply<Arg1,Random<Real[_,_]>>,Arg2,
-          Random<Real[_,_]>>>(M, U, V);
+      return construct<MatrixGaussianDistribution<Multiply<Arg1,
+          Random<Real[_,_]>>,Arg2,Random<Real[_,_]>>>(M, U, V);
     }
   }
 }
@@ -172,7 +172,8 @@ function update_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
   let N' <- N + inner(A, Z);
   let M <- cholsolve(Λ, N);
   let M' <- cholsolve(Λ', N');
-  let Ψ' <- Ψ + inner(X, Z) + inner(M, N) - inner(M', N');
+  let Ψ' <- combine(1.0, Ψ, 1.0, inner(X, Z), 1.0, inner(M, N), -1.0,
+      inner(M', N'));
   let k' <- k + n;
   return MatrixNormalInverseWishart(N', Λ', Ψ', k');
 }

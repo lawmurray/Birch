@@ -123,8 +123,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ.r.graft(p);
     return p;
   } else {
-    return construct<MultivariateGaussianDistribution<Arg1,Multiply<Arg2,Random<Real>>>>(
-        μ, Σ);
+    return construct<MultivariateGaussianDistribution<Arg1,Multiply<Arg2,
+        Random<Real>>>>(μ, Σ);
   }
 }
 
@@ -141,8 +141,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ.l.graft(p);
     return p;
   } else {
-    return construct<MultivariateGaussianDistribution<Arg1,Multiply<Random<Real>,Arg2>>>(
-        μ, Σ);
+    return construct<MultivariateGaussianDistribution<Arg1,Multiply<
+        Random<Real>,Arg2>>>(μ, Σ);
   }
 }
 

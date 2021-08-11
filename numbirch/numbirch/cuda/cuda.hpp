@@ -34,7 +34,7 @@ extern thread_local cudaStream_t stream;
 /*
  * Preferred thread block size for CUDA kernels.
  */
-static const int CUDA_PREFERRED_BLOCK_SIZE = 512;
+static const int CUDA_PREFERRED_BLOCK_SIZE = 256;
 
 /*
  * Initialize CUDA integrations. This should be called during init() by the

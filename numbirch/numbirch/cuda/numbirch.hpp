@@ -94,6 +94,29 @@ void transform(const int n, const T* x, const int incx, const T* y,
 }
 
 /*
+ * Matrix quaternary transform.
+ */
+template<class T, class Functor>
+__global__ void kernel_transform(const int m, const int n, const T* A,
+    const int ldA, const T* B, const int ldB, const T* C, const int ldC,
+    const T* D, const int ldD, T* E, const int ldE, Functor f) {
+  auto i = blockIdx.x*blockDim.x + threadIdx.x;
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    E[i + j*ldE] = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC], D[i + j*ldD]);
+  }
+}
+template<class T, class Functor>
+void transform(const int m, const int n, const T* A,
+    const int ldA, const T* B, const int ldB, const T* C, const int ldC,
+    const T* D, const int ldD, T* E, const int ldE, Functor f) {
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,
+      ldD, E, ldE, f);
+}
+
+/*
  * Matrix binary transform.
  */
 template<class T, class Functor>
@@ -185,6 +208,21 @@ void sub(const int m, const int n, const T* A, const int ldA, const T* B,
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
   transform(m, n, A, ldA, B, ldB, C, ldC, minus_functor<T>());
+}
+
+template<class T>
+void combine(const int m, const int n, const T a, const T* A, const int ldA,
+    const T b, const T* B, const int ldB, const T c, const T* C,
+    const int ldC, const T d, const T* D, const int ldD, T* E,
+    const int ldE) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  prefetch(D, m, n, ldD);
+  prefetch(E, m, n, ldE);
+
+  transform(m, n, A, ldA, B, ldB, C, ldC, D, ldD, E, ldE,
+      combine_functor<T>(a, b, c, d));
 }
 
 template<class T>

@@ -65,8 +65,8 @@ final class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
 
 function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5>(N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) -> {
-  return construct<MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
-      Arg4,Arg5>>(N, Λ, Ψ, k, U);
+  return construct<MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,
+      Arg2,Arg3,Arg4,Arg5>>(N, Λ, Ψ, k, U);
 }
 
 /**
@@ -91,8 +91,8 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, U:Arg,
       V.graft(p);
       return p;
     } else {
-      return construct<MatrixGaussianDistribution<Random<Real[_,_]>,Arg,Random<Real[_,_]>>>(
-          M, U, V);
+      return construct<MatrixGaussianDistribution<Random<Real[_,_]>,Arg,
+          Random<Real[_,_]>>>(M, U, V);
     }
   }
 }

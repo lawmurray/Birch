@@ -81,8 +81,8 @@ final class LinearMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2
 function LinearMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, C:Arg6,
     U:Arg7) -> {
-  return construct<LinearMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,
-      Arg3,Arg4,Arg5,Arg6,Arg7>>(A, N, Λ, Ψ, k, C, U);
+  return construct<LinearMatrixNormalInverseWishartMatrixGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(A, N, Λ, Ψ, k, C, U);
 }
 
 /**

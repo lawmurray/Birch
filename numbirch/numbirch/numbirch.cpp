@@ -79,6 +79,20 @@ void sub(const int m, const int n, const float* A, const int ldA,
   sub<float>(m, n, A, ldA, B, ldB, C, ldC);
 }
 
+void combine(const int m, const int n, const double a, const double* A,
+    const int ldA, const double b, const double* B, const int ldB,
+    const double c, const double* C, const int ldC, const double d,
+    const double* D, const int ldD, double* E, const int ldE) {
+  combine<double>(m, n, a, A, ldA, b, B, ldB, c, C, ldC, d, D, ldD, E, ldE);
+}
+
+void combine(const int m, const int n, const float a, const float* A,
+    const int ldA, const float b, const float* B, const int ldB,
+    const float c, const float* C, const int ldC, const float d,
+    const float* D, const int ldD, float* E, const int ldE) {
+  combine<float>(m, n, a, A, ldA, b, B, ldB, c, C, ldC, d, D, ldD, E, ldE);
+}
+
 void hadamard(const int n, const double* x, const int incx,
     const double* y, const int incy, double* z, const int incz) {
   hadamard<double>(n, x, incx, y, incy, z, incz);

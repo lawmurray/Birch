@@ -130,6 +130,19 @@ struct scalar_divides_functor {
 };
 
 template<class T = double>
+struct combine_functor {
+  combine_functor(const T a , const T b, const T c, const T d) :
+      a(a), b(b), c(c), d(d) {
+    //
+  }
+  __host__ __device__
+  T operator()(const T w, const T x, const T y, const T z) const {
+    return a*w + b*x + c*y + d*z;
+  }
+  const T a, b, c, d;
+};
+
+template<class T = double>
 struct log_abs_functor {
   __host__ __device__
   T operator()(const T x) const {

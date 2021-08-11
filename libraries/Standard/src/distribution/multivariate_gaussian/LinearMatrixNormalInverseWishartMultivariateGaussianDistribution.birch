@@ -2,9 +2,9 @@
  * Multivariate Gaussian distribution with linear transformation of
  * matrix-normal-inverse-Wishart prior.
  */
-final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6) <
-    Distribution<Real[_]> {
+final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
+    c:Arg6) < Distribution<Real[_]> {
   /**
    * Scale.
    */
@@ -72,8 +72,8 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg
 
 function LinearMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6) -> {
-  return construct<LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,
-      Arg2,Arg3,Arg4,Arg5,Arg6>>(a, N, Λ, Ψ, k, c);
+  return construct<LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(a, N, Λ, Ψ, k, c);
 }
 
 /**
