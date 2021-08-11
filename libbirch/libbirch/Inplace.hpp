@@ -98,7 +98,7 @@ public:
    */
   template<class... Args>
   auto& operator()(Args&&... args) {
-    return (*o)(std::forward<Args>(args)...);
+    return o(std::forward<Args>(args)...);
   }
 
   /**
