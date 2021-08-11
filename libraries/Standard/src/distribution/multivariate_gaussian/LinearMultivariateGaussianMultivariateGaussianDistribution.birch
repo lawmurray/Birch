@@ -75,8 +75,8 @@ final class LinearMultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2
 
 function LinearMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
-  return construct<LinearMultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
-      Arg3,Arg4,Arg5>>(A, μ, Σ, c, S);
+  return construct<LinearMultivariateGaussianMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5>>(A, μ, Σ, c, S);
 }
 
 /**

@@ -63,8 +63,8 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,Arg3>
 
 function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
     Σ:Arg2, S:Arg3) -> {
-  return construct<MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,Arg3>>(
-      μ, Σ, S);
+  return construct<MultivariateGaussianMultivariateGaussianDistribution<Arg1,
+      Arg2,Arg3>>(μ, Σ, S);
 }
 
 /**
@@ -79,7 +79,8 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
     μ.graft(p);
     return p;
   } else {
-    return construct<MultivariateGaussianDistribution<Random<Real[_]>,Arg>>(μ, Σ);
+    return construct<MultivariateGaussianDistribution<Random<Real[_]>,Arg>>(
+      μ, Σ);
   }
 }
 
