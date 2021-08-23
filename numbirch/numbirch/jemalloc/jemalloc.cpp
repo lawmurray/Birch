@@ -91,12 +91,6 @@ unsigned make_tcache() {
 }
 
 void numbirch::jemalloc_init() {
-  /* disable background threads */
-  bool background_thread = false;
-  [[maybe_unused]] int ret = mallctl("background_thread", nullptr, nullptr,
-      &background_thread, sizeof(background_thread));
-  assert(ret == 0);
-
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     /* shared arena setup */
@@ -123,7 +117,7 @@ void* numbirch::realloc(void* ptr, const size_t size) {
   if (size > 0) {
     return rallocx(ptr, size, shared_flags);
   } else {
-    dallocx(ptr, shared_flags);
+    free(ptr);
     return nullptr;
   }
 }
