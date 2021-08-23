@@ -1,0 +1,146 @@
+/**
+ * Wrap a value.
+ */
+function wrap(x:Boolean) -> Boolean {
+  return x;
+}
+
+/**
+ * Wrap a value.
+ */
+function wrap(x:Integer) -> Integer {
+  return x;
+}
+
+/**
+ * Wrap a value.
+ */
+function wrap(x:Real) -> Real {
+  return x;
+}
+
+/**
+ * Wrap a value.
+ */
+function wrap<Type>(x:Type[_]) -> Type[_] {
+  return x;
+}
+
+/**
+ * Wrap a value.
+ */
+function wrap<Type>(x:Type[_,_]) -> Type[_,_] {
+  return x;
+}
+
+/**
+ * Wrap a non-value.
+ */
+function wrap<Type>(x:Type) -> {
+  return box(x);
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2>(x:(Value1,Value2)) -> {
+  let (x1, x2) <- x;
+  return (wrap(x1), wrap(x2));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) -> {
+  let (x1, x2, x3) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) -> {
+  let (x1, x2, x3, x4) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) -> {
+  let (x1, x2, x3, x4, x5) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) -> {
+  let (x1, x2, x3, x4, x5, x6) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) -> {
+  let (x1, x2, x3, x4, x5, x6, x7) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) -> {
+  let (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2>(x1:Value1, x2:Value2) -> {
+  return (wrap(x1), wrap(x2));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3>(x1:Value1, x2:Value2, x3:Value3) -> {
+  return (wrap(x1), wrap(x2), wrap(x3));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4>(x1:Value1, x2:Value2, x3:Value3, x4:Value4) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7, x8:Value8) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
+}
