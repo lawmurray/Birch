@@ -91,12 +91,11 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
   /* wrap λ in another lambda function to translate 0-based serial indices
    * into 1-based row/column indices */
-  return libbirch::make_array_from_lambda(libbirch::make_shape(rows,
-      columns), [&](Integer s) {
+  return libbirch::Array([&](Integer s) {
         int j = s/rows;
         int i = s - j*rows;
         return λ(i + 1, j + 1);
-      });
+      }, libbirch::make_shape(rows, columns));
   }}
 }
 
@@ -109,8 +108,7 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
  */
 function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
   cpp{{
-  return libbirch::make_array_from_value<Type>(libbirch::make_shape(rows,
-      columns), x);
+  return libbirch::Array(libbirch::make_shape(rows, columns), x);
   }}
 }
 

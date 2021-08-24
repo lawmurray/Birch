@@ -117,6 +117,15 @@ private:
 };
 
 /**
+ * Make a vector shape.
+ *
+ * @ingroup libbirch
+ */
+inline ArrayShape<1> make_shape(const int n) {
+  return ArrayShape<1>(n);
+}
+
+/**
  * Shape and layout of a matrix (two-dimensional array) in column-major order.
  */
 template<>
@@ -278,4 +287,13 @@ private:
    */
   int ld;
 };
+
+/**
+ * Make a matrix shape.
+ *
+ * @ingroup libbirch
+ */
+inline ArrayShape<2> make_shape(const int m, const int n) {
+  return ArrayShape<2>(m, n);
+}
 }

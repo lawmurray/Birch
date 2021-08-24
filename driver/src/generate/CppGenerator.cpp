@@ -72,7 +72,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("std::nullopt");
   } else if (!inSequence) {
-    middle("libbirch::make_array_from_sequence(");
+    middle("libbirch::Array(");
     ++inSequence;
     middle("{ " << o->single << " }");
     --inSequence;
@@ -83,7 +83,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
 }
 
 void birch::CppGenerator::visit(const Cast* o) {
-  middle("libbirch::cast<" << o->returnType << ">(" << o->single << ')');
+  middle("birch::cast<" << o->returnType << ">(" << o->single << ')');
 }
 
 void birch::CppGenerator::visit(const Call* o) {
@@ -111,7 +111,7 @@ void birch::CppGenerator::visit(const UnaryCall* o) {
 void birch::CppGenerator::visit(const Assign* o) {
   ++inAssign;
   if (*o->name == "<-?") {
-    start("libbirch::optional_assign(" << o->left << ", ");
+    start("birch::optional_assign(" << o->left << ", ");
     --inAssign;
     finish(o->right << ");");
   } else if (*o->name == "<~") {

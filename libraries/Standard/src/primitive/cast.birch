@@ -1,0 +1,63 @@
+hpp{{
+namespace birch {
+
+/**
+ * Cast of anything to itelf.
+ */
+template<class To, class From,
+    std::enable_if_t<std::is_same<To,From>::value,int> = 0>
+std::optional<To> cast(const From& from) {
+  return from;
+}
+
+/**
+ * Cast of a pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same<To,From>::value &&
+    libbirch::is_pointer<To>::value && libbirch::is_pointer<From>::value,int> = 0>
+std::optional<To> cast(const From& from) {
+  auto ptr = dynamic_cast<typename To::value_type*>(from.get());
+  if (ptr) {
+    return To(ptr);
+  } else {
+    return std::nullopt;
+  }
+}
+
+/**
+ * Cast of a non-pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same<To,From>::value &&
+    std::is_constructible<To,From>::value &&
+    (!libbirch::is_pointer<To>::value || !libbirch::is_pointer<From>::value),int> = 0>
+std::optional<To> cast(const From& from) {
+  return To(from);
+}
+
+/**
+ * Non-identity cast of a non-pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same<To,From>::value &&
+    !std::is_constructible<To,From>::value &&
+    (!libbirch::is_pointer<To>::value || !libbirch::is_pointer<From>::value),int> = 0>
+std::optional<To> cast(const From& from) {
+  return std::nullopt;
+}
+
+/**
+ * Cast of an optional of anything.
+ */
+template<class To, class From>
+std::optional<To> cast(const std::optional<From>& from) {
+  if (from.has_value()) {
+    return cast<To>(from.value());
+  } else {
+    return std::nullopt;
+  }
+}
+
+}
+}}
