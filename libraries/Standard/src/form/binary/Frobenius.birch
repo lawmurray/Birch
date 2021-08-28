@@ -18,20 +18,9 @@ function frobenius<Left,Right>(l:Left, r:Right) -> Frobenius<Left,Right> {
 }
 
 /**
- * Frobenius vector product (same as dot product).
- */
-function frobenius<Type>(x:Type[_], y:Type[_]) -> Type {
-  assert length(x) == length(y);
-  cpp{{
-  return numbirch::frobenius(x.rows(), x.data(), x.stride(), y.data(),
-      y.stride());
-  }}
-}
-
-/**
  * Frobenius matrix product.
  */
-function frobenius<Type>(X:Type[_,_], Y:Type[_,_]) -> Type {
+function frobenius(X:Real[_,_], Y:Real[_,_]) -> Real {
   assert rows(X) == rows(Y);
   assert columns(X) == columns(Y);
   cpp{{
