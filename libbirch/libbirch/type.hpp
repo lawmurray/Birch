@@ -86,6 +86,34 @@ struct unwrap_inplace<T&&> {
 /**
  * @internal
  * 
+ * Is `T` a visitable type? This is a type that provides an `accept_(V)`
+ * function.
+ */
+template<class T, class V>
+struct is_visitable {
+private:
+  template<class U>
+  static constexpr bool has_accept(decltype(std::declval<U>().accept_(
+        std::declval<V>()))*) {
+    return true;
+  }
+  template<class U>
+  static constexpr bool has_accept(decltype(std::declval<U>().accept_(
+        std::declval<V>(), 0, 0))*) {
+    return true;
+  }
+  template<class>
+  static constexpr bool has_accept(...) {
+    return false;
+  }
+
+public:
+  static constexpr bool value = has_accept<T>(0);
+};
+
+/**
+ * @internal
+ * 
  * Is `T` an iterable type? This is a type that provides `begin()` and
  * `end()` member functions, and a `value_type` member type.
  */

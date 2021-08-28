@@ -8,7 +8,9 @@
 #include "libbirch/type.hpp"
 
 namespace libbirch {
-/*
+/**
+ * @internal
+ * 
  * Visitor implementing the first pass of bridge finding.
  */
 class Spanner {
@@ -17,8 +19,31 @@ public:
     return std::make_tuple(i, i, 0);
   }
 
-  template<class Arg, std::enable_if_t<!is_iterable<Arg>::value,int> = 0>
-  std::tuple<int,int,int> visit(const int i, const int j, Arg& arg) {
+  template<class T, std::enable_if_t<is_visitable<T,Spanner>::value,int> = 0>
+  std::tuple<int,int,int> visit(const int i, const int j, T& o) {
+    return o.accept_(*this, i, j);
+  }
+
+  template<class T, std::enable_if_t<!is_visitable<T,Spanner>::value &&
+      is_iterable<T>::value,int> = 0>
+  std::tuple<int,int,int> visit(const int i, const int j, T& o) {
+    int l = i, h = i, m = 0, l1, h1, m1;
+    if (!std::is_trivial<T>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        std::tie(l1, h1, m1) = visit(i, j + m, *iter);
+        l = std::min(l, l1);
+        h = std::max(h, h1);
+        m += m1;
+      }
+    }
+    return std::make_tuple(l, h, m);
+  }
+
+  template<class T, std::enable_if_t<!is_visitable<T,Spanner>::value &&
+      !is_iterable<T>::value,int> = 0>
+  std::tuple<int,int,int> visit(const int i, const int j, T& o) {
     return std::make_tuple(i, i, 0);
   }
 
@@ -45,22 +70,6 @@ public:
     } else {
       return std::make_tuple(i, i, 0);
     }
-  }
-
-  template<class T, std::enable_if_t<is_iterable<T>::value,int> = 0>
-  std::tuple<int,int,int> visit(const int i, const int j, T& o) {
-    int l = i, h = i, m = 0, l1, h1, m1;
-    if (!std::is_trivial<T>::value) {
-      auto iter = o.begin();
-      auto last = o.end();
-      for (; iter != last; ++iter) {
-        std::tie(l1, h1, m1) = visit(i, j + m, *iter);
-        l = std::min(l, l1);
-        h = std::max(h, h1);
-        m += m1;
-      }
-    }
-    return std::make_tuple(l, h, m);
   }
 
   template<class T>

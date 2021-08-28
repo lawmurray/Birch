@@ -20,8 +20,26 @@ public:
     //
   }
 
-  template<class Arg, std::enable_if_t<!is_iterable<Arg>::value,int> = 0>
-  void visit(Arg& arg) {
+  template<class T, std::enable_if_t<is_visitable<T,Copier>::value,int> = 0>
+  void visit(T& o) {
+    return o.accept_(*this);
+  }
+
+  template<class T, std::enable_if_t<!is_visitable<T,Copier>::value &&
+      is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
+    if (!std::is_trivial<T>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
+  }
+
+  template<class T, std::enable_if_t<!is_visitable<T,Copier>::value && 
+      !is_iterable<T>::value,int> = 0>
+  void visit(T& arg) {
     //
   }
 
@@ -40,17 +58,6 @@ public:
   void visit(std::optional<T>& o) {
     if (o.has_value()) {
       visit(o.value());
-    }
-  }
-
-  template<class T, std::enable_if_t<is_iterable<T>::value,int> = 0>
-  void visit(T& o) {
-    if (!std::is_trivial<T>::value) {
-      auto iter = o.begin();
-      auto last = o.end();
-      for (; iter != last; ++iter) {
-        visit(*iter);
-      }
     }
   }
 
