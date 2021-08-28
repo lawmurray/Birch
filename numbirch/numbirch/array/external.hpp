@@ -1,16 +1,14 @@
 /**
  * @file
  *
- * Includes of external headers.
+ * Includes all external headers.
  */
 #pragma once
 
 #include <algorithm>
 #include <numeric>
-#include <limits>
 #include <utility>
-#include <tuple>
-#include <optional>
+#include <initializer_list>
 #include <memory>
 
 #include <cassert>

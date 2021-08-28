@@ -21,8 +21,8 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   cpp{{
   /* wrap λ in another lambda function to translate 0-based indices into
    * 1-based indices */
-  return libbirch::Array([&](Integer i) { return λ(i + 1); },
-      libbirch::make_shape(length));
+  return numbirch::Array([&](Integer i) { return λ(i + 1); },
+      numbirch::make_shape(length));
   }}
 }
 
@@ -31,7 +31,7 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
  */
 function vector<Type>(x:Type, length:Integer) -> Type[_] {
   cpp{{
-  return libbirch::Array(libbirch::make_shape(length), x);
+  return numbirch::Array(numbirch::make_shape(length), x);
   }}
 }
 

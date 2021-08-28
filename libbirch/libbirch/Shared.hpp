@@ -10,9 +10,7 @@
 
 namespace libbirch {
 /**
- * Shared object.
- *
- * @ingroup libbirch
+ * %Shared object.
  *
  * @tparam T Type, must derive from Any.
  * 
@@ -337,6 +335,8 @@ public:
   }
 
   /**
+   * @internal
+   * 
    * Release the referent, during collection of a biconnected component.
    */
   void releaseBiconnected() {

@@ -72,7 +72,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("std::nullopt");
   } else if (!inSequence) {
-    middle("libbirch::Array(");
+    middle("numbirch::Array(");
     ++inSequence;
     middle("{ " << o->single << " }");
     --inSequence;
@@ -660,7 +660,7 @@ void birch::CppGenerator::visit(const EmptyType* o) {
 }
 
 void birch::CppGenerator::visit(const ArrayType* o) {
-  middle("libbirch::Array<" << o->single << ',' << o->depth() << '>');
+  middle("numbirch::Array<" << o->single << ',' << o->depth() << '>');
 }
 
 void birch::CppGenerator::visit(const TupleType* o) {

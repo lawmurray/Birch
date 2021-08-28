@@ -3,23 +3,22 @@
  */
 #pragma once
 
-#include "libbirch/external.hpp"
-#include "libbirch/Atomic.hpp"
+#include "numbirch/array/external.hpp"
 
-namespace libbirch {
+namespace numbirch {
 /**
+ * @internal
+ * 
  * Lock with exclusive use semantics.
- *
- * @ingroup libbirch
  */
 class Lock {
 public:
   /**
    * Constructor.
    */
-  Lock() :
-    lock(false) {
-    //
+  Lock() {
+    #pragma omp atomic write
+    lock = false;
   }
 
   /**
@@ -36,20 +35,28 @@ public:
    */
   void set() {
     /* spin, setting the lock true until its old value comes back false */
-    while (lock.exchangeLock(true));
+    bool old;
+    do {
+      #pragma omp atomic capture seq_cst
+      {
+        old = lock;
+        lock = true;
+      }
+    } while (old);
   }
 
   /**
    * Release exclusive use.
    */
   void unset() {
-    lock.storeLock(false);
+    #pragma omp atomic write seq_cst
+    lock = false;
   }
 
 private:
   /**
    * Lock.
    */
-  Atomic<bool> lock;
+  bool lock;
 };
 }

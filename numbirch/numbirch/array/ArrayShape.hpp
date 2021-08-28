@@ -3,12 +3,14 @@
  */
 #pragma once
 
-namespace libbirch {
+#include "numbirch/array/external.hpp"
+
+namespace numbirch {
+template<class T, int D> class Array;
+
 /**
- * Shape and layout of an array.
+ * Shape and layout of Array.
  *
- * @ingroup libbirch
- * 
  * @tparam D Number of dimensions.
  */
 template<int D>
@@ -118,8 +120,6 @@ private:
 
 /**
  * Make a vector shape.
- *
- * @ingroup libbirch
  */
 inline ArrayShape<1> make_shape(const int n) {
   return ArrayShape<1>(n);
@@ -290,8 +290,6 @@ private:
 
 /**
  * Make a matrix shape.
- *
- * @ingroup libbirch
  */
 inline ArrayShape<2> make_shape(const int m, const int n) {
   return ArrayShape<2>(m, n);

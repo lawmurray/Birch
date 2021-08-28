@@ -7,9 +7,7 @@
 
 namespace libbirch {
 /**
- * Inplace object.
- *
- * @ingroup libbirch
+ * %Inplace object.
  *
  * @tparam T Type.
  */

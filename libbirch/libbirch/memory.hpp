@@ -8,6 +8,8 @@
 
 namespace libbirch {
 /**
+ * @internal
+ * 
  * Register an object with the cycle collector as the possible root of a
  * cycle. This corresponds to the `PossibleRoot()` operation in @ref Bacon2001
  * "Bacon & Rajan (2001)".
@@ -15,6 +17,8 @@ namespace libbirch {
 void register_possible_root(Any* o);
 
 /**
+ * @internal
+ * 
  * Attempt to deregister an object with the cycle collector. The operation is
  * optional and only performed if it can be done efficiently, such as if the
  * object is the most-recently registered.
@@ -22,22 +26,29 @@ void register_possible_root(Any* o);
 void deregister_possible_root(Any* o);
 
 /**
+ * @internal
+ * 
  * Is the object in this thread's possible root list? Useful for debugging
  * purposes.
  */
 bool contains_possible_root(Any* o);
 
 /**
+ * @internal
+ * 
  * Register an object with the cycle collector as unreachable.
  */
 void register_unreachable(Any* o);
 
 /**
- * Run the cycle collector.
+ * Run the cycle collector. This must be called from outside of a parallel
+ * region.
  */
 void collect();
 
 /**
+ * @internal
+ * 
  * Query or toggle the biconnected-copy flag.
  * 
  * @param toggle If true, the flag is toggled (false to true, or true to
@@ -55,6 +66,8 @@ void collect();
 bool biconnected_copy(const bool toggle = false);
 
 /**
+ * @internal
+ * 
  * Collect a biconnected component, outside of regular garbage collection.
  * 
  * @param o Head of the biconnected component.

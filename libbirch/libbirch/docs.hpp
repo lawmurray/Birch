@@ -38,3 +38,10 @@
  * Reference Counted Systems](https://dx.doi.org/10.1007/3-540-45337-7_12).
  * *ECOOP 2001 --- Object-Oriented Programming*. 207--235.
  */
+
+/**
+ * LibBirch.
+ */
+namespace libbirch {
+  //
+}

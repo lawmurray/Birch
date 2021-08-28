@@ -1,0 +1,6 @@
+/**
+ * NumBirch.
+ */
+namespace numbirch {
+  //
+}

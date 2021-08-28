@@ -29,10 +29,6 @@ include_HEADERS = \
 
 nobase_include_HEADERS = \
   libbirch/Any.hpp \
-  libbirch/Array.hpp \
-  libbirch/ArrayControl.hpp \
-  libbirch/ArrayIterator.hpp \
-  libbirch/ArrayShape.hpp \
   libbirch/Atomic.hpp \
   libbirch/BiconnectedCollector.hpp \
   libbirch/BiconnectedCopier.hpp \
@@ -45,7 +41,6 @@ nobase_include_HEADERS = \
   libbirch/external.hpp \
   libbirch/Inplace.hpp \
   libbirch/internal.hpp \
-  libbirch/Lock.hpp \
   libbirch/Marker.hpp \
   libbirch/macro.hpp \
   libbirch/Memo.hpp \

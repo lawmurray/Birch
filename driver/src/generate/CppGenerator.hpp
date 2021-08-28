@@ -190,11 +190,11 @@ template<class T>
 void birch::CppGenerator::genInit(const T* o) {
   if (!o->brackets->isEmpty()) {
     if (!o->value->isEmpty()) {
-      middle("(libbirch::make_shape(" << o->brackets << "), " << o->value << ')');
+      middle("(numbirch::make_shape(" << o->brackets << "), " << o->value << ')');
     } else if (!o->args->isEmpty()) {
-      middle("(libbirch::make_shape(" << o->brackets << "), " << o->args << ')');
+      middle("(numbirch::make_shape(" << o->brackets << "), " << o->args << ')');
     } else {
-      middle("(libbirch::make_shape(" << o->brackets << "))");
+      middle("(numbirch::make_shape(" << o->brackets << "))");
     }
   } else if (!o->value->isEmpty()) {
     if (!inConstructor) {

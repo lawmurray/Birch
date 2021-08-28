@@ -8,11 +8,9 @@
 namespace libbirch {
 class Any;
 
-/**
+/*
  * Memo for copying graphs of unknown size, implemented as a hash map that is
  * resized and rehashed as needed.
- *
- * @ingroup libbirch
  */
 class Memo {
 public:

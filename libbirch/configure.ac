@@ -57,19 +57,8 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 # Checks for libraries
 AC_CHECK_LIB([atomic], [main], [], [], [])
 
-if $debug; then
-  AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="-lnumbirch-debug"], [AC_MSG_ERROR([required library not found])])
-fi
-if $test; then
-  AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="-lnumbirch-test"], [AC_MSG_ERROR([required library not found])])
-fi
-if $release; then
-  AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="-lnumbirch"], [AC_MSG_ERROR([required library not found])])
-fi
-
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([numbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
 
 AC_SUBST([DEBUG_LIBS])
 AC_SUBST([TEST_LIBS])

@@ -53,8 +53,8 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     std::string name = upper(canonical(o->name));
     line("#ifndef " << name << "_HPP");
     line("#define " << name << "_HPP\n");
-    line("#include <libbirch.hpp>\n");
     line("#include <numbirch.hpp>\n");
+    line("#include <libbirch.hpp>\n");
 
     for (auto name : o->packages) {
       fs::path include(tar(name));

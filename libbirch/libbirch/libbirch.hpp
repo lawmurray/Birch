@@ -12,7 +12,6 @@
 #include "libbirch/macro.hpp"
 #include "libbirch/type.hpp"
 
-#include "libbirch/Array.hpp"
 #include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"

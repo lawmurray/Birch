@@ -5,15 +5,12 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
-/**
- * @internal
- * 
+/*
  * Visitor for recursively flagging reachable objects for cycle collection.
  *
- * @ingroup libbirch
- * 
  * This performs the `ScanBlack()` operation of @ref Bacon2001
  * "Bacon & Rajan (2001)".
  */
@@ -23,7 +20,7 @@ public:
     //
   }
 
-  template<class Arg>
+  template<class Arg, std::enable_if_t<!is_iterable<Arg>::value,int> = 0>
   void visit(Arg& arg) {
     //
   }
@@ -46,8 +43,16 @@ public:
     }
   }
 
-  template<class T, int D>
-  void visit(Array<T,D>& o);
+  template<class T, std::enable_if_t<is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
+    if (!std::is_trivial<T>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
+  }
 
   template<class T>
   void visit(Inplace<T>& o);
@@ -59,21 +64,9 @@ public:
 };
 }
 
-#include "libbirch/Array.hpp"
 #include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-
-template<class T, int D>
-void libbirch::Reacher::visit(Array<T,D>& o) {
-  if (!std::is_trivial<T>::value) {
-    auto iter = o.begin();
-    auto last = o.end();
-    for (; iter != last; ++iter) {
-      visit(*iter);
-    }
-  }
-}
 
 template<class T>
 void libbirch::Reacher::visit(Inplace<T>& o) {

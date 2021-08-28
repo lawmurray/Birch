@@ -11,6 +11,8 @@
 
 namespace libbirch {
 /**
+ * @internal
+ * 
  * Flags used for bridge finding and cycle collection. For cycle collection,
  * they mostly correspond to the colors in @ref Bacon2001 "Bacon & Rajan
  * (2001)" but behave slightly differently to permit multithreading. The basic
@@ -47,8 +49,6 @@ enum Flag : int8_t {
 /**
  * Base class providing reference counting, cycle breaking, and lazy deep
  * copy support.
- *
- * @ingroup libbirch
  * 
  * Members of Any use an underscore suffix (e.g. `n_` instead of `n`) in order
  * to avoid naming collisions with derived classes.
@@ -90,31 +90,43 @@ public:
   Any& operator=(const Any&);
 
   /**
+   * @internal
+   * 
    * Destroy.
    */
   void destroy_();
 
   /**
+   * @internal
+   * 
    * Deallocate.
    */
   void deallocate_();
 
   /**
+   * @internal
+   * 
    * Reference count.
    */
   int numShared_() const;
 
   /**
+   * @internal
+   * 
    * Increment the shared reference count.
    */
   void incShared_();
 
   /**
+   * @internal
+   * 
    * Decrement the shared reference count.
    */
   void decShared_();
 
   /**
+   * @internal
+   * 
    * Decrement the shared count for an object that will remain reachable. The
    * object will not be destroyed, and will not be registered as a possible
    * root for cycle collection.
@@ -122,105 +134,159 @@ public:
   void decSharedReachable_();
 
   /**
+   * @internal
+   * 
    * Decrement the shared count during collection of a biconnected component.
    */
   void decSharedBiconnected_();
 
   /**
+   * @internal
+   * 
    * Decrement the shared count for a bridge edge.
    */
   void decSharedBridge_();
 
   /**
+   * @internal
+   * 
    * Decrement the shared count for an acyclic edge.
    */
   void decSharedAcyclic_();
 
   /**
+   * @internal
+   * 
    * Is there only one reference to this object?
    */
   bool isUnique_() const;
 
   /**
+   * @internal
+   * 
    * Is there only one external reference to this object, assuming that it is
    * the head node of a biconnected component?
    */
   bool isUniqueHead_() const;
 
   /**
+   * @internal
+   * 
    * Is this object of an acyclic class?
    */
   virtual bool isAcyclic_() const;
 
   /**
+   * @internal
+   * 
    * Is this object the possible root of a cycle?
    */
   bool isPossibleRoot_() const;
   
   /**
+   * @internal
+   * 
    * Unset buffered flag.
    */
   void unbuffer_();
 
   /**
+   * @internal
+   * 
    * Get the class name.
    */
   virtual const char* getClassName_() const;
 
   /**
+   * @internal
+   * 
    * Shallow copy the object.
    */
   virtual Any* copy_() const = 0;
 
+  /**
+   * @internal
+   */
   virtual void accept_(Marker& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(Scanner& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(Reacher& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(Collector& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(BiconnectedCollector& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual std::tuple<int,int,int> accept_(Spanner& visitor, const int i,
       const int j) {
     return std::make_tuple(i, i, 0);
   }
 
+  /**
+   * @internal
+   */
   virtual std::tuple<int,int,int,int> accept_(Bridger& visitor, const int j,
       const int k) {
     return std::make_tuple(std::numeric_limits<int>::max(), 0, 0, 0);
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(Copier& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(BiconnectedCopier& visitor) {
     //
   }
 
+  /**
+   * @internal
+   */
   virtual void accept_(Destroyer& visitor) {
     //
   }
 
 private:
   /**
+   * @internal
+   * 
    * Reference count.
    */
   Atomic<int> r_;
 
   /**
+   * @internal
+   * 
    * Account of references, used for bridge finding. For the head of a
    * biconnected component (i.e. HEAD flag is set), this is the number of
    * internal references to the object, plus one for the bridge edge.
@@ -229,11 +295,15 @@ private:
 
   union {
     /**
+     * @internal
+     * 
      * Lowest reachable rank, used for bridge finding.
      */
     int l_;
 
     /**
+     * @internal
+     * 
      * Index base in biconnected component, used for copying.
      */
     int k_;
@@ -241,22 +311,30 @@ private:
 
   union {
     /**
+     * @internal
+     * 
      * Highest reachable rank, used for bridge finding.
      */
     int h_;
 
     /**
+     * @internal
+     * 
      * Size of biconnnected component, used for copying.
      */
     int n_;
   };
 
   /**
+   * @internal
+   * 
    * Id of the thread that claimed the object, used for bridge finding.
    */
   int16_t p_;
 
   /**
+   * @internal
+   * 
    * Bitfield containing flags, used for bridge finding and cycle collection.
    */
   Atomic<int8_t> f_;

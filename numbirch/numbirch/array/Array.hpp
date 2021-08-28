@@ -3,14 +3,15 @@
  */
 #pragma once
 
-#include "libbirch/external.hpp"
-#include "libbirch/ArrayControl.hpp"
-#include "libbirch/ArrayShape.hpp"
-#include "libbirch/ArrayIterator.hpp"
-#include "libbirch/Lock.hpp"
+#include "numbirch/memory.hpp"
+#include "numbirch/array/external.hpp"
+#include "numbirch/array/ArrayControl.hpp"
+#include "numbirch/array/ArrayShape.hpp"
+#include "numbirch/array/ArrayIterator.hpp"
+#include "numbirch/array/Lock.hpp"
 
-namespace libbirch {
-/**
+namespace numbirch {
+/*
  * Are all argument types integral? This is used to determine whether a slice
  * will return a view of an array, or a single element.
  */
@@ -31,8 +32,8 @@ struct is_index<Arg,Args...> {
 };
 
 /**
- * Array.
- *
+ * Copy-on-write array.
+ * 
  * @tparam T Value type.
  * @tparam D Number of dimensions.
  */
@@ -394,14 +395,11 @@ public:
       swap(tmp);
     } else {
       own();
-      #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
         crystallize();
-        buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
+        buffer = (T*)realloc((void*)buffer, s.volume()*sizeof(T));
         atomize();
-      } else
-      #endif
-      {
+      } else {
         buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
       }
       std::memmove((void*)(buffer + i + 1), (void*)(buffer + i),
@@ -434,13 +432,10 @@ public:
       std::destroy(buffer + i, buffer + i + len);
       std::memmove((void*)(buffer + i), (void*)(buffer + i + len),
           (n - len - i)*sizeof(T));
-      #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
         crystallize();
-        buffer = (T*)numbirch::realloc((void*)buffer, s.volume()*sizeof(T));
-      } else
-      #endif
-      {
+        buffer = (T*)realloc((void*)buffer, s.volume()*sizeof(T));
+      } else {
         buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
       }
     }
@@ -483,15 +478,12 @@ private:
   void assign(const Array& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
         crystallize();
-        numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
+        memcpy(data(), shape.stride()*sizeof(T), o.data(),
             o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
             shape.height());
-      } else
-      #endif
-      {
+      } else {
         auto n = std::min(size(), o.size());
         auto begin1 = o.beginInternal();
         auto end1 = begin1.operator+(n);
@@ -548,13 +540,10 @@ private:
     assert(!control);
     assert(!isElementWise);
 
-    #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value) {
       crystallize();
-      buffer = (T*)numbirch::malloc(volume()*sizeof(T));
-    } else
-    #endif
-    {
+      buffer = (T*)malloc(volume()*sizeof(T));
+    } else {
       buffer = (T*)std::malloc(volume()*sizeof(T));
     }
   }
@@ -602,16 +591,13 @@ private:
           control = nullptr;
         } else {
           T* buf = nullptr;
-          #if HAVE_NUMBIRCH_HPP
           if (std::is_trivial<T>::value) {
             crystallize();
-            buf = (T*)numbirch::malloc(size()*sizeof(T));
-            numbirch::memcpy(buf, shape.width()*sizeof(T), buffer,
+            buf = (T*)malloc(size()*sizeof(T));
+            memcpy(buf, shape.width()*sizeof(T), buffer,
                 shape.stride()*sizeof(T), shape.width()*sizeof(T),
                 shape.height());
-          } else
-          #endif
-          {
+          } else {
             buf = (T*)std::malloc(size()*sizeof(T));
             std::uninitialized_copy(beginInternal(), endInternal(), buf);
           }
@@ -646,11 +632,9 @@ private:
    */
   void atomize() {
     if (!isElementWise) {
-      #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
-        numbirch::wait();
+        wait();
       }
-      #endif
       isElementWise = true;
     }
   }
@@ -667,12 +651,9 @@ private:
    */
   void release() {
     if (!isView && (!control || control->decShared_() == 0)) {
-      #if HAVE_NUMBIRCH_HPP
       if (std::is_trivial<T>::value) {
-        numbirch::free((void*)buffer);
-      } else
-      #endif
-      {
+        free((void*)buffer);
+      } else {
         std::destroy(beginInternal(), endInternal());
         std::free((void*)buffer);
       }
@@ -705,15 +686,12 @@ private:
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible<U,T>::value,int> = 0>
   void uninitialized_copy(const Array<U,E>& o) {
-    #if HAVE_NUMBIRCH_HPP
     if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
       crystallize();
-      numbirch::memcpy(data(), shape.stride()*sizeof(T), o.data(),
+      memcpy(data(), shape.stride()*sizeof(T), o.data(),
           o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
           shape.height());
-    } else
-    #endif
-    {
+    } else {
       auto n = std::min(size(), o.size());
       auto begin1 = o.beginInternal();
       auto end1 = begin1.operator+(n);

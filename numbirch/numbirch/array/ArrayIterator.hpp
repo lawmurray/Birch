@@ -3,15 +3,12 @@
  */
 #pragma once
 
-#include "libbirch/internal.hpp"
-#include "libbirch/ArrayShape.hpp"
+#include "numbirch/array/external.hpp"
 
-namespace libbirch {
+namespace numbirch {
 /**
  * Iterator over Array.
  * 
- * @ingroup libbirch
- *
  * @tparam T Value type.
  * @tparam D Number of dimensions.
  */

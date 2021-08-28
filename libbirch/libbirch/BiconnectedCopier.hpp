@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
+#include "libbirch/type.hpp"
 #include "libbirch/BiconnectedMemo.hpp"
 
 namespace libbirch {
@@ -12,8 +13,6 @@ namespace libbirch {
  * @internal
  * 
  * Copy a graph of known size, such as a biconnected component.
- *
- * @ingroup libbirch
  */
 class BiconnectedCopier {
 public:
@@ -28,7 +27,7 @@ public:
     //
   }
 
-  template<class Arg>
+  template<class Arg, std::enable_if_t<!is_iterable<Arg>::value,int> = 0>
   void visit(Arg& arg) {
     //
   }
@@ -51,8 +50,16 @@ public:
     }
   }
 
-  template<class T, int D>
-  void visit(Array<T,D>& o);
+  template<class T, std::enable_if_t<is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
+    if (!std::is_trivial<typename T::value_type>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
+  }
 
   template<class T>
   void visit(Inplace<T>& o);
@@ -70,21 +77,9 @@ private:
 };
 }
 
-#include "libbirch/Array.hpp"
 #include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-
-template<class T, int D>
-void libbirch::BiconnectedCopier::visit(Array<T,D>& o) {
-  if (!std::is_trivial<T>::value) {
-    auto iter = o.begin();
-    auto last = o.end();
-    for (; iter != last; ++iter) {
-      visit(*iter);
-    }
-  }
-}
 
 template<class T>
 void libbirch::BiconnectedCopier::visit(Inplace<T>& o) {

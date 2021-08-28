@@ -3,14 +3,11 @@
  */
 #pragma once
 
-#include "libbirch/external.hpp"
-#include "libbirch/Atomic.hpp"
+#include "numbirch/array/external.hpp"
 
-namespace libbirch {
-/**
+namespace numbirch {
+/*
  * Control block for reference counting of Array buffers.
- *
- * @ingroup libbirch
  */
 class ArrayControl {
 public:
@@ -19,15 +16,19 @@ public:
    *
    * @param r Initial reference count.
    */
-  ArrayControl(const int r) : r_(r) {
-    //
+  ArrayControl(const int r) {
+    #pragma omp atomic write
+    r_ = r;
   }
 
   /**
    * Reference count.
    */
   int numShared_() const {
-    return r_.load();
+    int r;    
+    #pragma omp atomic read
+    r = r_;
+    return r;
   }
 
   /**
@@ -35,20 +36,27 @@ public:
    */
   void incShared_() {
     assert(numShared_() > 0);
-    r_.increment();
+    #pragma omp atomic update
+    ++r_;
   }
 
   /**
    * Decrement the shared reference count and return the new value.
    */
   int decShared_() {
-    return --r_;
+    int r;
+    #pragma omp atomic capture
+    {
+      --r_;
+      r = r_;
+    }
+    return r;
   }
 
 private:
   /**
    * Reference count.
    */
-  Atomic<int> r_;
+  int r_;
 };
 }

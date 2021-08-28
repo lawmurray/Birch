@@ -59,7 +59,14 @@ libnumbirch_la_SOURCES = $(COMMON_SOURCES)
 
 include_HEADERS = numbirch/numbirch.hpp
 
-nobase_include_HEADERS =
+nobase_include_HEADERS = \
+  numbirch/array/Array.hpp \
+  numbirch/array/ArrayControl.hpp \
+  numbirch/array/ArrayIterator.hpp \
+  numbirch/array/ArrayShape.hpp \
+  numbirch/array/external.hpp \
+  numbirch/array/Lock.hpp \
+  numbirch/memory.hpp
 
 dist_noinst_DATA =  \
   Doxyfile \
