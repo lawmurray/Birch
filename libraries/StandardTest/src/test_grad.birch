@@ -55,7 +55,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let fd <- (r - q)/h';
         let δ <- abs(d[i] - fd);
 
-        pass <- 100 < N || δ <= ε*abs(fd);  // if N <= 10, smoke test only
+        pass <- 100 <= N || δ <= ε*abs(fd);  // if N <= 100, smoke test only
         if pass {
           /* success */
           t <- ntrials + 1;
@@ -65,8 +65,9 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
           h' <- 0.5*h';
         } else {
           /* fail */
-          warn("on component " + i + ", d=" + d[i] + ", fd=" + fd + ", "  + δ +
-              " > " + ε*abs(fd));
+          t <- ntrials + 1;
+          warn("on component " + i + ", d=" + d[i] + ", fd=" + fd + ", "  +
+              δ + " > " + ε*abs(fd));
           failed[n] <- failed[n] + 1.0/rows(x);
         }
       }
@@ -76,8 +77,6 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   /* check that failure rate within bounds */
   let rfail <- sum(failed)/N;
   if !(rfail <= γ) {
-    stderr.print("***failed*** in aggregate, rate " + rfail + " > " + γ +
-        "\n");
-    //exit(1);
+    error("***failed*** in aggregate, rate " + rfail + " > " + γ + "\n");
   }
 }
