@@ -307,9 +307,15 @@ T ldet(const int n, const T* A, const int ldA) {
 template<class T>
 T lcholdet(const int n, const T* S, const int ldS) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
-  auto llt = S1.llt();
-  assert(llt.info() == Eigen::Success);
-  return 2.0*llt.matrixLLT().diagonal().array().log().sum();
+  auto ldlt = S1.ldlt();
+  assert(ldlt.info() == Eigen::Success);
+
+  /* Eigen's LDLT decomposition factorizes as $S = P^\top LDL^\top P$; the $L$
+   * matrix has unit diagonal and thus determinant 1, the $P$ matrix is a
+   * permutation matrix and thus has determinant $\pm 1$, which squares to 1,
+   * leaving only the $D$ matrix with its determinant being the product along
+   * the main diagonal (log and sum) */
+  return ldlt.vectorD().array().log().sum();
 }
 
 template<class T>
