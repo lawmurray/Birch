@@ -1,18 +1,27 @@
-struct Expm1Function {
-function compute<Value>(m:Value) -> {
-    return expm1(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*exp(m);
-  }
+struct Expm1<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Expm1<Middle> = Unary<Expm1Function,Middle>;
+
+function value<Middle>(x:Expm1<Middle>) -> {
+  return expm1(value(x.m));
+}
+
+function peek<Middle>(x:Expm1<Middle>) -> {
+  return expm1(peek(x.m));
+}
+
+function eval<Middle>(x:Expm1<Middle>) -> {
+  return expm1(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Expm1<Middle>, d:Gradient) {
+  grad(x.m, d*exp(peek(x.m)));
+}
 
 /**
  * Exponential minus one.
  */
-function expm1<Middle>(m:Middle) -> {
+function expm1<Middle>(m:Middle) -> Expm1<Middle> {
   return construct<Expm1<Middle>>(m);
 }
 

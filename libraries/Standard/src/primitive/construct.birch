@@ -1,7 +1,7 @@
 /**
  * Construct an object.
  *
- *   - Type: The class type.
+ * - Type: The class type.
  *
  * Returns: The object.
  */

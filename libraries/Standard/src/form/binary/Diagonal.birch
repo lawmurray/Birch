@@ -1,14 +1,23 @@
-struct DiagonalFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return diagonal(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (trace(d), 0.0);
-  }
+struct Diagonal<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Diagonal<Left,Right> = Binary<DiagonalFunction,Left,Right>;
+
+function value<Left,Right>(x:Diagonal<Left,Right>) -> {
+  return diagonal(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:Diagonal<Left,Right>) -> {
+  return diagonal(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:Diagonal<Left,Right>) -> {
+  return diagonal(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:Diagonal<Left,Right>, d:Gradient) {
+  grad(x.l, trace(d));
+  grad(x.r, 0.0);
+}
 
 /**
  * Create diagonal matrix, filling the diagonal with a given scalar value.
@@ -16,7 +25,7 @@ struct Diagonal<Left,Right> = Binary<DiagonalFunction,Left,Right>;
  * - x: The value.
  * - length: Number of rows/columns.
  */
-function diagonal<Left,Right>(l:Left, r:Right) -> {
+function diagonal<Left,Right>(l:Left, r:Right) -> Diagonal<Left,Right> {
   return construct<Diagonal<Left,Right>>(l, r);
 }
 

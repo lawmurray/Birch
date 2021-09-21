@@ -1,0 +1,63 @@
+/*
+ * Element of a matrix.
+ */
+struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
+    Ternary<Left,Middle,Right> {
+  //
+}
+
+function value<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
+  return value(x.l)[value(x.m), value(x.r)];
+}
+
+function peek<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
+  return peek(x.l)[peek(x.m), peek(x.r)];
+}
+
+function eval<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
+  return eval(x.l)[eval(x.m), eval(x.r)];
+}
+
+function grad<Left,Middle,Right,Gradient>(x:MatrixElement<Left,Middle,Right>,
+    d:Gradient) {
+  grad(x.l, d, peek(x.m), peek(x.r));
+  grad(x.m, 0.0);
+  grad(x.r, 0.0);
+}
+
+/**
+ * Element of a matrix.
+ */
+function element<Value,Form,Middle,Right>(x:MatrixSplitExpression<Value,Form>, 
+    i:Middle, j:Right) -> {
+  return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,
+      Right>>(x, i, j);
+}
+
+/**
+ * Element of a matrix.
+ */
+function element<Left,Middle,Right>(x:Left, i:Middle, j:Right) -> {
+  return element(matrix_split(x), i, j);
+}
+
+/**
+ * Element of a matrix.
+ */
+function element(x:Boolean[_,_], i:Integer, j:Integer) -> Boolean {
+  return x[i,j];
+}
+
+/**
+ * Element of a matrix.
+ */
+function element(x:Integer[_,_], i:Integer, j:Integer) -> Integer {
+  return x[i,j];
+}
+
+/**
+ * Element of a matrix.
+ */
+function element(x:Real[_,_], i:Integer, j:Integer) -> Real {
+  return x[i,j];
+}

@@ -1,18 +1,27 @@
-struct AbsFunction {
-  function compute<Value>(m:Value) -> {
-    return abs(m);
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return copysign(d, m);
-  }
+struct Abs<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Abs<Middle> = Unary<AbsFunction,Middle>;
+
+function value<Middle>(x:Abs<Middle>) -> {
+  return abs(value(x.m));
+}
+
+function peek<Middle>(x:Abs<Middle>) -> {
+  return abs(peek(x.m));
+}
+
+function eval<Middle>(x:Abs<Middle>) -> {
+  return abs(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Abs<Middle>, d:Gradient) {
+  grad(x.m, copysign(d, peek(x.m)));
+}
 
 /**
  * Absolute value.
  */
-function abs<Middle>(m:Middle) -> {
+function abs<Middle>(m:Middle) -> Abs<Middle> {
   return construct<Abs<Middle>>(m);
 }
 

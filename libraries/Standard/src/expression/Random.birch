@@ -74,27 +74,17 @@ final class Random<Value> < Expression<Value> {
     return global.columns(x!);
   }
 
-  override function value() -> Value {
-    eval();
-    constant();
-    return x!;
-  }
-
   override function peek() -> Value {
     return eval();
   }
 
   override function eval() -> Value {
+    /* when evaluating for the first time, simulate; on subsequent occasions
+     * assumed to be set externally */
     if !x? {
       prune();
       handle_delay_simulate(this);
     }
-    return x!;
-  }
-
-  override function reval() -> Value {
-    /* values of Random objects are set externally before a call to reval()---
-     * that is its point---so the current value is that set, and is correct */
     return x!;
   }
 
@@ -104,6 +94,10 @@ final class Random<Value> < Expression<Value> {
     } else {
       this.d <- d;  // start accumulation
     }
+  }
+
+  override function link() {
+    //
   }
   
   override function label(gen:Integer) {
@@ -130,6 +124,7 @@ final class Random<Value> < Expression<Value> {
    * Move the value.
    */
   function move(x:Value) {
+    this.d <- nil;
     this.x <- x;
   }
 
@@ -340,7 +335,7 @@ final class Random<Value> < Expression<Value> {
 
   override function write(buffer:Buffer) {
     if hasValue() || hasDistribution() {
-      buffer.set(value());
+      buffer.set(this.value());
     } else {
       buffer.setNil();
     }
@@ -386,4 +381,61 @@ function make_random<Value>(x:Value?) -> Random<Value> {
  */
 function make_random<Value>(x:Random<Value>) -> Random<Value> {
   return x;
+}
+
+function length<Value>(x:Random<Value>) -> Integer {
+  return x.length();
+}
+
+function size<Value>(x:Random<Value>) -> Integer {
+  return x.size();
+}
+
+function rows<Value>(x:Random<Value>) -> Integer {
+  return x.rows();
+}
+
+function columns<Value>(x:Random<Value>) -> Integer {
+  return x.columns();
+}
+
+function link<Value>(x:Random<Value>) {
+  x.link();
+}
+
+function value<Value>(x:Random<Value>) -> {
+  return x.value();
+}
+
+function peek<Value>(x:Random<Value>) -> {
+  return x.peek();
+}
+
+function eval<Value>(x:Random<Value>) -> {
+  return x.eval();
+}
+
+function grad<Value,Gradient>(x:Random<Value>, d:Gradient) {
+  x.grad(d);
+}
+
+function grad<Value,Gradient>(x:Random<Value>, d:Gradient, i:Integer) {
+  x.grad(d, i);
+}
+
+function grad<Value,Gradient>(x:Random<Value>, d:Gradient, i:Integer,
+    j:Integer) {
+  x.grad(d, i, j);
+}
+
+function label<Value>(x:Random<Value>, gen:Integer) {
+  x.label(gen);
+}
+
+function constant<Value>(x:Random<Value>, gen:Integer) {
+  x.constant(gen);
+}
+
+function constant<Value>(x:Random<Value>) {
+  x.constant();
 }

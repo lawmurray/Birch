@@ -1,12 +1,7 @@
 /*
  * Function form with two arguments.
  */
-struct Binary<Function,Left,Right>(l:Left, r:Right) {
-  /**
-   * Function.
-   */
-  f:Function;
-
+struct Binary<Left,Right>(l:Left, r:Right) {
   /**
    * Left argument.
    */
@@ -16,41 +11,24 @@ struct Binary<Function,Left,Right>(l:Left, r:Right) {
    * Right argument.
    */
   r:Right <- r;
+}
 
-  function value() -> {
-    return f.compute(global.value(l), global.value(r));
-  }
+function link<Left,Right>(x:Binary<Left,Right>) {
+  link(x.l);
+  link(x.r);
+}
 
-  function peek() -> {
-    return f.compute(global.peek(l), global.peek(r));
-  }
+function label<Left,Right>(x:Binary<Left,Right>, gen:Integer) {
+  label(x.l, gen);
+  label(x.r, gen);
+}
 
-  function eval() -> {
-    return f.compute(global.eval(l), global.eval(r));
-  }
+function constant<Left,Right>(x:Binary<Left,Right>, gen:Integer) {
+  constant(x.l, gen);
+  constant(x.r, gen);
+}
 
-  function reval() -> {
-    return f.compute(global.reval(l), global.reval(r));
-  }
-
-  function grad<Gradient>(d:Gradient) {
-    let (dl, dr) <- f.grad(d, global.peek(l), global.peek(r));
-    global.grad(l, dl);
-    global.grad(r, dr);
-  }
-
-  function label(gen:Integer) {
-    global.label(l, gen);
-    global.label(r, gen);
-  }
-
-  function constant(gen:Integer) {
-    global.constant(l, gen);
-    global.constant(r, gen);
-  }
-
-  function constant() {
-    global.constant(l);
-    global.constant(r);
-  }
+function constant<Left,Right>(x:Binary<Left,Right>) {
+  constant(x.l);
+  constant(x.r);
 }

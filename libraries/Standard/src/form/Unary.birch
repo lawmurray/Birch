@@ -1,46 +1,25 @@
 /*
  * Function form with one argument.
  */
-struct Unary<Function,Middle>(m:Middle) {
-  /**
-   * Function.
-   */
-  f:Function;
-
+struct Unary<Middle>(m:Middle) {
   /**
    * Argument.
    */
   m:Middle <- m;
+}
 
-  function value() -> {
-    return f.compute(global.value(m));
-  }
+function link<Middle>(x:Unary<Middle>) {
+  link(x.m);
+}
 
-  function peek() -> {
-    return f.compute(global.peek(m));
-  }
+function label<Middle>(x:Unary<Middle>, gen:Integer) {
+  label(x.m, gen);
+}
 
-  function eval() -> {
-    return f.compute(global.eval(m));
-  }
+function constant<Middle>(x:Unary<Middle>, gen:Integer) {
+  constant(x.m, gen);
+}
 
-  function reval() -> {
-    return f.compute(global.reval(m));
-  }
-
-  function grad<Gradient>(d:Gradient) {
-    global.grad(m, f.grad(d, global.peek(m)));
-  }
-
-  function label(gen:Integer) {
-    global.label(m, gen);
-  }
-
-  function constant(gen:Integer) {
-    global.constant(m, gen);
-  }
-
-  function constant() {
-    global.constant(m);
-  }
+function constant<Middle>(x:Unary<Middle>) {
+  constant(x.m);
 }

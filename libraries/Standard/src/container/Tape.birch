@@ -277,6 +277,8 @@ final class Tape<Type> {
     while behind? {
       backward();
     }
+    assert behindCount == 0;
+    assert aheadCount == 0 || ahead?;
   }
 
   /**
@@ -286,6 +288,8 @@ final class Tape<Type> {
     while ahead? {
       forward();
     }
+    assert aheadCount == 0;
+    assert behindCount == 0 || behind?;
   }
 
   /**

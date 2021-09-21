@@ -20,6 +20,7 @@ final class TapeIterator<Type>(head:TapeNode<Type>?) < Iterator<Type> {
    * Get the next element.
    */
   override function next() -> Type {
+    assert node?;
     let x <- node!.x;
     node <- node!.next;
     return x;

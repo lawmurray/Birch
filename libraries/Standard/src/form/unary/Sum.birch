@@ -1,26 +1,27 @@
-struct SumFunction {
-  function compute<Value>(m:Value) -> {
-    return sum(m);
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d;
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value[_]) -> {
-    return vector(d, length(m));
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
-    return vector(d, rows(m), columns(m));
-  }
+struct Sum<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Sum<Middle> = Unary<SumFunction,Middle>;
+
+function value<Middle>(x:Sum<Middle>) -> {
+  return sum(value(x.m));
+}
+
+function peek<Middle>(x:Sum<Middle>) -> {
+  return sum(peek(x.m));
+}
+
+function eval<Middle>(x:Sum<Middle>) -> {
+  return sum(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {
+  grad(x.m, grad_sum(d, peek(x.m)));
+}
 
 /**
  * Sum.
  */
-function sum<Middle>(m:Middle) -> {
+function sum<Middle>(m:Middle) -> Sum<Middle> {
   return construct<Sum<Middle>>(m);
 }
 
@@ -68,4 +69,16 @@ function sum(X:Real[_,_]) -> Real {
   cpp{{
   return numbirch::sum(X.rows(), X.columns(), X.data(), X.stride());
   }}
+}
+
+function grad_sum<Gradient,Value>(d:Gradient, m:Value) {
+  return d;
+}
+
+function grad_sum<Gradient,Value>(d:Gradient, m:Value[_]) {
+  return vector(d, length(m));
+}
+
+function grad_sum<Gradient,Value>(d:Gradient, m:Value[_,_]) {
+  return matrix(d, rows(m), columns(m));
 }

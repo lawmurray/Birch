@@ -1,21 +1,31 @@
-struct CholSolveFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return cholsolve(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    let l1 <- cholinv(l);
-    return (-l1*outer(d, r)*l1, inner(l1, d));
-  }
+struct CholSolve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct CholSolve<Left,Right> = Binary<CholSolveFunction,Left,Right>;
+
+function value<Left,Right>(x:CholSolve<Left,Right>) -> {
+  return cholsolve(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:CholSolve<Left,Right>) -> {
+  return cholsolve(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:CholSolve<Left,Right>) -> {
+  return cholsolve(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:CholSolve<Left,Right>, d:Gradient) {
+  let l <- cholinv(peek(x.l));
+  let r <- peek(x.r);
+  grad(x.l, -l*outer(d, r)*l);
+  grad(x.r, inner(l, d));
+}
 
 /**
  * Solve a system of equations where the left argument is a symmetric
  * positive-definite matrix. The solution is via the Cholesky factorization.
  */
-function cholsolve<Left,Right>(l:Left, r:Right) -> {
+function cholsolve<Left,Right>(l:Left, r:Right) -> CholSolve<Left,Right> {
   return construct<CholSolve<Left,Right>>(l, r);
 }
 

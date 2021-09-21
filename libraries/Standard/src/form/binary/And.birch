@@ -1,19 +1,28 @@
-struct AndFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l && r;
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (0.0, 0.0);
-  }
+struct And<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct And<Left,Right> = Binary<AndFunction,Left,Right>;
+
+function value<Left,Right>(x:And<Left,Right>) -> {
+  return value(x.l) && value(x.r);
+}
+
+function peek<Left,Right>(x:And<Left,Right>) -> {
+  return peek(x.l) && peek(x.r);
+}
+
+function eval<Left,Right>(x:And<Left,Right>) -> {
+  return eval(x.l) && eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:And<Left,Right>, d:Gradient) {
+  grad(x.l, 0.0);
+  grad(x.r, 0.0);
+}
 
 /**
  * Logical `and`.
  */
-operator<Left,Right> (l:Left && r:Right) -> {
+operator<Left,Right> (l:Left && r:Right) -> And<Left,Right> {
   return construct<And<Left,Right>>(l, r);
 }
 

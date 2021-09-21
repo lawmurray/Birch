@@ -1,26 +1,27 @@
-struct TraceFunction {
-  function compute<Value>(m:Value) -> {
-    return trace(m);
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d;
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value[_]) -> {
-    return vector(d, global.length(m));
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
-    return diagonal(d, global.rows(m));
-  }
+struct Trace<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Trace<Middle> = Unary<TraceFunction,Middle>;
+
+function value<Middle>(x:Trace<Middle>) -> {
+  return trace(value(x.m));
+}
+
+function peek<Middle>(x:Trace<Middle>) -> {
+  return trace(peek(x.m));
+}
+
+function eval<Middle>(x:Trace<Middle>) -> {
+  return trace(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Trace<Middle>, d:Gradient) {
+  grad(x.m, grad_trace(d, peek(x.m)));
+}
 
 /**
  * Trace.
  */
-function trace<Middle>(m:Middle) -> {
+function trace<Middle>(m:Middle) -> Trace<Middle> {
   return construct<Trace<Middle>>(m);
 }
 
@@ -45,4 +46,16 @@ function trace(A:Real[_,_]) -> Real {
   cpp{{
   return numbirch::trace(A.rows(), A.columns(), A.data(), A.stride());
   }}
+}
+
+function grad_trace<Gradient,Value>(d:Gradient, m:Value) -> {
+  return d;
+}
+
+function grad_trace<Gradient,Value>(d:Gradient, m:Value[_]) -> {
+  return vector(d, length(m));
+}
+
+function grad_trace<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
+  return diagonal(d, rows(m));
 }

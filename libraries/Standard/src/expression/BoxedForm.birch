@@ -1,5 +1,6 @@
 /**
- * Boxed form.
+ * Boxed form. Memoizes forward evaluation, acting as a checkpoint for
+ * reverse-mode automatic differentiation.
  *
  * - Value: Result type.
  * - Form: Expression form.
@@ -32,12 +33,12 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   genMax:Integer <- 0;
 
   /**
-   * Number of times `eval()` has been called.
+   * Number of times `link()` has been called.
    */
-  evalCount:Integer <- 0;
+  linkCount:Integer <- 0;
 
   /**
-   * Number of times `reval()` or `grad()` has been called. Used to obtain
+   * Number of times `eval()` or `grad()` has been called. Used to obtain
    * pre- and post-order traversals of the expression graph.
    */
   visitCount:Integer <- 0;
@@ -58,35 +59,18 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
     return global.columns(x);
   }
 
-  final override function value() -> Value {
-    constant();
-    return x;
-  }
-
   final override function peek() -> Value {
     return x;
   }
 
   final override function eval() -> Value {
-    if f? {
-      evalCount <- evalCount + 1;
-    }
-    return x;
-  }
-
-  final override function reval() -> Value {
-    if f? {
+    if this.f? {
       if visitCount == 0 {
-        assert !d?;
-        x <- global.reval(f!);
+        x <- global.eval(f!);
       }
       visitCount <- visitCount + 1;
-      if visitCount >= evalCount {
-        assert visitCount == evalCount || evalCount == 0;
-        // ^ can have visitCount > evalCount = 0 if eval() has never been
-        //   called on this object, typically because it is a root expression
-        //   used from client code, rather than a subexpression used from
-        //   other expressions
+      if visitCount >= linkCount {
+        assert visitCount == linkCount || linkCount == 0;
         visitCount <- 0;  // reset for next time
       }
     }
@@ -94,7 +78,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function grad(d:Value) {
-    if f? {
+    if this.f? {
       if visitCount == 0 {
         assert !this.d?;
         this.d <- d;  // start accumulation
@@ -103,17 +87,17 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
         this.d <- this.d! + d;
       }
       visitCount <- visitCount + 1;
-      if visitCount >= evalCount {
-        assert visitCount == evalCount || evalCount == 0;
-        // ^ can have visitCount > evalCount = 0 if eval() has never been
-        //   called on this object, typically because it is a root expression
-        //   used from client code, rather than a subexpression used from
-        //   other expressions
-        global.grad(f!, this.d!);  // upstream gradients all accumulated, propagate
-        this.d <- nil;    // clear intermediate gradients to save memory
+      if visitCount >= linkCount {
+        assert visitCount == linkCount || linkCount == 0;
+        global.grad(this.f!, this.d!);  // upstream gradients accumulated
+        this.d <- nil;  // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
     }
+  }
+
+  final override function link() {
+    linkCount <- linkCount + 1;
   }
 
   final override function label(gen:Integer) {
@@ -141,8 +125,66 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
       d <- nil;
       gen <- 0;
       genMax <- 0;
-      evalCount <- 0;
+      linkCount <- 0;
       visitCount <- 0;
     }
   }
+}
+
+function length<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
+  return x.length();
+}
+
+function size<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
+  return x.size();
+}
+
+function rows<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
+  return x.rows();
+}
+
+function columns<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
+  return x.columns();
+}
+
+function link<Value,Form>(x:BoxedForm<Value,Form>) {
+  x.link();
+}
+
+function value<Value,Form>(x:BoxedForm<Value,Form>) -> {
+  return x.value();
+}
+
+function peek<Value,Form>(x:BoxedForm<Value,Form>) -> {
+  return x.peek();
+}
+
+function eval<Value,Form>(x:BoxedForm<Value,Form>) -> {
+  return x.eval();
+}
+
+function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient) {
+  x.grad(d);
+}
+
+function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient,
+    i:Integer) {
+  x.grad(d, i);
+}
+
+function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient,
+    i:Integer, j:Integer) {
+  x.grad(d, i, j);
+}
+
+function label<Value,Form>(x:BoxedForm<Value,Form>, gen:Integer) {
+  x.label(gen);
+}
+
+function constant<Value,Form>(x:BoxedForm<Value,Form>, gen:Integer) {
+  x.constant(gen);
+}
+
+function constant<Value,Form>(x:BoxedForm<Value,Form>) {
+  x.constant();
 }

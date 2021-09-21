@@ -1,4 +1,4 @@
-/**
+/*
  * Linear combination of four arguments.
  */
 struct Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(a:Arg1, w:Arg2,
@@ -11,74 +11,84 @@ struct Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(a:Arg1, w:Arg2,
   y:Arg6 <- y;
   d:Arg7 <- d;
   z:Arg8 <- z;
+}
 
-  function value() -> {
-    return combine(global.value(a), global.value(w), global.value(b),
-        global.value(x), global.value(c), global.value(y), global.value(d),
-        global.value(z));
-  }
+function link<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>) {
+  link(x.a);
+  link(x.w);
+  link(x.b);
+  link(x.x);
+  link(x.c);
+  link(x.y);
+  link(x.d);
+  link(x.z);
+}
 
-  function peek() -> {
-    return combine(global.peek(a), global.peek(w), global.peek(b),
-        global.peek(x), global.peek(c), global.peek(y), global.peek(d),
-        global.peek(z));
-  }
+function label<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>, gen:Integer) {
+  label(x.a, gen);
+  label(x.w, gen);
+  label(x.b, gen);
+  label(x.x, gen);
+  label(x.c, gen);
+  label(x.y, gen);
+  label(x.d, gen);
+  label(x.z, gen);
+}
 
-  function eval() -> {
-    return combine(global.eval(a), global.eval(w), global.eval(b),
-        global.eval(x), global.eval(c), global.eval(y), global.eval(d),
-        global.eval(z));
-  }
+function constant<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,
+    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>, gen:Integer) {
+  constant(x.a, gen);
+  constant(x.w, gen);
+  constant(x.b, gen);
+  constant(x.x, gen);
+  constant(x.c, gen);
+  constant(x.y, gen);
+  constant(x.d, gen);
+  constant(x.z, gen);
+}
 
-  function reval() -> {
-    return combine(global.reval(a), global.reval(w), global.reval(b),
-        global.reval(x), global.reval(c), global.reval(y), global.reval(d),
-        global.reval(z));
-  }
-  
-  function grad<Gradient>(g:Gradient) {
-    global.grad(a, g*w);
-    global.grad(w, g*a);
-    global.grad(b, g*x);
-    global.grad(x, g*b);
-    global.grad(c, g*y);
-    global.grad(y, g*c);
-    global.grad(d, g*z);
-    global.grad(z, g*d);
-  }
+function constant<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,
+    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>) {
+  constant(x.a);
+  constant(x.w);
+  constant(x.b);
+  constant(x.x);
+  constant(x.c);
+  constant(x.y);
+  constant(x.d);
+  constant(x.z);
+}
 
-  function label(gen:Integer) {
-    global.label(a, gen);
-    global.label(w, gen);
-    global.label(b, gen);
-    global.label(x, gen);
-    global.label(c, gen);
-    global.label(y, gen);
-    global.label(d, gen);
-    global.label(z, gen);
-  }
+function value<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>) -> {
+  return combine(value(x.a), value(x.w), value(x.b), value(x.x), value(x.c),
+      value(x.y), value(x.d), value(x.z));
+}
 
-  function constant(gen:Integer) {
-    global.constant(a, gen);
-    global.constant(w, gen);
-    global.constant(b, gen);
-    global.constant(x, gen);
-    global.constant(c, gen);
-    global.constant(y, gen);
-    global.constant(d, gen);
-    global.constant(z, gen);
-  }
+function peek<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>) -> {
+  return combine(peek(x.a), peek(x.w), peek(x.b), peek(x.x), peek(x.c),
+      peek(x.y), peek(x.d), peek(x.z));
+}
 
-  function constant() {
-    global.constant(a);
-    global.constant(w);
-    global.constant(b);
-    global.constant(x);
-    global.constant(c);
-    global.constant(y);
-    global.constant(d);
-    global.constant(z);
-  }
+function eval<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>) -> {
+  return combine(eval(x.a), eval(x.w), eval(x.b), eval(x.x), eval(x.c),
+      eval(x.y), eval(x.d), eval(x.z));
+}
+
+function grad<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8,Gradient>(x:Combine<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>, d:Gradient) {
+  grad(x.a, d*peek(x.w));
+  grad(x.w, d*peek(x.a));
+  grad(x.b, d*peek(x.x));
+  grad(x.x, d*peek(x.b));
+  grad(x.c, d*peek(x.y));
+  grad(x.y, d*peek(x.c));
+  grad(x.d, d*peek(x.z));
+  grad(x.z, d*peek(x.d));
 }
 
 /**

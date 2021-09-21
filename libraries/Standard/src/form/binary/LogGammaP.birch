@@ -1,31 +1,35 @@
-struct LogGammaPFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return lgamma(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    let y <- 0.0;
-    for i in 1..r {
-      y <- y + digamma(l + 0.5*(1 - i));
-    }
-    return (d*y, 0.0);
-  }
+struct LogGammaP<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct LogGammaP<Left,Right> = Binary<LogGammaPFunction,Left,Right>;
+
+function value<Left,Right>(x:LogGammaP<Left,Right>) -> {
+  return lgamma(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:LogGammaP<Left,Right>) -> {
+  return lgamma(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:LogGammaP<Left,Right>) -> {
+  return lgamma(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:LogGammaP<Left,Right>, d:Gradient) {
+  let l <- peek(x.l);
+  let r <- peek(x.r);
+  let y <- 0.0;
+  for i in 1..r {
+    y <- y + digamma(l + 0.5*(1 - i));
+  }
+  grad(x.l, d*y);
+  grad(x.r, 0.0);
+}
 
 /**
  * Logarithm of the multivariate gamma function.
  */
-function lgamma<Left,Right>(l:Left, r:Right) -> {
+function lgamma<Left,Right>(l:Left, r:Right) -> LogGammaP<Left,Right> {
   return construct<LogGammaP<Left,Right>>(l, r);
-}
-
-/**
- * Logarithm of the multivariate gamma function.
- */
-function lgamma(x:Integer, p:Integer) -> Real {
-  return lgamma(scalar<Real>(x), p);
 }
 
 /**
@@ -38,4 +42,11 @@ function lgamma(x:Real, p:Integer) -> Real {
     y <- y + lgamma(x + 0.5*(1 - i));
   }
   return y;
+}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:Integer, p:Integer) -> Real {
+  return lgamma(scalar<Real>(x), p);
 }

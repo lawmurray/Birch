@@ -1,41 +1,68 @@
-struct LogZConwayMaxwellPoissonFunction {
-  function compute<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
-    return logz_conway_maxwell_poisson(λ, ν, n);
-  }
-
-  function grad<Gradient,Arg1,Arg2,Arg3>(d:Gradient, λ:Arg1, ν:Arg2,
-      n:Arg3) -> {
-    let log_λ <- log(λ);
-    let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
-    let mx <- μ*log_λ - ν*lgamma(μ + 1);  // renormalizer
-    let log_xf <- 0.0;  // accumulator of log(x!)
-    let z <- 0.0;
-    let Z <- exp(-mx);  // for x == 0
-    let dλ <- 0.0;
-    let dν <- 0.0;
-    for x in 1..n {
-      log_xf <- log_xf + log(x);
-      z <- exp(x*log_λ - ν*log_xf - mx);
-      Z <- Z + z;
-      dλ <- dλ + x*z;
-      dν <- dν + log_xf*z;
-    }
-    dλ <- d*dλ/(λ*Z);
-    dν <- -d*dν/Z;
-
-    return (dλ, dν, 0.0);
-  }
+struct LogZConwayMaxwellPoisson<Left,Middle,Right>(l:Left, m:Middle,
+    r:Right) < Ternary<Left,Middle,Right>(l, m, r) {
+  //
 }
-struct LogZConwayMaxwellPoisson<Left,Middle,Right> = Ternary<
-    LogZConwayMaxwellPoissonFunction,Left,Middle,Right>;
+
+function value<Left,Middle,Right>(
+      x:LogZConwayMaxwellPoisson<Left,Middle,Right>) -> {
+  let λ <- value(x.l);
+  let ν <- value(x.m);
+  let n <- value(x.r);
+  return logz_conway_maxwell_poisson(λ, ν, n);
+}
+
+function peek<Left,Middle,Right>(
+      x:LogZConwayMaxwellPoisson<Left,Middle,Right>) -> {
+  let λ <- peek(x.l);
+  let ν <- peek(x.m);
+  let n <- peek(x.r);
+  return logz_conway_maxwell_poisson(λ, ν, n);
+}
+
+function eval<Left,Middle,Right>(
+      x:LogZConwayMaxwellPoisson<Left,Middle,Right>) -> {
+  let λ <- eval(x.l);
+  let ν <- eval(x.m);
+  let n <- eval(x.r);
+  return logz_conway_maxwell_poisson(λ, ν, n);
+}
+
+function grad<Left,Middle,Right,Gradient>(
+      x:LogZConwayMaxwellPoisson<Left,Middle,Right>, d:Gradient) {
+  let λ <- peek(x.l);
+  let ν <- peek(x.m);
+  let n <- peek(x.r);
+
+  let log_λ <- log(λ);
+  let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
+  let mx <- μ*log_λ - ν*lgamma(μ + 1);  // renormalizer
+  let log_xf <- 0.0;  // accumulator of log(x!)
+  let z <- 0.0;
+  let Z <- exp(-mx);  // for x == 0
+  let dλ <- 0.0;
+  let dν <- 0.0;
+  for x in 1..n {
+    log_xf <- log_xf + log(x);
+    z <- exp(x*log_λ - ν*log_xf - mx);
+    Z <- Z + z;
+    dλ <- dλ + x*z;
+    dν <- dν + log_xf*z;
+  }
+  dλ <- d*dλ/(λ*Z);
+  dν <- -d*dν/Z;
+
+  grad(x.l, dλ);
+  grad(x.m, dν);
+  grad(x.r, 0.0);
+}
 
 /**
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
  * distribution truncated on a finite interval $[0,n]$.
  */
-function logz_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
-    n:Arg3) -> {
-  return construct<LogZConwayMaxwellPoisson<Arg1,Arg2,Arg3>>(λ, ν, n);
+function logz_conway_maxwell_poisson<Left,Middle,Right>(λ:Left, ν:Middle,
+    n:Right) -> LogZConwayMaxwellPoisson<Left,Middle,Right> {
+  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(λ, ν, n);
 }
 
 /*

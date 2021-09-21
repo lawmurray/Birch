@@ -1,42 +1,46 @@
-struct LogChooseFunction {  
-  function compute<LeftValue,RightValue>(n:LeftValue, k:RightValue) -> {
-    return lchoose(n, k);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, n:LeftValue,
-      k:RightValue) -> {
-    dn:Real;
-    dk:Real;
-    if k == 0.0 || k == n {
-      dn <- 0.0;
-      dk <- 0.0;
-    } else if k == 1.0 || k == n - 1 {
-      dn <- 1.0/n;
-      dk <- 0.0;
-    } else if k < n - k {
-      dn <- -digamma(n - k + 1.0) + digamma(n + 1.0);
-      dk <- -1.0/k - digamma(k) + digamma(n - k + 1.0);
-    } else {
-      dn <- -1.0/(n - k) - digamma(n - k) + digamma(n + 1.0);
-      dk <- 1.0/(n - k) - digamma(k + 1.0) + digamma(n - k);
-    }
-    return (d*dn, d*dk);
-  }
+struct LogChoose<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct LogChoose<Left,Right> = Binary<LogChooseFunction,Left,Right>;
+
+function value<Left,Right>(x:LogChoose<Left,Right>) -> {
+  return lchoose(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:LogChoose<Left,Right>) -> {
+  return lchoose(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:LogChoose<Left,Right>) -> {
+  return lchoose(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:LogChoose<Left,Right>, d:Gradient) {
+  let n <- peek(x.l);
+  let k <- peek(x.r);
+  dn:Real;
+  dk:Real;
+  if k == 0 || k == n {
+    dn <- 0.0;
+    dk <- 0.0;
+  } else if k == 1 || k == n - 1 {
+    dn <- 1.0/n;
+    dk <- 0.0;
+  } else if k < n - k {
+    dn <- -digamma(n - k + 1) + digamma(n + 1);
+    dk <- -1.0/k - digamma(k) + digamma(n - k + 1);
+  } else {
+    dn <- -1.0/(n - k) - digamma(n - k) + digamma(n + 1);
+    dk <- 1.0/(n - k) - digamma(k + 1) + digamma(n - k);
+  }
+  grad(x.l, d*dn);
+  grad(x.r, d*dk);
+}
 
 /**
  * Logarithm of the binomial coefficient.
  */
-function lchoose<Left,Right>(n:Left, k:Right) -> {
-  return construct<LogChoose<Left,Right>>(n, k);
-}
-
-/**
- * Logarithm of the binomial coefficient.
- */
-function lchoose(n:Integer, k:Integer) -> Real {
-  return lchoose(scalar<Real>(n), scalar<Real>(k));
+function lchoose<Left,Right>(l:Left, r:Right) -> LogChoose<Left,Right> {
+  return construct<LogChoose<Left,Right>>(l, r);
 }
 
 /**
@@ -53,6 +57,13 @@ function lchoose(n:Real, k:Real) -> Real {
   } else {
     return -log(n - k) - lbeta(k + 1.0, n - k);
   }
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(n:Integer, k:Integer) -> Real {
+  return lchoose(scalar<Real>(n), scalar<Real>(k));
 }
 
 /**

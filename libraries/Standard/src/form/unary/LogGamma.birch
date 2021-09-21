@@ -1,18 +1,27 @@
-struct LogGammaFunction {
-function compute<Value>(m:Value) -> {
-    return lgamma(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*digamma(m);
-  }
+struct LogGamma<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct LogGamma<Middle> = Unary<LogGammaFunction,Middle>;
+
+function value<Middle>(x:LogGamma<Middle>) -> {
+  return lgamma(value(x.m));
+}
+
+function peek<Middle>(x:LogGamma<Middle>) -> {
+  return lgamma(peek(x.m));
+}
+
+function eval<Middle>(x:LogGamma<Middle>) -> {
+  return lgamma(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:LogGamma<Middle>, d:Gradient) {
+  return grad(x.m, d*digamma(peek(x.m)));
+}
 
 /**
  * Logarithm of the gamma function.
  */
-function lgamma<Middle>(m:Middle) -> {
+function lgamma<Middle>(m:Middle) -> LogGamma<Middle> {
   return construct<LogGamma<Middle>>(m);
 }
 

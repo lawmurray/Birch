@@ -1,12 +1,7 @@
 /*
  * Function form with three arguments.
  */
-struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
-  /**
-   * Function.
-   */
-  f:Function;
-
+struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) {
   /**
    * Left argument.
    */
@@ -21,46 +16,29 @@ struct Ternary<Function,Left,Middle,Right>(l:Left, m:Middle, r:Right) {
    * Right argument.
    */
   r:Right <- r;
+}
 
-  function value() -> {
-    return f.compute(global.value(l), global.value(m), global.value(r));
-  }
+function link<Left,Middle,Right>(x:Ternary<Left,Middle,Right>) {
+  link(x.l);
+  link(x.m);
+  link(x.r);
+}
 
-  function peek() -> {
-    return f.compute(global.peek(l), global.peek(m), global.peek(r));
-  }
+function label<Left,Middle,Right>(x:Ternary<Left,Middle,Right>, gen:Integer) {
+  label(x.l, gen);
+  label(x.m, gen);
+  label(x.r, gen);
+}
 
-  function eval() -> {
-    return f.compute(global.eval(l), global.eval(m), global.eval(r));
-  }
+function constant<Left,Middle,Right>(x:Ternary<Left,Middle,Right>,
+    gen:Integer) {
+  constant(x.l, gen);
+  constant(x.m, gen);
+  constant(x.r, gen);
+}
 
-  function reval() -> {
-    return f.compute(global.reval(l), global.reval(m), global.reval(r));
-  }
-
-  function grad<Gradient>(d:Gradient) {
-    let (dl, dm, dr) <- f.grad(d, global.peek(l), global.peek(m),
-        global.peek(r));
-    global.grad(l, dl);
-    global.grad(m, dm);
-    global.grad(r, dr);
-  }
-
-  function label(gen:Integer) {
-    global.label(l, gen);
-    global.label(m, gen);
-    global.label(r, gen);
-  }
-
-  function constant(gen:Integer) {
-    global.constant(l, gen);
-    global.constant(m, gen);
-    global.constant(r, gen);
-  }
-
-  function constant() {
-    global.constant(l);
-    global.constant(m);
-    global.constant(r);
-  }
+function constant<Left,Middle,Right>(x:Ternary<Left,Middle,Right>) {
+  constant(x.l);
+  constant(x.m);
+  constant(x.r);
 }

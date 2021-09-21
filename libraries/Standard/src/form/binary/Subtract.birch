@@ -1,14 +1,23 @@
-struct SubtractFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l - r;
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (d, -d);
-  }
+struct Subtract<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Subtract<Left,Right> = Binary<SubtractFunction,Left,Right>;
+
+function value<Left,Right>(x:Subtract<Left,Right>) -> {
+  return value(x.l) - value(x.r);
+}
+
+function peek<Left,Right>(x:Subtract<Left,Right>) -> {
+  return peek(x.l) - peek(x.r);
+}
+
+function eval<Left,Right>(x:Subtract<Left,Right>) -> {
+  return eval(x.l) - eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:Subtract<Left,Right>, d:Gradient) {
+  grad(x.l, d);
+  grad(x.r, -d);
+}
 
 /**
  * Subtraction.

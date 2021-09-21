@@ -1,18 +1,27 @@
-struct AsinFunction {
-function compute<Value>(m:Value) -> {
-    return asin(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d/sqrt(1.0 - pow(m, 2.0));
-  }
+struct Asin<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Asin<Middle> = Unary<AsinFunction,Middle>;
+
+function value<Middle>(x:Asin<Middle>) -> {
+  return asin(value(x.m));
+}
+
+function peek<Middle>(x:Asin<Middle>) -> {
+  return asin(peek(x.m));
+}
+
+function eval<Middle>(x:Asin<Middle>) -> {
+  return asin(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Asin<Middle>, d:Gradient) {
+  return grad(x.m, d/sqrt(1.0 - pow(peek(x.m), 2.0)));
+}
 
 /**
  * Arc sine.
  */
-function asin<Middle>(m:Middle) -> {
+function asin<Middle>(m:Middle) -> Asin<Middle> {
   return construct<Asin<Middle>>(m);
 }
 

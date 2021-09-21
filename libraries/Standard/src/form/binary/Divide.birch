@@ -1,14 +1,24 @@
-struct DivideFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l/r;
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (d/r, -trace(inner(d, l))/pow(r, 2.0));
-  }
+struct Divide<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Divide<Left,Right> = Binary<DivideFunction,Left,Right>;
+
+function value<Left,Right>(x:Divide<Left,Right>) -> {
+  return value(x.l)/value(x.r);
+}
+
+function peek<Left,Right>(x:Divide<Left,Right>) -> {
+  return peek(x.l)/peek(x.r);
+}
+
+function eval<Left,Right>(x:Divide<Left,Right>) -> {
+  return eval(x.l)/eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:Divide<Left,Right>, d:Gradient) {
+  let (dl, dr) <- grad_divide(d, peek(x.l), peek(x.r));
+  grad(x.l, dl);
+  grad(x.r, dr);
+}
 
 /**
  * Division.
@@ -72,4 +82,17 @@ operator (X:Real[_,_]/y:Real) -> Real[_,_] {
  */
 operator (X:Real[_,_]/y:Integer) -> Real[_,_] {
   return X/scalar<Real>(y);
+}
+
+function grad_divide<Type>(d:Real, l:Type, r:Type) -> (Real, Real) {
+  return (d/r, d*l/-pow(r, 2.0));
+}
+
+function grad_divide<Type>(d:Real[_], l:Type[_], r:Type) -> (Real[_], Real) {
+  return (d/r, dot(d, l)/-pow(r, 2.0));
+}
+
+function grad_divide<Type>(d:Real[_,_], l:Type[_,_], r:Type) ->
+    (Real[_,_], Real) {
+  return (d/r, frobenius(d, l)/-pow(r, 2.0));
 }

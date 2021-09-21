@@ -1,88 +1,29 @@
-struct InnerFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return inner(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (outer(r, d), l*d);
-  }
+struct Inner<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Inner<Left,Right> = Binary<InnerFunction,Left,Right>;
+
+function value<Left,Right>(x:Inner<Left,Right>) -> {
+  return inner(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:Inner<Left,Right>) -> {
+  return inner(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:Inner<Left,Right>) -> {
+  return inner(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:Inner<Left,Right>, d:Gradient) {
+  grad(x.l, outer(peek(x.r), d));
+  grad(x.r, peek(x.l)*d);
+}
 
 /**
  * Inner product.
  */
-function inner<Left,Right>(l:Left, r:Right) -> {
+function inner<Left,Right>(l:Left, r:Right) -> Inner<Left,Right> {
   return construct<Inner<Left,Right>>(l, r);
-}
-
-/**
- * Scalar product.
- */
-function inner(x:Real, y:Real) -> Real {
-  return x*y;
-}
-
-/**
- * Scalar product.
- */
-function inner(x:Integer, y:Real) -> Real {
-  return inner(scalar<Real>(x), y);
-}
-
-/**
- * Scalar product.
- */
-function inner(x:Real, y:Integer) -> Real {
-  return inner(x, scalar<Real>(y));
-}
-
-/**
- * Scalar-vector product.
- */
-function inner(x:Real, y:Real[_]) -> Real[_] {
-  return x*y;
-}
-
-/**
- * Scalar-vector inner product.
- */
-function inner(x:Integer, y:Real[_]) -> Real[_] {
-  return inner(scalar<Real>(x), y);
-}
-
-/**
- * Scalar-vector inner product.
- */
-function inner(x:Real[_], y:Real) -> Real[_,_] {
-  Z:Real[1,length(x)];
-  cpp{{
-  numbirch::transpose(Z.rows(), Z.columns(), y, x.data(), x.stride(),
-      Z.data(), Z.stride());
-  }}
-  return Z;
-}
-
-/**
- * Scalar-vector inner product.
- */
-function inner(x:Real[_], y:Integer) -> Real[_,_] {
-  return inner(x, scalar<Real>(y));
-}
-
-/**
- * Scalar-matrix inner product.
- */
-function inner(x:Real, y:Real[_,_]) -> Real[_,_] {
-  return x*y;
-}
-
-/**
- * Scalar-matrix inner product.
- */
-function inner(x:Integer, y:Real[_,_]) -> Real[_,_] {
-  return inner(scalar<Real>(x), y);
 }
 
 /**
@@ -101,21 +42,12 @@ function inner(x:Real[_,_], y:Real) -> Real[_,_] {
  * Scalar-matrix inner product.
  */
 function inner(x:Real[_,_], y:Integer) -> Real[_,_] {
-  return inner(x, scalar<Real>(y));
-}
-
-/**
- * Vector inner product.
- */
-function inner(x:Real[_], y:Real[_]) -> Real[_] {
-  assert length(x) == length(y);
-
-  z:Real[1];
+  Z:Real[columns(x),rows(x)];
   cpp{{
-  numbirch::mul(1, x.rows(), x.data(), x.stride(), y.data(), y.stride(),
-      z.data(), z.stride());
+  numbirch::transpose(Z.rows(), Z.columns(), y, x.data(), x.stride(),
+      Z.data(), Z.stride());
   }}
-  return z;
+  return Z;
 }
 
 /**
@@ -130,20 +62,6 @@ function inner(X:Real[_,_], y:Real[_]) -> Real[_] {
       y.stride(), z.data(), z.stride());
   }}
   return z;
-}
-
-/**
- * Vector-matrix inner product.
- */
-function inner(x:Real[_], Y:Real[_,_]) -> Real[_,_] {
-  assert length(x) == rows(Y);
-
-  Z:Real[1,columns(Y)];
-  cpp{{
-  numbirch::mul(Z.rows(), Z.columns(), x.rows(), x.data(), x.stride(),
-      Y.data(), Y.stride(), Z.data(), Z.stride());
-  }}
-  return Z;
 }
 
 /**

@@ -1,25 +1,42 @@
-struct TanhFunction {
-function compute<Value>(m:Value) -> {
-    return tanh(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return transform(d, m, \(d:Real, m:Real) -> Real {
-          return d*(1.0 + pow(tanh(m), 2.0));
-        });
-  }
+struct Tanh<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Tanh<Middle> = Unary<TanhFunction,Middle>;
+
+function value<Middle>(x:Tanh<Middle>) -> {
+  return tanh(value(x.m));
+}
+
+function peek<Middle>(x:Tanh<Middle>) -> {
+  return tanh(peek(x.m));
+}
+
+function eval<Middle>(x:Tanh<Middle>) -> {
+  return tanh(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Tanh<Middle>, d:Gradient) {
+  let m <- peek(x.m);
+  grad(x.m, transform(d, m, \(d:Real, m:Real) -> Real {
+        return d*(1.0 + pow(tanh(m), 2.0));
+      }));
+}
 
 /**
- * Tanh.
+ * Hyperbolic tangent.
  */
-function tanh<Middle>(m:Middle) -> {
+function tanh<Middle>(m:Middle) -> Tanh<Middle> {
   return construct<Tanh<Middle>>(m);
 }
 
 /**
- * Tanh scalar.
+ * Hyperbolic sine.
+ */
+function tanh(m:Integer) -> Real {
+  return tanh(scalar<Real>(m));
+}
+
+/**
+ * Hyperbolic tangent.
  */
 function tanh(m:Real) -> Real {
   cpp{{
@@ -28,14 +45,14 @@ function tanh(m:Real) -> Real {
 }
 
 /**
- * Tanh vector.
+ * Hyperbolic tangent.
  */
 function tanh(m:Real[_]) -> Real[_] {
   return transform(m, \(x:Real) -> Real { return tanh(x); });
 }
 
 /**
- * Tanh matrix.
+ * Hyperbolic tangent.
  */
 function tanh(m:Real[_,_]) -> Real[_,_] {
   return transform(m, \(x:Real) -> Real { return tanh(x); });

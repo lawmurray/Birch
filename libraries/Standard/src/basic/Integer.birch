@@ -60,6 +60,10 @@ function size(x:Integer) -> Integer {
   return 1;
 }
 
+function link(x:Integer) {
+  //
+}
+
 function value(x:Integer) -> Integer {
   return x;
 }
@@ -69,10 +73,6 @@ function peek(x:Integer) -> Integer {
 }
 
 function eval(x:Integer) -> Integer {
-  return x;
-}
-
-function reval(x:Integer) -> Integer {
   return x;
 }
 

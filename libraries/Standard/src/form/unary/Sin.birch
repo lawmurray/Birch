@@ -1,18 +1,27 @@
-struct SinFunction {
-function compute<Value>(m:Value) -> {
-    return sin(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*cos(m);
-  }
+struct Sin<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Sin<Middle> = Unary<SinFunction,Middle>;
+
+function value<Middle>(x:Sin<Middle>) -> {
+  return sin(value(x.m));
+}
+
+function peek<Middle>(x:Sin<Middle>) -> {
+  return sin(peek(x.m));
+}
+
+function eval<Middle>(x:Sin<Middle>) -> {
+  return sin(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Sin<Middle>, d:Gradient) {
+  grad(x.m, d*cos(peek(x.m)));
+}
 
 /**
  * Sine.
  */
-function sin<Middle>(m:Middle) -> {
+function sin<Middle>(m:Middle) -> Sin<Middle> {
   return construct<Sin<Middle>>(m);
 }
 
@@ -24,7 +33,7 @@ function sin(m:Integer) -> Real {
 }
 
 /**
- * Cosine.
+ * Sine.
  */
 function sin(m:Real) -> Real {
   cpp {{

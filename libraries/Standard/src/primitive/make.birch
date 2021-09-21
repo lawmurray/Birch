@@ -37,42 +37,6 @@ std::optional<T> make_optional(Args&&... args) {
 }
 
 /**
- * Make an inplace object.
- *
- * @tparam T Type.
- * @tparam Args Argument types.
- * 
- * @param args Arguments.
- *
- * @return If the type is constructible with the given arguments, then an
- * optional with a so-constructed value, otherwise an optional with no value.
- */
-template<class T, class... Args, std::enable_if_t<
-    libbirch::is_inplace<T>::value &&
-    std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
-std::optional<T> make_optional(Args&&... args) {
-  return T(std::forward<Args>(args)...);
-}
-
-/**
- * Make an inplace object.
- *
- * @tparam T Type.
- * @tparam Args Argument types.
- * 
- * @param args Arguments.
- *
- * @return If the type is constructible with the given arguments, then an
- * optional with a so-constructed value, otherwise an optional with no value.
- */
-template<class T, class... Args, std::enable_if_t<
-    libbirch::is_inplace<T>::value &&
-    !std::is_constructible<typename T::value_type,Args...>::value,int> = 0>
-std::optional<T> make_optional(Args&&... args) {
-  return std::nullopt;
-}
-
-/**
  * Make a value or object.
  *
  * @tparam T Type.
@@ -85,7 +49,6 @@ std::optional<T> make_optional(Args&&... args) {
  */
 template<class T, class... Args, std::enable_if_t<
     !libbirch::is_pointer<T>::value &&
-    !libbirch::is_inplace<T>::value &&
     std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -104,7 +67,6 @@ std::optional<T> make_optional(Args&&... args) {
  */
 template<class T, class... Args, std::enable_if_t<
     !libbirch::is_pointer<T>::value &&
-    !libbirch::is_inplace<T>::value &&
     !std::is_constructible<T,Args...>::value,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;

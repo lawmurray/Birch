@@ -1,18 +1,27 @@
-struct Log1pFunction {
-function compute<Value>(m:Value) -> {
-    return log1p(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d/(1.0 + m);
-  }
+struct Log1p<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Log1p<Middle> = Unary<Log1pFunction,Middle>;
+
+function value<Middle>(x:Log1p<Middle>) -> {
+  return log1p(value(x.m));
+}
+
+function peek<Middle>(x:Log1p<Middle>) -> {
+  return log1p(peek(x.m));
+}
+
+function eval<Middle>(x:Log1p<Middle>) -> {
+  return log1p(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Log1p<Middle>, d:Gradient) {
+  grad(x.m, d/(1.0 + peek(x.m)));
+}
 
 /**
  * Natural logarithm of 1 plus argument.
  */
-function log1p<Middle>(m:Middle) -> {
+function log1p<Middle>(m:Middle) -> Log1p<Middle> {
   return construct<Log1p<Middle>>(m);
 }
 

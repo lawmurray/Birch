@@ -1,18 +1,27 @@
-struct SqrtFunction {
-function compute<Value>(m:Value) -> {
-    return sqrt(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*0.5/sqrt(m);
-  }
+struct Sqrt<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Sqrt<Middle> = Unary<SqrtFunction,Middle>;
+
+function value<Middle>(x:Sqrt<Middle>) -> {
+  return sqrt(value(x.m));
+}
+
+function peek<Middle>(x:Sqrt<Middle>) -> {
+  return sqrt(peek(x.m));
+}
+
+function eval<Middle>(x:Sqrt<Middle>) -> {
+  return sqrt(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Sqrt<Middle>, d:Gradient) {
+  grad(x.m, d*0.5/sqrt(peek(x.m)));
+}
 
 /**
  * Square root.
  */
-function sqrt<Middle>(m:Middle) -> {
+function sqrt<Middle>(m:Middle) -> Sqrt<Middle> {
   return construct<Sqrt<Middle>>(m);
 }
 

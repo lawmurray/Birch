@@ -53,6 +53,10 @@ function size<Type>(x:Type[_]) -> Integer {
   return rows(x)*columns(x);
 }
 
+function link<Type>(x:Type[_]) {
+  //
+}
+
 function value<Type>(x:Type[_]) -> Type[_] {
   return x;
 }
@@ -62,10 +66,6 @@ function peek<Type>(x:Type[_]) -> Type[_] {
 }
 
 function eval<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function reval<Type>(x:Type[_]) -> Type[_] {
   return x;
 }
 

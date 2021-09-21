@@ -1,14 +1,23 @@
-struct AddFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l + r;
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (d, d);
-  }
+struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Add<Left,Right> = Binary<AddFunction,Left,Right>;
+
+function value<Left,Right>(x:Add<Left,Right>) -> {
+  return value(x.l) + value(x.r);
+}
+
+function peek<Left,Right>(x:Add<Left,Right>) -> {
+  return peek(x.l) + peek(x.r);
+}
+
+function eval<Left,Right>(x:Add<Left,Right>) -> {
+  return eval(x.l) + eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:Add<Left,Right>, d:Gradient) {
+  grad(x.l, d);
+  grad(x.r, d);
+}
 
 /**
  * Addition.

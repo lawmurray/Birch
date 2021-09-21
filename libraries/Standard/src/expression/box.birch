@@ -6,43 +6,6 @@ function box<Value>(x:Expression<Value>) -> Expression<Value> {
 }
 
 /**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value,Form>(x:BoxedForm<Value,Form>) -> Expression<Value> {
-  return x;
-}
-
-/**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value>(x:BoxedValue<Value>) -> Expression<Value> {
-  return x;
-}
-
-/**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value,Form>(x:MatrixSplitExpression<Value[_,_],Form>) ->
-    Expression<Value[_,_]> {
-  return x;
-}
-
-/**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value>(x:Random<Value>) -> Expression<Value> {
-  return x;
-}
-
-/**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value,Form>(x:VectorSplitExpression<Value[_],Form>) ->
-    Expression<Value[_]> {
-  return x;
-}
-
-/**
  * Box a value.
  */
 function box(x:Boolean) -> Expression<Boolean> {
@@ -83,7 +46,8 @@ function box<Type>(x:Type[_,_]) -> Expression<Type[_,_]> {
  * - f: Form of the expression.
  */
 function box<Form>(f:Form) -> {
-  return box_form(f.eval(), f);
+  link(f);
+  return box_form(peek(f), f);
 }
 function box_form<Value,Form>(x:Value, f:Form) -> Expression<Value> {
   return construct<BoxedForm<Value,Form>>(x, f);

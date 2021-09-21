@@ -1,24 +1,35 @@
-struct PowFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return pow(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    let dl <- d*r*pow(l, r - 1.0);
-    let dr <- 0.0;
-    if l > 0.0 {
-      dr <- d*pow(l, r)*log(l);
-    }
-    return (dl, dr);
-  }
+struct Pow<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Pow<Left,Right> = Binary<PowFunction,Left,Right>;
+
+function value<Left,Right>(x:Pow<Left,Right>) -> {
+  return pow(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:Pow<Left,Right>) -> {
+  return pow(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:Pow<Left,Right>) -> {
+  return pow(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {
+  let l <- peek(x.l);
+  let r <- peek(x.r);
+  let dl <- d*r*pow(l, r - 1.0);
+  let dr <- 0.0;
+  if l > 0.0 {
+    dr <- d*pow(l, r)*log(l);
+  }
+  grad(x.l, dl);
+  grad(x.r, dr);
+}
 
 /**
  * Power.
  */
-function pow<Left,Right>(l:Left, r:Right) -> {
+function pow<Left,Right>(l:Left, r:Right) -> Pow<Left,Right> {
   return construct<Pow<Left,Right>>(l, r);
 }
 

@@ -1,27 +1,31 @@
-struct LogBetaFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return lbeta(l, r);
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (d*(digamma(l) - digamma(l + r)), d*(digamma(r) - digamma(l + r)));
-  }
+struct LogBeta<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct LogBeta<Left,Right> = Binary<LogBetaFunction,Left,Right>;
+
+function value<Left,Right>(x:LogBeta<Left,Right>) -> {
+  return lbeta(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:LogBeta<Left,Right>) -> {
+  return lbeta(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:LogBeta<Left,Right>) -> {
+  return lbeta(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:LogBeta<Left,Right>, d:Gradient) {
+  let l <- peek(x.l);
+  let r <- peek(x.r);
+  grad(x.l, d*(digamma(l) - digamma(l + r)));
+  grad(x.r, d*(digamma(r) - digamma(l + r)));
+}
 
 /**
  * Logarithm of the beta function.
  */
-function lbeta<Left,Right>(l:Left, r:Right) -> {
+function lbeta<Left,Right>(l:Left, r:Right) -> LogBeta<Left,Right> {
   return construct<LogBeta<Left,Right>>(l, r);
-}
-
-/**
- * Logarithm of the beta function.
- */
-function lbeta(l:Integer, r:Integer) -> Real {
-  return lbeta(scalar<Real>(l), scalar<Real>(r));
 }
 
 /**
@@ -29,6 +33,13 @@ function lbeta(l:Integer, r:Integer) -> Real {
  */
 function lbeta(l:Real, r:Real) -> Real {
   return lgamma(l) + lgamma(r) - lgamma(l + r);
+}
+
+/**
+ * Logarithm of the beta function.
+ */
+function lbeta(l:Integer, r:Integer) -> Real {
+  return lbeta(scalar<Real>(l), scalar<Real>(r));
 }
 
 /**

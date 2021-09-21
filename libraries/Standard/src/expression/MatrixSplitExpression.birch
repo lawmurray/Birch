@@ -9,6 +9,7 @@ final class MatrixSplitExpression<Value,Form>(x:Value, f:Form) <
   function grad(d:Real, i:Integer, j:Integer) {
     if this.f? {
       if this.visitCount == 0 {
+        assert !this.d?;
         this.d <- matrix(0.0, this.rows(), this.columns());
       }
       this.d![i,j] <- this.d![i,j] + d;
@@ -19,8 +20,8 @@ final class MatrixSplitExpression<Value,Form>(x:Value, f:Form) <
         //   called on this object, typically because it is root expression
         //   used from client code, rather than a subexpression used from
         //   other expressions
-        global.grad(this.f!, this.d!);       // upstream gradients all accumulated, propagate
-        this.d <- nil;         // clear intermediate gradients to save memory
+        global.grad(this.f!, this.d!);  // upstream gradients accumulated
+        this.d <- nil;  // clear intermediate gradients to save memory
         this.visitCount <- 0;  // reset for next time
       }
     }
@@ -44,4 +45,64 @@ function matrix_split<Form>(f:Form) -> {
  */
 function matrix_split<Value,Form>(x:Value, f:Form) -> {
   return construct<MatrixSplitExpression<Value,Form>>(x, f);
+}
+
+function length<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Integer {
+  return x.length();
+}
+
+function size<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Integer {
+  return x.size();
+}
+
+function rows<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Integer {
+  return x.rows();
+}
+
+function columns<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Integer {
+  return x.columns();
+}
+
+function link<Value,Form>(x:MatrixSplitExpression<Value,Form>) {
+  x.link();
+}
+
+function value<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> {
+  return x.value();
+}
+
+function peek<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> {
+  return x.peek();
+}
+
+function eval<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> {
+  return x.eval();
+}
+
+function grad<Value,Form,Gradient>(x:MatrixSplitExpression<Value,Form>,
+    d:Gradient) {
+  x.grad(d);
+}
+
+function grad<Value,Form,Gradient>(x:MatrixSplitExpression<Value,Form>,
+    d:Gradient, i:Integer) {
+  x.grad(d, i);
+}
+
+function grad<Value,Form,Gradient>(x:MatrixSplitExpression<Value,Form>,
+    d:Gradient, i:Integer, j:Integer) {
+  x.grad(d, i, j);
+}
+
+function label<Value,Form>(x:MatrixSplitExpression<Value,Form>, gen:Integer) {
+  x.label(gen);
+}
+
+function constant<Value,Form>(x:MatrixSplitExpression<Value,Form>,
+    gen:Integer) {
+  x.constant(gen);
+}
+
+function constant<Value,Form>(x:MatrixSplitExpression<Value,Form>) {
+  x.constant();
 }

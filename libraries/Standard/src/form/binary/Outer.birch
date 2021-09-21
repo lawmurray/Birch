@@ -1,19 +1,28 @@
-struct OuterFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return outer(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (d*r, inner(d, l));
-  }
+struct Outer<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Outer<Left,Right> = Binary<OuterFunction,Left,Right>;
+
+function value<Left,Right>(x:Outer<Left,Right>) -> {
+  return outer(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:Outer<Left,Right>) -> {
+  return outer(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:Outer<Left,Right>) -> {
+  return outer(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:Outer<Left,Right>, d:Gradient) {
+  grad(x.l, d*peek(x.r));
+  grad(x.r, inner(d, eval(x.l)));
+}
 
 /**
  * Outer product.
  */
-function outer<Left,Right>(l:Left, r:Right) -> {
+function outer<Left,Right>(l:Left, r:Right) -> Outer<Left,Right> {
   return construct<Outer<Left,Right>>(l, r);
 }
 
@@ -22,20 +31,6 @@ function outer<Left,Right>(l:Left, r:Right) -> {
  */
 function outer(x:Real, y:Real) -> Real {
   return x*y;
-}
-
-/**
- * Scalar product.
- */
-function outer(x:Integer, y:Real) -> Real {
-  return outer(scalar<Real>(x), y);
-}
-
-/**
- * Scalar product.
- */
-function outer(x:Real, y:Integer) -> Real {
-  return outer(x, scalar<Real>(y));
 }
 
 /**
@@ -51,24 +46,10 @@ function outer(x:Real, y:Real[_]) -> Real[_,_] {
 }
 
 /**
- * Scalar-vector outer product.
- */
-function outer(x:Integer, y:Real[_]) -> Real[_,_] {
-  return outer(scalar<Real>(x), y);
-}
-
-/**
  * Scalar-vector product.
  */
 function outer(x:Real[_], y:Real) -> Real[_] {
   return x*y;
-}
-
-/**
- * Scalar-vector product.
- */
-function outer(x:Real[_], y:Integer) -> Real[_] {
-  return outer(x, scalar<Real>(y));
 }
 
 /**
@@ -81,13 +62,6 @@ function outer(x:Real, Y:Real[_,_]) -> Real[_,_] {
       Z.data(), Z.stride());
   }}
   return Z;
-}
-
-/**
- * Scalar-matrix outer product.
- */
-function outer(x:Integer, Y:Real[_,_]) -> Real[_,_] {
-  return outer(scalar<Real>(x), Y);
 }
 
 /**

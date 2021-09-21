@@ -1,19 +1,28 @@
-struct LessThanOrEqualFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l <= r;
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (0.0, 0.0);
-  }
+struct LessThanOrEqual<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct LessThanOrEqual<Left,Right> = Binary<LessThanOrEqualFunction,Left,Right>;
+
+function value<Left,Right>(x:LessThanOrEqual<Left,Right>) -> {
+  return value(x.l) <= value(x.r);
+}
+
+function peek<Left,Right>(x:LessThanOrEqual<Left,Right>) -> {
+  return peek(x.l) <= peek(x.r);
+}
+
+function eval<Left,Right>(x:LessThanOrEqual<Left,Right>) -> {
+  return eval(x.l) <= eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:LessThanOrEqual<Left,Right>, d:Gradient) {
+  grad(x.l, 0.0);
+  grad(x.r, 0.0);
+}
 
 /**
  * Less than or equal.
  */
-operator<Left,Right> (l:Left <= r:Right) -> {
+operator<Left,Right> (l:Left <= r:Right) -> LessThanOrEqual<Left,Right> {
   return construct<LessThanOrEqual<Left,Right>>(l, r);
 }
 

@@ -1,19 +1,28 @@
-struct DotFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return dot(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (r*d, outer(l, d));
-  }
+struct Dot<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Dot<Left,Right> = Binary<DotFunction,Left,Right>;
+
+function value<Left,Right>(x:Dot<Left,Right>) -> {
+  return dot(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:Dot<Left,Right>) -> {
+  return dot(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:Dot<Left,Right>) -> {
+  return dot(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:Dot<Left,Right>, d:Gradient) {
+  grad(x.l, peek(x.r)*d);
+  grad(x.r, outer(peek(x.l), d));
+}
 
 /**
  * Dot product.
  */
-function dot<Left,Right>(l:Left, r:Right) -> {
+function dot<Left,Right>(l:Left, r:Right) -> Dot<Left,Right> {
   return construct<Dot<Left,Right>>(l, r);
 }
 

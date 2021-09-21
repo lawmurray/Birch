@@ -1,18 +1,27 @@
-struct LDetFunction {
-function compute<Value>(m:Value) -> {
-    return ldet(m);
-  }
-
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return outer(d, inv(m));
-  }
+struct LDet<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct LDet<Middle> = Unary<LDetFunction,Middle>;
+
+function value<Middle>(x:LDet<Middle>) -> {
+  return ldet(value(x.m));
+}
+
+function peek<Middle>(x:LDet<Middle>) -> {
+  return ldet(peek(x.m));
+}
+
+function eval<Middle>(x:LDet<Middle>) -> {
+  return ldet(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:LDet<Middle>, d:Gradient) {
+  grad(x.m, outer(d, inv(peek(x.m))));
+}
 
 /**
  * Log-determinant of a matrix.
  */
-function ldet<Middle>(m:Middle) -> {
+function ldet<Middle>(m:Middle) -> LDet<Middle> {
   return construct<LDet<Middle>>(m);
 }
 

@@ -1,20 +1,29 @@
-struct CholInvFunction {
-  function compute<Value>(m:Value) -> {
-    return cholinv(m);
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    let m1 <- cholinv(m);
-    return -m1*d*m1;
-  }
+struct CholInv<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct CholInv<Middle> = Unary<CholInvFunction,Middle>;
+
+function value<Middle>(x:CholInv<Middle>) -> {
+  return cholinv(value(x.m));
+}
+
+function peek<Middle>(x:CholInv<Middle>) -> {
+  return cholinv(peek(x.m));
+}
+
+function eval<Middle>(x:CholInv<Middle>) -> {
+  return cholinv(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:CholInv<Middle>, d:Gradient) {
+  let y <- cholinv(peek(x.m));
+  grad(x.m, -y*d*y);
+}
 
 /**
  * Inverse of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
-function cholinv<Middle>(m:Middle) -> {
+function cholinv<Middle>(m:Middle) -> CholInv<Middle> {
   return construct<CholInv<Middle>>(m);
 }
 

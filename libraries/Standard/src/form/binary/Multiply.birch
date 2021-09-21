@@ -1,54 +1,24 @@
-struct MultiplyFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l*r;
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (trace(outer(d, r)), trace(inner(l, d)));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue[_]) -> {
-    return (trace(outer(d, r)), inner(l, d));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue[_,_]) -> {
-    return (trace(outer(d, r)), inner(l, d));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
-      r:RightValue) -> {
-    return (outer(d, r), trace(inner(l, d)));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
-      r:RightValue[_]) -> {
-    return (outer(d, r), inner(l, d));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
-      r:RightValue[_,_]) -> {
-    return (outer(d, r), inner(l, d));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
-      l:LeftValue[_,_], r:RightValue) -> {
-    return (outer(d, r), trace(inner(l, d)));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
-      l:LeftValue[_,_], r:RightValue[_]) -> {
-    return (outer(d, r), inner(l, d));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient,
-      l:LeftValue[_,_], r:RightValue[_,_]) -> {
-    return (outer(d, r), inner(l, d));
-  }
+struct Multiply<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Multiply<Left,Right> = Binary<MultiplyFunction,Left,Right>;
+
+function value<Left,Right>(x:Multiply<Left,Right>) -> {
+  return value(x.l)*value(x.r);
+}
+
+function peek<Left,Right>(x:Multiply<Left,Right>) -> {
+  return peek(x.l)*peek(x.r);
+}
+
+function eval<Left,Right>(x:Multiply<Left,Right>) -> {
+  return eval(x.l)*eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:Multiply<Left,Right>, d:Gradient) {
+  let (dl, dr) <- grad_multiply(d, peek(x.l), peek(x.r));
+  grad(x.l, dl);
+  grad(x.r, dr);
+}
 
 /**
  * Multiplication.
@@ -168,4 +138,39 @@ operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_] {
       Y.data(), Y.stride(), Z.data(), Z.stride());
   }}
   return Z;
+}
+
+function grad_multiply<Left,Right>(d:Real, l:Left, r:Right) ->
+    (Real, Real) {
+  return (r, l);
+}
+
+function grad_multiply<Left,Right>(d:Real[_], l:Left, r:Right[_]) -> 
+    (Real, Real[_]) {
+  return (dot(d, r), l*d);
+}
+
+function grad_multiply<Left,Right>(d:Real[_], l:Left[_], r:Right) -> 
+    (Real[_], Real) {
+  return (d*r, dot(l, d));
+}
+
+function grad_multiply<Left,Right>(d:Real[_,_], l:Left, r:Right[_,_]) ->
+    (Real, Real[_,_]) {
+  return (frobenius(d, r), l*d);
+}
+
+function grad_multiply<Left,Right>(d:Real[_,_], l:Left[_,_], r:Right) -> 
+    (Real[_,_], Real) {
+  return (d*r, frobenius(l, d));
+}
+
+function grad_multiply<Left,Right>(d:Real[_], l:Left[_,_], r:Right[_]) ->
+    (Real[_,_], Real[_]) {
+  return (outer(d, r), inner(l, d));
+}
+
+function grad_multiply<Left,Right>(d:Real[_,_], l:Left[_,_], r:Right[_,_]) ->
+    (Real[_,_], Real[_,_]) {
+  return (outer(d, r), inner(l, d));
 }

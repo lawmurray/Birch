@@ -62,7 +62,7 @@
  * expression that have not previously been rendered constant by a call to
  * `value()` are then considered *arguments* eligible for moving.
  *
- * After updating the value of arguments, use `reval()` to re-evaluate
+ * After updating the value of arguments, use `eval()` again to re-evaluate
  * the expression with those new values.
  *
  * At any time, use `grad()` to compute the gradient of an expression with
@@ -126,11 +126,21 @@ abstract class Expression<Value> < Delay {
   }
 
   /**
+   * Register this object as a dependency of another expression. This is
+   * called implicitly when boxing forms.
+   */
+  abstract function link();
+
+  /**
    * Get result and render constant.
    *
    * Returns: The result.
    */
-  abstract function value() -> Value;
+  final function value() -> Value {
+    let x <- peek();
+    constant();
+    return x;
+  }
 
   /**
    * Get result.
@@ -143,11 +153,6 @@ abstract class Expression<Value> < Delay {
    * Evaluate.
    */
   abstract function eval() -> Value;
-
-  /**
-   * Re-evaluate.
-   */
-  abstract function reval() -> Value;
 
   /**
    * Evaluate gradient of the expression with respect to its arguments.
@@ -226,58 +231,59 @@ abstract class Expression<Value> < Delay {
   }
 }
 
-function length<Type>(x:Type) -> Integer {
+function length<Value>(x:Expression<Value>) -> Integer {
   return x.length();
 }
 
-function size<Type>(x:Type) -> Integer {
+function size<Value>(x:Expression<Value>) -> Integer {
   return x.size();
 }
 
-function rows<Type>(x:Type) -> Integer {
+function rows<Value>(x:Expression<Value>) -> Integer {
   return x.rows();
 }
 
-function columns<Type>(x:Type) -> Integer {
+function columns<Value>(x:Expression<Value>) -> Integer {
   return x.columns();
 }
 
-function value<Type>(x:Type) -> {
+function link<Value>(x:Expression<Value>) {
+  x.link();
+}
+
+function value<Value>(x:Expression<Value>) -> {
   return x.value();
 }
 
-function peek<Type>(x:Type) -> {
+function peek<Value>(x:Expression<Value>) -> {
   return x.peek();
 }
 
-function eval<Type>(x:Type) -> {
+function eval<Value>(x:Expression<Value>) -> {
   return x.eval();
 }
 
-function reval<Type>(x:Type) -> {
-  return x.reval();
-}
-
-function grad<Type,Gradient>(x:Type, d:Gradient) {
+function grad<Value,Gradient>(x:Expression<Value>, d:Gradient) {
   x.grad(d);
 }
 
-function grad<Type,Gradient>(x:Type, d:Gradient, i:Integer) {
+function grad<Value,Gradient>(x:Expression<Value>, d:Gradient, i:Integer) {
   x.grad(d, i);
 }
 
-function grad<Type,Gradient>(x:Type, d:Gradient, i:Integer, j:Integer) {
+function grad<Value,Gradient>(x:Expression<Value>, d:Gradient, i:Integer,
+    j:Integer) {
   x.grad(d, i, j);
 }
 
-function label<Type>(x:Type, gen:Integer) {
+function label<Value>(x:Expression<Value>, gen:Integer) {
   x.label(gen);
 }
 
-function constant<Type>(x:Type, gen:Integer) {
+function constant<Value>(x:Expression<Value>, gen:Integer) {
   x.constant(gen);
 }
 
-function constant<Type>(x:Type) {
+function constant<Value>(x:Expression<Value>) {
   x.constant();
 }

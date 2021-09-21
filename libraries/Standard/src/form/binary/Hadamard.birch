@@ -1,14 +1,23 @@
-struct HadamardFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return hadamard(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (hadamard(d, r), hadamard(d, l));
-  }
+struct Hadamard<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct Hadamard<Left,Right> = Binary<HadamardFunction,Left,Right>;
+
+function value<Left,Right>(x:Hadamard<Left,Right>) -> {
+  return hadamard(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:Hadamard<Left,Right>) -> {
+  return hadamard(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:Hadamard<Left,Right>) -> {
+  return hadamard(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:Hadamard<Left,Right>, d:Gradient) {
+  grad(x.l, hadamard(d, peek(x.r)));
+  grad(x.r, hadamard(d, peek(x.l)));
+}
 
 /**
  * Hadamard (element-wise) product.

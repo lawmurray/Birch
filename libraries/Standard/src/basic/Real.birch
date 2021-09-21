@@ -94,6 +94,10 @@ function size(x:Real) -> Integer {
   return 1;
 }
 
+function link(x:Real) {
+  //
+}
+
 function value(x:Real) -> Real {
   return x;
 }
@@ -103,10 +107,6 @@ function peek(x:Real) -> Real {
 }
 
 function eval(x:Real) -> Real {
-  return x;
-}
-
-function reval(x:Real) -> Real {
   return x;
 }
 

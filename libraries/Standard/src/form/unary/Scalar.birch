@@ -1,18 +1,27 @@
-struct ScalarFunction<Value> {
-  function compute<MiddleValue>(m:MiddleValue) -> {
-    return scalar<Value>(m);
-  }
-
-  function grad<Gradient,MiddleValue>(d:Gradient, m:MiddleValue) -> {
-    return grad_scalar(d, m);
-  }
+struct Scalar<Value,Middle>(m:Middle) < Unary<Middle>(m) {
+  //
 }
-struct Scalar<Value,Middle> = Unary<ScalarFunction<Value>,Middle>;
+
+function value<Value,Middle>(x:Scalar<Value,Middle>) -> {
+  return scalar<Value>(value(x.m));
+}
+
+function peek<Value,Middle>(x:Scalar<Value,Middle>) -> {
+  return scalar<Value>(peek(x.m));
+}
+
+function eval<Value,Middle>(x:Scalar<Value,Middle>) -> {
+  return scalar<Value>(eval(x.m));
+}
+
+function grad<Value,Middle,Gradient>(x:Scalar<Value,Middle>, d:Gradient) -> {
+  grad(x.m, grad_scalar(d, peek(x.m)));
+}
 
 /**
  * Convert to scalar.
  */
-function scalar<Value,Middle>(m:Middle) -> {
+function scalar<Value,Middle>(m:Middle) -> Scalar<Value,Middle> {
   return construct<Scalar<Value,Middle>>(m);
 }
 
@@ -59,23 +68,14 @@ function scalar<Value>(m:Real) -> Value {
   }}
 }
 
-/**
- * Gradient of `scalar()`.
- */
 function grad_scalar<Gradient,Value>(d:Gradient, m:Value) -> {
   return scalar<Value>(d);
 }
 
-/**
- * Gradient of `scalar()`.
- */
 function grad_scalar<Gradient,Value>(d:Gradient, m:Value[_]) -> {
   return vector<Value>(d);
 }
 
-/**
- * Gradient of `scalar()`.
- */
 function grad_scalar<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
   return matrix<Value>(d);
 }

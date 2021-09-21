@@ -1,33 +1,31 @@
-struct MatrixPackFunction {
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return pack(l, r);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (d[1,1], d[1,2]);
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_],
-      r:RightValue[_]) -> {
-    return (column(d, 1), column(d, 2));
-  }
-
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue[_,_],
-      r:RightValue[_,_]) -> {
-    let r1 <- rows(l);
-    let c1 <- columns(l);
-    let c2 <- columns(r);
-    return (d[1..r1, 1..c1], d[1..r1, (c1 + 1)..(c1 + c2)]);
-  }
+struct MatrixPack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
 }
-struct MatrixPack<Left,Right> = Binary<MatrixPackFunction,Left,Right>;
+
+function value<Left,Right>(x:MatrixPack<Left,Right>) -> {
+  return pack(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:MatrixPack<Left,Right>) -> {
+  return pack(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:MatrixPack<Left,Right>) -> {
+  return pack(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:MatrixPack<Left,Right>, d:Gradient) {
+  let (dl, dr) <- grad_pack(d, peek(x.l), peek(x.r));
+  grad(x.l, dl);
+  grad(x.r, dr);
+}
+
 
 /**
  * Pack two matrices next to one another (i.e. append rows) to create a
  * new matrix.
  */
-function pack<Left,Right>(l:Left, r:Right) -> {
+function pack<Left,Right>(l:Left, r:Right) -> MatrixPack<Left,Right> {
   return construct<MatrixPack<Left,Right>>(l, r);
 }
 
@@ -42,13 +40,6 @@ function pack(x:Real, y:Real) -> Real[_,_] {
  * Pack two scalars next to one another as a row to create a new matrix.
  */
 function pack(x:Integer, y:Integer) -> Integer[_,_] {
-  return [[x, y]];
-}
-
-/**
- * Pack two scalars next to one another as a row to create a new matrix.
- */
-function pack(x:Boolean, y:Boolean) -> Boolean[_,_] {
   return [[x, y]];
 }
 
@@ -77,4 +68,26 @@ function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
   Z[1..R,1..C1] <- l;
   Z[1..R,(C1 + 1)..(C1 + C2)] <- r;
   return Z;
+}
+
+function grad_pack(d:Real[_,_], x:Real, y:Real) -> (Real, Real) {
+  return (d[1,1], d[1,2]);
+}
+
+function grad_pack(d:Real[_,_], x:Integer, y:Integer) -> (Real, Real) {
+  return (d[1,1], d[1,2]);
+}
+
+function grad_pack<Type>(d:Real[_,_], x:Type[_], y:Type[_]) ->
+    (Real[_], Real[_]) {
+  assert columns(d) == 2;
+  return (column(d, 1), column(d, 2));
+}
+
+function grad_pack<Type>(d:Real[_,_], l:Type[_,_], r:Type[_,_]) ->
+    (Real[_,_], Real[_,_]) {
+  let r1 <- rows(l);
+  let c1 <- columns(l);
+  let c2 <- columns(r);
+  return (d[1..r1, 1..c1], d[1..r1, (c1 + 1)..(c1 + c2)]);
 }

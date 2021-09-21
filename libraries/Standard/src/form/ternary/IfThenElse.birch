@@ -1,19 +1,33 @@
-struct IfThenElseFunction {  
-  function compute<LeftValue,MiddleValue,RightValue>(l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return if_then_else(l, m, r);
-  }
-
-  function grad<Gradient,LeftValue,MiddleValue,RightValue>(d:Gradient,
-      l:LeftValue, m:MiddleValue, r:RightValue) -> {
-    return (0.0, if_then_else(l, d, 0.0), if_then_else(l, 0.0, d));
-  }
+struct IfThenElse<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
+    Ternary<Left,Middle,Right>(l, m, r) {
+  //
 }
-struct IfThenElse<Left,Middle,Right> = Ternary<IfThenElseFunction,Left,Middle,Right>;
+
+function value<Left,Middle,Right>(x:IfThenElse<Left,Middle,Right>) -> {
+  return if_then_else(value(x.l), value(x.m), value(x.r));
+}
+
+function peek<Left,Middle,Right>(x:IfThenElse<Left,Middle,Right>) -> {
+  return if_then_else(peek(x.l), peek(x.m), peek(x.r));
+}
+
+function eval<Left,Middle,Right>(x:IfThenElse<Left,Middle,Right>) -> {
+  return if_then_else(eval(x.l), eval(x.m), eval(x.r));
+}
+
+function grad<Left,Middle,Right,Gradient>(x:IfThenElse<Left,Middle,Right>,
+    d:Gradient) {
+  let l <- peek(x.l);
+  grad(x.l, 0.0);
+  grad(x.m, if_then_else(l, d, 0.0));
+  grad(x.r, if_then_else(l, 0.0, d));
+}
 
 /**
  * If `cond` is true then return `x`, else return `y`.
  */
- function if_then_else<Left,Middle,Right>(l:Left, m:Middle, r:Right) -> {
+ function if_then_else<Left,Middle,Right>(l:Left, m:Middle, r:Right) ->
+     IfThenElse<Left,Middle,Right> {
   return construct<IfThenElse<Left,Middle,Right>>(l, m, r);
 }
 

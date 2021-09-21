@@ -46,6 +46,10 @@ function size(x:Boolean) -> Integer {
   return 1;
 }
 
+function link(x:Boolean) {
+  //
+}
+
 function value(x:Boolean) -> Boolean {
   return x;
 }
@@ -55,10 +59,6 @@ function peek(x:Boolean) -> Boolean {
 }
 
 function eval(x:Boolean) -> Boolean {
-  return x;
-}
-
-function reval(x:Boolean) -> Boolean {
   return x;
 }
 
