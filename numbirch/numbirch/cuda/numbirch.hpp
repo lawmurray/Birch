@@ -36,25 +36,6 @@ void prefetch(const T* A, const int m, const int n, const int ldA) {
 }
 
 /*
- * Vector unary transform.
- */
-template<class T, class Functor>
-__global__ void kernel_transform(const int n, const T* x, const int incx,
-    T* y, const int incy, Functor f) {
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  if (i < n) {
-    y[i*incy] = f(x[i*incx]);
-  }
-}
-template<class T, class Functor>
-void transform(const int n, const T* x, const int incx, T* y, const int incy,
-    Functor f) {
-  auto grid = make_grid(n);
-  auto block = make_block(n);
-  kernel_transform<<<grid,block,0,stream>>>(n, x, incx, y, incy, f);
-}
-
-/*
  * Matrix unary transform.
  */
 template<class T, class Functor>
@@ -75,22 +56,24 @@ void transform(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 /*
- * Vector binary transform.
+ * Matrix binary transform.
  */
 template<class T, class Functor>
-__global__ void kernel_transform(const int n, const T* x, const int incx,
-    const T* y, const int incy, T* z, const int incz, Functor f) {
+__global__ void kernel_transform(const int m, const int n, const T* A,
+    const int ldA, const T* B, const int ldB, T* C, const int ldC,
+    Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  if (i < n) {
-    z[i*incz] = f(x[i*incx], y[i*incy]);
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    C[i + j*ldC] = f(A[i + j*ldA], B[i + j*ldB]);
   }
 }
 template<class T, class Functor>
-void transform(const int n, const T* x, const int incx, const T* y,
-    const int incy, T* z, const int incz, Functor f) {
-  auto grid = make_grid(n);
-  auto block = make_block(n);
-  kernel_transform<<<grid,block,0,stream>>>(n, x, incx, y, incy, z, incz, f);
+void transform(const int m, const int n, const T* A, const int ldA,
+    const T* B, const int ldB, T* C, const int ldC, Functor f) {
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, f);
 }
 
 /*
@@ -117,27 +100,6 @@ void transform(const int m, const int n, const T* A,
 }
 
 /*
- * Matrix binary transform.
- */
-template<class T, class Functor>
-__global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const T* B, const int ldB, T* C, const int ldC,
-    Functor f) {
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    C[i + j*ldC] = f(A[i + j*ldA], B[i + j*ldB]);
-  }
-}
-template<class T, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA,
-    const T* B, const int ldB, T* C, const int ldC, Functor f) {
-  auto grid = make_grid(m, n);
-  auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, f);
-}
-
-/*
  * Matrix transpose kernel.
  */
 template<class T>
@@ -160,27 +122,11 @@ __global__ void kernel_transpose(const int m, const int n, const T x,
 }
 
 template<class T>
-void neg(const int n, const T* x, const int incx, T* y, const int incy) {
-  prefetch(x, n, incx);
-  prefetch(y, n, incy);
-  transform(n, x, incx, y, incy, negate_functor<T>());
-}
-
-template<class T>
 void neg(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   transform(m, n, A, ldA, B, ldB, negate_functor<T>());
-}
-
-template<class T>
-void add(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z, const int incz) {
-  prefetch(x, n, incx);
-  prefetch(y, n, incy);
-  prefetch(z, n, incz);
-  transform(n, x, incx, y, incy, z, incz, plus_functor<T>());
 }
 
 template<class T>
@@ -190,15 +136,6 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
   transform(m, n, A, ldA, B, ldB, C, ldC, plus_functor<T>());
-}
-
-template<class T>
-void sub(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z, const int incz) {
-  prefetch(x, n, incx);
-  prefetch(y, n, incy);
-  prefetch(z, n, incz);
-  transform(n, x, incx, y, incy, z, incz, minus_functor<T>());
 }
 
 template<class T>
@@ -226,15 +163,6 @@ void combine(const int m, const int n, const T a, const T* A, const int ldA,
 }
 
 template<class T>
-void hadamard(const int n, const T* x, const int incx, const T* y,
-    const int incy, T* z, const int incz) {
-  prefetch(x, n, incx);
-  prefetch(y, n, incy);
-  prefetch(z, n, incz);
-  transform(n, x, incx, y, incy, z, incz, multiplies_functor<T>());
-}
-
-template<class T>
 void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   prefetch(A, m, n, ldA);
@@ -244,27 +172,11 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
 }
 
 template<class T>
-void div(const int n, const T* x, const int incx, const T y, T* z,
-    const int incz) {
-  prefetch(x, n, incx);
-  prefetch(z, n, incz);
-  transform(n, x, incx, z, incz, scalar_divides_functor<T>(y));
-}
-
-template<class T>
 void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
     const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(C, m, n, ldC);
   transform(m, n, A, ldA, C, ldC, scalar_divides_functor<T>(b));
-}
-
-template<class T>
-void mul(const int n, const T x, const T* y, const int incy, T* z,
-    const int incz) {
-  prefetch(y, n, incy);
-  prefetch(z, n, incz);
-  transform(n, y, incy, z, incz, scalar_multiplies_functor<T>(x));
 }
 
 template<class T>
@@ -361,26 +273,6 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
   free(bufferOnHost);
   device_free(bufferOnDevice);
   device_free(L);
-}
-
-template<class T>
-T sum(const int n, const T* x, const int incx) {
-  prefetch(x, n, incx);
-
-  T* y = (T*)malloc(sizeof(T));
-  auto x1 = make_cub_vector(x, n, incx);
-  void* tmp = nullptr;
-  size_t bytes = 0;
-
-  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, x1.begin(), y, n, stream));
-  tmp = device_malloc(bytes);
-  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, x1.begin(), y, n, stream));
-  wait();
-  T z = *y;
-
-  device_free(tmp);
-  free(y);
-  return z;
 }
 
 template<class T>

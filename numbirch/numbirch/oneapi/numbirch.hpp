@@ -13,30 +13,12 @@
 namespace numbirch {
 
 template<class T>
-void neg(const int n, const T* x, const int incx, T* y, const int incy) {
-  auto x1 = make_dpl_vector(x, n, incx);
-  auto y1 = make_dpl_vector(y, n, incy);
-  dpl::transform(dpl::execution::make_device_policy(queue), x1.begin(),
-      x1.end(), y1.begin(), dpl::negate<T>());
-}
-
-template<class T>
 void neg(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_dpl_matrix(A, m, n, ldA);
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
       A1.end(), B1.begin(), dpl::negate<T>());
-}
-
-template<class T>
-void add(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z, const int incz) {
-  auto x1 = make_dpl_vector(x, n, incx);
-  auto y1 = make_dpl_vector(y, n, incy);
-  auto z1 = make_dpl_vector(z, n, incz);
-  dpl::transform(dpl::execution::make_device_policy(queue), x1.begin(),
-      x1.end(), y1.begin(), z1.begin(), dpl::plus<T>());
 }
 
 template<class T>
@@ -50,16 +32,6 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
 }
 
 template<class T>
-void sub(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z, const int incz) {
-  auto x1 = make_dpl_vector(x, n, incx);
-  auto y1 = make_dpl_vector(y, n, incy);
-  auto z1 = make_dpl_vector(z, n, incz);
-  dpl::transform(dpl::execution::make_device_policy(queue), x1.begin(),
-      x1.end(), y1.begin(), z1.begin(), dpl::minus<T>());
-}
-
-template<class T>
 void sub(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   auto A1 = make_dpl_matrix(A, m, n, ldA);
@@ -67,16 +39,6 @@ void sub(const int m, const int n, const T* A, const int ldA, const T* B,
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
       A1.end(), B1.begin(), C1.begin(), dpl::minus<T>());
-}
-
-template<class T>
-void hadamard(const int n, const T* x, const int incx, const T* y,
-    const int incy, T* z, const int incz) {
-  auto x1 = make_dpl_vector(x, n, incx);
-  auto y1 = make_dpl_vector(y, n, incy);
-  auto z1 = make_dpl_vector(z, n, incz);
-  dpl::transform(dpl::execution::make_device_policy(queue), x1.begin(),
-      x1.end(), y1.begin(), z1.begin(), dpl::multiplies<T>());
 }
 
 template<class T>
@@ -90,27 +52,12 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
 }
 
 template<class T>
-void div(const int n, const T* x, const int incx, const T y, T* z,
-    const int incz) {
-  auto x1 = make_dpl_vector(x, n, incx);
-  auto z1 = make_dpl_vector(z, n, incz);
-  dpl::transform(dpl::execution::make_device_policy(queue), x1.begin(),
-      x1.end(), z1.begin(), [=](T x) { return x/y; });
-}
-
-template<class T>
 void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
     const int ldC) {
   auto A1 = make_dpl_matrix(A, m, n, ldA);
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
       A1.end(), C1.begin(), [=](T a) { return a/b; });
-}
-
-template<class T>
-void mul(const int n, const T x, const T* y, const int incy, T* z,
-    const int incz) {
-  blas::axpby(queue, n, x, y, incy, 0.0, z, incz);
 }
 
 template<class T>
@@ -180,13 +127,6 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
 
   device_free(L);
   device_free(scratchpad);
-}
-
-template<class T>
-T sum(const int n, const T* x, const int incx) {
-  auto x1 = make_dpl_vector(x, n, incx);
-  return dpl::reduce(dpl::execution::make_device_policy(queue), x1.begin(),
-      x1.end());
 }
 
 template<class T>

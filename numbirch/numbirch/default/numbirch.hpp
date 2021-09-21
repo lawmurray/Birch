@@ -10,27 +10,11 @@
 namespace numbirch {
 
 template<class T>
-void neg(const int n, const T* x, const int incx, T* y, const int incy) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
-  y1.noalias() = -x1;
-}
-
-template<class T>
 void neg(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.noalias() = -A1;
-}
-
-template<class T>
-void add(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z, const int incz) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
-  auto z1 = make_eigen_vector(z, n, incz);
-  z1.noalias() = x1 + y1;
 }
 
 template<class T>
@@ -40,15 +24,6 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1 + B1;
-}
-
-template<class T>
-void sub(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z, const int incz) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
-  auto z1 = make_eigen_vector(z, n, incz);
-  z1.noalias() = x1 - y1;
 }
 
 template<class T>
@@ -74,15 +49,6 @@ void combine(const int m, const int n, const T a, const T* A, const int ldA,
 }
 
 template<class T>
-void hadamard(const int n, const T* x, const int incx, const T* y,
-    const int incy, T* z, const int incz) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
-  auto z1 = make_eigen_vector(z, n, incz);
-  z1.noalias() = x1.cwiseProduct(y1);
-}
-
-template<class T>
 void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
@@ -92,27 +58,11 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
 }
 
 template<class T>
-void div(const int n, const T* x, const int incx, const T y, T* z,
-    const int incz) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto z1 = make_eigen_vector(z, n, incz);
-  z1.noalias() = x1/y;
-}
-
-template<class T>
 void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
     const int ldC) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1/b;
-}
-
-template<class T>
-void mul(const int n, const T x, const T* y, const int incy, T* z,
-    const int incz) {
-  auto y1 = make_eigen_vector(y, n, incy);
-  auto z1 = make_eigen_vector(z, n, incz);
-  z1.noalias() = x*y1;
 }
 
 template<class T>
@@ -163,12 +113,6 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
   //assert(ldlt.info() == Eigen::Success);
   C1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*B1));
-}
-
-template<class T>
-T sum(const int n, const T* x, const int incx) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  return x1.sum();
 }
 
 template<class T>

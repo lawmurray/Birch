@@ -346,30 +346,39 @@ public:
   }
 
   /**
-   * Number of rows. For a vector, this is the length.
+   * Number of rows.
+   */
+  int length() const {
+    return shape.rows();
+  }
+
+  /**
+   * Number of rows.
    */
   int rows() const {
     return shape.rows();
   }
 
   /**
-   * Number of columns. For a vector, this is 1.
+   * Number of columns (1 for a vector).
    */
   int columns() const {
     return shape.columns();
   }
 
   /**
-   * Stride. For a vector this is the stride between elements, for a matrix
-   * this is the stride between columns.
+   * Stride, in number of elements. For a vector this is the stride between
+   * elements (equal to 1 for a contiguous vector), for a matrix this is the
+   * stride between columns (equal to the number of rows for a contiguous
+   * matrix).
    */
   int stride() const {
     return shape.stride();
   }
 
   /**
-   * For a one-dimensional array, push an element onto the end. This increases
-   * the array size by one.
+   * Push an element onto the end of a vector. The vector length is increased
+   * by one.
    *
    * @param x Value.
    */
@@ -378,8 +387,9 @@ public:
   }
 
   /**
-   * For a one-dimensional array, insert an element at a given position. This
-   * increases the array size by one.
+   * Insert an element into a vector at a given position. The element is
+   * inserted just before the existing element at that position, and the
+   * vector length increased by one.
    *
    * @param i Position.
    * @param x Value.
@@ -410,8 +420,8 @@ public:
   }
 
   /**
-   * For a one-dimensional array, erase elements from a given position. This
-   * decreases the array size by the number of elements.
+   * Erase elements from a vector from a given position forward. The vector
+   * length is reduced by the number of elements erased.
    *
    * @param i Position.
    * @param len Number of elements to erase.

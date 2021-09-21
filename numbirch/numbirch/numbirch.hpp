@@ -10,20 +10,6 @@
 
 namespace numbirch {
 /**
- * Vector negation.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param[out] y Vector.
- * @param incy Element stride of `y`.
- */
-void neg(const int n, const double* x, const int incx, double* y,
-    const int incy);
-void neg(const int n, const float* x, const int incx, float* y,
-    const int incy);
-
-/**
  * Matrix negation.
  * 
  * @param m Number of rows.
@@ -37,22 +23,6 @@ void neg(const int m, const int n, const double* A, const int ldA, double* B,
     const int ldB);
 void neg(const int m, const int n, const float* A, const int ldA, float* B,
     const int ldB);
-
-/**
- * Vector addition.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Vector.
- * @param incy Element stride of `y`.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void add(const int n, const double* x, const int incx, const double* y,
-    const int incy, double* z, const int incz);
-void add(const int n, const float* x, const int incx, const float* y,
-    const int incy, float* z, const int incz);
 
 /**
  * Matrix addition.
@@ -70,22 +40,6 @@ void add(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
 void add(const int m, const int n, const float* A, const int ldA,
     const float* B, const int ldB, float* C, const int ldC);
-
-/**
- * Vector subtraction.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Vector.
- * @param incy Element stride of `y`.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void sub(const int n, const double* x, const int incx, const double* y,
-    const int incy, double* z, const int incz);
-void sub(const int n, const float* x, const int incx, const float* y,
-    const int incy, float* z, const int incz);
 
 /**
  * Matrix subtraction.
@@ -134,22 +88,6 @@ void combine(const int m, const int n, const float a, const float* A,
     const float* D, const int ldD, float* E, const int ldE);
 
 /**
- * Hadamard (element-wise) vector multiplication.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Vector.
- * @param incy Element stride of `y`.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void hadamard(const int n, const double* x, const int incx, const double* y,
-    const int incy, double* z, const int incz);
-void hadamard(const int n, const float* x, const int incx, const float* y,
-    const int incy, float* z, const int incz);
-
-/**
  * Hadamard (element-wise) matrix multiplication.
  * 
  * @param m Number of rows.
@@ -167,21 +105,6 @@ void hadamard(const int m, const int n, const float* A, const int ldA,
     const float* B, const int ldB, float* C, const int ldC);
 
 /**
- * Vector-scalar division.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * @param y Scalar.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void div(const int n, const double* x, const int incx, const double y,
-    double* z, const int incz);
-void div(const int n, const float* x, const int incx, const float y,
-    float* z, const int incz);
-
-/**
  * Matrix-scalar division.
  * 
  * @param m Number of rows.
@@ -196,21 +119,6 @@ void div(const int m, const int n, const double* A, const int ldA,
     const double b, double* C, const int ldC);
 void div(const int m, const int n, const float* A, const int ldA,
     const float b, float* C, const int ldC);
-
-/**
- * Scalar-vector multiplication.
- * 
- * @param n Number of elements.
- * @param x Scalar.
- * @param y Vector.
- * @param incy Element stride of `y`.
- * @param[out] z Vector.
- * @param incz Element stride of `z`.
- */
-void mul(const int n, const double x, const double* y, const int incy,
-    double* z, const int incz);
-void mul(const int n, const float x, const float* y, const int incy,
-    float* z, const int incz);
 
 /**
  * Scalar-matrix multiplication.
@@ -297,18 +205,6 @@ void cholmul(const int m, const int n, const double* S, const int ldS,
     const double* B, const int ldB, double* C, const int ldC);
 void cholmul(const int m, const int n, const float* S, const int ldS,
     const float* B, const int ldB, float* C, const int ldC);
-
-/**
- * Vector sum of elements.
- * 
- * @param n Number of elements.
- * @param x Vector.
- * @param incx Element stride of `x`.
- * 
- * @return Sum of elements of the vector.
- */
-double sum(const int n, const double* x, const int incx);
-float sum(const int n, const float* x, const int incx);
 
 /**
  * Matrix sum of elements.

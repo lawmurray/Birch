@@ -32,7 +32,7 @@ function dot<Left,Right>(l:Left, r:Right) -> Dot<Left,Right> {
 function dot(x:Real[_], y:Real[_]) -> Real {
   assert length(x) == length(y);
   cpp{{
-  return numbirch::dot(x.rows(), x.data(), x.stride(), y.data(), y.stride());
+  return numbirch::dot(x.length(), x.data(), x.stride(), y.data(), y.stride());
   }}
 }
 

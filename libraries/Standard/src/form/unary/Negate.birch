@@ -41,7 +41,7 @@ operator (-x:Real) -> Real;
 operator (-x:Real[_]) -> Real[_] {
   y:Real[length(x)];
   cpp{{
-  numbirch::neg(x.rows(), x.data(), x.stride(), y.data(), y.stride());
+  numbirch::neg(1, x.length(), x.data(), x.stride(), y.data(), y.stride());
   }}
   return y;
 }
