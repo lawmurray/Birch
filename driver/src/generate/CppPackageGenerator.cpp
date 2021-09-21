@@ -24,6 +24,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
 
   /* gather important objects */
   Gatherer<Basic> basics;
+  Gatherer<Struct> structs;
   Gatherer<Class> classes;
   Gatherer<GlobalVariable> globals;
   Gatherer<Function> functions;
@@ -32,6 +33,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   Gatherer<UnaryOperator> unaries;
   for (auto file : o->sources) {
     file->accept(&basics);
+    file->accept(&structs);
     file->accept(&classes);
     file->accept(&globals);
     file->accept(&functions);
@@ -45,6 +47,10 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   poset<const Class*,inherits> sortedClasses;
   for (auto o : classes) {
     sortedClasses.insert(o);
+  }
+  poset<const Struct*,inherits> sortedStructs;
+  for (auto o : structs) {
+    sortedStructs.insert(o);
   }
 
   if (header) {
@@ -77,25 +83,24 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     /* forward class type declarations */
     for (auto o : classes) {
       if (!o->isAlias()) {
-        if (o->has(STRUCT)) {
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          line("struct " << o->name << "_;");
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          start("using " << o->name << " = libbirch::Inplace<" << o->name << '_');
-          genTemplateArgs(o);
-          finish(">;");
-        } else {
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          line("class " << o->name << "_;");
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
-          genTemplateArgs(o);
-          finish(">;");
-        }
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        line("class " << o->name << "_;");
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
+        genTemplateArgs(o);
+        finish(">;");
+      }
+    }
+    line("");
+
+    /* forward struct type declarations */
+    for (auto o : structs) {
+      if (!o->isAlias()) {
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        line("struct " << o->name << ';');
       }
     }
     line("");
@@ -115,6 +120,21 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
     line("");
+
+    /* struct type aliases */
+    for (auto o : structs) {
+      if (o->isAlias()) {
+        auto base = dynamic_cast<const NamedType*>(o->base);
+        assert(base);
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        start("using " << o->name << " = " << base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+        finish(';');
+      }
+    }
 
     /* class type aliases */
     for (auto o : classes) {
@@ -152,15 +172,15 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     }
 
     /* structs */
-    for (auto o : sortedClasses) {
-      if (o->has(STRUCT) && !o->isAlias()) {
+    for (auto o : sortedStructs) {
+      if (!o->isAlias()) {
         auxDeclaration << o;
       }
     }
 
     /* classes */
     for (auto o : sortedClasses) {
-      if (!o->has(STRUCT) && !o->isAlias()) {
+      if (!o->isAlias()) {
         auxDeclaration << o;
       }
     }
@@ -170,7 +190,14 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* generic class type definitions, generic member definitions */
+    /* generic struct definitions */
+    for (auto o : structs) {
+      if (o->isGeneric() && !o->isAlias()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic class definitions, generic member definitions */
     for (auto o : classes) {
       if (o->isGeneric() && !o->isAlias()) {
         /* whole class (which may include generic members) */

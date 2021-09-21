@@ -69,6 +69,7 @@ birch_SOURCES = \
   src/generate/CppClassGenerator.cpp \
   src/generate/CppGenerator.cpp \
   src/generate/CppPackageGenerator.cpp \
+  src/generate/CppStructGenerator.cpp \
   src/generate/IndentableGenerator.cpp \
   src/generate/MarkdownGenerator.cpp \
   src/primitive/string.cpp \
@@ -102,6 +103,7 @@ birch_SOURCES = \
   src/statement/Statement.cpp \
   src/statement/StatementIterator.cpp \
   src/statement/StatementList.cpp \
+  src/statement/Struct.cpp \
   src/statement/TupleVariable.cpp \
   src/statement/UnaryOperator.cpp \
   src/statement/While.cpp \
@@ -184,6 +186,7 @@ noinst_HEADERS = \
   src/generate/CppClassGenerator.hpp \
   src/generate/CppGenerator.hpp \
   src/generate/CppPackageGenerator.hpp \
+  src/generate/CppStructGenerator.hpp \
   src/generate/IndentableGenerator.hpp \
   src/generate/MarkdownGenerator.hpp \
   src/primitive/inherits.hpp \
@@ -220,6 +223,7 @@ noinst_HEADERS = \
   src/statement/Statement.hpp \
   src/statement/StatementIterator.hpp \
   src/statement/StatementList.hpp \
+  src/statement/Struct.hpp \
   src/statement/TupleVariable.hpp \
   src/statement/UnaryOperator.hpp \
   src/statement/While.hpp \

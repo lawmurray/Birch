@@ -19,15 +19,17 @@ public:
     //
   }
 
-  template<class T, std::enable_if_t<is_visitable<T,Destroyer>::value,int> = 0>
+  template<class T, std::enable_if_t<
+      is_visitable<T,Destroyer>::value,int> = 0>
   void visit(T& o) {
     return o.accept_(*this);
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Destroyer>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Destroyer>::value &&
       is_iterable<T>::value,int> = 0>
   void visit(T& o) {
-    if (!std::is_trivial<T>::value) {
+    if (!std::is_trivial<typename T::value_type>::value) {
       auto iter = o.begin();
       auto last = o.end();
       for (; iter != last; ++iter) {
@@ -36,7 +38,8 @@ public:
     }
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Destroyer>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Destroyer>::value &&
       !is_iterable<T>::value,int> = 0>
   void visit(T& o) {
     //
@@ -61,20 +64,11 @@ public:
   }
 
   template<class T>
-  void visit(Inplace<T>& o);
-
-  template<class T>
   void visit(Shared<T>& o);
 };
 }
 
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
-
-template<class T>
-void libbirch::Destroyer::visit(Inplace<T>& o) {
-  o->accept_(*this);
-}
 
 template<class T>
 void libbirch::Destroyer::visit(Shared<T>& o) {

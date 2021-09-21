@@ -72,9 +72,6 @@ public:
   }
 
   template<class T>
-  void visit(Inplace<T>& o);
-
-  template<class T>
   void visit(Shared<T>& o);
 
   Any* visit(Any* o);
@@ -87,14 +84,8 @@ private:
 };
 }
 
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-
-template<class T>
-void libbirch::BiconnectedCopier::visit(Inplace<T>& o) {
-  o->accept_(*this);
-}
 
 template<class T>
 void libbirch::BiconnectedCopier::visit(Shared<T>& o) {

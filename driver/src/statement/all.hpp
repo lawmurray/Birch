@@ -30,6 +30,7 @@
 #include "src/statement/SliceOperator.hpp"
 #include "src/statement/StatementIterator.hpp"
 #include "src/statement/StatementList.hpp"
+#include "src/statement/Struct.hpp"
 #include "src/statement/TupleVariable.hpp"
 #include "src/statement/UnaryOperator.hpp"
 #include "src/statement/While.hpp"

@@ -28,7 +28,7 @@ public:
       is_iterable<T>::value,int> = 0>
   std::tuple<int,int,int> visit(const int i, const int j, T& o) {
     int l = i, h = i, m = 0, l1, h1, m1;
-    if (!std::is_trivial<T>::value) {
+    if (!std::is_trivial<typename T::value_type>::value) {
       auto iter = o.begin();
       auto last = o.end();
       for (; iter != last; ++iter) {
@@ -73,24 +73,14 @@ public:
   }
 
   template<class T>
-  std::tuple<int,int,int> visit(const int i, const int j, Inplace<T>& o);
-
-  template<class T>
   std::tuple<int,int,int> visit(const int i, const int j, Shared<T>& o);
 
   std::tuple<int,int,int> visit(const int i, const int j, Any* o);
 };
 }
 
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-
-template<class T>
-std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
-    Inplace<T>& o) {
-  return o->accept_(*this, i, j);
-}
 
 template<class T>
 std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,

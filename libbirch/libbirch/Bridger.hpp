@@ -23,16 +23,18 @@ public:
     return std::make_tuple(MAX, 0, 0, 0);
   }
 
-  template<class T, std::enable_if_t<is_visitable<T,Bridger>::value,int> = 0>
+  template<class T, std::enable_if_t<
+      is_visitable<T,Bridger>::value,int> = 0>
   std::tuple<int,int,int,int> visit(const int j, const int k, T& o) {
     return o.accept_(*this, j, k);
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Bridger>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Bridger>::value &&
       is_iterable<T>::value,int> = 0>
   std::tuple<int,int,int,int> visit(const int j, const int k, T& o) {
     int l = MAX, h = 0, m = 0, n = 0, l1, h1, m1, n1;
-    if (!std::is_trivial<T>::value) {
+    if (!std::is_trivial<typename T::value_type>::value) {
       auto iter = o.begin();
       auto last = o.end();
       for (; iter != last; ++iter) {
@@ -46,7 +48,8 @@ public:
     return std::make_tuple(l, h, m, n);
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Bridger>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Bridger>::value &&
       !is_iterable<T>::value,int> = 0>
   std::tuple<int,int,int,int> visit(const int j, const int k, T& o) {
     return std::make_tuple(MAX, 0, 0, 0);
@@ -82,24 +85,14 @@ public:
   }
 
   template<class T>
-  std::tuple<int,int,int,int> visit(const int j, const int k, Inplace<T>& o);
-
-  template<class T>
   std::tuple<int,int,int,int> visit(const int j, const int k, Shared<T>& o);
 
   std::tuple<int,int,int,int> visit(const int j, const int k, Any* o);
 };
 }
 
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
-
-template<class T>
-std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
-    Inplace<T>& o) {
-  return o->accept_(*this, j, k);
-}
 
 template<class T>
 std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,

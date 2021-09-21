@@ -4,6 +4,7 @@
 #include "src/generate/CppGenerator.hpp"
 
 #include "src/generate/CppClassGenerator.hpp"
+#include "src/generate/CppStructGenerator.hpp"
 #include "src/primitive/string.hpp"
 
 birch::CppGenerator::CppGenerator(std::ostream& base, const int level,
@@ -111,21 +112,21 @@ void birch::CppGenerator::visit(const UnaryCall* o) {
 void birch::CppGenerator::visit(const Assign* o) {
   ++inAssign;
   if (*o->name == "<-?") {
-    start("birch::optional_assign(" << o->left << ", ");
+    middle("birch::optional_assign(" << o->left << ", ");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else if (*o->name == "<~") {
-    start(o->left << "= handle_simulate(");
+    middle(o->left << "= handle_simulate(");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else if (*o->name == "~>") {
-    start("handle_observe(" << o->left << ", ");
+    middle("handle_observe(" << o->left << ", ");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else if (*o->name == "~") {
-    start("handle_assume(" << o->left << ", ");
+    middle("handle_assume(" << o->left << ", ");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else {
     middle(o->left << " = ");
     --inAssign;
@@ -520,6 +521,14 @@ void birch::CppGenerator::visit(const Class* o) {
     CppClassGenerator auxClass(base, level, header, includeInline,
         includeLines, o);
     auxClass << o;
+  }
+}
+
+void birch::CppGenerator::visit(const Struct* o) {
+  if (includeInline || !o->isGeneric()) {
+    CppStructGenerator auxStruct(base, level, header, includeInline,
+        includeLines, o);
+    auxStruct << o;
   }
 }
 

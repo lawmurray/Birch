@@ -68,6 +68,7 @@ public:
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Class* o);
+  virtual void visit(const Struct* o);
   virtual void visit(const Generic* o);
   virtual void visit(const Braces* o);
   virtual void visit(const ExpressionStatement* o);
@@ -226,7 +227,7 @@ void birch::CppGenerator::genTemplateParams(const ObjectType* o) {
     for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
         ++iter) {
       if (iter != o->typeParams->begin()) {
-        middle(',');
+        middle(", ");
       }
       middle("class " << *iter);
     }

@@ -47,46 +47,7 @@ struct unwrap_pointer<T&&> {
 /**
  * @internal
  * 
- * Is `T` an inplace type?
- */
-template<class T>
-struct is_inplace {
-  static const bool value = false;
-};
-
-template<class T>
-struct is_inplace<T&> {
-  static const bool value = is_inplace<T>::value;
-};
-
-template<class T>
-struct is_inplace<T&&> {
-  static const bool value = is_inplace<T>::value;
-};
-
-/**
- * @internal
- * 
- * If `T` is an inplace type, unwrap it to the referent type, otherwise to
- * `T`.
- */
-template<class T>
-struct unwrap_inplace {
-  using type = T;
-};
-template<class T>
-struct unwrap_inplace<T&> {
-  using type = typename unwrap_inplace<T>::type;
-};
-template<class T>
-struct unwrap_inplace<T&&> {
-  using type = typename unwrap_inplace<T>::type;
-};
-
-/**
- * @internal
- * 
- * Is `T` a visitable type? This is a type that provides an `accept_(V)`
+ * Is `T` a visitable type? This is a type that provides an `accept_(V&)`
  * function.
  */
 template<class T, class V>
@@ -94,12 +55,14 @@ struct is_visitable {
 private:
   template<class U>
   static constexpr bool has_accept(decltype(std::declval<U>().accept_(
-        std::declval<V>()))*) {
+      std::declval<typename std::add_lvalue_reference<V>::type>()))*) {
     return true;
   }
+
   template<class U>
   static constexpr bool has_accept(decltype(std::declval<U>().accept_(
-        std::declval<V>(), 0, 0))*) {
+      std::declval<typename std::add_lvalue_reference<V>::type>(), 0, 0))*) {
+    // ^ Spanner and Bridger require two additional int arguments
     return true;
   }
   template<class>

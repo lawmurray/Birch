@@ -229,6 +229,14 @@ void birch::Visitor::visit(const Class* o) {
   o->braces->accept(this);
 }
 
+void birch::Visitor::visit(const Struct* o) {
+  o->typeParams->accept(this);
+  o->params->accept(this);
+  o->base->accept(this);
+  o->args->accept(this);
+  o->braces->accept(this);
+}
+
 void birch::Visitor::visit(const Basic* o) {
   o->typeParams->accept(this);
   o->base->accept(this);

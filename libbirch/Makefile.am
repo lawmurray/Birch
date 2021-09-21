@@ -39,7 +39,6 @@ nobase_include_HEADERS = \
   libbirch/Destroyer.hpp \
   libbirch/docs.hpp \
   libbirch/external.hpp \
-  libbirch/Inplace.hpp \
   libbirch/internal.hpp \
   libbirch/Marker.hpp \
   libbirch/macro.hpp \

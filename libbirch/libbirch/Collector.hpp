@@ -22,15 +22,17 @@ public:
     //
   }
 
-  template<class T, std::enable_if_t<is_visitable<T,Collector>::value,int> = 0>
+  template<class T, std::enable_if_t<
+      is_visitable<T,Collector>::value,int> = 0>
   void visit(T& o) {
     return o.accept_(*this);
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Collector>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Collector>::value &&
       is_iterable<T>::value,int> = 0>
   void visit(T& o) {
-    if (!std::is_trivial<T>::value) {
+    if (!std::is_trivial<typename T::value_type>::value) {
       auto iter = o.begin();
       auto last = o.end();
       for (; iter != last; ++iter) {
@@ -39,7 +41,8 @@ public:
     }
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Collector>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Collector>::value &&
       !is_iterable<T>::value,int> = 0>
   void visit(T& o) {
     //
@@ -64,24 +67,15 @@ public:
   }
 
   template<class T>
-  void visit(Inplace<T>& o);
-
-  template<class T>
   void visit(Shared<T>& o);
 
   void visit(Any* o);
 };
 }
 
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
 #include "libbirch/Any.hpp"
 #include "libbirch/BiconnectedCollector.hpp"
-
-template<class T>
-void libbirch::Collector::visit(Inplace<T>& o) {
-  o->accept_(*this);
-}
 
 template<class T>
 void libbirch::Collector::visit(Shared<T>& o) {

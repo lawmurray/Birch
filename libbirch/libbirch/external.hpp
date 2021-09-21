@@ -12,6 +12,7 @@
 #include <tuple>
 #include <optional>
 #include <memory>
+#include <type_traits>
 
 #include <cassert>
 #include <cstdlib>

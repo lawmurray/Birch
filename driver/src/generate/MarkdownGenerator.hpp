@@ -32,6 +32,7 @@ public:
   virtual void visit(const ConversionOperator* o);
   virtual void visit(const SliceOperator* o);
   virtual void visit(const Basic* o);
+  virtual void visit(const Struct* o);
   virtual void visit(const Class* o);
 
   virtual void visit(const TypeList* o);

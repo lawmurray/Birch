@@ -388,6 +388,22 @@ public:
   }
 
   /**
+   * Equality operator.
+   */
+  template<class U>
+  bool operator==(const Shared<U>& o) const {
+    return get() == o.get();
+  }
+
+  /**
+   * Non-equality operator.
+   */
+  template<class U>
+  bool operator!=(const Shared<U>& o) const {
+    return get() != o.get();
+  }
+
+  /**
    * Call on referent.
    */
   template<class... Args>
