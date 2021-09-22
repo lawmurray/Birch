@@ -112,11 +112,31 @@ final class Multi < Model {
   }
 
   override function read(buffer:Buffer) {
-    θ <-? buffer.get<Global>();
+    θ.l <-? buffer.get<Real>("l");
+    θ.u <-? buffer.get<Real>("u");
+    θ.d <-? buffer.get<Real>("d");
+    θ.M <-? buffer.get<Real[_,_]>("M");
+    θ.A <-? buffer.get<Real[_,_]>("A");
+    θ.Q <-? buffer.get<Real[_,_]>("Q");
+    θ.B <-? buffer.get<Real[_,_]>("B");
+    θ.R <-? buffer.get<Real[_,_]>("R");
+    θ.λ <-? buffer.get<Real>("λ");
+    θ.μ <-? buffer.get<Real>("μ");
+    θ.τ <-? buffer.get<Real>("τ");
   }
 
   override function write(buffer:Buffer) {
-    buffer.set("θ", θ);
+    buffer.set("l", θ.l);
+    buffer.set("u", θ.u);
+    buffer.set("d", θ.d);
+    buffer.set("M", θ.M);
+    buffer.set("A", θ.A);
+    buffer.set("Q", θ.Q);
+    buffer.set("B", θ.B);
+    buffer.set("R", θ.R);
+    buffer.set("λ", θ.λ);
+    buffer.set("μ", θ.μ);
+    buffer.set("τ", θ.τ);
     buffer.set("z", xAll);
     buffer.set("y", yAll);
   }

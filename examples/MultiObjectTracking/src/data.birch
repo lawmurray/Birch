@@ -14,38 +14,55 @@ program data(input:String <- "output/simulate.json",
   reader.close();
   
   /* read in the simulated observations from the track */
-  θ:Global;
-  y:RaggedArray<Real[_]>;
-
   let iter1 <- inputBuffer.walk();
-  if iter1.hasNext() {
-    let sample <- iter1.next().get("sample");
-    if sample? {
-      sample!.get("θ", θ);
-      sample!.get("y", y);
-      let iter2 <- sample!.walk("z");
-      while iter2.hasNext() {
-        let z <- iter2.next();
-        let s <- z.get<Integer>("s")!;
-        let iter3 <- z.walk("y");
-        while iter3.hasNext() {
-          let u <- iter3.next();
-          let v <- u.get<Real[_]>();
-          if v? {
-            y.pushBack(s, v![1..2]);
-          }
-          s <- s + 1;
-        }
+  let sample <- iter1.next().get("sample");
+  let l <- sample!.get<Real>("l")!;
+  let u <- sample!.get<Real>("u")!;
+  let d <- sample!.get<Real>("d")!;
+  let M <- sample!.get<Real[_,_]>("M")!;
+  let A <- sample!.get<Real[_,_]>("A")!;
+  let Q <- sample!.get<Real[_,_]>("Q")!;
+  let B <- sample!.get<Real[_,_]>("B")!;
+  let R <- sample!.get<Real[_,_]>("R")!;
+  let λ <- sample!.get<Real>("λ")!;
+  let μ <- sample!.get<Real>("μ")!;
+  let τ <- sample!.get<Real>("τ")!;
+  let y <- sample!.get<RaggedArray<Real[_]>>("y")!;
+
+  let iter2 <- sample!.walk("z");
+  while iter2.hasNext() {
+    let z <- iter2.next();
+    let s <- z.get<Integer>("s")!;
+    let iter3 <- z.walk("y");
+    while iter3.hasNext() {
+      let u <- iter3.next();
+      let v <- u.get<Real[_]>();
+      if v? {
+        y.pushBack(s, v![1..2]);
       }
+      s <- s + 1;
     }
   }
   
   /* save the observations to the output file */
+  θ:Buffer;
+  θ.set("l", l);
+  θ.set("u", u);
+  θ.set("d", d);
+  θ.set("M", M);
+  θ.set("A", A);
+  θ.set("Q", Q);
+  θ.set("B", B);
+  θ.set("R", R);
+  θ.set("λ", λ);
+  θ.set("μ", μ);
+  θ.set("τ", τ);
+
   outputBuffer:Buffer;
   outputBuffer.push(θ);
-  let iter2 <- y.walk();
-  while iter2.hasNext() {
-    outputBuffer.push(iter2.next());
+  let iter3 <- y.walk();
+  while iter3.hasNext() {
+    outputBuffer.push(iter3.next());
   }
 
   let writer <- make_writer(output);

@@ -29,10 +29,8 @@ program draw(input:String <- "output/simulate.json",
     let array <- iter.next();
     let sample <- array.get("sample");
     if sample? {
-      let θ <- sample!.get("θ")!;
-      let l <- θ.get<Real>("l")!;
-      let u <- θ.get<Real>("u")!;
-
+      let l <- sample!.get<Real>("l")!;
+      let u <- sample!.get<Real>("u")!;
       let scaleX <- width/(u - l);
       let scaleY <- height/(u - l);
       let scale <- max(scaleX, scaleY);
