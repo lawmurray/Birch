@@ -84,15 +84,16 @@ operator (X:Real[_,_]/y:Integer) -> Real[_,_] {
   return X/scalar<Real>(y);
 }
 
-function grad_divide<Type>(d:Real, l:Type, r:Type) -> (Real, Real) {
+function grad_divide<Left,Right>(d:Real, l:Left, r:Right) -> (Real, Real) {
   return (d/r, d*l/-pow(r, 2.0));
 }
 
-function grad_divide<Type>(d:Real[_], l:Type[_], r:Type) -> (Real[_], Real) {
+function grad_divide<Left,Right>(d:Real[_], l:Left[_], r:Right) ->
+    (Real[_], Real) {
   return (d/r, dot(d, l)/-pow(r, 2.0));
 }
 
-function grad_divide<Type>(d:Real[_,_], l:Type[_,_], r:Type) ->
+function grad_divide<Left,Right>(d:Real[_,_], l:Left[_,_], r:Right) ->
     (Real[_,_], Real) {
   return (d/r, frobenius(d, l)/-pow(r, 2.0));
 }
