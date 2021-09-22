@@ -73,10 +73,6 @@ function grad<Type,Gradient>(x:Type[_], d:Gradient) {
   //
 }
 
-function grad<Type,Gradient>(x:Type[_], d:Gradient, i:Integer) {
-  //
-}
-
 function label<Type>(x:Type[_], gen:Integer) {
   //
 }

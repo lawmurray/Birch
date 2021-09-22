@@ -41,15 +41,13 @@ function box<Type>(x:Type[_,_]) -> Expression<Type[_,_]> {
 }
 
 /**
- * Box an expression.
- *
- * - f: Form of the expression.
+ * Box a form.
  */
 function box<Form>(f:Form) -> {
   link(f);
-  return box_form(peek(f), f);
+  return box_impl(peek(f), f);
 }
-function box_form<Value,Form>(x:Value, f:Form) -> Expression<Value> {
+function box_impl<Value,Form>(x:Value, f:Form) -> Expression<Value> {
   return construct<BoxedForm<Value,Form>>(x, f);
 }
 

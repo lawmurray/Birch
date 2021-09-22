@@ -64,7 +64,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function eval() -> Value {
-    if this.f? {
+    if f? {
       if visitCount == 0 {
         x <- global.eval(f!);
       }
@@ -78,7 +78,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function grad(d:Value) {
-    if this.f? {
+    if f? {
       if visitCount == 0 {
         assert !this.d?;
         this.d <- d;  // start accumulation
@@ -89,7 +89,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
       visitCount <- visitCount + 1;
       if visitCount >= linkCount {
         assert visitCount == linkCount || linkCount == 0;
-        global.grad(this.f!, this.d!);  // upstream gradients accumulated
+        global.grad(f!, this.d!);  // upstream gradients accumulated
         this.d <- nil;  // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
@@ -165,16 +165,6 @@ function eval<Value,Form>(x:BoxedForm<Value,Form>) -> {
 
 function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient) {
   x.grad(d);
-}
-
-function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient,
-    i:Integer) {
-  x.grad(d, i);
-}
-
-function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient,
-    i:Integer, j:Integer) {
-  x.grad(d, i, j);
 }
 
 function label<Value,Form>(x:BoxedForm<Value,Form>, gen:Integer) {

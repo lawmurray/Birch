@@ -419,15 +419,6 @@ function grad<Value,Gradient>(x:Random<Value>, d:Gradient) {
   x.grad(d);
 }
 
-function grad<Value,Gradient>(x:Random<Value>, d:Gradient, i:Integer) {
-  x.grad(d, i);
-}
-
-function grad<Value,Gradient>(x:Random<Value>, d:Gradient, i:Integer,
-    j:Integer) {
-  x.grad(d, i, j);
-}
-
 function label<Value>(x:Random<Value>, gen:Integer) {
   x.label(gen);
 }

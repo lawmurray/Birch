@@ -88,15 +88,6 @@ function grad<Value,Gradient>(x:BoxedValue<Value>, d:Gradient) {
   x.grad(d);
 }
 
-function grad<Value,Gradient>(x:BoxedValue<Value>, d:Gradient, i:Integer) {
-  x.grad(d, i);
-}
-
-function grad<Value,Gradient>(x:BoxedValue<Value>, d:Gradient, i:Integer,
-    j:Integer) {
-  x.grad(d, i, j);
-}
-
 function label<Value>(x:BoxedValue<Value>, gen:Integer) {
   x.label(gen);
 }
