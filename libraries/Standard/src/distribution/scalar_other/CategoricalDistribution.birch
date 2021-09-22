@@ -31,11 +31,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function lower() -> Integer? {
-    return if_then_else(length(eval(ρ)) > 0, 1, 0);
+    return if_then_else(length(peek(ρ)) > 0, 1, 0);
   }
 
   override function upper() -> Integer? {
-    return length(eval(ρ));
+    return length(peek(ρ));
   }
 
   override function write(buffer:Buffer) {
