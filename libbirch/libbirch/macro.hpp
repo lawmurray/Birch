@@ -185,7 +185,7 @@ auto make_object(Args&&... args) {
     return static_cast<base_type_*>(this); \
   } \
   \
-  virtual const char* getClassName_() const { \
+  const char* getClassName_() const { \
     return #Name; \
   }
 
