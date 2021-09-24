@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "numbirch/default/eigen.hpp"
+#include "numbirch/eigen/eigen.hpp"
 
 namespace numbirch {
 

@@ -35,9 +35,9 @@ if CUDA
       numbirch/cuda/numbirch.cpp \
       numbirch/numbirch.cpp
 else
-  AM_CPPFLAGS += -DBACKEND_DEFAULT -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
+  AM_CPPFLAGS += -DBACKEND_EIGEN -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += \
-      numbirch/default/numbirch.cpp \
+      numbirch/eigen/numbirch.cpp \
       numbirch/numbirch.cpp
 endif
 endif

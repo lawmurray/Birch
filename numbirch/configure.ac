@@ -54,13 +54,13 @@ AC_ARG_ENABLE([cuda],
 esac],[cuda=false])
 AM_CONDITIONAL([CUDA], [test x$cuda = xtrue])
 
-AC_ARG_ENABLE([default],
-[AS_HELP_STRING[--enable-default], [Use default]],
+AC_ARG_ENABLE([eigen],
+[AS_HELP_STRING[--enable-eigen], [Use eigen]],
 [case "${enableval}" in
-  yes) default=true ;;
-  no)  default=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-default]) ;;
-esac],[default=true])
+  yes) eigen=true ;;
+  no)  eigen=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-eigen]) ;;
+esac],[eigen=true])
 
 # Programs
 if $oneapi; then

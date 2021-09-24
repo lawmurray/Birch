@@ -2,7 +2,7 @@
  * @file
  */
 #include "numbirch/numbirch.hpp"
-#include "numbirch/default/numbirch.hpp"
+#include "numbirch/eigen/numbirch.hpp"
 
 namespace numbirch {
 

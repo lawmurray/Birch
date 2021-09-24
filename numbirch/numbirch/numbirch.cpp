@@ -13,8 +13,8 @@
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numbirch.hpp"
 #endif
-#ifdef BACKEND_DEFAULT
-#include "numbirch/default/numbirch.hpp"
+#ifdef BACKEND_EIGEN
+#include "numbirch/eigen/numbirch.hpp"
 #endif
 
 namespace numbirch {
