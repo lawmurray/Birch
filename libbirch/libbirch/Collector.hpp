@@ -25,7 +25,7 @@ public:
   template<class T, std::enable_if_t<
       is_visitable<T,Collector>::value,int> = 0>
   void visit(T& o) {
-    return o.accept_(*this);
+    o.accept_(*this);
   }
 
   template<class T, std::enable_if_t<
@@ -69,21 +69,32 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  void visit(Any* o);
+  template<class T>
+  void visitObject(T* o);
 };
 }
 
 #include "libbirch/Shared.hpp"
-#include "libbirch/Any.hpp"
-#include "libbirch/BiconnectedCollector.hpp"
 
 template<class T>
 void libbirch::Collector::visit(Shared<T>& o) {
   if (!o.a && !o.b) {
-    Any* o1 = o.load();
+    T* o1 = o.load();
     if (o1) {
       o.store(nullptr);
-      visit(o1);
+      visitObject(o1);
+    }
+  }
+}
+
+template<class T>
+void libbirch::Collector::visitObject(T* o) {
+  if (!(o->f_.load() & REACHED)) {
+    auto old = o->f_.exchangeOr(COLLECTED);
+    if (!(old & COLLECTED)) {
+      assert(o->numShared_() == 0);
+      o->accept_(*this);
+      register_unreachable(o);
     }
   }
 }

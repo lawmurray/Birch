@@ -87,25 +87,55 @@ public:
   template<class T>
   std::tuple<int,int,int,int> visit(const int j, const int k, Shared<T>& o);
 
-  std::tuple<int,int,int,int> visit(const int j, const int k, Any* o);
+  template<class T>
+  std::tuple<int,int,int,int> visitObject(const int j, const int k, T* o);
 };
 }
 
 #include "libbirch/Shared.hpp"
-#include "libbirch/Any.hpp"
 
 template<class T>
 std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     Shared<T>& o) {
   if (!o.b) {
-    Any* o1 = o.load();
     int l, h, m, n;
-    std::tie(l, h, m, n) = visit(j, k, o1);
+    T* o1 = o.load();
+    std::tie(l, h, m, n) = visitObject(j, k, o1);
     if (l == j && h < j + m) {
       /* is a bridge */
       o.b = true;
       n = 0;  // base case for post-order rank in biconnected component
     }
+    return std::make_tuple(l, h, m, n);
+  } else {
+    return std::make_tuple(MAX, 0, 0, 0);
+  }
+}
+
+template<class T>
+std::tuple<int,int,int,int> libbirch::Bridger::visitObject(const int j,
+    const int k, T* o) {
+  if (o->p_ == get_thread_num()) {
+    int l, h, m, n, l1, h1, m1, n1;
+    o->p_ = -1;
+    if (o->a_ < o->numShared_()) {
+      l = 0;
+      h = MAX;
+    } else {
+      l = o->l_;
+      h = o->h_;
+    }
+    std::tie(l1, h1, m1, n1) = o->accept_(*this, j + 1, k);
+    l = std::min(l, l1);
+    h = std::max(h, h1);
+    m = m1 + 1;
+    n = n1 + 1;
+    
+    //o->a_ = 0;  // keep this, used later in BiconnectedCollector
+    o->k_ = k;
+    o->n_ = n;
+    o->f_.maskAnd(~(CLAIMED|POSSIBLE_ROOT));
+    // ^ while we're here, object is definitely reachable, so not a root
     return std::make_tuple(l, h, m, n);
   } else {
     return std::make_tuple(MAX, 0, 0, 0);

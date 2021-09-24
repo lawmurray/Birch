@@ -5,47 +5,22 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
+#include "libbirch/macro.hpp"
 #include "libbirch/memory.hpp"
 #include "libbirch/thread.hpp"
 #include "libbirch/Atomic.hpp"
+#include "libbirch/Marker.hpp"
+#include "libbirch/Scanner.hpp"
+#include "libbirch/Reacher.hpp"
+#include "libbirch/Collector.hpp"
+#include "libbirch/BiconnectedCollector.hpp"
+#include "libbirch/Spanner.hpp"
+#include "libbirch/Bridger.hpp"
+#include "libbirch/Copier.hpp"
+#include "libbirch/BiconnectedCopier.hpp"
+#include "libbirch/Destroyer.hpp"
 
 namespace libbirch {
-/**
- * @internal
- * 
- * Flags used for bridge finding and cycle collection. For cycle collection,
- * they mostly correspond to the colors in @ref Bacon2001 "Bacon & Rajan
- * (2001)" but behave slightly differently to permit multithreading. The basic
- * principle to ensure this is that flags can be safely set during normal
- * execution (with atomic operations), but should only be unset with careful
- * consideration of thread safety.
- *
- * The flags map to colors in @ref Bacon2001 "Bacon & Rajan (2001)" as
- * follows:
- *
- *   - *buffered* maps to *purple*,
- *   - *marked* maps to *gray*,
- *   - *scanned* and *reached* together map to *black* (both on) or
- *     *white* (first on, second off),
- *   - *collected* is set once a *white* object has been destroyed.
- *
- * The use of these flags also resolves some thread safety issues that can
- * otherwise exist during the scan operation, when coloring an object white
- * (eligible for collection) then later recoloring it black (reachable); the
- * sequencing of this coloring can become problematic with multiple threads.
- * 
- * Acyclic objects are handled via separate mechanism, but map to *green*.
- */
-enum Flag : int8_t {
-  BUFFERED = (1 << 0),
-  POSSIBLE_ROOT = (1 << 1),
-  MARKED = (1 << 2),
-  SCANNED = (1 << 3),
-  REACHED = (1 << 4),
-  COLLECTED = (1 << 5),
-  CLAIMED = (1 << 6)
-};
-
 /**
  * Base class providing reference counting, cycle breaking, and lazy deep
  * copy support.
@@ -54,20 +29,9 @@ enum Flag : int8_t {
  * to avoid naming collisions with derived classes.
  */
 class Any {
-  friend class Marker;
-  friend class Scanner;
-  friend class Reacher;
-  friend class Collector;
-  friend class BiconnectedCollector;
-  friend class Spanner;
-  friend class Bridger;
-  friend class Copier;
-  friend class Memo;
-  friend class BiconnectedCopier;
-  friend class BiconnectedMemo;
-  friend class Destroyer;
 public:
-  using this_type_ = Any;
+  LIBBIRCH_CLASS(Any, LIBBIRCH_NO_BASE)
+  LIBBIRCH_CLASS_MEMBERS(LIBBIRCH_NO_MEMBERS)
 
   /**
    * Constructor.
@@ -190,92 +154,6 @@ public:
    */
   void unbuffer_();
 
-  /**
-   * @internal
-   * 
-   * Get the class name.
-   */
-  virtual const char* getClassName_() const;
-
-  /**
-   * @internal
-   * 
-   * Shallow copy the object.
-   */
-  virtual Any* copy_() const = 0;
-
-  /**
-   * @internal
-   */
-  virtual void accept_(Marker& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(Scanner& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(Reacher& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(Collector& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(BiconnectedCollector& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual std::tuple<int,int,int> accept_(Spanner& visitor, const int i,
-      const int j) {
-    return std::make_tuple(i, i, 0);
-  }
-
-  /**
-   * @internal
-   */
-  virtual std::tuple<int,int,int,int> accept_(Bridger& visitor, const int j,
-      const int k) {
-    return std::make_tuple(std::numeric_limits<int>::max(), 0, 0, 0);
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(Copier& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(BiconnectedCopier& visitor) {
-    //
-  }
-
-  /**
-   * @internal
-   */
-  virtual void accept_(Destroyer& visitor) {
-    //
-  }
-
 private:
   /**
    * @internal
@@ -384,8 +262,4 @@ inline bool libbirch::Any::isPossibleRoot_() const {
 
 inline void libbirch::Any::unbuffer_() {
   f_.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
-}
-
-inline const char* libbirch::Any::getClassName_() const {
-  return "Any";
 }

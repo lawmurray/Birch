@@ -42,15 +42,15 @@ void birch::CppStructGenerator::visit(const Struct* o) {
       genSourceLine(o->loc);
       start("LIBBIRCH_STRUCT(" << o->name << ", ");
       if (o->base->isEmpty()) {
-        middle("void");
+        middle("LIBBIRCH_NO_BASE");
       } else {
         genBase(o);
       }
       finish(')');
 
       genSourceLine(o->loc);
+      start("LIBBIRCH_STRUCT_MEMBERS(");
       if (memberVariables.size() > 0) {
-        start("LIBBIRCH_STRUCT_MEMBERS(");
         for (auto iter = memberVariables.begin(); iter != memberVariables.end();
             ++iter) {
           if (iter != memberVariables.begin()) {
@@ -58,8 +58,10 @@ void birch::CppStructGenerator::visit(const Struct* o) {
           }
           middle((*iter)->name);
         }
-        finish(')');
+      } else {
+        middle("LIBBIRCH_NO_MEMBERS");
       }
+      finish(')');
 
       /* dereference and member access through pointer operators; these
        * allow struct objects to be dereferenced with unary `*` (an identity

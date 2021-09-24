@@ -452,6 +452,14 @@ public:
     shape = s;
   }
 
+  /**
+   * Clear the array, erasing all elements.
+   */
+  void clear() {
+    release();
+    shape = ArrayShape<D>();
+  }
+
 private:
   /**
    * Iterator for use internally.

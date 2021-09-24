@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "libbirch/Any.hpp"
 #include "libbirch/Atomic.hpp"
 #include "libbirch/type.hpp"
 #include "libbirch/memory.hpp"
@@ -482,7 +481,7 @@ T* libbirch::Shared<T>::get() {
       assert(!biconnected_copy());
       biconnected_copy(true);
       assert(biconnected_copy());
-      o = static_cast<T*>(BiconnectedCopier(o).visit(static_cast<Any*>(o)));
+      o = BiconnectedCopier(o).visitObject(o);
       biconnected_copy(true);
       assert(!biconnected_copy());
 
@@ -512,7 +511,7 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
     assert(!biconnected_copy());
     biconnected_copy(true);
     assert(biconnected_copy());
-    o = static_cast<T*>(Copier().visit(static_cast<Any*>(o)));
+    o = Copier().visitObject(o);
     biconnected_copy(true);
     assert(!biconnected_copy());
   }

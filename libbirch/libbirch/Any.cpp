@@ -54,7 +54,7 @@ void libbirch::Any::decSharedBiconnected_() {
 
     auto old = f_.load();
     if (old & BUFFERED) {
-      /* current registered; could attempt to deregister here, but this is
+      /* currently registered; could attempt to deregister here, but this is
        * only successful for recently-registered objects, which is highly
        * unlikely in this scenario, so don't bother trying */
       //deregister_possible_root(this);
@@ -91,7 +91,7 @@ void libbirch::Any::decSharedBridge_() {
      * as such */
     auto old = f_.load();
     if (old & BUFFERED) {
-      /* current registered; could attempt to deregister here, but this is
+      /* currently registered; could attempt to deregister here, but this is
        * only successful for recently-registered objects, which is highly
        * unlikely in this scenario, so don't bother trying */
       //deregister_possible_root(this);

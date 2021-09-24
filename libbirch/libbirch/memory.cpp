@@ -110,7 +110,7 @@ void libbirch::collect() {
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Marker visitor;
-      visitor.visit(o);
+      visitor.visitObject(o);
     }
     #pragma omp barrier
 
@@ -119,7 +119,7 @@ void libbirch::collect() {
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Scanner visitor;
-      visitor.visit(o);
+      visitor.visitObject(o);
     }
     #pragma omp barrier
 
@@ -128,7 +128,7 @@ void libbirch::collect() {
     for (int i = 0; i < (int)all_possible_roots.size(); ++i) {
       auto o = all_possible_roots[i];
       Collector visitor;
-      visitor.visit(o);
+      visitor.visitObject(o);
     }
     sizes[tid] = unreachables.size();
     #pragma omp barrier
@@ -175,5 +175,5 @@ bool libbirch::biconnected_copy(const bool toggle) {
 }
 
 void libbirch::biconnected_collect(Any* o) {
-  BiconnectedCollector().visit(o);
+  BiconnectedCollector().visitObject(o);
 }

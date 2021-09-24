@@ -22,12 +22,14 @@ public:
     //
   }
 
-  template<class T, std::enable_if_t<is_visitable<T,Reacher>::value,int> = 0>
+  template<class T, std::enable_if_t<
+      is_visitable<T,Reacher>::value,int> = 0>
   void visit(T& o) {
-    return o.accept_(*this);
+    o.accept_(*this);
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Reacher>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Reacher>::value &&
       is_iterable<T>::value,int> = 0>
   void visit(T& o) {
     if (!std::is_trivial<typename T::value_type>::value) {
@@ -39,7 +41,8 @@ public:
     }
   }
 
-  template<class T, std::enable_if_t<!is_visitable<T,Reacher>::value &&
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Reacher>::value &&
       !is_iterable<T>::value,int> = 0>
   void visit(T& o) {
     //
@@ -66,20 +69,30 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  void visit(Any* o);
+  template<class T>
+  void visitObject(T* o);
 };
 }
 
 #include "libbirch/Shared.hpp"
-#include "libbirch/Any.hpp"
 
 template<class T>
 void libbirch::Reacher::visit(Shared<T>& o) {
   if (!o.a && !o.b) {
-    Any* o1 = o.load();
+    auto o1 = o.load();
     if (o1) {
       o1->incShared_();
-      visit(o1);
+      visitObject(o1);
     }
+  }
+}
+
+template<class T>
+void libbirch::Reacher::visitObject(T* o) {
+  if (!(o->f_.exchangeOr(SCANNED) & SCANNED)) {
+    o->f_.maskAnd(~MARKED);  // unset for next time
+  }
+  if (!(o->f_.exchangeOr(REACHED) & REACHED)) {
+    o->accept_(*this);
   }
 }

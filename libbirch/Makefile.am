@@ -54,17 +54,8 @@ nobase_include_HEADERS = \
 
 COMMON_SOURCES =  \
   libbirch/Any.cpp \
-  libbirch/BiconnectedCollector.cpp \
-  libbirch/BiconnectedCopier.cpp \
   libbirch/BiconnectedMemo.cpp \
-  libbirch/Bridger.cpp \
-  libbirch/Copier.cpp \
-  libbirch/Collector.cpp \
-  libbirch/Marker.cpp \
   libbirch/Memo.cpp \
-  libbirch/Reacher.cpp \
-  libbirch/Scanner.cpp \
-  libbirch/Spanner.cpp \
   libbirch/memory.cpp
 
 dist_noinst_DATA =  \

@@ -57,8 +57,8 @@ void birch::CppClassGenerator::visit(const Class* o) {
       finish(')');
       
       genSourceLine(o->loc);
+      start("LIBBIRCH_CLASS_MEMBERS(");
       if (memberVariables.size() > 0) {
-        start("LIBBIRCH_CLASS_MEMBERS(");
         for (auto iter = memberVariables.begin(); iter != memberVariables.end();
             ++iter) {
           if (iter != memberVariables.begin()) {
@@ -66,8 +66,10 @@ void birch::CppClassGenerator::visit(const Class* o) {
           }
           middle((*iter)->name);
         }
-        finish(')');
+      } else {
+        middle("LIBBIRCH_NO_MEMBERS");
       }
+      finish(')');
   
       /* using declarations for member functions in base classes that are
       * overridden */

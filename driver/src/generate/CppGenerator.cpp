@@ -186,11 +186,11 @@ void birch::CppGenerator::visit(const Member* o) {
 }
 
 void birch::CppGenerator::visit(const This* o) {
-  middle("this->shared_from_this_()");
+  middle("libbirch::Shared<this_type_>(this)");
 }
 
 void birch::CppGenerator::visit(const Super* o) {
-  middle("this->shared_from_base_()");
+  middle("libbirch::Shared<base_type_>(this)");
 }
 
 void birch::CppGenerator::visit(const Global* o) {

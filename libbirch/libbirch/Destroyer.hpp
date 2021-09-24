@@ -22,20 +22,14 @@ public:
   template<class T, std::enable_if_t<
       is_visitable<T,Destroyer>::value,int> = 0>
   void visit(T& o) {
-    return o.accept_(*this);
+    o.accept_(*this);
   }
 
   template<class T, std::enable_if_t<
       !is_visitable<T,Destroyer>::value &&
       is_iterable<T>::value,int> = 0>
   void visit(T& o) {
-    if (!std::is_trivial<typename T::value_type>::value) {
-      auto iter = o.begin();
-      auto last = o.end();
-      for (; iter != last; ++iter) {
-        visit(*iter);
-      }
-    }
+    o.clear();
   }
 
   template<class T, std::enable_if_t<

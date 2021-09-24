@@ -21,7 +21,9 @@ public:
    * 
    * @param o The bridge head.
    */
-  BiconnectedCopier(Any* o);
+  BiconnectedCopier(Any* o) : m(o) {
+    //
+  }
 
   void visit() {
     //
@@ -30,7 +32,7 @@ public:
   template<class T, std::enable_if_t<
       is_visitable<T,BiconnectedCopier>::value,int> = 0>
   void visit(T& o) {
-    return o.accept_(*this);
+    o.accept_(*this);
   }
 
   template<class T, std::enable_if_t<
@@ -74,7 +76,8 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  Any* visit(Any* o);
+  template<class T>
+  T* visitObject(T* o);
 
 private:
   /**
@@ -85,14 +88,22 @@ private:
 }
 
 #include "libbirch/Shared.hpp"
-#include "libbirch/Any.hpp"
 
 template<class T>
 void libbirch::BiconnectedCopier::visit(Shared<T>& o) {
   if (!o.b) {
-    Any* u = o.load();
-    T* v = static_cast<T*>(visit(u));
-    v->incShared_();
-    o.store(v);
+    T* o1 = visitObject(o.load());
+    o1->incShared_();
+    o.store(o1);
   }
+}
+
+template<class T>
+T* libbirch::BiconnectedCopier::visitObject(T* o) {
+  auto& value = m.get(o);
+  if (!value) {
+    value = o->copy_();
+    value->accept_(*this);
+  }
+  return static_cast<T*>(value);
 }
