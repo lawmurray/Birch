@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/array/external.hpp"
+#include "numbirch/array/Atomic.hpp"
 
 namespace numbirch {
 /**
@@ -16,9 +17,8 @@ public:
   /**
    * Constructor.
    */
-  Lock() {
-    #pragma omp atomic write
-    lock = false;
+  Lock() : lock(false) {
+    //
   }
 
   /**
@@ -35,28 +35,20 @@ public:
    */
   void set() {
     /* spin, setting the lock true until its old value comes back false */
-    bool old;
-    do {
-      #pragma omp atomic capture seq_cst
-      {
-        old = lock;
-        lock = true;
-      }
-    } while (old);
+    while (lock.exchange(true));
   }
 
   /**
    * Release exclusive use.
    */
   void unset() {
-    #pragma omp atomic write seq_cst
-    lock = false;
+    lock.store(false);
   }
 
 private:
   /**
    * Lock.
    */
-  bool lock;
+  Atomic<bool> lock;
 };
 }

@@ -8,6 +8,7 @@
 #include "numbirch/array/ArrayControl.hpp"
 #include "numbirch/array/ArrayShape.hpp"
 #include "numbirch/array/ArrayIterator.hpp"
+#include "numbirch/array/Atomic.hpp"
 #include "numbirch/array/Lock.hpp"
 
 namespace numbirch {
@@ -172,7 +173,9 @@ public:
   Array(const Array& o) : Array() {
     shape = o.shape;
     if (!o.isView && std::is_trivial<T>::value) {
-      std::tie(control, buffer, isElementWise) = o.share();
+      ArrayControl* ctrl;
+      std::tie(ctrl, buffer, isElementWise) = o.share();
+      control.store(ctrl);
     } else {
       compact();
       allocate();
@@ -555,7 +558,7 @@ private:
    */
   void allocate() {
     assert(!buffer);
-    assert(!control);
+    assert(!control.load());
     assert(!isElementWise);
 
     if (std::is_trivial<T>::value) {
@@ -567,24 +570,48 @@ private:
   }
 
   /**
+   * Release the buffer, deallocating if this is the last reference to it.
+   */
+  void release() {
+    if (!isView) {
+      auto ctrl = control.exchange(nullptr);
+      if (!ctrl || ctrl->decShared() == 0) {
+        if (std::is_trivial<T>::value) {
+          free((void*)buffer);
+        } else {
+          std::destroy(beginInternal(), endInternal());
+          std::free((void*)buffer);
+        }
+        delete ctrl;
+      }
+    }
+    buffer = nullptr;
+    isView = false;
+    isElementWise = false;
+  }
+
+  /**
    * Share the buffer.
    * 
    * @return A pair giving pointers to the control block and buffer.
    */
   std::tuple<ArrayControl*,T*,bool> share() {
     assert(!isView);
-    if (control) {
-      control->incShared_();
+    ArrayControl* ctrl = control.load();
+    if (ctrl) {
+      ctrl->incShared();
     } else if (buffer) {
       lock.set();
-      if (control) {  // another thread may have created in the meantime
-        control->incShared_();
+      ctrl = control.load();  // another thread may have updated in meantime
+      if (ctrl) {
+        ctrl->incShared();
       } else {
-        control = new ArrayControl(2);
+        ctrl = new ArrayControl(2);  // one ref for current, one ref for new
+        control.store(ctrl);
       }
       lock.unset();
     }
-    return std::make_tuple(control, buffer, isElementWise);
+    return std::make_tuple(ctrl, buffer, isElementWise);
   }
 
   /**
@@ -599,30 +626,36 @@ private:
    * buffer is shared is indicated by the presence of a control block.
    */
   void own() {
-    if (control) {
+    ArrayControl* ctrl = control.load();
+    if (ctrl) {
       assert(!isView);
       lock.set();
-      if (control) {  // another thread may have cleared in the meantime
-        if (control->numShared_() == 1) {
-          /* last reference */
-          delete control;
-          control = nullptr;
+      ctrl = control.load();  // another thread may have updated in meantime
+      if (!ctrl) {
+        // last reference optimization already applied by another thread
+      } else if (ctrl->numShared() == 1) {
+        /* apply last reference optimization */
+        delete ctrl;
+        control.store(nullptr);
+      } else {
+        T* buf = nullptr;
+        if (std::is_trivial<T>::value) {
+          crystallize();
+          buf = (T*)malloc(volume()*sizeof(T));
+          memcpy(buf, shape.width()*sizeof(T), buffer,
+              shape.stride()*sizeof(T), shape.width()*sizeof(T),
+              shape.height());
         } else {
-          T* buf = nullptr;
-          if (std::is_trivial<T>::value) {
-            crystallize();
-            buf = (T*)malloc(size()*sizeof(T));
-            memcpy(buf, shape.width()*sizeof(T), buffer,
-                shape.stride()*sizeof(T), shape.width()*sizeof(T),
-                shape.height());
-          } else {
-            buf = (T*)std::malloc(size()*sizeof(T));
-            std::uninitialized_copy(beginInternal(), endInternal(), buf);
-          }
-          release();
-          compact();
-          this->buffer = buf;
+          buf = (T*)std::malloc(volume()*sizeof(T));
+          std::uninitialized_copy(beginInternal(), endInternal(), buf);
         }
+
+        /* memory order is important here: the new control block should not
+         * become visible to other threads until after the buffer is set, if
+         * the use of the control block as a lock is to be successful */
+        buffer = buf;
+        isElementWise = false;
+        control.store(nullptr);
       }
       lock.unset();
     }
@@ -662,25 +695,6 @@ private:
    */
   void atomize() const {
     const_cast<Array*>(this)->atomize();
-  }
-
-  /**
-   * Release the buffer, deallocating if this is the last reference to it.
-   */
-  void release() {
-    if (!isView && (!control || control->decShared_() == 0)) {
-      if (std::is_trivial<T>::value) {
-        free((void*)buffer);
-      } else {
-        std::destroy(beginInternal(), endInternal());
-        std::free((void*)buffer);
-      }
-      delete control;
-    }
-    buffer = nullptr;
-    control = nullptr;
-    isView = false;
-    isElementWise = false;
   }
 
   /**
@@ -726,7 +740,7 @@ private:
   /**
    * Control block for sharing buffer.
    */
-  ArrayControl* control;
+  Atomic<ArrayControl*> control;
 
   /**
    * Shape.
@@ -741,7 +755,9 @@ private:
 
   /**
    * Is the array prepared for element-wise access? If false, the array is
-   * prepared for block-wise access.
+   * prepared for block-wise access. This is not atomic as a thread only
+   * synchronizes with its own device anyway to convert from block-wise to
+   * element-wise operations.
    */
   bool isElementWise;
 

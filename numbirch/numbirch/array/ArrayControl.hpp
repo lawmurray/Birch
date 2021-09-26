@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/array/external.hpp"
+#include "numbirch/array/Atomic.hpp"
 
 namespace numbirch {
 /*
@@ -16,47 +17,36 @@ public:
    *
    * @param r Initial reference count.
    */
-  ArrayControl(const int r) {
-    #pragma omp atomic write
-    r_ = r;
+  ArrayControl(const int r) : r(r) {
+    //
   }
 
   /**
    * Reference count.
    */
-  int numShared_() const {
-    int r;    
-    #pragma omp atomic read
-    r = r_;
-    return r;
+  int numShared() const {
+    return r.load();
   }
 
   /**
    * Increment the shared reference count.
    */
-  void incShared_() {
-    assert(numShared_() > 0);
-    #pragma omp atomic update
-    ++r_;
+  void incShared() {
+    assert(numShared() > 0);
+    r.increment();
   }
 
   /**
    * Decrement the shared reference count and return the new value.
    */
-  int decShared_() {
-    int r;
-    #pragma omp atomic capture
-    {
-      --r_;
-      r = r_;
-    }
-    return r;
+  int decShared() {
+    return --r;
   }
 
 private:
   /**
    * Reference count.
    */
-  int r_;
+  Atomic<int> r;
 };
 }

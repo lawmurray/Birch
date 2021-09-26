@@ -64,6 +64,7 @@ nobase_include_HEADERS = \
   numbirch/array/ArrayControl.hpp \
   numbirch/array/ArrayIterator.hpp \
   numbirch/array/ArrayShape.hpp \
+  numbirch/array/Atomic.hpp \
   numbirch/array/external.hpp \
   numbirch/array/Lock.hpp \
   numbirch/memory.hpp
