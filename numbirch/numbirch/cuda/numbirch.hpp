@@ -661,8 +661,8 @@ T ldet(const int n, const T* A, const int ldA) {
    * logarithms of the absolute values of elements on the main diagonal */
   ///@todo Remove temporary
   auto d = (T*)device_malloc(n*sizeof(T));
-  transform(n, LU, ldLU + 1, d, 1, log_abs_functor<T>());
-  T ldet = sum(n, d, 1);
+  transform(1, n, LU, ldLU + 1, d, 1, log_abs_functor<T>());
+  T ldet = sum(1, n, d, 1);
 
   device_free(d);
   device_free(ipiv);
@@ -698,8 +698,8 @@ T lcholdet(const int n, const T* S, const int ldS) {
    * diagonal, all of which should be positive */
   ///@todo Remove temporary
   auto d = (T*)device_malloc(n*sizeof(T));
-  transform(n, L, ldL + 1, d, 1, log_functor<T>());
-  T ldet = 2.0*sum(n, d, 1);
+  transform(1, n, L, ldL + 1, d, 1, log_functor<T>());
+  T ldet = 2.0*sum(1, n, d, 1);
 
   device_free(d);
   free(bufferOnHost);
@@ -731,7 +731,7 @@ void transpose(const int m, const int n, const T x, const T* A, const int ldA,
 
 template<class T>
 T trace(const int m, const int n, const T* A, const int ldA) {
-  return sum(std::min(m, n), A, ldA + 1);
+  return sum(1, std::min(m, n), A, ldA + 1);
 }
 
 }
