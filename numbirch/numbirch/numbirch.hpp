@@ -25,6 +25,22 @@ void neg(const int m, const int n, const float* A, const int ldA, float* B,
     const int ldB);
 
 /**
+ * Matrix rectify.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param[out] B Matrix.
+ * @param ldB Column stride of `B`.
+ */
+void rectify(const int m, const int n, const double* A, const int ldA,
+    double* B, const int ldB);
+void rectify(const int m, const int n, const float* A, const int ldA,
+    float* B, const int ldB);
+
+
+/**
  * Matrix addition.
  * 
  * @param m Number of rows.

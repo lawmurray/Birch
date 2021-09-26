@@ -29,6 +29,16 @@ void neg(const int m, const int n, const float* A, const int ldA,
   neg<float>(m, n, A, ldA, B, ldB);
 }
 
+void rectify(const int m, const int n, const double* A, const int ldA,
+    double* B, const int ldB) {
+  rectify<double>(m, n, A, ldA, B, ldB);
+}
+
+void rectify(const int m, const int n, const float* A, const int ldA,
+    float* B, const int ldB) {
+  rectify<float>(m, n, A, ldA, B, ldB);
+}
+
 void add(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC) {
   add<double>(m, n, A, ldA, B, ldB, C, ldC);

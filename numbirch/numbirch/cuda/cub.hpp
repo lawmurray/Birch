@@ -72,6 +72,14 @@ struct negate_functor {
 };
 
 template<class T = double>
+struct rectify_functor {
+  __host__ __device__
+  T operator()(const T x) const {
+    return x > T(0) ? x : T(0);
+  }
+};
+
+template<class T = double>
 struct plus_functor {
   __host__ __device__
   T operator()(const T x, const T y) const {

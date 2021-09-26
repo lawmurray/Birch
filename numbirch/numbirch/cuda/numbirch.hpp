@@ -130,6 +130,14 @@ void neg(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void rectify(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, rectify_functor<T>());
+}
+
+template<class T>
 void add(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   prefetch(A, m, n, ldA);

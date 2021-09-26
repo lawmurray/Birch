@@ -15,10 +15,7 @@ function eval<Middle>(x:Tanh<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:Tanh<Middle>, d:Gradient) {
-  let m <- peek(x.m);
-  grad(x.m, transform(d, m, \(d:Real, m:Real) -> Real {
-        return d*(1.0 + pow(tanh(m), 2.0));
-      }));
+  grad(x.m, d*(1.0 + pow(tanh(peek(x.m)), 2.0)));
 }
 
 /**
@@ -42,18 +39,4 @@ function tanh(m:Real) -> Real {
   cpp{{
   return std::tanh(m);
   }}
-}
-
-/**
- * Hyperbolic tangent.
- */
-function tanh(m:Real[_]) -> Real[_] {
-  return transform(m, \(x:Real) -> Real { return tanh(x); });
-}
-
-/**
- * Hyperbolic tangent.
- */
-function tanh(m:Real[_,_]) -> Real[_,_] {
-  return transform(m, \(x:Real) -> Real { return tanh(x); });
 }

@@ -18,6 +18,14 @@ void neg(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void rectify(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.noalias() = A1.cwiseMax(T(0));
+}
+
+template<class T>
 void add(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
@@ -98,7 +106,7 @@ void cholmul(const int n, const T* S, const int ldS, const T* x,
   auto x1 = make_eigen_vector(x, n, incx);
   auto y1 = make_eigen_vector(y, n, incy);
   auto ldlt = S1.ldlt();
-  //assert(ldlt.info() == Eigen::Success);
+  assert(ldlt.info() == Eigen::Success);
   y1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().cwiseProduct(x1)));
 }
@@ -110,7 +118,7 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   auto ldlt = S1.ldlt();
-  //assert(ldlt.info() == Eigen::Success);
+  assert(ldlt.info() == Eigen::Success);
   C1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*B1));
 }
@@ -179,7 +187,7 @@ void cholouter(const int m, const int n, const T* A, const int ldA,
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   auto ldlt = S1.ldlt();
-  //assert(ldlt.info() == Eigen::Success);
+  assert(ldlt.info() == Eigen::Success);
   C1.noalias() = (ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*
       A1.transpose()))).transpose();
