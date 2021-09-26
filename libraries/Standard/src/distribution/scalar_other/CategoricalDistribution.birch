@@ -74,7 +74,7 @@ function simulate_categorical(ρ:Real[_], Z:Real) -> Integer {
     let x <- 1;
     let P <- ρ[1];
     while P < u {
-      assert x <= length(ρ);
+      assert x < length(ρ);
       x <- x + 1;
       P <- P + ρ[x];
     }
