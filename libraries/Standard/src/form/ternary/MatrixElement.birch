@@ -2,7 +2,7 @@
  * Element of a matrix.
  */
 struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
-    Ternary<Left,Middle,Right> {
+    Ternary<Left,Middle,Right>(l, m, r) {
   //
 }
 

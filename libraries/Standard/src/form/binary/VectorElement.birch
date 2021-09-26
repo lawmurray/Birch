@@ -1,7 +1,7 @@
 /*
  * Element of a vector.
  */
-struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right> {
+struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   //
 }
 
