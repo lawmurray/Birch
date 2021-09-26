@@ -44,9 +44,7 @@ esac],[single=false])
 AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
 AM_CONDITIONAL([TEST], [test x$test = xtrue])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
-AM_CONDITIONAL([DEBUG_SINGLE], [test x$single = xtrue -a x$debug = xtrue])
-AM_CONDITIONAL([TEST_SINGLE], [test x$single = xtrue -a x$test = xtrue])
-AM_CONDITIONAL([RELEASE_SINGLE], [test x$single = xtrue -a x$release = xtrue])
+AM_CONDITIONAL([SINGLE], [test x$single = xtrue])
 
 # Programs
 AC_PROG_CXX

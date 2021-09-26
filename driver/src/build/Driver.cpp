@@ -1099,22 +1099,22 @@ void birch::Driver::setup() {
   for (auto value : metaContents["require.package"]) {
     auto tarName = tar(value);
     configureStream << "if $test; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-test], [main], [TEST_LIBS=\"$TEST_LIBS -l" << tarName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$TEST_LIBS])\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-test], [main], [BIRCH_TEST_LIBS=\"$BIRCH_TEST_LIBS -l" << tarName << "-test\"], [AC_MSG_ERROR([required library not found.])], [$BIRCH_TEST_LIBS])\n";
     configureStream << "fi\n";
     configureStream << "if $debug; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug], [main], [DEBUG_LIBS=\"$DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_LIBS])\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug], [main], [BIRCH_DEBUG_LIBS=\"$BIRCH_DEBUG_LIBS -l" << tarName << "-debug\"], [AC_MSG_ERROR([required library not found.])], [$BIRCH_DEBUG_LIBS])\n";
     configureStream << "fi\n";
     configureStream << "if $release; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "], [main], [RELEASE_LIBS=\"$RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_LIBS])\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "], [main], [BIRCH_RELEASE_LIBS=\"$BIRCH_RELEASE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$BIRCH_RELEASE_LIBS])\n";
     configureStream << "fi\n";
     configureStream << "if $test && $single; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-test-single], [main], [TEST_SINGLE_LIBS=\"$TEST_SINGLE_LIBS -l" << tarName << "-test-single\"], [AC_MSG_ERROR([required library not found.])], [$TEST_SINGLE_LIBS])\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-test-single], [main], [BIRCH_TEST_SINGLE_LIBS=\"$BIRCH_TEST_SINGLE_LIBS -l" << tarName << "-test-single\"], [AC_MSG_ERROR([required library not found.])], [$BIRCH_TEST_SINGLE_LIBS])\n";
     configureStream << "fi\n";
     configureStream << "if $debug && $single; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug-single], [main], [DEBUG_SINGLE_LIBS=\"$DEBUG_SINGLE_LIBS -l" << tarName << "-debug-single\"], [AC_MSG_ERROR([required library not found.])], [$DEBUG_SINGLE_LIBS])\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-debug-single], [main], [BIRCH_DEBUG_SINGLE_LIBS=\"$BIRCH_DEBUG_SINGLE_LIBS -l" << tarName << "-debug-single\"], [AC_MSG_ERROR([required library not found.])], [$BIRCH_DEBUG_SINGLE_LIBS])\n";
     configureStream << "fi\n";
     configureStream << "if $release && $single; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-single], [main], [RELEASE_SINGLE_LIBS=\"$RELEASE_SINGLE_LIBS -l" << tarName << "-single\"], [AC_MSG_ERROR([required library not found.])], [$RELEASE_SINGLE_LIBS])\n";
+    configureStream << "  AC_CHECK_LIB([" << tarName << "-single], [main], [BIRCH_RELEASE_SINGLE_LIBS=\"$BIRCH_RELEASE_SINGLE_LIBS -l" << tarName << "-single\"], [AC_MSG_ERROR([required library not found.])], [$BIRCH_RELEASE_SINGLE_LIBS])\n";
     configureStream << "fi\n";
   }
 
@@ -1130,9 +1130,12 @@ void birch::Driver::setup() {
   configureStream << "AC_SUBST([DEBUG_LIBS])\n";
   configureStream << "AC_SUBST([TEST_LIBS])\n";
   configureStream << "AC_SUBST([RELEASE_LIBS])\n";
-  configureStream << "AC_SUBST([DEBUG_SINGLE_LIBS])\n";
-  configureStream << "AC_SUBST([TEST_SINGLE_LIBS])\n";
-  configureStream << "AC_SUBST([RELEASE_SINGLE_LIBS])\n";
+  configureStream << "AC_SUBST([BIRCH_DEBUG_LIBS])\n";
+  configureStream << "AC_SUBST([BIRCH_TEST_LIBS])\n";
+  configureStream << "AC_SUBST([BIRCH_RELEASE_LIBS])\n";
+  configureStream << "AC_SUBST([BIRCH_DEBUG_SINGLE_LIBS])\n";
+  configureStream << "AC_SUBST([BIRCH_TEST_SINGLE_LIBS])\n";
+  configureStream << "AC_SUBST([BIRCH_RELEASE_SINGLE_LIBS])\n";
   configureStream << "\n";
   configureStream << "AC_CONFIG_FILES([Makefile])\n";
   configureStream << "AC_OUTPUT\n";
