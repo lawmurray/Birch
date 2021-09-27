@@ -16,7 +16,7 @@ function eval<Left,Right>(x:Outer<Left,Right>) -> {
 
 function grad<Left,Right,Gradient>(x:Outer<Left,Right>, d:Gradient) {
   grad(x.l, d*peek(x.r));
-  grad(x.r, inner(d, eval(x.l)));
+  grad(x.r, inner(d, peek(x.l)));
 }
 
 /**
