@@ -1,53 +1,5 @@
-/**
- * Resample with systematic resampling.
- *
- * - w: Log weights.
- *
- * Return: the vector of ancestor indices, in non-descending order.
- *
- *
- */
-function resample_systematic(w:Real[_]) -> Integer[_] {
-  return cumulative_offspring_to_ancestors(
-      systematic_cumulative_offspring(cumulative_weights(w)));
-}
-
-/**
- * Resample with multinomial resampling.
- *
- * - w: Log weights.
- *
- * Return: the vector of ancestor indices, in non-descending order.
- */
-function resample_multinomial(w:Real[_]) -> Integer[_] {
-  return offspring_to_ancestors(simulate_multinomial(length(w),
-      norm_exp(w)));
-}
-
-/**
- * Exponentiate and sum a vector, return the logarithm of the sum.
- */
-function log_sum_exp(x:Real[_]) -> Real {
-  if length(x) > 0 {
-    let mx <- max(x);
-    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
-        \(x:Real) -> { return nan_exp(x - mx); });
-    return mx + log(r);
-  } else {
-    return -inf;
-  }
-}
-
-/**
- * Take the logarithm of each element of a vector and return the sum.
- */
-function log_sum(x:Real[_]) -> Real {
-  return transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
-      \(x:Real) -> { return log(x); });
-}
-
-/**
- * Take the exponential of a value, where `nan` is treated as `-inf`.
+/*
+ * Take the exponential of a value, where NaN is treated as though `-inf`.
  */
 function nan_exp(x:Real) -> Real {
   if isnan(x) {
@@ -57,56 +9,149 @@ function nan_exp(x:Real) -> Real {
   }
 }
 
-
-/**
- * Take the exponential of each element of a vector and normalize to sum to
- * one.
+/*
+ * Take the maximum of two values, where NaN are treated as though `-inf`.
  */
-function norm_exp(x:Real[_]) -> Real[_] {
-  if length(x) == 0 {
+function nan_max(x:Real, y:Real) -> Real {
+  if isnan(x) && isnan(y) {
+    return -inf;
+  } else if isnan(x) {
+    return y;
+  } else if isnan(y) {
     return x;
   } else {
-    let mx <- max(x);
-    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+    return max(x, y);
+  }
+}
+
+/*
+ * Find the maximum of a log weight vector, where NaN are treated as though
+ * `-inf`.
+ */
+function nan_max(w:Real[_]) -> Real {
+  return reduce(w, -inf, \(x:Real, y:Real) -> { return nan_max(x, y); });
+}
+
+/*
+ * Exponentiate and sum a log weight vector.
+ *
+ * - w: Log weights.
+ *
+ * Return: the logarithm of the sum.
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
+ */
+function log_sum_exp(w:Real[_]) -> Real {
+  if length(w) > 0 {
+    let mx <- nan_max(w);
+    let r <- transform_reduce(w, 0.0, \(x:Real, y:Real) -> { return x + y; },
+        \(x:Real) -> { return nan_exp(x - mx); });
+    return mx + log(r);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Convert a log weight vector into a normalized weight vector.
+ *
+ * - w: Log weights.
+ *
+ * Return: normalized weights.
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
+ */
+function norm_exp(w:Real[_]) -> Real[_] {
+  if length(w) == 0 {
+    return w;
+  } else {
+    let mx <- nan_max(w);
+    let r <- transform_reduce(w, 0.0, \(x:Real, y:Real) -> { return x + y; },
         \(x:Real) -> { return nan_exp(x - mx); });
     let W <- mx + log(r);
-    return transform(x, \(x:Real) -> { return nan_exp(x - W); });
+    return transform(w, \(x:Real) -> { return nan_exp(x - W); });
   }
 }
 
-/**
+/*
+ * Resample with systematic resampling.
+ *
+ * - w: Log weights.
+ *
+ * Return: the vector of ancestor indices, in non-descending order.
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
+ */
+function resample_systematic(w:Real[_]) -> Integer[_] {
+  return cumulative_offspring_to_ancestors(
+      systematic_cumulative_offspring(cumulative_weights(w)));
+}
+
+/*
+ * Resample with multinomial resampling.
+ *
+ * - w: Log weights.
+ *
+ * Return: the vector of ancestor indices, in non-descending order.
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
+ */
+function resample_multinomial(w:Real[_]) -> Integer[_] {
+  return offspring_to_ancestors(simulate_multinomial(length(w),
+      norm_exp(w)));
+}
+
+/*
  * Sample a single ancestor for a cumulative weight vector.
+ *
+ * - W: Cumulative weight vector.
+ *
+ * Returns: an ancestor index, or zero on failure (e.g. weights are zero).
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
  */
 function cumulative_ancestor(W:Real[_]) -> Integer {
+  let n <- 0;
   let N <- length(W);
-  if N > 0 {
-    assert W[N] > 0.0;
+  if N > 0 && W[N] > 0.0 {
+    /* binary search for uniform random variate */
     let u <- simulate_uniform(0.0, W[N]);
-    let n <- 1;
-    while W[n] < u {
-      n <- n + 1;
+    let l <- 0;
+    let r <- N;
+    while l < r {
+      n <- (l + r)/2;
+      if W[n + 1] < u {
+        l <- n + 1;
+      } else {
+        r <- n;
+      }
     }
-    return n;
-  } else {
-    return 0;
+    n <- l + 1;
   }
+  assert n <= N;
+  return n;
 }
 
-/**
- * Sample a single ancestor for a log-weight vector. If the sum of
- * weights is zero, returns zero.
+/*
+ * Sample a single ancestor for a log weight vector.
+ *
+ * - w: Log weight vector.
+ *
+ * Returns: an ancestor index, or zero on failure (e.g. weights are zero).
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
  */
 function ancestor(w:Real[_]) -> Integer {
-  let N <- length(w);
-  let W <- cumulative_weights(w);
-  if W[N] > 0.0 {
-    return cumulative_ancestor(W);
-  } else {
-    return 0;
-  }
+  return cumulative_ancestor(cumulative_weights(w));
 }
 
-/**
+/*
  * Systematic resampling.
  */
 function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
@@ -120,7 +165,7 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
   return O;
 }
 
-/**
+/*
  * Convert an offspring vector into an ancestry vector.
  */
 function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
@@ -138,7 +183,7 @@ function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
   return a;
 }
 
-/**
+/*
  * Convert a cumulative offspring vector into an ancestry vector.
  */
 function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
@@ -158,7 +203,7 @@ function cumulative_offspring_to_ancestors(O:Integer[_]) -> Integer[_] {
   return a;
 }
 
-/**
+/*
  * Convert a cumulative offspring vector into an offspring vector.
  */
 function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
@@ -167,7 +212,7 @@ function cumulative_offspring_to_offspring(O:Integer[_]) -> Integer[_] {
       });
 }
 
-/**
+/*
  * Permute an ancestry vector to ensure that, when a particle survives, at
  * least one of its instances remains in the same place.
  */
@@ -187,14 +232,14 @@ function permute_ancestors(a:Integer[_]) -> Integer[_] {
   return b;
 }
 
-/**
+/*
  * Compute the cumulative weight vector from the log-weight vector.
  */
 function cumulative_weights(w:Real[_]) -> Real[_] {
   let N <- length(w);
   W:Real[N];
   if N > 0 {
-    let mx <- max(w);
+    let mx <- nan_max(w);
     W[1] <- nan_exp(w[1] - mx);
     for n in 2..N {
       W[n] <- W[n - 1] + nan_exp(w[n] - mx);
@@ -203,7 +248,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
   return W;
 }
 
-/**
+/*
  * Compute the effective sample size (ESS) and logarithm of the average
  * weight, given a log-weight vector.
  *
@@ -217,7 +262,7 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
     let N <- length(w);
     let W <- 0.0;
     let W2 <- 0.0;
-    let mx <- max(w);    
+    let mx <- nan_max(w);    
     for n in 1..N {
       let v <- nan_exp(w[n] - mx);
       W <- W + v;
