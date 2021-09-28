@@ -52,10 +52,12 @@ void cuda_term();
  * Configure thread block size for a vector transformation.
  */
 inline dim3 make_block(const int n) {
-  dim3 block;
+  dim3 block{0, 0, 0};
   block.x = std::min(n, CUDA_PREFERRED_BLOCK_SIZE);
-  block.y = 1;
-  block.z = 1;
+  if (block.x > 0) {
+    block.y = 1;
+    block.z = 1;
+  }
   return block;
 }
 
@@ -63,10 +65,12 @@ inline dim3 make_block(const int n) {
  * Configure thread block size for a matrix transformation.
  */
 inline dim3 make_block(const int m, const int n) {
-  dim3 block;
+  dim3 block{0, 0, 0};
   block.x = std::min(m, CUDA_PREFERRED_BLOCK_SIZE);
-  block.y = std::min(n, CUDA_PREFERRED_BLOCK_SIZE/(int)block.x);
-  block.z = 1;
+  if (block.x > 0) {
+    block.y = std::min(n, CUDA_PREFERRED_BLOCK_SIZE/(int)block.x);
+    block.z = 1;
+  }
   return block;
 }
 
@@ -75,10 +79,12 @@ inline dim3 make_block(const int m, const int n) {
  */
 inline dim3 make_grid(const int n) {
   dim3 block = make_block(n);
-  dim3 grid;
-  grid.x = (n + block.x - 1)/block.x;
-  grid.y = 1;
-  grid.z = 1;
+  dim3 grid{0, 0, 0};
+  if (block.x > 0) {
+    grid.x = (n + block.x - 1)/block.x;
+    grid.y = 1;
+    grid.z = 1;
+  }
   return grid;
 }
 
@@ -87,10 +93,12 @@ inline dim3 make_grid(const int n) {
  */
 inline dim3 make_grid(const int m, const int n) {
   dim3 block = make_block(m, n);
-  dim3 grid;
-  grid.x = (n + block.x - 1)/block.x;
-  grid.y = (m + block.y - 1)/block.y;
-  grid.z = 1;
+  dim3 grid{0, 0, 0};
+  if (block.x > 0 && block.y > 0) {
+    grid.x = (n + block.x - 1)/block.x;
+    grid.y = (m + block.y - 1)/block.y;
+    grid.z = 1;
+  }
   return grid;
 }
 
