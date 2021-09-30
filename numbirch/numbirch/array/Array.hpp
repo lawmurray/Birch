@@ -12,9 +12,13 @@
 #include "numbirch/array/Lock.hpp"
 
 namespace numbirch {
-/*
+/**
+ * @internal
+ * 
  * Are all argument types integral? This is used to determine whether a slice
  * will return a view of an array, or a single element.
+ * 
+ * @ingroup array
  */
 template<class... Args>
 struct is_index {
@@ -33,7 +37,9 @@ struct is_index<Arg,Args...> {
 };
 
 /**
- * Copy-on-write array.
+ * Multidimensional array with copy-on-write.
+ * 
+ * @ingroup array
  * 
  * @tparam T Value type.
  * @tparam D Number of dimensions.

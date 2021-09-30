@@ -7,6 +7,8 @@
  * @internal
  * 
  * @def NUMBIRCH_ATOMIC_OPENMP
+ * 
+ * @ingroup memory
  *
  * Set to 1 for numbirch::Atomic use OpenMP, or 0 to use std::atomic.
  *
@@ -28,6 +30,8 @@ namespace numbirch {
  * @internal
  * 
  * Atomic value.
+ * 
+ * @ingroup memory
  *
  * @tparam Value type.
  */

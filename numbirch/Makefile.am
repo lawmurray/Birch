@@ -20,9 +20,9 @@ if ONEAPI
   AM_LDFLAGS += $(AM_CXXFLAGS)
   COMMON_SOURCES += \
       numbirch/jemalloc/jemalloc.cpp \
-      numbirch/oneapi/numbirch.cpp \
+      numbirch/oneapi/memory.cpp \
       numbirch/oneapi/sycl.cpp \
-      numbirch/numbirch.cpp
+      numbirch/common/numbirch.cpp
 else
 if CUDA
   AM_CXXFLAGS += -DBACKEND_CUDA
@@ -32,13 +32,13 @@ if CUDA
       numbirch/cuda/cuda.cpp \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cusolver.cpp \
-      numbirch/cuda/numbirch.cpp \
-      numbirch/numbirch.cpp
+      numbirch/cuda/memory.cpp \
+      numbirch/common/numbirch.cpp
 else
   AM_CPPFLAGS += -DBACKEND_EIGEN -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += \
-      numbirch/eigen/numbirch.cpp \
-      numbirch/numbirch.cpp
+      numbirch/eigen/memory.cpp \
+      numbirch/common/numbirch.cpp
 endif
 endif
 

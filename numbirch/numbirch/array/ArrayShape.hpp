@@ -10,6 +10,8 @@ template<class T, int D> class Array;
 
 /**
  * Shape and layout of Array.
+ * 
+ * @ingroup array
  *
  * @tparam D Number of dimensions.
  */
@@ -20,6 +22,8 @@ class ArrayShape {
 
 /**
  * Shape and layout of a vector (one-dimensional array).
+ * 
+ * @ingroup array
  */
 template<>
 class ArrayShape<1> {
@@ -120,6 +124,8 @@ private:
 
 /**
  * Make a vector shape.
+ * 
+ * @ingroup array
  */
 inline ArrayShape<1> make_shape(const int n) {
   return ArrayShape<1>(n);
@@ -127,6 +133,8 @@ inline ArrayShape<1> make_shape(const int n) {
 
 /**
  * Shape and layout of a matrix (two-dimensional array) in column-major order.
+ * 
+ * @ingroup array
  */
 template<>
 class ArrayShape<2> {
@@ -290,6 +298,8 @@ private:
 
 /**
  * Make a matrix shape.
+ * 
+ * @ingroup array
  */
 inline ArrayShape<2> make_shape(const int m, const int n) {
   return ArrayShape<2>(m, n);

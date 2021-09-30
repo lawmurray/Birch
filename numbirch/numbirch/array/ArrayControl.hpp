@@ -7,8 +7,12 @@
 #include "numbirch/array/Atomic.hpp"
 
 namespace numbirch {
-/*
+/**
+ * @internal
+ * 
  * Control block for reference counting of Array buffers.
+ * 
+ * @ingroup memory
  */
 class ArrayControl {
 public:

@@ -11,6 +11,8 @@ namespace numbirch {
  * @internal
  * 
  * Lock with exclusive use semantics.
+ * 
+ * @ingroup memory
  */
 class Lock {
 public:

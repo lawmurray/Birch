@@ -1,8 +1,11 @@
 /**
  * @file
  */
-#include "numbirch/numbirch.hpp"
-#include "numbirch/eigen/numbirch.hpp"
+#include "numbirch/memory.hpp"
+#include "numbirch/eigen/eigen.hpp"
+
+#include <cstdlib>
+#include <cstring>
 
 namespace numbirch {
 

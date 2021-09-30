@@ -1,10 +1,7 @@
 /**
  * @file
- * 
- * Generic implementation of interface for Eigen.
  */
-#pragma once
-
+#include "numbirch/numbirch.hpp"
 #include "numbirch/eigen/eigen.hpp"
 
 namespace numbirch {

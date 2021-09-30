@@ -12,16 +12,22 @@ namespace numbirch {
  * Initialize NumBirch. This should be called once at the start of the
  * program. It initializes, for example, thread-local variables necessary for
  * computations.
+ * 
+ * @ingroup memory
  */
 void init();
 
 /**
  * Terminate NumBirch.
+ * 
+ * @ingroup memory
  */
 void term();
 
 /**
  * Allocate memory.
+ * 
+ * @ingroup memory
  * 
  * @param size Number of bytes to allocate.
  * 
@@ -36,6 +42,8 @@ void* malloc(const size_t size);
 
 /**
  * Reallocate memory.
+ * 
+ * @ingroup memory
  * 
  * @param ptr Existing allocation.
  * @param size New size of allocation.
@@ -54,12 +62,16 @@ void* realloc(void* ptr, const size_t size);
 /**
  * Free allocation.
  * 
+ * @ingroup memory
+ * 
  * @param ptr Existing allocation.
  */
 void free(void* ptr);
 
 /**
  * Batch copy.
+ * 
+ * @ingroup memory
  * 
  * @param[out] dst Destination.
  * @param dpitch Stride between batches of `dst`, in bytes.
@@ -74,6 +86,8 @@ void memcpy(void* dst, const size_t dpitch, const void* src,
 /**
  * Synchronize with the device. This waits for all operations to complete for
  * the current thread.
+ * 
+ * @ingroup memory
  */
 void wait();
 }

@@ -1,7 +1,5 @@
 /**
  * @file
- * 
- * CUDA implementation of non-generic functions.
  */
 #include "numbirch/numbirch.hpp"
 #include "numbirch/cuda/cuda.hpp"
