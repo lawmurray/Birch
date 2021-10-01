@@ -7,8 +7,6 @@
 #include "libbirch/internal.hpp"
 #include "libbirch/type.hpp"
 
-#include <numbirch.hpp>
-
 namespace libbirch {
 /**
  * @internal
