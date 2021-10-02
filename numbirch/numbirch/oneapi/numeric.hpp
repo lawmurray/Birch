@@ -8,6 +8,7 @@
 #include "numbirch/oneapi/sycl.hpp"
 #include "numbirch/oneapi/mkl.hpp"
 #include "numbirch/oneapi/dpl.hpp"
+#include "numbirch/common/functor.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
 namespace numbirch {
@@ -19,6 +20,15 @@ void neg(const int m, const int n, const T* A, const int ldA, T* B,
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
       A1.end(), B1.begin(), dpl::negate<T>());
+}
+
+template<class T>
+void rectify(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  auto A1 = make_dpl_matrix(A, m, n, ldA);
+  auto B1 = make_dpl_matrix(B, m, n, ldB);
+  dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
+      A1.end(), B1.begin(), rectify_functor<T>());
 }
 
 template<class T>
@@ -42,6 +52,24 @@ void sub(const int m, const int n, const T* A, const int ldA, const T* B,
 }
 
 template<class T>
+void combine(const int m, const int n, const T a, const T* A, const int ldA,
+    const T b, const T* B, const int ldB, const T c, const T* C,
+    const int ldC, const T d, const T* D, const int ldD, T* E,
+    const int ldE) {
+  auto A1 = make_dpl_matrix(A, m, n, ldA);
+  auto B1 = make_dpl_matrix(B, m, n, ldB);
+  auto C1 = make_dpl_matrix(C, m, n, ldC);
+  auto D1 = make_dpl_matrix(D, m, n, ldD);
+  auto E1 = make_dpl_matrix(E, m, n, ldE);
+
+  auto begin = dpl::make_zip_iterator(A1.begin(), B1.begin(), C1.begin(),
+      D1.begin());
+
+  dpl::transform(dpl::execution::make_device_policy(queue), begin, begin +
+      m*n, E1.begin(), combine4_functor<T>(a, b, c, d));
+}
+
+template<class T>
 void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   auto A1 = make_dpl_matrix(A, m, n, ldA);
@@ -57,7 +85,7 @@ void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
   auto A1 = make_dpl_matrix(A, m, n, ldA);
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
-      A1.end(), C1.begin(), [=](T a) { return a/b; });
+      A1.end(), C1.begin(), scalar_divides_functor<T>(b));
 }
 
 template<class T>
@@ -66,7 +94,7 @@ void mul(const int m, const int n, const T a, const T* B, const int ldB, T* C,
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), B1.begin(),
-      B1.end(), C1.begin(), [=](T b) { return a*b; });
+      B1.end(), C1.begin(), scalar_multiplies_functor<T>(a));
 }
 
 template<class T>
@@ -381,10 +409,9 @@ T ldet(const int n, const T* A, const int ldA) {
    * $|U|$ here; the logarithm of its absolute value is just the sum of the
    * logarithms of the absolute values of elements on the main diagonal */
   auto d = make_dpl_vector(L, n, ldL + 1);  // diagonal of L
-  auto logabs = [](T x) { return std::log(std::abs(x)); };
   auto ldet = dpl::experimental::transform_reduce_async(
       dpl::execution::make_device_policy(queue), d.begin(), d.end(), 0.0,
-      dpl::plus<T>(), logabs);
+      dpl::plus<T>(), log_abs_functor<T>());
   wait();
 
   device_free(L);
@@ -411,10 +438,9 @@ T lcholdet(const int n, const T* S, const int ldS) {
    * diagonal, all of which should be positive; the 2.0 is multiplied in by
    * the return statement below */
   auto d = make_dpl_vector(L, n, ldL + 1);  // diagonal of L
-  auto log = [](T x) { return std::log(x); };
   auto half_ldet = dpl::experimental::transform_reduce_async(
       dpl::execution::make_device_policy(queue), d.begin(), d.end(), 0.0,
-      dpl::plus<T>(), log);
+      dpl::plus<T>(), log_functor<T>());
   wait();
 
   device_free(L);
@@ -424,17 +450,27 @@ T lcholdet(const int n, const T* S, const int ldS) {
 }
 
 template<class T>
+void diagonal(const T a, const int n, T* B, const int ldB) {
+  auto B1 = make_dpl_matrix(B, n, n, ldB);
+  auto d = make_dpl_vector(B, n, ldB + 1);  // diagonal
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      B1.begin(), B1.end(), 0.0);
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      d.begin(), d.end(), a);
+}
+
+template<class T>
 void transpose(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_dpl_matrix_transpose(A, m, n, ldA);
   auto B1 = make_dpl_matrix(B, m, n, ldB);
-  dpl::copy(dpl::execution::make_device_policy(queue), A1.begin(), A1.end(),
-      B1.begin());
+  dpl::copy(dpl::execution::make_device_policy(queue),
+      A1.begin(), A1.end(), B1.begin());
 }
 
 template<class T>
 T trace(const int m, const int n, const T* A, const int ldA) {
-  return sum(std::min(m, n), A, ldA + 1);
+  return sum(1, std::min(m, n), A, ldA + 1);
 }
 
 }

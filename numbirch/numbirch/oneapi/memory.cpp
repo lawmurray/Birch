@@ -32,6 +32,30 @@ void extent_destroy(extent_hooks_t *extent_hooks, void *addr, size_t size,
   sycl::free(addr, queue);
 }
 
+void* device_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
+    size_t size, size_t alignment, bool *zero, bool *commit,
+    unsigned arena_ind) {
+  if (!new_addr) {
+    new_addr = sycl::malloc_shared(size, queue);
+  }
+  if (*zero) {
+    queue.memset(new_addr, 0, size);
+  }
+  queue.wait();
+  return new_addr;
+}
+
+bool device_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind) {
+  sycl::free(addr, queue);
+  return false;
+}
+
+void device_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind) {
+  sycl::free(addr, queue);
+}
+
 void init() {
   #pragma omp parallel
   {

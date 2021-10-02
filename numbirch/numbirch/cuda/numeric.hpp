@@ -9,6 +9,7 @@
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"
 #include "numbirch/cuda/cub.hpp"
+#include "numbirch/common/functor.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
 namespace numbirch {
@@ -36,10 +37,10 @@ void prefetch(const T* A, const int m, const int n, const int ldA) {
 }
 
 /*
- * Matrix fill.
+ * Matrix for-each.
  */
 template<class T, class Functor>
-__global__ void kernel_fill(const int m, const int n, T* A, const int ldA,
+__global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
     Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
@@ -48,10 +49,10 @@ __global__ void kernel_fill(const int m, const int n, T* A, const int ldA,
   }
 }
 template<class T, class Functor>
-void fill(const int m, const int n, T* A, const int ldA, Functor f) {
+void for_each(const int m, const int n, T* A, const int ldA, Functor f) {
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  kernel_fill<<<grid,block,0,stream>>>(m, n, A, ldA, f);
+  kernel_for_each<<<grid,block,0,stream>>>(m, n, A, ldA, f);
 }
 
 /*
@@ -738,7 +739,7 @@ T lcholdet(const int n, const T* S, const int ldS) {
 
 template<class T>
 void diagonal(const T a, const int n, T* B, const int ldB) {
-  fill(n, n, B, ldB, diagonal_functor<T>(a));
+  for_each(n, n, B, ldB, diagonal_functor<T>(a));
 }
 
 template<class T>
