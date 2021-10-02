@@ -21,6 +21,51 @@ class ArrayShape {
 };
 
 /**
+ * Shape and layout of a scalar (zero-dimensional array).
+ * 
+ * @ingroup array
+ */
+template<>
+class ArrayShape<0> {
+public:
+  static constexpr int64_t size() {
+    return 1;
+  }
+
+  static constexpr int64_t volume() {
+    return 1;
+  }
+
+  static constexpr int rows() {
+    return 1;
+  }
+
+  static constexpr int columns() {
+    return 1;
+  }
+
+  static constexpr int width() {
+    return 1;
+  }
+
+  static constexpr int height() {
+    return 1;
+  }
+
+  static constexpr int stride() {
+    return 1;
+  }
+
+  static constexpr bool conforms(const ArrayShape<0>& o) {
+    return true;
+  }
+
+  static constexpr ArrayShape<0> compact() {
+    return ArrayShape<0>();
+  }
+};
+
+/**
  * Shape and layout of a vector (one-dimensional array).
  * 
  * @ingroup array

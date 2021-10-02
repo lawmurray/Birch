@@ -67,6 +67,9 @@ nobase_include_HEADERS = \
   numbirch/array/Atomic.hpp \
   numbirch/array/external.hpp \
   numbirch/array/Lock.hpp \
+  numbirch/array/Matrix.hpp \
+  numbirch/array/Scalar.hpp \
+  numbirch/array/Vector.hpp \
   numbirch/array.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
