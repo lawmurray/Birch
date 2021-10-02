@@ -118,21 +118,22 @@ void birch::CppStructGenerator::visit(const Struct* o) {
     if (header) {
       finish(";\n");
     } else {
+      ++inConstructor;
+      bool first = true;
       if (!o->base->isEmpty()) {
         finish(" :");
+        first = false;
         in();
         in();
         genSourceLine(o->loc);
         start("base_type_(" << o->args << ')');
       }
-      ++inConstructor;
-      bool first = true;
       for (auto o : memberVariables) {
         if (first) {
           finish(" :");
-          in();
-          in();
           first = false;
+          in();
+          in();
         } else {
           finish(',');
         }
