@@ -15,7 +15,7 @@ namespace numbirch {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam T Element type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -35,7 +35,7 @@ Array<T,D> operator-(const Array<T,D>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -54,7 +54,7 @@ Array<T,D> rectify(const Array<T,D>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam T Element type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -78,7 +78,7 @@ Array<T,D> operator+(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam T Element type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -102,7 +102,7 @@ Array<T,D> operator-(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * @tparam D Number of dimensions.
  * 
  * @param a Coefficient on `A`.
@@ -139,7 +139,7 @@ Array<T,D> combine(const T a, const Array<T,D>& A, const T b,
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -163,18 +163,21 @@ Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * @tparam D Number of dimensions.
+ * @tparam U Scalar type. Will be converted to T.
  * 
  * @param A %Array.
  * @param b Scalar.
  * 
  * @return %Array.
  */
-template<class T, int D>
-Array<T,D> operator/(const Array<T,D>& A, const T b) {
+template<class T, int D, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+Array<T,D> operator/(const Array<T,D>& A, const U b) {
   Array<T,D> C(A.shape().compact());
-  div(A.width(), A.height(), A.data(), A.stride(), b, C.data(), C.stride());
+  div(A.width(), A.height(), A.data(), A.stride(), T(b), C.data(),
+      C.stride());
   return C;
 }
 
@@ -183,7 +186,8 @@ Array<T,D> operator/(const Array<T,D>& A, const T b) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Scalar type. Will be converted to U.
+ * @tparam U Element type (`double` or `float`).
  * @tparam D Number of dimensions.
  * 
  * @param a Scalar.
@@ -191,10 +195,12 @@ Array<T,D> operator/(const Array<T,D>& A, const T b) {
  * 
  * @return %Array.
  */
-template<class T, int D>
-Array<T,D> operator*(const T a, const Array<T,D>& B) {
+template<class T, class U, int D,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Array<T,D> operator*(const T a, const Array<U,D>& B) {
   Array<T,D> C(B.shape().compact());
-  mul(C.width(), C.height(), a, B.data(), B.stride(), C.data(), C.stride());
+  mul(C.width(), C.height(), U(a), B.data(), B.stride(), C.data(),
+      C.stride());
   return C;
 }
 
@@ -203,16 +209,18 @@ Array<T,D> operator*(const T a, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * @tparam D Number of dimensions.
+ * @tparam U Scalar type. Will be converted to T.
  * 
  * @param A %Array.
  * @param b %Array.
  * 
  * @return %Array.
  */
-template<class T, int D>
-Array<T,D> operator*(const Array<T,D>& A, const T b) {
+template<class T, int D, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+Array<T,D> operator*(const Array<T,D>& A, const U b) {
   return b*A;
 }
 
@@ -221,7 +229,7 @@ Array<T,D> operator*(const Array<T,D>& A, const T b) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param x Vector.
@@ -243,7 +251,7 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -266,7 +274,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param S Symmetric positive definite matrix.
  * @param x Vector.
@@ -290,7 +298,7 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param S Symmetric positive definite matrix.
  * @param B Matrix.
@@ -313,7 +321,7 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam T Element type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -330,7 +338,7 @@ T sum(const Array<T,D>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param x Vector.
  * @param y Vector.
@@ -349,7 +357,7 @@ T dot(const Array<T,1>& x, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param x Vector.
  * @param A Matrix.
@@ -368,7 +376,7 @@ Array<T,1> dot(const Array<T,1>& x, const Array<T,2>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -388,7 +396,7 @@ T frobenius(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param x Vector.
@@ -410,7 +418,7 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -432,7 +440,7 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param x Vector.
  * @param y Vector.
@@ -452,7 +460,7 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -475,7 +483,7 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param S Symmetric positive definite matrix.
@@ -498,7 +506,7 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param y Vector.
@@ -521,7 +529,7 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * @param C Matrix.
@@ -545,7 +553,7 @@ Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param S Symmetric positive definite matrix.
  * @param y Vector.
@@ -569,7 +577,7 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param S Symmetric positive definite matrix.
  * @param B Matrix.
@@ -592,7 +600,7 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * 
@@ -611,7 +619,7 @@ Array<T,2> inv(const Array<T,2>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param S Symmetric positive definite matrix.
  * 
@@ -629,7 +637,7 @@ Array<T,2> cholinv(const Array<T,2>& S) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * 
@@ -646,7 +654,7 @@ T ldet(const Array<T,2>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param S Symmetric positive definite matrix.
  * 
@@ -665,7 +673,7 @@ T lcholdet(const Array<T,2>& S) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param a Scalar to assign to diagonal.
  * @param n Number of rows and columns.
@@ -682,7 +690,7 @@ Array<T,2> diagonal(const T a, const int n) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param x Scalar.
  * @param A Matrix.
@@ -702,7 +710,7 @@ Array<T,2> transpose(const Array<T,2>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Element type (`double` or `float`).
  * 
  * @param A Matrix.
  * 
