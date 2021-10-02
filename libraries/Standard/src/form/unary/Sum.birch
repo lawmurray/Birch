@@ -22,53 +22,10 @@ function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {
  * Sum.
  */
 function sum<Middle>(m:Middle) -> Sum<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Sum<Middle>>(m);
-}
-
-/**
- * Sum scalar.
- */
-function sum(x:Integer) -> Integer {
-  return x;
-}
-
-/**
- * Sum scalar.
- */
-function sum(x:Real) -> Real {
-  return x;
-}
-
-/**
- * Sum vector.
- */
-function sum(x:Integer[_]) -> Integer {
-  return reduce(x, 0, \(x:Integer, y:Integer) -> { return x + y; });
-}
-
-/**
- * Sum matrix.
- */
-function sum(X:Integer[_,_]) -> Integer {
-  return reduce(X, 0, \(x:Integer, y:Integer) -> { return x + y; });
-}
-
-/**
- * Sum vector.
- */
-function sum(x:Real[_]) -> Real {
-  cpp{{
-  return numbirch::sum(1, x.length(), x.data(), x.stride());
-  }}
-}
-
-/**
- * Sum matrix.
- */
-function sum(X:Real[_,_]) -> Real {
-  cpp{{
-  return numbirch::sum(X.rows(), X.columns(), X.data(), X.stride());
-  }}
 }
 
 function grad_sum<Gradient,Value>(d:Gradient, m:Value) {

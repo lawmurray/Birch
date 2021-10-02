@@ -23,25 +23,8 @@ function grad<Left,Right,Gradient>(x:LessThanOrEqual<Left,Right>, d:Gradient) {
  * Less than or equal.
  */
 operator<Left,Right> (l:Left <= r:Right) -> LessThanOrEqual<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<LessThanOrEqual<Left,Right>>(l, r);
 }
-
-/**
- * Less than or equal.
- */
-operator (l:Integer <= r:Integer) -> Boolean;
-
-/**
- * Less than or equal.
- */
-operator (l:Real <= r:Real) -> Boolean;
-
-/**
- * Less than or equal.
- */
-operator (l:Integer <= r:Real) -> Boolean;
-
-/**
- * Less than or equal.
- */
-operator (l:Real <= r:Integer) -> Boolean;

@@ -22,30 +22,10 @@ function grad<Middle,Gradient>(x:Trace<Middle>, d:Gradient) {
  * Trace.
  */
 function trace<Middle>(m:Middle) -> Trace<Middle> {
-  return construct<Trace<Middle>>(m);
-}
-
-/**
- * Trace.
- */
-function trace(m:Real) -> Real {
-  return m;
-}
-
-/**
- * Trace.
- */
-function trace(x:Real[_]) -> Real {
-  return sum(x);
-}
-
-/**
- * Trace.
- */
-function trace(A:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::trace(A.rows(), A.columns(), A.data(), A.stride());
+  static_assert(is_form<Middle>::value, "argument types not supported");
   }}
+  return construct<Trace<Middle>>(m);
 }
 
 function grad_trace<Gradient,Value>(d:Gradient, m:Value) -> {

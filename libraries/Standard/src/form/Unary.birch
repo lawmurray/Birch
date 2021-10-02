@@ -1,7 +1,7 @@
 /*
  * Function form with one argument.
  */
-struct Unary<Middle>(m:Middle) {
+struct Unary<Middle>(m:Middle) < Form {
   /**
    * Argument.
    */

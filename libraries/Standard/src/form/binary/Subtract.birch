@@ -23,54 +23,8 @@ function grad<Left,Right,Gradient>(x:Subtract<Left,Right>, d:Gradient) {
  * Subtraction.
  */
 operator<Left,Right> (l:Left - r:Right) -> Subtract<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Subtract<Left,Right>>(l, r);
-}
-
-/**
- * Subtraction.
- */
-operator (x:Integer - y:Integer) -> Integer;
-
-/**
- * Subtraction.
- */
-operator (x:Real - y:Real) -> Real;
-
-/**
- * Subtraction.
- */
-operator (x:Integer - y:Real) -> Real;
-
-/**
- * Subtraction.
- */
-operator (x:Real - y:Integer) -> Real;
-
-/**
- * Subtraction.
- */
-operator (x:Real[_] - y:Real[_]) -> Real[_] {
-  assert length(x) == length(y);
-
-  z:Real[length(x)];
-  cpp{{
-  numbirch::sub(1, x.length(), x.data(), x.stride(), y.data(), y.stride(),
-      z.data(), z.stride());
-  }}
-  return z;
-}
-
-/**
- * Subtraction.
- */
-operator (X:Real[_,_] - Y:Real[_,_]) -> Real[_,_] {
-  assert rows(X) == rows(Y);
-  assert columns(Y) == columns(Y);
-
-  Z:Real[rows(X), columns(X)];
-  cpp{{
-  numbirch::sub(X.rows(), X.columns(), X.data(), X.stride(), Y.data(),
-      Y.stride(), Z.data(), Z.stride());
-  }}
-  return Z;
 }

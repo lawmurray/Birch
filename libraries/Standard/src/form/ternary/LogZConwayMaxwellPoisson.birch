@@ -59,15 +59,6 @@ function grad<Left,Middle,Right,Gradient>(
 /**
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
  * distribution truncated on a finite interval $[0,n]$.
- */
-function logz_conway_maxwell_poisson<Left,Middle,Right>(λ:Left, ν:Middle,
-    n:Right) -> LogZConwayMaxwellPoisson<Left,Middle,Right> {
-  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(λ, ν, n);
-}
-
-/*
- * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
- * distribution truncated on a finite interval $[0,n]$.
  *
  * - λ: Rate.
  * - ν: Dispersion.
@@ -75,6 +66,15 @@ function logz_conway_maxwell_poisson<Left,Middle,Right>(λ:Left, ν:Middle,
  *
  * Return: vector of probabilities on $[0,n]$.
  */
+function logz_conway_maxwell_poisson<Left,Middle,Right>(λ:Left, ν:Middle,
+    n:Right) -> LogZConwayMaxwellPoisson<Left,Middle,Right> {
+  cpp{{
+  static_assert(is_form<Left,Middle,Right>::value,
+      "argument types not supported");
+  }}
+  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(λ, ν, n);
+}
+
 function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   let log_λ <- log(λ);
 

@@ -1,7 +1,7 @@
 /*
  * Function form with three arguments.
  */
-struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) {
+struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
   /**
    * Left argument.
    */

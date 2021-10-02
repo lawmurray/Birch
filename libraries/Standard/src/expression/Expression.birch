@@ -159,8 +159,6 @@ abstract class Expression<Value> < Delay {
    *
    * - d: Upstream gradient.
    *
-   * `eval()` must have been called before calling `grad()`.
-   *
    * The expression is treated as a function, and the arguments defined
    * as those `Random` objects in the expression that are not constant.
    *

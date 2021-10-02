@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Sin<Middle>, d:Gradient) {
  * Sine.
  */
 function sin<Middle>(m:Middle) -> Sin<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Sin<Middle>>(m);
 }
 

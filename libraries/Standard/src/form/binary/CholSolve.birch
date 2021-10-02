@@ -28,33 +28,3 @@ function grad<Left,Right,Gradient>(x:CholSolve<Left,Right>, d:Gradient) {
 function cholsolve<Left,Right>(l:Left, r:Right) -> CholSolve<Left,Right> {
   return construct<CholSolve<Left,Right>>(l, r);
 }
-
-/**
- * Solve a system of equations via the Cholesky factorization.
- */
-function cholsolve(S:Real[_,_], y:Real[_]) -> Real[_] {
-  assert rows(S) == columns(S);
-  assert rows(S) == length(y);
-
-  x:Real[length(y)];
-  cpp{{
-  numbirch::cholsolve(x.rows(), S.data(), S.stride(), x.data(), x.stride(),
-      y.data(), y.stride());
-  }}
-  return x;
-}
-
-/**
- * Solve a system of equations via the Cholesky factorization.
- */
-function cholsolve(S:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
-  assert rows(S) == columns(S);
-  assert rows(S) == rows(Y);
-
-  X:Real[rows(Y), columns(Y)];
-  cpp{{
-  numbirch::cholsolve(X.rows(), X.columns(), S.data(), S.stride(), X.data(),
-      X.stride(), Y.data(), Y.stride());
-  }}
-  return X;
-}

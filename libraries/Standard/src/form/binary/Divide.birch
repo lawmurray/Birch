@@ -24,76 +24,20 @@ function grad<Left,Right,Gradient>(x:Divide<Left,Right>, d:Gradient) {
  * Division.
  */
 operator<Left,Right> (l:Left/r:Right) -> Divide<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Divide<Left,Right>>(l, r);
 }
 
-/**
- * Division.
- */
-operator (x:Integer/y:Integer) -> Integer;
-
-/**
- * Division.
- */
-operator (x:Integer/y:Real) -> Real;
-
-/**
- * Division.
- */
-operator (x:Real/y:Integer) -> Real;
-
-/**
- * Division.
- */
-operator (x:Real/y:Real) -> Real;
-
-/**
- * Division.
- */
-operator (x:Real[_]/y:Real) -> Real[_] {
-  z:Real[length(x)];
-  cpp{{
-  numbirch::div(1, x.length(), x.data(), x.stride(), y, z.data(), z.stride());
-  }}
-  return z;
-}
-
-/**
- * Division.
- */
-operator (x:Real[_]/y:Integer) -> Real[_] {
-  return x/scalar<Real>(y);
-}
-
-/**
- * Division.
- */
-operator (X:Real[_,_]/y:Real) -> Real[_,_] {
-  Z:Real[rows(X), columns(X)];
-  cpp{{
-  numbirch::div(X.rows(), X.columns(), X.data(), X.stride(), y, Z.data(),
-      Z.stride());
-  }}
-  return Z;
-}
-
-/**
- * Division.
- */
-operator (X:Real[_,_]/y:Integer) -> Real[_,_] {
-  return X/scalar<Real>(y);
-}
-
-function grad_divide<Left,Right>(d:Real, l:Left, r:Right) -> (Real, Real) {
+function grad_divide(d:Real, l:Real, r:Real) -> (Real, Real) {
   return (d/r, d*l/-pow(r, 2.0));
 }
 
-function grad_divide<Left,Right>(d:Real[_], l:Left[_], r:Right) ->
-    (Real[_], Real) {
+function grad_divide(d:Real[_], l:Real[_], r:Real) -> (Real[_], Real) {
   return (d/r, dot(d, l)/-pow(r, 2.0));
 }
 
-function grad_divide<Left,Right>(d:Real[_,_], l:Left[_,_], r:Right) ->
-    (Real[_,_], Real) {
+function grad_divide(d:Real[_,_], l:Real[_,_], r:Real) -> (Real[_,_], Real) {
   return (d/r, frobenius(d, l)/-pow(r, 2.0));
 }

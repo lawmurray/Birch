@@ -1,7 +1,7 @@
 /*
  * Function form with two arguments.
  */
-struct Binary<Left,Right>(l:Left, r:Right) {
+struct Binary<Left,Right>(l:Left, r:Right) < Form {
   /**
    * Left argument.
    */

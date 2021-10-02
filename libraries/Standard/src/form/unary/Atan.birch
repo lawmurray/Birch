@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Atan<Middle>, d:Gradient) {
  * Arc tangent.
  */
 function atan<Middle>(m:Middle) -> Atan<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Atan<Middle>>(m);
 }
 

@@ -2,7 +2,7 @@
  * Linear combination of four arguments.
  */
 struct Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(a:Arg1, w:Arg2,
-    b:Arg3, x:Arg4, c:Arg5, y:Arg6, d:Arg7, z:Arg8) {
+    b:Arg3, x:Arg4, c:Arg5, y:Arg6, d:Arg7, z:Arg8) < Form {
   a:Arg1 <- a;
   w:Arg2 <- w;
   b:Arg3 <- b;
@@ -96,27 +96,10 @@ function grad<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8,Gradient>(x:Combine<
  */
 function combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(a:Arg1, w:Arg2,
     b:Arg3, x:Arg4, c:Arg5, y:Arg6, d:Arg7, z:Arg8) -> {
+  cpp{{
+  static_assert(is_form<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>::value,
+      "argument types not supported");
+  }}
   return construct<Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>>(a, w, b,
       x, c, y, d, z);
-}
-
-/**
- * Linear combination of four arguments.
- */
-function combine(a:Real, A:Real[_,_], b:Real, B:Real[_,_], c:Real,
-    C:Real[_,_], d:Real, D:Real[_,_]) -> Real[_,_] {
-  assert rows(A) == rows(B);
-  assert rows(A) == rows(C);
-  assert rows(A) == rows(D);
-  assert columns(A) == columns(B);
-  assert columns(A) == columns(C);
-  assert columns(A) == columns(D);
-
-  E:Real[rows(A),columns(A)];
-  cpp{{
-  numbirch::combine(E.rows(), E.columns(), a, A.data(), A.stride(), b,
-      B.data(), B.stride(), c, C.data(), C.stride(), d, D.data(), D.stride(),
-      E.data(), E.stride());
-  }}
-  return E;
 }

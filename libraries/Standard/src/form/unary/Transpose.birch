@@ -22,36 +22,8 @@ function grad<Middle,Gradient>(x:Transpose<Middle>, d:Gradient) {
  * Matrix transpose.
  */
 function transpose<Middle>(m:Middle) -> Transpose<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Transpose<Middle>>(m);
-}
-
-/**
- * Transpose of a scalar (identity operation).
- */
-function transpose(m:Real) -> Real {
-  return m;
-}
-
-/**
- * Transpose of a vector into a matrix.
- */
-function transpose(x:Real[_]) -> Real[_,_] {
-  Y:Real[1,length(x)];
-  cpp{{
-  numbirch::transpose(Y.rows(), Y.columns(), Real(1.0), x.data(), x.stride(),
-      Y.data(), Y.stride());
-  }}
-  return Y;
-}
-
-/**
- * Transpose of a matrix.
- */
-function transpose(X:Real[_,_]) -> Real[_,_] {
-  Y:Real[columns(X), rows(X)];
-  cpp{{
-  numbirch::transpose(Y.rows(), Y.columns(), Real(1.0), X.data(), X.stride(),
-      Y.data(), Y.stride());
-  }}
-  return Y;
 }

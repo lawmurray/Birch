@@ -24,153 +24,40 @@ function grad<Left,Right,Gradient>(x:Multiply<Left,Right>, d:Gradient) {
  * Multiplication.
  */
 operator<Left,Right> (l:Left*r:Right) -> Multiply<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Multiply<Left,Right>>(l, r);
 }
 
-/**
- * Multiplication.
- */
-operator (x:Integer*y:Integer) -> Integer;
-
-/**
- * Multiplication.
- */
-operator (x:Integer*y:Real) -> Real;
-
-/**
- * Multiplication.
- */
-operator (x:Real*y:Integer) -> Real;
-
-/**
- * Multiplication.
- */
-operator (x:Real*y:Real) -> Real;
-
-/**
- * Scalar-vector multiplication.
- */
-operator (x:Real*y:Real[_]) -> Real[_] {
-  z:Real[length(y)];
-  cpp{{
-  numbirch::mul(1, y.length(), x, y.data(), y.stride(), z.data(), z.stride());
-  }}
-  return z;
+function grad_multiply(d:Real, l:Real, r:Real) -> (Real, Real) {
+  return (d*r, l*d);
 }
 
-/**
- * Scalar-vector multiplication.
- */
-operator (x:Real[_]*y:Real) -> Real[_] {
-  return y*x;
-}
-
-/**
- * Scalar-vector multiplication.
- */
-operator (x:Integer*y:Real[_]) -> Real[_] {
-  return scalar<Real>(x)*y;
-}
-
-/**
- * Scalar-vector multiplication.
- */
-operator (x:Real[_]*y:Integer) -> Real[_] {
-  return x*scalar<Real>(y);
-}
-
-/**
- * Scalar-matrix multiplication.
- */
-operator (x:Real*Y:Real[_,_]) -> Real[_,_] {
-  Z:Real[rows(Y), columns(Y)];
-  cpp{{
-  numbirch::mul(Z.rows(), Z.columns(), x, Y.data(), Y.stride(), Z.data(),
-      Z.stride());
-  }}
-  return Z;
-}
-
-/**
- * Scalar-matrix multiplication.
- */
-operator (X:Real[_,_]*y:Real) -> Real[_,_] {
-  return y*X;
-}
-
-/**
- * Scalar-matrix multiplication.
- */
-operator (x:Integer*y:Real[_,_]) -> Real[_,_] {
-  return scalar<Real>(x)*y;
-}
-
-/**
- * Scalar-matrix multiplication.
- */
-operator (x:Real[_,_]*y:Integer) -> Real[_,_] {
-  return x*scalar<Real>(y);
-}
-
-/**
- * Matrix-vector multiplication.
- */
-operator (X:Real[_,_]*y:Real[_]) -> Real[_] {
-  assert columns(X) == length(y);
-
-  z:Real[rows(X)];
-  cpp{{
-  numbirch::mul(X.rows(), X.columns(), X.data(), X.stride(), y.data(),
-      y.stride(), z.data(), z.stride());
-  }}
-  return z;
-}
-
-/**
- * Multiplication.
- */
-operator (X:Real[_,_]*Y:Real[_,_]) -> Real[_,_] {
-  assert columns(X) == rows(Y);
-
-  Z:Real[rows(X), columns(Y)];
-  cpp{{
-  numbirch::mul(Z.rows(), Z.columns(), X.columns(), X.data(), X.stride(),
-      Y.data(), Y.stride(), Z.data(), Z.stride());
-  }}
-  return Z;
-}
-
-function grad_multiply<Left,Right>(d:Real, l:Left, r:Right) ->
-    (Real, Real) {
-  return (r, l);
-}
-
-function grad_multiply<Left,Right>(d:Real[_], l:Left, r:Right[_]) -> 
-    (Real, Real[_]) {
+function grad_multiply(d:Real[_], l:Real, r:Real[_]) -> (Real, Real[_]) {
   return (dot(d, r), l*d);
 }
 
-function grad_multiply<Left,Right>(d:Real[_], l:Left[_], r:Right) -> 
-    (Real[_], Real) {
+function grad_multiply(d:Real[_], l:Real[_], r:Real) -> (Real[_], Real) {
   return (d*r, dot(l, d));
 }
 
-function grad_multiply<Left,Right>(d:Real[_,_], l:Left, r:Right[_,_]) ->
+function grad_multiply(d:Real[_,_], l:Real, r:Real[_,_]) ->
     (Real, Real[_,_]) {
   return (frobenius(d, r), l*d);
 }
 
-function grad_multiply<Left,Right>(d:Real[_,_], l:Left[_,_], r:Right) -> 
+function grad_multiply(d:Real[_,_], l:Real[_,_], r:Real) -> 
     (Real[_,_], Real) {
   return (d*r, frobenius(l, d));
 }
 
-function grad_multiply<Left,Right>(d:Real[_], l:Left[_,_], r:Right[_]) ->
+function grad_multiply(d:Real[_], l:Real[_,_], r:Real[_]) ->
     (Real[_,_], Real[_]) {
   return (outer(d, r), inner(l, d));
 }
 
-function grad_multiply<Left,Right>(d:Real[_,_], l:Left[_,_], r:Right[_,_]) ->
+function grad_multiply(d:Real[_,_], l:Real[_,_], r:Real[_,_]) ->
     (Real[_,_], Real[_,_]) {
   return (outer(d, r), inner(l, d));
 }

@@ -40,6 +40,9 @@ function grad<Left,Right,Gradient>(x:LogChoose<Left,Right>, d:Gradient) {
  * Logarithm of the binomial coefficient.
  */
 function lchoose<Left,Right>(l:Left, r:Right) -> LogChoose<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<LogChoose<Left,Right>>(l, r);
 }
 
@@ -59,23 +62,14 @@ function lchoose(n:Real, k:Real) -> Real {
   }
 }
 
-/**
- * Logarithm of the binomial coefficient.
- */
 function lchoose(n:Integer, k:Integer) -> Real {
   return lchoose(scalar<Real>(n), scalar<Real>(k));
 }
 
-/**
- * Logarithm of the binomial coefficient.
- */
 function lchoose(n:Integer, k:Real) -> Real {
   return lchoose(scalar<Real>(n), k);
 }
 
-/**
- * Logarithm of the binomial coefficient.
- */
 function lchoose(n:Real, k:Integer) -> Real {
   return lchoose(n, scalar<Real>(k));
 }

@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Asin<Middle>, d:Gradient) {
  * Arc sine.
  */
 function asin<Middle>(m:Middle) -> Asin<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Asin<Middle>>(m);
 }
 

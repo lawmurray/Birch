@@ -23,83 +23,8 @@ function grad<Left,Right,Gradient>(x:Outer<Left,Right>, d:Gradient) {
  * Outer product.
  */
 function outer<Left,Right>(l:Left, r:Right) -> Outer<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Outer<Left,Right>>(l, r);
-}
-
-/**
- * Scalar product.
- */
-function outer(x:Real, y:Real) -> Real {
-  return x*y;
-}
-
-/**
- * Scalar-vector outer product.
- */
-function outer(x:Real, y:Real[_]) -> Real[_,_] {
-  Z:Real[1,length(y)];
-  cpp{{
-  numbirch::transpose(Z.rows(), Z.columns(), x, y.data(), y.stride(),
-      Z.data(), Z.stride());
-  }}
-  return Z;
-}
-
-/**
- * Scalar-vector product.
- */
-function outer(x:Real[_], y:Real) -> Real[_] {
-  return x*y;
-}
-
-/**
- * Scalar-matrix outer product.
- */
-function outer(x:Real, Y:Real[_,_]) -> Real[_,_] {
-  Z:Real[columns(Y),rows(Y)];
-  cpp{{
-  numbirch::transpose(Z.rows(), Z.columns(), x, Y.data(), Y.stride(),
-      Z.data(), Z.stride());
-  }}
-  return Z;
-}
-
-/**
- * Scalar-matrix product.
- */
-function outer(X:Real[_,_], y:Real) -> Real[_,_] {
-  return X*y;
-}
-
-/**
- * Scalar-matrix product.
- */
-function outer(X:Real[_,_], y:Integer) -> Real[_,_] {
-  return outer(X, scalar<Real>(y));
-}
-
-/**
- * Vector outer product.
- */
-function outer(x:Real[_], y:Real[_]) -> Real[_,_] {
-  Z:Real[length(x), length(y)];
-  cpp{{
-  numbirch::outer(Z.rows(), Z.columns(), x.data(), x.stride(), y.data(),
-      y.stride(), Z.data(), Z.stride());
-  }}
-  return Z;
-}
-
-/**
- * Matrix outer product.
- */
-function outer(X:Real[_,_], Y:Real[_,_]) -> Real[_,_] {
-  assert columns(X) == columns(Y);
-
-  Z:Real[rows(X), rows(Y)];
-  cpp{{
-  numbirch::outer(Z.rows(), Z.columns(), X.columns(), X.data(), X.stride(),
-      Y.data(), Y.stride(), Z.data(), Z.stride());
-  }}
-  return Z;
 }

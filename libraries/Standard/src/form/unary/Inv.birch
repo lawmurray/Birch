@@ -15,24 +15,16 @@ function eval<Middle>(x:Inv<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:Inv<Middle>, d:Gradient) {
-  let y <- inv(peek(x.m));
-  grad(x.m, -outer(inner(y, d), y));
+  let A <- inv(peek(x.m));
+  grad(x.m, -outer(inner(A, d), A));
 }
 
 /**
  * Inverse of a matrix.
  */
 function inv<Middle>(m:Middle) -> Inv<Middle> {
-  return construct<Inv<Middle>>(m);
-}
-
-/**
- * Inverse of a matrix.
- */
-function inv(A:Real[_,_]) -> Real[_,_] {
-  B:Real[rows(A), columns(A)];
   cpp{{
-  numbirch::inv(A.rows(), A.data(), A.stride(), B.data(), B.stride());
+  static_assert(is_form<Middle>::value, "argument types not supported");
   }}
-  return B;
+  return construct<Inv<Middle>>(m);
 }

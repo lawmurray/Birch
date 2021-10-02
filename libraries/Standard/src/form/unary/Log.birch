@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Log<Middle>, d:Gradient) {
  * Natural logarithm.
  */
 function log<Middle>(m:Middle) -> Log<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Log<Middle>>(m);
 }
 

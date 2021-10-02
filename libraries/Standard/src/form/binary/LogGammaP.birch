@@ -29,12 +29,12 @@ function grad<Left,Right,Gradient>(x:LogGammaP<Left,Right>, d:Gradient) {
  * Logarithm of the multivariate gamma function.
  */
 function lgamma<Left,Right>(l:Left, r:Right) -> LogGammaP<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<LogGammaP<Left,Right>>(l, r);
 }
 
-/**
- * Logarithm of the multivariate gamma function.
- */
 function lgamma(x:Real, p:Integer) -> Real {
   assert p > 0;
   let y <- 0.25*(p*(p - 1))*log(π);
@@ -44,9 +44,6 @@ function lgamma(x:Real, p:Integer) -> Real {
   return y;
 }
 
-/**
- * Logarithm of the multivariate gamma function.
- */
 function lgamma(x:Integer, p:Integer) -> Real {
   return lgamma(scalar<Real>(x), p);
 }

@@ -26,41 +26,14 @@ function grad<Left,Right,Gradient>(x:Diagonal<Left,Right>, d:Gradient) {
  * - length: Number of rows/columns.
  */
 function diagonal<Left,Right>(l:Left, r:Right) -> Diagonal<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Diagonal<Left,Right>>(l, r);
 }
 
-/**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - length: Number of rows/columns.
- */
-function diagonal(x:Boolean, length:Integer) -> Boolean[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> {
-        return if_then_else(i == j, x, false);
-      }, length, length);
-}
-
-/**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - length: Number of rows/columns.
- */
-function diagonal(x:Integer, length:Integer) -> Integer[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> {
-        return if_then_else(i == j, x, 0);
-      }, length, length);
-}
-
-/**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - length: Number of rows/columns.
- */
-function diagonal(x:Real, length:Integer) -> Real[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> {
-        return if_then_else(i == j, x, 0.0);
-      }, length, length);
+function diagonal(x:Real, n:Integer) -> Real[_,_] {
+  cpp{{
+  return numbirch::diagonal(x, n);
+  }}
 }

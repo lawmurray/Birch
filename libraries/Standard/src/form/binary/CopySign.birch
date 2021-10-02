@@ -25,35 +25,26 @@ function grad<Left,Right,Gradient>(x:CopySign<Left,Right>, d:Gradient) {
  * Copy sign of a number.
  */
 function copysign<Left,Right>(l:Left, r:Right) -> CopySign<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<CopySign<Left,Right>>(l, r);
 }
 
-/**
- * Copy sign of a number.
- */
-function copysign(l:Integer, r:Real) -> Real {
-  return if_then_else(r >= 0, abs(l), -abs(l));
-}
-
-/**
- * Copy sign of a number.
- */
-function copysign(l:Real, r:Integer) -> Real {
-  return if_then_else(r >= 0, abs(l), -abs(l));
-}
-
-/**
- * Copy sign of a number.
- */
-function copysign(l:Integer, r:Integer) -> Integer {
-  return if_then_else(r >= 0, abs(l), -abs(l));
-}
-
-/**
- * Copy sign of a number.
- */
 function copysign(l:Real, r:Real) -> Real {
   cpp {{
   return std::copysign(l, r);
   }}
+}
+
+function copysign(l:Integer, r:Integer) -> Integer {
+  return if_then_else(r >= 0, abs(l), -abs(l));
+}
+
+function copysign(l:Integer, r:Real) -> Real {
+  return if_then_else(r >= 0, abs(l), -abs(l));
+}
+
+function copysign(l:Real, r:Integer) -> Real {
+  return if_then_else(r >= 0, abs(l), -abs(l));
 }

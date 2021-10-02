@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Expm1<Middle>, d:Gradient) {
  * Exponential minus one.
  */
 function expm1<Middle>(m:Middle) -> Expm1<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Expm1<Middle>>(m);
 }
 

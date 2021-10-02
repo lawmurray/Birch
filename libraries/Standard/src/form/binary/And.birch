@@ -23,10 +23,8 @@ function grad<Left,Right,Gradient>(x:And<Left,Right>, d:Gradient) {
  * Logical `and`.
  */
 operator<Left,Right> (l:Left && r:Right) -> And<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<And<Left,Right>>(l, r);
 }
-
-/**
- * Logical `and`.
- */
-operator (l:Boolean && r:Boolean) -> Boolean;

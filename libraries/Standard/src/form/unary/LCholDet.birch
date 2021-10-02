@@ -23,15 +23,8 @@ function grad<Middle,Gradient>(x:LCholDet<Middle>, d:Gradient) {
  * factorization.
  */
 function lcholdet<Middle>(m:Middle) -> LCholDet<Middle> {
-  return construct<LCholDet<Middle>>(m);
-}
-
-/**
- * Log-determinant of a symmetric positive-definite matrix via the Cholesky
- * factorization.
- */
-function lcholdet(S:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::lcholdet(S.rows(), S.data(), S.stride());
+  static_assert(is_form<Middle>::value, "argument types not supported");
   }}
+  return construct<LCholDet<Middle>>(m);
 }

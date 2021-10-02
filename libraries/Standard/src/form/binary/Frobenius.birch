@@ -23,17 +23,8 @@ function grad<Left,Right,Gradient>(x:Frobenius<Left,Right>, d:Gradient) {
  * Frobenius product.
  */
 function frobenius<Left,Right>(l:Left, r:Right) -> Frobenius<Left,Right> {
-  return construct<Frobenius<Left,Right>>(l, r);
-}
-
-/**
- * Frobenius matrix product.
- */
-function frobenius(X:Real[_,_], Y:Real[_,_]) -> Real {
-  assert rows(X) == rows(Y);
-  assert columns(X) == columns(Y);
   cpp{{
-  return numbirch::frobenius(X.rows(), X.columns(), X.data(), X.stride(),
-      Y.data(), Y.stride());
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
   }}
+  return construct<Frobenius<Left,Right>>(l, r);
 }

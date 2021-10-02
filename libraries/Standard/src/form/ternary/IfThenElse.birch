@@ -26,14 +26,15 @@ function grad<Left,Middle,Right,Gradient>(x:IfThenElse<Left,Middle,Right>,
 /**
  * If `cond` is true then return `x`, else return `y`.
  */
- function if_then_else<Left,Middle,Right>(l:Left, m:Middle, r:Right) ->
+ function if_then_else<Left,Middle,Right>(cond:Left, x:Middle, y:Right) ->
      IfThenElse<Left,Middle,Right> {
-  return construct<IfThenElse<Left,Middle,Right>>(l, m, r);
+  cpp{{
+  static_assert(is_form<Left,Middle,Right>::value,
+      "argument types not supported");
+  }}
+  return construct<IfThenElse<Left,Middle,Right>>(cond, x, y);
 }
 
-/**
- * If `cond` is true then return `x`, else return `y`.
- */
 function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
   if cond {
     return x;

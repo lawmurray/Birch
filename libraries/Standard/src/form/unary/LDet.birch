@@ -15,21 +15,15 @@ function eval<Middle>(x:LDet<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:LDet<Middle>, d:Gradient) {
-  grad(x.m, outer(d, inv(peek(x.m))));
+  grad(x.m, d*transpose(inv(peek(x.m))));
 }
 
 /**
  * Log-determinant of a matrix.
  */
 function ldet<Middle>(m:Middle) -> LDet<Middle> {
-  return construct<LDet<Middle>>(m);
-}
-
-/**
- * Log-determinant of a matrix.
- */
-function ldet(A:Real[_,_]) -> Real {
   cpp{{
-  return numbirch::ldet(A.rows(), A.data(), A.stride());
+  static_assert(is_form<Middle>::value, "argument types not supported");
   }}
+  return construct<LDet<Middle>>(m);
 }

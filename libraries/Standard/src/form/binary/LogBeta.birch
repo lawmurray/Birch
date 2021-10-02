@@ -25,33 +25,24 @@ function grad<Left,Right,Gradient>(x:LogBeta<Left,Right>, d:Gradient) {
  * Logarithm of the beta function.
  */
 function lbeta<Left,Right>(l:Left, r:Right) -> LogBeta<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<LogBeta<Left,Right>>(l, r);
 }
 
-/**
- * Logarithm of the beta function.
- */
 function lbeta(l:Real, r:Real) -> Real {
   return lgamma(l) + lgamma(r) - lgamma(l + r);
 }
 
-/**
- * Logarithm of the beta function.
- */
 function lbeta(l:Integer, r:Integer) -> Real {
   return lbeta(scalar<Real>(l), scalar<Real>(r));
 }
 
-/**
- * Logarithm of the beta function.
- */
 function lbeta(l:Integer, r:Real) -> Real {
   return lbeta(scalar<Real>(l), r);
 }
 
-/**
- * Logarithm of the beta function.
- */
 function lbeta(l:Real, r:Integer) -> Real {
   return lbeta(l, scalar<Real>(r));
 }

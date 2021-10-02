@@ -1,0 +1,31 @@
+/*
+ * Base struct for function forms.
+ */
+struct Form {
+  //
+}
+
+hpp{{
+namespace birch {
+template<class... Args>
+struct is_form {
+  //
+};
+
+template<class Arg>
+struct is_form<libbirch::Shared<Arg>> {
+  static const bool value =
+      std::is_base_of<Delay_,Arg>::value;
+};
+
+template<class Arg>
+struct is_form<Arg> {
+  static const bool value = std::is_base_of<Form,Arg>::value;
+};
+
+template<class Arg, class... Args>
+struct is_form<Arg,Args...> {
+  static const bool value = is_form<Arg>::value || is_form<Args...>::value;
+};
+}
+}}

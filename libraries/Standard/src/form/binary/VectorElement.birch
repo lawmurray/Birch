@@ -25,36 +25,19 @@ function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
 /**
  * Element of a vector.
  */
+function element<Left,Right>(x:Left, i:Right) -> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
+  return element(vector_split(x), i);
+}
+
 function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>,
     i:Right) -> {
   return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x,
       i);
 }
 
-/**
- * Element of a vector.
- */
-function element<Left,Right>(x:Left, i:Right) -> {
-  return element(vector_split(x), i);
-}
-
-/**
- * Element of a vector.
- */
-function element(x:Boolean[_], i:Integer) -> Boolean {
-  return x[i];
-}
-
-/**
- * Element of a vector.
- */
-function element(x:Integer[_], i:Integer) -> Integer {
-  return x[i];
-}
-
-/**
- * Element of a vector.
- */
-function element(x:Real[_], i:Integer) -> Real {
+function element<Type>(x:Type[_], i:Integer) -> Type {
   return x[i];
 }

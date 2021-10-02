@@ -22,6 +22,9 @@ function grad<Value,Middle,Gradient>(x:Vector<Value,Middle>, d:Gradient) {
  * Convert to vector.
  */
 function vector<Value,Middle>(m:Middle) -> Vector<Value,Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Vector<Value,Middle>>(m);
 }
 

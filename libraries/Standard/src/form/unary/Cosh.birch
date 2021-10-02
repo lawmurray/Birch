@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Cosh<Middle>, d:Gradient) {
  * Hyperbolic cosine.
  */
 function cosh<Middle>(m:Middle) -> Cosh<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Cosh<Middle>>(m);
 }
 

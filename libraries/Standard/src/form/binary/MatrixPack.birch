@@ -26,6 +26,9 @@ function grad<Left,Right,Gradient>(x:MatrixPack<Left,Right>, d:Gradient) {
  * new matrix.
  */
 function pack<Left,Right>(l:Left, r:Right) -> MatrixPack<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<MatrixPack<Left,Right>>(l, r);
 }
 

@@ -24,17 +24,8 @@ function grad<Middle,Gradient>(x:CholInv<Middle>, d:Gradient) {
  * factorization.
  */
 function cholinv<Middle>(m:Middle) -> CholInv<Middle> {
-  return construct<CholInv<Middle>>(m);
-}
-
-/**
- * Inverse of a symmetric positive-definite matrix via the Cholesky
- * factorization.
- */
-function cholinv(S:Real[_,_]) -> Real[_,_] {
-  B:Real[rows(S), columns(S)];
   cpp{{
-  numbirch::cholinv(S.rows(), S.data(), S.stride(), B.data(), B.stride());
+  static_assert(is_form<Middle>::value, "argument types not supported");
   }}
-  return B;
+  return construct<CholInv<Middle>>(m);
 }

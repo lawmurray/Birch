@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Exp<Middle>, d:Gradient) {
  * Exponential.
  */
 function exp<Middle>(m:Middle) -> Exp<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Exp<Middle>>(m);
 }
 

@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Acos<Middle>, d:Gradient) {
  * Arc cosine.
  */
 function acos<Middle>(m:Middle) -> Acos<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Acos<Middle>>(m);
 }
 

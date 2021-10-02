@@ -22,6 +22,9 @@ function grad<Middle,Gradient>(x:Floor<Middle>, d:Gradient) {
  * Round to largest integer value not greater than argument.
  */
 function floor<Middle>(m:Middle) -> Floor<Middle> {
+  cpp{{
+  static_assert(is_form<Middle>::value, "argument types not supported");
+  }}
   return construct<Floor<Middle>>(m);
 }
 

@@ -30,37 +30,28 @@ function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {
  * Power.
  */
 function pow<Left,Right>(l:Left, r:Right) -> Pow<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Pow<Left,Right>>(l, r);
 }
 
-/**
- * Power.
- */
-function pow(x:Integer, y:Integer) -> Integer {
-  cpp {{
-  return std::pow(x, y);
-  }}
-}
-
-/**
- * Power.
- */
 function pow(x:Real, y:Real) -> Real {
   cpp {{
   return std::pow(x, y);
   }}
 }
 
-/**
- * Power.
- */
+function pow(x:Integer, y:Integer) -> Integer {
+  cpp {{
+  return std::pow(x, y);
+  }}
+}
+
 function pow(x:Integer, y:Real) -> Real {
   return pow(scalar<Real>(x), y);
 }
 
-/**
- * Power.
- */
 function pow(x:Real, y:Integer) -> Real {
   return pow(x, scalar<Real>(y));
 }

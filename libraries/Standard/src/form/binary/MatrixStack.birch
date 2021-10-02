@@ -25,6 +25,9 @@ function grad<Left,Right,Gradient>(x:MatrixStack<Left,Right>, d:Gradient) {
  * new matrix.
  */
 function stack<Left,Right>(l:Left, r:Right) -> MatrixStack<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<MatrixStack<Left,Right>>(l, r);
 }
 

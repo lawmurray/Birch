@@ -15,38 +15,25 @@ function eval<Left,Right>(x:Dot<Left,Right>) -> {
 }
 
 function grad<Left,Right,Gradient>(x:Dot<Left,Right>, d:Gradient) {
-  grad(x.l, peek(x.r)*d);
-  grad(x.r, outer(peek(x.l), d));
+  let (dl, dr) <- grad_dot(d, peek(x.l), peek(x.r));
+  grad(x.l, dl);
+  grad(x.r, dr);
 }
 
 /**
  * Dot product.
  */
 function dot<Left,Right>(l:Left, r:Right) -> Dot<Left,Right> {
+  cpp{{
+  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  }}
   return construct<Dot<Left,Right>>(l, r);
 }
 
-/**
- * Dot product of two vectors.
- */
-function dot(x:Real[_], y:Real[_]) -> Real {
-  assert length(x) == length(y);
-  cpp{{
-  return numbirch::dot(x.length(), x.data(), x.stride(), y.data(), y.stride());
-  }}
+function grad_dot(d:Real, l:Real[_], r:Real[_]) -> (Real[_], Real[_]) {
+  return (r*d, l*d);
 }
 
-/**
- * Dot product of vector with columns of a matrix. The expression `dot(x, Y)`
- * is equivalent to `inner(Y, x)`.
- */
-function dot(x:Real[_], Y:Real[_,_]) -> Real[_] {
-  assert length(x) == rows(Y);
-
-  z:Real[columns(Y)];
-  cpp{{
-  numbirch::inner(z.rows(), Y.rows(), Y.data(), Y.stride(), x.data(),
-      x.stride(), z.data(), z.stride());
-  }}
-  return z;
+function grad_dot(d:Real[_], l:Real[_], r:Real[_,_]) -> (Real[_], Real[_,_]) {
+  return (r*d, outer(l, d));
 }

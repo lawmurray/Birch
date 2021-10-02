@@ -64,6 +64,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function eval() -> Value {
+    assert !d?;
     if f? {
       if visitCount == 0 {
         x <- global.eval(f!);
@@ -97,6 +98,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
   }
 
   final override function link() {
+    assert visitCount == 0;
     linkCount <- linkCount + 1;
   }
 
