@@ -1,13 +1,11 @@
 /**
- * @defgroup memory Memory
- * Memory allocation functions.
- * 
  * @defgroup array Array
- * Multidimensional arrays with copy-on-write.
+ * Multidimensional arrays with copy-on-write, and interface to numeric
+ * functions via these.
+ *
+ * @defgroup memory Memory
+ * Memory management functions.
  * 
- * @defgroup cpp-high C++ high-level interface
- * Interface to numerical functions using multidimensional arrays.
- * 
- * @defgroup cpp-low C++ low-level interface
+ * @defgroup cpp-raw C++ lower-level interface
  * Interface to numerical functions using raw pointers.
  */

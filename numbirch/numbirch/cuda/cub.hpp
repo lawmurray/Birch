@@ -166,6 +166,19 @@ struct log_functor {
   }
 };
 
+template<class T = double>
+struct diagonal_functor {
+  diagonal_functor(T a) :
+      a(a) {
+    //
+  }
+  __host__ __device__
+  T operator()(const int i, const int j) const {
+    return (i == j) ? a : T(0);
+  }
+  T a;
+};
+
 /*
  * Pair of iterators defining a range.
  */

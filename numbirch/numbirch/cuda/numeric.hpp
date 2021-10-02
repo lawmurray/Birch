@@ -36,6 +36,25 @@ void prefetch(const T* A, const int m, const int n, const int ldA) {
 }
 
 /*
+ * Matrix fill.
+ */
+template<class T, class Functor>
+__global__ void kernel_fill(const int m, const int n, T* A, const int ldA,
+    Functor f) {
+  auto i = blockIdx.x*blockDim.x + threadIdx.x;
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    A[i + j*ldA] = f(i, j);
+  }
+}
+template<class T, class Functor>
+void fill(const int m, const int n, T* A, const int ldA, Functor f) {
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_fill<<<grid,block,0,stream>>>(m, n, A, ldA, f);
+}
+
+/*
  * Matrix unary transform.
  */
 template<class T, class Functor>
@@ -103,8 +122,8 @@ void transform(const int m, const int n, const T* A,
  * Matrix transpose kernel.
  */
 template<class T>
-__global__ void kernel_transpose(const int m, const int n, const T x,
-    const T* A, const int ldA, T* B, const int ldB) {
+__global__ void kernel_transpose(const int m, const int n, const T* A,
+    const int ldA, T* B, const int ldB) {
   __shared__ T tile[TRANSPOSE_SIZE][TRANSPOSE_SIZE + 1];
   // ^ +1 reduce shared memory bank conflicts
 
@@ -117,7 +136,7 @@ __global__ void kernel_transpose(const int m, const int n, const T x,
   i = blockIdx.x*blockDim.x + threadIdx.x;
   j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    B[i + j*ldB] = x*tile[threadIdx.y][threadIdx.x];
+    B[i + j*ldB] = tile[threadIdx.y][threadIdx.x];
   }
 }
 
@@ -718,8 +737,13 @@ T lcholdet(const int n, const T* S, const int ldS) {
 }
 
 template<class T>
-void transpose(const int m, const int n, const T x, const T* A, const int ldA,
-    T* B, const int ldB) {
+void diagonal(const T a, const int n, T* B, const int ldB) {
+  fill(n, n, B, ldB, diagonal_functor<T>(a));
+}
+
+template<class T>
+void transpose(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
   prefetch(A, n, m, ldA);
   prefetch(B, m, n, ldB);
 
@@ -734,7 +758,7 @@ void transpose(const int m, const int n, const T x, const T* A, const int ldA,
   grid.z = 1;
 
   auto shared = TRANSPOSE_SIZE*TRANSPOSE_SIZE*sizeof(T);
-  kernel_transpose<<<grid,block,shared,stream>>>(m, n, x, A, ldA, B, ldB);
+  kernel_transpose<<<grid,block,shared,stream>>>(m, n, A, ldA, B, ldB);
 }
 
 template<class T>

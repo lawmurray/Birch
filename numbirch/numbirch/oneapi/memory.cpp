@@ -3,7 +3,7 @@
  * 
  * oneAPI implementation of non-generic functions.
  */
-#include "numbirch/numbirch.hpp"
+#include "numbirch/memory.hpp"
 #include "numbirch/oneapi/sycl.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 

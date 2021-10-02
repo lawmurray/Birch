@@ -243,8 +243,7 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
   auto B1 = make_eigen_matrix(B, n, n, ldB);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
-  B1.noalias() = ldlt.solve(Eigen::Matrix<T,Eigen::Dynamic,
-      Eigen::Dynamic,Eigen::ColMajor>::Identity(n, n));
+  B1.noalias() = ldlt.solve(B1.Identity(n, n));
 }
 
 template<class T>
@@ -268,11 +267,17 @@ T lcholdet(const int n, const T* S, const int ldS) {
 }
 
 template<class T>
-void transpose(const int m, const int n, const T x, const T* A, const int ldA,
-    T* B, const int ldB) {
+void diagonal(const T a, const int n, T* B, const int ldB) {
+  auto B1 = make_eigen_matrix(B, n, n, ldB);
+  B1.noalias() = a*B1.Identity(n, n);
+}
+
+template<class T>
+void transpose(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
   auto A1 = make_eigen_matrix(A, n, m, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
-  B1.noalias() = x*A1.transpose();
+  B1.noalias() = A1.transpose();
 }
 
 template<class T>

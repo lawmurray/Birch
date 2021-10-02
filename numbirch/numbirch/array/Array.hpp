@@ -55,12 +55,12 @@ public:
    * Constructor.
    */
   Array() :
-      buffer(nullptr),
-      control(nullptr),
-      shape(),
+      buf(nullptr),
+      ctl(nullptr),
+      shp(),
       isView(false),
       isElementWise(false) {
-    assert(shape.volume() == 0);
+    assert(shp.volume() == 0);
   }
 
   /**
@@ -69,9 +69,9 @@ public:
    * @param shape Shape.
    */
   Array(const shape_type& shape) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(shape),
+      buf(nullptr),
+      ctl(nullptr),
+      shp(shape),
       isView(false),
       isElementWise(false) {
     allocate();
@@ -91,9 +91,9 @@ public:
    */
   template<class... Args>
   Array(const shape_type& shape, Args&&... args) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(shape),
+      buf(nullptr),
+      ctl(nullptr),
+      shp(shape),
       isView(false),
       isElementWise(false) {
     allocate();
@@ -108,9 +108,9 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
   Array(const std::initializer_list<T>& values) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(values.size()),
+      buf(nullptr),
+      ctl(nullptr),
+      shp(values.size()),
       isView(false),
       isElementWise(false) {
     allocate();
@@ -125,9 +125,9 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array(const std::initializer_list<std::initializer_list<T>>& values) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(values.size(), values.begin()->size()),
+      buf(nullptr),
+      ctl(nullptr),
+      shp(values.size(), values.begin()->size()),
       isView(false),
       isElementWise(false) {
     allocate();
@@ -135,7 +135,7 @@ public:
     int64_t t = 0;
     for (auto row : values) {
       for (auto x : row) {
-        new (buffer + shape.transpose(t++)) T(x);
+        new (buf + shp.transpose(t++)) T(x);
       }
     }
   }
@@ -148,9 +148,9 @@ public:
    */
   template<class L>
   Array(const L& l, const shape_type& shape) :
-      buffer(nullptr),
-      control(nullptr),
-      shape(shape),
+      buf(nullptr),
+      ctl(nullptr),
+      shp(shape),
       isView(false),
       isElementWise(false) {
     allocate();
@@ -164,10 +164,10 @@ public:
   /**
    * View constructor.
    */
-  Array(T* buffer, const shape_type& shape) :
-      buffer(buffer),
-      control(nullptr),
-      shape(shape),
+  Array(T* buf, const shape_type& shape) :
+      buf(buf),
+      ctl(nullptr),
+      shp(shape),
       isView(true),
       isElementWise(false) {
     //
@@ -177,11 +177,11 @@ public:
    * Copy constructor.
    */
   Array(const Array& o) : Array() {
-    shape = o.shape;
+    shp = o.shp;
     if (!o.isView && std::is_trivial<T>::value) {
-      ArrayControl* ctrl;
-      std::tie(ctrl, buffer, isElementWise) = o.share();
-      control.store(ctrl);
+      ArrayControl* ctl;
+      std::tie(ctl, buf, isElementWise) = o.share();
+      this->ctl.store(ctl);
     } else {
       compact();
       allocate();
@@ -195,7 +195,7 @@ public:
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible<U,T>::value,int> = 0>
   Array(const Array<U,E>& o) : Array() {
-    shape = o.shape;
+    shp = o.shp;
     compact();
     allocate();
     uninitialized_copy(o);
@@ -208,7 +208,7 @@ public:
     if (!o.isView) {
       swap(o);
     } else {
-      shape = o.shape;
+      shp = o.shp;
       compact();
       allocate();
       uninitialized_copy(o);
@@ -248,7 +248,7 @@ public:
   ArrayIterator<T,D> begin() {
     own();
     atomize();
-    return ArrayIterator<T,D>(buffer, shape);
+    return ArrayIterator<T,D>(buf, shp);
   }
 
   /**
@@ -256,7 +256,7 @@ public:
    */
   ArrayIterator<T,D> begin() const {
     atomize();
-    return ArrayIterator<T,D>(buffer, shape);
+    return ArrayIterator<T,D>(buf, shp);
   }
 
   /**
@@ -292,7 +292,7 @@ public:
   auto operator()(Args&&... args) {
     own();
     crystallize();
-    return shape.slice(buffer, std::forward<Args>(args)...);
+    return shp.slice(buf, std::forward<Args>(args)...);
   }
 
   /**
@@ -301,7 +301,7 @@ public:
   template<class... Args, std::enable_if_t<!is_index<Args...>::value,int> = 0>
   auto operator()(Args&&... args) const {
     crystallize();
-    return shape.slice(buffer, std::forward<Args>(args)...);
+    return shp.slice(buf, std::forward<Args>(args)...);
   }
 
   /**
@@ -311,7 +311,7 @@ public:
   decltype(auto) operator()(Args&&... args) {
     own();
     atomize();
-    return shape.slice(buffer, std::forward<Args>(args)...);
+    return shp.slice(buf, std::forward<Args>(args)...);
   }
 
   /**
@@ -320,7 +320,7 @@ public:
   template<class... Args, std::enable_if_t<is_index<Args...>::value,int> = 0>
   auto operator()(Args&&... args) const {
     atomize();
-    return shape.slice(buffer, std::forward<Args>(args)...);
+    return shp.slice(buf, std::forward<Args>(args)...);
   }
 
   /**
@@ -329,7 +329,7 @@ public:
   T* data() {
     own();
     crystallize();
-    return buffer;
+    return buf;
   }
 
   /**
@@ -337,52 +337,83 @@ public:
    */
   const T* data() const {
     crystallize();
-    return buffer;
+    return buf;
+  }
+
+  /**
+   * Shape.
+   */
+  ArrayShape<D> shape() const {
+    return shp;
   }
 
   /**
    * Number of elements.
    */
   int64_t size() const {
-    return shape.size();
+    return shp.size();
   }
 
   /**
    * Number of elements allocated.
    */
   int64_t volume() const {
-    return shape.volume();
+    return shp.volume();
   }
 
   /**
-   * Number of rows.
+   * Length. For a scalar this is 1, for a vector its length, for a matrix its
+   * number of rows. Same as rows().
    */
   int length() const {
-    return shape.rows();
+    return shp.rows();
   }
 
   /**
-   * Number of rows.
+   * Number of rows. For a scalar this is 1, for a vector its length, for a
+   * matrix its number of rows. Same as length().
    */
   int rows() const {
-    return shape.rows();
+    return shp.rows();
   }
 
   /**
-   * Number of columns (1 for a vector).
+   * Number of columns. For a scalar or vector this is 1, for a matrix its
+   * number of columns.
    */
   int columns() const {
-    return shape.columns();
+    return shp.columns();
   }
 
   /**
-   * Stride, in number of elements. For a vector this is the stride between
-   * elements (equal to 1 for a contiguous vector), for a matrix this is the
-   * stride between columns (equal to the number of rows for a contiguous
-   * matrix).
+   * Width, in number of elements. This refers to the 2d memory layout of the
+   * array, where the width is the number of elements in each contiguous
+   * block. For a scalar or vector it is 1, for a matrix it is the number of
+   * rows.
+   */
+  int width() const {
+    return shp.width();
+  }
+
+  /**
+   * Height, in number of elements. This refers to the 2d memory layout of the
+   * array, where the height is the number of contiguous blocks. For a scalar
+   * it is 1, for a vector it is the length, for a matrix it is the number of
+   * columns.
+   */
+  int height() const {
+    return shp.height();
+  }
+
+  /**
+   * Stride, in number of elements. This refers to the 2d memory layout of the
+   * array, where the stride is the number of elements between the first
+   * element of each contiguous block. For a scalar it is 1, for a vector it
+   * is the stride between elements, for a matrix it is the stride between
+   * columns.
    */
   int stride() const {
-    return shape.stride();
+    return shp.stride();
   }
 
   /**
@@ -409,22 +440,22 @@ public:
 
     auto n = size();
     ArrayShape<1> s(n + 1);
-    if (!buffer) {
+    if (!buf) {
       Array tmp(s, x);
       swap(tmp);
     } else {
       own();
       if (std::is_trivial<T>::value) {
         crystallize();
-        buffer = (T*)realloc((void*)buffer, s.volume()*sizeof(T));
+        buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
         atomize();
       } else {
-        buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
+        buf = (T*)std::realloc((void*)buf, s.volume()*sizeof(T));
       }
-      std::memmove((void*)(buffer + i + 1), (void*)(buffer + i),
+      std::memmove((void*)(buf + i + 1), (void*)(buf + i),
           (n - i)*sizeof(T));
-      new (buffer + i) T(x);
-      shape = s;
+      new (buf + i) T(x);
+      shp = s;
     }
   }
 
@@ -448,17 +479,17 @@ public:
     } else {
       own();
       atomize();
-      std::destroy(buffer + i, buffer + i + len);
-      std::memmove((void*)(buffer + i), (void*)(buffer + i + len),
+      std::destroy(buf + i, buf + i + len);
+      std::memmove((void*)(buf + i), (void*)(buf + i + len),
           (n - len - i)*sizeof(T));
       if (std::is_trivial<T>::value) {
         crystallize();
-        buffer = (T*)realloc((void*)buffer, s.volume()*sizeof(T));
+        buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
       } else {
-        buffer = (T*)std::realloc((void*)buffer, s.volume()*sizeof(T));
+        buf = (T*)std::realloc((void*)buf, s.volume()*sizeof(T));
       }
     }
-    shape = s;
+    shp = s;
   }
 
   /**
@@ -466,7 +497,7 @@ public:
    */
   void clear() {
     release();
-    shape = ArrayShape<D>();
+    shp = ArrayShape<D>();
   }
 
 private:
@@ -474,14 +505,14 @@ private:
    * Iterator for use internally.
    */
   ArrayIterator<T,D> beginInternal() {
-    return ArrayIterator<T,D>(buffer, shape);
+    return ArrayIterator<T,D>(buf, shp);
   }
 
   /**
    * @copydoc beginInternal()
    */
   ArrayIterator<T,D> beginInternal() const {
-    return ArrayIterator<T,D>(buffer, shape);
+    return ArrayIterator<T,D>(buf, shp);
   }
 
   /**
@@ -499,17 +530,17 @@ private:
   }
 
   /**
-   * Copy assignment. For a view the shapes of the two arrays must
-   * conform, otherwise a resize is permitted.
+   * Copy assignment. For a view the shapes of the two arrays must conform,
+   * otherwise a resize is permitted.
    */
   void assign(const Array& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
       if (std::is_trivial<T>::value) {
         crystallize();
-        memcpy(data(), shape.stride()*sizeof(T), o.data(),
-            o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
-            shape.height());
+        memcpy(data(), shp.stride()*sizeof(T), o.data(),
+            o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
+            shp.height());
       } else {
         auto n = std::min(size(), o.size());
         auto begin1 = o.beginInternal();
@@ -534,9 +565,9 @@ private:
   void swap(Array& o) {
     assert(!isView);
     assert(!o.isView);
-    std::swap(shape, o.shape);
-    std::swap(buffer, o.buffer);
-    std::swap(control, o.control);
+    std::swap(shp, o.shp);
+    std::swap(buf, o.buf);
+    std::swap(ctl, o.ctl);
     std::swap(isElementWise, o.isElementWise);
   }
 
@@ -547,7 +578,7 @@ private:
    */
   template<class U>
   bool conforms(const Array<U,D>& o) const {
-    return shape.conforms(o.shape);
+    return shp.conforms(o.shp);
   }
 
   /**
@@ -555,23 +586,23 @@ private:
    * possible prior to allocation.
    */
   void compact() {
-    assert(!buffer);
-    shape.compact();
+    assert(!buf);
+    shp = shp.compact();
   }
 
   /**
    * Allocate memory for this, leaving uninitialized.
    */
   void allocate() {
-    assert(!buffer);
-    assert(!control.load());
+    assert(!buf);
+    assert(!ctl.load());
     assert(!isElementWise);
 
     if (std::is_trivial<T>::value) {
       crystallize();
-      buffer = (T*)malloc(volume()*sizeof(T));
+      buf = (T*)malloc(volume()*sizeof(T));
     } else {
-      buffer = (T*)std::malloc(volume()*sizeof(T));
+      buf = (T*)std::malloc(volume()*sizeof(T));
     }
   }
 
@@ -580,18 +611,18 @@ private:
    */
   void release() {
     if (!isView) {
-      auto ctrl = control.exchange(nullptr);
-      if (!ctrl || ctrl->decShared() == 0) {
+      auto ctl = this->ctl.exchange(nullptr);
+      if (!ctl || ctl->decShared() == 0) {
         if (std::is_trivial<T>::value) {
-          free((void*)buffer);
+          free((void*)buf);
         } else {
           std::destroy(beginInternal(), endInternal());
-          std::free((void*)buffer);
+          std::free((void*)buf);
         }
-        delete ctrl;
+        delete ctl;
       }
     }
-    buffer = nullptr;
+    buf = nullptr;
     isView = false;
     isElementWise = false;
   }
@@ -603,21 +634,21 @@ private:
    */
   std::tuple<ArrayControl*,T*,bool> share() {
     assert(!isView);
-    ArrayControl* ctrl = control.load();
-    if (ctrl) {
-      ctrl->incShared();
-    } else if (buffer) {
+    auto ctl = this->ctl.load();
+    if (ctl) {
+      ctl->incShared();
+    } else if (buf) {
       lock.set();
-      ctrl = control.load();  // another thread may have updated in meantime
-      if (ctrl) {
-        ctrl->incShared();
+      ctl = this->ctl.load();  // another thread may have updated in meantime
+      if (ctl) {
+        ctl->incShared();
       } else {
-        ctrl = new ArrayControl(2);  // one ref for current, one ref for new
-        control.store(ctrl);
+        ctl = new ArrayControl(2);  // one ref for current, one ref for new
+        this->ctl.store(ctl);
       }
       lock.unset();
     }
-    return std::make_tuple(ctrl, buffer, isElementWise);
+    return std::make_tuple(ctl, buf, isElementWise);
   }
 
   /**
@@ -632,25 +663,24 @@ private:
    * buffer is shared is indicated by the presence of a control block.
    */
   void own() {
-    ArrayControl* ctrl = control.load();
-    if (ctrl) {
+    auto ctl = this->ctl.load();
+    if (ctl) {
       assert(!isView);
       lock.set();
-      ctrl = control.load();  // another thread may have updated in meantime
-      if (!ctrl) {
+      ctl = this->ctl.load();  // another thread may have updated in meantime
+      if (!ctl) {
         // last reference optimization already applied by another thread
-      } else if (ctrl->numShared() == 1) {
+      } else if (ctl->numShared() == 1) {
         /* apply last reference optimization */
-        delete ctrl;
-        control.store(nullptr);
+        delete ctl;
+        this->ctl.store(nullptr);
       } else {
         T* buf = nullptr;
         if (std::is_trivial<T>::value) {
           crystallize();
           buf = (T*)malloc(volume()*sizeof(T));
-          memcpy(buf, shape.width()*sizeof(T), buffer,
-              shape.stride()*sizeof(T), shape.width()*sizeof(T),
-              shape.height());
+          memcpy(buf, shp.stride()*sizeof(T), this->buf,
+              shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
         } else {
           buf = (T*)std::malloc(volume()*sizeof(T));
           std::uninitialized_copy(beginInternal(), endInternal(), buf);
@@ -659,9 +689,9 @@ private:
         /* memory order is important here: the new control block should not
          * become visible to other threads until after the buffer is set, if
          * the use of the control block as a lock is to be successful */
-        buffer = buf;
-        isElementWise = false;
-        control.store(nullptr);
+        this->buf = buf;
+        this->isElementWise = false;
+        this->ctl.store(nullptr);
       }
       lock.unset();
     }
@@ -726,9 +756,9 @@ private:
   void uninitialized_copy(const Array<U,E>& o) {
     if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
       crystallize();
-      memcpy(data(), shape.stride()*sizeof(T), o.data(),
-          o.shape.stride()*sizeof(T), shape.width()*sizeof(T),
-          shape.height());
+      memcpy(data(), shp.stride()*sizeof(T), o.data(),
+          o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
+          shp.height());
     } else {
       auto n = std::min(size(), o.size());
       auto begin1 = o.beginInternal();
@@ -741,17 +771,17 @@ private:
   /**
    * Buffer containing elements.
    */
-  T* buffer;
+  T* buf;
 
   /**
-   * Control block for sharing buffer.
+   * Control block for sharing the buffer.
    */
-  Atomic<ArrayControl*> control;
+  Atomic<ArrayControl*> ctl;
 
   /**
    * Shape.
    */
-  ArrayShape<D> shape;
+  ArrayShape<D> shp;
 
   /**
    * Is this a view of another array? A view has stricter assignment

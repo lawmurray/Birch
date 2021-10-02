@@ -3,16 +3,16 @@
  * 
  * Explicit instantiations of numeric functions for the enabled backend.
  */
-#include "numbirch/numbirch.hpp"
+#include "numbirch/numeric.hpp"
 
 #ifdef BACKEND_ONEAPI
-#include "numbirch/oneapi/numbirch.hpp"
+#include "numbirch/oneapi/numeric.hpp"
 #endif
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/numbirch.hpp"
+#include "numbirch/cuda/numeric.hpp"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/numbirch.hpp"
+#include "numbirch/eigen/numeric.hpp"
 #endif
 
 namespace numbirch {
@@ -21,6 +21,8 @@ template void neg(const int m, const int n, const double* A, const int ldA,
     double* B, const int ldB);
 template void neg(const int m, const int n, const float* A, const int ldA,
     float* B, const int ldB);
+template void neg(const int m, const int n, const int* A, const int ldA,
+    int* B, const int ldB);
 
 template void rectify(const int m, const int n, const double* A,
     const int ldA, double* B, const int ldB);
@@ -31,11 +33,15 @@ template void add(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
 template void add(const int m, const int n, const float* A, const int ldA,
     const float* B, const int ldB, float* C, const int ldC);
+template void add(const int m, const int n, const int* A, const int ldA,
+    const int* B, const int ldB, int* C, const int ldC);
 
 template void sub(const int m, const int n, const double* A, const int ldA,
     const double* B, const int ldB, double* C, const int ldC);
 template void sub(const int m, const int n, const float* A, const int ldA,
     const float* B, const int ldB, float* C, const int ldC);
+template void sub(const int m, const int n, const int* A, const int ldA,
+    const int* B, const int ldB, int* C, const int ldC);
 
 template void combine(const int m, const int n, const double a,
     const double* A, const int ldA, const double b, const double* B,
@@ -83,6 +89,7 @@ template void cholmul(const int m, const int n, const float* S,
 
 template double sum(const int m, const int n, const double* A, const int ldA);
 template float sum(const int m, const int n, const float* A, const int ldA);
+template int sum(const int m, const int n, const int* A, const int ldA);
 
 template double dot(const int n, const double* x, const int incx,
     const double* y, const int incy);
@@ -155,10 +162,13 @@ template float ldet(const int n, const float* A, const int ldA);
 template double lcholdet(const int n, const double* S, const int ldS);
 template float lcholdet(const int n, const float* S, const int ldS);
 
-template void transpose(const int m, const int n, const double x,
-    const double* A, const int ldA, double* B, const int ldB);
-template void transpose(const int m, const int n, const float x,
-    const float* A, const int ldA, float* B, const int ldB);
+template void diagonal(const double a, const int n, double* B, const int ldB);
+template void diagonal(const float a, const int n, float* B, const int ldB);
+
+template void transpose(const int m, const int n, const double* A,
+    const int ldA, double* B, const int ldB);
+template void transpose(const int m, const int n, const float* A,
+    const int ldA, float* B, const int ldB);
 
 template double trace(const int m, const int n, const double* A,
     const int ldA);

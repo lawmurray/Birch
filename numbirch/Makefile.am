@@ -22,7 +22,7 @@ if ONEAPI
       numbirch/jemalloc/jemalloc.cpp \
       numbirch/oneapi/memory.cpp \
       numbirch/oneapi/sycl.cpp \
-      numbirch/common/numbirch.cpp
+      numbirch/common/numeric.cpp
 else
 if CUDA
   AM_CXXFLAGS += -DBACKEND_CUDA
@@ -33,12 +33,12 @@ if CUDA
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cusolver.cpp \
       numbirch/cuda/memory.cpp \
-      numbirch/common/numbirch.cpp
+      numbirch/common/numeric.cpp
 else
   AM_CPPFLAGS += -DBACKEND_EIGEN -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += \
       numbirch/eigen/memory.cpp \
-      numbirch/common/numbirch.cpp
+      numbirch/common/numeric.cpp
 endif
 endif
 
@@ -67,7 +67,10 @@ nobase_include_HEADERS = \
   numbirch/array/Atomic.hpp \
   numbirch/array/external.hpp \
   numbirch/array/Lock.hpp \
-  numbirch/memory.hpp
+  numbirch/array.hpp \
+  numbirch/memory.hpp \
+  numbirch/numbirch.hpp \
+  numbirch/numeric.hpp
 
 dist_noinst_DATA =  \
   Doxyfile \

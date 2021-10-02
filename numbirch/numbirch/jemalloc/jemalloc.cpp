@@ -2,7 +2,7 @@
  * @file
  */
 #include "numbirch/jemalloc/jemalloc.hpp"
-#include "numbirch/numbirch.hpp"
+#include "numbirch/memory.hpp"
 
 #include <omp.h>
 #include <cassert>

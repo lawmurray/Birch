@@ -50,11 +50,7 @@ public:
     return 1;
   }
 
-  int stride() const {
-    return inc;
-  }
-
-  int width() const {
+  static constexpr int width() {
     return 1;
   }
 
@@ -62,12 +58,16 @@ public:
     return n;
   }
 
+  int stride() const {
+    return inc;
+  }
+
   bool conforms(const ArrayShape<1>& o) const {
     return n == o.n;
   }
 
-  void compact() {
-    inc = 1;
+  ArrayShape<1> compact() const {
+    return ArrayShape<1>(n);
   }
 
   template<class T>
@@ -176,10 +176,6 @@ public:
     return n;
   }
 
-  int stride() const {
-    return ld;
-  }
-
   int width() const {
     return m;
   }
@@ -188,12 +184,16 @@ public:
     return n;
   }
 
+  int stride() const {
+    return ld;
+  }
+
   bool conforms(const ArrayShape<2>& o) const {
     return m == o.m && n == o.n;
   }
 
-  void compact() {
-    ld = m;
+  ArrayShape<2> compact() const {
+    return ArrayShape<2>(m, n);
   }
 
   /**

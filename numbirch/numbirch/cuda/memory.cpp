@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "numbirch/numbirch.hpp"
+#include "numbirch/memory.hpp"
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"

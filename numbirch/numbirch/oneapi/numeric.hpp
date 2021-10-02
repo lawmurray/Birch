@@ -424,12 +424,12 @@ T lcholdet(const int n, const T* S, const int ldS) {
 }
 
 template<class T>
-void transpose(const int m, const int n, const T x, const T* A, const int ldA,
-    T* B, const int ldB) {
+void transpose(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
   auto A1 = make_dpl_matrix_transpose(A, m, n, ldA);
   auto B1 = make_dpl_matrix(B, m, n, ldB);
-  dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
-      A1.end(), B1.begin(), [=](T a) { return x*a; });
+  dpl::copy(dpl::execution::make_device_policy(queue), A1.begin(), A1.end(),
+      B1.begin());
 }
 
 template<class T>
