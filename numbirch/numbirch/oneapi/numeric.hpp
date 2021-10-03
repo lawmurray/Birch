@@ -79,22 +79,40 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
       A1.end(), B1.begin(), C1.begin(), dpl::multiplies<T>());
 }
 
-template<class T>
-void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
-    const int ldC) {
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
   auto A1 = make_dpl_matrix(A, m, n, ldA);
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
-      A1.end(), C1.begin(), scalar_divides_functor<T>(b));
+      A1.end(), C1.begin(), scalar_divides_functor<T,U>(b));
 }
 
-template<class T>
-void mul(const int m, const int n, const T a, const T* B, const int ldB, T* C,
-    const int ldC) {
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
+  auto A1 = make_dpl_matrix(A, m, n, ldA);
+  auto C1 = make_dpl_matrix(C, m, n, ldC);
+  dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
+      A1.end(), C1.begin(), scalar_divides_pointer_functor<T,U>(b));
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T a, const U* B, const int ldB,
+    U* C, const int ldC) {
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), B1.begin(),
-      B1.end(), C1.begin(), scalar_multiplies_functor<T>(a));
+      B1.end(), C1.begin(), scalar_multiplies_functor<U,T>(a));
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T a, const U* B, const int ldB,
+    U* C, const int ldC) {
+  auto B1 = make_dpl_matrix(B, m, n, ldB);
+  auto C1 = make_dpl_matrix(C, m, n, ldC);
+  dpl::transform(dpl::execution::make_device_policy(queue), B1.begin(),
+      B1.end(), C1.begin(), scalar_multiplies_pointer_functor<U,T>(a));
 }
 
 template<class T>
@@ -451,12 +469,24 @@ T lcholdet(const int n, const T* S, const int ldS) {
 
 template<class T>
 void diagonal(const T a, const int n, T* B, const int ldB) {
+  ///@todo Implement as single kernel
   auto B1 = make_dpl_matrix(B, n, n, ldB);
   auto d = make_dpl_vector(B, n, ldB + 1);  // diagonal
   dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
       B1.begin(), B1.end(), 0.0);
   dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
       d.begin(), d.end(), a);
+}
+
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB) {
+  ///@todo Implement as single kernel
+  auto B1 = make_dpl_matrix(B, n, n, ldB);
+  auto d = make_dpl_vector(B, n, ldB + 1);  // diagonal
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      B1.begin(), B1.end(), 0.0);
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      d.begin(), d.end(), *a);
 }
 
 template<class T>

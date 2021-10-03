@@ -166,6 +166,22 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
   transform(m, n, A, ldA, B, ldB, C, ldC, plus_functor<T>());
 }
 
+template<class T, class U>
+void add(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, C, ldC, plus_scalar_functor<T,U>(b));
+}
+
+template<class T, class U>
+void add(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, C, ldC, plus_scalar_pointer_functor<T,U>(b));
+}
+
 template<class T>
 void sub(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
@@ -173,6 +189,22 @@ void sub(const int m, const int n, const T* A, const int ldA, const T* B,
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
   transform(m, n, A, ldA, B, ldB, C, ldC, minus_functor<T>());
+}
+
+template<class T, class U>
+void sub(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, C, ldC, minus_scalar_functor<T,U>(b));
+}
+
+template<class T, class U>
+void sub(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, C, ldC, minus_scalar_pointer_functor<T,U>(b));
 }
 
 template<class T>
@@ -199,20 +231,36 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
   transform(m, n, A, ldA, B, ldB, C, ldC, multiplies_functor<T>());
 }
 
-template<class T>
-void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
-    const int ldC) {
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, C, ldC, scalar_divides_functor<T>(b));
+  transform(m, n, A, ldA, C, ldC, scalar_divides_functor<T,U>(b));
 }
 
-template<class T>
-void mul(const int m, const int n, const T a, const T* B, const int ldB, T* C,
-    const int ldC) {
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, C, ldC, scalar_divides_pointer_functor<T,U>(b));
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T a, const U* B, const int ldB,
+    U* C, const int ldC) {
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, B, ldB, C, ldC, scalar_multiplies_functor<T>(a));
+  transform(m, n, B, ldB, C, ldC, scalar_multiplies_functor<U,T>(a));
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T* a, const U* B, const int ldB,
+    U* C, const int ldC) {
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, B, ldB, C, ldC, scalar_multiplies_pointer_functor<U,T>(a));
 }
 
 template<class T>
@@ -304,41 +352,31 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
 }
 
 template<class T>
-T sum(const int m, const int n, const T* A, const int ldA) {
+void sum(const int m, const int n, const T* A, const int ldA, T* b) {
   prefetch(A, m, n, ldA);
 
-  T* y = (T*)malloc(sizeof(T));
   auto A1 = make_cub_matrix(A, m, n, ldA);
   void* tmp = nullptr;
   size_t bytes = 0;
 
-  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), y, m*n, stream));
+  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), b, m*n, stream));
   tmp = device_malloc(bytes);
-  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), y, m*n, stream));
-  wait();
-  T z = *y;
-
+  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), b, m*n, stream));
   device_free(tmp);
-  free(y);
-  return z;
 }
 
 template<class T>
-T dot(const int n, const T* x, const int incx, const T* y, const int incy) {
+void dot(const int n, const T* x, const int incx, const T* y, const int incy,
+    T* z) {
   prefetch(x, n, incx);
   prefetch(y, n, incy);
 
-  T* z = (T*)malloc(sizeof(T));
   CUBLAS_CHECK(cublas<T>::dot(cublasHandle, n, x, incx, y, incy, z));
-  wait();
-  T result = *z;
-  free(z);
-  return result;
 }
 
 template<class T>
-T frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB) {
+void frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* c) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
 
@@ -346,9 +384,8 @@ T frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
   auto C = (T*)device_malloc(m*n*sizeof(T));
   auto ldC = m;
   hadamard(m, n, A, ldA, B, ldB, C, ldC);
-  auto z = sum(m, n, C, ldC);
+  sum(m, n, C, ldC, c);
   device_free(C);
-  return z;
 }
 
 template<class T>
@@ -660,7 +697,7 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
 }
 
 template<class T>
-T ldet(const int n, const T* A, const int ldA) {
+void ldet(const int n, const T* A, const int ldA, T* b) {
   prefetch(A, n, n, ldA);
 
   auto LU = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
@@ -690,19 +727,17 @@ T ldet(const int n, const T* A, const int ldA) {
   ///@todo Remove temporary
   auto d = (T*)device_malloc(n*sizeof(T));
   transform(1, n, LU, ldLU + 1, d, 1, log_abs_functor<T>());
-  T ldet = sum(1, n, d, 1);
+  sum(1, n, d, 1, b);
 
   device_free(d);
   device_free(ipiv);
   free(bufferOnHost);
   device_free(bufferOnDevice);
   device_free(LU);
-
-  return ldet;
 }
 
 template<class T>
-T lcholdet(const int n, const T* S, const int ldS) {
+void lcholdet(const int n, const T* S, const int ldS, T* b) {
   prefetch(S, n, n, ldS);
 
   auto L = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
@@ -726,20 +761,23 @@ T lcholdet(const int n, const T* S, const int ldS) {
    * diagonal, all of which should be positive */
   ///@todo Remove temporary
   auto d = (T*)device_malloc(n*sizeof(T));
-  transform(1, n, L, ldL + 1, d, 1, log_functor<T>());
-  T ldet = 2.0*sum(1, n, d, 1);
+  transform(1, n, L, ldL + 1, d, 1, log_square_functor<T>());
+  sum(1, n, d, 1, b);
 
   device_free(d);
   free(bufferOnHost);
   device_free(bufferOnDevice);
   device_free(L);
-
-  return ldet;
 }
 
 template<class T>
 void diagonal(const T a, const int n, T* B, const int ldB) {
   for_each(n, n, B, ldB, diagonal_functor<T>(a));
+}
+
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB) {
+  for_each(n, n, B, ldB, diagonal_pointer_functor<T>(a));
 }
 
 template<class T>
@@ -763,8 +801,8 @@ void transpose(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
-T trace(const int m, const int n, const T* A, const int ldA) {
-  return sum(1, std::min(m, n), A, ldA + 1);
+void trace(const int m, const int n, const T* A, const int ldA, T* b) {
+  return sum(1, std::min(m, n), A, ldA + 1, b);
 }
 
 }

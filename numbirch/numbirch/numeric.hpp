@@ -46,7 +46,6 @@ template<class T>
 void rectify(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB);
 
-
 /**
  * Addition.
  * 
@@ -68,6 +67,46 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC);
 
 /**
+ * Scalar addition.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void add(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC);
+
+/**
+ * Scalar addition.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void add(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC);
+
+/**
  * Subtraction.
  * 
  * @ingroup cpp-raw
@@ -86,6 +125,46 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
 template<class T>
 void sub(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC);
+
+/**
+ * Scalar subtraction.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void sub(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC);
+
+/**
+ * Scalar subtraction.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void sub(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC);
 
 /**
  * Linear combination of matrices.
@@ -143,6 +222,7 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
  * @ingroup cpp-raw
  * 
  * @tparam T Value type (`double` or `float`).
+ * @tparam U Value type (`double`, `float` or `int`).
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -152,16 +232,37 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T>
-void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
-    const int ldC);
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC);
+
+/**
+ * Scalar division.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC);
 
 /**
  * Scalar multiplication.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam U Value type (`double` or `float`).
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -171,9 +272,29 @@ void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T>
-void mul(const int m, const int n, const T a, const T* B, const int ldB, T* C,
-    const int ldC);
+template<class T, class U>
+void mul(const int m, const int n, const T a, const U* B, const int ldB,
+    U* C, const int ldC);
+
+/**
+ * Scalar multiplication.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam U Value type (`double` or `float`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param a Scalar.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void mul(const int m, const int n, const T* a, const U* B, const int ldB,
+    U* C, const int ldC);
 
 /**
  * Matrix-vector multiplication. Computes @f$y = Ax@f$.
@@ -268,11 +389,10 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
  * @param n Number of columns.
  * @param A Matrix.
  * @param ldA Column stride of `A`.
- * 
- * @return Sum of elements of the matrix.
+ * @param[out] b Sum of elements of the matrix.
  */
 template<class T>
-T sum(const int m, const int n, const T* A, const int ldA);
+void sum(const int m, const int n, const T* A, const int ldA, T* b);
 
 /**
  * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
@@ -286,11 +406,11 @@ T sum(const int m, const int n, const T* A, const int ldA);
  * @param incx Element stride of `x`.
  * @param y Vector.
  * @param incy Element stride of `y`.
- * 
- * @return Dot product.
+ * @param[out] z Dot product.
  */
 template<class T>
-T dot(const int n, const T* x, const int incx, const T* y, const int incy);
+void dot(const int n, const T* x, const int incx, const T* y, const int incy,
+    T* z);
 
 /**
  * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
@@ -307,12 +427,11 @@ T dot(const int n, const T* x, const int incx, const T* y, const int incy);
  * @param ldA Column stride of `A`.
  * @param B Matrix.
  * @param ldB Column stride of `B`.
- * 
- * @return Frobenius product.
+ * @param[out] c Frobenius product.
  */
 template<class T>
-T frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB);
+void frobenius(const int m, const int n, const T* A, const int ldA,
+    const T* B, const int ldB, T* c);
 
 /**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
@@ -541,15 +660,15 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB);
  * @param n Number of rows and columns.
  * @param A Matrix.
  * @param ldA Column stride of `A`.
- * 
- * @return Logarithm of the absolute value of the determinant of `A`.
+ * @param[out] b Logarithm of the absolute value of the determinant of `A`.
  */
 template<class T>
-T ldet(const int n, const T* A, const int ldA);
+void ldet(const int n, const T* A, const int ldA, T* b);
 
 /**
- * Logarithm of the absolute value of the determinant of a symmetric positive
- * definite matrix, via the Cholesky factorization.
+ * Logarithm of the determinant of a symmetric positive definite matrix, via
+ * the Cholesky factorization. The determinant of a positive definite matrix
+ * is always positive.
  * 
  * @ingroup cpp-raw
  * 
@@ -558,13 +677,10 @@ T ldet(const int n, const T* A, const int ldA);
  * @param n Number of rows and columns.
  * @param S Symmetric positive definite matrix.
  * @param ldS Column stride of `S`.
- * 
- * @return Logarithm of the determinant of `S`.
- * 
- * The determinant of a positive definite matrix is always positive.
+ * @param[out] b Logarithm of the determinant of `S`.
  */
 template<class T>
-T lcholdet(const int n, const T* S, const int ldS);
+void lcholdet(const int n, const T* S, const int ldS, T* b);
 
 /**
  * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
@@ -581,6 +697,22 @@ T lcholdet(const int n, const T* S, const int ldS);
  */
 template<class T>
 void diagonal(const T a, const int n, T* B, const int ldB);
+
+/**
+ * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
+ * value, while all off-diagonal elements are assigned zero.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * 
+ * @param a Scalar to assign to diagonal.
+ * @param n Number of rows and columns of `B`.
+ * @param[out] B Matrix.
+ * @param ldB Column stride of `B`.
+ */
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB);
 
 /**
  * Matrix transpose. Computes @f$B = A^\top@f$.
@@ -611,10 +743,9 @@ void transpose(const int m, const int n, const T* A, const int ldA, T* B,
  * @param n Number of columns.
  * @param A Matrix.
  * @param ldA Column stride of `A`.
- * 
- * @return Trace of the matrix.
+ * @param[out] b Trace of the matrix.
  */
 template<class T>
-T trace(const int m, const int n, const T* A, const int ldA);
+void trace(const int m, const int n, const T* A, const int ldA, T* b);
 
 }

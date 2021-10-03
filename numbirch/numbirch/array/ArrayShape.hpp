@@ -63,6 +63,14 @@ public:
   static constexpr ArrayShape<0> compact() {
     return ArrayShape<0>();
   }
+
+  static constexpr int64_t offset(const int64_t s) {
+    return s;
+  }
+
+  static constexpr int64_t transpose(const int64_t t) {
+    return t;
+  }
 };
 
 /**

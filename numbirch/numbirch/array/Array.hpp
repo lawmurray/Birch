@@ -54,13 +54,46 @@ public:
   /**
    * Constructor.
    */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array() :
       buf(nullptr),
       ctl(nullptr),
       shp(),
       isView(false),
       isElementWise(false) {
-    assert(shp.volume() == 0);
+    // default allocation of a scalar has one element
+    allocate();
+    if (!std::is_trivial<T>::value) {
+      atomize();
+      initialize();
+    }
+  }
+
+  /**
+   * Constructor.
+   */
+  template<int E = D, std::enable_if_t<E != 0,int> = 0>
+  Array() :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(),
+      isView(false),
+      isElementWise(false) {
+    // default allocation of non-scalar has zero elements
+  }
+
+  /**
+   * Constructor.
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  Array(const T& value) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(),
+      isView(false),
+      isElementWise(false) {
+    allocate();
+    *buf = value;  ///@todo Use asynchronous fill
   }
 
   /**
@@ -176,7 +209,12 @@ public:
   /**
    * Copy constructor.
    */
-  Array(const Array& o) : Array() {
+  Array(const Array& o) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(),
+      isView(false),
+      isElementWise(false) {
     shp = o.shp;
     if (!o.isView && std::is_trivial<T>::value) {
       ArrayControl* ctl;
@@ -194,7 +232,12 @@ public:
    */
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible<U,T>::value,int> = 0>
-  Array(const Array<U,E>& o) : Array() {
+  Array(const Array<U,E>& o) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(),
+      isView(false),
+      isElementWise(false) {
     shp = o.shp;
     compact();
     allocate();
@@ -204,7 +247,12 @@ public:
   /**
    * Move constructor.
    */
-  Array(Array&& o) : Array() {
+  Array(Array&& o) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(),
+      isView(false),
+      isElementWise(false) {
     if (!o.isView) {
       swap(o);
     } else {
@@ -272,6 +320,56 @@ public:
   ArrayIterator<T,D> end() const {
     return begin().operator+(size());
   }
+
+  /**
+   * Convert to value (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  operator T&() {
+    return value();
+  }
+
+  /**
+   * Convert to value (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  operator const T&() const {
+    return value();
+  }
+
+  /**
+   * Value (scalar only)
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  T& value() {
+    own();
+    atomize();
+    return *buf;
+  }
+
+  /**
+   * Value (scalar only)
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  const T& value() const {
+    atomize();
+    return *buf;
+  }
+
+  /**
+   * Is the value (for a scalar) or are the elements (for vectors and
+   * matrices) available without waiting for asynchronous device operations to
+   * complete?
+   * 
+   * In the current implementation, once a device operation is launched that
+   * depends on the buffer, this returns false until a call to value() (for a
+   * scalar) or an element is accessed (for vectors and matrices), after which
+   * it returns true.
+   */
+  bool has_value() const {
+    return !std::is_trivial<T>::value || isElementWise;
+  }
+
 
   /**
    * Slice.

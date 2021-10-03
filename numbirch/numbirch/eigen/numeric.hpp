@@ -31,6 +31,22 @@ void add(const int m, const int n, const T* A, const int ldA, const T* B,
   C1.noalias() = A1 + B1;
 }
 
+template<class T, class U>
+void add(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.array() = A1.array() + b;
+}
+
+template<class T, class U>
+void add(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.array() = A1.array() + (*b);
+}
+
 template<class T>
 void sub(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
@@ -38,6 +54,22 @@ void sub(const int m, const int n, const T* A, const int ldA, const T* B,
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1 - B1;
+}
+
+template<class T, class U>
+void sub(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.array() = A1.array() - b;
+}
+
+template<class T, class U>
+void sub(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.array() = A1.array() - (*b);
 }
 
 template<class T>
@@ -62,20 +94,36 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
   C1.noalias() = A1.cwiseProduct(B1);
 }
 
-template<class T>
-void div(const int m, const int n, const T* A, const int ldA, const T b, T* C,
-    const int ldC) {
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U b,
+    T* C, const int ldC) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1/b;
 }
 
-template<class T>
-void mul(const int m, const int n, const T a, const T* B, const int ldB, T* C,
-    const int ldC) {
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1/(*b);
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T a, const U* B, const int ldB,
+    U* C, const int ldC) {
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = a*B1;
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T* a, const U* B, const int ldB,
+    U* C, const int ldC) {
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = (*a)*B1;
 }
 
 template<class T>
@@ -121,24 +169,25 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
 }
 
 template<class T>
-T sum(const int m, const int n, const T* A, const int ldA) {
+void sum(const int m, const int n, const T* A, const int ldA, T* b) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
-  return A1.sum();
+  *b = A1.sum();
 }
 
 template<class T>
-T dot(const int n, const T* x, const int incx, const T* y, const int incy) {
+void dot(const int n, const T* x, const int incx, const T* y, const int incy,
+    T* z) {
   auto x1 = make_eigen_vector(x, n, incx);
   auto y1 = make_eigen_vector(y, n, incy);
-  return x1.dot(y1);
+  *z = x1.dot(y1);
 }
 
 template<class T>
-T frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB) {
+void frobenius(const int m, const int n, const T* A, const int ldA,
+    const T* B, const int ldB, T* c) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
-  return (A1.array()*B1.array()).sum();
+  *c = (A1.array()*B1.array()).sum();
 }
 
 template<class T>
@@ -247,13 +296,13 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
 }
 
 template<class T>
-T ldet(const int n, const T* A, const int ldA) {
+void ldet(const int n, const T* A, const int ldA, T* b) {
   auto A1 = make_eigen_matrix(A, n, n, ldA);
-  return A1.householderQr().logAbsDeterminant();
+  *b = A1.householderQr().logAbsDeterminant();
 }
 
 template<class T>
-T lcholdet(const int n, const T* S, const int ldS) {
+void lcholdet(const int n, const T* S, const int ldS, T* b) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
@@ -263,13 +312,19 @@ T lcholdet(const int n, const T* S, const int ldS) {
    * permutation matrix and thus has determinant $\pm 1$, which squares to 1,
    * leaving only the $D$ matrix with its determinant being the product along
    * the main diagonal (log and sum) */
-  return ldlt.vectorD().array().log().sum();
+  *b = ldlt.vectorD().array().log().sum();
 }
 
 template<class T>
 void diagonal(const T a, const int n, T* B, const int ldB) {
   auto B1 = make_eigen_matrix(B, n, n, ldB);
   B1.noalias() = a*B1.Identity(n, n);
+}
+
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB) {
+  auto B1 = make_eigen_matrix(B, n, n, ldB);
+  B1.noalias() = (*a)*B1.Identity(n, n);
 }
 
 template<class T>
@@ -281,9 +336,9 @@ void transpose(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
-T trace(const int m, const int n, const T* A, const int ldA) {
+void trace(const int m, const int n, const T* A, const int ldA, T* b) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
-  return A1.trace();
+  *b = A1.trace();
 }
 
 }

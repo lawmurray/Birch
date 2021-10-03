@@ -33,26 +33,6 @@ Array<T,D> operator-(const Array<T,D>& A) {
 }
 
 /**
- * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
- * 0)@f$.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double` or `float`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<T,D> rectify(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
-  rectify(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-  return B;
-}
-
-/**
  * Addition.
  * 
  * @ingroup array
@@ -77,6 +57,46 @@ Array<T,D> operator+(const Array<T,D>& A, const Array<T,D>& B) {
 }
 
 /**
+ * Scalar addition.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type (`double`, `float` or `int`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
+ * 
+ * @param a Scalar.
+ * @param b Scalar.
+ * 
+ * @return Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<U> operator+(const T a, const Scalar<U>& b) {
+  Scalar<U> c;
+  add(1, 1, U(a), b.data(), b.stride(), c.data(), c.stride());
+  return c;
+}
+
+/**
+ * Scalar addition.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type (`double`, `float` or `int`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
+ * 
+ * @param a Scalar.
+ * @param b Scalar.
+ * 
+ * @return Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+Scalar<T> operator+(const Scalar<T>& a, const U b) {
+  return b + a;
+}
+
+/**
  * Subtraction.
  * 
  * @ingroup array
@@ -98,6 +118,66 @@ Array<T,D> operator-(const Array<T,D>& A, const Array<T,D>& B) {
   sub(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
+}
+
+/**
+ * Scalar subtraction.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type (`double`, `float` or `int`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
+ * 
+ * @param a Scalar.
+ * @param b Scalar.
+ * 
+ * @return %Array.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<U> operator-(const T a, const Scalar<U>& b) {
+  return -a + b;
+}
+
+/**
+ * Scalar subtraction.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type (`double`, `float` or `int`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
+ * 
+ * @param a Scalar.
+ * @param b Scalar.
+ * 
+ * @return %Array.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+Scalar<T> operator-(const Scalar<T>& a, const U b) {
+  Scalar<T> c;
+  sub(1, 1, a.data(), a.stride(), b, c.data(), c.stride());
+  return c;
+}
+
+/**
+ * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
+ * 0)@f$.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> rectify(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  rectify(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
 }
 
 /**
@@ -167,8 +247,8 @@ Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
  * @ingroup array
  * 
  * @tparam T Element type (`double` or `float`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
- * @tparam U Scalar type. Will be converted to T.
  * 
  * @param A %Array.
  * @param b Scalar.
@@ -179,7 +259,28 @@ template<class T, int D, class U,
     std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
 Array<T,D> operator/(const Array<T,D>& A, const U b) {
   Array<T,D> C(A.shape().compact());
-  div(A.width(), A.height(), A.data(), A.stride(), T(b), C.data(),
+  div(A.width(), A.height(), A.data(), A.stride(), b, C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Scalar division.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param b Scalar.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, class U>
+Array<T,D> operator/(const Array<T,D>& A, const Scalar<U>& b) {
+  Array<T,D> C(A.shape().compact());
+  div(A.width(), A.height(), A.data(), A.stride(), b.data(), C.data(),
       C.stride());
   return C;
 }
@@ -189,7 +290,7 @@ Array<T,D> operator/(const Array<T,D>& A, const U b) {
  * 
  * @ingroup array
  * 
- * @tparam T Scalar type. Will be converted to U.
+ * @tparam T Scalar type (`double`, `float` or `int`).
  * @tparam U Element type (`double` or `float`).
  * @tparam D Number of dimensions.
  * 
@@ -200,9 +301,30 @@ Array<T,D> operator/(const Array<T,D>& A, const U b) {
  */
 template<class T, class U, int D,
     std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Array<T,D> operator*(const T a, const Array<U,D>& B) {
-  Array<T,D> C(B.shape().compact());
-  mul(C.width(), C.height(), U(a), B.data(), B.stride(), C.data(),
+Array<U,D> operator*(const T a, const Array<U,D>& B) {
+  Array<U,D> C(B.shape().compact());
+  mul(C.width(), C.height(), a, B.data(), B.stride(), C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Scalar multiplication.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type (`double`, `float` or `int`).
+ * @tparam U Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param a Scalar.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, class U, int D>
+Array<U,D> operator*(const Scalar<T>& a, const Array<U,D>& B) {
+  Array<U,D> C(B.shape().compact());
+  mul(C.width(), C.height(), a.data(), B.data(), B.stride(), C.data(),
       C.stride());
   return C;
 }
@@ -213,8 +335,8 @@ Array<T,D> operator*(const T a, const Array<U,D>& B) {
  * @ingroup array
  * 
  * @tparam T Element type (`double` or `float`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
- * @tparam U Scalar type. Will be converted to T.
  * 
  * @param A %Array.
  * @param b %Array.
@@ -224,6 +346,25 @@ Array<T,D> operator*(const T a, const Array<U,D>& B) {
 template<class T, int D, class U,
     std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
 Array<T,D> operator*(const Array<T,D>& A, const U b) {
+  return b*A;
+}
+
+/**
+ * Scalar multiplication.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam U Scalar type (`double`, `float` or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param b %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, class U>
+Array<T,D> operator*(const Array<T,D>& A, const Scalar<U>& b) {
   return b*A;
 }
 
@@ -332,8 +473,10 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
  * @return Sum of elements of the array.
  */
 template<class T, int D>
-T sum(const Array<T,D>& A) {
-  return sum(A.width(), A.height(), A.data(), A.stride());
+Scalar<T> sum(const Array<T,D>& A) {
+  Scalar<T> b;
+  sum(A.width(), A.height(), A.data(), A.stride(), b.data());
+  return b;
 }
 
 /**
@@ -349,9 +492,11 @@ T sum(const Array<T,D>& A) {
  * @return Dot product.
  */
 template<class T>
-T dot(const Array<T,1>& x, const Array<T,1>& y) {
+Scalar<T> dot(const Array<T,1>& x, const Array<T,1>& y) {
   assert(x.length() == y.length());
-  return dot(x.length(), x.data(), x.stride(), y.data(), y.stride());
+  Scalar<T> z;
+  dot(x.length(), x.data(), x.stride(), y.data(), y.stride(), z.data());
+  return z;
 }
 
 /**
@@ -387,11 +532,13 @@ Array<T,1> dot(const Array<T,1>& x, const Array<T,2>& A) {
  * @return Frobenius product.
  */
 template<class T>
-T frobenius(const Array<T,2>& A, const Array<T,2>& B) {
+Scalar<T> frobenius(const Array<T,2>& A, const Array<T,2>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
-  return frobenius(A.rows(), A.columns(), A.data(), A.stride(), B.data(),
-      B.stride());
+  Scalar<T> c;
+  frobenius(A.rows(), A.columns(), A.data(), A.stride(), B.data(),
+      B.stride(), c.data());
+  return c;
 }
 
 /**
@@ -647,13 +794,16 @@ Array<T,2> cholinv(const Array<T,2>& S) {
  * @return Logarithm of the absolute value of the determinant of `A`.
  */
 template<class T>
-T ldet(const Array<T,2>& A) {
-  return ldet(A.rows(), A.data(), A.stride());
+Scalar<T> ldet(const Array<T,2>& A) {
+  Scalar<T> b;
+  ldet(A.rows(), A.data(), A.stride(), b.data());
+  return b;
 }
 
 /**
- * Logarithm of the absolute value of the determinant of a symmetric positive
- * definite matrix, via the Cholesky factorization.
+ * Logarithm of the determinant of a symmetric positive definite matrix, via
+ * the Cholesky factorization. The determinant of a positive definite matrix
+ * is always positive.
  * 
  * @ingroup array
  * 
@@ -662,12 +812,12 @@ T ldet(const Array<T,2>& A) {
  * @param S Symmetric positive definite matrix.
  * 
  * @return Logarithm of the determinant of `S`.
- * 
- * The determinant of a positive definite matrix is always positive.
  */
 template<class T>
-T lcholdet(const Array<T,2>& S) {
-  return lcholdet(S.rows(), S.data(), S.stride());
+Scalar<T> lcholdet(const Array<T,2>& S) {
+  Scalar<T> b;
+  lcholdet(S.rows(), S.data(), S.stride(), b.data());
+  return b;
 }
 
 /**
@@ -683,6 +833,24 @@ T lcholdet(const Array<T,2>& S) {
  */
 template<class T>
 Array<T,2> diagonal(const T a, const int n) {
+  Array<T,2> B(make_shape(n, n));
+  diagonal(a, n, B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
+ * value, while all off-diagonal elements are assigned zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * 
+ * @param a Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ */
+template<class T>
+Array<T,2> diagonal(const T* a, const int n) {
   Array<T,2> B(make_shape(n, n));
   diagonal(a, n, B.data(), B.stride());
   return B;
@@ -720,8 +888,10 @@ Array<T,2> transpose(const Array<T,2>& A) {
  * @return Trace of the matrix.
  */
 template<class T>
-T trace(const Array<T,2>& A) {
-  return trace(A.rows(), A.columns(), A.data(), A.stride());
+Scalar<T> trace(const Array<T,2>& A) {
+  Scalar<T> b;
+  trace(A.rows(), A.columns(), A.data(), A.stride(), b.data());
+  return b;
 }
 
 }

@@ -62,73 +62,97 @@ struct matrix_transpose_element_functor {
   int ldA;
 };
 
-template<class T = double>
+template<class T>
 struct negate_functor {
   HOST_DEVICE T operator()(const T x) const {
     return -x;
   }
 };
 
-template<class T = double>
+template<class T>
 struct rectify_functor {
   HOST_DEVICE T operator()(const T x) const {
     return x > T(0) ? x : T(0);
   }
 };
 
-template<class T = double>
+template<class T>
 struct plus_functor {
   HOST_DEVICE T operator()(const T x, const T y) const {
     return x + y;
   }
 };
 
-template<class T = double>
+template<class T>
 struct minus_functor {
   HOST_DEVICE T operator()(const T x, const T y) const {
     return x - y;
   }
 };
 
-template<class T = double>
+template<class T>
 struct multiplies_functor {
   HOST_DEVICE T operator()(const T x, const T y) const {
     return x*y;
   }
 };
 
-template<class T = double>
-struct divides_functor {
-  HOST_DEVICE T operator()(const T x, const T y) const {
-    return x/y;
-  }
-};
-
-template<class T = double>
+template<class T, class U>
 struct scalar_multiplies_functor {
-  scalar_multiplies_functor(T a) :
+  scalar_multiplies_functor(const U a) :
       a(a) {
     //
   }
   HOST_DEVICE T operator()(const T x) const {
     return x*a;
   }
-  T a;
+  const U a;
 };
 
-template<class T = double>
+template<class T, class U>
+struct scalar_multiplies_pointer_functor {
+  scalar_multiplies_pointer_functor(const U* a) :
+      a(a) {
+    //
+  }
+  HOST_DEVICE T operator()(const T x) const {
+    return x*(*a);
+  }
+  const U* a;
+};
+
+template<class T>
+struct divides_functor {
+  HOST_DEVICE T operator()(const T x, const T y) const {
+    return x/y;
+  }
+};
+
+template<class T, class U>
 struct scalar_divides_functor {
-  scalar_divides_functor(T a) :
+  scalar_divides_functor(const U a) :
       a(a) {
     //
   }
   HOST_DEVICE T operator()(const T x) const {
     return x/a;
   }
-  T a;
+  const U a;
 };
 
-template<class T = double>
+template<class T, class U>
+struct scalar_divides_pointer_functor {
+  scalar_divides_pointer_functor(const U* a) :
+      a(a) {
+    //
+  }
+  HOST_DEVICE T operator()(const T x) const {
+    return x/(*a);
+  }
+  const U* a;
+};
+
+template<class T>
 struct combine_functor {
   combine_functor(const T a , const T b, const T c, const T d) :
       a(a), b(b), c(c), d(d) {
@@ -140,7 +164,7 @@ struct combine_functor {
   const T a, b, c, d;
 };
 
-template<class T = double>
+template<class T>
 struct combine4_functor {
   combine4_functor(const T a , const T b, const T c, const T d) :
       a(a), b(b), c(c), d(d) {
@@ -153,30 +177,49 @@ struct combine4_functor {
   const T a, b, c, d;
 };
 
-template<class T = double>
+template<class T>
 struct log_abs_functor {
   HOST_DEVICE T operator()(const T x) const {
     return std::log(std::abs(x));
   }
 };
 
-template<class T = double>
+template<class T>
+struct log_square_functor {
+  HOST_DEVICE T operator()(const T x) const {
+    return 2.0*std::log(x);
+  }
+};
+
+template<class T>
 struct log_functor {
   HOST_DEVICE T operator()(const T x) const {
     return std::log(x);
   }
 };
 
-template<class T = double>
+template<class T>
 struct diagonal_functor {
-  diagonal_functor(T a) :
+  diagonal_functor(const T a) :
       a(a) {
     //
   }
   HOST_DEVICE T operator()(const int i, const int j) const {
     return (i == j) ? a : T(0);
   }
-  T a;
+  const T a;
+};
+
+template<class T>
+struct diagonal_pointer_functor {
+  diagonal_functor(const T* a) :
+      a(a) {
+    //
+  }
+  HOST_DEVICE T operator()(const int i, const int j) const {
+    return (i == j) ? *a : T(0);
+  }
+  const T* a;
 };
 
 }
