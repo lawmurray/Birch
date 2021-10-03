@@ -1,0 +1,27 @@
+/**
+ * @file
+ * 
+ * Explicit instantiations of numeric functions for the enabled backend.
+ */
+#include "numbirch/numeric/unary_operator.hpp"
+
+#ifdef BACKEND_ONEAPI
+#include "numbirch/oneapi/unary_operator.hpp"
+#endif
+#ifdef BACKEND_CUDA
+#include "numbirch/cuda/unary_operator.hpp"
+#endif
+#ifdef BACKEND_EIGEN
+#include "numbirch/eigen/unary_operator.hpp"
+#endif
+
+namespace numbirch {
+
+template void neg(const int m, const int n, const double* A, const int ldA,
+    double* B, const int ldB);
+template void neg(const int m, const int n, const float* A, const int ldA,
+    float* B, const int ldB);
+template void neg(const int m, const int n, const int* A, const int ldA,
+    int* B, const int ldB);
+
+}

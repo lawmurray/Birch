@@ -1,0 +1,64 @@
+/**
+ * @file
+ */
+#pragma once
+
+#include "numbirch/numeric/binary_operator.hpp"
+#include "numbirch/eigen/eigen.hpp"
+
+namespace numbirch {
+
+template<class T>
+void add(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1 + B1;
+}
+
+template<class T, class U>
+void div(const int m, const int n, const T* A, const int ldA, const U* b,
+    T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1/(*b);
+}
+
+template<class T, class U>
+void mul(const int m, const int n, const T* a, const U* B, const int ldB,
+    U* C, const int ldC) {
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = (*a)*B1;
+}
+
+template<class T>
+void mul(const int m, const int n, const T* A, const int ldA, const T* x,
+    const int incx, T* y, const int incy) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto x1 = make_eigen_vector(x, n, incx);
+  auto y1 = make_eigen_vector(y, m, incy);
+  y1.noalias() = A1*x1;
+}
+
+template<class T>
+void mul(const int m, const int n, const int k, const T* A, const int ldA,
+    const T* B, const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, k, ldA);
+  auto B1 = make_eigen_matrix(B, k, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1*B1;
+}
+
+
+template<class T>
+void sub(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1 - B1;
+}
+
+}

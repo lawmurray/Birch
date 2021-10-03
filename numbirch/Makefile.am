@@ -13,7 +13,15 @@ AM_CPPFLAGS =
 AM_CXXFLAGS = 
 AM_LDFLAGS = 
 
-COMMON_SOURCES =
+COMMON_SOURCES = \
+    numbirch/common/binary_function.cpp \
+    numbirch/common/binary_operator.cpp \
+    numbirch/common/other_function.cpp \
+    numbirch/common/ternary_function.cpp \
+    numbirch/common/ternary_operator.cpp \
+    numbirch/common/unary_function.cpp \
+    numbirch/common/unary_operator.cpp
+
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI -Wno-deprecated-declarations -Wno-unused-command-line-argument
   AM_CXXFLAGS += -fsycl -qmkl
@@ -21,24 +29,21 @@ if ONEAPI
   COMMON_SOURCES += \
       numbirch/jemalloc/jemalloc.cpp \
       numbirch/oneapi/memory.cpp \
-      numbirch/oneapi/sycl.cpp \
-      numbirch/common/numeric.cpp
+      numbirch/oneapi/sycl.cpp
 else
 if CUDA
   AM_CXXFLAGS += -DBACKEND_CUDA
   AM_CXXFLAGS += -x cu -G -arch=sm_75 -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
   COMMON_SOURCES += \
-      numbirch/jemalloc/jemalloc.cpp \
-      numbirch/cuda/cuda.cpp \
       numbirch/cuda/cublas.cpp \
+      numbirch/cuda/cuda.cpp \
       numbirch/cuda/cusolver.cpp \
       numbirch/cuda/memory.cpp \
-      numbirch/common/numeric.cpp
+      numbirch/jemalloc/jemalloc.cpp
 else
   AM_CPPFLAGS += -DBACKEND_EIGEN -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += \
-      numbirch/eigen/memory.cpp \
-      numbirch/common/numeric.cpp
+      numbirch/eigen/memory.cpp
 endif
 endif
 
@@ -73,7 +78,55 @@ nobase_include_HEADERS = \
   numbirch/array.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
-  numbirch/numeric.hpp
+  numbirch/numeric.hpp \
+  numbirch/scalar.hpp
+
+noinst_HEADERS = \
+  numbirch/cuda/binary_function.hpp \
+  numbirch/cuda/binary_operator.hpp \
+  numbirch/cuda/cub.hpp \
+  numbirch/cuda/cublas.hpp \
+  numbirch/cuda/cuda.hpp \
+  numbirch/cuda/cusolver.hpp \
+  numbirch/cuda/other_function.hpp \
+  numbirch/cuda/ternary_function.hpp \
+  numbirch/cuda/ternary_operator.hpp \
+  numbirch/cuda/unary_function.hpp \
+  numbirch/cuda/unary_operator.hpp \
+  numbirch/eigen/binary_function.hpp \
+  numbirch/eigen/binary_operator.hpp \
+  numbirch/eigen/eigen.hpp \
+  numbirch/eigen/other_function.hpp \
+  numbirch/eigen/ternary_function.hpp \
+  numbirch/eigen/ternary_operator.hpp \
+  numbirch/eigen/unary_function.hpp \
+  numbirch/eigen/unary_operator.hpp \
+  numbirch/functor/binary_function.hpp \
+  numbirch/functor/binary_operator.hpp \
+  numbirch/functor/other_function.hpp \
+  numbirch/functor/ternary_function.hpp \
+  numbirch/functor/ternary_operator.hpp \
+  numbirch/functor/unary_function.hpp \
+  numbirch/functor/unary_operator.hpp \
+  numbirch/jemalloc/jemalloc.hpp \
+  numbirch/numeric/binary_function.hpp \
+  numbirch/numeric/binary_operator.hpp \
+  numbirch/numeric/other_function.hpp \
+  numbirch/numeric/ternary_function.hpp \
+  numbirch/numeric/ternary_operator.hpp \
+  numbirch/numeric/unary_function.hpp \
+  numbirch/numeric/unary_operator.hpp \
+  numbirch/oneapi/binary_function.hpp \
+  numbirch/oneapi/binary_operator.hpp \
+  numbirch/oneapi/dpl.hpp \
+  numbirch/oneapi/other_function.hpp \
+  numbirch/oneapi/sycl.hpp \
+  numbirch/oneapi/ternary_function.hpp \
+  numbirch/oneapi/ternary_operator.hpp \
+  numbirch/oneapi/unary_function.hpp \
+  numbirch/oneapi/unary_operator.hpp \
+  numbirch/docs.hpp
+
 
 dist_noinst_DATA =  \
   Doxyfile \
