@@ -1258,17 +1258,15 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxTemplateParameter("template parameter", options);
   std::regex rxTemplateArgument("template argument", options);
   std::regex rxTypeDeduction("before deduction of ‘’", options);
-  std::regex rxReal("\\b(?:float|double)\\b", options);
-  std::regex rxInteger("\\b(?:long )?(?:long|int)\\b", options);
-  std::regex rxBoolean("\\bbool\\b", options);
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
+  std::regex rxScalar("Array<(" + type + "), *0 *>", options);
   std::regex rxVector("Array<(" + type + "), *1 *>", options);
   std::regex rxMatrix("Array<(" + type + "), *2 *>", options);
   std::regex rxShared("Shared<(" + type + ") *>", options);
   std::regex rxOptional("std::optional<(" + type + ") *>", options);
   std::regex rxConstRef("(?:const *)?(" + type + ") *&", options);
   std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::", options);
-  std::regex rxAka("\\{aka *‘?(class |const )?" + type + "’?\\}", options);
+  std::regex rxAka(" *\\{aka *.?+\\}", options);
   std::regex rxValueType("using value_type *= *", options);
   std::regex rxValueType2("::value_type", options);
   std::regex rxDeref("(?:operator)?->", options);
@@ -1308,12 +1306,10 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxTypeDeduction, "before deduction of return type");
 
         /* convert back some types */
-        str = std::regex_replace(str, rxReal, "Real");
-        str = std::regex_replace(str, rxInteger, "Integer");
-        str = std::regex_replace(str, rxBoolean, "Boolean");
         str = std::regex_replace(str, rxString, "String");
 
         /* replace some types */
+        str = std::regex_replace(str, rxScalar, "$1");
         str = std::regex_replace(str, rxVector, "$1[_]");
         str = std::regex_replace(str, rxMatrix, "$1[_,_]");
         str = std::regex_replace(str, rxConstRef, "$1");

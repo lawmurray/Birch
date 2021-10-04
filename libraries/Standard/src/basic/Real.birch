@@ -8,9 +8,9 @@ type Real;
 
 hpp{{
 #ifdef BIRCH_SINGLE
-using Real = float;
+using Real = numbirch::Scalar<float>;
 #else
-using Real = double;
+using Real = numbirch::Scalar<double>;
 #endif
 }}
 

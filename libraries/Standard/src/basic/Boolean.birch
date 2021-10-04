@@ -4,7 +4,7 @@
 type Boolean;
 
 hpp{{
-using Boolean = bool;
+using Boolean = numbirch::Scalar<bool>;
 }}
 
 /*

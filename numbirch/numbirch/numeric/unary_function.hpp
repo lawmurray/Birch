@@ -89,7 +89,7 @@ void rectify(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB);
 
 /**
- * Matrix sum of elements.
+ * Sum of elements.
  * 
  * @ingroup cpp-raw
  * 

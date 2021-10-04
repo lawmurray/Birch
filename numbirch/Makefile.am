@@ -70,10 +70,17 @@ nobase_include_HEADERS = \
   numbirch/array/ArrayIterator.hpp \
   numbirch/array/ArrayShape.hpp \
   numbirch/array/Atomic.hpp \
+  numbirch/array/binary_function.hpp \
+  numbirch/array/binary_operator.hpp \
   numbirch/array/external.hpp \
   numbirch/array/Lock.hpp \
   numbirch/array/Matrix.hpp \
+  numbirch/array/other_function.hpp \
   numbirch/array/Scalar.hpp \
+  numbirch/array/ternary_function.hpp \
+  numbirch/array/ternary_operator.hpp \
+  numbirch/array/unary_function.hpp \
+  numbirch/array/unary_operator.hpp \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
   numbirch/memory.hpp \

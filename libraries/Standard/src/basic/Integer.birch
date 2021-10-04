@@ -4,7 +4,7 @@
 type Integer;
 
 hpp{{
-using Integer = int;
+using Integer = numbirch::Scalar<int>;
 }}
 
 /*
