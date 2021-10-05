@@ -45,6 +45,135 @@ void div(const int m, const int n, const T* A, const int ldA, const U* b,
     T* C, const int ldC);
 
 /**
+ * Equal to comparison.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void equal(const int m, const int n, const T* A, const int ldA, const T* b,
+    bool* C, const int ldC);
+
+/**
+ * Greater than comparison.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void greater(const int m, const int n, const T* A, const int ldA, const T* b,
+    bool* C, const int ldC);
+
+/**
+ * Greater than or equal to comparison.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void greater_or_equal(const int m, const int n, const T* A, const int ldA,
+    const T* b, bool* C, const int ldC);
+
+/**
+ * Less than comparison.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void less(const int m, const int n, const T* A, const int ldA, const T* b,
+    bool* C, const int ldC);
+
+/**
+ * Less than or equal to comparison.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void less_or_equal(const int m, const int n, const T* A, const int ldA,
+    const T* b, bool* C, const int ldC);
+
+/**
+ * Logical `and`.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+void logical_and(const int m, const int n, const bool* A, const int ldA,
+    const bool* B, const int ldB, bool* C, const int ldC);
+
+/**
+ * Logical `or`.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+void logical_or(const int m, const int n, const bool* A, const int ldA,
+    const bool* B, const int ldB, bool* C, const int ldC);
+
+/**
  * Scalar multiplication.
  * 
  * @ingroup cpp-raw
@@ -104,6 +233,25 @@ void mul(const int m, const int n, const T* A, const int ldA, const T* x,
 template<class T>
 void mul(const int m, const int n, const int k, const T* A, const int ldA,
     const T* B, const int ldB, T* C, const int ldC);
+
+/**
+ * Not equal comparison.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param b Scalar.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void not_equal(const int m, const int n, const T* A, const int ldA,
+    const T* b, bool* C, const int ldC);
 
 /**
  * Subtraction.

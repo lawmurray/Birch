@@ -4,9 +4,20 @@
 #pragma once
 
 #include "numbirch/numeric/binary_function.hpp"
+#include "numbirch/functor/binary_function.hpp"
 #include "numbirch/eigen/eigen.hpp"
 
 namespace numbirch {
+
+template<class T>
+void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.binaryExpr(B1, [](const T x, const T y) {
+        return std::copysign(x, y); });
+}
 
 template<class T>
 void cholmul(const int n, const T* S, const int ldS, const T* x,
@@ -117,6 +128,36 @@ void inner(const int m, const int n, const int k, const T* A, const int ldA,
 }
 
 template<class T>
+void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.binaryExpr(B1, lbeta_functor<T,T>());
+}
+
+template<class T>
+void lchoose(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.binaryExpr(B1, lchoose_functor<T,T>());
+}
+
+template<class T>
+void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<T>();
+  ///@todo Eigen does not support binary expressions with arguments of
+  ///different type, so we cast here; preferably re-implement this using STL
+  ///instead of Eigen.
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.binaryExpr(B1, lgammap_functor<T,T>());
+}
+
+template<class T>
 void outer(const int m, const int n, const T* x, const int incx, const T* y,
     const int incy, T* A, const int ldA) {
   auto x1 = make_eigen_vector(x, m, incx);
@@ -132,6 +173,17 @@ void outer(const int m, const int n, const int k, const T* A, const int ldA,
   auto B1 = make_eigen_matrix(B, n, k, ldB);
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1*B1.transpose();
+}
+
+template<class T, class U>
+void pow(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<T>();
+  // ^ Eigen does not support binary expressions with arguments of
+  //   different type, so we cast here
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.binaryExpr(B1, pow_functor<T,T>());
 }
 
 template<class T>

@@ -15,6 +15,46 @@
 namespace numbirch {
 
 template<class T>
+void abs(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, abs_functor<T>());
+}
+
+template<class T>
+void acos(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, acos_functor<T>());
+}
+
+template<class T>
+void asin(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, asin_functor<T>());
+}
+
+template<class T>
+void atan(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, atan_functor<T>());
+}
+
+template<class T>
+void ceil(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, ceil_functor<T>());
+}
+
+template<class T>
 void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
   prefetch(S, n, n, ldS);
   prefetch(B, n, n, ldB);
@@ -47,6 +87,46 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
   free(bufferOnHost);
   device_free(bufferOnDevice);
   device_free(L);
+}
+
+template<class T>
+void cos(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, cos_functor<T>());
+}
+
+template<class T>
+void cosh(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, cosh_functor<T>());
+}
+
+template<class T>
+void exp(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, exp_functor<T>());
+}
+
+template<class T>
+void expm1(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, expm1_functor<T>());
+}
+
+template<class T>
+void floor(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, floor_functor<T>());
 }
 
 template<class T>
@@ -161,11 +241,67 @@ void ldet(const int n, const T* A, const int ldA, T* b) {
 }
 
 template<class T>
+void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, lgamma_functor<T>());
+}
+
+template<class T>
+void log(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, log_functor<T>());
+}
+
+template<class T>
+void log1p(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, log1p_functor<T>());
+}
+
+template<class T>
 void rectify(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   transform(m, n, A, ldA, B, ldB, rectify_functor<T>());
+}
+
+template<class T>
+void round(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, round_functor<T>());
+}
+
+template<class T>
+void sin(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, sin_functor<T>());
+}
+
+template<class T>
+void sinh(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, sinh_functor<T>());
+}
+
+template<class T>
+void sqrt(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, sqrt_functor<T>());
 }
 
 template<class T>
@@ -180,6 +316,22 @@ void sum(const int m, const int n, const T* A, const int ldA, T* b) {
   tmp = device_malloc(bytes);
   CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), b, m*n, stream));
   device_free(tmp);
+}
+
+template<class T>
+void tan(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, tan_functor<T>());
+}
+
+template<class T>
+void tanh(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, tanh_functor<T>());
 }
 
 template<class T>

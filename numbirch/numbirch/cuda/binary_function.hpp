@@ -193,6 +193,15 @@ void cholsolve(const int m, const int n, const T* S, const int ldS, T* X,
 }
 
 template<class T>
+void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, copysign_functor<T>());
+}
+
+template<class T>
 void diagonal(const T* a, const int n, T* B, const int ldB) {
   for_each(n, n, B, ldB, diagonal_functor<T>(a));
 }
@@ -250,6 +259,33 @@ void inner(const int m, const int n, const int k, const T* A, const int ldA,
 }
 
 template<class T>
+void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, lbeta_functor<T,T>());
+}
+
+template<class T>
+void lchoose(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, lchoose_functor<T,T>());
+}
+
+template<class T>
+void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, lgammap_functor<T,int>());
+}
+
+template<class T>
 void outer(const int m, const int n, const T* x, const int incx, const T* y,
     const int incy, T* A, const int ldA) {
   prefetch(x, m, incx);
@@ -272,6 +308,15 @@ void outer(const int m, const int n, const int k, const T* A, const int ldA,
   prefetch(C, m, n, ldC);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T, m, n,
       k, scalar<T>::one, A, ldA, B, ldB, scalar<T>::zero, C, ldC));
+}
+
+template<class T, class U>
+void pow(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, pow_functor<T,U>());
 }
 
 template<class T>

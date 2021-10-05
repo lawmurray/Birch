@@ -12,6 +12,26 @@
 
 namespace numbirch {
 /**
+ * Logical `not`.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float` or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<int D>
+Array<bool,D> operator!(const Array<bool,D>& A) {
+  Array<bool,D> B(A.shape().compact());
+  logical_not(A.width(), A.height(), A.data(), A.stride(), B.data(),
+      B.stride());
+  return B;
+}
+
+/**
  * Negation.
  * 
  * @ingroup array

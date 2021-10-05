@@ -12,6 +12,30 @@
 
 namespace numbirch {
 /**
+ * Copy sign of a number.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  copysign(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
  * Hadamard (element-wise) matrix multiplication.
  * 
  * @ingroup array
@@ -79,30 +103,6 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
 
   Array<T,2> C(make_shape(S.rows(), B.columns()));
   cholmul(C.rows(), C.columns(), S.data(), S.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
-}
-
-/**
- * Outer product of matrix and lower-triangular Cholesky factor of another
- * matrix. Computes @f$C = AL^\top@f$, where @f$S = LL^\top@f$.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double` or `float`).
- * 
- * @param A Matrix.
- * @param S Symmetric positive definite matrix.
- * 
- * @return Matrix.
- */
-template<class T>
-Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
-  assert(A.columns() == S.columns());
-  assert(S.rows() == S.columns());
-
-  Array<T,2> C(make_shape(A.rows(), S.rows()));
-  cholouter(C.rows(), C.columns(), A.data(), A.stride(), S.data(), S.stride(),
       C.data(), C.stride());
   return C;
 }
@@ -236,6 +236,126 @@ Array<T,1> dot(const Array<T,1>& x, const Array<T,2>& A) {
 }
 
 /**
+ * Equal to comparison.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<bool,D> equal(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  equal(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Greater than comparison.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<bool,D> greater(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  greater(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Greater than or equal to comparison.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<bool,D> greater_or_equal(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  greater_or_equal(A.width(), A.height(), A.data(), A.stride(), B.data(),
+      B.stride(), C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Less than comparison.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<bool,D> less(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  less(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Less than or equal to comparison.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<bool,D> less_or_equal(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  less_or_equal(A.width(), A.height(), A.data(), A.stride(), B.data(),
+      B.stride(), C.data(), C.stride());
+  return C;
+}
+
+/**
  * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
  * \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}@f$,
  * resulting in a scalar.
@@ -304,6 +424,148 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
 }
 
 /**
+ * Logarithm of the beta function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  lbeta(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float` or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> lchoose(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  lchoose(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  lgamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Logical `and`.
+ * 
+ * @ingroup array
+ * 
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<int D>
+Array<bool,D> logical_and(const Array<bool,D>& A, const Array<bool,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  logical_and(A.width(), A.height(), A.data(), A.stride(), B.data(),
+      B.stride(), C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Logical `or`.
+ * 
+ * @ingroup array
+ * 
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<int D>
+Array<bool,D> logical_or(const Array<bool,D>& A, const Array<bool,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  logical_or(A.width(), A.height(), A.data(), A.stride(), B.data(),
+      B.stride(), C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Not equal to comparison.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<bool,D> not_equal(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<bool,D> C(A.shape().compact());
+  not_equal(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
  * Vector-vector outer product. Computes @f$A = xy^\top@f$.
  * 
  * @ingroup array
@@ -342,6 +604,31 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
   Array<T,2> C(make_shape(A.rows(), B.rows()));
   outer(C.rows(), C.columns(), A.columns(), A.data(), A.stride(), B.data(),
       B.stride(), C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Power.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float`, or `int`).
+ * @tparam U Element type (`double`, `float`, or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, class U>
+Array<T,D> pow(const Array<T,D>& A, const Array<U,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  pow(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
   return C;
 }
 

@@ -17,6 +17,9 @@
 
 namespace numbirch {
 
+void logical_not(const int m, const int n, const bool* A, const int ldA,
+    bool* B, const int ldB);
+
 template void neg(const int m, const int n, const double* A, const int ldA,
     double* B, const int ldB);
 template void neg(const int m, const int n, const float* A, const int ldA,

@@ -32,8 +32,8 @@ if ONEAPI
       numbirch/oneapi/sycl.cpp
 else
 if CUDA
-  AM_CXXFLAGS += -DBACKEND_CUDA
-  AM_CXXFLAGS += -x cu -G -arch=sm_75 -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
+  AM_CPPFLAGS += -DBACKEND_CUDA 
+  AM_CXXFLAGS += -x cu -G -arch=sm_75 -expt-relaxed-constexpr -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
   COMMON_SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \
@@ -82,6 +82,13 @@ nobase_include_HEADERS = \
   numbirch/array/unary_function.hpp \
   numbirch/array/unary_operator.hpp \
   numbirch/array/Vector.hpp \
+  numbirch/numeric/binary_function.hpp \
+  numbirch/numeric/binary_operator.hpp \
+  numbirch/numeric/other_function.hpp \
+  numbirch/numeric/ternary_function.hpp \
+  numbirch/numeric/ternary_operator.hpp \
+  numbirch/numeric/unary_function.hpp \
+  numbirch/numeric/unary_operator.hpp \
   numbirch/array.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
@@ -116,13 +123,6 @@ noinst_HEADERS = \
   numbirch/functor/unary_function.hpp \
   numbirch/functor/unary_operator.hpp \
   numbirch/jemalloc/jemalloc.hpp \
-  numbirch/numeric/binary_function.hpp \
-  numbirch/numeric/binary_operator.hpp \
-  numbirch/numeric/other_function.hpp \
-  numbirch/numeric/ternary_function.hpp \
-  numbirch/numeric/ternary_operator.hpp \
-  numbirch/numeric/unary_function.hpp \
-  numbirch/numeric/unary_operator.hpp \
   numbirch/oneapi/binary_function.hpp \
   numbirch/oneapi/binary_operator.hpp \
   numbirch/oneapi/dpl.hpp \

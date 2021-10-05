@@ -147,17 +147,17 @@ void for_each(const int m, const int n, T* A, const int ldA, Functor f) {
 /*
  * Matrix unary transform.
  */
-template<class T, class Functor>
+template<class T, class U, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, T* B, const int ldB, Functor f) {
+    const int ldA, U* B, const int ldB, Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
     B[i + j*ldB] = f(A[i + j*ldA]);
   }
 }
-template<class T, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U, class Functor>
+void transform(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB, Functor f) {
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
@@ -167,9 +167,9 @@ void transform(const int m, const int n, const T* A, const int ldA, T* B,
 /*
  * Matrix binary transform.
  */
-template<class T, class Functor>
+template<class T, class U, class V, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const T* B, const int ldB, T* C, const int ldC,
+    const int ldA, const U* B, const int ldB, V* C, const int ldC,
     Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
@@ -177,9 +177,9 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
     C[i + j*ldC] = f(A[i + j*ldA], B[i + j*ldB]);
   }
 }
-template<class T, class Functor>
+template<class T, class U, class V, class Functor>
 void transform(const int m, const int n, const T* A, const int ldA,
-    const T* B, const int ldB, T* C, const int ldC, Functor f) {
+    const U* B, const int ldB, V* C, const int ldC, Functor f) {
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, f);
@@ -188,20 +188,20 @@ void transform(const int m, const int n, const T* A, const int ldA,
 /*
  * Matrix quaternary transform.
  */
-template<class T, class Functor>
+template<class T, class U, class V, class W, class X, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const T* B, const int ldB, const T* C, const int ldC,
-    const T* D, const int ldD, T* E, const int ldE, Functor f) {
+    const int ldA, const U* B, const int ldB, const V* C, const int ldC,
+    const W* D, const int ldD, X* E, const int ldE, Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
     E[i + j*ldE] = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC], D[i + j*ldD]);
   }
 }
-template<class T, class Functor>
-void transform(const int m, const int n, const T* A,
-    const int ldA, const T* B, const int ldB, const T* C, const int ldC,
-    const T* D, const int ldD, T* E, const int ldE, Functor f) {
+template<class T, class U, class V, class W, class X, class Functor>
+void transform(const int m, const int n, const T* A, const int ldA,
+    const U* B, const int ldB, const V* C, const int ldC, const W* D,
+    const int ldD, X* E, const int ldE, Functor f) {
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,

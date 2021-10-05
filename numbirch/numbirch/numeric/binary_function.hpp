@@ -5,6 +5,26 @@
 
 namespace numbirch {
 /**
+ * Copy sign of a number.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC);
+
+/**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
  * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
  * 
@@ -142,6 +162,88 @@ void diagonal(const T* a, const int n, T* B, const int ldB);
  */
 template<class T>
 void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC);
+
+/**
+ * Logarithm of the beta function.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC);
+
+/**
+ * Logarithm of the binomial coefficient.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void lchoose(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC);
+
+/**
+ * Logarithm of the multivariate gamma function.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double` or `float`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T>
+void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
+    const int ldB, T* C, const int ldC);
+
+/**
+ * Power.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type (`double`, `float` or `int`).
+ * @tparam U Value type (`double`, `float` or `int`).
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void pow(const int m, const int n, const T* A, const int ldA, const U* B,
     const int ldB, T* C, const int ldC);
 
 /**

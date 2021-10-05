@@ -12,6 +12,101 @@
 
 namespace numbirch {
 /**
+ * Absolute value.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double`, `float` or `int`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> abs(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  abs(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Arc cosine.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> acos(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  acos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Arc sine.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> asin(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  asin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Arc tangent.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> atan(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  atan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Round to smallest integer value not less than argument.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> ceil(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  ceil(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
  * Inverse of a symmetric positive definite square matrix, via the Cholesky
  * factorization.
  * 
@@ -27,6 +122,101 @@ template<class T>
 Array<T,2> cholinv(const Array<T,2>& S) {
   Array<T,2> B(make_shape(S.rows(), S.columns()));
   cholinv(S.rows(), S.data(), S.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Cosine.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> cos(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  cos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Hyperbolic cosine.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> cosh(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  cosh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Exponential.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> exp(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  exp(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Exponential minus one.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> expm1(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  expm1(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Round to largest integer value not greater than argument.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> floor(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  floor(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
 
@@ -87,6 +277,63 @@ Scalar<T> ldet(const Array<T,2>& A) {
 }
 
 /**
+ * Logarithm of the gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> lgamma(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  lgamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Logarithm.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> log(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  log(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Logarithm of one plus argument.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> log1p(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  log1p(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
  * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
  * 0)@f$.
  * 
@@ -107,6 +354,82 @@ Array<T,D> rectify(const Array<T,D>& A) {
 }
 
 /**
+ * Round to nearest integer value.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> round(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  round(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Sine.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> sin(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  sin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Hyperbolic sine.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> sinh(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  sinh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Square root.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> sqrt(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  sqrt(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
  * Sum of elements.
  * 
  * @ingroup array
@@ -123,6 +446,44 @@ Scalar<T> sum(const Array<T,D>& A) {
   Scalar<T> b;
   sum(A.width(), A.height(), A.data(), A.stride(), b.data());
   return b;
+}
+
+/**
+ * Tangent.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> tan(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  tan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Hyperbolic tangent.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+Array<T,D> tanh(const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  tanh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
 }
 
 /**
