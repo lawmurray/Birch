@@ -40,7 +40,7 @@ void birch::CppGenerator::visit(const Literal<bool>* o) {
 }
 
 void birch::CppGenerator::visit(const Literal<int64_t>* o) {
-  middle("Integer(" << o->str << ')');
+  middle(o->str);
 }
 
 void birch::CppGenerator::visit(const Literal<double>* o) {
@@ -572,8 +572,8 @@ void birch::CppGenerator::visit(const If* o) {
 void birch::CppGenerator::visit(const For* o) {
   auto index = genIndex(o->index);
   genSourceLine(o->loc);
-  start("for (auto " << index << " = " << o->from << "; ");
-  finish(index << " <= " << o->to << "; ++" << index << ") {");
+  start("for (int " << index << " = int(" << o->from << "); ");
+  finish(index << " <= int(" << o->to << "); ++" << index << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -596,8 +596,8 @@ void birch::CppGenerator::visit(const Parallel* o) {
     middle("static");
   }
   finish(')');
-  start("for (auto " << index << " = " << o->from << "; ");
-  finish(index << " <= " << o->to << "; ++" << index << ") {");
+  start("for (int " << index << " = int(" << o->from << "); ");
+  finish(index << " <= int(" << o->to << "); ++" << index << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -678,6 +678,10 @@ void birch::CppGenerator::visit(const TupleType* o) {
 
 void birch::CppGenerator::visit(const OptionalType* o) {
   middle("std::optional<" << o->single << '>');
+}
+
+void birch::CppGenerator::visit(const FutureType* o) {
+  middle("numbirch::Future<" << o->single << '>');
 }
 
 void birch::CppGenerator::visit(const MemberType* o) {

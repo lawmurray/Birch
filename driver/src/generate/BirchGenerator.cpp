@@ -509,6 +509,10 @@ void birch::BirchGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
 }
 
+void birch::BirchGenerator::visit(const FutureType* o) {
+  middle(o->single << '!');
+}
+
 void birch::BirchGenerator::visit(const TypeList* o) {
   middle(o->head << ", " << o->tail);
 }

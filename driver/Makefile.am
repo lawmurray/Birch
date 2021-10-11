@@ -111,6 +111,7 @@ birch_SOURCES = \
   src/type/ArrayType.cpp \
   src/type/DeducedType.cpp \
   src/type/EmptyType.cpp \
+  src/type/FutureType.cpp \
   src/type/MemberType.cpp \
   src/type/NamedType.cpp \
   src/type/OptionalType.cpp \
@@ -232,6 +233,7 @@ noinst_HEADERS = \
   src/type/ArrayType.hpp \
   src/type/DeducedType.hpp \
   src/type/EmptyType.hpp \
+  src/type/FutureType.hpp \
   src/type/MemberType.hpp \
   src/type/NamedType.hpp \
   src/type/OptionalType.hpp \

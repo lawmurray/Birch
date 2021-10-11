@@ -55,6 +55,11 @@ public:
    * Is this an optional type?
    */
   virtual bool isOptional() const;
+  
+  /**
+   * Is this a future type?
+   */
+  virtual bool isFuture() const;
 
   /**
    * Is this a deduced type?

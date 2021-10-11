@@ -33,6 +33,10 @@ bool birch::Type::isOptional() const {
   return false;
 }
 
+bool birch::Type::isFuture() const {
+  return false;
+}
+
 bool birch::Type::isDeduced() const {
   return false;
 }

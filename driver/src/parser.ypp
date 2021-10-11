@@ -820,6 +820,7 @@ primary_type
 type
     : primary_type
     | type '?'                                              { $$ = new birch::OptionalType($1, make_loc(@$)); }
+    | type '!'                                              { $$ = new birch::FutureType($1, make_loc(@$)); }
     | named_type '.' named_type                             { $$ = new birch::MemberType($1, $3, make_loc(@$)); }
     | type '[' shape ']'                                    { $$ = new birch::ArrayType($1, $3, make_loc(@$)); }
     ;

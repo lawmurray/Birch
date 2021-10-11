@@ -1259,15 +1259,18 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxTemplateArgument("template argument", options);
   std::regex rxTypeDeduction("before deduction of ‘’", options);
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
+  std::regex rxReal("\\b(?:double|float)\\b", options);
+  std::regex rxInteger("\\bint\\b", options);
   std::regex rxScalar("Array<(" + type + "), *0 *>", options);
   std::regex rxVector("Array<(" + type + "), *1 *>", options);
   std::regex rxMatrix("Array<(" + type + "), *2 *>", options);
   std::regex rxShared("Shared<(" + type + ") *>", options);
   std::regex rxOptional("std::optional<(" + type + ") *>", options);
+  std::regex rxFuture("(?:Future|Scalar)<(" + type + ") *>", options);
   std::regex rxConstRef("(?:const *)?(" + type + ") *&", options);
   std::regex rxThis("\\(\\(" + type + "\\*\\)this\\)->" + type + "::", options);
-  std::regex rxAka(" *\\{aka *.?+\\}", options);
-  std::regex rxValueType("using value_type *= *", options);
+  std::regex rxAka(" *\\{aka *[^\\}]+?\\}", options);
+  std::regex rxValueType("\\busing value_type *= *", options);
   std::regex rxValueType2("::value_type", options);
   std::regex rxDeref("(?:operator)?->", options);
   std::regex rxAssign("‘(?:operator)?=’", options);
@@ -1307,9 +1310,11 @@ void birch::Driver::target(const std::string& cmd) {
 
         /* convert back some types */
         str = std::regex_replace(str, rxString, "String");
+        str = std::regex_replace(str, rxReal, "Real");
+        str = std::regex_replace(str, rxInteger, "Integer");
 
         /* replace some types */
-        str = std::regex_replace(str, rxScalar, "$1");
+        str = std::regex_replace(str, rxScalar, "$1!");
         str = std::regex_replace(str, rxVector, "$1[_]");
         str = std::regex_replace(str, rxMatrix, "$1[_,_]");
         str = std::regex_replace(str, rxConstRef, "$1");
@@ -1319,6 +1324,9 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxValueType2, "");
         for (auto i = 0; i < 10; ++i) {
           str = std::regex_replace(str, rxOptional, "$1?");
+        }
+        for (auto i = 0; i < 10; ++i) {
+          str = std::regex_replace(str, rxFuture, "$1!");
         }
         for (auto i = 0; i < 10; ++i) {
           str = std::regex_replace(str, rxShared, "$1");

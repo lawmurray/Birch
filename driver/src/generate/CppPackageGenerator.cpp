@@ -220,19 +220,35 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* generic function and operator definitions */
+    /* generic function and operator definitions; those with deduced return
+     * types first to reduce occurrences of use before deduction */
     for (auto o : functions) {
-      if (o->isGeneric()) {
+      if (o->isGeneric() && o->returnType->isDeduced()) {
         auxDefinition << o;
       }
     }
     for (auto o : binaries) {
-      if (o->isGeneric()) {
+      if (o->isGeneric() && o->returnType->isDeduced()) {
         auxDefinition << o;
       }
     }
     for (auto o : unaries) {
-      if (o->isGeneric()) {
+      if (o->isGeneric() && o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : functions) {
+      if (o->isGeneric() && !o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : binaries) {
+      if (o->isGeneric() && !o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : unaries) {
+      if (o->isGeneric() && !o->returnType->isDeduced()) {
         auxDefinition << o;
       }
     }

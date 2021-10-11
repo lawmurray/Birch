@@ -335,6 +335,10 @@ void birch::Visitor::visit(const OptionalType* o) {
   o->single->accept(this);
 }
 
+void birch::Visitor::visit(const FutureType* o) {
+  o->single->accept(this);
+}
+
 void birch::Visitor::visit(const DeducedType* o) {
   //
 }
