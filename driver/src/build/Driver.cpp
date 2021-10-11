@@ -1244,7 +1244,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::string name = "[αβγδεζηθικλμνξπρστυφχψωΓΔΘΛΞΠΣΥΦΨΩA-Za-z0-9_]+";
   std::string type = name;
   for (auto i = 0; i < 10; ++i) {
-    type = name + "(?:<" + type + "(?:, *" + type + ")* *>)?(?:\\[[_,]+\\])?\\??";
+    type = name + "(?:<" + type + "(?:, *" + type + ")* *>)?(?:\\[[_,]+\\])?[\\?\\!]*";
   }
   std::string generic = "<" + name + "(?:, *" + name + ")* *>";
 
