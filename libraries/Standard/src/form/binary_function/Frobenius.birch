@@ -19,12 +19,16 @@ function grad<Left,Right,Gradient>(x:Frobenius<Left,Right>, d:Gradient) {
   grad(x.r, d*peek(x.l));
 }
 
+hpp{{
+namespace birch {
 /**
  * Frobenius product.
  */
-function frobenius<Left,Right>(l:Left, r:Right) -> Frobenius<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Frobenius<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Frobenius<Left,Right> frobenius(Left&& l, Right&& r) {
+  return construct<Frobenius<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}

@@ -75,7 +75,7 @@ function simulate_dirichlet_categorical(α:Real[_]) -> Integer {
  */
 function logpdf_dirichlet_categorical(x:Integer, α:Real[_]) -> Real {
   if 1 <= x && x <= length(α) {
-    let A <- sum(α);
+    let A <- sum(α)!;
     return lgamma(1.0 + α[x]) - lgamma(α[x]) + lgamma(A) - lgamma(1.0 + A);
   } else {
     return -inf;

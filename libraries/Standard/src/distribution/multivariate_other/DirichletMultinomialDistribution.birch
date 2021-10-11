@@ -72,16 +72,10 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
 function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
     Real {
   assert length(x) == length(α);
-  let A <- sum(α);
-  let m <- 0;
-  let w <- lgamma(n + 1.0) + lgamma(A) - lgamma(n + A);
-  for i in 1..length(α) {
-    assert x[i] >= 0;
-    m <- m + x[i];
-    w <- w + lgamma(x[i] + α[i]) - lgamma(x[i] + 1.0) - lgamma(α[i]);
-  }
-  if m == n {
-    return w;
+  if sum(x)! == n {
+    let A <- sum(α);
+    return (lgamma(n + 1.0) + lgamma(A) - lgamma(n + A) +
+        sum(lgamma(x + α) - log(x) - lgamma(x) - lgamma(α)))!;
   } else {
     return -inf;
   }
@@ -99,6 +93,6 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
  */
 function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
     DirichletDistribution<Real[_]> {
-  assert sum(x) == n;
+  assert sum(x)! == n;
   return Dirichlet(transform(x, α, \(x:Integer, α:Real) -> { return x + α; }));
 }

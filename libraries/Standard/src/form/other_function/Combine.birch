@@ -91,15 +91,22 @@ function grad<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8,Gradient>(x:Combine<
   grad(x.z, d*peek(x.d));
 }
 
+hpp{{
+namespace birch {
 /**
  * Linear combination of four arguments.
  */
-function combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(a:Arg1, w:Arg2,
-    b:Arg3, x:Arg4, c:Arg5, y:Arg6, d:Arg7, z:Arg8) -> {
-  cpp{{
-  static_assert(is_form<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>::value,
-      "argument types not supported");
-  }}
-  return construct<Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>>(a, w, b,
-      x, c, y, d, z);
+template<class Arg1, class Arg2, class Arg3, class Arg4, class Arg5,
+    class Arg6, class Arg7, class Arg8, std::enable_if_t<
+    is_delay<Arg1>::value || is_delay<Arg2>::value || is_delay<Arg3>::value ||
+    is_delay<Arg4>::value || is_delay<Arg5>::value || is_delay<Arg6>::value ||
+    is_delay<Arg7>::value || is_delay<Arg8>::value,int> = 0>
+Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8> combine(Arg1&& a, Arg2&& w,
+    Arg3&& b, Arg4&& x, Arg5&& c, Arg6&& y, Arg7&& d, Arg8&& z) {
+  return construct<Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>>(
+      std::forward<Arg1>(a), std::forward<Arg2>(w), std::forward<Arg3>(b),
+      std::forward<Arg4>(x), std::forward<Arg5>(c), std::forward<Arg6>(y),
+      std::forward<Arg7>(d), std::forward<Arg8>(z));
 }
+}
+}}

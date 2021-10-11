@@ -1,0 +1,34 @@
+struct Less<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
+}
+
+function value<Left,Right>(x:Less<Left,Right>) -> {
+  return value(x.l) < value(x.r);
+}
+
+function peek<Left,Right>(x:Less<Left,Right>) -> {
+  return peek(x.l) < peek(x.r);
+}
+
+function eval<Left,Right>(x:Less<Left,Right>) -> {
+  return eval(x.l) < eval(x.r);
+}
+
+function grad<Left,Right,Gradient>(x:Less<Left,Right>, d:Gradient) {
+  grad(x.l, 0.0);
+  grad(x.r, 0.0);
+}
+
+hpp{{
+namespace birch {
+/**
+ * Less than comparison.
+ */
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Less<Left,Right> operator<(Left&& l, Right&& r) {
+  return construct<Less<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
+}
+}
+}}

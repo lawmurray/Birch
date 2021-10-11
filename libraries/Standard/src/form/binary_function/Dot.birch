@@ -20,20 +20,25 @@ function grad<Left,Right,Gradient>(x:Dot<Left,Right>, d:Gradient) {
   grad(x.r, dr);
 }
 
+hpp{{
+namespace birch {
 /**
  * Dot product.
  */
-function dot<Left,Right>(l:Left, r:Right) -> Dot<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Dot<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Dot<Left,Right> dot(Left&& l, Right&& r) {
+  return construct<Dot<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}
 
-function grad_dot(d:Real, l:Real[_], r:Real[_]) -> (Real[_], Real[_]) {
+function grad_dot<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right[_]) -> {
   return (r*d, l*d);
 }
 
-function grad_dot(d:Real[_], l:Real[_], r:Real[_,_]) -> (Real[_], Real[_,_]) {
+function grad_dot<Gradient,Left,Right>(d:Gradient, l:Left[_],
+    r:Right[_,_]) -> {
   return (r*d, outer(l, d));
 }

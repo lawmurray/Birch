@@ -20,24 +20,29 @@ function grad<Left,Right,Gradient>(x:Divide<Left,Right>, d:Gradient) {
   grad(x.r, dr);
 }
 
+hpp{{
+namespace birch {
 /**
  * Division.
  */
-operator<Left,Right> (l:Left/r:Right) -> Divide<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Divide<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Divide<Left,Right> operator/(Left&& l, Right&& r) {
+  return construct<Divide<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}
 
-function grad_divide(d:Real, l:Real, r:Real) -> (Real, Real) {
+function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left, r:Right) -> {
   return (d/r, d*l/-pow(r, 2.0));
 }
 
-function grad_divide(d:Real[_], l:Real[_], r:Real) -> (Real[_], Real) {
+function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right) -> {
   return (d/r, dot(d, l)/-pow(r, 2.0));
 }
 
-function grad_divide(d:Real[_,_], l:Real[_,_], r:Real) -> (Real[_,_], Real) {
+function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left[_,_],
+    r:Right) -> {
   return (d/r, frobenius(d, l)/-pow(r, 2.0));
 }

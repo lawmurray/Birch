@@ -18,12 +18,14 @@ function grad<Middle,Gradient>(x:Transpose<Middle>, d:Gradient) {
   grad(x.m, transpose(d));
 }
 
+hpp{{
+namespace birch {
 /**
  * Matrix transpose.
  */
-function transpose<Middle>(m:Middle) -> Transpose<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Transpose<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Transpose<Middle> transpose(Middle&& m) {
+  return construct<Transpose<Middle>>(std::forward<Middle>(m));
 }
+}
+}}

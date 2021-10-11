@@ -4,18 +4,8 @@
 type Integer;
 
 hpp{{
-using Integer = numbirch::Scalar<int>;
+using Integer = int;
 }}
-
-/*
- * Operators
- */
-operator (+x:Integer) -> Integer;
-operator (x:Integer > y:Integer) -> Boolean;
-operator (x:Integer >= y:Integer) -> Boolean;
-operator (x:Integer <= y:Integer) -> Boolean;
-operator (x:Integer == y:Integer) -> Boolean;
-operator (x:Integer != y:Integer) -> Boolean;
 
 /**
  * Modulus.

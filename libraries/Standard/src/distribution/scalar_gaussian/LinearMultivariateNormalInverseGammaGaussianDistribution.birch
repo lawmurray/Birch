@@ -240,7 +240,8 @@ function Gaussian<Arg>(μ:Dot<Arg,Random<Real[_]>>,
 function simulate_linear_multivariate_normal_inverse_gamma_gaussian(a:Real[_],
     ν:Real[_], Λ:Real[_,_], c:Real, α:Real, β:Real, s2:Real) -> Real {
   let S <- cholinv(Λ);
-  return simulate_student_t(2.0*α, dot(a, S*ν) + c, (β/α)*(s2 + dot(a, S*a)));
+  return simulate_student_t(2.0*α, dot(a, S*ν)! + c,
+      (β/α)*(s2 + dot(a, S*a)!));
 }
 
 /*
@@ -316,7 +317,7 @@ function cdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
     Real {
   let S <- cholinv(Λ);
   let μ <- S*ν;
-  return cdf_student_t(x, 2.0*α, dot(a, μ) + c, (β/α)*(s2 + dot(a, S*a)));
+  return cdf_student_t(x, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 + dot(a, S*a)!));
 }
 
 /*
@@ -339,6 +340,6 @@ function quantile_linear_multivariate_normal_inverse_gamma_gaussian(P:Real,
     Real {
   let S <- cholinv(Λ);
   let μ <- S*ν;
-  return quantile_student_t(P, 2.0*α, dot(a, μ) + c, (β/α)*(s2 +
-      dot(a, S*a)));
+  return quantile_student_t(P, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 +
+      dot(a, S*a)!));
 }

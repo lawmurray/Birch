@@ -18,24 +18,26 @@ function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {
   grad(x.m, grad_sum(d, peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Sum.
  */
-function sum<Middle>(m:Middle) -> Sum<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Sum<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Sum<Middle> sum(Middle&& m) {
+  return construct<Sum<Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
-function grad_sum<Gradient,Value>(d:Gradient, m:Value) {
+function grad_sum<Gradient,Type>(d:Gradient, m:Type) {
   return d;
 }
 
-function grad_sum<Gradient,Value>(d:Gradient, m:Value[_]) {
+function grad_sum<Gradient,Type>(d:Gradient, m:Type[_]) {
   return vector(d, length(m));
 }
 
-function grad_sum<Gradient,Value>(d:Gradient, m:Value[_,_]) {
+function grad_sum<Gradient,Type>(d:Gradient, m:Type[_,_]) {
   return matrix(d, rows(m), columns(m));
 }

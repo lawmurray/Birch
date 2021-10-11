@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Sqrt<Middle>, d:Gradient) {
   grad(x.m, d*0.5/sqrt(peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Square root.
  */
-function sqrt<Middle>(m:Middle) -> Sqrt<Middle> {
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Sqrt<Middle> sqrt(Middle&& m) {
+  return construct<Sqrt<Middle>>(std::forward<Middle>(m));
+}
+}
+}}
+
+/**
+ * Square root.
+ */
+function sqrt(m:Real) -> Real {
   cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Sqrt<Middle>>(m);
-}
-
-/**
- * Square root.
- */
-function sqrt(m:Integer) -> Real {
-  return sqrt(scalar<Real>(m));
-}
-
-/**
- * Square root.
- */
-function sqrt(x:Real) -> Real {
-  cpp {{
-  return std::sqrt(x);
+  return std::sqrt(m);
   }}
 }

@@ -19,12 +19,16 @@ function grad<Left,Right,Gradient>(x:And<Left,Right>, d:Gradient) {
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Logical `and`.
  */
-operator<Left,Right> (l:Left && r:Right) -> And<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<And<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+And<Left,Right> operator&&(Left&& l, Right&& r) {
+  return construct<And<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}

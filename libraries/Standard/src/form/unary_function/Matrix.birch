@@ -18,15 +18,18 @@ function grad<Value,Middle,Gradient>(x:Matrix<Value,Middle>, d:Gradient) {
   grad(x.m, grad_matrix<Value>(d, peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Convert to matrix.
  */
-function matrix<Value,Middle>(m:Middle) -> Matrix<Value,Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Matrix<Value,Middle>>(m);
+template<class Value, class Middle,
+    std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Matrix<Value,Middle> matrix(Middle&& m) {
+  return construct<Matrix<Value,Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
 /**
  * Convert to matrix.
@@ -63,14 +66,14 @@ function matrix<Value>(m:Real) -> Value[_,_] {
   return [[scalar<Value>(m)]];
 }
 
-function grad_matrix<Gradient,Value>(d:Gradient[_,_], m:Value) -> {
-  return scalar<Value>(d);
+function grad_matrix<Gradient,Type>(d:Gradient[_,_], m:Type) -> {
+  return scalar<Type>(d);
 }
 
-function grad_matrix<Gradient,Value>(d:Gradient[_,_], m:Value[_]) -> {
-  return vector<Value>(d);
+function grad_matrix<Gradient,Type>(d:Gradient[_,_], m:Type[_]) -> {
+  return vector<Type>(d);
 }
 
-function grad_matrix<Gradient,Value>(d:Gradient[_,_], m:Value[_,_]) -> {
-  return matrix<Value>(d);
+function grad_matrix<Gradient,Type>(d:Gradient[_,_], m:Type[_,_]) -> {
+  return matrix<Type>(d);
 }

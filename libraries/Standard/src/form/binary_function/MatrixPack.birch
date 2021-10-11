@@ -20,17 +20,20 @@ function grad<Left,Right,Gradient>(x:MatrixPack<Left,Right>, d:Gradient) {
   grad(x.r, dr);
 }
 
-
+hpp{{
+namespace birch {
 /**
  * Pack two matrices next to one another (i.e. append rows) to create a
  * new matrix.
  */
-function pack<Left,Right>(l:Left, r:Right) -> MatrixPack<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<MatrixPack<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+MatrixPack<Left,Right> pack(Left&& l, Right&& r) {
+  return construct<MatrixPack<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}
 
 /**
  * Pack two scalars next to one another as a row to create a new matrix.
@@ -73,22 +76,17 @@ function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
   return Z;
 }
 
-function grad_pack(d:Real[_,_], x:Real, y:Real) -> (Real, Real) {
+function grad_pack<Gradient,Type>(d:Gradient, x:Type, y:Type) -> {
+  assert rows(d) == 1 && columns(d) == 2;
   return (d[1,1], d[1,2]);
 }
 
-function grad_pack(d:Real[_,_], x:Integer, y:Integer) -> (Real, Real) {
-  return (d[1,1], d[1,2]);
-}
-
-function grad_pack<Type>(d:Real[_,_], x:Type[_], y:Type[_]) ->
-    (Real[_], Real[_]) {
+function grad_pack<Gradient,Type>(d:Gradient, x:Type[_], y:Type[_]) -> {
   assert columns(d) == 2;
   return (column(d, 1), column(d, 2));
 }
 
-function grad_pack<Type>(d:Real[_,_], l:Type[_,_], r:Type[_,_]) ->
-    (Real[_,_], Real[_,_]) {
+function grad_pack<Gradient,Type>(d:Gradient, l:Type[_,_], r:Type[_,_]) -> {
   let r1 <- rows(l);
   let c1 <- columns(l);
   let c2 <- columns(r);

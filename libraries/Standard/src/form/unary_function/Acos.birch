@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Acos<Middle>, d:Gradient) {
   grad(x.m, -d/sqrt(1.0 - pow(peek(x.m), 2.0)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Arc cosine.
  */
-function acos<Middle>(m:Middle) -> Acos<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Acos<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Acos<Middle> acos(Middle&& m) {
+  return construct<Acos<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Arc cosine.
- */
-function acos(m:Integer) -> Real {
-  return acos(scalar<Real>(m));
 }
+}}
 
 /**
  * Arc cosine.
  */
 function acos(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::acos(m);
   }}
 }

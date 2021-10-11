@@ -34,7 +34,7 @@ function grad<Left,Middle,Right,Gradient>(
   let n <- peek(x.r);
 
   let log_λ <- log(λ);
-  let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
+  let μ <- min(pow(λ, 1.0/ν), n);  // mode
   let mx <- μ*log_λ - ν*lgamma(μ + 1);  // renormalizer
   let log_xf <- 0.0;  // accumulator of log(x!)
   let z <- 0.0;
@@ -56,6 +56,8 @@ function grad<Left,Middle,Right,Gradient>(
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
  * distribution truncated on a finite interval $[0,n]$.
@@ -66,14 +68,16 @@ function grad<Left,Middle,Right,Gradient>(
  *
  * Return: vector of probabilities on $[0,n]$.
  */
-function logz_conway_maxwell_poisson<Left,Middle,Right>(λ:Left, ν:Middle,
-    n:Right) -> LogZConwayMaxwellPoisson<Left,Middle,Right> {
-  cpp{{
-  static_assert(is_form<Left,Middle,Right>::value,
-      "argument types not supported");
-  }}
-  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(λ, ν, n);
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay<Left>::value || is_delay<Middle>::value ||
+    is_delay<Right>::value, int> = 0>
+LogZConwayMaxwellPoisson<Left,Middle,Right> logz_conway_maxwell_poisson(
+    Left&& λ, Middle&& ν, Right&& n) {
+  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(
+      std::forward<Left>(λ), std::forward<Middle>(ν), std::forward<Right>(n));
 }
+}
+}}
 
 function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   let log_λ <- log(λ);
@@ -88,7 +92,7 @@ function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   let log_xf <- 0.0;  // accumulator of log(x!)
   let Z <- exp(-mx);  // for x == 0
   for x in 1..n {
-    log_xf <- log_xf + log(x);
+    log_xf <- log_xf + log(scalar<Real>(x));
     Z <- Z + exp(x*log_λ - ν*log_xf - mx);
   }
 

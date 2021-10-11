@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Sin<Middle>, d:Gradient) {
   grad(x.m, d*cos(peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Sine.
  */
-function sin<Middle>(m:Middle) -> Sin<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Sin<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Sin<Middle> sin(Middle&& m) {
+  return construct<Sin<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Sine.
- */
-function sin(m:Integer) -> Real {
-  return sin(scalar<Real>(m));
 }
+}}
 
 /**
  * Sine.
  */
 function sin(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::sin(m);
   }}
 }

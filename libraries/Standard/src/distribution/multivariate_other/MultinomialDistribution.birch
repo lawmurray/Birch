@@ -70,7 +70,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
  */
 function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   assert length(ρ) > 0;
-  assert abs(sum(ρ) - Z) < 1.0e-6;
+  assert abs(sum(ρ)! - Z) < 1.0e-6;
 
   let D <- length(ρ);
   let R <- ρ[D];

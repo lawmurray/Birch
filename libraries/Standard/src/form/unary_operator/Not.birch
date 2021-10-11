@@ -1,0 +1,31 @@
+struct Not<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
+}
+
+function value<Middle>(x:Not<Middle>) -> {
+  return !value(x.m);
+}
+
+function peek<Middle>(x:Not<Middle>) -> {
+  return !peek(x.m);
+}
+
+function eval<Middle>(x:Not<Middle>) -> {
+  return !eval(x.m);
+}
+
+function grad<Middle,Gradient>(x:Not<Middle>, d:Gradient) {
+  grad(x.m, 0.0);
+}
+
+hpp{{
+namespace birch {
+/**
+ * Logical `not`.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Not<Middle> operator!(Middle&& m) {
+  return construct<Not<Middle>>(std::forward<Middle>(m));
+}
+}
+}}

@@ -26,32 +26,22 @@ function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {
   grad(x.r, dr);
 }
 
+hpp{{
+namespace birch {
 /**
  * Power.
  */
-function pow<Left,Right>(l:Left, r:Right) -> Pow<Left,Right> {
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Pow<Left,Right> pow(Left&& l, Right&& r) {
+  return construct<Pow<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
+}
+}
+}}
+
+function pow(l:Real, r:Real) -> Real {
   cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
+  return numbirch::pow(l, r);
   }}
-  return construct<Pow<Left,Right>>(l, r);
-}
-
-function pow(x:Real, y:Real) -> Real {
-  cpp {{
-  return std::pow(x, y);
-  }}
-}
-
-function pow(x:Integer, y:Integer) -> Integer {
-  cpp {{
-  return std::pow(x, y);
-  }}
-}
-
-function pow(x:Integer, y:Real) -> Real {
-  return pow(scalar<Real>(x), y);
-}
-
-function pow(x:Real, y:Integer) -> Real {
-  return pow(x, scalar<Real>(y));
 }

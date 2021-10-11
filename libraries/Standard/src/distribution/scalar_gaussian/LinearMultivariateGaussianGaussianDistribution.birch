@@ -123,7 +123,7 @@ function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
  */
 function simulate_linear_multivariate_gaussian_gaussian(a:Real[_], μ:Real[_],
     Σ:Real[_,_], c:Real, s2:Real) -> Real {
-  return simulate_gaussian(dot(a, μ) + c, dot(a, Σ*a) + s2);
+  return simulate_gaussian(dot(a, μ)! + c, dot(a, Σ*a)! + s2);
 }
 
 /*
@@ -159,7 +159,7 @@ function logpdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
  */
 function cdf_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
     μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> Real {
-  return cdf_gaussian(x, dot(a, μ) + c, dot(a, Σ*a) + s2);
+  return cdf_gaussian(x, dot(a, μ)! + c, dot(a, Σ*a)! + s2);
 }
 
 /*
@@ -177,7 +177,7 @@ function cdf_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
  */
 function quantile_linear_multivariate_gaussian_gaussian(P:Real, a:Real[_],
     μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> Real {
-  return quantile_gaussian(P, dot(a, μ) + c, dot(a, Σ*a) + s2);
+  return quantile_gaussian(P, dot(a, μ)! + c, dot(a, Σ*a)! + s2);
 }
 
 /*

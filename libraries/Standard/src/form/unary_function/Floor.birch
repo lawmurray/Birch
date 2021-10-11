@@ -18,21 +18,23 @@ function grad<Middle,Gradient>(x:Floor<Middle>, d:Gradient) {
   grad(x.m, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Round to largest integer value not greater than argument.
  */
-function floor<Middle>(m:Middle) -> Floor<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Floor<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Floor<Middle> floor(Middle&& m) {
+  return construct<Floor<Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
 /**
  * Round to largest integer value not greater than argument.
  */
-function floor(x:Real) -> Real {
-  cpp {{
-  return std::floor(x);
+function floor(m:Real) -> Real {
+  cpp{{
+  return std::floor(m);
   }}
 }

@@ -111,7 +111,7 @@ function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
     a:Real[_], N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_] {
   let S <- cholinv(Λ);
   let M <- S*N;
-  let σ2 <- 1.0 + dot(a, S*a);
+  let σ2 <- 1.0 + dot(a, S*a)!;
   return simulate_multivariate_t(k, dot(a, M), σ2*Ψ);
 }
 

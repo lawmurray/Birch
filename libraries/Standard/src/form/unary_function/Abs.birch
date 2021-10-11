@@ -18,30 +18,23 @@ function grad<Middle,Gradient>(x:Abs<Middle>, d:Gradient) {
   grad(x.m, copysign(d, peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Absolute value.
  */
-function abs<Middle>(m:Middle) -> Abs<Middle> {
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Abs<Middle> abs(Middle&& m) {
+  return construct<Abs<Middle>>(std::forward<Middle>(m));
+}
+}
+}}
+
+/**
+ * Absolute value.
+ */
+function abs(m:Real) -> Real {
   cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Abs<Middle>>(m);
-}
-
-/**
- * Absolute value.
- */
-function abs(x:Integer) -> Integer {
-  cpp {{
-  return std::abs(x);
-  }}
-}
-
-/**
- * Absolute value.
- */
-function abs(x:Real) -> Real {
-  cpp {{
-  return std::abs(x);
+  return std::abs(m);
   }}
 }

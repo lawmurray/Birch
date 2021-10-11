@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Sinh<Middle>, d:Gradient) {
   grad(x.m, d*cosh(peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Hyperbolic sine.
  */
-function sinh<Middle>(m:Middle) -> Sinh<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Sinh<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Sinh<Middle> sinh(Middle&& m) {
+  return construct<Sinh<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Hyperbolic sine.
- */
-function sinh(m:Integer) -> Real {
-  return sinh(scalar<Real>(m));
 }
+}}
 
 /**
  * Hyperbolic sine.
  */
 function sinh(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::sinh(m);
   }}
 }

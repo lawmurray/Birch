@@ -19,21 +19,31 @@ function grad<Left,Right,Gradient>(x:Diagonal<Left,Right>, d:Gradient) {
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Create diagonal matrix, filling the diagonal with a given scalar value.
  *
  * - x: The value.
  * - length: Number of rows/columns.
  */
-function diagonal<Left,Right>(l:Left, r:Right) -> Diagonal<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Diagonal<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Diagonal<Left,Right> diagonal(Left&& l, Right&& r) {
+  return construct<Diagonal<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}
 
-function diagonal(x:Real, n:Integer) -> Real[_,_] {
+/**
+ * Create diagonal matrix, filling the diagonal with a given scalar value.
+ *
+ * - x: The value.
+ * - length: Number of rows/columns.
+ */
+function diagonal<Type>(l:Type, r:Integer) -> {
   cpp{{
-  return numbirch::diagonal(x, n);
+  return numbirch::diagonal(l, r);
   }}
 }

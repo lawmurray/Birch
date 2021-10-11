@@ -230,7 +230,7 @@ class ParticleFilter {
     parallel for n in 1..nparticles {
       α[n] <- κ.apply(t, x[n]);
     }
-    raccepts <- sum(α)/nparticles;  // average acceptance rate
+    raccepts <- sum(α)!/nparticles;  // average acceptance rate
   }
 
   override function read(buffer:Buffer) {

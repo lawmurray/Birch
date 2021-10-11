@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Log1p<Middle>, d:Gradient) {
   grad(x.m, d/(1.0 + peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
- * Natural logarithm of 1 plus argument.
+ * Logarithm of one plus argument.
  */
-function log1p<Middle>(m:Middle) -> Log1p<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Log1p<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Log1p<Middle> log1p(Middle&& m) {
+  return construct<Log1p<Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
 /**
- * Natural logarithm of 1 plus argument.
- */
-function log1p(m:Integer) -> Real {
-  return log1p(scalar<Real>(m));
-}
-
-/**
- * Natural logarithm of 1 plus argument.
+ * Logarithm of one plus argument.
  */
 function log1p(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::log1p(m);
   }}
 }

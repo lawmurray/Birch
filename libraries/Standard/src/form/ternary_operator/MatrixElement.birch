@@ -25,23 +25,36 @@ function grad<Left,Middle,Right,Gradient>(x:MatrixElement<Left,Middle,Right>,
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Element of a matrix.
  */
-function element<Left,Middle,Right>(x:Left, i:Middle, j:Right) -> {
-  cpp{{
-  static_assert(is_form<Left,Middle,Right>::value,
-      "argument types not supported");
-  }}
-  return element(matrix_split(x), i, j);
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay<Left>::value || is_delay<Middle>::value || is_delay<Right>::value,
+    int> = 0>
+auto element(Left&& x, Middle&& i, Right&& j) {
+  return element(matrix_split(std::forward<Left>(x)), std::forward<Middle>(i),
+      std::forward<Right>(j));
 }
 
-function element<Value,Form,Middle,Right>(x:MatrixSplitExpression<Value,Form>, 
-    i:Middle, j:Right) -> {
+/**
+ * Element of a matrix.
+ */
+template<class Value, class Form, class Middle, class Right, std::enable_if_t<
+    is_delay<Form>::value || is_delay<Middle>::value || is_delay<Right>::value,
+    int> = 0>
+auto element(MatrixSplitExpression<Value,Form>&& x, Middle&& i, Right&& j) {
   return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,
-      Right>>(x, i, j);
+      Right>>(std::forward<MatrixSplitExpression<Value,Form>>(x),
+      std::forward<Middle>(i), std::forward<Right>(j));
 }
+}
+}}
 
+/**
+ * Element of a matrix.
+ */
 function element<Type>(x:Type[_,_], i:Integer, j:Integer) -> Type {
   return x[i,j];
 }

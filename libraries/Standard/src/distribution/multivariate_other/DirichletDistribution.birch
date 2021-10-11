@@ -47,7 +47,7 @@ function Dirichlet<Arg>(α:Arg) -> {
  */
 function simulate_dirichlet(α:Real[_]) -> Real[_] {
   let x <- transform(α, \(α:Real) -> Real { return simulate_gamma(α, 1.0); });
-  return x/sum(x);
+  return x/sum(x)!;
 }
 
 /*
@@ -58,7 +58,7 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
  */
 function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
   let x <- vector_lambda(\(i:Integer) -> Real { return simulate_gamma(α, 1.0); }, D);
-  return x/sum(x);
+  return x/sum(x)!;
 }
 
 /*
@@ -79,6 +79,6 @@ function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
     }
     w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
   }
-  w <- w + lgamma(sum(α)); 
+  w <- w + lgamma(sum(α)!); 
   return w;
 }

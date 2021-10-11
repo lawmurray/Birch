@@ -22,8 +22,5 @@ function grad<Middle,Gradient>(x:LDet<Middle>, d:Gradient) {
  * Log-determinant of a matrix.
  */
 function ldet<Middle>(m:Middle) -> LDet<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
   return construct<LDet<Middle>>(m);
 }

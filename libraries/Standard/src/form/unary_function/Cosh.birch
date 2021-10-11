@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Cosh<Middle>, d:Gradient) {
   grad(x.m, -d*sinh(peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Hyperbolic cosine.
  */
-function cosh<Middle>(m:Middle) -> Cosh<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Cosh<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Cosh<Middle> cosh(Middle&& m) {
+  return construct<Cosh<Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
 /**
  * Hyperbolic cosine.
- */
-function cosh(m:Integer) -> Real {
-  return cosh(scalar<Real>(m));
-}
-
-/**
- * Cosine.
  */
 function cosh(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::cosh(m);
   }}
 }

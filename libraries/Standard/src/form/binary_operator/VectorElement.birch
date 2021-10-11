@@ -22,22 +22,33 @@ function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Element of a vector.
  */
-function element<Left,Right>(x:Left, i:Right) -> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return element(vector_split(x), i);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+auto element(Left&& x, Right&& i) {
+  return element(vector_split(std::forward<Left>(x)), std::forward<Right>(i));
 }
 
-function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>,
-    i:Right) -> {
-  return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x,
-      i);
+/**
+ * Element of a vector.
+ */
+template<class Value, class Form, class Right, std::enable_if_t<
+    is_delay<Form>::value || is_delay<Right>::value,int> = 0>
+auto element(VectorSplitExpression<Value,Form>&& x, Right&& i) {
+  return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(
+      vector_split(std::forward<VectorSplitExpression<Value,Form>>(x)),
+      std::forward<Right>(i));
 }
+}
+}}
 
+/**
+ * Element of a vector.
+ */
 function element<Type>(x:Type[_], i:Integer) -> Type {
   return x[i];
 }

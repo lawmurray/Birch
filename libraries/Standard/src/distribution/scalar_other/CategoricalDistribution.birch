@@ -136,7 +136,7 @@ function cdf_categorical(x:Integer, ρ:Real[_], Z:Real) -> Real {
   if x <= 0 {
     return 0.0;
   } else if 1 <= x && x <= length(ρ) {
-    return sum(ρ[1..x])/Z;
+    return sum(ρ[1..x])!/Z;
   } else {
     return 1.0;
   }

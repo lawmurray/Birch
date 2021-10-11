@@ -1,7 +1,7 @@
-operator<Type> (X:Type[_,_] == Y:Type[_,_]) -> Boolean;
-operator<Type> (X:Type[_,_] != Y:Type[_,_]) -> Boolean;
+operator <Type>(X:Type[_,_] == Y:Type[_,_]) -> Boolean;
+operator <Type>(X:Type[_,_] != Y:Type[_,_]) -> Boolean;
 
-operator<Type> (+X:Type[_,_]) -> Type[_,_] {
+operator <Type>(+X:Type[_,_]) -> Type[_,_] {
   return X;
 }
 
@@ -91,7 +91,7 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
   /* wrap λ in another lambda function to translate 0-based serial indices
    * into 1-based row/column indices */
-  return numbirch::Array([&](Integer s) {
+  return numbirch::Array([&](const int64_t s) {
         int j = s/rows;
         int i = s - j*rows;
         return λ(i + 1, j + 1);

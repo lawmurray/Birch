@@ -110,7 +110,7 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:Add<Random<Integer>,Arg>) -> {
+function Delta<Arg>(μ:Add<Random<Integer>,Arg>) -> Distribution<Integer> {
   let r ~ Delta(μ.r);
   return Delta(μ.l + r);
 }
@@ -118,7 +118,7 @@ function Delta<Arg>(μ:Add<Random<Integer>,Arg>) -> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:Add<Arg,Random<Integer>>) -> {
+function Delta<Arg>(μ:Add<Arg,Random<Integer>>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   return Delta(l + μ.r);
 }
@@ -126,7 +126,7 @@ function Delta<Arg>(μ:Add<Arg,Random<Integer>>) -> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg1,Arg2>(μ:Add<Arg1,Arg2>) -> {
+function Delta<Arg1,Arg2>(μ:Add<Arg1,Arg2>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   let r ~ Delta(μ.r);
   return Delta(l + r);

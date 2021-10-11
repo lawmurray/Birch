@@ -1,0 +1,60 @@
+struct LChoose<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
+}
+
+function value<Left,Right>(x:LChoose<Left,Right>) -> {
+  return lchoose(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:LChoose<Left,Right>) -> {
+  return lchoose(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:LChoose<Left,Right>) -> {
+  return lchoose(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:LChoose<Left,Right>, d:Gradient) {
+  let n <- peek(x.l);
+  let k <- peek(x.r);
+  dn:Real;
+  dk:Real;
+  if k == 0 || k == n {
+    dn <- 0.0;
+    dk <- 0.0;
+  } else if k == 1 || k == n - 1 {
+    dn <- 1.0/n;
+    dk <- 0.0;
+  } else if k < n - k {
+    dn <- -digamma(n - k + 1) + digamma(n + 1);
+    dk <- -1.0/k - digamma(k) + digamma(n - k + 1);
+  } else {
+    dn <- -1.0/(n - k) - digamma(n - k) + digamma(n + 1);
+    dk <- 1.0/(n - k) - digamma(k + 1) + digamma(n - k);
+  }
+  grad(x.l, d*dn);
+  grad(x.r, d*dk);
+}
+
+hpp{{
+namespace birch {
+/**
+ * Logarithm of the binomial coefficient.
+ */
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+LChoose<Left,Right> lchoose(Left&& l, Right&& r) {
+  return construct<LChoose<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
+}
+}
+}}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lchoose(x:Real, y:Real) -> Real {
+  cpp{{
+  return numbirch::lchoose(x, y);
+  }}
+}

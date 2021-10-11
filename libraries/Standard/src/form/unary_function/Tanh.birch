@@ -18,22 +18,17 @@ function grad<Middle,Gradient>(x:Tanh<Middle>, d:Gradient) {
   grad(x.m, d*(1.0 + pow(tanh(peek(x.m)), 2.0)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Hyperbolic tangent.
  */
-function tanh<Middle>(m:Middle) -> Tanh<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Tanh<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Tanh<Middle> tanh(Middle&& m) {
+  return construct<Tanh<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Hyperbolic sine.
- */
-function tanh(m:Integer) -> Real {
-  return tanh(scalar<Real>(m));
 }
+}}
 
 /**
  * Hyperbolic tangent.

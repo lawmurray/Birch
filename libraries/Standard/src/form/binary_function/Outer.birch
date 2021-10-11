@@ -19,12 +19,16 @@ function grad<Left,Right,Gradient>(x:Outer<Left,Right>, d:Gradient) {
   grad(x.r, inner(d, peek(x.l)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Outer product.
  */
-function outer<Left,Right>(l:Left, r:Right) -> Outer<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Outer<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Outer<Left,Right> outer(Left&& l, Right&& r) {
+  return construct<Outer<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}

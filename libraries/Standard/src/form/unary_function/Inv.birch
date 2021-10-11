@@ -23,8 +23,5 @@ function grad<Middle,Gradient>(x:Inv<Middle>, d:Gradient) {
  * Inverse of a matrix.
  */
 function inv<Middle>(m:Middle) -> Inv<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
   return construct<Inv<Middle>>(m);
 }

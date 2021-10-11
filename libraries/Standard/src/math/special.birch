@@ -1,37 +1,14 @@
 cpp{{
-#include <boost/math/special_functions/digamma.hpp>
 #include <boost/math/special_functions/gamma.hpp>
-#include <boost/math/special_functions/beta.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 }}
-
-/**
- * Gamma function.
- */
-function gamma(x:Real) -> Real {
-  cpp {{
-  return ::tgamma(x);
-  }}
-}
-
-/**
- * Multivariate gamma function.
- */
-function gamma(x:Real, p:Integer) -> Real {
-  assert p > 0;
-  let y <- 0.25*(p*(p - 1))*log(π);
-  for i in 1..p {
-    y <- y*gamma(x + 0.5*(1 - i));
-  }
-  return y;
-}
 
 /**
  * Digamma function (derivative of `lgamma`).
  */
 function digamma(x:Real) -> Real {
   cpp{{
-  return boost::math::digamma(x);
+  return numbirch::digamma(x);
   }}
 }
 
@@ -54,36 +31,10 @@ function gamma_q(a:Real, x:Real) -> Real {
 }
 
 /**
- * Beta function.
- */
-function beta(x:Real, y:Real) -> Real {
-  cpp{{
-  return boost::math::beta(x, y);
-  }}
-}
-
-/**
  * Incomplete beta function.
  */
 function ibeta(a:Real, b:Real, x:Real) -> Real {
   cpp{{
   return boost::math::ibeta(a, b, x);
   }}
-}
-
-/**
- * Binomial coefficient.
- */
-function choose(x:Integer, y:Integer) -> Real {
-  assert 0.0 <= x;
-  assert 0.0 <= y;
-  assert x >= y;
-
-  if y == 0.0 {
-    return 1.0;
-  } else {
-    cpp{{
-    return boost::math::binomial_coefficient<Real>(x, y);
-    }}
-  }
 }

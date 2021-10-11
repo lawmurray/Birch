@@ -1,7 +1,7 @@
-operator<Type> (x:Type[_] == y:Type[_]) -> Boolean;
-operator<Type> (x:Type[_] != y:Type[_]) -> Boolean;
+operator <Type>(x:Type[_] == y:Type[_]) -> Boolean;
+operator <Type>(x:Type[_] != y:Type[_]) -> Boolean;
 
-operator<Type> (+x:Type[_]) -> Type[_] {
+operator <Type>(+x:Type[_]) -> Type[_] {
   return x;
 }
 
@@ -21,7 +21,7 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   cpp{{
   /* wrap λ in another lambda function to translate 0-based indices into
    * 1-based indices */
-  return numbirch::Array([&](Integer i) { return λ(i + 1); },
+  return numbirch::Array([&](const int i) { return λ(i + 1); },
       numbirch::make_shape(length));
   }}
 }

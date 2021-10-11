@@ -19,12 +19,16 @@ function grad<Left,Right,Gradient>(x:Subtract<Left,Right>, d:Gradient) {
   grad(x.r, -d);
 }
 
+hpp{{
+namespace birch {
 /**
  * Subtraction.
  */
-operator<Left,Right> (l:Left - r:Right) -> Subtract<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Subtract<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Subtract<Left,Right> operator-(Left&& l, Right&& r) {
+  return construct<Subtract<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}

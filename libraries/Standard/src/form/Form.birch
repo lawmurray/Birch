@@ -7,25 +7,30 @@ struct Form {
 
 hpp{{
 namespace birch {
-template<class... Args>
-struct is_form {
-  //
+
+template<class T>
+struct is_delay {
+private:
+  template<class U>
+  static constexpr bool is_form(...) {
+    return std::is_base_of<Form,typename std::decay<U>::type>::value;
+  }
+
+  template<class U>
+  static constexpr bool is_expression(
+        typename std::decay<U>::type::value_type::Value_*) {
+    return std::is_base_of<
+        Expression_<typename std::decay<U>::type::value_type::Value_>,
+        typename std::decay<U>::type::value_type>::value;
+  }
+  template<class>
+  static constexpr bool is_expression(...) {
+    return false;
+  }
+
+public:
+  static constexpr bool value = is_form<T>(0) || is_expression<T>(0);
 };
 
-template<class Arg>
-struct is_form<libbirch::Shared<Arg>> {
-  static const bool value =
-      std::is_base_of<Delay_,Arg>::value;
-};
-
-template<class Arg>
-struct is_form<Arg> {
-  static const bool value = std::is_base_of<Form,Arg>::value;
-};
-
-template<class Arg, class... Args>
-struct is_form<Arg,Args...> {
-  static const bool value = is_form<Arg>::value || is_form<Args...>::value;
-};
 }
 }}

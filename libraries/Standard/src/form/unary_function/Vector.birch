@@ -22,11 +22,21 @@ function grad<Value,Middle,Gradient>(x:Vector<Value,Middle>, d:Gradient) {
  * Convert to vector.
  */
 function vector<Value,Middle>(m:Middle) -> Vector<Value,Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
   return construct<Vector<Value,Middle>>(m);
 }
+
+hpp{{
+namespace birch {
+/**
+ * Convert to vector.
+ */
+template<class Value, class Middle,
+    std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Vector<Value,Middle> vector(Middle&& m) {
+  return construct<Vector<Value,Middle>>(std::forward<Middle>(m));
+}
+}
+}}
 
 /**
  * Convert to vector.
@@ -64,14 +74,14 @@ function vector<Value>(m:Real) -> Value[_] {
   return [scalar<Value>(m)];
 }
 
-function grad_vector<Gradient,Value>(d:Gradient[_], m:Value) -> {
-  return scalar<Value>(d);
+function grad_vector<Gradient,Type>(d:Gradient[_], m:Type) -> {
+  return scalar<Type>(d);
 }
 
-function grad_vector<Gradient,Value>(d:Gradient[_], m:Value[_]) -> {
-  return vector<Value>(d);
+function grad_vector<Gradient,Type>(d:Gradient[_], m:Type[_]) -> {
+  return vector<Type>(d);
 }
 
-function grad_vector<Gradient,Value>(d:Gradient[_], m:Value[_,_]) -> {
-  return matrix<Value>(d);
+function grad_vector<Gradient,Type>(d:Gradient[_], m:Type[_,_]) -> {
+  return matrix<Type>(d);
 }

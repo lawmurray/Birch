@@ -89,7 +89,7 @@ function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
 function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
     Integer {
   let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return simulate_categorical(p, sum(p)) - 1;
+  return simulate_categorical(p, sum(p)!) - 1;
 }
 
 /*
@@ -121,7 +121,7 @@ function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
 function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
     Real {
   let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return cdf_categorical(x + 1, p, sum(p));
+  return cdf_categorical(x + 1, p, sum(p)!);
 }
 
 /*
@@ -137,7 +137,7 @@ function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
 function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
     n:Integer) -> Integer {
   let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return quantile_categorical(P, p, sum(p)) - 1;
+  return quantile_categorical(P, p, sum(p)!) - 1;
 }
 
 /*

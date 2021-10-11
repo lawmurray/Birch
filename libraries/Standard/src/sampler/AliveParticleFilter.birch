@@ -66,9 +66,9 @@ class AliveParticleFilter < ParticleFilter {
 
   override function reduce() {
     super.reduce();
-    npropagations <- sum(p);
+    npropagations <- sum(p)!;
     if npropagations > 0 {
-      lnormalize <- lnormalize + log(nparticles) - log(npropagations-1);
+      lnormalize <- lnormalize + log(nparticles) - log(npropagations - 1);
     }
   }
 }

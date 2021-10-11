@@ -23,17 +23,20 @@ function grad<Left,Middle,Right,Gradient>(x:IfThenElse<Left,Middle,Right>,
   grad(x.r, if_then_else(l, 0.0, d));
 }
 
+hpp{{
+namespace birch {
 /**
- * If `cond` is true then return `x`, else return `y`.
+ * If `l` is true then return `m`, else return `r`.
  */
- function if_then_else<Left,Middle,Right>(cond:Left, x:Middle, y:Right) ->
-     IfThenElse<Left,Middle,Right> {
-  cpp{{
-  static_assert(is_form<Left,Middle,Right>::value,
-      "argument types not supported");
-  }}
-  return construct<IfThenElse<Left,Middle,Right>>(cond, x, y);
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay<Left>::value || is_delay<Middle>::value || is_delay<Right>::value,
+    int> = 0>
+IfThenElse<Left,Middle,Right> if_then_else(Left&& l, Middle&& m, Right&& r) {
+  return construct<IfThenElse<Left,Middle,Right>>(std::forward<Left>(l),
+      std::forward<Middle>(m), std::forward<Right>(r));
 }
+}
+}}
 
 function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
   if cond {

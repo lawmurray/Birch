@@ -8,28 +8,18 @@ type Real;
 
 hpp{{
 #ifdef BIRCH_SINGLE
-using Real = numbirch::Scalar<float>;
+using Real = float;
 #else
-using Real = numbirch::Scalar<double>;
+using Real = double;
 #endif
 }}
-
-/*
- * Operators
- */
-operator (+x:Real) -> Real;
-operator (x:Real > y:Real) -> Boolean;
-operator (x:Real >= y:Real) -> Boolean;
-operator (x:Real <= y:Real) -> Boolean;
-operator (x:Real == y:Real) -> Boolean;
-operator (x:Real != y:Real) -> Boolean;
 
 /**
  * Modulus.
  */
 function mod(x:Real, y:Real) -> Real {
   cpp {{
-  return ::fmod(x, y);
+  return std::fmod(x, y);
   }}
 }
 

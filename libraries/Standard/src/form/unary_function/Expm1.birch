@@ -18,29 +18,23 @@ function grad<Middle,Gradient>(x:Expm1<Middle>, d:Gradient) {
   grad(x.m, d*exp(peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Exponential minus one.
  */
-function expm1<Middle>(m:Middle) -> Expm1<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Expm1<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Expm1<Middle> expm1(Middle&& m) {
+  return construct<Expm1<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Exponential minus one.
- */
-function expm1(m:Integer) -> Real {
-  return expm1(scalar<Real>(m));
 }
+}}
 
 /**
  * Exponential minus one.
  */
 function expm1(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::expm1(m);
   }}
 }
-

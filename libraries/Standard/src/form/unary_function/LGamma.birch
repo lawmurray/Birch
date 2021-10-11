@@ -1,0 +1,40 @@
+struct LGamma<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
+}
+
+function value<Middle>(x:LGamma<Middle>) -> {
+  return lgamma(value(x.m));
+}
+
+function peek<Middle>(x:LGamma<Middle>) -> {
+  return lgamma(peek(x.m));
+}
+
+function eval<Middle>(x:LGamma<Middle>) -> {
+  return lgamma(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:LGamma<Middle>, d:Gradient) {
+  return grad(x.m, d*digamma(peek(x.m)));
+}
+
+hpp{{
+namespace birch {
+/**
+ * Logarithm of the gamma function.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+LGamma<Middle> lgamma(Middle&& m) {
+  return construct<LGamma<Middle>>(std::forward<Middle>(m));
+}
+}
+}}
+
+/**
+ * Logarithm of the gamma function.
+ */
+function lgamma(m:Real) -> Real {
+  cpp{{
+  return std::lgamma(m);
+  }}
+}

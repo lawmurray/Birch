@@ -19,12 +19,16 @@ function grad<Left,Right,Gradient>(x:Add<Left,Right>, d:Gradient) {
   grad(x.r, d);
 }
 
+hpp{{
+namespace birch {
 /**
  * Addition.
  */
-operator<Left,Right> (l:Left + r:Right) -> Add<Left,Right> {
-  cpp{{
-  static_assert(is_form<Left,Right>::value, "argument types not supported");
-  }}
-  return construct<Add<Left,Right>>(l, r);
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+Add<Left,Right> operator+(Left&& l, Right&& r) {
+  return construct<Add<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
 }
+}
+}}

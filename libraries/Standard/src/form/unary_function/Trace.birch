@@ -18,24 +18,26 @@ function grad<Middle,Gradient>(x:Trace<Middle>, d:Gradient) {
   grad(x.m, grad_trace(d, peek(x.m)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Trace.
  */
-function trace<Middle>(m:Middle) -> Trace<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Trace<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Trace<Middle> trace(Middle&& m) {
+  return construct<Trace<Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
-function grad_trace<Gradient,Value>(d:Gradient, m:Value) -> {
+function grad_trace<Gradient,Type>(d:Gradient, m:Type) -> {
   return d;
 }
 
-function grad_trace<Gradient,Value>(d:Gradient, m:Value[_]) -> {
+function grad_trace<Gradient,Type>(d:Gradient, m:Type[_]) -> {
   return vector(d, length(m));
 }
 
-function grad_trace<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
+function grad_trace<Gradient,Type>(d:Gradient, m:Type[_,_]) -> {
   return diagonal(d, rows(m));
 }

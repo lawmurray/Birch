@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Tan<Middle>, d:Gradient) {
   grad(x.m, d*(1.0 + pow(tan(peek(x.m)), 2.0)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Tangent.
  */
-function tan<Middle>(m:Middle) -> Tan<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Tan<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Tan<Middle> tan(Middle&& m) {
+  return construct<Tan<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Tangent.
- */
-function tan(m:Integer) -> Real {
-  return tan(scalar<Real>(m));
 }
+}}
 
 /**
  * Tangent.
  */
 function tan(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::tan(m);
   }}
 }

@@ -18,21 +18,23 @@ function grad<Middle,Gradient>(x:Ceil<Middle>, d:Gradient) {
   grad(x.m, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Round to smallest integer value not less than argument.
  */
-function ceil<Middle>(m:Middle) -> Ceil<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Ceil<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Ceil<Middle> ceil(Middle&& m) {
+  return construct<Ceil<Middle>>(std::forward<Middle>(m));
 }
+}
+}}
 
 /**
  * Round to smallest integer value not less than argument.
  */
-function ceil(x:Real) -> Real {
-  cpp {{
-  return std::ceil(x);
+function ceil(m:Real) -> Real {
+  cpp{{
+  return std::ceil(m);
   }}
 }

@@ -1,0 +1,43 @@
+struct LGammaP<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  //
+}
+
+function value<Left,Right>(x:LGammaP<Left,Right>) -> {
+  return lgamma(value(x.l), value(x.r));
+}
+
+function peek<Left,Right>(x:LGammaP<Left,Right>) -> {
+  return lgamma(peek(x.l), peek(x.r));
+}
+
+function eval<Left,Right>(x:LGammaP<Left,Right>) -> {
+  return lgamma(eval(x.l), eval(x.r));
+}
+
+function grad<Left,Right,Gradient>(x:LGammaP<Left,Right>, d:Gradient) {
+  grad(x.l, d*digamma(peek(x.l), peek(x.r)));
+  grad(x.r, 0.0);
+}
+
+hpp{{
+namespace birch {
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
+    is_delay<Right>::value,int> = 0>
+LGammaP<Left,Right> lgamma(Left&& l, Right&& r) {
+  return construct<LGammaP<Left,Right>>(std::forward<Left>(l),
+      std::forward<Right>(r));
+}
+}
+}}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:Real, y:Integer) -> Real {
+  cpp{{
+  return numbirch::lgamma(x, y);
+  }}
+}

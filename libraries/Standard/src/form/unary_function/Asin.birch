@@ -18,28 +18,23 @@ function grad<Middle,Gradient>(x:Asin<Middle>, d:Gradient) {
   return grad(x.m, d/sqrt(1.0 - pow(peek(x.m), 2.0)));
 }
 
+hpp{{
+namespace birch {
 /**
  * Arc sine.
  */
-function asin<Middle>(m:Middle) -> Asin<Middle> {
-  cpp{{
-  static_assert(is_form<Middle>::value, "argument types not supported");
-  }}
-  return construct<Asin<Middle>>(m);
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Asin<Middle> asin(Middle&& m) {
+  return construct<Asin<Middle>>(std::forward<Middle>(m));
 }
-
-/**
- * Arc sine.
- */
-function asin(m:Integer) -> Real {
-  return asin(scalar<Real>(m));
 }
+}}
 
 /**
  * Arc sine.
  */
 function asin(m:Real) -> Real {
-  cpp {{
+  cpp{{
   return std::asin(m);
   }}
 }
