@@ -9,7 +9,7 @@ executors:
       - image: lawmurray/birch-circleci:opensuse
     environment:
       OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
+      MAKE_FLAGS: "-j2"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
       SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
@@ -24,7 +24,7 @@ executors:
       - image: lawmurray/birch-circleci:ubuntu
     environment:
       OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
+      MAKE_FLAGS: "-j2"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
@@ -35,7 +35,7 @@ executors:
       - image: lawmurray/birch-circleci:debian
     environment:
       OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
+      MAKE_FLAGS: "-j2"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
@@ -46,7 +46,7 @@ executors:
       - image: lawmurray/birch-circleci:fedora
     environment:
       OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
+      MAKE_FLAGS: "-j2"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
@@ -57,7 +57,7 @@ executors:
       - image: lawmurray/birch-circleci:alpine
     environment:
       OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
+      MAKE_FLAGS: "-j2"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
