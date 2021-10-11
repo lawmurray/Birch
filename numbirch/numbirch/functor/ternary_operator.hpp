@@ -3,8 +3,7 @@
  */
 #pragma once
 
-#include "numbirch/functor/macro.hpp"
-#include "numbirch/functor/function.hpp"
+#include "numbirch/function.hpp"
 
 namespace numbirch {
 

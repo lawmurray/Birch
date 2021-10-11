@@ -44,12 +44,28 @@ template void cholsolve(const int m, const int n, const float* S,
 
 template void copysign(const int m, const int n, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void copysign(const int m, const int n, const double* A,
+    const int ldA, const float* B, const int ldB, double* C, const int ldC);
+template void copysign(const int m, const int n, const double* A,
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
 template void copysign(const int m, const int n, const float* A,
     const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void copysign(const int m, const int n, const float* A,
+    const int ldA, const double* B, const int ldB, float* C, const int ldC);
+template void copysign(const int m, const int n, const float* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void copysign(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, int* C, const int ldC);
+template void copysign(const int m, const int n, const int* A,
+    const int ldA, const float* B, const int ldB, int* C, const int ldC);
+template void copysign(const int m, const int n, const int* A,
+    const int ldA, const double* B, const int ldB, int* C, const int ldC);
 
 template void diagonal(const double* a, const int n, double* B,
     const int ldB);
 template void diagonal(const float* a, const int n, float* B,
+    const int ldB);
+template void diagonal(const int* a, const int n, int* B,
     const int ldB);
 
 template void dot(const int n, const double* x, const int incx,
@@ -79,19 +95,53 @@ template void inner(const int m, const int n, const int k, const float* A,
 
 template void lbeta(const int m, const int n, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void lbeta(const int m, const int n, const double* A,
+    const int ldA, const float* B, const int ldB, double* C, const int ldC);
+template void lbeta(const int m, const int n, const double* A,
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
 template void lbeta(const int m, const int n, const float* A,
     const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void lbeta(const int m, const int n, const float* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void lbeta(const int m, const int n, const float* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void lbeta(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
+template void lbeta(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void lbeta(const int m, const int n, const int* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void lbeta(const int m, const int n, const int* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
 
 template void lchoose(const int m, const int n, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void lchoose(const int m, const int n, const double* A,
+    const int ldA, const float* B, const int ldB, double* C, const int ldC);
+template void lchoose(const int m, const int n, const double* A,
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
 template void lchoose(const int m, const int n, const float* A,
     const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void lchoose(const int m, const int n, const float* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void lchoose(const int m, const int n, const float* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
 template void lchoose(const int m, const int n, const int* A,
-    const int ldA, const int* B, const int ldB, int* C, const int ldC);
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
+template void lchoose(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void lchoose(const int m, const int n, const int* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void lchoose(const int m, const int n, const int* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
 
 template void lgamma(const int m, const int n, const double* A,
     const int ldA, const int* B, const int ldB, double* C, const int ldC);
 template void lgamma(const int m, const int n, const float* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void lgamma(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
+template void lgamma(const int m, const int n, const int* A,
     const int ldA, const int* B, const int ldB, float* C, const int ldC);
 
 template void outer(const int m, const int n, const double* x, const int incx,
@@ -107,11 +157,21 @@ template void outer(const int m, const int n, const int k, const float* A,
 template void pow(const int m, const int n, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
 template void pow(const int m, const int n, const double* A,
+    const int ldA, const float* B, const int ldB, double* C, const int ldC);
+template void pow(const int m, const int n, const double* A,
     const int ldA, const int* B, const int ldB, double* C, const int ldC);
 template void pow(const int m, const int n, const float* A,
     const int ldA, const float* B, const int ldB, float* C, const int ldC);
 template void pow(const int m, const int n, const float* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void pow(const int m, const int n, const float* A,
     const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void pow(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, int* C, const int ldC);
+template void pow(const int m, const int n, const int* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void pow(const int m, const int n, const int* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
 
 template void solve(const int n, const double* A, const int ldA, double* x,
     const int incx, const double* y, const int incy);

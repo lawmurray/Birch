@@ -5,32 +5,12 @@
 
 namespace numbirch {
 /**
- * Copy sign of a number.
- * 
- * @ingroup cpp-raw
- * 
- * @tparam T Value type (`double` or `float`).
- * 
- * @param m Number of rows.
- * @param n Number of columns.
- * @param A Matrix.
- * @param ldA Column stride of `A`.
- * @param B Matrix.
- * @param ldB Column stride of `B`.
- * @param[out] C Matrix.
- * @param ldC Column stride of `C`.
- */
-template<class T>
-void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC);
-
-/**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
  * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of rows and columns of `S`, and elements of `x` and `y`.
  * @param S Symmetric positive definite matrix.
@@ -50,7 +30,7 @@ void cholmul(const int n, const T* S, const int ldS, const T* x,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `S` and `C`.
  * @param n Number of columns of `B` and `C`.
@@ -71,7 +51,7 @@ void cholmul(const int m, const int n, const T* S, const int ldS, const T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `C`, and rows of `A`.
  * @param n Number of columns of `C`, columns of `A`, and rows and columns of
@@ -93,7 +73,7 @@ void cholouter(const int m, const int n, const T* A, const int ldA,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of elements of `x`.
  * @param S Symmetric positive definite matrix.
@@ -113,7 +93,7 @@ void cholsolve(const int n, const T* S, const int ldS, T* x, const int incx,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `X`.
  * @param n Number of columns of `X`.
@@ -129,12 +109,33 @@ void cholsolve(const int m, const int n, const T* S, const int ldS, T* X,
     const int ldX, const T* Y, const int ldY);
 
 /**
+ * Copy sign of a number.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U>
+void copysign(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, T* C, const int ldC);
+
+/**
  * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
  * value, while all off-diagonal elements are assigned zero.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param a Scalar to assign to diagonal.
  * @param n Number of rows and columns of `B`.
@@ -149,7 +150,9 @@ void diagonal(const T* a, const int n, T* B, const int ldB);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam V Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -160,16 +163,18 @@ void diagonal(const T* a, const int n, T* B, const int ldB);
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T>
-void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC);
+template<class T, class U, class V>
+void hadamard(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC);
 
 /**
  * Logarithm of the beta function.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam V Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -180,17 +185,18 @@ void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T>
-void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC);
+template<class T, class U, class V>
+void lbeta(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC);
 
 /**
  * Logarithm of the binomial coefficient.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double`, `float` or `int`).
- * @tparam U Value type (`double`, `float` or `int`).
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam V Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -201,37 +207,17 @@ void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
-void lchoose(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC);
+template<class T, class U, class V>
+void lchoose(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC);
 
 /**
  * Logarithm of the multivariate gamma function.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
- * 
- * @param m Number of rows.
- * @param n Number of columns.
- * @param A Matrix.
- * @param ldA Column stride of `A`.
- * @param B Matrix.
- * @param ldB Column stride of `B`.
- * @param[out] C Matrix.
- * @param ldC Column stride of `C`.
- */
-template<class T>
-void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
-    const int ldB, T* C, const int ldC);
-
-/**
- * Power.
- * 
- * @ingroup cpp-raw
- * 
- * @tparam T Value type (`double`, `float` or `int`).
- * @tparam U Value type (`double`, `float` or `int`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -243,15 +229,37 @@ void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
  * @param ldC Column stride of `C`.
  */
 template<class T, class U>
+void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
+    const int ldB, U* C, const int ldC);
+
+/**
+ * Power.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam V Value type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] C Matrix.
+ * @param ldC Column stride of `C`.
+ */
+template<class T, class U, class V>
 void pow(const int m, const int n, const T* A, const int ldA, const U* B,
-    const int ldB, T* C, const int ldC);
+    const int ldB, V* C, const int ldC);
 
 /**
  * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of elements of `x`.
  * @param A Matrix.
@@ -270,7 +278,7 @@ void solve(const int n, const T* A, const int ldA, T* x, const int incx,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `X`.
  * @param n Number of columns of `X`.
@@ -290,7 +298,7 @@ void solve(const int m, const int n, const T* A, const int ldA, T* X,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of elements.
  * @param x Vector.
@@ -310,7 +318,7 @@ void dot(const int n, const T* x, const int incx, const T* y, const int incy,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `A` and `B`.
  * @param n Number of columns of `A` and `B`.
@@ -329,7 +337,7 @@ void frobenius(const int m, const int n, const T* A, const int ldA,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of elements of `y` and columns of `A`.
  * @param n Number of elements of `x` and rows of `A`.
@@ -349,7 +357,7 @@ void inner(const int m, const int n, const T* A, const int ldA, const T* x,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `C`, and columns of `A`.
  * @param n Number of columns of `C` and columns of `B`.
@@ -370,7 +378,7 @@ void inner(const int m, const int n, const int k, const T* A, const int ldA,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `A` and elements of `x`.
  * @param n Number of columns of `A` and elements of `y`.
@@ -390,7 +398,7 @@ void outer(const int m, const int n, const T* x, const int incx, const T* y,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `C`, and rows of `A`.
  * @param n Number of columns of `C` and rows of `B`.
@@ -411,7 +419,7 @@ void outer(const int m, const int n, const int k, const T* A, const int ldA,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of elements of `x`.
  * @param A Matrix.

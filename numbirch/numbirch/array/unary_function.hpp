@@ -10,6 +10,8 @@
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
 
+#include <cmath>
+
 namespace numbirch {
 /**
  * Absolute value.
@@ -43,8 +45,8 @@ Array<T,D> abs(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> acos(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto acos(const Array<T,D>& A) {
+  Array<decltype(std::acos(T())),D> B(A.shape().compact());
   acos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -62,8 +64,8 @@ Array<T,D> acos(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> asin(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto asin(const Array<T,D>& A) {
+  Array<decltype(std::asin(T())),D> B(A.shape().compact());
   asin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -81,8 +83,8 @@ Array<T,D> asin(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> atan(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto atan(const Array<T,D>& A) {
+  Array<decltype(std::atan(T())),D> B(A.shape().compact());
   atan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -100,8 +102,8 @@ Array<T,D> atan(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> ceil(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto ceil(const Array<T,D>& A) {
+  Array<decltype(ceil(T())),D> B(A.shape().compact());
   ceil(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -119,8 +121,8 @@ Array<T,D> ceil(const Array<T,D>& A) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> cholinv(const Array<T,2>& S) {
-  Array<T,2> B(make_shape(S.rows(), S.columns()));
+Matrix<T> cholinv(const Matrix<T>& S) {
+  Matrix<T> B(make_shape(S.rows(), S.columns()));
   cholinv(S.rows(), S.data(), S.stride(), B.data(), B.stride());
   return B;
 }
@@ -138,8 +140,8 @@ Array<T,2> cholinv(const Array<T,2>& S) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> cos(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto cos(const Array<T,D>& A) {
+  Array<decltype(std::cos(T())),D> B(A.shape().compact());
   cos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -157,8 +159,8 @@ Array<T,D> cos(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> cosh(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto cosh(const Array<T,D>& A) {
+  Array<decltype(std::cos(T())),D> B(A.shape().compact());
   cosh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -176,8 +178,8 @@ Array<T,D> cosh(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> exp(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto exp(const Array<T,D>& A) {
+  Array<decltype(std::exp(T())),D> B(A.shape().compact());
   exp(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -195,8 +197,8 @@ Array<T,D> exp(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> expm1(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto expm1(const Array<T,D>& A) {
+  Array<decltype(std::expm1(T())),D> B(A.shape().compact());
   expm1(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -214,8 +216,8 @@ Array<T,D> expm1(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> floor(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto floor(const Array<T,D>& A) {
+  Array<decltype(floor(T())),D> B(A.shape().compact());
   floor(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -232,8 +234,8 @@ Array<T,D> floor(const Array<T,D>& A) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> inv(const Array<T,2>& A) {
-  Array<T,2> B(make_shape(A.rows(), A.columns()));
+Matrix<T> inv(const Matrix<T>& A) {
+  Matrix<T> B(make_shape(A.rows(), A.columns()));
   inv(A.rows(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -252,7 +254,7 @@ Array<T,2> inv(const Array<T,2>& A) {
  * @return Logarithm of the determinant of `S`.
  */
 template<class T>
-Scalar<T> lcholdet(const Array<T,2>& S) {
+Scalar<T> lcholdet(const Matrix<T>& S) {
   Scalar<T> b;
   lcholdet(S.rows(), S.data(), S.stride(), b.data());
   return b;
@@ -270,7 +272,7 @@ Scalar<T> lcholdet(const Array<T,2>& S) {
  * @return Logarithm of the absolute value of the determinant of `A`.
  */
 template<class T>
-Scalar<T> ldet(const Array<T,2>& A) {
+Scalar<T> ldet(const Matrix<T>& A) {
   Scalar<T> b;
   ldet(A.rows(), A.data(), A.stride(), b.data());
   return b;
@@ -289,8 +291,8 @@ Scalar<T> ldet(const Array<T,2>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> lgamma(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto lgamma(const Array<T,D>& A) {
+  Array<decltype(std::lgamma(T())),D> B(A.shape().compact());
   lgamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -308,8 +310,8 @@ Array<T,D> lgamma(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> log(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto log(const Array<T,D>& A) {
+  Array<decltype(std::log(T())),D> B(A.shape().compact());
   log(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -327,8 +329,8 @@ Array<T,D> log(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> log1p(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto log1p(const Array<T,D>& A) {
+  Array<decltype(std::log1p(T())),D> B(A.shape().compact());
   log1p(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -347,8 +349,8 @@ Array<T,D> log1p(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> rectify(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto rectify(const Array<T,D>& A) {
+  Array<decltype(rectify(T())),D> B(A.shape().compact());
   rectify(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -366,8 +368,8 @@ Array<T,D> rectify(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> round(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto round(const Array<T,D>& A) {
+  Array<decltype(round(T())),D> B(A.shape().compact());
   round(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -385,8 +387,8 @@ Array<T,D> round(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> sin(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto sin(const Array<T,D>& A) {
+  Array<decltype(std::sin(T())),D> B(A.shape().compact());
   sin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -404,8 +406,8 @@ Array<T,D> sin(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> sinh(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto sinh(const Array<T,D>& A) {
+  Array<decltype(std::sinh(T())),D> B(A.shape().compact());
   sinh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -423,8 +425,8 @@ Array<T,D> sinh(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> sqrt(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto sqrt(const Array<T,D>& A) {
+  Array<decltype(std::sqrt(T())),D> B(A.shape().compact());
   sqrt(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -461,8 +463,8 @@ Scalar<T> sum(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> tan(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto tan(const Array<T,D>& A) {
+  Array<decltype(std::tanh(T())),D> B(A.shape().compact());
   tan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -480,8 +482,8 @@ Array<T,D> tan(const Array<T,D>& A) {
  * @return %Array.
  */
 template<class T, int D>
-Array<T,D> tanh(const Array<T,D>& A) {
-  Array<T,D> B(A.shape().compact());
+auto tanh(const Array<T,D>& A) {
+  Array<decltype(std::tanh(T())),D> B(A.shape().compact());
   tanh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
@@ -498,7 +500,7 @@ Array<T,D> tanh(const Array<T,D>& A) {
  * @return Trace of the matrix.
  */
 template<class T>
-Scalar<T> trace(const Array<T,2>& A) {
+Scalar<T> trace(const Matrix<T>& A) {
   Scalar<T> b;
   trace(A.rows(), A.columns(), A.data(), A.stride(), b.data());
   return b;
@@ -517,8 +519,8 @@ Scalar<T> trace(const Array<T,2>& A) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> transpose(const Array<T,2>& A) {
-  Array<T,2> B(make_shape(A.columns(), A.rows()));
+Matrix<T> transpose(const Matrix<T>& A) {
+  Matrix<T> B(make_shape(A.columns(), A.rows()));
   transpose(B.rows(), B.columns(), A.data(), A.stride(), B.data(),
       B.stride());
   return B;

@@ -9,7 +9,7 @@ namespace numbirch {
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -27,7 +27,8 @@ void abs(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -36,8 +37,8 @@ void abs(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void acos(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void acos(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -45,7 +46,8 @@ void acos(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -54,8 +56,8 @@ void acos(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void asin(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void asin(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -63,7 +65,8 @@ void asin(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -72,8 +75,8 @@ void asin(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void atan(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void atan(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -81,7 +84,8 @@ void atan(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -100,7 +104,7 @@ void ceil(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of rows and columns.
  * @param S Symmetric positive definite matrix.
@@ -116,7 +120,8 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -125,8 +130,8 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB);
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void cos(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void cos(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -134,7 +139,8 @@ void cos(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -143,8 +149,8 @@ void cos(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void cosh(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void cosh(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -152,7 +158,8 @@ void cosh(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -161,8 +168,8 @@ void cosh(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void exp(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void exp(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -170,7 +177,8 @@ void exp(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -179,8 +187,8 @@ void exp(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void expm1(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void expm1(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -188,7 +196,7 @@ void expm1(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -206,7 +214,7 @@ void floor(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of rows and columns.
  * @param A Matrix.
@@ -224,7 +232,7 @@ void inv(const int n, const T* A, const int ldA, T* B, const int ldB);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of rows and columns.
  * @param S Symmetric positive definite matrix.
@@ -239,7 +247,7 @@ void lcholdet(const int n, const T* S, const int ldS, T* b);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param n Number of rows and columns.
  * @param A Matrix.
@@ -254,7 +262,8 @@ void ldet(const int n, const T* A, const int ldA, T* b);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -263,8 +272,8 @@ void ldet(const int n, const T* A, const int ldA, T* b);
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void lgamma(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -272,7 +281,8 @@ void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -281,8 +291,8 @@ void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void log(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void log(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -290,7 +300,8 @@ void log(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -299,8 +310,8 @@ void log(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void log1p(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void log1p(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -309,7 +320,7 @@ void log1p(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -327,7 +338,7 @@ void rectify(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -345,7 +356,8 @@ void round(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -354,8 +366,8 @@ void round(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void sin(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void sin(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -363,7 +375,8 @@ void sin(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -372,8 +385,8 @@ void sin(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void sinh(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void sinh(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -381,7 +394,8 @@ void sinh(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -390,8 +404,8 @@ void sinh(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void sqrt(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void sqrt(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -399,7 +413,7 @@ void sqrt(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -415,7 +429,8 @@ void sum(const int m, const int n, const T* A, const int ldA, T* b);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -424,8 +439,8 @@ void sum(const int m, const int n, const T* A, const int ldA, T* b);
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void tan(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void tan(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -433,7 +448,8 @@ void tan(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -442,8 +458,8 @@ void tan(const int m, const int n, const T* A, const int ldA, T* B,
  * @param[out] B Matrix.
  * @param ldB Column stride of `B`.
  */
-template<class T>
-void tanh(const int m, const int n, const T* A, const int ldA, T* B,
+template<class T, class U>
+void tanh(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
@@ -451,7 +467,7 @@ void tanh(const int m, const int n, const T* A, const int ldA, T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -467,7 +483,7 @@ void trace(const int m, const int n, const T* A, const int ldA, T* b);
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param m Number of rows of `B` and columns of `A`.
  * @param n Number of columns of `B` and rows of `A`.

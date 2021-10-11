@@ -10,16 +10,6 @@
 namespace numbirch {
 
 template<class T>
-void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto B1 = make_eigen_matrix(B, m, n, ldB);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, [](const T x, const T y) {
-        return std::copysign(x, y); });
-}
-
-template<class T>
 void cholmul(const int n, const T* S, const int ldS, const T* x,
     const int incx, T* y, const int incy) {
   auto S1 = make_eigen_matrix(S, n, n, ldS);
@@ -78,6 +68,15 @@ void cholsolve(const int m, const int n, const T* S, const int ldS, T* X,
   X1.noalias() = ldlt.solve(Y1);
 }
 
+template<class T, class U>
+void copysign(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, T* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<T>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<T>();
+  auto C1 = make_eigen_matrix(C, m, n, ldC);
+  C1.noalias() = A1.binaryExpr(B1, copysign_functor<T,T>());
+}
+
 template<class T>
 void diagonal(const T* a, const int n, T* B, const int ldB) {
   auto B1 = make_eigen_matrix(B, n, n, ldB);
@@ -127,34 +126,31 @@ void inner(const int m, const int n, const int k, const T* A, const int ldA,
   C1.noalias() = A1.transpose()*B1;
 }
 
-template<class T>
-void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto B1 = make_eigen_matrix(B, m, n, ldB);
+template<class T, class U, class V>
+void lbeta(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<V>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<V>();
   auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, lbeta_functor<T,T>());
+  C1.noalias() = A1.binaryExpr(B1, lbeta_functor<V,V>());
 }
 
-template<class T>
-void lchoose(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto B1 = make_eigen_matrix(B, m, n, ldB);
+template<class T, class U, class V>
+void lchoose(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<V>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<V>();
   auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, lchoose_functor<T,T>());
+  C1.noalias() = A1.binaryExpr(B1, lchoose_functor<V,V>());
 }
 
-template<class T>
+template<class T, class U>
 void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
-    const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<T>();
-  ///@todo Eigen does not support binary expressions with arguments of
-  ///different type, so we cast here; preferably re-implement this using STL
-  ///instead of Eigen.
+    const int ldB, U* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<U>();
   auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, lgammap_functor<T,T>());
+  C1.noalias() = A1.binaryExpr(B1, lgammap_functor<U,U>());
 }
 
 template<class T>
@@ -175,15 +171,13 @@ void outer(const int m, const int n, const int k, const T* A, const int ldA,
   C1.noalias() = A1*B1.transpose();
 }
 
-template<class T, class U>
+template<class T, class U, class V>
 void pow(const int m, const int n, const T* A, const int ldA, const U* B,
-    const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<T>();
-  // ^ Eigen does not support binary expressions with arguments of
-  //   different type, so we cast here
+    const int ldB, V* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<V>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<V>();
   auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, pow_functor<T,T>());
+  C1.noalias() = A1.binaryExpr(B1, pow_functor<V,V>());
 }
 
 template<class T>

@@ -3,14 +3,13 @@
  */
 #pragma once
 
-#include "numbirch/functor/macro.hpp"
-#include "numbirch/functor/function.hpp"
+#include "numbirch/function.hpp"
 
 namespace numbirch {
 
-template<class T, class U>
+template<class T>
 struct if_then_else_functor {
-  DEVICE T operator()(const T x, const U y, const U z) const {
+  HOST_DEVICE auto operator()(const bool x, const T y, const T z) const {
     return x ? y : z;
   }
 };

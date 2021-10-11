@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/array/Array.hpp"
+#include "numbirch/array/Future.hpp"
 #include "numbirch/array/Scalar.hpp"
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"

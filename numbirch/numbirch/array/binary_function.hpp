@@ -12,60 +12,12 @@
 
 namespace numbirch {
 /**
- * Copy sign of a number.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double` or `float`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<T,D> C(A.shape().compact());
-  copysign(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
-}
-
-/**
- * Hadamard (element-wise) matrix multiplication.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double` or `float`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<T,D> C(A.shape().compact());
-  hadamard(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
-}
-
-/**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
  * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param x Vector.
@@ -73,11 +25,11 @@ Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
  * @return Vector.
  */
 template<class T>
-Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
+Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
   assert(S.rows() == S.columns());
   assert(S.columns() == x.length());
 
-  Array<T,1> y(make_shape(S.rows()));
+  Vector<T> y(make_shape(S.rows()));
   cholmul(y.rows(), S.data(), S.stride(), x.data(), x.stride(), y.data(),
       y.stride());
   return y;
@@ -89,7 +41,7 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param B Matrix.
@@ -97,11 +49,11 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
+Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
   assert(S.rows() == S.columns());
   assert(S.columns() == S.rows());
 
-  Array<T,2> C(make_shape(S.rows(), B.columns()));
+  Matrix<T> C(make_shape(S.rows(), B.columns()));
   cholmul(C.rows(), C.columns(), S.data(), S.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -113,7 +65,7 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param S Symmetric positive definite matrix.
@@ -121,11 +73,11 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
+Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
   assert(A.columns() == S.columns());
   assert(S.rows() == S.columns());
 
-  Array<T,2> C(make_shape(A.rows(), S.rows()));
+  Matrix<T> C(make_shape(A.rows(), S.rows()));
   cholouter(C.rows(), C.columns(), A.data(), A.stride(), S.data(), S.stride(),
       C.data(), C.stride());
   return C;
@@ -137,7 +89,7 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param y Vector.
@@ -145,11 +97,11 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
  * @return Vector.
  */
 template<class T>
-Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
+Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
   assert(S.rows() == S.columns());
   assert(S.rows() == y.length());
 
-  Array<T,1> x(make_shape(y.length()));
+  Vector<T> x(make_shape(y.length()));
   cholsolve(x.rows(), S.data(), S.stride(), x.data(), x.stride(), y.data(),
       y.stride());
   return x;
@@ -161,7 +113,7 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param B Matrix.
@@ -169,14 +121,77 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& B) {
+Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
   assert(S.rows() == S.columns());
   assert(S.rows() == B.rows());
 
-  Array<T,2> A(make_shape(B.rows(), B.columns()));
+  Matrix<T> A(make_shape(B.rows(), B.columns()));
   cholsolve(A.rows(), A.columns(), S.data(), S.stride(), A.data(), A.stride(),
       B.data(), B.stride());
   return A;
+}
+
+/**
+ * Copy sign of a number.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, class U, int D>
+auto copysign(const Array<T,D>& A, const Array<U,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  copysign(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Copy sign of a number.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+auto copysign(const Scalar<T>& x, const U& y) {
+  return copysign(x, Scalar<U>(y));
+}
+
+/**
+ * Copy sign of a number.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+auto copysign(const T& x, const Scalar<U>& y) {
+  return copysign(Scalar<T>(x), y);
 }
 
 /**
@@ -185,16 +200,32 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
- * @param a Scalar to assign to diagonal.
+ * @param x Scalar to assign to diagonal.
  * @param n Number of rows and columns.
  */
 template<class T>
-Array<T,2> diagonal(const Scalar<T>& a, const int n) {
-  Array<T,2> B(make_shape(n, n));
-  diagonal(a.data(), n, B.data(), B.stride());
+Matrix<T> diagonal(const Scalar<T>& x, const int n) {
+  Matrix<T> B(make_shape(n, n));
+  diagonal(x.data(), n, B.data(), B.stride());
   return B;
+}
+
+/**
+ * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
+ * value, while all off-diagonal elements are assigned zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * 
+ * @param x Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ */
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Matrix<T> diagonal(const T& x, const int n) {
+  return diagonal(Scalar<T>(x), n);
 }
 
 /**
@@ -202,7 +233,8 @@ Array<T,2> diagonal(const Scalar<T>& a, const int n) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
  * @param x Vector.
  * @param y Vector.
@@ -210,7 +242,7 @@ Array<T,2> diagonal(const Scalar<T>& a, const int n) {
  * @return Dot product.
  */
 template<class T>
-Scalar<T> dot(const Array<T,1>& x, const Array<T,1>& y) {
+Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
   assert(x.length() == y.length());
   Scalar<T> z;
   dot(x.length(), x.data(), x.stride(), y.data(), y.stride(), z.data());
@@ -223,7 +255,7 @@ Scalar<T> dot(const Array<T,1>& x, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param x Vector.
  * @param A Matrix.
@@ -231,128 +263,8 @@ Scalar<T> dot(const Array<T,1>& x, const Array<T,1>& y) {
  * @return Vector giving the dot product of @p x with each column of @p A.
  */
 template<class T>
-Array<T,1> dot(const Array<T,1>& x, const Array<T,2>& A) {
+Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
   return inner(A, x);
-}
-
-/**
- * Equal to comparison.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<bool,D> equal(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  equal(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
-}
-
-/**
- * Greater than comparison.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<bool,D> greater(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  greater(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
-}
-
-/**
- * Greater than or equal to comparison.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<bool,D> greater_or_equal(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  greater_or_equal(A.width(), A.height(), A.data(), A.stride(), B.data(),
-      B.stride(), C.data(), C.stride());
-  return C;
-}
-
-/**
- * Less than comparison.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<bool,D> less(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  less(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
-}
-
-/**
- * Less than or equal to comparison.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<bool,D> less_or_equal(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  less_or_equal(A.width(), A.height(), A.data(), A.stride(), B.data(),
-      B.stride(), C.data(), C.stride());
-  return C;
 }
 
 /**
@@ -362,7 +274,7 @@ Array<bool,D> less_or_equal(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -370,7 +282,7 @@ Array<bool,D> less_or_equal(const Array<T,D>& A, const Array<T,D>& B) {
  * @return Frobenius product.
  */
 template<class T>
-Scalar<T> frobenius(const Array<T,2>& A, const Array<T,2>& B) {
+Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
   Scalar<T> c;
@@ -380,11 +292,74 @@ Scalar<T> frobenius(const Array<T,2>& A, const Array<T,2>& B) {
 }
 
 /**
+ * Hadamard (element-wise) matrix multiplication.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, class U, int D>
+auto hadamard(const Array<T,D>& A, const Array<U,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<decltype(T()*U()),D> C(A.shape().compact());
+  hadamard(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Hadamard (element-wise) matrix multiplication.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+auto hadamard(const Scalar<T>& x, const U& y) {
+  return hadamard(x, Scalar<U>(y));
+}
+
+/**
+ * Hadamard (element-wise) matrix multiplication.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+auto hadamard(const T& x, const Scalar<U>& y) {
+  return hadamard(Scalar<T>(x), y);
+}
+
+/**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param x Vector.
@@ -392,10 +367,10 @@ Scalar<T> frobenius(const Array<T,2>& A, const Array<T,2>& B) {
  * @return Vector.
  */
 template<class T>
-Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
+Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
   assert(A.rows() == x.length());
   
-  Array<T,1> y(make_shape(A.columns()));
+  Vector<T> y(make_shape(A.columns()));
   inner(y.rows(), A.rows(), A.data(), A.stride(), x.data(), x.stride(),
       y.data(), y.stride());
   return y;
@@ -406,7 +381,7 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -414,10 +389,10 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
+Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.rows() == B.rows());
 
-  Array<T,2> C(make_shape(A.columns(), B.columns()));
+  Matrix<T> C(make_shape(A.columns(), B.columns()));
   inner(C.rows(), C.columns(), A.rows(), A.data(), A.stride(), B.data(),
       B.stride(), C.data(), C.stride());
   return C;
@@ -428,7 +403,8 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -436,13 +412,76 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @return %Array.
  */
-template<class T, int D>
-Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
+template<class T, class U, int D>
+auto lbeta(const Array<T,D>& A, const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<T,D> C(A.shape().compact());
+  Array<decltype(lbeta(T(), U())),D> C(A.shape().compact());
   lbeta(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Logarithm of the beta function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+auto lbeta(const Scalar<T>& x, const U& y) {
+  return lbeta(x, Scalar<U>(y));
+}
+
+/**
+ * Logarithm of the beta function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+auto lbeta(const T& x, const Scalar<U>& y) {
+  return lbeta(Scalar<T>(x), y);
+}
+
+/**
+ * Logarithm of the binomial coefficient.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, class U, int D>
+auto lchoose(const Array<T,D>& A, const Array<U,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<decltype(lchoose(T(), U())),D> C(A.shape().compact());
+  lchoose(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
 }
@@ -452,23 +491,37 @@ Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double`, `float` or `int`).
- * @tparam D Number of dimensions.
+ * @tparam T Value type.
+ * @tparam U Value type.
  * 
- * @param A %Array.
- * @param B %Array.
+ * @param x %Scalar.
+ * @param y %Scalar.
  * 
- * @return %Array.
+ * @return %Scalar.
  */
-template<class T, int D>
-Array<T,D> lchoose(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+auto lchoose(const Scalar<T>& x, const U& y) {
+  return lchoose(x, Scalar<U>(y));
+}
 
-  Array<T,D> C(A.shape().compact());
-  lchoose(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
+/**
+ * Logarithm of the binomial coefficient.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+auto lchoose(const T& x, const Scalar<U>& y) {
+  return lchoose(Scalar<T>(x), y);
 }
 
 /**
@@ -476,7 +529,7 @@ Array<T,D> lchoose(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -496,73 +549,37 @@ Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
 }
 
 /**
- * Logical `and`.
+ * Logarithm of the multivariate gamma function.
  * 
  * @ingroup array
  * 
- * @tparam D Number of dimensions.
+ * @tparam T Value type.
  * 
- * @param A %Array.
- * @param B %Array.
+ * @param x %Scalar.
+ * @param y %Scalar.
  * 
- * @return %Array.
+ * @return %Scalar.
  */
-template<int D>
-Array<bool,D> logical_and(const Array<bool,D>& A, const Array<bool,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  logical_and(A.width(), A.height(), A.data(), A.stride(), B.data(),
-      B.stride(), C.data(), C.stride());
-  return C;
+template<class T>
+auto lgamma(const Scalar<T>& x, const int& y) {
+  return lgamma(x, Scalar<int>(y));
 }
 
 /**
- * Logical `or`.
+ * Logarithm of the multivariate gamma function.
  * 
  * @ingroup array
  * 
- * @tparam D Number of dimensions.
+ * @tparam T Value type.
  * 
- * @param A %Array.
- * @param B %Array.
+ * @param x %Scalar.
+ * @param y %Scalar.
  * 
- * @return %Array.
+ * @return %Scalar.
  */
-template<int D>
-Array<bool,D> logical_or(const Array<bool,D>& A, const Array<bool,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  logical_or(A.width(), A.height(), A.data(), A.stride(), B.data(),
-      B.stride(), C.data(), C.stride());
-  return C;
-}
-
-/**
- * Not equal to comparison.
- * 
- * @ingroup array
- * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam D Number of dimensions.
- * 
- * @param A %Array.
- * @param B %Array.
- * 
- * @return %Array.
- */
-template<class T, int D>
-Array<bool,D> not_equal(const Array<T,D>& A, const Array<T,D>& B) {
-  assert(A.rows() == B.rows());
-  assert(A.columns() == B.columns());
-
-  Array<bool,D> C(A.shape().compact());
-  not_equal(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-      C.data(), C.stride());
-  return C;
+template<class T>
+auto lgamma(const T& x, const Scalar<int>& y) {
+  return lgamma(Scalar<T>(x), y);
 }
 
 /**
@@ -570,7 +587,7 @@ Array<bool,D> not_equal(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param x Vector.
  * @param y Vector.
@@ -578,8 +595,8 @@ Array<bool,D> not_equal(const Array<T,D>& A, const Array<T,D>& B) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
-  Array<T,2> C(make_shape(x.length(), y.length()));
+Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
+  Matrix<T> C(make_shape(x.length(), y.length()));
   outer(C.rows(), C.columns(), x.data(), x.stride(), y.data(), y.stride(),
       C.data(), C.stride());
   return C;
@@ -590,7 +607,7 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param B Matrix.
@@ -598,10 +615,10 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
+Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.columns() == B.columns());
 
-  Array<T,2> C(make_shape(A.rows(), B.rows()));
+  Matrix<T> C(make_shape(A.rows(), B.rows()));
   outer(C.rows(), C.columns(), A.columns(), A.data(), A.stride(), B.data(),
       B.stride(), C.data(), C.stride());
   return C;
@@ -612,8 +629,8 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double`, `float`, or `int`).
- * @tparam U Element type (`double`, `float`, or `int`).
+ * @tparam T Value type.
+ * @tparam U Value type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -621,15 +638,53 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
  * 
  * @return %Array.
  */
-template<class T, int D, class U>
+template<class T, class U, int D>
 Array<T,D> pow(const Array<T,D>& A, const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<T,D> C(A.shape().compact());
+  Array<decltype(T()*U()),D> C(A.shape().compact());
   pow(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
+}
+
+/**
+ * Power.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
+auto pow(const Scalar<T>& x, const U& y) {
+  return pow(x, Scalar<U>(y));
+}
+
+/**
+ * Power.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, class U,
+    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+auto pow(const T& x, const Scalar<U>& y) {
+  return pow(Scalar<T>(x), y);
 }
 
 /**
@@ -637,7 +692,7 @@ Array<T,D> pow(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param y Vector.
@@ -645,11 +700,11 @@ Array<T,D> pow(const Array<T,D>& A, const Array<U,D>& B) {
  * @return Vector.
  */
 template<class T>
-Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
+Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
   assert(A.rows() == A.columns());
   assert(A.rows() == y.length());
 
-  Array<T,1> x(make_shape(y.length()));
+  Vector<T> x(make_shape(y.length()));
   solve(x.rows(), A.data(), A.stride(), x.data(), x.stride(), y.data(),
       y.stride());
   return x;
@@ -660,7 +715,7 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Value type.
  * 
  * @param A Matrix.
  * @param C Matrix.
@@ -668,11 +723,11 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
  * @return Matrix.
  */
 template<class T>
-Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
+Matrix<T> solve(const Matrix<T>& A, const Matrix<T>& C) {
   assert(A.rows() == A.columns());
   assert(A.rows() == C.rows());
 
-  Array<T,2> B(make_shape(C.rows(), C.columns()));
+  Matrix<T> B(make_shape(C.rows(), C.columns()));
   solve(A.rows(), A.columns(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return A;

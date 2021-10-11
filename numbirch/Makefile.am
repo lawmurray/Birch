@@ -73,6 +73,7 @@ nobase_include_HEADERS = \
   numbirch/array/binary_function.hpp \
   numbirch/array/binary_operator.hpp \
   numbirch/array/external.hpp \
+  numbirch/array/Future.hpp \
   numbirch/array/Lock.hpp \
   numbirch/array/Matrix.hpp \
   numbirch/array/other_function.hpp \
@@ -90,10 +91,11 @@ nobase_include_HEADERS = \
   numbirch/numeric/unary_function.hpp \
   numbirch/numeric/unary_operator.hpp \
   numbirch/array.hpp \
+  numbirch/function.hpp \
+  numbirch/macro.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
-  numbirch/numeric.hpp \
-  numbirch/scalar.hpp
+  numbirch/numeric.hpp
 
 noinst_HEADERS = \
   numbirch/cuda/binary_function.hpp \

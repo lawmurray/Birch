@@ -322,22 +322,6 @@ public:
   }
 
   /**
-   * Convert to value (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator T&() {
-    return value();
-  }
-
-  /**
-   * Convert to value (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator const T&() const {
-    return value();
-  }
-
-  /**
    * Value (scalar only)
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
@@ -912,6 +896,9 @@ Array(const L& l, const ArrayShape<1>& shape) -> Array<decltype(l(0)),1>;
 
 template<class L>
 Array(const L& l, const ArrayShape<2>& shape) -> Array<decltype(l(0)),2>;
+
+template<class T>
+Array(const T& value) -> Array<T,0>;
 
 template<class T>
 Array(const ArrayShape<1>& shape, const T& value) -> Array<T,1>;

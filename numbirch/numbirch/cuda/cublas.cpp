@@ -38,7 +38,7 @@ void cublas_init() {
     CUDA_CHECK(cudaMalloc(&cublasWorkspace, size));
     CUBLAS_CHECK(cublasSetWorkspace(cublasHandle, cublasWorkspace, size));
     CUBLAS_CHECK(cublasSetPointerMode(cublasHandle,
-        CUBLAS_POINTER_MODE_DEVICE));
+        CUBLAS_POINTER_MODE_HOST_DEVICE));
     CUBLAS_CHECK(cublasSetAtomicsMode(cublasHandle,
         CUBLAS_ATOMICS_ALLOWED));
   }
