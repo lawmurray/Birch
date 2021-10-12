@@ -26,8 +26,8 @@ namespace birch {
  * Pack two matrices next to one another (i.e. append rows) to create a
  * new matrix.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 MatrixPack<Left,Right> pack(Left&& l, Right&& r) {
   return construct<MatrixPack<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

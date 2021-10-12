@@ -31,8 +31,7 @@ namespace birch {
  * Element of a matrix.
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay<Left>::value || is_delay<Middle>::value || is_delay<Right>::value,
-    int> = 0>
+    is_delay<Left,Middle,Right>::value,int> = 0>
 auto element(Left&& x, Middle&& i, Right&& j) {
   return element(matrix_split(std::forward<Left>(x)), std::forward<Middle>(i),
       std::forward<Right>(j));

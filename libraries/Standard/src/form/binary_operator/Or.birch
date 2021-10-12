@@ -24,8 +24,8 @@ namespace birch {
 /**
  * Logical `or`.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 Or<Left,Right> operator||(Left&& l, Right&& r) {
   return construct<Or<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

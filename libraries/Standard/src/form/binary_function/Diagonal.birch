@@ -27,8 +27,8 @@ namespace birch {
  * - x: The value.
  * - length: Number of rows/columns.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 Diagonal<Left,Right> diagonal(Left&& l, Right&& r) {
   return construct<Diagonal<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

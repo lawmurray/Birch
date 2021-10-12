@@ -41,8 +41,8 @@ namespace birch {
 /**
  * Logarithm of the binomial coefficient.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 LChoose<Left,Right> lchoose(Left&& l, Right&& r) {
   return construct<LChoose<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

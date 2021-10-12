@@ -26,8 +26,8 @@ namespace birch {
  * Stack two matrices atop one another (i.e. append columns) to create a
  * new matrix.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 MatrixStack<Left,Right> stack(Left&& l, Right&& r) {
   return construct<MatrixStack<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

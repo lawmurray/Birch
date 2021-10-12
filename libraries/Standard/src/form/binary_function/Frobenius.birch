@@ -24,8 +24,8 @@ namespace birch {
 /**
  * Frobenius product.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 Frobenius<Left,Right> frobenius(Left&& l, Right&& r) {
   return construct<Frobenius<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

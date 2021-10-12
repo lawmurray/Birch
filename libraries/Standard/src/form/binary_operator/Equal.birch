@@ -24,8 +24,8 @@ namespace birch {
 /**
  * Equal to comparison.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 Equal<Left,Right> operator==(Left&& l, Right&& r) {
   return construct<Equal<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));

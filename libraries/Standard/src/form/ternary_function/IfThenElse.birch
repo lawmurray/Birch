@@ -29,8 +29,7 @@ namespace birch {
  * If `l` is true then return `m`, else return `r`.
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay<Left>::value || is_delay<Middle>::value || is_delay<Right>::value,
-    int> = 0>
+    is_delay<Left,Middle,Right>::value,int> = 0>
 IfThenElse<Left,Middle,Right> if_then_else(Left&& l, Middle&& m, Right&& r) {
   return construct<IfThenElse<Left,Middle,Right>>(std::forward<Left>(l),
       std::forward<Middle>(m), std::forward<Right>(r));

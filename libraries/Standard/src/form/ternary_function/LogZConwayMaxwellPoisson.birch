@@ -69,8 +69,7 @@ namespace birch {
  * Return: vector of probabilities on $[0,n]$.
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay<Left>::value || is_delay<Middle>::value ||
-    is_delay<Right>::value, int> = 0>
+    is_delay<Left,Middle,Right>::value,int> = 0>
 LogZConwayMaxwellPoisson<Left,Middle,Right> logz_conway_maxwell_poisson(
     Left&& λ, Middle&& ν, Right&& n) {
   return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(

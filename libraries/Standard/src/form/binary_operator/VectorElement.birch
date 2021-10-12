@@ -27,8 +27,8 @@ namespace birch {
 /**
  * Element of a vector.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 auto element(Left&& x, Right&& i) {
   return element(vector_split(std::forward<Left>(x)), std::forward<Right>(i));
 }

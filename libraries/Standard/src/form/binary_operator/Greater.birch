@@ -24,8 +24,8 @@ namespace birch {
 /**
  * Greater than comparison.
  */
-template<class Left, class Right, std::enable_if_t<is_delay<Left>::value ||
-    is_delay<Right>::value,int> = 0>
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
 Greater<Left,Right> operator>(Left&& l, Right&& r) {
   return construct<Greater<Left,Right>>(std::forward<Left>(l),
       std::forward<Right>(r));
