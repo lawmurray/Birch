@@ -823,14 +823,9 @@ final class Buffer {
     scalarString <- x;
   }
 
-  function doSet<Type>(x:Type) {
+  function doSet(x:Object) {
     setNil();
     x.write(this);
-  }
-
-  function doSet<Type>(t:Integer, x:Type) {
-    setNil();
-    x.write(t, this);
   }
 
   function doSet(x:Boolean[_]) {
@@ -848,20 +843,6 @@ final class Buffer {
     vectorReal <- x;
   }
 
-  function doSet<Type>(x:Type[_]) {
-    setEmptyArray();
-    for i in 1..length(x) {
-      push(make_buffer(x[i]));
-    }
-  }
-
-  function doSet<Type>(t:Integer, x:Type[_]) {
-    setEmptyArray();
-    for i in 1..length(x) {
-      push(make_buffer(t, x[i]));
-    }
-  }
-
   function doSet(x:Boolean[_,_]) {
     setNil();
     matrixBoolean <- x;
@@ -875,6 +856,25 @@ final class Buffer {
   function doSet(x:Real[_,_]) {
     setNil();
     matrixReal <- x;
+  }
+
+  function doSet(x:Object[_]) {
+    setEmptyArray();
+    for i in 1..length(x) {
+      push(make_buffer(x[i]));
+    }
+  }
+
+  function doSet(t:Integer, x:Object) {
+    setNil();
+    x.write(t, this);
+  }
+
+  function doSet(t:Integer, x:Object[_]) {
+    setEmptyArray();
+    for i in 1..length(x) {
+      push(make_buffer(t, x[i]));
+    }
   }
 
   function doPush(x:Boolean) {
@@ -947,12 +947,8 @@ final class Buffer {
     push(make_buffer(x));
   }
 
-  function doPush<Type>(x:Type) {
+  function doPush(x:Object) {
     push(make_buffer(x));
-  }
-
-  function doPush<Type>(t:Integer, x:Type) {
-    push(make_buffer(t, x));
   }
 
   function doPush(x:Boolean[_]) {
@@ -1007,6 +1003,18 @@ final class Buffer {
     } else {
       push(make_buffer(x));
     }
+  }
+
+  function doPush(x:Object[_]) {
+    push(make_buffer(x));
+  }
+
+  function doPush(t:Integer, x:Object) {
+    push(make_buffer(t, x));
+  }
+
+  function doPush(t:Integer, x:Object[_]) {
+    push(make_buffer(t, x));
   }
 }
 
