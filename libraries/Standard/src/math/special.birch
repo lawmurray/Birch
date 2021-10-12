@@ -13,6 +13,15 @@ function digamma(x:Real) -> Real {
 }
 
 /**
+ * Multivariate digamma function (derivative of multivariate `lgamma`).
+ */
+function digamma(x:Real, p:Integer) -> Real {
+  cpp{{
+  return numbirch::digamma(x, p);
+  }}
+}
+
+/**
  * Regularized lower incomplete gamma function.
  */
 function gamma_p(a:Real, x:Real) -> Real {
