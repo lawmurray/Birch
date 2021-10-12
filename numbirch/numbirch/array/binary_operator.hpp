@@ -608,8 +608,8 @@ auto operator*(const T& a, const Array<U,D>& B) {
  * 
  * @return %Array.
  * 
- * @note Disabled for D == 0 as signature would be identical with operator*()
- * with the arguments swapped.
+ * @note Disabled for D == 0 as signature would be identical with
+ * operator*(const Scalar<T>&, const Array<U,D>&).
  */
 template<class T, int D, class U, std::enable_if_t<(D > 0),int> = 0>
 auto operator*(const Array<T,D>& A, const Scalar<U>& b) {
@@ -629,12 +629,9 @@ auto operator*(const Array<T,D>& A, const Scalar<U>& b) {
  * @param b %Array.
  * 
  * @return %Array.
- * 
- * @note Disabled for D == 0 as signature would be identical with operator*()
- * with the arguments swapped.
  */
 template<class T, int D, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value && (D > 0),int> = 0>
+    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
 auto operator*(const Array<T,D>& A, const U& b) {
   return b*A;
 }
