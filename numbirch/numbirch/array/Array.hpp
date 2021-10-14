@@ -322,22 +322,48 @@ public:
   }
 
   /**
-   * Value (scalar only)
+   * Value conversion (scalar only).
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  T& value() {
-    own();
-    atomize();
-    return *buf;
+  operator T&() {
+    return value();
   }
 
   /**
-   * Value (scalar only)
+   * Value conversion (scalar only).
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  const T& value() const {
-    atomize();
-    return *buf;
+  operator const T&() const {
+    return value();
+  }
+
+  /**
+   * Value.
+   * 
+   * @return For a scalar, the value. For a vector or matrix, `*this`.
+   */
+  auto& value() {
+    if constexpr (D == 0) {
+      own();
+      atomize();
+      return *buf;
+    } else {
+      return *this;
+    }
+  }
+
+  /**
+   * Value.
+   * 
+   * @return For a scalar, the value. For a vector or matrix, `*this`.
+   */
+  const auto& value() const {
+    if constexpr (D == 0) {
+      atomize();
+      return *buf;
+    } else {
+      return *this;
+    }
   }
 
   /**

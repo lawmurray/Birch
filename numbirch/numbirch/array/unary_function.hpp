@@ -9,6 +9,7 @@
 #include "numbirch/array/Matrix.hpp"
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
+#include "numbirch/function.hpp"
 
 #include <cmath>
 
@@ -162,6 +163,25 @@ template<class T, int D>
 auto cosh(const Array<T,D>& A) {
   Array<decltype(std::cos(T())),D> B(A.shape().compact());
   cosh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Digamma.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Element type (`double` or `float`).
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D>
+auto digamma(const Array<T,D>& A) {
+  Array<decltype(digamma(T())),D> B(A.shape().compact());
+  digamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
 }
 

@@ -81,6 +81,16 @@ template void cosh(const int m, const int n, const int* A,
 template void cosh(const int m, const int n, const int* A,
     const int ldA, float* B, const int ldB);
 
+template void digamma(const int m, const int n, const double* A,
+    const int ldA, double* B, const int ldB);
+template void digamma(const int m, const int n, const float* A,
+    const int ldA, float* B, const int ldB);
+template void digamma(const int m, const int n, const int* A,
+    const int ldA, double* B, const int ldB);
+template void digamma(const int m, const int n, const int* A,
+    const int ldA, float* B, const int ldB);
+
+
 template void exp(const int m, const int n, const double* A,
     const int ldA, double* B, const int ldB);
 template void exp(const int m, const int n, const float* A,

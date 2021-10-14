@@ -9,6 +9,7 @@
 #include "numbirch/array/Matrix.hpp"
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
+#include "numbirch/function.hpp"
 
 namespace numbirch {
 /**

@@ -106,6 +106,14 @@ void cosh(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void digamma(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, digamma_functor<T>());
+}
+
+template<class T>
 void exp(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);

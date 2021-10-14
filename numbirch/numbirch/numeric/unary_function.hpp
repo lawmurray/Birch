@@ -154,6 +154,25 @@ void cosh(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB);
 
 /**
+ * Digamma function.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Value type.
+ * @tparam U Value type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param[out] B Matrix.
+ * @param ldB Column stride of `B`.
+ */
+template<class T, class U>
+void digamma(const int m, const int n, const T* A, const int ldA, U* B,
+    const int ldB);
+
+/**
  * Exponential.
  * 
  * @ingroup cpp-raw

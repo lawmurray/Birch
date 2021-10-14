@@ -6,6 +6,7 @@
 #pragma once
 
 #include <eigen3/Eigen/Dense>
+#include <eigen3/unsupported/Eigen/SpecialFunctions>
 
 template<class T>
 static auto make_eigen_vector(T* x, const int n, const int incx) {

@@ -35,4 +35,10 @@ template<class T>
 using Future = typename std::conditional<is_array<T>::value,T,
     Scalar<T>>::type;
 
+///@todo Deduction guides for type aliases require C++20
+// template<class T>
+// Future(const T&) -> Future<T>;
+// template<class T, int D>
+// Future(const Array<T,D>&) -> Future<Array<T,D>>;
+
 }

@@ -75,6 +75,14 @@ void cosh(const int m, const int n, const T* A, const int ldA, U* B,
 }
 
 template<class T, class U>
+void digamma(const int m, const int n, const T* A, const int ldA, U* B,
+    const int ldB) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.array() = A1.array().digamma();
+}
+
+template<class T, class U>
 void exp(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
@@ -130,7 +138,7 @@ void lgamma(const int m, const int n, const T* A, const int ldA, U* B,
     const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
   auto B1 = make_eigen_matrix(B, m, n, ldB);
-  B1.noalias() = A1.unaryExpr(lgamma_functor<U>());
+  B1.array() = A1.array().lgamma();
 }
 
 template<class T, class U>
