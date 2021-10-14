@@ -24,8 +24,8 @@ namespace birch {
  * Square root.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Sqrt<Middle> sqrt(Middle&& m) {
-  return construct<Sqrt<Middle>>(std::forward<Middle>(m));
+Sqrt<Middle> sqrt(const Middle& m) {
+  return construct<Sqrt<Middle>>(m);
 }
 }
 }}

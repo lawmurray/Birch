@@ -71,9 +71,8 @@ namespace birch {
 template<class Left, class Middle, class Right, std::enable_if_t<
     is_delay<Left,Middle,Right>::value,int> = 0>
 LogZConwayMaxwellPoisson<Left,Middle,Right> logz_conway_maxwell_poisson(
-    Left&& λ, Middle&& ν, Right&& n) {
-  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(
-      std::forward<Left>(λ), std::forward<Middle>(ν), std::forward<Right>(n));
+    const Left& λ, const Middle& ν, const Right& n) {
+  return construct<LogZConwayMaxwellPoisson<Left,Middle,Right>>(λ, ν, n);
 }
 }
 }}

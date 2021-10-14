@@ -1,11 +1,4 @@
 /**
- * Box an already-boxed expression (identity operation).
- */
-function box<Value>(x:Expression<Value>) -> Expression<Value> {
-  return x;
-}
-
-/**
  * Box a value.
  */
 function box(x:Boolean) -> Expression<Boolean> {
@@ -41,14 +34,43 @@ function box<Type>(x:Type[_,_]) -> Expression<Type[_,_]> {
 }
 
 /**
+ * Box a future.
+ */
+function box(x:Boolean!) -> Expression<Boolean> {
+  return construct<BoxedValue<Boolean>>(x);
+}
+
+/**
+ * Box a future.
+ */
+function box(x:Integer!) -> Expression<Integer> {
+  return construct<BoxedValue<Integer>>(x);
+}
+
+/**
+ * Box a future.
+ */
+function box(x:Real!) -> Expression<Real> {
+  return construct<BoxedValue<Real>>(x);
+}
+
+/**
  * Box a form.
  */
 function box<Form>(f:Form) -> {
   link(f);
-  return box_impl(peek(f), f);
+  let x <- peek(f);
+  cpp{{
+  return construct<BoxedForm<typename std::decay<decltype(x.value())>::type,
+      Form>>(x, f);
+  }}
 }
-function box_impl<Value,Form>(x:Value, f:Form) -> Expression<Value> {
-  return construct<BoxedForm<Value,Form>>(x, f);
+
+/**
+ * Box an expression (already boxed, so identity operation).
+ */
+function box<Value>(x:Expression<Value>) -> Expression<Value> {
+  return x;
 }
 
 /**

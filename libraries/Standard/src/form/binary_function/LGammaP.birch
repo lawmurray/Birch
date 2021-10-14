@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-LGammaP<Left,Right> lgamma(Left&& l, Right&& r) {
-  return construct<LGammaP<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+LGammaP<Left,Right> lgamma(const Left& l, const Right& r) {
+  return construct<LGammaP<Left,Right>>(l, r);
 }
 }
 }}

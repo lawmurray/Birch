@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-LessOrEqual<Left,Right> operator<=(Left&& l, Right&& r) {
-  return construct<LessOrEqual<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+LessOrEqual<Left,Right> operator<=(const Left& l, const Right& r) {
+  return construct<LessOrEqual<Left,Right>>(l, r);
 }
 }
 }}

@@ -24,8 +24,8 @@ namespace birch {
  * Arc tangent.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Atan<Middle> atan(Middle&& m) {
-  return construct<Atan<Middle>>(std::forward<Middle>(m));
+Atan<Middle> atan(const Middle& m) {
+  return construct<Atan<Middle>>(m);
 }
 }
 }}

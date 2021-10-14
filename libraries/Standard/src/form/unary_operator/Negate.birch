@@ -24,8 +24,8 @@ namespace birch {
  * Negation.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Negate<Middle> operator-(Middle&& m) {
-  return construct<Negate<Middle>>(std::forward<Middle>(m));
+Negate<Middle> operator-(const Middle& m) {
+  return construct<Negate<Middle>>(m);
 }
 }
 }}

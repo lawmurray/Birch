@@ -24,8 +24,8 @@ namespace birch {
  * Tangent.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Tan<Middle> tan(Middle&& m) {
-  return construct<Tan<Middle>>(std::forward<Middle>(m));
+Tan<Middle> tan(const Middle& m) {
+  return construct<Tan<Middle>>(m);
 }
 }
 }}

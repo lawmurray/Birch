@@ -34,10 +34,38 @@ function wrap<Type>(x:Type[_,_]) -> Type[_,_] {
 }
 
 /**
- * Wrap a non-value.
+ * Wrap a future.
  */
-function wrap<Type>(x:Type) -> {
-  return box(x);
+function wrap(x:Boolean!) -> Boolean! {
+  return x;
+}
+
+/**
+ * Wrap a future.
+ */
+function wrap(x:Integer!) -> Integer! {
+  return x;
+}
+
+/**
+ * Wrap a future.
+ */
+function wrap(x:Real!) -> Real! {
+  return x;
+}
+
+/**
+ * Wrap a form (same as box).
+ */
+function wrap<Form>(f:Form) -> {
+  return box(f);
+}
+
+/**
+ * Wrap an expression (already wrapped, so identity operation).
+ */
+function wrap<Value>(x:Expression<Value>) -> Expression<Value> {
+  return x;
 }
 
 /**

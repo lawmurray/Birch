@@ -29,9 +29,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Diagonal<Left,Right> diagonal(Left&& l, Right&& r) {
-  return construct<Diagonal<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Diagonal<Left,Right> diagonal(const Left& l, const Right& r) {
+  return construct<Diagonal<Left,Right>>(l, r);
 }
 }
 }}

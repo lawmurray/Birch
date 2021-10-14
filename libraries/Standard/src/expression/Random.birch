@@ -12,19 +12,19 @@
  */
 final class Random<Value> < Expression<Value> {  
   /**
-   * Variate value, once realized.
-   */
-  x:Value?;
-
-  /**
    * Associated distribution.
    */
   p:Distribution<Value>?;
 
   /**
+   * Variate value, once realized.
+   */
+  x:Value!?;
+
+  /**
    * Accumulated upstream gradient.
    */
-  d:Value?;
+  d:Value!?;
 
   /**
    * Is this a constant?
@@ -39,7 +39,7 @@ final class Random<Value> < Expression<Value> {
   /**
    * Value assignment.
    */
-  operator <- x:Value {
+  operator <- x:Value! {
     assert !this.x?;
     prune();
     this.x <- x;
@@ -74,11 +74,11 @@ final class Random<Value> < Expression<Value> {
     return global.columns(x!);
   }
 
-  override function peek() -> Value {
+  override function peek() -> Value! {
     return eval();
   }
 
-  override function eval() -> Value {
+  override function eval() -> Value! {
     /* when evaluating for the first time, simulate; on subsequent occasions
      * assumed to be set externally */
     if !x? {
@@ -88,7 +88,7 @@ final class Random<Value> < Expression<Value> {
     return x!;
   }
 
-  override function grad(d:Value) {
+  override function grad(d:Value!) {
     if this.d? {
       this.d <- this.d! + d;  // accumulate
     } else {
@@ -123,7 +123,7 @@ final class Random<Value> < Expression<Value> {
   /**
    * Move the value.
    */
-  function move(x:Value) {
+  function move(x:Value!) {
     this.d <- nil;
     this.x <- x;
   }
@@ -355,7 +355,7 @@ function make_random<Value>() -> Random<Value> {
  *
  * - x: Value to assign.
  */
-function make_random<Value>(x:Value) -> Random<Value> {
+function make_random<Value>(x:Value!) -> Random<Value> {
   o:Random<Value>;
   o <- x;
   return o;
@@ -366,7 +366,7 @@ function make_random<Value>(x:Value) -> Random<Value> {
  *
  * - x: Optional value to assign.
  */
-function make_random<Value>(x:Value?) -> Random<Value> {
+function make_random<Value>(x:Value!?) -> Random<Value> {
   o:Random<Value>;
   if x? {
     o <- x!;
@@ -403,15 +403,15 @@ function link<Value>(x:Random<Value>) {
   x.link();
 }
 
-function value<Value>(x:Random<Value>) -> {
+function value<Value>(x:Random<Value>) -> Value! {
   return x.value();
 }
 
-function peek<Value>(x:Random<Value>) -> {
+function peek<Value>(x:Random<Value>) -> Value! {
   return x.peek();
 }
 
-function eval<Value>(x:Random<Value>) -> {
+function eval<Value>(x:Random<Value>) -> Value! {
   return x.eval();
 }
 

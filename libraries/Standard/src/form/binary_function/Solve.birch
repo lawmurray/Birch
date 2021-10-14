@@ -29,9 +29,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Solve<Left,Right> solve(Left&& l, Right&& r) {
-  return construct<Solve<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Solve<Left,Right> solve(const Left& l, const Right& r) {
+  return construct<Solve<Left,Right>>(l, r);
 }
 }
 }}

@@ -33,9 +33,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Pow<Left,Right> pow(Left&& l, Right&& r) {
-  return construct<Pow<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Pow<Left,Right> pow(const Left& l, const Right& r) {
+  return construct<Pow<Left,Right>>(l, r);
 }
 }
 }}

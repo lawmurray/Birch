@@ -27,9 +27,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Multiply<Left,Right> operator*(Left&& l, Right&& r) {
-  return construct<Multiply<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Multiply<Left,Right> operator*(const Left& l, const Right& r) {
+  return construct<Multiply<Left,Right>>(l, r);
 }
 }
 }}

@@ -24,8 +24,8 @@ namespace birch {
  * Sine.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Sin<Middle> sin(Middle&& m) {
-  return construct<Sin<Middle>>(std::forward<Middle>(m));
+Sin<Middle> sin(const Middle& m) {
+  return construct<Sin<Middle>>(m);
 }
 }
 }}

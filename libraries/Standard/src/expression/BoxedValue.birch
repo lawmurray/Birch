@@ -1,11 +1,11 @@
 /**
  * Boxed value.
  */
-final acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {  
+final acyclic class BoxedValue<Value>(x:Value!) < Expression<Value> {  
   /**
    * Constant value.
    */
-  x:Value <- x;
+  x:Value! <- x;
 
   override function isRandom() -> Boolean {
     return false;
@@ -23,15 +23,15 @@ final acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {
     return global.columns(x);
   }
 
-  override function peek() -> Value {
+  override function peek() -> Value! {
     return x;
   }
 
-  override function eval() -> Value {
+  override function eval() -> Value! {
     return x;
   }
 
-  override function grad(d:Value) {
+  override function grad(d:Value!) {
     //
   }
 
@@ -72,19 +72,19 @@ function link<Value>(x:BoxedValue<Value>) {
   x.link();
 }
 
-function value<Value>(x:BoxedValue<Value>) -> {
+function value<Value>(x:BoxedValue<Value>) -> Value! {
   return x.value();
 }
 
-function peek<Value>(x:BoxedValue<Value>) -> {
+function peek<Value>(x:BoxedValue<Value>) -> Value! {
   return x.peek();
 }
 
-function eval<Value>(x:BoxedValue<Value>) -> {
+function eval<Value>(x:BoxedValue<Value>) -> Value! {
   return x.eval();
 }
 
-function grad<Value,Gradient>(x:BoxedValue<Value>, d:Gradient) {
+function grad<Value>(x:BoxedValue<Value>, d:Value!) {
   x.grad(d);
 }
 

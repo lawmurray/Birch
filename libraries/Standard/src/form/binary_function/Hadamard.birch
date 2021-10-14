@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Hadamard<Left,Right> hadamard(Left&& l, Right&& r) {
-  return construct<Hadamard<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Hadamard<Left,Right> hadamard(const Left& l, const Right& r) {
+  return construct<Hadamard<Left,Right>>(l, r);
 }
 }
 }}

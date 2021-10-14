@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Frobenius<Left,Right> frobenius(Left&& l, Right&& r) {
-  return construct<Frobenius<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Frobenius<Left,Right> frobenius(const Left& l, const Right& r) {
+  return construct<Frobenius<Left,Right>>(l, r);
 }
 }
 }}

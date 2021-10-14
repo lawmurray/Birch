@@ -24,8 +24,8 @@ namespace birch {
  * Cosine.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Cos<Middle> cos(Middle&& m) {
-  return construct<Cos<Middle>>(std::forward<Middle>(m));
+Cos<Middle> cos(const Middle& m) {
+  return construct<Cos<Middle>>(m);
 }
 }
 }}

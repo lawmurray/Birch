@@ -136,7 +136,7 @@ abstract class Expression<Value> < Delay {
    *
    * Returns: The result.
    */
-  final function value() -> Value {
+  final function value() -> Value! {
     let x <- peek();
     constant();
     return x;
@@ -147,12 +147,12 @@ abstract class Expression<Value> < Delay {
    *
    * Returns: The result.
    */
-  abstract function peek() -> Value;
+  abstract function peek() -> Value!;
 
   /**
    * Evaluate.
    */
-  abstract function eval() -> Value;
+  abstract function eval() -> Value!;
 
   /**
    * Evaluate gradient of the expression with respect to its arguments.
@@ -197,7 +197,7 @@ abstract class Expression<Value> < Delay {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  abstract function grad(d:Value);
+  abstract function grad(d:Value!);
 
   /**
    * Label generations.
@@ -249,19 +249,19 @@ function link<Value>(x:Expression<Value>) {
   x.link();
 }
 
-function value<Value>(x:Expression<Value>) -> {
+function value<Value>(x:Expression<Value>) -> Value! {
   return x.value();
 }
 
-function peek<Value>(x:Expression<Value>) -> {
+function peek<Value>(x:Expression<Value>) -> Value! {
   return x.peek();
 }
 
-function eval<Value>(x:Expression<Value>) -> {
+function eval<Value>(x:Expression<Value>) -> Value! {
   return x.eval();
 }
 
-function grad<Value,Gradient>(x:Expression<Value>, d:Gradient) {
+function grad<Value>(x:Expression<Value>, d:Value!) {
   x.grad(d);
 }
 

@@ -32,8 +32,8 @@ namespace birch {
  */
 template<class Value, class Middle,
     std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Vector<Value,Middle> vector(Middle&& m) {
-  return construct<Vector<Value,Middle>>(std::forward<Middle>(m));
+Vector<Value,Middle> vector(const Middle& m) {
+  return construct<Vector<Value,Middle>>(m);
 }
 }
 }}

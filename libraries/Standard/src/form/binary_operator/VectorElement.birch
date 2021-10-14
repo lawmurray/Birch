@@ -29,8 +29,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-auto element(Left&& x, Right&& i) {
-  return element(vector_split(std::forward<Left>(x)), std::forward<Right>(i));
+auto element(const Left& x, const Right& i) {
+  return element(vector_split(x), i);
 }
 
 /**
@@ -38,10 +38,10 @@ auto element(Left&& x, Right&& i) {
  */
 template<class Value, class Form, class Right, std::enable_if_t<
     is_delay<Form>::value || is_delay<Right>::value,int> = 0>
-auto element(VectorSplitExpression<Value,Form>&& x, Right&& i) {
+auto element(VectorSplitExpression<Value,Form>&& x, const Right& i) {
   return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(
       vector_split(std::forward<VectorSplitExpression<Value,Form>>(x)),
-      std::forward<Right>(i));
+      i);
 }
 }
 }}

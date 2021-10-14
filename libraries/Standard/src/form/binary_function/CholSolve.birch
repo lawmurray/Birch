@@ -29,9 +29,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-CholSolve<Left,Right> cholsolve(Left&& l, Right&& r) {
-  return construct<CholSolve<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+CholSolve<Left,Right> cholsolve(const Left& l, const Right& r) {
+  return construct<CholSolve<Left,Right>>(l, r);
 }
 }
 }}

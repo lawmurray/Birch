@@ -28,9 +28,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-MatrixStack<Left,Right> stack(Left&& l, Right&& r) {
-  return construct<MatrixStack<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+MatrixStack<Left,Right> stack(const Left& l, const Right& r) {
+  return construct<MatrixStack<Left,Right>>(l, r);
 }
 }
 }}

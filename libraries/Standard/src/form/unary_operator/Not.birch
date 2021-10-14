@@ -24,8 +24,8 @@ namespace birch {
  * Logical `not`.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Not<Middle> operator!(Middle&& m) {
-  return construct<Not<Middle>>(std::forward<Middle>(m));
+Not<Middle> operator!(const Middle& m) {
+  return construct<Not<Middle>>(m);
 }
 }
 }}

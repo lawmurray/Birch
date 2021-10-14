@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Outer<Left,Right> outer(Left&& l, Right&& r) {
-  return construct<Outer<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Outer<Left,Right> outer(const Left& l, const Right& r) {
+  return construct<Outer<Left,Right>>(l, r);
 }
 }
 }}

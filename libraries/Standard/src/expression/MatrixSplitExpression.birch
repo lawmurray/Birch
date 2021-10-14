@@ -2,15 +2,15 @@
  * Boxed and split matrix expression.
  *
  * - Value: Result type.
- * - Form: Expression type.
+ * - Form: Form type.
  */
-final class MatrixSplitExpression<Value,Form>(x:Value, f:Form) <
-    BoxedForm<Value,Form>(x, f) {
-  function grad(d:Real, i:Integer, j:Integer) {
+final class MatrixSplitExpression<Value,Form>(x:Value[_,_], f:Form) <
+    BoxedForm<Value[_,_],Form>(x, f) {
+  function grad(d:Value!, i:Integer, j:Integer) {
     if this.f? {
       if this.visitCount == 0 {
         assert !this.d?;
-        this.d <- matrix(0.0, this.rows(), this.columns());
+        this.d <- matrix<Value>(0, this.rows(), this.columns());
       }
       assert this.d?;
       this.d![i,j] <- this.d![i,j] + d;
@@ -34,7 +34,7 @@ function matrix_split<Form>(f:Form) -> {
   link(f);
   return matrix_split_impl(peek(f), f);
 }
-function matrix_split_impl<Value,Form>(x:Value, f:Form) -> {
+function matrix_split_impl<Value,Form>(x:Value[_,_], f:Form) -> {
   return construct<MatrixSplitExpression<Value,Form>>(x, f);
 }
 
@@ -54,20 +54,20 @@ function columns<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Integer {
   return x.columns();
 }
 
-function value<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> {
+function value<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Value[_,_] {
   return x.value();
 }
 
-function peek<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> {
+function peek<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Value[_,_] {
   return x.peek();
 }
 
-function eval<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> {
+function eval<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Value[_,_] {
   return x.eval();
 }
 
-function grad<Value,Form,Gradient>(x:MatrixSplitExpression<Value,Form>,
-    d:Gradient, i:Integer, j:Integer) {
+function grad<Value,Form>(x:MatrixSplitExpression<Value,Form>,
+    d:Value!, i:Integer, j:Integer) {
   x.grad(d, i, j);
 }
 

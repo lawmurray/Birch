@@ -99,12 +99,11 @@ namespace birch {
 template<class Arg1, class Arg2, class Arg3, class Arg4, class Arg5,
     class Arg6, class Arg7, class Arg8, std::enable_if_t<
     is_delay<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>::value,int> = 0>
-Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8> combine(Arg1&& a, Arg2&& w,
-    Arg3&& b, Arg4&& x, Arg5&& c, Arg6&& y, Arg7&& d, Arg8&& z) {
-  return construct<Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>>(
-      std::forward<Arg1>(a), std::forward<Arg2>(w), std::forward<Arg3>(b),
-      std::forward<Arg4>(x), std::forward<Arg5>(c), std::forward<Arg6>(y),
-      std::forward<Arg7>(d), std::forward<Arg8>(z));
+Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8> combine(const Arg1& a,
+    const Arg2& w, const Arg3& b, const Arg4& x, const Arg5& c, const Arg6& y,
+    const Arg7& d, const Arg8& z) {
+  return construct<Combine<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>>(a, w, b,
+      x, c, y, d, z);
 }
 }
 }}

@@ -32,9 +32,8 @@ namespace birch {
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
     is_delay<Left,Middle,Right>::value,int> = 0>
-auto element(Left&& x, Middle&& i, Right&& j) {
-  return element(matrix_split(std::forward<Left>(x)), std::forward<Middle>(i),
-      std::forward<Right>(j));
+auto element(const Left& x, const Middle& i, const Right& j) {
+  return element(matrix_split(x), i, j);
 }
 
 /**
@@ -43,10 +42,10 @@ auto element(Left&& x, Middle&& i, Right&& j) {
 template<class Value, class Form, class Middle, class Right, std::enable_if_t<
     is_delay<Form>::value || is_delay<Middle>::value || is_delay<Right>::value,
     int> = 0>
-auto element(MatrixSplitExpression<Value,Form>&& x, Middle&& i, Right&& j) {
+auto element(MatrixSplitExpression<Value,Form>&& x, const Middle& i, const Right& j) {
   return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,
       Right>>(std::forward<MatrixSplitExpression<Value,Form>>(x),
-      std::forward<Middle>(i), std::forward<Right>(j));
+      i, j);
 }
 }
 }}

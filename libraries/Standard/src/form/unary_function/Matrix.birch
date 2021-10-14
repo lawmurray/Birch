@@ -25,8 +25,8 @@ namespace birch {
  */
 template<class Value, class Middle,
     std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Matrix<Value,Middle> matrix(Middle&& m) {
-  return construct<Matrix<Value,Middle>>(std::forward<Middle>(m));
+Matrix<Value,Middle> matrix(const Middle& m) {
+  return construct<Matrix<Value,Middle>>(m);
 }
 }
 }}

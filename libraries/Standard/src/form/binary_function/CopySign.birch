@@ -28,9 +28,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-CopySign<Left,Right> copysign(Left&& l, Right&& r) {
-  return construct<CopySign<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+CopySign<Left,Right> copysign(const Left& l, const Right& r) {
+  return construct<CopySign<Left,Right>>(l, r);
 }
 }
 }}

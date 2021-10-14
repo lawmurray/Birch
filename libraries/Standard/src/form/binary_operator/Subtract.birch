@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Subtract<Left,Right> operator-(Left&& l, Right&& r) {
-  return construct<Subtract<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Subtract<Left,Right> operator-(const Left& l, const Right& r) {
+  return construct<Subtract<Left,Right>>(l, r);
 }
 }
 }}

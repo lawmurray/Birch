@@ -24,8 +24,8 @@ namespace birch {
  * Matrix transpose.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Transpose<Middle> transpose(Middle&& m) {
-  return construct<Transpose<Middle>>(std::forward<Middle>(m));
+Transpose<Middle> transpose(const Middle& m) {
+  return construct<Transpose<Middle>>(m);
 }
 }
 }}

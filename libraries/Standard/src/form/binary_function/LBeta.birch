@@ -28,9 +28,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-LBeta<Left,Right> lbeta(Left&& l, Right&& r) {
-  return construct<LBeta<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+LBeta<Left,Right> lbeta(const Left& l, const Right& r) {
+  return construct<LBeta<Left,Right>>(l, r);
 }
 }
 }}

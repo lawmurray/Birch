@@ -24,8 +24,8 @@ namespace birch {
  * Sum.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Sum<Middle> sum(Middle&& m) {
-  return construct<Sum<Middle>>(std::forward<Middle>(m));
+Sum<Middle> sum(const Middle& m) {
+  return construct<Sum<Middle>>(m);
 }
 }
 }}

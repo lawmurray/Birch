@@ -24,8 +24,8 @@ namespace birch {
  * Exponential.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Exp<Middle> exp(Middle&& m) {
-  return construct<Exp<Middle>>(std::forward<Middle>(m));
+Exp<Middle> exp(const Middle& m) {
+  return construct<Exp<Middle>>(m);
 }
 }
 }}

@@ -26,8 +26,8 @@ namespace birch {
  * Rectification.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Rectify<Middle> rectify(Middle&& m) {
-  return construct<Rectify<Middle>>(std::forward<Middle>(m));
+Rectify<Middle> rectify(const Middle& m) {
+  return construct<Rectify<Middle>>(m);
 }
 }
 }}

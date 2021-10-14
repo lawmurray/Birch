@@ -3,23 +3,23 @@
  * reverse-mode automatic differentiation.
  *
  * - Value: Result type.
- * - Form: Expression form.
+ * - Form: Form form.
  */
-class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
-  /**
-   * Memoized result.
-   */
-  x:Value <- x;
-
+class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value> {
   /**
    * Expression form.
    */
   f:Form? <- f;
 
   /**
+   * Memoized result.
+   */
+  x:Value! <- x;
+
+  /**
    * Accumulated upstream gradient.
    */
-  d:Value?;
+  d:Value!?;
 
   /**
    * Generation label.
@@ -59,11 +59,11 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
     return global.columns(x);
   }
 
-  final override function peek() -> Value {
+  final override function peek() -> Value! {
     return x;
   }
 
-  final override function eval() -> Value {
+  final override function eval() -> Value! {
     assert !d?;
     if f? {
       if visitCount == 0 {
@@ -78,7 +78,7 @@ class BoxedForm<Value,Form>(x:Value, f:Form) < Expression<Value> {
     return x;
   }
 
-  final override function grad(d:Value) {
+  final override function grad(d:Value!) {
     if f? {
       if visitCount == 0 {
         assert !this.d?;
@@ -153,19 +153,19 @@ function link<Value,Form>(x:BoxedForm<Value,Form>) {
   x.link();
 }
 
-function value<Value,Form>(x:BoxedForm<Value,Form>) -> {
+function value<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
   return x.value();
 }
 
-function peek<Value,Form>(x:BoxedForm<Value,Form>) -> {
+function peek<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
   return x.peek();
 }
 
-function eval<Value,Form>(x:BoxedForm<Value,Form>) -> {
+function eval<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
   return x.eval();
 }
 
-function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient) {
+function grad<Value,Form>(x:BoxedForm<Value,Form>, d:Value!) {
   x.grad(d);
 }
 

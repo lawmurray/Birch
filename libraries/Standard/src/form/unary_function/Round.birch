@@ -24,8 +24,8 @@ namespace birch {
  * Round to nearest integer value.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Round<Middle> round(Middle&& m) {
-  return construct<Round<Middle>>(std::forward<Middle>(m));
+Round<Middle> round(const Middle& m) {
+  return construct<Round<Middle>>(m);
 }
 }
 }}

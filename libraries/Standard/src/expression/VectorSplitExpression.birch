@@ -2,15 +2,15 @@
  * Boxed and split vector expression.
  *
  * - Value: Result type.
- * - Form: Expression type.
+ * - Form: Form type.
  */
-final class VectorSplitExpression<Value,Form>(x:Value, f:Form) <
-    BoxedForm<Value,Form>(x, f) {
-  function grad(d:Real, i:Integer) {
+final class VectorSplitExpression<Value,Form>(x:Value[_], f:Form) <
+    BoxedForm<Value[_],Form>(x, f) {
+  function grad(d:Value, i:Integer) {
     if this.f? {
       if this.visitCount == 0 {
         assert !this.d?;
-        this.d <- vector(0.0, this.length());
+        this.d <- vector<Value>(0, this.length());
       }
       assert this.d?;
       this.d![i] <- this.d![i] + d;
@@ -34,7 +34,7 @@ function vector_split<Form>(f:Form) -> {
   link(f);
   return vector_split_impl(peek(f), f);
 }
-function vector_split_impl<Value,Form>(x:Value, f:Form) -> {
+function vector_split_impl<Value,Form>(x:Value[_], f:Form) -> {
   return construct<VectorSplitExpression<Value,Form>>(x, f);
 }
 
@@ -54,20 +54,20 @@ function columns<Value,Form>(x:VectorSplitExpression<Value,Form>) -> Integer {
   return x.columns();
 }
 
-function value<Value,Form>(x:VectorSplitExpression<Value,Form>) -> {
+function value<Value,Form>(x:VectorSplitExpression<Value,Form>) -> Value[_] {
   return x.value();
 }
 
-function peek<Value,Form>(x:VectorSplitExpression<Value,Form>) -> {
+function peek<Value,Form>(x:VectorSplitExpression<Value,Form>) -> Value[_] {
   return x.peek();
 }
 
-function eval<Value,Form>(x:VectorSplitExpression<Value,Form>) -> {
+function eval<Value,Form>(x:VectorSplitExpression<Value,Form>) -> Value[_] {
   return x.eval();
 }
 
-function grad<Value,Form,Gradient>(x:VectorSplitExpression<Value,Form>,
-    d:Gradient, i:Integer) {
+function grad<Value,Form>(x:VectorSplitExpression<Value,Form>,
+    d:Value!, i:Integer) {
   x.grad(d, i);
 }
 

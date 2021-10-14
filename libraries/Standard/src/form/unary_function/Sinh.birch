@@ -24,8 +24,8 @@ namespace birch {
  * Hyperbolic sine.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Sinh<Middle> sinh(Middle&& m) {
-  return construct<Sinh<Middle>>(std::forward<Middle>(m));
+Sinh<Middle> sinh(const Middle& m) {
+  return construct<Sinh<Middle>>(m);
 }
 }
 }}

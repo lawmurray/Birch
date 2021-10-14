@@ -26,9 +26,8 @@ namespace birch {
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Add<Left,Right> operator+(Left&& l, Right&& r) {
-  return construct<Add<Left,Right>>(std::forward<Left>(l),
-      std::forward<Right>(r));
+Add<Left,Right> operator+(const Left& l, const Right& r) {
+  return construct<Add<Left,Right>>(l, r);
 }
 }
 }}
