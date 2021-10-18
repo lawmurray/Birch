@@ -1261,6 +1261,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxString("(?:const *)?std::(?:__cxx11::)?basic_string<char>", options);
   std::regex rxReal("\\b(?:double|float)\\b", options);
   std::regex rxInteger("\\bint\\b", options);
+  std::regex rxBool("\\bbool\\b", options);
   std::regex rxScalar("Array<(" + type + "), *0 *>", options);
   std::regex rxVector("Array<(" + type + "), *1 *>", options);
   std::regex rxMatrix("Array<(" + type + "), *2 *>", options);
@@ -1311,6 +1312,7 @@ void birch::Driver::target(const std::string& cmd) {
         str = std::regex_replace(str, rxString, "String");
         str = std::regex_replace(str, rxReal, "Real");
         str = std::regex_replace(str, rxInteger, "Integer");
+        str = std::regex_replace(str, rxBool, "Boolean");
 
         /* replace some types */
         str = std::regex_replace(str, rxScalar, "$1!");
