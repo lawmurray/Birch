@@ -36,6 +36,31 @@ struct is_index<Arg,Args...> {
   static const bool value = is_index<Arg>::value && is_index<Args...>::value;
 };
 
+template<class T, class U>
+struct can_promote {
+  static const bool value = false;
+};
+
+template<class T>
+struct can_promote<T,T> {
+  static const bool value = true;
+};
+
+template<>
+struct can_promote<int,float> {
+  static const bool value = true;
+};
+
+template<>
+struct can_promote<int,double> {
+  static const bool value = true;
+};
+
+template<>
+struct can_promote<float,double> {
+  static const bool value = true;
+};
+
 /**
  * Multidimensional array with copy-on-write.
  * 
@@ -321,19 +346,35 @@ public:
     return begin().operator+(size());
   }
 
+  // /**
+  //  * Value conversion (scalar only).
+  //  */
+  // template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  // operator T&() {
+  //   return value();
+  // }
+
+  // /**
+  //  * Value conversion (scalar only).
+  //  */
+  // template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  // operator const T&() const {
+  //   return value();
+  // }
+
   /**
-   * Value conversion (scalar only).
+   * Dereference (scalar only).
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator T&() {
+  T& operator*() {
     return value();
   }
 
   /**
-   * Value conversion (scalar only).
+   * Dereference (scalar only).
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator const T&() const {
+  const T& operator*() const {
     return value();
   }
 

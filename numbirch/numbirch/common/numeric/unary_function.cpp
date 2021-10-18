@@ -6,13 +6,13 @@
 #include "numbirch/numeric/unary_function.hpp"
 
 #ifdef BACKEND_ONEAPI
-#include "numbirch/oneapi/unary_function.hpp"
+#include "numbirch/oneapi/numeric/unary_function.hpp"
 #endif
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/unary_function.hpp"
+#include "numbirch/cuda/numeric/unary_function.hpp"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/unary_function.hpp"
+#include "numbirch/eigen/numeric/unary_function.hpp"
 #endif
 
 namespace numbirch {
