@@ -808,14 +808,26 @@ final class Buffer {
     scalarBoolean <- x;
   }
 
+  function doSet(x:Boolean!) {
+    doSet(x!);
+  }
+
   function doSet(x:Integer) {
     setNil();
     scalarInteger <- x;
   }
 
+  function doSet(x:Integer!) {
+    doSet(x!);
+  }
+
   function doSet(x:Real) {
     setNil();
     scalarReal <- x;
+  }
+
+  function doSet(x:Real!) {
+    doSet(x!);
   }
 
   function doSet(x:String) {
@@ -899,6 +911,10 @@ final class Buffer {
     }
   }
 
+  function doPush(x:Boolean!) {
+    doPush(x!);
+  }
+
   function doPush(x:Integer) {
     if isEmpty() {
       set(x);
@@ -921,6 +937,10 @@ final class Buffer {
     }
   }
 
+  function doPush(x:Integer!) {
+    doPush(x!);
+  }
+
   function doPush(x:Real) {
     if isEmpty() {
       set(x);
@@ -941,6 +961,10 @@ final class Buffer {
     } else {
       push(make_buffer(x));
     }
+  }
+
+  function doPush(x:Real!) {
+    doPush(x!);
   }
 
   function doPush(x:String) {
