@@ -4,120 +4,135 @@
 #pragma once
 
 #include "numbirch/macro.hpp"
+#include "numbirch/type.hpp"
 
-#include <boost/math/special_functions/digamma.hpp>
+/* for recent versions of CUDA, disables warnings about diag_suppress being
+ * deprecated in favor of nv_diag_suppress */
+#pragma nv_diag_suppress 20236
+
+#if defined(HAVE_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
+#include <unsupported/Eigen/SpecialFunctions>
+#elif defined(HAVE_EIGEN3_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
+#include <eigen3/unsupported/Eigen/SpecialFunctions>
+#endif
+
 #include <cmath>
 
 namespace numbirch {
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE auto ceil(const T x) {
+HOST_DEVICE T ceil(const T x) {
   return std::ceil(x);
 }
 
-template<class T, std::enable_if_t<std::is_integral<T>::value,int> = 0>
-HOST_DEVICE auto ceil(const T x) {
-  return x;
-}
-
-template<class T, class U, std::enable_if_t<
-    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value &&
-    !(std::is_integral<T>::value && std::is_integral<U>::value),int> = 0>
-HOST_DEVICE auto copysign(const T x, const U y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T copysign(const T x, const T y) {
   return std::copysign(x, y);
 }
 
-template<class T, class U, std::enable_if_t<std::is_integral<T>::value &&
-    std::is_integral<U>::value,int> = 0>
-HOST_DEVICE auto copysign(const T x, const U y) {
-  // std::copysign returns floating point here, override to return int
+inline HOST_DEVICE int copysign(const int x, const int y) {
+  // don't use std::copysign, as it promotes to return floating point
   return (y >= 0) ? std::abs(x) : -std::abs(x);
 }
 
-template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE auto digamma(const T x) {
-  return boost::math::digamma(x);
+  return Eigen::numext::digamma(x);
 }
 
-template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE auto digamma(const T x, const int y) {
-  using U = decltype(digamma(x));
-  U z = 0.0;
+  T z = 0.0;
   for (int i = 1; i <= y; ++i) {
-    z += digamma(x + U(0.5)*(1 - i));
+    z += digamma(x + T(0.5)*(1 - i));
   }
   return z;
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE auto floor(const T x) {
+HOST_DEVICE T floor(const T x) {
   return std::floor(x);
 }
 
-template<class T, std::enable_if_t<std::is_integral<T>::value,int> = 0>
-HOST_DEVICE auto floor(const T x) {
-  return x;
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T gamma_p(const T a, const T x) {
+  return Eigen::numext::igamma(a, x);
 }
 
-template<class T, class U, std::enable_if_t<std::is_arithmetic<T>::value &&
-    std::is_arithmetic<U>::value,int> = 0>
-HOST_DEVICE auto lbeta(const T x, const U y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T gamma_q(const T a, const T x) {
+  return Eigen::numext::igammac(a, x);
+}
+
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T ibeta(const T a, const T b, const T x) {
+  return Eigen::numext::betainc(a, b, x);
+}
+
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T lbeta(const T x, const T y) {
   return std::lgamma(x) + std::lgamma(y) - std::lgamma(x + y);
 }
 
-template<class T, class U, std::enable_if_t<std::is_arithmetic<T>::value &&
-    std::is_arithmetic<U>::value,int> = 0>
-HOST_DEVICE auto lchoose(const T x, const U y) {
-  // based on the Boost binomial_coefficient implementation
-  using V = decltype(std::log(x - y));
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T lchoose(const int x, const int y) {
   if (y == 0 || y == x) {
-    return V(0);
+    return T(0);
   } else if (y == 1 || y == x - 1) {
-    return V(std::log(x));
+    return std::log(T(x));
   } else if (y < x - y) {
-    return V(-std::log(y) - lbeta(y, x - y + 1));
+    return -std::log(T(y)) - lbeta(T(y), T(x - y + 1));
   } else {
-    return V(-std::log(x - y) - lbeta(y + 1, x - y));
+    return -std::log(T(x - y)) - lbeta(T(y + 1), T(x - y));
   }
 }
 
-template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-HOST_DEVICE auto lgamma(const T x, const int y) {
-  using U = decltype(std::lgamma(x));
-  U z = U(0.25)*(y*(y - 1))*std::log(U(PI));
-  for (U i = 1; i <= y; ++i) {
-    z += std::lgamma(x + U(0.5)*(1 - i));
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE pair<T> lchoose_grad(const T d, const int x, const int y) {
+  T dx, dy;
+  if (y == 0 || y == x) {
+    dx = T(0);
+    dy = T(0);
+  } else if (y == 1 || y == x - 1) {
+    dx = T(1)/x;
+    dy = T(0);
+  } else if (y < x - y) {
+    dx = -digamma(T(x - y + 1)) + digamma(T(x + 1));
+    dy = -T(1)/y - digamma(T(y)) + digamma(T(x - y + 1));
+  } else {
+    dx = -T(1)/(x - y) - digamma(T(x - y)) + digamma(T(x + 1));
+    dy = T(1)/(x - y) - digamma(T(y + 1)) + digamma(T(x - y));
+  }
+  return pair<T>{d*dx, d*dy};
+}
+
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T lgamma(const T x, const int y) {
+  T z = T(0.25)*(y*(y - 1))*std::log(T(PI));
+  for (int i = 1; i <= y; ++i) {
+    z += std::lgamma(x + T(0.5)*(1 - i));
   }
   return z;
 }
 
-template<class T, class U, std::enable_if_t<
-    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value &&
-    !(std::is_integral<T>::value && std::is_integral<U>::value),int> = 0>
-HOST_DEVICE auto pow(const T x, const U y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T pow(const T x, const T y) {
   return std::pow(x, y);
 }
 
-template<class T, class U, std::enable_if_t<std::is_integral<T>::value &&
-    std::is_integral<U>::value,int> = 0>
-HOST_DEVICE auto pow(const T x, const U y) {
-  // std::pow returns floating point here, override to return int
-  return decltype(x*y)(std::pow(x, y));
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T rcp(const T x) {
+  return T(0)/x;
 }
 
-template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-HOST_DEVICE auto rectify(const T x) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T rectify(const T x) {
   return std::max(T(0), x);
 }
 
-template<class T, std::enable_if_t<!std::is_integral<T>::value,int> = 0>
-HOST_DEVICE auto round(const T x) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T round(const T x) {
   return std::round(x);
-}
-
-template<class T, std::enable_if_t<std::is_integral<T>::value,int> = 0>
-HOST_DEVICE auto round(const T x) {
-  return x;
 }
 
 }

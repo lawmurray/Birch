@@ -95,6 +95,7 @@ else
   AC_OPENMP
   AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
   AC_SEARCH_LIBS([omp_get_max_threads], [omp])
+  AC_CHECK_HEADERS([unsupported/Eigen/SpecialFunctions eigen3/unsupported/Eigen/SpecialFunctions], [break], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
 
   if $cuda; then
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
@@ -105,8 +106,7 @@ else
     AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([jemalloc], [malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   else
-    AC_OPENMP
-    AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
+    AC_CHECK_HEADERS([Eigen/Dense eigen3/Eigen/Dense], [break], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])
   fi
 fi
 

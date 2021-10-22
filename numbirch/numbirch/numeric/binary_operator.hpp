@@ -9,9 +9,9 @@ namespace numbirch {
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
- * @tparam V Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -31,9 +31,9 @@ void add(const int m, const int n, const T* A, const int ldA, const U* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
- * @tparam V Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -52,8 +52,7 @@ void div(const int m, const int n, const T* A, const int ldA, const U* b,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -64,8 +63,8 @@ void div(const int m, const int n, const T* A, const int ldA, const U* b,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
-void equal(const int m, const int n, const T* A, const int ldA, const U* B,
+template<class T>
+void equal(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, bool* C, const int ldC);
 
 /**
@@ -73,8 +72,7 @@ void equal(const int m, const int n, const T* A, const int ldA, const U* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -85,8 +83,8 @@ void equal(const int m, const int n, const T* A, const int ldA, const U* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
-void greater(const int m, const int n, const T* A, const int ldA, const U* B,
+template<class T>
+void greater(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, bool* C, const int ldC);
 
 /**
@@ -94,8 +92,7 @@ void greater(const int m, const int n, const T* A, const int ldA, const U* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -106,17 +103,16 @@ void greater(const int m, const int n, const T* A, const int ldA, const U* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
+template<class T>
 void greater_or_equal(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, bool* C, const int ldC);
+    const T* B, const int ldB, bool* C, const int ldC);
 
 /**
  * Less than comparison.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -127,8 +123,8 @@ void greater_or_equal(const int m, const int n, const T* A, const int ldA,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
-void less(const int m, const int n, const T* A, const int ldA, const U* B,
+template<class T>
+void less(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, bool* C, const int ldC);
 
 /**
@@ -136,8 +132,7 @@ void less(const int m, const int n, const T* A, const int ldA, const U* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -148,9 +143,9 @@ void less(const int m, const int n, const T* A, const int ldA, const U* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
+template<class T>
 void less_or_equal(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, bool* C, const int ldC);
+    const T* B, const int ldB, bool* C, const int ldC);
 
 /**
  * Logical `and`.
@@ -191,9 +186,9 @@ void logical_or(const int m, const int n, const bool* A, const int ldA,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
- * @tparam V Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -212,7 +207,7 @@ void mul(const int m, const int n, const T* a, const U* B, const int ldB,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -232,7 +227,7 @@ void mul(const int m, const int n, const T* A, const int ldA, const T* x,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows of `A` and `C`.
  * @param n Number of columns of `B` and `C`.
@@ -253,8 +248,7 @@ void mul(const int m, const int n, const int k, const T* A, const int ldA,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -265,18 +259,18 @@ void mul(const int m, const int n, const int k, const T* A, const int ldA,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T, class U>
+template<class T>
 void not_equal(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, bool* C, const int ldC);
+    const T* B, const int ldB, bool* C, const int ldC);
 
 /**
  * Subtraction.
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type.
- * @tparam U Value type.
- * @tparam V Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.

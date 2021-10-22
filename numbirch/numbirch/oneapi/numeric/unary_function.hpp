@@ -42,6 +42,24 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
 }
 
 template<class T>
+T count(const int m, const int n, const T* A, const int ldA) {
+  auto A1 = make_dpl_matrix(A, m, n, ldA);
+  return dpl::transform_reduce(dpl::execution::make_device_policy(queue),
+      A1.begin(), A1.end(), 0, dpl::plus<int>(), count_functor<T>());
+}
+
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB) {
+  ///@todo Implement as single kernel
+  auto B1 = make_dpl_matrix(B, n, n, ldB);
+  auto d = make_dpl_vector(B, n, ldB + 1);  // diagonal
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      B1.begin(), B1.end(), 0.0);
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      d.begin(), d.end(), *a);
+}
+
+template<class T>
 void inv(const int n, const T* A, const int ldA, T* B, const int ldB) {
   auto scratchpad_size1 = lapack::getrf_scratchpad_size<T>(queue, n,
       n, ldB);
@@ -121,12 +139,30 @@ T ldet(const int n, const T* A, const int ldA) {
 }
 
 template<class T>
+void rcp(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  auto A1 = make_dpl_matrix(A, m, n, ldA);
+  auto B1 = make_dpl_matrix(B, m, n, ldB);
+  dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
+      A1.end(), B1.begin(), rcp_functor<T>());
+}
+
+template<class T>
 void rectify(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_dpl_matrix(A, m, n, ldA);
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
       A1.end(), B1.begin(), rectify_functor<T>());
+}
+
+template<class T>
+void single(const int* i, const int n, T* x, const int incx) {
+  ///@todo Implement as single kernel
+  auto x1 = make_dpl_vector(x, n, incx);
+  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
+      x1.begin(), x1.end(), 0.0);
+  *(x1.begin() + *i) = T(1);
 }
 
 template<class T>

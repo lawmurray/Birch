@@ -10,6 +10,7 @@
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
 #include "numbirch/function.hpp"
+#include "numbirch/type.hpp"
 
 namespace numbirch {
 /**
@@ -18,14 +19,14 @@ namespace numbirch {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param x Vector.
  * 
  * @return Vector.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
   assert(S.rows() == S.columns());
   assert(S.columns() == x.length());
@@ -42,14 +43,14 @@ Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param B Matrix.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
   assert(S.rows() == S.columns());
   assert(S.columns() == S.rows());
@@ -66,14 +67,14 @@ Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param S Symmetric positive definite matrix.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
   assert(A.columns() == S.columns());
   assert(S.rows() == S.columns());
@@ -90,14 +91,14 @@ Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param y Vector.
  * 
  * @return Vector.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
   assert(S.rows() == S.columns());
   assert(S.rows() == y.length());
@@ -114,14 +115,14 @@ Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param S Symmetric positive definite matrix.
  * @param B Matrix.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
   assert(S.rows() == S.columns());
   assert(S.rows() == B.rows());
@@ -137,8 +138,7 @@ Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -146,8 +146,9 @@ Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-auto copysign(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -162,18 +163,17 @@ auto copysign(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto copysign(const Scalar<T>& x, const U& y) {
-  return copysign(x, Scalar<U>(y));
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value &&
+    std::is_arithmetic<U>::value,int> = 0>
+Scalar<T> copysign(const Scalar<T>& x, const T& y) {
+  return copysign(x, Scalar<T>(y));
 }
 
 /**
@@ -181,52 +181,77 @@ auto copysign(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto copysign(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value &&
+    std::is_arithmetic<T>::value,int> = 0>
+Scalar<T> copysign(const T& x, const Scalar<T>& y) {
   return copysign(Scalar<T>(x), y);
 }
 
 /**
- * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
- * value, while all off-diagonal elements are assigned zero.
+ * Multivariate digamma function.
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
  * 
- * @param x Scalar to assign to diagonal.
- * @param n Number of rows and columns.
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
  */
-template<class T>
-Matrix<T> diagonal(const Scalar<T>& x, const int n) {
-  Matrix<T> B(make_shape(n, n));
-  diagonal(x.data(), n, B.data(), B.stride());
-  return B;
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> auto digamma(const Array<T,D>& A, const Array<int,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  digamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
 }
 
 /**
- * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
- * value, while all off-diagonal elements are assigned zero.
+ * Multivariate digamma function.
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
- * @param x Scalar to assign to diagonal.
- * @param n Number of rows and columns.
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
  */
-template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Matrix<T> diagonal(const T& x, const int n) {
-  return diagonal(Scalar<T>(x), n);
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> digamma(const Scalar<T>& x, const int& y) {
+  return digamma(x, Scalar<int>(y));
+}
+
+/**
+ * Multivariate digamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> digamma(const T& x, const Scalar<int>& y) {
+  return digamma(Scalar<T>(x), y);
 }
 
 /**
@@ -234,15 +259,14 @@ Matrix<T> diagonal(const T& x, const int n) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x Vector.
  * @param y Vector.
  * 
  * @return Dot product.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
   assert(x.length() == y.length());
   Scalar<T> z;
@@ -256,14 +280,14 @@ Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param x Vector.
  * @param A Matrix.
  * 
  * @return Vector giving the dot product of @p x with each column of @p A.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
   return inner(A, x);
 }
@@ -275,30 +299,29 @@ Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param B Matrix.
  * 
  * @return Frobenius product.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
   Scalar<T> c;
-  frobenius(A.rows(), A.columns(), A.data(), A.stride(), B.data(),
-      B.stride(), c.data());
+  frobenius(A.rows(), A.columns(), A.data(), A.stride(), B.data(), B.stride(),
+      c.data());
   return c;
 }
 
 /**
- * Hadamard (element-wise) matrix multiplication.
+ * Normalized lower incomplete gamma function.
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -306,12 +329,131 @@ Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-auto hadamard(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> gamma_p(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<decltype(T()*U()),D> C(A.shape().compact());
+  Array<T,D> C(A.shape().compact());
+  gamma_p(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Normalized lower incomplete gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> gamma_p(const Scalar<T>& x, const T& y) {
+  return gamma_p(x, Scalar<T>(y));
+}
+
+/**
+ * Normalized lower incomplete gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> gamma_p(const T& x, const Scalar<T>& y) {
+  return gamma_p(Scalar<T>(x), y);
+}
+
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> gamma_q(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
+  gamma_q(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
+      C.data(), C.stride());
+  return C;
+}
+
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> gamma_q(const Scalar<T>& x, const T& y) {
+  return gamma_q(x, Scalar<T>(y));
+}
+
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x %Scalar.
+ * @param y %Scalar.
+ * 
+ * @return %Scalar.
+ */
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> gamma_q(const T& x, const Scalar<T>& y) {
+  return gamma_q(Scalar<T>(x), y);
+}
+
+/**
+ * Hadamard (element-wise) matrix multiplication.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
+  assert(A.rows() == B.rows());
+  assert(A.columns() == B.columns());
+
+  Array<T,D> C(A.shape().compact());
   hadamard(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -322,18 +464,16 @@ auto hadamard(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto hadamard(const Scalar<T>& x, const U& y) {
-  return hadamard(x, Scalar<U>(y));
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> hadamard(const Scalar<T>& x, const T& y) {
+  return hadamard(x, Scalar<T>(y));
 }
 
 /**
@@ -341,17 +481,15 @@ auto hadamard(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto hadamard(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> hadamard(const T& x, const Scalar<U>& y) {
   return hadamard(Scalar<T>(x), y);
 }
 
@@ -360,14 +498,14 @@ auto hadamard(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param x Vector.
  * 
  * @return Vector.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
   assert(A.rows() == x.length());
   
@@ -382,14 +520,14 @@ Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param B Matrix.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.rows() == B.rows());
 
@@ -404,8 +542,7 @@ Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -413,12 +550,13 @@ Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-auto lbeta(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<decltype(lbeta(T(), U())),D> C(A.shape().compact());
+  Array<T,D> C(A.shape().compact());
   lbeta(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -429,18 +567,16 @@ auto lbeta(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto lbeta(const Scalar<T>& x, const U& y) {
-  return lbeta(x, Scalar<U>(y));
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> lbeta(const Scalar<T>& x, const U& y) {
+  return lbeta(x, Scalar<T>(y));
 }
 
 /**
@@ -448,17 +584,15 @@ auto lbeta(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto lbeta(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> lbeta(const T& x, const Scalar<T>& y) {
   return lbeta(Scalar<T>(x), y);
 }
 
@@ -467,21 +601,23 @@ auto lbeta(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
  * @param B %Array.
  * 
  * @return %Array.
+ * 
+ * @note The result type `T` must be explicitly specified.
  */
-template<class T, class U, int D>
-auto lchoose(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> lchoose(const Array<int,D>& A, const Array<int,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<decltype(lchoose(T(), U())),D> C(A.shape().compact());
+  Array<T,D> C(A.shape().compact());
   lchoose(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -492,18 +628,18 @@ auto lchoose(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
+ * 
+ * @note The result type `T` must be explicitly specified.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto lchoose(const Scalar<T>& x, const U& y) {
-  return lchoose(x, Scalar<U>(y));
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Array<T,D> lchoose(const Scalar<int>& x, const int& y) {
+  return lchoose(x, Scalar<int>(y));
 }
 
 /**
@@ -511,18 +647,18 @@ auto lchoose(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
+ * 
+ * @note The result type `T` must be explicitly specified.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto lchoose(const T& x, const Scalar<U>& y) {
-  return lchoose(Scalar<T>(x), y);
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Array<T,D> lchoose(const int& x, const Scalar<int>& y) {
+  return lchoose(Scalar<int>(x), y);
 }
 
 /**
@@ -530,7 +666,7 @@ auto lchoose(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -538,7 +674,8 @@ auto lchoose(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, int D>
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
 Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
@@ -554,15 +691,15 @@ Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T>
-auto lgamma(const Scalar<T>& x, const int& y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> lgamma(const Scalar<T>& x, const int& y) {
   return lgamma(x, Scalar<int>(y));
 }
 
@@ -571,15 +708,15 @@ auto lgamma(const Scalar<T>& x, const int& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T>
-auto lgamma(const T& x, const Scalar<int>& y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> lgamma(const T& x, const Scalar<int>& y) {
   return lgamma(Scalar<T>(x), y);
 }
 
@@ -588,14 +725,14 @@ auto lgamma(const T& x, const Scalar<int>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param x Vector.
  * @param y Vector.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
   Matrix<T> C(make_shape(x.length(), y.length()));
   outer(C.rows(), C.columns(), x.data(), x.stride(), y.data(), y.stride(),
@@ -608,14 +745,14 @@ Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param B Matrix.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.columns() == B.columns());
 
@@ -630,8 +767,7 @@ Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -639,12 +775,13 @@ Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<T,D> pow(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> pow(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<decltype(T()*U()),D> C(A.shape().compact());
+  Array<T,D> C(A.shape().compact());
   pow(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -655,18 +792,16 @@ Array<T,D> pow(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto pow(const Scalar<T>& x, const U& y) {
-  return pow(x, Scalar<U>(y));
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<T> pow(const Scalar<T>& x, const T& y) {
+  return pow(x, Scalar<T>(y));
 }
 
 /**
@@ -674,18 +809,87 @@ auto pow(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto pow(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<T> pow(const T& x, const Scalar<T>& y) {
   return pow(Scalar<T>(x), y);
+}
+
+/**
+ * Construct single-entry matrix. One of the elements of the matrix is one,
+ * all others are zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param i Row index of single entry (1-based).
+ * @param j Column index of single entry (1-based).
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return %Matrix.
+ * 
+ * @note The result type `T` must be explicitly specified.
+ */
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
+    const int n) {
+  Matrix<T> A(make_shape(m, n));
+  single(i.data(), j.data(), m, n, A.data(), A.stride());
+  return A;
+}
+
+/**
+ * Construct single-entry matrix. One of the elements of the matrix is one,
+ * all others are zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param i Row index of single entry (1-based).
+ * @param j Column index of single entry (1-based).
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return %Matrix.
+ * 
+ * @note The result type `T` must be explicitly specified.
+ */
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Matrix<T> single(const int& i, const Scalar<int>& j, const int m,
+    const int n) {
+  return single<T>(Scalar<int>(i), j, m, n);
+}
+
+/**
+ * Construct single-entry matrix. One of the elements of the matrix is one,
+ * all others are zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param i Row index of single entry (1-based).
+ * @param j Column index of single entry (1-based).
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return %Matrix.
+ * 
+ * @note The result type `T` must be explicitly specified.
+ */
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Matrix<T> single(const Scalar<int>& i, const int& j, const int m,
+    const int n) {
+  return single<T>(i, Scalar<int>(j), m, n);
 }
 
 /**
@@ -693,14 +897,14 @@ auto pow(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param y Vector.
  * 
  * @return Vector.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
   assert(A.rows() == A.columns());
   assert(A.rows() == y.length());
@@ -716,14 +920,14 @@ Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * 
  * @param A Matrix.
  * @param C Matrix.
  * 
  * @return Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> solve(const Matrix<T>& A, const Matrix<T>& C) {
   assert(A.rows() == A.columns());
   assert(A.rows() == C.rows());

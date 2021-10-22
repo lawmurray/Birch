@@ -9,6 +9,7 @@
 #include "numbirch/array/Matrix.hpp"
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
+#include "numbirch/type.hpp"
 
 namespace numbirch {
 /**
@@ -16,8 +17,8 @@ namespace numbirch {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -25,12 +26,14 @@ namespace numbirch {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-auto operator+(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator+(const Array<T,D>& A,
+    const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
-  Array<decltype(T()*U()),D> C(A.shape().compact());
+  Array<typename promote<T,U>::type,D> C(A.shape().compact());
   add(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -41,17 +44,18 @@ auto operator+(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto operator+(const Scalar<T>& x, const U& y) {
+template<class T, class U, std::enable_if_t<std::is_arithmetic<T>::value &&
+    std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> operator+(const Scalar<T>& x,
+    const U& y) {
   return x + Scalar<U>(y);
 }
 
@@ -60,17 +64,18 @@ auto operator+(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto operator+(const T& x, const Scalar<U>& y) {
+template<class T, class U, std::enable_if_t<std::is_arithmetic<T>::value &&
+    std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> operator+(const T& x,
+    const Scalar<U>& y) {
   return Scalar<T>(x) + y;
 }
 
@@ -79,18 +84,18 @@ auto operator+(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
- * @tparam U Value type.
  * 
  * @param A %Array.
  * @param b Scalar.
  * 
  * @return %Array.
  */
-template<class T, int D, class U>
-auto operator/(const Array<T,D>& A, const Scalar<U>& b) {
-  Array<decltype(T()*U()),D> C(A.shape().compact());
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> operator/(const Array<T,D>& A, const Scalar<T>& b) {
+  Array<T,D> C(A.shape().compact());
   div(A.width(), A.height(), A.data(), A.stride(), b.data(), C.data(),
       C.stride());
   return C;
@@ -101,19 +106,18 @@ auto operator/(const Array<T,D>& A, const Scalar<U>& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
- * @tparam U Value type.
  * 
  * @param A %Array.
  * @param b %Scalar.
  * 
  * @return %Array.
  */
-template<class T, int D, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto operator/(const Array<T,D>& A, const U& b) {
-  return A/Scalar<U>(b);
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> operator/(const Array<T,D>& A, const T& b) {
+  return A/Scalar<T>(b);
 }
 
 /**
@@ -121,17 +125,15 @@ auto operator/(const Array<T,D>& A, const U& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto operator/(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+Scalar<T> operator/(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x)/y;
 }
 
@@ -140,8 +142,7 @@ auto operator/(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -149,8 +150,9 @@ auto operator/(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<bool,D> operator==(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<bool,D> operator==(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -165,18 +167,16 @@ Array<bool,D> operator==(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto operator==(const Scalar<T>& x, const U& y) {
-  return x == Scalar<U>(y);
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator==(const Scalar<T>& x, const T& y) {
+  return x == Scalar<T>(y);
 }
 
 /**
@@ -184,17 +184,15 @@ auto operator==(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto operator==(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator==(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) == y;
 }
 
@@ -203,8 +201,7 @@ auto operator==(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -212,8 +209,9 @@ auto operator==(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<bool,D> operator>(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<bool,D> operator>(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -228,17 +226,15 @@ Array<bool,D> operator>(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-Scalar<bool> operator>(const Scalar<T>& x, const U& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator>(const Scalar<T>& x, const T& y) {
   return x > Scalar<U>(y);
 }
 
@@ -247,17 +243,15 @@ Scalar<bool> operator>(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator>(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator>(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) > y;
 }
 
@@ -266,8 +260,7 @@ Scalar<bool> operator>(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -275,8 +268,9 @@ Scalar<bool> operator>(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<bool,D> operator>=(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<bool,D> operator>=(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -291,18 +285,16 @@ Array<bool,D> operator>=(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-Scalar<bool> operator>=(const Scalar<T>& x, const U& y) {
-  return x >= Scalar<U>(y);
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator>=(const Scalar<T>& x, const T& y) {
+  return x >= Scalar<T>(y);
 }
 
 /**
@@ -310,17 +302,15 @@ Scalar<bool> operator>=(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator>=(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator>=(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) >= y;
 }
 
@@ -329,8 +319,7 @@ Scalar<bool> operator>=(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -338,8 +327,9 @@ Scalar<bool> operator>=(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<bool,D> operator<(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<bool,D> operator<(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -354,18 +344,16 @@ Array<bool,D> operator<(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-Scalar<bool> operator<(const Scalar<T>& x, const U& y) {
-  return x < Scalar<U>(y);
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator<(const Scalar<T>& x, const T& y) {
+  return x < Scalar<T>(y);
 }
 
 /**
@@ -373,17 +361,15 @@ Scalar<bool> operator<(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator<(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator<(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) < y;
 }
 
@@ -392,8 +378,7 @@ Scalar<bool> operator<(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -401,8 +386,9 @@ Scalar<bool> operator<(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<bool,D> operator<=(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<bool,D> operator<=(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -417,18 +403,16 @@ Array<bool,D> operator<=(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-Scalar<bool> operator<=(const Scalar<T>& x, const U& y) {
-  return x <= Scalar<U>(y);
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator<=(const Scalar<T>& x, const T& y) {
+  return x <= Scalar<T>(y);
 }
 
 /**
@@ -436,17 +420,15 @@ Scalar<bool> operator<=(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator<=(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator<=(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) <= y;
 }
 
@@ -557,18 +539,18 @@ inline Scalar<bool> operator||(const bool& x, const Scalar<bool>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
- * @param a Scalar.
+ * @param a %Scalar.
  * @param B %Array.
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-auto operator*(const Scalar<T>& a, const Array<U,D>& B) {
-  Array<decltype(T()*U()),D> C(B.shape().compact());
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> operator*(const Scalar<T>& a, const Array<T,D>& B) {
+  Array<T,D> C(B.shape().compact());
   mul(C.width(), C.height(), a.data(), B.data(), B.stride(), C.data(),
       C.stride());
   return C;
@@ -579,8 +561,7 @@ auto operator*(const Scalar<T>& a, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param a Scalar.
@@ -588,9 +569,9 @@ auto operator*(const Scalar<T>& a, const Array<U,D>& B) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto operator*(const T& a, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> operator*(const T& a, const Array<T,D>& B) {
   return Scalar<T>(a)*B;
 }
 
@@ -599,20 +580,20 @@ auto operator*(const T& a, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
- * @tparam U Value type.
  * 
  * @param A %Array.
  * @param b %Array.
  * 
  * @return %Array.
  * 
- * @note Disabled for D == 0 as signature would be identical with
- * operator*(const Scalar<T>&, const Array<U,D>&).
+ * @note Disabled for `D == 0` as signature would be identical with
+ * `operator*(const Scalar<T>&, const Array<T,D>&)`.
  */
-template<class T, int D, class U, std::enable_if_t<(D > 0),int> = 0>
-auto operator*(const Array<T,D>& A, const Scalar<U>& b) {
+template<class T, int D, std::enable_if_t<(D > 0) &&
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> operator*(const Array<T,D>& A, const Scalar<T>& b) {
   return b*A;
 }
 
@@ -621,18 +602,17 @@ auto operator*(const Array<T,D>& A, const Scalar<U>& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
- * @tparam U Value type.
  * 
  * @param A %Array.
  * @param b %Array.
  * 
  * @return %Array.
  */
-template<class T, int D, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto operator*(const Array<T,D>& A, const U& b) {
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> operator*(const Array<T,D>& A, const T& b) {
   return b*A;
 }
 
@@ -641,14 +621,14 @@ auto operator*(const Array<T,D>& A, const U& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Floating point type.
  * 
- * @param A Matrix.
- * @param x Vector.
+ * @param A %Matrix.
+ * @param x %Vector.
  * 
- * @return Vector.
+ * @return %Vector.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Vector<T> operator*(const Matrix<T>& A, const Vector<T>& x) {
   assert(A.columns() == x.length());
 
@@ -663,14 +643,14 @@ Vector<T> operator*(const Matrix<T>& A, const Vector<T>& x) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Floating point type.
  * 
- * @param A Matrix.
- * @param B Matrix.
+ * @param A %Matrix.
+ * @param B %Matrix.
  * 
- * @return Matrix.
+ * @return %Matrix.
  */
-template<class T>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.columns() == B.rows());
 
@@ -685,8 +665,7 @@ Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -694,8 +673,9 @@ Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<bool,D> operator!=(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
+Array<bool,D> operator!=(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -710,18 +690,16 @@ Array<bool,D> operator!=(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-Scalar<bool> operator!=(const Scalar<T>& x, const U& y) {
-  return x != Scalar<U>(y);
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator!=(const Scalar<T>& x, const T& y) {
+  return x != Scalar<T>(y);
 }
 
 /**
@@ -729,17 +707,15 @@ Scalar<bool> operator!=(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator!=(const T& x, const Scalar<U>& y) {
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+Scalar<bool> operator!=(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) != y;
 }
 
@@ -748,8 +724,8 @@ Scalar<bool> operator!=(const T& x, const Scalar<U>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -757,12 +733,14 @@ Scalar<bool> operator!=(const T& x, const Scalar<U>& y) {
  * 
  * @return %Array.
  */
-template<class T, class U, int D>
-Array<T,D> operator-(const Array<T,D>& A, const Array<U,D>& B) {
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator-(const Array<T,D>& A,
+    const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
-  Array<decltype(T()*U()),D> C(A.shape().compact());
+  Array<typename promote<T,U>::type,D> C(A.shape().compact());
   sub(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -773,18 +751,19 @@ Array<T,D> operator-(const Array<T,D>& A, const Array<U,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<U>::value,int> = 0>
-auto operator-(const Scalar<T>& x, const U& y) {
-  return x - Scalar<U>(y);
+template<class T, class U, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> operator-(const Scalar<T>& x,
+    const U& y) {
+  return x - Scalar<T>(y);
 }
 
 /**
@@ -792,17 +771,18 @@ auto operator-(const Scalar<T>& x, const U& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Value type.
- * @tparam U Value type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, class U,
-    std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-auto operator-(const T& x, const Scalar<U>& y) {
+template<class T, class U, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> operator-(const T& x,
+    const Scalar<U>& y) {
   return Scalar<T>(x) - y;
 }
 

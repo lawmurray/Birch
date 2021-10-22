@@ -202,8 +202,12 @@ void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
 }
 
 template<class T>
-void diagonal(const T* a, const int n, T* B, const int ldB) {
-  for_each(n, n, B, ldB, diagonal_functor<T>(a));
+void digamma(const int m, const int n, const T* A, const int ldA,
+    const int* B, const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, digammap_functor<T>());
 }
 
 template<class T>
@@ -227,6 +231,24 @@ void frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
   hadamard(m, n, A, ldA, B, ldB, C, ldC);
   sum(m, n, C, ldC, c);
   device_free(C);
+}
+
+template<class T>
+void gamma_p(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, gamma_p_functor<T>());
+}
+
+template<class T>
+void gamma_q(const int m, const int n, const T* A, const int ldA, const T* B,
+    const int ldB, T* C, const int ldC) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(C, m, n, ldC);
+  transform(m, n, A, ldA, B, ldB, C, ldC, gamma_q_functor<T>());
 }
 
 template<class T>
@@ -264,16 +286,16 @@ void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, lbeta_functor<T,T>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, lbeta_functor<T>());
 }
 
 template<class T>
-void lchoose(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
+void lchoose(const int m, const int n, const int* A, const int ldA,
+    const int* B, const int ldB, T* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, lchoose_functor<T,T>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, lchoose_functor<T>());
 }
 
 template<class T>
@@ -282,7 +304,7 @@ void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, lgammap_functor<T,int>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, lgammap_functor<T>());
 }
 
 template<class T>
@@ -310,13 +332,19 @@ void outer(const int m, const int n, const int k, const T* A, const int ldA,
       k, scalar<T>::one, A, ldA, B, ldB, scalar<T>::zero, C, ldC));
 }
 
-template<class T, class U>
-void pow(const int m, const int n, const T* A, const int ldA, const U* B,
+template<class T>
+void pow(const int m, const int n, const T* A, const int ldA, const T* B,
     const int ldB, T* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, pow_functor<T,U>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, pow_functor<T>());
+}
+
+template<class T>
+void single(const int* i, const int* j, const int m, const int n, T* A,
+    const int ldA) {
+  for_each(m, n, A, ldA, single_functor<T>(i, j));
 }
 
 template<class T>

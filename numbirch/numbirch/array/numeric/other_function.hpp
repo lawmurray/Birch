@@ -16,7 +16,7 @@ namespace numbirch {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double` or `float`).
+ * @tparam T Floating point type.
  * @tparam D Number of dimensions.
  * 
  * @param a Coefficient on `A`.
@@ -30,7 +30,8 @@ namespace numbirch {
  * 
  * @return %Array.
  */
-template<class T, int D>
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
 Array<T,D> combine(const T a, const Array<T,D>& A, const T b,
     const Array<T,D>& B, const T c, const Array<T,D>& C, const T e,
     const Array<T,D>& E) {

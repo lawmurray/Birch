@@ -30,6 +30,14 @@ void cublas_init() {
   CUBLAS_CHECK(cublasSetVector(1, sizeof(float), &oneS1, 1, oneS, 1));
   CUBLAS_CHECK(cublasSetVector(1, sizeof(float), &zeroS1, 1, zeroS, 1));
 
+  /* integer scalars */
+  int oneI1 = 1;
+  int zeroI1 = 0;
+  CUDA_CHECK(cudaMalloc(&oneI, sizeof(int)));
+  CUDA_CHECK(cudaMalloc(&zeroI, sizeof(int)));  
+  CUBLAS_CHECK(cublasSetVector(1, sizeof(int), &oneI1, 1, oneI, 1));
+  CUBLAS_CHECK(cublasSetVector(1, sizeof(int), &zeroI1, 1, zeroI, 1));
+
   #pragma omp parallel
   {
     size_t size = 1 << 21; // 4 MB as recommended in CUBLAS docs
@@ -38,7 +46,7 @@ void cublas_init() {
     CUDA_CHECK(cudaMalloc(&cublasWorkspace, size));
     CUBLAS_CHECK(cublasSetWorkspace(cublasHandle, cublasWorkspace, size));
     CUBLAS_CHECK(cublasSetPointerMode(cublasHandle,
-        CUBLAS_POINTER_MODE_HOST_DEVICE));
+        CUBLAS_POINTER_MODE_DEVICE));
     CUBLAS_CHECK(cublasSetAtomicsMode(cublasHandle,
         CUBLAS_ATOMICS_ALLOWED));
   }

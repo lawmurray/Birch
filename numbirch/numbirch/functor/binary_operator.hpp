@@ -6,63 +6,63 @@
 #include "numbirch/function.hpp"
 
 namespace numbirch {
-template<class T, class U>
+template<class T>
 struct add_functor {
-  HOST_DEVICE auto operator()(const T x, const U y) const {
+  HOST_DEVICE T operator()(const T x, const T y) const {
     return x + y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct divide_functor {
-  HOST_DEVICE auto operator()(const T x, const U y) const {
+  HOST_DEVICE T operator()(const T x, const T y) const {
     return x/y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct divide_scalar_functor {
-  divide_scalar_functor(const U* a) :
+  divide_scalar_functor(const T* a) :
       a(a) {
     //
   }
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return x/(*a);
   }
-  const U* a;
+  const T* a;
 };
 
-template<class T, class U>
+template<class T>
 struct equal_functor {
-  HOST_DEVICE bool operator()(const T x, const U y) const {
+  HOST_DEVICE bool operator()(const T x, const T y) const {
     return x == y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct greater_functor {
-  HOST_DEVICE bool operator()(const T x, const U y) const {
+  HOST_DEVICE bool operator()(const T x, const T y) const {
     return x > y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct greater_or_equal_functor {
-  HOST_DEVICE bool operator()(const T x, const U y) const {
+  HOST_DEVICE bool operator()(const T x, const T y) const {
     return x >= y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct less_functor {
-  HOST_DEVICE bool operator()(const T x, const U y) const {
+  HOST_DEVICE bool operator()(const T x, const T y) const {
     return x < y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct less_or_equal_functor {
-  HOST_DEVICE bool operator()(const T x, const U y) const {
+  HOST_DEVICE bool operator()(const T x, const T y) const {
     return x <= y;
   }
 };
@@ -79,35 +79,35 @@ struct logical_or_functor {
   }
 };
 
-template<class T, class U>
+template<class T>
 struct multiply_functor {
-  HOST_DEVICE auto operator()(const T x, const U y) const {
+  HOST_DEVICE auto operator()(const T x, const T y) const {
     return x*y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct multiply_scalar_functor {
-  multiply_scalar_functor(const U* a) :
+  multiply_scalar_functor(const T* a) :
       a(a) {
     //
   }
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return x*(*a);
   }
-  const U* a;
+  const T* a;
 };
 
-template<class T, class U>
+template<class T>
 struct not_equal_functor {
-  HOST_DEVICE bool operator()(const T x, const U y) const {
+  HOST_DEVICE bool operator()(const T x, const T y) const {
     return x != y;
   }
 };
 
-template<class T, class U>
+template<class T>
 struct subtract_functor {
-  HOST_DEVICE auto operator()(const T x, const U y) const {
+  HOST_DEVICE auto operator()(const T x, const T y) const {
     return x - y;
   }
 };

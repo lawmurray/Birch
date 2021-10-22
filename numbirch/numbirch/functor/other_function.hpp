@@ -6,6 +6,7 @@
 #pragma once
 
 #include "numbirch/function.hpp"
+#include "numbirch/type.hpp"
 
 namespace numbirch {
 
@@ -27,23 +28,10 @@ struct combine4_functor {
       a(a), b(b), c(c), d(d) {
     //
   }
-  HOST_DEVICE T operator()(const std::tuple<T,T,T,T>& o) const {
-    return a*std::get<0>(o) + b*std::get<1>(o) + c*std::get<2>(o) +
-        d*std::get<3>(o);
+  HOST_DEVICE T operator()(const quad<T>& o) const {
+    return a*o.first + b*o.second + c*o.third + d*o.fourth;
   }
   const T a, b, c, d;
-};
-
-template<class T>
-struct diagonal_functor {
-  diagonal_functor(const T* a) :
-      a(a) {
-    //
-  }
-  HOST_DEVICE T operator()(const int i, const int j) const {
-    return (i == j) ? *a : T(0);
-  }
-  const T* a;
 };
 
 }

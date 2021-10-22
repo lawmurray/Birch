@@ -60,6 +60,8 @@ extern double* oneD;
 extern double* zeroD;
 extern float* oneS;
 extern float* zeroS;
+extern int* oneI;
+extern int* zeroI;
 
 /*
  * Scalar access for single and double precision.
@@ -77,6 +79,11 @@ template<>
 struct scalar<float> {
   static constexpr float*& one = oneS;
   static constexpr float*& zero = zeroS;
+};
+template<>
+struct scalar<int> {
+  static constexpr int*& one = oneI;
+  static constexpr int*& zero = zeroI;
 };
 
 /*

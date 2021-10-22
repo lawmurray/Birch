@@ -76,6 +76,11 @@ public:
   using value_type = T;
   using shape_type = ArrayShape<D>;
 
+  /* catch some common error cases */
+  static_assert(!std::is_same<T,Array<double,0>>::value);
+  static_assert(!std::is_same<T,Array<float,0>>::value);
+  static_assert(!std::is_same<T,Array<int,0>>::value);
+
   /**
    * Constructor.
    */
@@ -137,6 +142,34 @@ public:
       atomize();
       initialize();
     }
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param shape Shape.
+   * @param value Fill value.
+   */
+  Array(const shape_type& shape, const T& value) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(shape),
+      isView(false),
+      isElementWise(false) {
+    allocate();
+    atomize();
+    fill(value);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param shape Shape.
+   * @param value Fill value.
+   */
+  Array(const shape_type& shape, const Array<T,0>& value) :
+      Array(shape, *value) {
+    ///@todo Use asynchronous fill
   }
 
   /**
@@ -898,6 +931,15 @@ private:
   }
 
   /**
+   * Fill allocated memory with value.
+   *
+   * @param value The value.
+   */
+  void fill(const T& value) {
+    std::uninitialized_fill(beginInternal(), endInternal(), value);
+  }
+
+  /**
    * Copy from another array.
    */
   template<class U, int E, std::enable_if_t<D == E &&
@@ -972,5 +1014,11 @@ Array(const ArrayShape<1>& shape, const T& value) -> Array<T,1>;
 
 template<class T>
 Array(const ArrayShape<2>& shape, const T& value) -> Array<T,2>;
+
+template<class T>
+Array(const ArrayShape<1>& shape, const Array<T,0>& value) -> Array<T,1>;
+
+template<class T>
+Array(const ArrayShape<2>& shape, const Array<T,0>& value) -> Array<T,2>;
 
 }

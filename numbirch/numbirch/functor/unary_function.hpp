@@ -9,51 +9,70 @@ namespace numbirch {
 
 template<class T>
 struct abs_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::abs(x);
   }
 };
 
 template<class T>
 struct acos_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::acos(x);
   }
 };
 
 template<class T>
 struct asin_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::asin(x);
   }
 };
 
 template<class T>
 struct atan_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::atan(x);
   }
 };
 
 template<class T>
 struct ceil_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::ceil(x);
   }
 };
 
 template<class T>
 struct cos_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::cos(x);
   }
 };
 
 template<class T>
 struct cosh_functor {
-  HOST_DEVICE auto operator()(const T x) const {
+  HOST_DEVICE T operator()(const T x) const {
     return std::cosh(x);
   }
+};
+
+template<class T>
+struct count_functor {
+  HOST_DEVICE int operator()(const T x) const {
+    return (x == T(0)) ? 0 : 1;
+  }
+};
+
+template<class T>
+struct diagonal_functor {
+  diagonal_functor(const T* a) :
+      a(a) {
+    //
+  }
+  HOST_DEVICE T operator()(const int i, const int j) const {
+    return (i == j) ? *a : T(0);
+  }
+  const T* a;
 };
 
 template<class T>
@@ -116,6 +135,13 @@ template<class T>
 struct log_square_functor {
   HOST_DEVICE auto operator()(const T x) const {
     return 2.0*std::log(x);
+  }
+};
+
+template<class T>
+struct rcp_functor {
+  HOST_DEVICE auto operator()(const T x) const {
+    return rcp(x);
   }
 };
 

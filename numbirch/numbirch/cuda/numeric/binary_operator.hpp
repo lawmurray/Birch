@@ -14,21 +14,21 @@
 
 namespace numbirch {
 
-template<class T>
-void add(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
+template<class T, class U, class V>
+void add(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, add_functor<T>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, add_functor<V>());
 }
 
-template<class T, class U>
+template<class T, class U, class V>
 void div(const int m, const int n, const T* A, const int ldA, const U* b,
-    T* C, const int ldC) {
+    V* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, C, ldC, divide_scalar_functor<T,U>(b));
+  transform(m, n, A, ldA, C, ldC, divide_scalar_functor<V>(b));
 }
 
 template<class T>
@@ -93,12 +93,12 @@ void logical_or(const int m, const int n, const bool* A, const int ldA,
   transform(m, n, A, ldA, B, ldB, C, ldC, logical_or_functor());
 }
 
-template<class T, class U>
+template<class T, class U, class V>
 void mul(const int m, const int n, const T* a, const U* B, const int ldB,
-    U* C, const int ldC) {
+    V* C, const int ldC) {
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, B, ldB, C, ldC, multiply_scalar_functor<U,T>(a));
+  transform(m, n, B, ldB, C, ldC, multiply_scalar_functor<V>(a));
 }
 
 template<class T>
@@ -130,13 +130,13 @@ void not_equal(const int m, const int n, const T* A, const int ldA,
   transform(m, n, A, ldA, B, ldB, C, ldC, not_equal_functor<T>());
 }
 
-template<class T>
-void sub(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
+template<class T, class U, class V>
+void sub(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, subtract_functor<T>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, subtract_functor<V>());
 }
 
 }

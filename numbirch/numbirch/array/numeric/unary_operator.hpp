@@ -16,7 +16,6 @@ namespace numbirch {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double`, `float` or `int`).
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -36,14 +35,15 @@ Array<bool,D> operator!(const Array<bool,D>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Element type (`double`, `float` or `int`).
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
  * 
  * @return %Array.
  */
-template<class T, int D>
+template<class T, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value,int> = 0>
 Array<T,D> operator-(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   neg(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());

@@ -106,6 +106,23 @@ void cosh(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void count(const int m, const int n, const T* A, const int ldA, int* b) {
+  prefetch(A, m, n, ldA);
+
+  ///@todo Remove temporary
+  auto B = (int*)device_malloc(m*n*sizeof(int));
+  int ldB = m;
+  transform(m, n, A, ldA, B, ldB, count_functor<T>());
+  sum(m, n, B, ldB, b);
+  device_free(B);
+}
+
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB) {
+  for_each(n, n, B, ldB, diagonal_functor<T>(a));
+}
+
+template<class T>
 void digamma(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);
@@ -273,6 +290,14 @@ void log1p(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void rcp(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, rcp_functor<T>());
+}
+
+template<class T>
 void rectify(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);
@@ -294,6 +319,11 @@ void sin(const int m, const int n, const T* A, const int ldA, T* B,
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   transform(m, n, A, ldA, B, ldB, sin_functor<T>());
+}
+
+template<class T>
+void single(const int* i, const int n, T* x, const int incx) {
+  for_each(1, n, x, incx, single_functor<T>(scalar<int>::one, i));
 }
 
 template<class T>

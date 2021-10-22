@@ -186,6 +186,54 @@ void transform(const int m, const int n, const T* A, const int ldA,
 }
 
 /*
+ * Matrix ternary transform.
+ */
+template<class T, class U, class V, class W, class Functor>
+__global__ void kernel_transform(const int m, const int n, const T* A,
+    const int ldA, const U* B, const int ldB, const V* C, const int ldC,
+    W* D, const int ldD, Functor f) {
+  auto i = blockIdx.x*blockDim.x + threadIdx.x;
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    D[i + j*ldD] = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC]);
+  }
+}
+template<class T, class U, class V, class W, class Functor>
+void transform(const int m, const int n, const T* A, const int ldA,
+    const U* B, const int ldB, const V* C, const int ldC, W* D, const int ldD,
+    Functor f) {
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,
+      ldD, f);
+}
+
+/*
+ * Matrix ternary transform with two outputs.
+ */
+template<class T, class U, class V, class W, class X, class Functor>
+__global__ void kernel_transform(const int m, const int n, const T* A,
+    const int ldA, const U* B, const int ldB, const V* C, const int ldC,
+    W* D, const int ldD, X* E, const int ldE, Functor f) {
+  auto i = blockIdx.x*blockDim.x + threadIdx.x;
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    auto pair = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC]);
+    D[i + j*ldD] = pair.first;
+    E[i + j*ldE] = pair.second;
+  }
+}
+template<class T, class U, class V, class W, class X, class Functor>
+void transform(const int m, const int n, const T* A, const int ldA,
+    const U* B, const int ldB, const V* C, const int ldC, W* D, const int ldD,
+    X* E, const int ldE, Functor f) {
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,
+      ldD, E, ldE, f);
+}
+
+/*
  * Matrix quaternary transform.
  */
 template<class T, class U, class V, class W, class X, class Functor>

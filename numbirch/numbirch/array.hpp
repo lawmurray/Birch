@@ -18,3 +18,4 @@
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
 #include "numbirch/random.hpp"
+#include "numbirch/type.hpp"

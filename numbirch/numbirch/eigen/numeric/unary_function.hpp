@@ -17,26 +17,26 @@ void abs(const int m, const int n, const T* A, const int ldA, T* B,
   B1.array() = A1.array().abs();
 }
 
-template<class T, class U>
-void acos(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void acos(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().acos();
 }
 
-template<class T, class U>
-void asin(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void asin(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().asin();
 }
 
-template<class T, class U>
-void atan(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void atan(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().atan();
 }
@@ -58,44 +58,56 @@ void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
   B1.noalias() = ldlt.solve(B1.Identity(n, n));
 }
 
-template<class T, class U>
-void cos(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void cos(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().cos();
 }
 
-template<class T, class U>
-void cosh(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void cosh(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().cosh();
 }
 
-template<class T, class U>
-void digamma(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void count(const int m, const int n, const T* A, const int ldA, int* b) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  *b = A1.unaryExpr(count_functor<T>()).sum();
+}
+
+template<class T>
+void diagonal(const T* a, const int n, T* B, const int ldB) {
+  auto B1 = make_eigen_matrix(B, n, n, ldB);
+  B1.noalias() = (*a)*B1.Identity(n, n);
+}
+
+template<class T>
+void digamma(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().digamma();
 }
 
-template<class T, class U>
-void exp(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void exp(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().exp();
 }
 
-template<class T, class U>
-void expm1(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void expm1(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
-  B1.noalias() = A1.unaryExpr(expm1_functor<U>());
+  B1.noalias() = A1.unaryExpr(expm1_functor<T>());
 }
 
 template<class T>
@@ -133,28 +145,36 @@ void ldet(const int n, const T* A, const int ldA, T* b) {
   *b = A1.householderQr().logAbsDeterminant();
 }
 
-template<class T, class U>
-void lgamma(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().lgamma();
 }
 
-template<class T, class U>
-void log(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void log(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().log();
 }
 
-template<class T, class U>
-void log1p(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void log1p(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().log1p();
+}
+
+template<class T>
+void rcp(const int m, const int n, const T* A, const int ldA, T* B,
+    const int ldB) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.noalias() = A1.unaryExpr(rcp_functor<T>());
 }
 
 template<class T>
@@ -173,26 +193,33 @@ void round(const int m, const int n, const T* A, const int ldA, T* B,
   B1.array() = A1.array().round();
 }
 
-template<class T, class U>
-void sin(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void sin(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().sin();
 }
 
-template<class T, class U>
-void sinh(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void single(const int* i, const int n, T* x, const int incx) {
+  auto x1 = make_eigen_vector(x, n, incx);
+  x1.noalias() = x1.Zero(n, 1);
+  x1(*i) = T(1);
+}
+
+template<class T>
+void sinh(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().sinh();
 }
 
-template<class T, class U>
-void sqrt(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void sqrt(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().sqrt();
 }
@@ -203,18 +230,18 @@ void sum(const int m, const int n, const T* A, const int ldA, T* b) {
   *b = A1.sum();
 }
 
-template<class T, class U>
-void tan(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void tan(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().tan();
 }
 
-template<class T, class U>
-void tanh(const int m, const int n, const T* A, const int ldA, U* B,
+template<class T>
+void tanh(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<U>();
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
   B1.array() = A1.array().tanh();
 }

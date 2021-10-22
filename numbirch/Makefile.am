@@ -34,7 +34,7 @@ if ONEAPI
 else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA 
-  AM_CXXFLAGS += -x cu -G -arch=sm_75 -expt-relaxed-constexpr -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result"
+  AM_CXXFLAGS += -x cu -G -arch=sm_75 -expt-relaxed-constexpr -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result" -Xcompiler="-Wno-unknown-pragmas" -Xcompiler="-Wno-deprecated-declarations"
   COMMON_SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \
@@ -98,7 +98,8 @@ nobase_include_HEADERS = \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
   numbirch/numeric.hpp \
-  numbirch/random.hpp
+  numbirch/random.hpp \
+  numbirch/type.hpp
 
 noinst_HEADERS = \
   numbirch/cuda/numeric/binary_function.hpp \

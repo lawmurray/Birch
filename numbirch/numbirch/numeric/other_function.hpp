@@ -9,7 +9,7 @@ namespace numbirch {
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Value type (`double` or `float`).
+ * @tparam T Floating point type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.

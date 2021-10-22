@@ -133,17 +133,6 @@ void cholsolve(const int m, const int n, const T* S, const int ldS, T* X,
 }
 
 template<class T>
-void diagonal(const T* a, const int n, T* B, const int ldB) {
-  ///@todo Implement as single kernel
-  auto B1 = make_dpl_matrix(B, n, n, ldB);
-  auto d = make_dpl_vector(B, n, ldB + 1);  // diagonal
-  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
-      B1.begin(), B1.end(), 0.0);
-  dpl::experimental::fill_async(dpl::execution::make_device_policy(queue),
-      d.begin(), d.end(), *a);
-}
-
-template<class T>
 T dot(const int n, const T* x, const int incx, const T* y, const int incy) {
   auto z = (T*)device_malloc(sizeof(T));
   blas::dot(queue, n, x, incx, y, incy, z);
