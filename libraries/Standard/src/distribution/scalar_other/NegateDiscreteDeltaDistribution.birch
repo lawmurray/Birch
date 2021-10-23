@@ -11,20 +11,32 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
    */
   p:BoundedDiscreteDistribution <- p;
 
-  override function simulate() -> Integer {
+  override function supportsLazy() -> Boolean {
+    return p.supportsLazy();
+  }
+
+  override function simulate() -> Integer! {
     return -p.simulate();
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function simulateLazy() -> Integer!? {
+    return -p.simulateLazy()!;
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
     return p.logpdf(-x);
   }
 
-  override function update(x:Integer) -> Delay? {
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return p.logpdfLazy(box(-x));
+  }
+
+  override function update(x:Integer!) -> Delay? {
     return Delta(-x);
   }
 
-  override function lower() -> Integer? {
-    let l <- p.upper();
+  override function lower() -> Integer!? {
+    let l <- p.upper()!;
 		if l? {
 			return -l!;
 		} else {
@@ -32,8 +44,8 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
 		}
   }
   
-  override function upper() -> Integer? {
-    let l <- p.lower();
+  override function upper() -> Integer!? {
+    let l <- p.lower()!;
 		if l? {
 			return -l!;
 		} else {

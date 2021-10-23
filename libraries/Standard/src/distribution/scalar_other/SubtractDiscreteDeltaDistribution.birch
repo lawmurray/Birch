@@ -39,44 +39,44 @@ final class SubtractDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
    */
   Z:Real <- 0.0;
 
-  function enumerate(x:Integer) {
-    if !this.x? || this.x! != x {
-      l <- max(p.lower()!, x + q.lower()!);
-      u <- min(p.upper()!, x + q.upper()!);
+  function enumerate(x:Integer!) {
+    if !this.x? || this.x! != x! {
+      l <- max(p.lower()!!, x! + q.lower()!!);
+      u <- min(p.upper()!!, x! + q.upper()!!);
       Z <- -inf;
       if l <= u {
         /* distribution over possible pairs that produce the given sum */
         z <- vector_lambda(\(i:Integer) -> {
               let n <- l + i - 1;
-              return p.logpdf(n) + q.logpdf(n - x);
+              return p.logpdf(n)! + q.logpdf(n - x!)!;
             }, u - l + 1);
         Z <- log_sum_exp(z);
         z <- norm_exp(z);
       }
-      this.x <- x;
+      this.x <- x!;
     }
   }
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return p.simulate() - q.simulate();
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     enumerate(x);
     return Z;
   }
 
-  override function update(x:Integer) -> Delay? {
+  override function update(x:Integer!) -> Delay? {
     enumerate(x);
-    return construct<SubtractDiscreteConstrainedDistribution>(z, l, x);
+    return construct<SubtractDiscreteConstrainedDistribution>(z, l, x!);
   }
   
-  override function lower() -> Integer? {
-    return p.lower()! - q.upper()!;
+  override function lower() -> Integer!? {
+    return p.lower()!! - q.upper()!!;
   }
   
-  override function upper() -> Integer? {
-    return p.upper()! - q.lower()!;
+  override function upper() -> Integer!? {
+    return p.upper()!! - q.lower()!!;
   }
 }
 

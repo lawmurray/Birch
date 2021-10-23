@@ -43,19 +43,19 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
         value(a), value(ν), value(Λ), value(c), value(α), value(β),
         value(s2));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
         peek(a), peek(ν), peek(Λ), peek(c), peek(α), peek(β), peek(s2));
         
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x,
         value(a), value(ν), value(Λ), value(c), value(α), value(β),
         value(s2));
@@ -66,7 +66,7 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
         ν, Λ, c, α, β, s2));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_linear_multivariate_normal_inverse_gamma_gaussian(x,
         value(a), value(ν), value(Λ), value(c), value(α), value(β),
         value(s2));
@@ -77,12 +77,12 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
         ν, Λ, c, α, β, s2);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_linear_multivariate_normal_inverse_gamma_gaussian(x, value(a),
         value(ν), value(Λ), value(c), value(α), value(β), value(s2));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_linear_multivariate_normal_inverse_gamma_gaussian(P,
         value(a), value(ν), value(Λ), value(c), value(α), value(β),
         value(s2));
@@ -229,16 +229,17 @@ function Gaussian<Arg>(μ:Dot<Arg,Random<Real[_]>>,
  * Simulate a Gaussian distribution with a linear transformation of a
  * multivariate linear normal inverse-gamma prior.
  *
- * - a: Scale.
- * - ν: Precision times mean.
- * - Λ: Precision.
+ * - a: Scale vector.
+ * - ν: Precision times mean vector.
+ * - Λ: Precision matrix.
  * - c: Offset.
  * - α: Variance shape.
  * - β: Variance scale.
  * - s2: Likelihood variance scale.
  */
-function simulate_linear_multivariate_normal_inverse_gamma_gaussian(a:Real[_],
-    ν:Real[_], Λ:Real[_,_], c:Real, α:Real, β:Real, s2:Real) -> Real {
+function simulate_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, c:Arg4, α:Arg5, β:Arg6,
+    s2:Arg7) -> {
   let S <- cholinv(Λ);
   return simulate_student_t(2.0*α, dot(a, S*ν)! + c,
       (β/α)*(s2 + dot(a, S*a)!));
@@ -249,9 +250,9 @@ function simulate_linear_multivariate_normal_inverse_gamma_gaussian(a:Real[_],
  * prior with linear transformation.
  *
  * - x: The variate.
- * - a: Scale.
- * - ν: Precision times mean.
- * - Λ: Precision.
+ * - a: Scale vector.
+ * - ν: Precision times mean vector.
+ * - Λ: Precision matrix.
  * - c: Offset.
  * - α: Variance shape.
  * - β: Variance scale.
@@ -312,9 +313,9 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,
  *
  * Return: the cumulative probability.
  */
-function cdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
-    a:Real[_], ν:Real[_], Λ:Real[_,_], c:Real, α:Real, β:Real, s2:Real) ->
-    Real {
+function cdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
+    Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5, α:Arg6,
+    β:Arg7, s2:Arg8) -> {
   let S <- cholinv(Λ);
   let μ <- S*ν;
   return cdf_student_t(x, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 + dot(a, S*a)!));
@@ -335,9 +336,9 @@ function cdf_linear_multivariate_normal_inverse_gamma_gaussian(x:Real,
  *
  * Return: the quantile.
  */
-function quantile_linear_multivariate_normal_inverse_gamma_gaussian(P:Real,
-    a:Real[_], ν:Real[_], Λ:Real[_,_], c:Real, α:Real, β:Real, s2:Real) ->
-    Real {
+function quantile_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,
+    α:Arg6, β:Arg7, s2:Arg8) -> {
   let S <- cholinv(Λ);
   let μ <- S*ν;
   return quantile_student_t(P, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 +

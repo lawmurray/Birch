@@ -1,16 +1,16 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/students_t.hpp>
 }}
 
 /**
  * Student's $t$-distribution.
  */
-final class StudentDistribution<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) <
+final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     Distribution<Real> {
   /**
    * Degrees of freedom.
    */
-  ν:Arg1 <- ν;
+  k:Arg1 <- k;
 
   /**
    * Location parameter.
@@ -26,33 +26,33 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) <
     return true;
   }
 
-  override function simulate() -> Real {
-    return simulate_student_t(value(ν), value(μ), value(σ2));
+  override function simulate() -> Real! {
+    return simulate_student_t(value(k), value(μ), value(σ2));
   }
 
-  override function simulateLazy() -> Real? {
-    return simulate_student_t(peek(ν), peek(μ), peek(σ2));
+  override function simulateLazy() -> Real!? {
+    return simulate_student_t(peek(k), peek(μ), peek(σ2));
   }
   
-  override function logpdf(x:Real) -> Real {
-    return logpdf_student_t(x, value(ν), value(μ), value(σ2));
+  override function logpdf(x:Real!) -> Real! {
+    return logpdf_student_t(x, value(k), value(μ), value(σ2));
   }
 
   override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_student_t(x, ν, μ, σ2));
+    return box(logpdf_student_t(x, k, μ, σ2));
   }
 
-  override function cdf(x:Real) -> Real? {
-    return cdf_student_t(x, value(ν), value(μ), value(σ2));
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_student_t(x, value(k), value(μ), value(σ2));
   }
 
-  override function quantile(P:Real) -> Real? {
-    return quantile_student_t(P, value(ν), value(μ), value(σ2));
+  override function quantile(P:Real!) -> Real!? {
+    return quantile_student_t(P, value(k), value(μ), value(σ2));
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Student");
-    buffer.set("ν", value(ν));
+    buffer.set("k", value(k));
     buffer.set("μ", value(μ));
     buffer.set("σ2", value(σ2));
   }
@@ -61,15 +61,15 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) <
 /**
  * Create Student's $t$-distribution.
  */
-function Student<Arg1,Arg2,Arg3>(ν:Arg1, μ:Arg2, σ2:Arg3) -> {
-  return construct<StudentDistribution<Arg1,Arg2,Arg3>>(ν, μ, σ2);
+function Student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return construct<StudentDistribution<Arg1,Arg2,Arg3>>(k, μ, σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student<Arg>(ν:Arg) -> {
-  return Student(ν, 0.0, 1.0);
+function Student<Arg>(k:Arg) -> {
+  return Student(k, 0.0, 1.0);
 }
 
 /*
@@ -77,10 +77,9 @@ function Student<Arg>(ν:Arg) -> {
  *
  * - k: Degrees of freedom.
  */
-function simulate_student_t(k:Real) -> Real {
-  assert 0.0 < k;
+function simulate_student_t<Arg1>(k:Arg1) -> {
   cpp{{
-  return std::student_t_distribution<Real>(k)(rng);
+  return std::student_t_distribution<Real>(wait(k))(rng);
   }}
 }
 
@@ -89,10 +88,10 @@ function simulate_student_t(k:Real) -> Real {
  *
  * - k: Degrees of freedom.
  * - μ: Location.
- * - v: Scale.
+ * - σ2: Squared scale.
  */
-function simulate_student_t(k:Real, μ:Real, v:Real) -> Real {
-  return μ + sqrt(v)*simulate_student_t(k);
+function simulate_student_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return μ + sqrt(σ2)*simulate_student_t(k);
 }
 
 /*
@@ -115,16 +114,16 @@ function logpdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
  * - x: The variate.
  * - k: Degrees of freedom.
  * - μ: Location.
- * - v: Scale.
+ * - σ2: Scale.
  *
  * Returns: the log probability density.
  */
 function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
-    v:Arg4) -> {
-  let z <- (x - μ)/sqrt(v);
+    σ2:Arg4) -> {
+  let z <- (x - μ)/sqrt(σ2);
   let a <- 0.5*(k + 1.0);
   let b <- 0.5*k;
-  return lgamma(a) - lgamma(b) - 0.5*log(π*k*v) - a*log1p(z*z/k);
+  return lgamma(a) - lgamma(b) - 0.5*log(π*k*σ2) - a*log1p(z*z/k);
 }
 
 /*
@@ -135,11 +134,8 @@ function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
  *
  * Return: the cumulative probability.
  */
-function cdf_student_t(x:Real, ν:Real) -> Real {
-  assert 0.0 < ν;
-  let t <- 0.5*x/sqrt(x*x + ν) + 0.5;
-  let prob <- ibeta(0.5*ν, 0.5*ν, t);
-  return prob;
+function cdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
+  return ibeta(0.5*k, 0.5*k, 0.5*x/sqrt(pow(x, 2.0) + k) + 0.5);
 }
 
 /*
@@ -152,8 +148,8 @@ function cdf_student_t(x:Real, ν:Real) -> Real {
  *
  * Return: the cumulative probability.
  */
-function cdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < σ2;
+function cdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
+    σ2:Arg4) -> {
   return cdf_student_t((x - μ)/sqrt(σ2), k);
 }
 
@@ -161,15 +157,14 @@ function cdf_student_t(x:Real, k:Real, μ:Real, σ2:Real) -> Real {
  * Quantile of a Student's $t$ distribution.
  *
  * - P: The cumulative probability.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  *
  * Return: the quantile.
  */
-function quantile_student_t(P:Real, ν:Real) -> Real {
-  assert 0.0 < ν;
+function quantile_student_t<Arg1,Arg2>(P:Arg1, k:Arg2) -> {
   cpp{{
-  return boost::math::quantile(boost::math::students_t_distribution<Real>(ν),
-      P);
+  return boost::math::quantile(boost::math::students_t_distribution<Real>(
+      wait(k)), wait(P));
   }}
 }
 
@@ -177,13 +172,13 @@ function quantile_student_t(P:Real, ν:Real) -> Real {
  * Quantile of a Student's $t$ distribution with location and scale.
  *
  * - P: The cumulative probability.
- * - ν: Degrees of freedom.
+ * - k: Degrees of freedom.
  * - μ: Location.
  * - σ2: Squared scale.
  *
  * Return: the quantile.
  */
-function quantile_student_t(P:Real, ν:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < σ2;
-  return quantile_student_t(P, ν)*sqrt(σ2) + μ;
+function quantile_student_t<Arg1,Arg2,Arg3,Arg4>(P:Arg1, k:Arg2, μ:Arg3,
+    σ2:Arg4) -> {
+  return quantile_student_t(P, k)*sqrt(σ2) + μ;
 }

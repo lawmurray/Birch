@@ -6,14 +6,14 @@
  */
 final class MatrixSplitExpression<Value,Form>(x:Value[_,_], f:Form) <
     BoxedForm<Value[_,_],Form>(x, f) {
-  function grad(d:Value!, i:Integer, j:Integer) {
+  function grad<Gradient>(d:Gradient, i:Integer, j:Integer) {
     if this.f? {
       if this.visitCount == 0 {
         assert !this.d?;
         this.d <- matrix<Value>(0, this.rows(), this.columns());
       }
       assert this.d?;
-      this.d![i,j] <- this.d![i,j] + d;
+      this.d![i,j] <- this.d![i,j] + wait(d);
       this.visitCount <- this.visitCount + 1;
       if this.visitCount >= this.linkCount {
         assert this.visitCount == this.linkCount || this.linkCount == 0;
@@ -66,8 +66,8 @@ function eval<Value,Form>(x:MatrixSplitExpression<Value,Form>) -> Value[_,_] {
   return x.eval();
 }
 
-function grad<Value,Form>(x:MatrixSplitExpression<Value,Form>,
-    d:Value!, i:Integer, j:Integer) {
+function grad<Value,Form,Gradient>(x:MatrixSplitExpression<Value,Form>,
+    d:Gradient, i:Integer, j:Integer) {
   x.grad(d, i, j);
 }
 

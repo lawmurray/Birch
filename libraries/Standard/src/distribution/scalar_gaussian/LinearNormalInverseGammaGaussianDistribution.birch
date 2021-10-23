@@ -43,17 +43,17 @@ final class LinearNormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_linear_normal_inverse_gamma_gaussian(value(a), value(ν),
         value(λ), value(α), value(β), value(c), value(s2));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_linear_normal_inverse_gamma_gaussian(peek(a), peek(ν),
         peek(λ), peek(α), peek(β), peek(c), peek(s2));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_linear_normal_inverse_gamma_gaussian(x, value(a), value(ν),
         value(λ), value(α), value(β), value(c), value(s2));
   }
@@ -63,7 +63,7 @@ final class LinearNormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         c, s2));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_linear_normal_inverse_gamma_gaussian(x, value(a), value(ν),
         value(λ), value(α), value(β), value(c), value(s2));
   }
@@ -73,12 +73,12 @@ final class LinearNormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         c, s2);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_linear_normal_inverse_gamma_gaussian(x, value(a), value(ν),
         value(λ), value(α), value(β), value(c), value(s2));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_linear_normal_inverse_gamma_gaussian(P, value(a),
         value(ν), value(λ), value(α), value(β), value(c), value(s2));
   }
@@ -226,8 +226,9 @@ function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>,
  * - c: Offset.
  * - s2: Likelihood variance scale.
  */
-function simulate_linear_normal_inverse_gamma_gaussian(a:Real, ν:Real,
-    λ:Real, α:Real, β:Real, c:Real, s2:Real) -> Real {
+function simulate_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
+    s2:Arg7) -> {
   return simulate_student_t(2.0*α, a*ν/λ + c, (β/α)*(s2 + a*a/λ));
 }
 
@@ -295,8 +296,9 @@ function update_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
  *
  * Return: the cumulative probability.
  */
-function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real, ν:Real,
-    λ:Real, α:Real, β:Real, c:Real, s2:Real) -> Real {
+function cdf_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
+    Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, λ:Arg4, α:Arg5, β:Arg6, c:Arg7,
+    s2:Arg8) -> {
   return cdf_student_t(x, 2.0*α, a*ν/λ + c, (β/α)*(s2 + a*a/λ));
 }
 
@@ -315,7 +317,8 @@ function cdf_linear_normal_inverse_gamma_gaussian(x:Real, a:Real, ν:Real,
  *
  * Return: the quantile.
  */
-function quantile_linear_normal_inverse_gamma_gaussian(P:Real, a:Real, ν:Real,
-    λ:Real, α:Real, β:Real, c:Real, s2:Real) -> Real {
+function quantile_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, λ:Arg4, α:Arg5, β:Arg6,
+    c:Arg7, s2:Arg8) -> {
   return quantile_student_t(P, 2.0*α, a*ν/λ + c, (β/α)*(s2 + a*a/λ));
 }

@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/inverse_gamma.hpp>
 }}
 
@@ -20,15 +20,15 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_inverse_gamma(value(α), value(β));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_inverse_gamma(peek(α), peek(β));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_inverse_gamma(x, value(α), value(β));
   }
 
@@ -36,15 +36,15 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
     return box(logpdf_inverse_gamma(x, α, β));
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_inverse_gamma(x, value(α), value(β));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_inverse_gamma(P, value(α), value(β));
   }
 
-  override function lower() -> Real? {
+  override function lower() -> Real!? {
     return 0.0;
   }
   
@@ -76,7 +76,7 @@ function InverseGamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
  * - α: Shape.
  * - β: Scale.
  */
-function simulate_inverse_gamma(α:Real, β:Real) -> Real {
+function simulate_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return 1.0/simulate_gamma(α, 1.0/β);
 }
 
@@ -103,9 +103,7 @@ function logpdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
-  assert 0.0 < α;
-  assert 0.0 < β;
+function cdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return if_then_else(0.0 < x, gamma_q(α, β/x), 0.0);
 }
 
@@ -118,15 +116,9 @@ function cdf_inverse_gamma(x:Real, α:Real, β:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_inverse_gamma(P:Real, α:Real, β:Real) -> Real {
-  assert 0.0 < α;
-  assert 0.0 < β;
-  if P == 0.0 {
-    return 0.0;
-  } else {
-    cpp{{
-    return boost::math::quantile(boost::math::inverse_gamma_distribution<
-        Real>(α, β), P);
-    }}
-  }
+function quantile_inverse_gamma<Arg1,Arg2,Arg3>(P:Arg1, α:Arg2, β:Arg3) -> {
+  cpp{{
+  return boost::math::quantile(boost::math::inverse_gamma_distribution<
+      Real>(wait(α), wait(β)), wait(P));
+  }}
 }

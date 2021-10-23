@@ -22,15 +22,15 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:A
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_gaussian_gaussian(value(μ), value(σ2), value(s2));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_gaussian_gaussian(peek(μ), peek(σ2), peek(s2));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
   }
 
@@ -38,7 +38,7 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:A
     return box(logpdf_gaussian_gaussian(x, μ, σ2, s2));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
   }
 
@@ -46,11 +46,11 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:A
     return update_gaussian_gaussian(x, μ, σ2, s2);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_gaussian_gaussian(P, value(μ), value(σ2), value(s2));
   }
 
@@ -85,12 +85,12 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
 /*
  * Simulate a Gaussian variate with Gaussian prior on the mean.
  *
- * - x: The variate.
  * - μ: Prior mean.
  * - σ2: Prior variance.
  * - s2: Variance.
  */
-function simulate_gaussian_gaussian(μ:Real, σ2:Real, s2:Real) -> Real {
+function simulate_gaussian_gaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2,
+    s2:Arg3) -> {
   return simulate_gaussian(μ, σ2 + s2);
 }
 
@@ -119,7 +119,8 @@ function logpdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
  *
  * Return: the cumulative probability.
  */
-function cdf_gaussian_gaussian(x:Real, μ:Real, σ2:Real, s2:Real) -> Real {
+function cdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2, σ2:Arg3,
+    s2:Arg4) -> {
   return cdf_gaussian(x, μ, σ2 + s2);
 }
 
@@ -133,8 +134,8 @@ function cdf_gaussian_gaussian(x:Real, μ:Real, σ2:Real, s2:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_gaussian_gaussian(P:Real, μ:Real, σ2:Real, s2:Real) ->
-    Real {
+function quantile_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
+    σ2:Arg3, s2:Arg4) -> {
   return quantile_gaussian(P, μ, σ2 + s2);
 }
 

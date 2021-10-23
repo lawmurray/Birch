@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/gamma.hpp>
 }}
 
@@ -20,15 +20,15 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_gamma(value(k), value(θ));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_gamma(peek(k), peek(θ));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_gamma(x, value(k), value(θ));
   }
 
@@ -36,15 +36,15 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
     return box(logpdf_gamma(x, k, θ));
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_gamma(x, value(k), value(θ));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_gamma(P, value(k), value(θ));
   }
 
-  override function lower() -> Real? {
+  override function lower() -> Real!? {
     return 0.0;
   }
 
@@ -76,11 +76,9 @@ function Gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
  * - k: Shape.
  * - θ: Scale.
  */
-function simulate_gamma(k:Real, θ:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < θ;
+function simulate_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   cpp{{
-  return std::gamma_distribution<Real>(k, θ)(rng);
+  return std::gamma_distribution<Real>(wait(k), wait(θ))(rng);
   }}
 }
 
@@ -107,9 +105,7 @@ function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < θ;
+function cdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   return if_then_else(0.0 < x, gamma_p(k, x/θ), 0.0);
 }
 
@@ -122,11 +118,9 @@ function cdf_gamma(x:Real, k:Real, θ:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_gamma(P:Real, k:Real, θ:Real) -> Real {
-  assert 0.0 < k;
-  assert 0.0 < θ;
+function quantile_gamma<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, θ:Arg3) -> {
   cpp{{
-  return boost::math::quantile(boost::math::gamma_distribution<Real>(k, θ),
-      P);
+  return boost::math::quantile(boost::math::gamma_distribution<Real>(wait(k),
+      wait(θ)), wait(P));
   }}
 }

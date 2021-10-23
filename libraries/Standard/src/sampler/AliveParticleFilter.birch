@@ -43,7 +43,7 @@ class AliveParticleFilter < ParticleFilter {
           h.w <- 0.0;
           x[n].m.read(t, input);
           x[n].m.simulate(t);
-          w[n] <- h.w;
+          w[n] <- h.w!;
         }
         if !isfinite(w[n]) {
           a[n] <- global.ancestor(w0);  // try again

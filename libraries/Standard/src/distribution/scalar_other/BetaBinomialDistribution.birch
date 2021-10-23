@@ -22,15 +22,15 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
     return true;
   }
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return simulate_beta_binomial(value(n), value(α), value(β));
   }
   
-  override function simulateLazy() -> Integer? {
+  override function simulateLazy() -> Integer!? {
     return simulate_beta_binomial(peek(n), peek(α), peek(β));
   }
   
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     return logpdf_beta_binomial(x, value(n), value(α), value(β));
   }
 
@@ -38,7 +38,7 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
     return box(logpdf_beta_binomial(x, n, α, β));
   }
 
-  override function update(x:Integer) -> Delay? {
+  override function update(x:Integer!) -> Delay? {
     return update_beta_binomial(x, value(n), value(α), value(β));
   }
 
@@ -46,15 +46,15 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
     return update_beta_binomial(x, n, α, β);
   }
 
-  override function cdf(x:Integer) -> Real? {
+  override function cdf(x:Integer!) -> Real!? {
     return cdf_beta_binomial(x, value(n), value(α), value(β));
   }
   
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
     return 0;
   }
   
-  override function upper() -> Integer? {
+  override function upper() -> Integer!? {
     return value(n);
   }
 }
@@ -85,7 +85,7 @@ function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
  * - α: First shape.
  * - β: Second shape.
  */
-function simulate_beta_binomial(n:Integer, α:Real, β:Real) -> Integer {
+function simulate_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
   assert 0 <= n;
   assert 0.0 < α;
   assert 0.0 < β;
@@ -132,7 +132,8 @@ function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
  *
  * Return: the cumulative probability.
  */
-function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real {
+function cdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
+    β:Arg4) -> {
   let P <- 0.0;
   for i in 0..min(n, x) {
     P <- P + exp(logpdf_beta_binomial(i, n, α, β));

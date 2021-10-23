@@ -22,15 +22,15 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return true;
   }
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return simulate_beta_negative_binomial(value(k), value(α), value(β));
   }
 
-  override function simulateLazy() -> Integer? {
+  override function simulateLazy() -> Integer!? {
     return simulate_beta_negative_binomial(peek(k), peek(α), peek(β));
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     return logpdf_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
@@ -38,7 +38,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return box(logpdf_beta_negative_binomial(x, k, α, β));
   }
 
-  override function update(x:Integer) -> Delay? {
+  override function update(x:Integer!) -> Delay? {
     return update_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
@@ -46,7 +46,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return update_beta_negative_binomial(x, k, α, β);
   }
   
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
     return 0;
   }
 }
@@ -77,7 +77,8 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) -> Distribution<Integer
  * - α: Shape.
  * - β: Shape.
  */
-function simulate_beta_negative_binomial(k:Integer, α:Real, β:Real) -> Integer {
+function simulate_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
   assert 0.0 < α;
   assert 0.0 < β;
   assert 0 < k;

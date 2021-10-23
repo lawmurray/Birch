@@ -1,0 +1,48 @@
+struct LFact<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
+}
+
+function value<Middle>(x:LFact<Middle>) -> {
+  return lfact(value(x.m));
+}
+
+function peek<Middle>(x:LFact<Middle>) -> {
+  return lfact(peek(x.m));
+}
+
+function eval<Middle>(x:LFact<Middle>) -> {
+  return lfact(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) {
+  return grad(x.m, d*lfact_grad(d, peek(x.m)));
+}
+
+hpp{{
+namespace birch {
+/**
+ * Logarithm of the factorial function.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+LFact<Middle> lfact(const Middle& m) {
+  return construct<LFact<Middle>>(m);
+}
+
+/**
+ * Logarithm of the factorial function.
+ */
+template<class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
+auto lfact(const T& x) {
+  return numbirch::lfact<Real>(x);
+}
+}
+}}
+
+/*
+ * Gradient of `lfact()`.
+ */
+function lfact_grad<Gradient,Type>(d:Gradient, x:Type) -> {
+  cpp{{
+  return numbirch::lfact_grad(d, x);
+  }}
+}

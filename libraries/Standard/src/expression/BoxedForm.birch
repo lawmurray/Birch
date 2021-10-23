@@ -5,131 +5,31 @@
  * - Value: Result type.
  * - Form: Form form.
  */
-class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value> {
+class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value>(x, false) {
   /**
    * Expression form.
    */
   f:Form? <- f;
 
-  /**
-   * Memoized result.
-   */
-  x:Value! <- x;
-
-  /**
-   * Accumulated upstream gradient.
-   */
-  d:Value!?;
-
-  /**
-   * Generation label.
-   */
-  gen:Integer <- 0;
-
-  /**
-   * Maximum generation label with which constant(Integer) has been called.
-   * This is used to truncate recursions.
-   */
-  genMax:Integer <- 0;
-
-  /**
-   * Number of times `link()` has been called.
-   */
-  linkCount:Integer <- 0;
-
-  /**
-   * Number of times `eval()` or `grad()` has been called. Used to obtain
-   * pre- and post-order traversals of the expression graph.
-   */
-  visitCount:Integer <- 0;
-
-  final override function isRandom() -> Boolean {
-    return false;
+  final override function doEval() {
+    this.x <- global.eval(f!);
   }
 
-  final override function isConstant() -> Boolean {
-    return !f?;
+  final override function doGrad() {
+    global.grad(f!, this.d!);
   }
 
-  final override function rows() -> Integer {
-    return global.rows(x);
-  }
-  
-  final override function columns() -> Integer {
-    return global.columns(x);
+  final override function doLabel(gen:Integer) {
+    global.label(f!, this.gen);
   }
 
-  final override function peek() -> Value! {
-    return x;
+  final override function doConstant(gen:Integer) {
+    global.constant(f!, this.gen);
   }
 
-  final override function eval() -> Value! {
-    assert !d?;
-    if f? {
-      if visitCount == 0 {
-        x <- global.eval(f!);
-      }
-      visitCount <- visitCount + 1;
-      if visitCount >= linkCount {
-        assert visitCount == linkCount || linkCount == 0;
-        visitCount <- 0;  // reset for next time
-      }
-    }
-    return x;
-  }
-
-  final override function grad(d:Value!) {
-    if f? {
-      if visitCount == 0 {
-        assert !this.d?;
-        this.d <- d;  // start accumulation
-      } else {
-        assert this.d?;
-        this.d <- this.d! + d;
-      }
-      visitCount <- visitCount + 1;
-      if visitCount >= linkCount {
-        assert visitCount == linkCount || linkCount == 0;
-        global.grad(f!, this.d!);  // upstream gradients accumulated
-        this.d <- nil;  // clear intermediate gradients to save memory
-        visitCount <- 0;  // reset for next time
-      }
-    }
-  }
-
-  final override function link() {
-    assert visitCount == 0;
-    linkCount <- linkCount + 1;
-  }
-
-  final override function label(gen:Integer) {
-    if f? && this.gen == 0 {
-      this.gen <- gen;
-      global.label(f!, gen);
-    }
-  }
-
-  final override function constant(gen:Integer) {
-    if f? && gen > genMax {
-      genMax <- gen;
-      if this.gen < gen {
-        constant();
-      } else {
-        global.constant(f!, gen);
-      }
-    }
-  }
-
-  final override function constant() {
-    if f? {
-      global.constant(f!);
-      f <- nil;
-      d <- nil;
-      gen <- 0;
-      genMax <- 0;
-      linkCount <- 0;
-      visitCount <- 0;
-    }
+  final override function doConstant() {
+    global.constant(f!);
+    f <- nil;
   }
 }
 
@@ -165,7 +65,7 @@ function eval<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
   return x.eval();
 }
 
-function grad<Value,Form>(x:BoxedForm<Value,Form>, d:Value!) {
+function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient) {
   x.grad(d);
 }
 

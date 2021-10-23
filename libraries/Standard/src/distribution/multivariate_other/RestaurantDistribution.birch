@@ -5,7 +5,8 @@
  * likelihood evaluated. The distribution exists only for use as a prior on
  * a Categorical distribution.
  */
-final class RestaurantDistribution<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<Real[_]> {
+final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
+    Distribution<Real[_]> {
   /**
    * Concentration.
    */
@@ -19,15 +20,10 @@ final class RestaurantDistribution<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<R
   /**
    * Number of samples drawn in each component.
    */
-  n:Integer[_];
-
-  /**
-   * Number of samples drawn.
-   */
-  N:Integer <- 0;
+  n:Arg3 <- n;
 
   override function supportsLazy() -> Boolean {
-    return false;
+    return true;
   }
 
   override function simulate() -> Real[_] {
@@ -40,7 +36,7 @@ final class RestaurantDistribution<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<R
     return vector(0.0, 0);
   }
   
-  override function logpdf(x:Real[_]) -> Real {
+  override function logpdf(x:Real[_]) -> Real! {
     assert false;
     return 0.0;
   }
@@ -55,8 +51,8 @@ final class RestaurantDistribution<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<R
   }
 
   override function getRestaurant() -> (Expression<Real>, Expression<Real>,
-      Expression<Integer[_]>, Expression<Integer>)? {
-    return box(α, θ, n, N);
+      Expression<Integer[_]>)? {
+    return box(α, θ, n);
   }
 
   override function write(buffer:Buffer) {
@@ -69,7 +65,23 @@ final class RestaurantDistribution<Arg1,Arg2>(α:Arg1, θ:Arg2) < Distribution<R
 
 /**
  * Create Chinese restaurant process.
+ *
+ * - α: Concentration.
+ * - θ: Strength.
+ * - n: Vector of number of draws of each element.
+ */
+function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
+  return construct<RestaurantDistribution<Arg1,Arg2,Arg3>>(α, θ, n);
+}
+
+/**
+ * Create Chinese restaurant process.
+ *
+ * - α: Concentration.
+ * - θ: Strength.
+ *
+ * Constructs a Chinese restaurant process with a maximum of 256 components.
  */
 function Restaurant<Arg1,Arg2>(α:Arg1, θ:Arg2) -> {
-  return construct<RestaurantDistribution<Arg1,Arg2>>(α, θ);
+  return Restaurant(α, θ, vector(0, 256));
 }

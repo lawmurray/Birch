@@ -15,7 +15,7 @@ function eval<Middle>(x:Log<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:Log<Middle>, d:Gradient) {
-  grad(x.m, d/peek(x.m));
+  grad(x.m, hadamard(d, rcp(peek(x.m))));
 }
 
 hpp{{

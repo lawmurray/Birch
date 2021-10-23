@@ -25,14 +25,14 @@ abstract class Distribution<Value> < Delay {
    *
    * Return: the value.
    */
-  abstract function simulate() -> Value;
+  abstract function simulate() -> Value!;
 
   /**
    * Simulate a value as part of a lazy expression.
    *
    * Return: the value, if supported.
    */
-  function simulateLazy() -> Value? {
+  function simulateLazy() -> Value!? {
     return nil;
   }
 
@@ -43,7 +43,7 @@ abstract class Distribution<Value> < Delay {
    *
    * Return: the log probability density (or mass).
    */
-  abstract function logpdf(x:Value) -> Real;
+  abstract function logpdf(x:Value!) -> Real!;
 
   /**
    * Construct a lazy expression for the log probability density (or mass).
@@ -62,7 +62,7 @@ abstract class Distribution<Value> < Delay {
    *
    * - x: The value.
    */
-  function update(x:Value) -> Delay? {
+  function update(x:Value!) -> Delay? {
     return nil;
   }
 
@@ -82,7 +82,7 @@ abstract class Distribution<Value> < Delay {
    *
    * Return: the probability density (or mass).
    */
-  function pdf(x:Value) -> Real {
+  function pdf(x:Value!) -> Real! {
     return exp(logpdf(x));
   }
 
@@ -93,7 +93,7 @@ abstract class Distribution<Value> < Delay {
    *
    * Return: the cumulative probability, if supported.
    */
-  function cdf(x:Value) -> Real? {
+  function cdf(x:Value!) -> Real!? {
     return nil;
   }
 
@@ -104,21 +104,21 @@ abstract class Distribution<Value> < Delay {
    *
    * Return: the quantile, if supported.
    */
-  function quantile(P:Real) -> Value? {
+  function quantile(P:Real!) -> Value!? {
     return nil;
   }
   
   /**
    * Finite lower bound of the support of this node, if any.
    */
-  function lower() -> Value? {
+  function lower() -> Value!? {
     return nil;
   }
   
   /**
    * Finite upper bound of the support of this node, if any.
    */
-  function upper() -> Value? {
+  function upper() -> Value!? {
     return nil;
   }
 
@@ -219,7 +219,7 @@ abstract class Distribution<Value> < Delay {
   }
 
   function getRestaurant() -> (Expression<Real>, Expression<Real>,
-      Expression<Integer[_]>, Expression<Integer>)? {
+      Expression<Integer[_]>)? {
     return nil;
   }
 

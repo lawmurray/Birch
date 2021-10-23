@@ -10,114 +10,23 @@
  * to update their value. Random objects in the value state are considered
  * *constants*.
  */
-final class Random<Value> < Expression<Value> {  
+final class Random<Value> < Expression<Value>(nil, false) {  
   /**
    * Associated distribution.
    */
   p:Distribution<Value>?;
 
   /**
-   * Variate value, once realized.
-   */
-  x:Value!?;
-
-  /**
-   * Accumulated upstream gradient.
-   */
-  d:Value!?;
-
-  /**
-   * Is this a constant?
-   */
-  flagConstant:Boolean <- false;
-
-  /**
-   * Generation label.
-   */
-  gen:Integer <- 0;
-
-  /**
    * Value assignment.
    */
   operator <- x:Value! {
-    assert !this.x?;
+    assert !this.hasValue();
     prune();
     this.x <- x;
-    if this.p? {
+    if this.hasDistribution() {
       handle_delay_observe(this);
     }
-    constant();
-  }
-
-  override function isRandom() -> Boolean {
-    return true;
-  }
-
-  override function isConstant() -> Boolean {
-    return flagConstant;
-  }
-
-  /**
-   * Does this have a value?
-   */
-  function hasValue() -> Boolean {
-    return x?;
-  }
-  
-  override function rows() -> Integer {
-    eval();
-    return global.rows(x!);
-  }
-
-  override function columns() -> Integer {
-    eval();
-    return global.columns(x!);
-  }
-
-  override function peek() -> Value! {
-    return eval();
-  }
-
-  override function eval() -> Value! {
-    /* when evaluating for the first time, simulate; on subsequent occasions
-     * assumed to be set externally */
-    if !x? {
-      prune();
-      handle_delay_simulate(this);
-    }
-    return x!;
-  }
-
-  override function grad(d:Value!) {
-    if this.d? {
-      this.d <- this.d! + d;  // accumulate
-    } else {
-      this.d <- d;  // start accumulation
-    }
-  }
-
-  override function link() {
-    //
-  }
-  
-  override function label(gen:Integer) {
-    if !flagConstant && this.gen == 0 {
-      this.gen <- gen;
-    }
-  }
-
-  override function constant(gen:Integer) {
-    if !flagConstant && this.gen < gen {
-      constant();
-    }
-  }
-
-  override function constant() {
-    if !flagConstant {
-      p <- nil;
-      d <- nil;
-      flagConstant <- true;
-    }
+    this.constant();
   }
 
   /**
@@ -137,9 +46,26 @@ final class Random<Value> < Expression<Value> {
    */
   function assume(p:Distribution<Value>) {
     assert !this.child?;
-    assert !this.p?;
+    assert !this.hasDistribution();
     p.graft(this);
     this.p <- p;
+  }
+
+  override function isRandom() -> Boolean {
+    return true;
+  }
+
+  override function doEval() {
+    /* when evaluating for the first time, simulate; on subsequent occasions
+     * assumed to be set externally */
+    if !this.hasValue() {
+      prune();
+      handle_delay_simulate(this);
+    }
+  }
+
+  override function doConstant() {
+    p <- nil;
   }
 
   override function graft(node:Delay) {
@@ -161,17 +87,17 @@ final class Random<Value> < Expression<Value> {
 
       /* restore distribution, conditioned on the value of the child */
       this.p <- Distribution<Value>?(this.child!.prune());
-      assert this.p?;
+      assert this.hasDistribution();
       this.child <- nil;
 
       if this.coparent? && this.n == 1 {
         /* restore the $M$-path between this and the co-parent */
-        this.coparent!.graftReplace(this.p!);
-        this.p!.graft(this);
+        this.coparent!.graftReplace(this.getDistribution());
+        this.getDistribution().graft(this);
         this.coparent!.coparent <- nil;
         this.coparent <- nil;
       }
-      assert this.p?;
+      assert this.hasDistribution();
     }
     assert !this.coparent?;
     assert !this.child?;
@@ -179,154 +105,152 @@ final class Random<Value> < Expression<Value> {
   }
 
   /**
-   * Does this have a gradient?
-   */
-  function hasGradient() -> Boolean {
-    return this.d?;
-  }
-
-  /**
-   * Get the gradient of an evaluated function with respect to this random
-   * variable at its current value.
-   */
-  function getGradient() -> Value {
-    assert this.d?;
-    return this.d!;
-  }
-
-  /**
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return this.p? || this.child?;
+    return this.hasDistribution() || this.child?;
   }
 
   /**
    * Get the distribution.
    */
   function getDistribution() -> Distribution<Value> {
-    assert this.p? || this.child?;
+    assert this.hasDistribution() || this.child?;
     prune();
-    assert this.p?;
-    return this.p!;
+    assert this.hasDistribution();
+    return this.getDistribution();
   }
 
   function hasGaussian() -> Boolean {
-    return !this.x? && this.p? && this.p!.isGaussian();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isGaussian();
   }
 
   function getGaussian() -> (Expression<Real>, Expression<Real>) {
-    return this.p!.getGaussian()!;
+    return this.getDistribution().getGaussian()!;
   }
 
   function hasBeta() -> Boolean {
-    return !this.x? && this.p? && this.p!.isBeta();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isBeta();
   }
 
   function getBeta() -> (Expression<Real>, Expression<Real>) {
-    return this.p!.getBeta()!;
+    return this.getDistribution().getBeta()!;
   }
 
   function hasGamma() -> Boolean {
-    return !x? && this.p? && this.p!.isGamma();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isGamma();
   }
 
   function getGamma() -> (Expression<Real>, Expression<Real>) {
-    return this.p!.getGamma()!;
+    return this.getDistribution().getGamma()!;
   }
 
   function hasInverseGamma() -> Boolean {
-    return !x? && this.p? && this.p!.isInverseGamma();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isInverseGamma();
   } 
 
   function getInverseGamma() -> (Expression<Real>, Expression<Real>) {
-    return this.p!.getInverseGamma()!;
+    return this.getDistribution().getInverseGamma()!;
   }
 
   function hasInverseWishart() -> Boolean {
-    return !x? && this.p? && this.p!.isInverseWishart();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isInverseWishart();
   } 
 
   function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>) {
-    return this.p!.getInverseWishart()!;
+    return this.getDistribution().getInverseWishart()!;
   } 
 
   function hasNormalInverseGamma() -> Boolean {
-    return !x? && this.p? && this.p!.isNormalInverseGamma();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isNormalInverseGamma();
   }
 
   function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
       Expression<Real>, Expression<Real>) {
-    return this.p!.getNormalInverseGamma()!;
+    return this.getDistribution().getNormalInverseGamma()!;
   }
 
   function hasDirichlet() -> Boolean {
-    return !x? && this.p? && this.p!.isDirichlet();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isDirichlet();
   }
 
   function getDirichlet() -> Expression<Real[_]> {
-    return this.p!.getDirichlet()!;
+    return this.getDistribution().getDirichlet()!;
   }
 
   function hasRestaurant() -> Boolean {
-    return !x? && this.p? && this.p!.isRestaurant();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isRestaurant();
   }
 
   function getRestaurant() -> (Expression<Real>, Expression<Real>,
-      Expression<Integer[_]>, Expression<Integer>) {
-    return this.p!.getRestaurant()!;
+      Expression<Integer[_]>) {
+    return this.getDistribution().getRestaurant()!;
   }
 
   function hasMultivariateGaussian() -> Boolean {
-    return !x? && this.p? && this.p!.isMultivariateGaussian();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isMultivariateGaussian();
   }
 
   function getMultivariateGaussian() -> (Expression<Real[_]>,
       Expression<Real[_,_]>) {
-    return this.p!.getMultivariateGaussian()!;
+    return this.getDistribution().getMultivariateGaussian()!;
   }
 
   function hasMultivariateNormalInverseGamma() -> Boolean {
-    return !x? && this.p? && this.p!.isMultivariateNormalInverseGamma();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isMultivariateNormalInverseGamma();
   }
 
   function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
       Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
-    return this.p!.getMultivariateNormalInverseGamma()!;
+    return this.getDistribution().getMultivariateNormalInverseGamma()!;
   }
 
   function hasMatrixGaussian() -> Boolean {
-    return !x? && this.p? && this.p!.isMatrixGaussian();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isMatrixGaussian();
   }
 
   function getMatrixGaussian() -> (Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>) {
-    return this.p!.getMatrixGaussian()!;
+    return this.getDistribution().getMatrixGaussian()!;
   }
 
   function hasMatrixNormalInverseWishart() -> Boolean {
-    return !x? && this.p? && this.p!.isMatrixNormalInverseWishart();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isMatrixNormalInverseWishart();
   }
 
   function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
-    return this.p!.getMatrixNormalInverseWishart()!;
+    return this.getDistribution().getMatrixNormalInverseWishart()!;
   }
 
   function hasDiscrete() -> Boolean {
-    return !x? && this.p? && this.p!.isDiscrete();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isDiscrete();
   }
 
   function getDiscrete() -> DiscreteDistribution {
-    return this.p!.getDiscrete()!;
+    return this.getDistribution().getDiscrete()!;
   }
 
   function hasBoundedDiscrete() -> Boolean {
-    return !x? && this.p? && this.p!.isBoundedDiscrete();
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isBoundedDiscrete();
   }
 
   function getBoundedDiscrete() -> BoundedDiscreteDistribution {
-    return this.p!.getBoundedDiscrete()!;
+    return this.getDistribution().getBoundedDiscrete()!;
   }
 
   override function read(buffer:Buffer) {
@@ -334,8 +258,8 @@ final class Random<Value> < Expression<Value> {
   }
 
   override function write(buffer:Buffer) {
-    if hasValue() || hasDistribution() {
-      buffer.set(this.value());
+    if this.hasValue() || this.hasDistribution() {
+      buffer.set(this.value()!);
     } else {
       buffer.setNil();
     }

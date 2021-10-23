@@ -21,7 +21,7 @@ function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {
 hpp{{
 namespace birch {
 /**
- * Sum.
+ * Sum of elements.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
 Sum<Middle> sum(const Middle& m) {
@@ -30,14 +30,14 @@ Sum<Middle> sum(const Middle& m) {
 }
 }}
 
-function grad_sum<Gradient,Type>(d:Gradient, m:Type) {
+function grad_sum<Gradient,Type>(d:Gradient, m:Type) -> {
   return d;
 }
 
-function grad_sum<Gradient,Type>(d:Gradient, m:Type[_]) {
+function grad_sum<Gradient,Type>(d:Gradient, m:Type[_]) -> {
   return vector(d, length(m));
 }
 
-function grad_sum<Gradient,Type>(d:Gradient, m:Type[_,_]) {
+function grad_sum<Gradient,Type>(d:Gradient, m:Type[_,_]) -> {
   return matrix(d, rows(m), columns(m));
 }

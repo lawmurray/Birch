@@ -16,15 +16,15 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distributio
     return true;
   }
 
-  override function simulate() -> Boolean {
+  override function simulate() -> Boolean! {
     return simulate_beta_bernoulli(value(α), value(β));
   }
   
-  override function simulateLazy() -> Boolean? {
+  override function simulateLazy() -> Boolean!? {
     return simulate_beta_bernoulli(peek(α), peek(β));
   }
   
-  override function logpdf(x:Boolean) -> Real {
+  override function logpdf(x:Boolean!) -> Real! {
     return logpdf_beta_bernoulli(x, value(α), value(β));
   }
 
@@ -32,7 +32,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distributio
     return box(logpdf_beta_bernoulli(x, α, β));
   }
 
-  override function update(x:Boolean) -> Delay? {
+  override function update(x:Boolean!) -> Delay? {
     return update_beta_bernoulli(x, value(α), value(β));
   }
 
@@ -66,9 +66,7 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
  * - α: Shape.
  * - β: Shape.
  */
-function simulate_beta_bernoulli(α:Real, β:Real) -> Boolean {
-  assert 0.0 < α;
-  assert 0.0 < β;
+function simulate_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return simulate_bernoulli(α/(α + β));
 }
 

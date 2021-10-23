@@ -1,0 +1,43 @@
+struct Count<Middle>(m:Middle) < Unary<Middle>(m) {
+  //
+}
+
+function value<Middle>(x:Count<Middle>) -> {
+  return count(value(x.m));
+}
+
+function peek<Middle>(x:Count<Middle>) -> {
+  return count(peek(x.m));
+}
+
+function eval<Middle>(x:Count<Middle>) -> {
+  return count(eval(x.m));
+}
+
+function grad<Middle,Gradient>(x:Count<Middle>, d:Gradient) {
+  grad(x.m, grad_count(d, peek(x.m)));
+}
+
+hpp{{
+namespace birch {
+/**
+ * Count of nonzero elements.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Count<Middle> count(const Middle& m) {
+  return construct<Count<Middle>>(m);
+}
+}
+}}
+
+function grad_count<Gradient,Type>(d:Gradient, m:Type) -> {
+  return 0.0;
+}
+
+function grad_count<Gradient,Type>(d:Gradient, m:Type[_]) -> {
+  return vector(0.0, length(m));
+}
+
+function grad_count<Gradient,Type>(d:Gradient, m:Type[_,_]) -> {
+  return matrix(0.0, rows(m), columns(m));
+}

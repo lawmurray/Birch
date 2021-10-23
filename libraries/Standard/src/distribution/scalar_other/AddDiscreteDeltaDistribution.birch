@@ -39,15 +39,15 @@ final class AddDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
    */
   Z:Real <- 0.0;
   
-  function enumerate(x:Integer) {
-    if !this.x? || this.x! != x {
-      l <- max(p.lower()!, x - q.upper()!);
-      u <- min(p.upper()!, x - q.lower()!);
+  function enumerate(x:Integer!) {
+    if !this.x? || this.x! != x! {
+      l <- max(p.lower()!!, x! - q.upper()!!);
+      u <- min(p.upper()!!, x! - q.lower()!!);
       if l <= u {
         /* distribution over possible pairs that produce the given sum */
         z <- vector_lambda(\(i:Integer) -> {
               let n <- l + i - 1;
-              return p.logpdf(n) + q.logpdf(x - n);
+              return p.logpdf(n)! + q.logpdf(x! - n)!;
             }, u - l + 1);
         Z <- log_sum_exp(z);
         z <- norm_exp(z);
@@ -55,30 +55,30 @@ final class AddDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
         Z <- -inf;
         z <- vector(0.0, 0);
       }
-      this.x <- x;
+      this.x <- x!;
     }
   }
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return p.simulate() + q.simulate();
   }
   
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     enumerate(x);
     return Z;
   }
   
-  override function update(x:Integer) -> Delay? {
+  override function update(x:Integer!) -> Delay? {
     enumerate(x);
-    return construct<AddDiscreteConstrainedDistribution>(z, l, x);
+    return construct<AddDiscreteConstrainedDistribution>(z, l, x!);
   }
   
-  override function lower() -> Integer? {
-    return p.lower()! + q.lower()!;
+  override function lower() -> Integer!? {
+    return p.lower()!! + q.lower()!!;
   }
   
-  override function upper() -> Integer? {
-    return p.upper()! + q.upper()!;
+  override function upper() -> Integer!? {
+    return p.upper()!! + q.upper()!!;
   }
 }
 

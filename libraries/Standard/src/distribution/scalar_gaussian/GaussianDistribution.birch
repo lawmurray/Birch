@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/normal.hpp>
 }}
 
@@ -20,15 +20,15 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_gaussian(value(μ), value(σ2));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_gaussian(peek(μ), peek(σ2));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_gaussian(x, value(μ), value(σ2));
   }
 
@@ -36,11 +36,11 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
     return box(logpdf_gaussian(x, μ, σ2));
   }
   
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_gaussian(x, value(μ), value(σ2));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_gaussian(P, value(μ), value(σ2));
   }
 
@@ -72,15 +72,10 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) -> {
  * - μ: Mean.
  * - σ2: Variance.
  */
-function simulate_gaussian(μ:Real, σ2:Real) -> Real {
-  assert 0.0 <= σ2;
-  if σ2 == 0.0 {
-    return μ;
-  } else {
-    cpp{{
-    return std::normal_distribution<Real>(μ, sqrt(σ2))(rng);
-    }}
-  }
+function simulate_gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) -> {
+  cpp{{
+  return std::normal_distribution<Real>(wait(μ), sqrt(wait(σ2)))(rng);
+  }}
 }
 
 /*
@@ -105,9 +100,11 @@ function logpdf_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2, σ2:Arg3) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < σ2;
-  return 0.5*(1.0 + erf((x - μ)/sqrt(σ2*2.0)));
+function cdf_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2, σ2:Arg3) -> {
+  cpp{{
+  return boost::math::cdf(boost::math::normal_distribution<Real>(
+      wait(μ), sqrt(wait(σ2))), wait(x));
+  }}
 }
 
 /*
@@ -119,10 +116,9 @@ function cdf_gaussian(x:Real, μ:Real, σ2:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_gaussian(P:Real, μ:Real, σ2:Real) -> Real {
-  assert 0.0 < σ2;
+function quantile_gaussian<Arg1,Arg2,Arg3>(P:Arg1, μ:Arg2, σ2:Arg3) -> {
   cpp{{
-  return boost::math::quantile(boost::math::normal_distribution<Real>(μ,
-      sqrt(σ2)), P);
+  return boost::math::quantile(boost::math::normal_distribution<Real>(
+      wait(μ), sqrt(wait(σ2))), wait(P));
   }}
 }

@@ -20,20 +20,6 @@ function box(x:Real) -> Expression<Real> {
 }
 
 /**
- * Box a value.
- */
-function box<Type>(x:Type[_]) -> Expression<Type[_]> {
-  return construct<BoxedValue<Type[_]>>(x);
-}
-
-/**
- * Box a value.
- */
-function box<Type>(x:Type[_,_]) -> Expression<Type[_,_]> {
-  return construct<BoxedValue<Type[_,_]>>(x);
-}
-
-/**
  * Box a future.
  */
 function box(x:Boolean!) -> Expression<Boolean> {
@@ -55,14 +41,28 @@ function box(x:Real!) -> Expression<Real> {
 }
 
 /**
+ * Box a value.
+ */
+function box<Type>(x:Type[_]) -> Expression<Type[_]> {
+  return construct<BoxedValue<Type[_]>>(x);
+}
+
+/**
+ * Box a value.
+ */
+function box<Type>(x:Type[_,_]) -> Expression<Type[_,_]> {
+  return construct<BoxedValue<Type[_,_]>>(x);
+}
+
+/**
  * Box a form.
  */
 function box<Form>(f:Form) -> {
   link(f);
   let x <- peek(f);
   cpp{{
-  return construct<BoxedForm<typename std::decay<decltype(x.value())>::type,
-      Form>>(x, f);
+  using Value = typename std::decay<decltype(wait(x))>::type;
+  return Expression<Value>(construct<BoxedForm<Value,Form>>(x, f));
   }}
 }
 

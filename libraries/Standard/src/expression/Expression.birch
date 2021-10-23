@@ -3,6 +3,9 @@
  *
  * - Value: Result type.
  *
+ * - x: Evaluated value of the expression (optional).
+ * - flagConstant: Is this a constant expression?
+ *
  * ```mermaid
  * classDiagram
  *    Expression <|-- Random
@@ -90,26 +93,87 @@
  *     Correctness is the programmer's responsibility when using the advanced
  *     interface.
  */
-abstract class Expression<Value> < Delay {
+abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
+  /**
+   * Memoized result.
+   */
+  x:Value!? <- x;
+
+  /**
+   * Accumulated upstream gradient.
+   */
+  d:Value!? <- nil;
+
+  /**
+   * Generation label.
+   */
+  gen:Integer <- 0;
+
+  /**
+   * Maximum generation label with which constant(Integer) has been called.
+   * This is used to truncate recursions.
+   */
+  genMax:Integer <- 0;
+
+  /**
+   * Number of times `link()` has been called.
+   */
+  linkCount:Integer <- 0;
+
+  /**
+   * Number of times `eval()` or `grad()` has been called. Used to obtain
+   * pre- and post-order traversals of the expression graph.
+   */
+  visitCount:Integer <- 0;
+
+  /**
+   * Is this a constant expression?
+   */
+  flagConstant:Boolean <- flagConstant;
+
   /**
    * Is this a Random expression?
    */
-  abstract function isRandom() -> Boolean;
+  function isRandom() -> Boolean {
+    return false;
+  }
   
   /**
    * Is this a constant expression?
    */
-  abstract function isConstant() -> Boolean;
+  final function isConstant() -> Boolean {
+    return flagConstant;
+  }
+
+  /**
+   * Does this have a value?
+   */
+  final function hasValue() -> Boolean {
+    return x?;
+  }
+
+  /**
+   * Does this have a gradient?
+   */
+  final function hasGradient() -> Boolean {
+    return this.d?;
+  }
 
   /**
    * Number of rows in result.
    */
-  abstract function rows() -> Integer;
+  final function rows() -> Integer {
+    peek();
+    return global.rows(x);
+  }
   
   /**
    * Number of columns in result.
    */
-  abstract function columns() -> Integer;
+  final function columns() -> Integer {
+    peek();
+    return global.columns(x);
+  }
 
   /**
    * Length of result. This is synonymous with `rows()`.
@@ -129,7 +193,10 @@ abstract class Expression<Value> < Delay {
    * Register this object as a dependency of another expression. This is
    * called implicitly when boxing forms.
    */
-  abstract function link();
+  final function link() {
+    assert visitCount == 0;
+    linkCount <- linkCount + 1;
+  }
 
   /**
    * Get result and render constant.
@@ -137,9 +204,8 @@ abstract class Expression<Value> < Delay {
    * Returns: The result.
    */
   final function value() -> Value! {
-    let x <- peek();
     constant();
-    return x;
+    return peek();
   }
 
   /**
@@ -147,12 +213,34 @@ abstract class Expression<Value> < Delay {
    *
    * Returns: The result.
    */
-  abstract function peek() -> Value!;
+  final function peek() -> Value! {
+    if !x? {
+      return eval();
+    } else {
+      return x!;
+    }
+  }
 
   /**
    * Evaluate.
    */
-  abstract function eval() -> Value!;
+  final function eval() -> Value! {
+    assert !d?;
+    if !flagConstant {
+      if visitCount == 0 {
+        doEval();
+      }
+      visitCount <- visitCount + 1;
+      if visitCount >= linkCount {
+        assert visitCount == linkCount || linkCount == 0;
+        visitCount <- 0;  // reset for next time
+      }
+    }
+    return x!;
+  }
+  function doEval() {
+    //
+  }
 
   /**
    * Evaluate gradient of the expression with respect to its arguments.
@@ -197,7 +285,27 @@ abstract class Expression<Value> < Delay {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  abstract function grad(d:Value!);
+  final function grad<Gradient>(d:Gradient) {
+    if !flagConstant {
+      if visitCount == 0 {
+        assert !this.d?;
+        this.d <- d;  // start accumulation
+      } else {
+        assert this.d?;
+        this.d <- this.d! + d;
+      }
+      visitCount <- visitCount + 1;
+      if visitCount >= linkCount {
+        assert visitCount == linkCount || linkCount == 0;
+        doGrad();
+        this.d <- nil;  // clear intermediate gradients to save memory
+        visitCount <- 0;  // reset for next time
+      }
+    }
+  }
+  function doGrad() {
+    //
+  }
 
   /**
    * Label generations.
@@ -207,7 +315,15 @@ abstract class Expression<Value> < Delay {
    * Recursively labels all subexpressions with the given generation,
    * terminating on subexpressions that are already labeled.
    */
-  abstract function label(gen:Integer);
+  final function label(gen:Integer) {
+    if !flagConstant && this.gen == 0 {
+      this.gen <- gen;
+      doLabel(gen);
+    }
+  }
+  function doLabel(gen:Integer) {
+    //
+  }
 
   /**
    * Make older generations constant.
@@ -217,15 +333,40 @@ abstract class Expression<Value> < Delay {
    * Removes subexpressions that are labeled with a generation less than
    * `gen`.
    */
-  abstract function constant(gen:Integer);
+  final function constant(gen:Integer) {
+    if !flagConstant && gen > genMax {
+      genMax <- gen;
+      if this.gen < gen {
+        constant();
+      } else {
+        doConstant(gen);
+      }
+    }
+  }
+  function doConstant(gen:Integer) {
+    //
+  }
 
   /**
    * Render the entire expression constant.
    */
-  abstract function constant();
+  final function constant() {
+    if !flagConstant {
+      d <- nil;
+      gen <- 0;
+      genMax <- 0;
+      linkCount <- 0;
+      visitCount <- 0;
+      flagConstant <- true;
+      doConstant();
+    }
+  }
+  function doConstant() {
+    //
+  }
 
   override function write(buffer:Buffer) {
-    buffer.set(value());
+    buffer.set(value()!);
   }
 }
 
@@ -261,7 +402,7 @@ function eval<Value>(x:Expression<Value>) -> Value! {
   return x.eval();
 }
 
-function grad<Value>(x:Expression<Value>, d:Value!) {
+function grad<Value,Gradient>(x:Expression<Value>, d:Gradient) {
   x.grad(d);
 }
 

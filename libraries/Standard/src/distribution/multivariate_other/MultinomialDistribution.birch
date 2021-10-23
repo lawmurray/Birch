@@ -14,15 +14,24 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function supportsLazy() -> Boolean {
-    return false;
+    return true;
   }
 
   override function simulate() -> Integer[_] {
     return simulate_multinomial(value(n), value(ρ));
   }
-  
-  override function logpdf(x:Integer[_]) -> Real {
+
+  override function simulateLazy() -> Integer[_] {
+    return simulate_multinomial(peek(n), peek(ρ));
+  }
+
+  override function logpdf(x:Integer[_]) -> Real! {
     return logpdf_multinomial(x, value(n), value(ρ));
+  }
+
+  override function logpdfLazy(x:Expression<Integer[_]>) ->
+      Expression<Real>? {
+    return box(logpdf_multinomial(x, n, ρ));
   }
 
   override function write(buffer:Buffer) {
@@ -51,7 +60,7 @@ function Multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
  * numbers. Technical Report 2450, Carnegie Mellon University, Computer
  * Science Department.
  */
-function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
+function simulate_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
   return simulate_multinomial(n, ρ, 1.0);
 }
 
@@ -68,7 +77,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
  * numbers. Technical Report 2450, Carnegie Mellon University, Computer
  * Science Department.
  */
-function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
+function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
   assert length(ρ) > 0;
   assert abs(sum(ρ)! - Z) < 1.0e-6;
 
@@ -106,19 +115,7 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
  *
  * Returns: the log probability mass.
  */
-function logpdf_multinomial(x:Integer[_], n:Integer, ρ:Real[_]) -> Real {
+function logpdf_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   assert length(x) == length(ρ);
-  let m <- 0;
-  let w <- lgamma(n + 1.0);
-  for i in 1..length(x) {
-    assert x[i] >= 0;
-    assert ρ[i] >= 0.0;
-    m <- m + x[i];
-    w <- w + x[i]*log(ρ[i]) - lgamma(x[i] + 1.0);
-  }
-  if m == n {
-    return w;
-  } else {
-    return -inf;
-  }
+  return lfact(n) + sum(hadamard(x, log(ρ)) - lfact(x));
 }

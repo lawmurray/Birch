@@ -102,13 +102,13 @@ function MultivariateGaussian<Arg>(μ:Dot<Arg,Random<Real[_,_]>>,
  * matrix-normal-inverse-Wishart prior.
  *
  * - a: Scale.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - Ψ: Variance shape.
- * - k: Degrees of freedom.
+ * - N: Prior precision times mean matrix.
+ * - Λ: Prior precision matrix.
+ * - Ψ: Prior covariance shape matrix.
+ * - k: Prior degrees of freedom.
  */
-function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-    a:Real[_], N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_], k:Real) -> Real[_] {
+function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
   let S <- cholinv(Λ);
   let M <- S*N;
   let σ2 <- 1.0 + dot(a, S*a)!;
@@ -122,8 +122,8 @@ function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
  * - x: The variate.
  * - a: Scale.
  * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - Ψ: Prior variance shape.
+ * - Λ: Prior precision matrix.
+ * - Ψ: Prior covariance shape matrix.
  * - k: Prior degrees of freedom.
  *
  * Returns: the log probability density.

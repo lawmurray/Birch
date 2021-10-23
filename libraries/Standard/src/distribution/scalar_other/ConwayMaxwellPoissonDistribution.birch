@@ -32,15 +32,15 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
     return true;
   }
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return simulate_conway_maxwell_poisson(value(λ), value(ν), value(n));
   }
 
-  override function simulateLazy() -> Integer? {
+  override function simulateLazy() -> Integer!? {
     return simulate_conway_maxwell_poisson(peek(λ), peek(ν), peek(n));
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     return logpdf_conway_maxwell_poisson(x, value(λ), value(ν), value(n));
   }
 
@@ -48,19 +48,19 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
     return box(logpdf_conway_maxwell_poisson(x, λ, ν, n));
   }
 
-  override function cdf(x:Integer) -> Real? {
+  override function cdf(x:Integer!) -> Real!? {
     return cdf_conway_maxwell_poisson(x, value(λ), value(ν), value(n));
   }
 
-  override function quantile(P:Real) -> Integer? {
+  override function quantile(P:Real!) -> Integer!? {
     return quantile_conway_maxwell_poisson(P, value(λ), value(ν), value(n));
   }
 
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
     return 0;
   }
 
-  override function upper() -> Integer? {
+  override function upper() -> Integer!? {
     return value(n);
   }
 
@@ -86,10 +86,10 @@ function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
  * - ν: Dispersion.
  * - n: Truncation point.
  */
-function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
-    Integer {
+function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
+    n:Arg3) -> {
   let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return simulate_categorical(p, sum(p)!) - 1;
+  return simulate_categorical(p, sum(p)) - 1;
 }
 
 /*
@@ -104,7 +104,7 @@ function simulate_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) ->
  */
 function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  return if_then_else(0 <= x && x <= n, x*log(λ) - ν*lgamma(x + 1) -
+  return if_then_else(0 <= x && x <= n, x*log(λ) - ν*lfact<Real>(x) -
       logz_conway_maxwell_poisson(λ, ν, n), -inf);
 }
 
@@ -118,8 +118,8 @@ function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
  *
  * Return: the cumulative probability.
  */
-function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
-    Real {
+function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
+    ν:Arg3, n:Arg4) -> {
   let p <- p_conway_maxwell_poisson(λ, ν, n);
   return cdf_categorical(x + 1, p, sum(p)!);
 }
@@ -134,8 +134,8 @@ function cdf_conway_maxwell_poisson(x:Integer, λ:Real, ν:Real, n:Integer) ->
  *
  * Return: the quantile.
  */
-function quantile_conway_maxwell_poisson(P:Real, λ:Real, ν:Real,
-    n:Integer) -> Integer {
+function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, λ:Arg2,
+    ν:Arg3, n:Arg4) -> {
   let p <- p_conway_maxwell_poisson(λ, ν, n);
   return quantile_categorical(P, p, sum(p)!) - 1;
 }

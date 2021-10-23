@@ -22,15 +22,15 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_inverse_gamma_gamma(value(k), value(α), value(β));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_inverse_gamma_gamma(peek(k), peek(α), peek(β));
   }
 
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
   }
 
@@ -38,7 +38,7 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
     return box(logpdf_inverse_gamma_gamma(x, k, α, β));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_inverse_gamma_gamma(x, value(k), value(α), value(β));
   }
 
@@ -46,11 +46,11 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
     return update_inverse_gamma_gamma(x, k, α, β);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
   }
 
-  override function lower() -> Real? {
+  override function lower() -> Real!? {
     return 0.0;
   }
 }
@@ -81,7 +81,8 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
  * - α: Shape.
  * - β: Scale.
  */
-function simulate_inverse_gamma_gamma(k:Real, α:Real, β:Real) -> Real {
+function simulate_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
   return simulate_gamma(k, simulate_inverse_gamma(α, β));
 }
 
@@ -126,7 +127,8 @@ function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
  *
  * Return: the cumulative probability.
  */
-function cdf_inverse_gamma_gamma(x:Real, k:Real, α:Real, β:Real) -> Real {
+function cdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, α:Arg3,
+    β:Arg4) -> {
   if x <= 0.0 {
     return 0.0;
   } else {

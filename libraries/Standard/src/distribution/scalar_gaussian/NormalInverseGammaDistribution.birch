@@ -51,16 +51,16 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_normal_inverse_gamma(value(ν), value(λ), value(α),
         value(β));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_normal_inverse_gamma(peek(ν), peek(λ), peek(α), peek(β));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_normal_inverse_gamma(x, value(ν), value(λ), value(α),
         value(β));
   }
@@ -69,7 +69,7 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     return box(logpdf_normal_inverse_gamma(x, ν, λ, α, β));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_normal_inverse_gamma(x, value(ν), value(λ), value(α),
         value(β));
   }
@@ -78,12 +78,12 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
    return update_normal_inverse_gamma(x, ν, λ, α, β);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_normal_inverse_gamma(x, value(ν), value(λ), value(α),
         value(β));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_normal_inverse_gamma(P, value(ν), value(λ), value(α),
         value(β));
   }
@@ -192,8 +192,8 @@ function Gaussian<Arg>(μ:Arg, σ2:Multiply<Random<Real>,Random<Real>>) ->
  * - α: Shape of inverse-gamma on variance.
  * - β: Scale of inverse-gamma on variance.
  */
-function simulate_normal_inverse_gamma(ν:Real, λ:Real, α:Real, β:Real) ->
-    Real {
+function simulate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+    α:Arg3, β:Arg4) -> {
   return simulate_student_t(2.0*α, ν/λ, β/(α*λ));
 }
 
@@ -241,8 +241,8 @@ function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
  *
  * Return: the cumulative probability.
  */
-function cdf_normal_inverse_gamma(x:Real, ν:Real, λ:Real, α:Real, β:Real) ->
-    Real {
+function cdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1, ν:Arg2,
+    λ:Arg3, α:Arg4, β:Arg5) -> {
   return cdf_student_t(x, 2.0*α, ν/λ, β/(α*λ));
 }
 
@@ -257,7 +257,7 @@ function cdf_normal_inverse_gamma(x:Real, ν:Real, λ:Real, α:Real, β:Real) ->
  *
  * Return: the quantile.
  */
-function quantile_normal_inverse_gamma(P:Real, ν:Real, λ:Real, α:Real,
-    β:Real) -> Real {
+function quantile_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(P:Arg1,
+    ν:Arg2, λ:Arg3, α:Arg4, β:Arg5) -> {
   return quantile_student_t(P, 2.0*α, ν/λ, β/(α*λ));
 }

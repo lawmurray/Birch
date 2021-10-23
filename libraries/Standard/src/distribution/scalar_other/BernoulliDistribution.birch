@@ -11,15 +11,15 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
     return true;
   }
 
-  override function simulate() -> Boolean {
+  override function simulate() -> Boolean! {
     return simulate_bernoulli(value(ρ));
   }
   
-  override function simulateLazy() -> Boolean? {
+  override function simulateLazy() -> Boolean!? {
     return simulate_bernoulli(peek(ρ));
   }
   
-  override function logpdf(x:Boolean) -> Real {
+  override function logpdf(x:Boolean!) -> Real! {
     return logpdf_bernoulli(x, value(ρ));
   }
 
@@ -45,10 +45,9 @@ function Bernoulli<Arg>(ρ:Arg) -> {
  *
  * - ρ: Probability of a true result.
  */
-function simulate_bernoulli(ρ:Real) -> Boolean {
-  assert 0.0 <= ρ && ρ <= 1.0;
+function simulate_bernoulli<Arg1>(ρ:Arg1) -> {
   cpp{{
-  return std::bernoulli_distribution(ρ)(rng);
+  return std::bernoulli_distribution(wait(ρ))(rng);
   }}
 }
 

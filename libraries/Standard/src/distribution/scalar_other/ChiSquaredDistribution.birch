@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/chi_squared.hpp>
 }}
 
@@ -7,10 +7,10 @@ cpp{{
  *
  * - ν: Degrees of freedom.
  */
-function simulate_chi_squared(ν:Real) -> Real {
+function simulate_chi_squared<Arg1>(ν:Arg1) -> {
   assert 0.0 < ν;
   cpp{{
-  return std::chi_squared_distribution<Real>(ν)(rng);
+  return std::chi_squared_distribution<Real>(wait(ν))(rng);
   }}
 }
 
@@ -35,7 +35,7 @@ function logpdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_chi_squared(x:Real, ν:Real) -> Real {
+function cdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
   assert 0.0 < ν;
   return gamma_p(0.5*ν, 0.5*x);
 }
@@ -48,10 +48,10 @@ function cdf_chi_squared(x:Real, ν:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_chi_squared(P:Real, ν:Real) -> Real {
+function quantile_chi_squared<Arg1,Arg2>(P:Arg1, ν:Arg2) -> {
   assert 0.0 < ν;
   cpp{{
-  return boost::math::quantile(boost::math::chi_squared_distribution<Real>(ν),
-      P);
+  return boost::math::quantile(boost::math::chi_squared_distribution<Real>(
+      wait(ν)), wait(P));
   }}
 }

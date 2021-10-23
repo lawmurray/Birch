@@ -63,3 +63,7 @@ function if_then_else<Type>(cond:Boolean, x:Type, y:Type!) -> Type! {
     return y;
   }
 }
+
+function if_then_else<Type1,Type2>(cond:Boolean!, x:Type1, y:Type2) -> {
+  return if_then_else(cond!, x, y);
+}

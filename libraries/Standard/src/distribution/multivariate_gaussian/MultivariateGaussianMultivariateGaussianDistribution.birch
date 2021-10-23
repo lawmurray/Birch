@@ -88,12 +88,12 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
  * Simulate a multivariate Gaussian distribution with a multivariate Gaussian
  * prior on the mean.
  *
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - S: Covariance.
+ * - μ: Prior mean vector.
+ * - Σ: Prior covariance matrix.
+ * - S: Covariance matrix.
  */
-function simulate_multivariate_gaussian_multivariate_gaussian(
-      μ:Real[_], Σ:Real[_,_], S:Real[_,_]) -> Real[_] {
+function simulate_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3>(
+      μ:Arg1, Σ:Arg2, S:Arg3) -> {
   return simulate_multivariate_gaussian(μ, Σ + S);
 }
 
@@ -102,8 +102,8 @@ function simulate_multivariate_gaussian_multivariate_gaussian(
  * on the mean.
  *
  * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - S: Covariance.
+ * - Σ: Prior covariance matrix.
+ * - S: Covariance matrix.
  *
  * Returns: the log probability density.
  */

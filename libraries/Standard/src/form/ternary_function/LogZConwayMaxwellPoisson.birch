@@ -35,7 +35,7 @@ function grad<Left,Middle,Right,Gradient>(
 
   let log_λ <- log(λ);
   let μ <- min(pow(λ, 1.0/ν), n);  // mode
-  let mx <- μ*log_λ - ν*lgamma(μ + 1);  // renormalizer
+  let mx <- μ*log_λ - ν*lgamma(μ + 1.0);  // renormalizer
   let log_xf <- 0.0;  // accumulator of log(x!)
   let z <- 0.0;
   let Z <- exp(-mx);  // for x == 0

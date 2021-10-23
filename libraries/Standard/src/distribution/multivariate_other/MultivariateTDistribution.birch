@@ -2,11 +2,10 @@
  * Simulate a multivariate $t$-distribution variate with location and scale.
  *
  * - k: Degrees of freedom.
- * - μ: Mean.
- * - U: Spread.
+ * - μ: Mean vector.
+ * - U: Spread matrix.
  */
-function simulate_multivariate_t(k:Real, μ:Real[_], U:Real[_,_]) ->
-    Real[_] {
+function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, U:Arg3) -> {
   return simulate_multivariate_gaussian(μ, simulate_inverse_wishart(U, k));
 }
 
@@ -15,8 +14,8 @@ function simulate_multivariate_t(k:Real, μ:Real[_], U:Real[_,_]) ->
  *
  * - x: The variate.
  * - k: Degrees of freedom.
- * - m: Mean.
- * - U: Spread.
+ * - μ: Mean vector.
+ * - U: Spread matrix.
  *
  * Returns: the log probability density.
  */

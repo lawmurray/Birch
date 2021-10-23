@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/uniform.hpp>
 }}
 
@@ -20,15 +20,15 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_uniform(value(l), value(u));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_uniform(peek(l), peek(u));
   }
 
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_uniform(x, value(l), value(u));
   }
 
@@ -36,19 +36,19 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
     return box(logpdf_uniform(x, l, u));
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_uniform(x, value(l), value(u));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_uniform(P, value(l), value(u));
   }
 
-  override function lower() -> Real? {
+  override function lower() -> Real!? {
     return value(l);
   }
   
-  override function upper() -> Real? {
+  override function upper() -> Real!? {
     return value(u);
   }
 
@@ -72,10 +72,10 @@ function Uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
  * - l: Lower bound of interval.
  * - u: Upper bound of interval.
  */
-function simulate_uniform(l:Real, u:Real) -> Real {
+function simulate_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   assert l <= u;
   cpp{{
-  return std::uniform_real_distribution<Real>(l, u)(rng);
+  return std::uniform_real_distribution<Real>(wait(l), wait(u))(rng);
   }}
 }
 
@@ -101,7 +101,7 @@ function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
+function cdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
   assert l <= u;
   if x <= l {
     return 0.0;
@@ -121,7 +121,7 @@ function cdf_uniform(x:Real, l:Real, u:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_uniform(P:Real, l:Real, u:Real) -> Real {
+function quantile_uniform<Arg1,Arg2,Arg3>(P:Arg1, l:Arg2, u:Arg3) -> {
   assert l <= u;
   return l + P*(u - l);
 }

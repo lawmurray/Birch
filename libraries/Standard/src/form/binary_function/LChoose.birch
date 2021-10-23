@@ -15,25 +15,9 @@ function eval<Left,Right>(x:LChoose<Left,Right>) -> {
 }
 
 function grad<Left,Right,Gradient>(x:LChoose<Left,Right>, d:Gradient) {
-  let n <- peek(x.l);
-  let k <- peek(x.r);
-  dn:Real;
-  dk:Real;
-  if k == 0 || k == n {
-    dn <- 0.0;
-    dk <- 0.0;
-  } else if k == 1 || k == n - 1 {
-    dn <- 1.0/n;
-    dk <- 0.0;
-  } else if k < n - k {
-    dn <- -digamma(n - k + 1) + digamma(n + 1);
-    dk <- -1.0/k - digamma(k) + digamma(n - k + 1);
-  } else {
-    dn <- -1.0/(n - k) - digamma(n - k) + digamma(n + 1);
-    dk <- 1.0/(n - k) - digamma(k + 1) + digamma(n - k);
-  }
-  grad(x.l, d*dn);
-  grad(x.r, d*dk);
+  let (dx, dy) <- lchoose_grad(d, peek(x.l), peek(x.r));
+  grad(x.l, d*dx);
+  grad(x.r, d*dy);
 }
 
 hpp{{
@@ -46,14 +30,23 @@ template<class Left, class Right, std::enable_if_t<
 LChoose<Left,Right> lchoose(const Left& l, const Right& r) {
   return construct<LChoose<Left,Right>>(l, r);
 }
-}
-}}
 
 /**
  * Logarithm of the binomial coefficient.
  */
-function lchoose(x:Real, y:Real) -> Real {
+template<class T, class U, std::enable_if_t<!is_delay<T,U>::value,int> = 0>
+auto lchoose(const T& x, const U& y) {
+  return numbirch::lchoose<Real>(x, y);
+}
+}
+}}
+
+/**
+ * Gradient of `lchoose()`.
+ */
+function lchoose_grad(d:Real, x:Integer, y:Integer) -> (Real, Real) {
   cpp{{
-  return numbirch::lchoose(x, y);
+  auto pair = numbirch::lchoose_grad(d, x, y);
+  return std::make_pair(pair.first, pair.second);
   }}
 }

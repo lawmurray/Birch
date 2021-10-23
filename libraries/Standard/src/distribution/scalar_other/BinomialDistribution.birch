@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/binomial.hpp>
 }}
 
@@ -21,15 +21,15 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return true;
   }
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return simulate_binomial(value(n), value(ρ));
   }
   
-  override function simulateLazy() -> Integer? {
+  override function simulateLazy() -> Integer!? {
     return simulate_binomial(peek(n), peek(ρ));
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     return logpdf_binomial(x, value(n), value(ρ));
   }
 
@@ -37,19 +37,19 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return box(logpdf_binomial(x, n, ρ));
   }
 
-  override function cdf(x:Integer) -> Real? {
+  override function cdf(x:Integer!) -> Real!? {
     return cdf_binomial(x, value(n), value(ρ));
   }
 
-  override function quantile(P:Real) -> Integer? {
+  override function quantile(P:Real!) -> Integer!? {
     return quantile_binomial(P, value(n), value(ρ));
   }
 
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
     return 0;
   }
   
-  override function upper() -> Integer? {
+  override function upper() -> Integer!? {
     return value(n);
   }
 
@@ -73,11 +73,11 @@ function Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
  * - n: Number of trials.
  * - ρ: Probability of a true result.
  */
-function simulate_binomial(n:Integer, ρ:Real) -> Integer {
+function simulate_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return std::binomial_distribution<Integer>(n, ρ)(rng);
+  return std::binomial_distribution<Integer>(wait(n), wait(ρ))(rng);
   }}
 }
 
@@ -103,7 +103,7 @@ function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
+function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   if x < 0 {
@@ -124,11 +124,11 @@ function cdf_binomial(x:Integer, n:Integer, ρ:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_binomial(P:Real, n:Integer, ρ:Real) -> Integer {
+function quantile_binomial<Arg1,Arg2,Arg3>(P:Arg1, n:Arg2, ρ:Arg3) -> {
   assert 0 <= n;
   assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
-  return boost::math::quantile(boost::math::binomial_distribution<Real>(n, ρ),
-      P);
+  return boost::math::quantile(boost::math::binomial_distribution<Real>(
+      wait(n), wait(ρ)), wait(P));
   }}
 }

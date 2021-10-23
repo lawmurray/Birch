@@ -19,7 +19,7 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Evaluate the log-posterior.
    */
-  function peek() -> Real {
+  function peek() -> Real! {
     return h.peek();
   }
 
@@ -40,7 +40,7 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Move the particle.
    */
-  function move(x:Real[_]) -> Real {
+  function move(x:Real[_]) -> Real! {
     return h.move(x);
   }
 

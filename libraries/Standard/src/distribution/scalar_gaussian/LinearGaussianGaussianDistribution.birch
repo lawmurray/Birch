@@ -32,17 +32,17 @@ final class LinearGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_linear_gaussian_gaussian(value(a), value(μ), value(σ2),
         value(c), value(s2));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_linear_gaussian_gaussian(peek(a), peek(μ), peek(σ2),
         peek(c), peek(s2));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_linear_gaussian_gaussian(x, value(a), value(μ), value(σ2),
         value(c), value(s2));
   }
@@ -51,7 +51,7 @@ final class LinearGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     return box(logpdf_linear_gaussian_gaussian(x, a, μ, σ2, c, s2));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_linear_gaussian_gaussian(x, value(a), value(μ), value(σ2),
         value(c), value(s2));
   }
@@ -60,12 +60,12 @@ final class LinearGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     return update_linear_gaussian_gaussian(x, a, μ, σ2, c, s2);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_linear_gaussian_gaussian(x, value(a), value(μ), value(σ2),
         value(c), value(s2));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_linear_gaussian_gaussian(P, value(a), value(μ), value(σ2),
         value(c), value(s2));
   }
@@ -120,8 +120,8 @@ function Gaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real>>, σ2:Arg2) ->
  * - c: Offset.
  * - s2: Variance.
  */
-function simulate_linear_gaussian_gaussian(a:Real, μ:Real, σ2:Real, c:Real,
-    s2:Real) -> Real {
+function simulate_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) -> {
   return simulate_gaussian(a*μ + c, a*a*σ2 + s2);
 }
 
@@ -156,8 +156,8 @@ function logpdf_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
  *
  * Return: the cumulative probability.
  */
-function cdf_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, σ2:Real, c:Real,
-    s2:Real) -> Real {
+function cdf_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1,
+    a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
   return cdf_gaussian(x, a*μ + c, a*a*σ2 + s2);
 }
 
@@ -174,8 +174,8 @@ function cdf_linear_gaussian_gaussian(x:Real, a:Real, μ:Real, σ2:Real, c:Real,
  *
  * Return: the quantile.
  */
-function quantile_linear_gaussian_gaussian(P:Real, a:Real, μ:Real, σ2:Real,
-    c:Real, s2:Real) -> Real {
+function quantile_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+      P:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
   return quantile_gaussian(P, a*μ + c, a*a*σ2 + s2);
 }
 

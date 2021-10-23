@@ -32,17 +32,17 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_linear_multivariate_gaussian_gaussian(value(a), value(μ),
         value(Σ), value(c), value(s2));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_linear_multivariate_gaussian_gaussian(peek(a), peek(μ),
         peek(Σ), peek(c), peek(s2));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_linear_multivariate_gaussian_gaussian(x, value(a), value(μ),
         value(Σ), value(c), value(s2));
   }
@@ -52,7 +52,7 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
         s2));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_linear_multivariate_gaussian_gaussian(x, value(a), value(μ),
         value(Σ), value(c), value(s2));
   }
@@ -61,12 +61,12 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
     return update_linear_multivariate_gaussian_gaussian(x, a, μ, Σ, c, s2);
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_linear_multivariate_gaussian_gaussian(x, value(a), value(μ),
         value(Σ), value(c), value(s2));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_linear_multivariate_gaussian_gaussian(P, value(a),
         value(μ), value(Σ), value(c), value(s2));
   }
@@ -116,13 +116,13 @@ function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
  * the mean.
  *
  * - a: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
+ * - μ: Prior mean vector.
+ * - Σ: Prior covariance matrix.
  * - c: Offset.
- * - s2: Likelihood covariance.
+ * - s2: Likelihood variance.
  */
-function simulate_linear_multivariate_gaussian_gaussian(a:Real[_], μ:Real[_],
-    Σ:Real[_,_], c:Real, s2:Real) -> Real {
+function simulate_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5>(a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, s2:Arg5) -> {
   return simulate_gaussian(dot(a, μ)! + c, dot(a, Σ*a)! + s2);
 }
 
@@ -132,10 +132,10 @@ function simulate_linear_multivariate_gaussian_gaussian(a:Real[_], μ:Real[_],
  *
  * - x: The variate.
  * - a: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
+ * - μ: Prior mean vector.
+ * - Σ: Prior covariance matrix.
  * - c: Offset.
- * - s2: Likelihood covariance.
+ * - s2: Likelihood variance.
  *
  * Returns: the log probability density.
  */
@@ -157,8 +157,8 @@ function logpdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
  *
  * Return: the cumulative probability.
  */
-function cdf_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
-    μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> Real {
+function cdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
+    Arg6>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
   return cdf_gaussian(x, dot(a, μ)! + c, dot(a, Σ*a)! + s2);
 }
 
@@ -175,8 +175,8 @@ function cdf_linear_multivariate_gaussian_gaussian(x:Real, a:Real[_],
  *
  * Return: the quantile.
  */
-function quantile_linear_multivariate_gaussian_gaussian(P:Real, a:Real[_],
-    μ:Real[_], Σ:Real[_,_], c:Real, s2:Real) -> Real {
+function quantile_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5,Arg6>(P:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
   return quantile_gaussian(P, dot(a, μ)! + c, dot(a, Σ*a)! + s2);
 }
 

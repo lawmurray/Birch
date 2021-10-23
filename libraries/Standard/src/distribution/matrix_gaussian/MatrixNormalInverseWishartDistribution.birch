@@ -106,8 +106,8 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
  * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
-function simulate_matrix_normal_inverse_wishart(N:Real[_,_], Λ:Real[_,_],
-    Ψ:Real[_,_], k:Real) -> Real[_,_] {
+function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
+    Λ:Arg2, Ψ:Arg3, k:Arg4) -> {
   let Σ <- cholinv(Λ);
   let M <- Σ*N;
   return simulate_matrix_t(k, M, Σ, Ψ);

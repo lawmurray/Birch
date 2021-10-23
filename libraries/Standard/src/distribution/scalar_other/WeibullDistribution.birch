@@ -1,4 +1,4 @@
-cpp{{
+hpp{{
 #include <boost/math/distributions/weibull.hpp>
 }}
 
@@ -20,15 +20,15 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) < Distribution<Real>
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_weibull(value(k), value(λ));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_weibull(peek(k), peek(λ));
   }
   
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_weibull(x, value(k), value(λ));
   }
 
@@ -36,15 +36,15 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) < Distribution<Real>
     return box(logpdf_weibull(x, k, λ));
   }
 
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_weibull(x, value(k), value(λ));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_weibull(P, value(k), value(λ));
   }
 
-  override function lower() -> Real? {
+  override function lower() -> Real!? {
     return 0.0;
   }
 
@@ -68,11 +68,11 @@ function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
  * - k: Shape.
  * - λ: Scale.
  */
-function simulate_weibull(k:Real, λ:Real) -> Real {
+function simulate_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
   assert 0.0 < k;
   assert 0.0 < λ;
   cpp{{
-  return std::weibull_distribution<Real>(k, λ)(rng);
+  return std::weibull_distribution<Real>(wait(k), wait(λ))(rng);
   }}
 }
 
@@ -99,7 +99,7 @@ function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
  *
  * Return: the cumulative probability.
  */
-function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
+function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
   assert 0.0 < k;
   assert 0.0 < λ;
   return if_then_else(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
@@ -114,11 +114,11 @@ function cdf_weibull(x:Real, k:Real, λ:Real) -> Real {
  *
  * Return: the quantile.
  */
-function quantile_weibull(P:Real, k:Real, λ:Real) -> Real {
+function quantile_weibull<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, λ:Arg3) -> {
   assert 0.0 < k;
   assert 0.0 < λ;
   cpp{{
-  return boost::math::quantile(boost::math::weibull_distribution<Real>(k, λ),
-      P);
+  return boost::math::quantile(boost::math::weibull_distribution<Real>(
+      wait(k), wait(λ)), wait(P));
   }}
 }

@@ -6,19 +6,19 @@ struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 }
 
 function value<Left,Right>(x:VectorElement<Left,Right>) -> {
-  return value(x.l)[value(x.r)];
+  return value(x.l)[wait(value(x.r))];
 }
 
 function peek<Left,Right>(x:VectorElement<Left,Right>) -> {
-  return peek(x.l)[peek(x.r)];
+  return peek(x.l)[wait(peek(x.r))];
 }
 
 function eval<Left,Right>(x:VectorElement<Left,Right>) -> {
-  return eval(x.l)[eval(x.r)];
+  return eval(x.l)[wait(eval(x.r))];
 }
 
 function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
-  grad(x.l, d, peek(x.r));
+  grad(x.l, d, wait(peek(x.r)));
   grad(x.r, 0.0);
 }
 
@@ -37,10 +37,9 @@ auto element(const Left& x, const Right& i) {
  * Element of a vector.
  */
 template<class Value, class Form, class Right, std::enable_if_t<
-    is_delay<Form>::value || is_delay<Right>::value,int> = 0>
-auto element(VectorSplitExpression<Value,Form>&& x, const Right& i) {
-  return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(
-      vector_split(std::forward<VectorSplitExpression<Value,Form>>(x)),
+    is_delay<Form,Right>::value,int> = 0>
+auto element(const VectorSplitExpression<Value,Form>& x, const Right& i) {
+  return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x,
       i);
 }
 }
@@ -51,4 +50,11 @@ auto element(VectorSplitExpression<Value,Form>&& x, const Right& i) {
  */
 function element<Type>(x:Type[_], i:Integer) -> Type {
   return x[i];
+}
+
+/**
+ * Element of a vector.
+ */
+function element<Type>(x:Type[_], i:Integer!) -> Type {
+  return x[i!];
 }

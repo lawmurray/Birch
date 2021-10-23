@@ -59,10 +59,10 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
 /*
  * Simulate a multivariate Gaussian distribution.
  *
- * - μ: Mean.
- * - Σ: Covariance.
+ * - μ: Mean vector.
+ * - Σ: Covariance matrix.
  */
-function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
+function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   assert length(μ) == rows(Σ);
   assert length(μ) == columns(Σ);
   let n <- length(μ);
@@ -76,8 +76,8 @@ function simulate_multivariate_gaussian(μ:Real[_], Σ:Real[_,_]) -> Real[_] {
  * Observe a multivariate Gaussian variate.
  *
  * - x: The variate.
- * - μ: Mean.
- * - Σ: Covariance.
+ * - μ: Mean vector.
+ * - Σ: Covariance matrix.
  *
  * Returns: the log probability density.
  */

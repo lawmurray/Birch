@@ -60,7 +60,7 @@ class LangevinKernel < Kernel {
             });
 
         /* accept/reject */
-        accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + q - q';
+        accept <- log(simulate_uniform(0.0, 1.0)) <= (p' - p + q - q')!;
         if accept {
           naccepts <- naccepts + 1;
           x <- x';

@@ -10,19 +10,19 @@ final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
    */
   μ:Arg <- μ;
 
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return value(μ);
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     return if_then_else(x == value(μ), 0.0, -inf);
   }
 
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
     return value(μ);
   }
   
-  override function upper() -> Integer? {
+  override function upper() -> Integer!? {
     return value(μ);
   }
 

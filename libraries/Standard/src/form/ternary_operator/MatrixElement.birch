@@ -7,20 +7,20 @@ struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
 }
 
 function value<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
-  return value(x.l)[value(x.m), value(x.r)];
+  return value(x.l)[wait(value(x.m)), wait(value(x.r))];
 }
 
 function peek<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
-  return peek(x.l)[peek(x.m), peek(x.r)];
+  return peek(x.l)[wait(peek(x.m)), wait(peek(x.r))];
 }
 
 function eval<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
-  return eval(x.l)[eval(x.m), eval(x.r)];
+  return eval(x.l)[wait(eval(x.m)), wait(eval(x.r))];
 }
 
 function grad<Left,Middle,Right,Gradient>(x:MatrixElement<Left,Middle,Right>,
     d:Gradient) {
-  grad(x.l, d, peek(x.m), peek(x.r));
+  grad(x.l, d, wait(peek(x.m)), wait(peek(x.r)));
   grad(x.m, 0.0);
   grad(x.r, 0.0);
 }
@@ -40,12 +40,11 @@ auto element(const Left& x, const Middle& i, const Right& j) {
  * Element of a matrix.
  */
 template<class Value, class Form, class Middle, class Right, std::enable_if_t<
-    is_delay<Form>::value || is_delay<Middle>::value || is_delay<Right>::value,
-    int> = 0>
-auto element(MatrixSplitExpression<Value,Form>&& x, const Middle& i, const Right& j) {
+    is_delay<Form,Middle,Right>::value,int> = 0>
+auto element(const MatrixSplitExpression<Value,Form>& x, const Middle& i,
+    const Right& j) {
   return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,
-      Right>>(std::forward<MatrixSplitExpression<Value,Form>>(x),
-      i, j);
+      Right>>(x, i, j);
 }
 }
 }}
@@ -55,4 +54,25 @@ auto element(MatrixSplitExpression<Value,Form>&& x, const Middle& i, const Right
  */
 function element<Type>(x:Type[_,_], i:Integer, j:Integer) -> Type {
   return x[i,j];
+}
+
+/**
+ * Element of a matrix.
+ */
+function element<Type>(x:Type[_,_], i:Integer!, j:Integer) -> Type {
+  return x[i!,j];
+}
+
+/**
+ * Element of a matrix.
+ */
+function element<Type>(x:Type[_,_], i:Integer, j:Integer!) -> Type {
+  return x[i,j!];
+}
+
+/**
+ * Element of a matrix.
+ */
+function element<Type>(x:Type[_,_], i:Integer!, j:Integer!) -> Type {
+  return x[i!,j!];
 }

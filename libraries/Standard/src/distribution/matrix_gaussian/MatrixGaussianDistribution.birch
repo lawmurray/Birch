@@ -70,8 +70,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
  * - U: Among-row covariance.
  * - V: Among-column covariance.
  */
-function simulate_matrix_gaussian(M:Real[_,_], U:Real[_,_], V:Real[_,_]) ->
-    Real[_,_] {
+function simulate_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
   assert rows(M) == rows(U);
   assert rows(M) == columns(U);
   assert columns(M) == rows(V);

@@ -14,15 +14,24 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   α:Arg2 <- α;
 
   override function supportsLazy() -> Boolean {
-    return false;
+    return true;
   }
 
   override function simulate() -> Integer[_] {
     return simulate_dirichlet_multinomial(value(n), value(α));
   }
-  
+
+  override function simulateLazy() -> Integer[_] {
+    return simulate_dirichlet_multinomial(peek(n), peek(α));
+  }
+
   override function logpdf(x:Integer[_]) -> Real {
     return logpdf_dirichlet_multinomial(x, value(n), value(α));
+  }
+
+  override function logpdfLazy(x:Expression<Integer[_]>) ->
+      Expression<Real>? {
+    return box(logpdf_dirichlet_multinomial(x, n, α));
   }
 
   override function update(x:Integer[_]) -> Delay? {
@@ -56,7 +65,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
  * - n: Number of trials.
  * - α: Concentrations.
  */
-function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
+function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
   return simulate_multinomial(n, simulate_dirichlet(α));
 }
 
@@ -69,16 +78,11 @@ function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
  *
  * Returns: the log probability mass.
  */
-function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
-    Real {
+function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
+    α:Arg3) -> {
   assert length(x) == length(α);
-  if sum(x)! == n {
-    let A <- sum(α);
-    return (lgamma(n + 1.0) + lgamma(A) - lgamma(n + A) +
-        sum(lgamma(x + α) - log(x) - lgamma(x) - lgamma(α)))!;
-  } else {
-    return -inf;
-  }
+  return lfact(n) + lgamma(sum(α)) - lgamma(n + sum(α)) +
+      sum(lgamma(x + α) - lgamma(α) - lfact(x));
 }
 
 /*
@@ -91,8 +95,8 @@ function logpdf_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
  *
  * Returns: the posterior hyperparameters `α'`.
  */
-function update_dirichlet_multinomial(x:Integer[_], n:Integer, α:Real[_]) ->
-    DirichletDistribution<Real[_]> {
-  assert sum(x)! == n;
-  return Dirichlet(transform(x, α, \(x:Integer, α:Real) -> { return x + α; }));
+function update_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
+    α:Arg3) -> {
+  let α' <- α + x;
+  return Dirichlet(α');
 }

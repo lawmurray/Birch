@@ -10,23 +10,35 @@ final class DiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
    */
   p:BoundedDiscreteDistribution <- p;
 
-  override function simulate() -> Integer {
+  override function supportsLazy() -> Boolean {
+    return p.supportsLazy();
+  }
+
+  override function simulate() -> Integer! {
     return p.simulate();
   }
 
-  override function logpdf(x:Integer) -> Real {
+  override function simulateLazy() -> Integer!? {
+    return p.simulateLazy();
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
     return p.logpdf(x);
   }
 
-  override function update(x:Integer) -> Delay? {
+  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+    return p.logpdfLazy(x);
+  }
+
+  override function update(x:Integer!) -> Delay? {
     return Delta(x);
   }
 
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
 		return p.lower();
   }
   
-  override function upper() -> Integer? {
+  override function upper() -> Integer!? {
 	  return p.upper();
   }
 }

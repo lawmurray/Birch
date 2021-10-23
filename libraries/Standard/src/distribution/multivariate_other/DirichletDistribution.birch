@@ -8,15 +8,23 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   α:Arg <- α;
 
   override function supportsLazy() -> Boolean {
-    return false;
+    return true;
   }
 
   override function simulate() -> Real[_] {
     return simulate_dirichlet(value(α));
   }
   
-  override function logpdf(x:Real[_]) -> Real {
+  override function simulateLazy() -> Real[_]? {
+    return simulate_dirichlet(peek(α));
+  }
+
+  override function logpdf(x:Real[_]) -> Real! {
     return logpdf_dirichlet(x, value(α));
+  }
+
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return box(logpdf_dirichlet(x, value(α)));
   }
 
   override function isDirichlet() -> Boolean {
@@ -45,9 +53,9 @@ function Dirichlet<Arg>(α:Arg) -> {
  *
  * - α: Concentrations.
  */
-function simulate_dirichlet(α:Real[_]) -> Real[_] {
+function simulate_dirichlet<Arg1>(α:Arg1) -> {
   let x <- transform(α, \(α:Real) -> Real { return simulate_gamma(α, 1.0); });
-  return x/sum(x)!;
+  return x/sum(x);
 }
 
 /*
@@ -56,9 +64,10 @@ function simulate_dirichlet(α:Real[_]) -> Real[_] {
  * - α: Concentration.
  * - D: Number of dimensions.
  */
-function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
-  let x <- vector_lambda(\(i:Integer) -> Real { return simulate_gamma(α, 1.0); }, D);
-  return x/sum(x)!;
+function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
+  let x <- vector_lambda(\(i:Integer) -> Real {
+        return simulate_gamma(α, 1.0); }, D);
+  return x/sum(x);
 }
 
 /*
@@ -69,16 +78,7 @@ function simulate_dirichlet(α:Real, D:Integer) -> Real[_] {
  *
  * Returns: the log probability density.
  */
-function logpdf_dirichlet(x:Real[_], α:Real[_]) -> Real {
+function logpdf_dirichlet<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
   assert length(x) == length(α);
-  let D <- length(x);
-  let w <- 0.0;
-  for i in 1..D {
-    if x[i] < 0.0 {
-      return -inf;
-    }
-    w <- w + (α[i] - 1.0)*log(x[i]) - lgamma(α[i]);
-  }
-  w <- w + lgamma(sum(α)!); 
-  return w;
+  return sum(hadamard(α, log(x)) - log(x) - lgamma(α)) + lgamma(sum(α));
 }

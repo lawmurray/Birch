@@ -22,15 +22,15 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
     return true;
   }
 
-  override function simulate() -> Real {
+  override function simulate() -> Real! {
     return simulate_lomax(1.0/(value(a)*value(θ)), value(k));
   }
 
-  override function simulateLazy() -> Real? {
+  override function simulateLazy() -> Real!? {
     return simulate_lomax(1.0/(peek(a)*peek(θ)), peek(k));
   }
 
-  override function logpdf(x:Real) -> Real {
+  override function logpdf(x:Real!) -> Real! {
     return logpdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }
 
@@ -38,7 +38,7 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
     return box(logpdf_lomax(x, 1.0/(a*θ), k));
   }
 
-  override function update(x:Real) -> Delay? {
+  override function update(x:Real!) -> Delay? {
     return update_scaled_gamma_exponential(x, value(a), value(k), value(θ));
   }
 
@@ -46,15 +46,15 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
     return update_scaled_gamma_exponential(x, a, k, θ);
   }
   
-  override function cdf(x:Real) -> Real? {
+  override function cdf(x:Real!) -> Real!? {
     return cdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  override function quantile(P:Real) -> Real? {
+  override function quantile(P:Real!) -> Real!? {
     return quantile_lomax(P, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  override function lower() -> Real? {
+  override function lower() -> Real!? {
     return 0.0;
   }
 }

@@ -1,0 +1,53 @@
+struct VectorSingle<Value,Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
+  /**
+   * Length of vector.
+   */
+  n:Integer <- n;
+}
+
+function value<Value,Middle>(x:VectorSingle<Value,Middle>) -> {
+  return single<Value>(value(x.m), x.n);
+}
+
+function peek<Value,Middle>(x:VectorSingle<Value,Middle>) -> {
+  return single<Value>(peek(x.m), x.n);
+}
+
+function eval<Value,Middle>(x:VectorSingle<Value,Middle>) -> {
+  return single<Value>(eval(x.m), x.n);
+}
+
+function grad<Value,Middle,Gradient>(x:VectorSingle<Value,Middle>,
+    d:Gradient) {
+  //
+}
+
+hpp{{
+namespace birch {
+/**
+ * Create single-entry vector. One of the elements of the vector is one, all
+ * others are zero.
+ *
+ * - i: Index of single entry.
+ * - n: Length of vector.
+ */
+template<class Value, class Middle, std::enable_if_t<
+    is_delay<Middle>::value,int> = 0>
+VectorSingle<Value,Middle> single(const Middle& i, const int n) {
+  return construct<VectorSingle<Value,Middle>>(i, n);
+}
+}
+}}
+
+/**
+ * Create single-entry vector. One of the elements of the vector is one, all
+ * others are zero.
+ *
+ * - i: Index of single entry.
+ * - n: Length of vector.
+ */
+function single<Value>(i:Integer, n:Integer) -> Value[_] {
+  cpp{{
+  return numbirch::single<Value>(i, n);
+  }}
+}

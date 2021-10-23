@@ -109,16 +109,16 @@ function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>,
  * Simulate a Gaussian distribution with linear transformation of as
  * matrix-normal-inverse-Wishart prior.
  *
- * - A: Scale.
+ * - A: Scale matrix.
  * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - Ψ: Variance shape.
+ * - Λ: Precision matrix.
+ * - Ψ: Shape matrix.
  * - k: Degrees of freedom.
- * - U: Among-row covariance.
+ * - U: Among-row covariance matrix.
  */
-function simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian(
-    A:Real[_,_], N:Real[_,_], Λ:Real[_,_], Ψ:Real[_,_], k:Real,
-    U:Real[_,_]) -> Real[_,_] {
+function simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
+    Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
+    U:Arg6) -> {
   let S <- cholinv(Λ);
   let M <- A*S*N;
   let Σ <- U + outer(A*S, A);
@@ -130,12 +130,12 @@ function simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian(
  * matrix-normal-inverse-Wishart prior.
  *
  * - X: The variate.
- * - A: Scale.
- * - N: Prior precision times mean matrix.
- * - Λ: Prior precision.
- * - Ψ: Prior variance shape.
- * - k: Prior degrees of freedom.
- * - U: Among-row covariance.
+ * - A: Scale matrix.
+ * - N: Precision times mean matrix.
+ * - Λ: Precision matrix.
+ * - Ψ: Shape matrix.
+ * - k: Degrees of freedom.
+ * - U: Among-row covariance matrix.
  *
  * Returns: the log probability density.
  */

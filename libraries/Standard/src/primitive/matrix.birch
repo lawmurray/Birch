@@ -1,10 +1,3 @@
-operator <Type>(X:Type[_,_] == Y:Type[_,_]) -> Boolean;
-operator <Type>(X:Type[_,_] != Y:Type[_,_]) -> Boolean;
-
-operator <Type>(+X:Type[_,_]) -> Type[_,_] {
-  return X;
-}
-
 /**
  * Convert vector to matrix with single row.
  */
@@ -66,15 +59,6 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
 }
 
 /**
- * Create identity matrix.
- *
- * - length: Number of rows/columns.
- */
-function identity(length:Integer) -> Real[_,_] {
-  return diagonal(1.0, length);
-}
-
-/**
  * Create a matrix filled by a lambda function.
  *
  * - λ: Lambda function.
@@ -106,7 +90,7 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
  * - rows: Number of rows.
  * - columns: Number of columns.
  */
-function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
+function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> {
   cpp{{
   return numbirch::Array(numbirch::make_shape(rows, columns), x);
   }}

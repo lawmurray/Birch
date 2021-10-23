@@ -1,10 +1,3 @@
-operator <Type>(x:Type[_] == y:Type[_]) -> Boolean;
-operator <Type>(x:Type[_] != y:Type[_]) -> Boolean;
-
-operator <Type>(+x:Type[_]) -> Type[_] {
-  return x;
-}
-
 /**
  * Create a vector filled by a lambda function.
  *
@@ -29,10 +22,17 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
 /**
  * Create vector filled with a given value.
  */
-function vector<Type>(x:Type, length:Integer) -> Type[_] {
+function vector<Type>(x:Type, length:Integer) -> {
   cpp{{
   return numbirch::Array(numbirch::make_shape(length), x);
   }}
+}
+
+/**
+ * Create vector filled with a given value.
+ */
+function vector<Type>(x:Type!, length:Integer) -> Type[_] {
+  return vector<Type>(x!, length);
 }
 
 function rows<Type>(x:Type[_]) -> Integer {

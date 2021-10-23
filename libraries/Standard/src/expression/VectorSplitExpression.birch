@@ -6,14 +6,14 @@
  */
 final class VectorSplitExpression<Value,Form>(x:Value[_], f:Form) <
     BoxedForm<Value[_],Form>(x, f) {
-  function grad(d:Value, i:Integer) {
+  function grad<Gradient>(d:Gradient, i:Integer) {
     if this.f? {
       if this.visitCount == 0 {
         assert !this.d?;
         this.d <- vector<Value>(0, this.length());
       }
       assert this.d?;
-      this.d![i] <- this.d![i] + d;
+      this.d![i] <- this.d![i] + wait(d);
       this.visitCount <- this.visitCount + 1;
       if this.visitCount >= this.linkCount {
         assert this.visitCount == this.linkCount || this.linkCount == 0;
@@ -66,8 +66,8 @@ function eval<Value,Form>(x:VectorSplitExpression<Value,Form>) -> Value[_] {
   return x.eval();
 }
 
-function grad<Value,Form>(x:VectorSplitExpression<Value,Form>,
-    d:Value!, i:Integer) {
+function grad<Value,Form,Gradient>(x:VectorSplitExpression<Value,Form>,
+    d:Gradient, i:Integer) {
   x.grad(d, i);
 }
 

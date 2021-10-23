@@ -21,23 +21,23 @@ final class AddDiscreteConstrainedDistribution(p:Real[_], l:Integer,
    */
   y:Integer <- y;
   
-  override function simulate() -> Integer {
+  override function simulate() -> Integer! {
     return simulate_categorical(p) + l - 1;
   }
   
-  override function logpdf(x:Integer) -> Real {
+  override function logpdf(x:Integer!) -> Real! {
     return logpdf_categorical(x - l + 1, p);
   }
   
-  override function update(x:Integer) -> Delay? {
+  override function update(x:Integer!) -> Delay? {
     return Delta(y - x);
   }
   
-  override function lower() -> Integer? {
+  override function lower() -> Integer!? {
     return l;
   }
   
-  override function upper() -> Integer? {
+  override function upper() -> Integer!? {
     return l + length(p) - 1;
   }
 }
