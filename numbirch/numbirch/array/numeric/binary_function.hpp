@@ -171,7 +171,7 @@ Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value &&
-    std::is_arithmetic<U>::value,int> = 0>
+    std::is_arithmetic<T>::value,int> = 0>
 Scalar<T> copysign(const Scalar<T>& x, const T& y) {
   return copysign(x, Scalar<T>(y));
 }
@@ -182,7 +182,6 @@ Scalar<T> copysign(const Scalar<T>& x, const T& y) {
  * @ingroup array
  * 
  * @tparam T Arithmetic type.
- * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
@@ -210,7 +209,7 @@ Scalar<T> copysign(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> auto digamma(const Array<T,D>& A, const Array<int,D>& B) {
+Array<T,D> digamma(const Array<T,D>& A, const Array<int,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -439,7 +438,8 @@ Scalar<T> gamma_q(const T& x, const Scalar<T>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -447,13 +447,14 @@ Scalar<T> gamma_q(const T& x, const Scalar<T>& y) {
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> hadamard(const Array<T,D>& A,
+    const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
-  Array<T,D> C(A.shape().compact());
+  Array<typename promote<T,U>::type,D> C(A.shape().compact());
   hadamard(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
       C.data(), C.stride());
   return C;
@@ -464,16 +465,18 @@ Array<T,D> hadamard(const Array<T,D>& A, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> hadamard(const Scalar<T>& x, const T& y) {
-  return hadamard(x, Scalar<T>(y));
+template<class T, class U, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> hadamard(const Scalar<T>& x, const U& y) {
+  return hadamard(x, Scalar<U>(y));
 }
 
 /**
@@ -481,15 +484,17 @@ Scalar<T> hadamard(const Scalar<T>& x, const T& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> hadamard(const T& x, const Scalar<U>& y) {
+template<class T, class U, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> hadamard(const T& x, const Scalar<U>& y) {
   return hadamard(Scalar<T>(x), y);
 }
 
@@ -575,7 +580,7 @@ Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lbeta(const Scalar<T>& x, const U& y) {
+Scalar<T> lbeta(const Scalar<T>& x, const T& y) {
   return lbeta(x, Scalar<T>(y));
 }
 
@@ -609,7 +614,7 @@ Scalar<T> lbeta(const T& x, const Scalar<T>& y) {
  * 
  * @return %Array.
  * 
- * @note The result type `T` must be explicitly specified.
+ * @note The return type `T` must be explicitly specified.
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
@@ -635,11 +640,11 @@ Array<T,D> lchoose(const Array<int,D>& A, const Array<int,D>& B) {
  * 
  * @return %Scalar.
  * 
- * @note The result type `T` must be explicitly specified.
+ * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lchoose(const Scalar<int>& x, const int& y) {
-  return lchoose(x, Scalar<int>(y));
+Scalar<T> lchoose(const Scalar<int>& x, const int& y) {
+  return lchoose<T>(x, Scalar<int>(y));
 }
 
 /**
@@ -654,11 +659,42 @@ Array<T,D> lchoose(const Scalar<int>& x, const int& y) {
  * 
  * @return %Scalar.
  * 
- * @note The result type `T` must be explicitly specified.
+ * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lchoose(const int& x, const Scalar<int>& y) {
-  return lchoose(Scalar<int>(x), y);
+Scalar<T> lchoose(const int& x, const Scalar<int>& y) {
+  return lchoose<T>(Scalar<int>(x), y);
+}
+
+/**
+ * Gradient of lchoose().
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param G %Array.
+ * @param A %Array.
+ * @param B %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+std::pair<Array<T,D>,Array<T,D>> lchoose_grad(const Array<T,D>& G,
+    const Array<int,D>& A, const Array<int,D>& B) {
+  assert(G.rows() == A.rows());
+  assert(G.columns() == A.columns());
+  assert(G.rows() == B.rows());
+  assert(G.columns() == B.columns());
+
+  Array<T,D> GA(A.shape().compact());
+  Array<T,D> GB(A.shape().compact());
+  lchoose_grad(G.width(), G.height(), G.data(), G.stride(), A.data(),
+      A.stride(), B.data(), B.stride(), GA.data(), GA.stride(), GB.data(),
+      GB.stride());
+  return std::make_pair(GA, GB);
 }
 
 /**
@@ -836,7 +872,7 @@ Scalar<T> pow(const T& x, const Scalar<T>& y) {
  * 
  * @return %Matrix.
  * 
- * @note The result type `T` must be explicitly specified.
+ * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
@@ -861,7 +897,7 @@ Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
  * 
  * @return %Matrix.
  * 
- * @note The result type `T` must be explicitly specified.
+ * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 Matrix<T> single(const int& i, const Scalar<int>& j, const int m,
@@ -884,7 +920,7 @@ Matrix<T> single(const int& i, const Scalar<int>& j, const int m,
  * 
  * @return %Matrix.
  * 
- * @note The result type `T` must be explicitly specified.
+ * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 Matrix<T> single(const Scalar<int>& i, const int& j, const int m,

@@ -91,7 +91,7 @@ void digamma(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
-  B1.array() = A1.array().digamma();
+  B1.noalias() = A1.unaryExpr(digamma_functor<T>());
 }
 
 template<class T>
@@ -146,11 +146,28 @@ void ldet(const int n, const T* A, const int ldA, T* b) {
 }
 
 template<class T>
+void lfact(const int m, const int n, const int* A, const int ldA, T* B,
+    const int ldB) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA);
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.noalias() = A1.unaryExpr(lfact_functor<T>());
+}
+
+template<class T>
+void lfact_grad(const int m, const int n, const T* G, const int ldG,
+    const int* A, const int ldA, T* B, const int ldB) {
+  auto G1 = make_eigen_matrix(G, m, n, ldG);
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<T>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.noalias() = G1.binaryExpr(A1, lfact_grad_functor<T>());
+}
+
+template<class T>
 void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   auto B1 = make_eigen_matrix(B, m, n, ldB);
-  B1.array() = A1.array().lgamma();
+  B1.noalias() = A1.unaryExpr(lgamma_functor<T>());
 }
 
 template<class T>

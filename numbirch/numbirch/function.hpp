@@ -6,16 +6,6 @@
 #include "numbirch/macro.hpp"
 #include "numbirch/type.hpp"
 
-/* for recent versions of CUDA, disables warnings about diag_suppress being
- * deprecated in favor of nv_diag_suppress */
-#pragma nv_diag_suppress 20236
-
-#if defined(HAVE_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
-#include <unsupported/Eigen/SpecialFunctions>
-#elif defined(HAVE_EIGEN3_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
-#include <eigen3/unsupported/Eigen/SpecialFunctions>
-#endif
-
 #include <cmath>
 
 namespace numbirch {
@@ -36,12 +26,10 @@ inline HOST_DEVICE int copysign(const int x, const int y) {
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE auto digamma(const T x) {
-  return Eigen::numext::digamma(x);
-}
+HOST_DEVICE T digamma(const T x);
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE auto digamma(const T x, const int y) {
+HOST_DEVICE T digamma(const T x, const int y) {
   T z = 0.0;
   for (int i = 1; i <= y; ++i) {
     z += digamma(x + T(0.5)*(1 - i));
@@ -55,19 +43,13 @@ HOST_DEVICE T floor(const T x) {
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE T gamma_p(const T a, const T x) {
-  return Eigen::numext::igamma(a, x);
-}
+HOST_DEVICE T gamma_p(const T a, const T x);
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE T gamma_q(const T a, const T x) {
-  return Eigen::numext::igammac(a, x);
-}
+HOST_DEVICE T gamma_q(const T a, const T x);
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE T ibeta(const T a, const T b, const T x) {
-  return Eigen::numext::betainc(a, b, x);
-}
+HOST_DEVICE T ibeta(const T a, const T b, const T x);
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE T lbeta(const T x, const T y) {
@@ -104,6 +86,16 @@ HOST_DEVICE pair<T> lchoose_grad(const T d, const int x, const int y) {
     dy = T(1)/(x - y) - digamma(T(y + 1)) + digamma(T(x - y));
   }
   return pair<T>{d*dx, d*dy};
+}
+
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T lfact(const int x) {
+  return std::lgamma(T(x) + T(1));
+}
+
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T lfact_grad(const T d, const int x) {
+  return digamma(T(x) + T(1));
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>

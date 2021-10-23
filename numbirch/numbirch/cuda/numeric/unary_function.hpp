@@ -266,6 +266,23 @@ void ldet(const int n, const T* A, const int ldA, T* b) {
 }
 
 template<class T>
+void lfact(const int m, const int n, const int* A, const int ldA, T* B,
+    const int ldB) {
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, A, ldA, B, ldB, lfact_functor<T>());
+}
+
+template<class T>
+void lfact_grad(const int m, const int n, const T* G, const int ldG,
+    const int* A, const int ldA, T* B, const int ldB) {
+  prefetch(G, m, n, ldG);
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, G, ldG, A, ldA, B, ldB, lfact_grad_functor<T>());
+}
+
+template<class T>
 void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);

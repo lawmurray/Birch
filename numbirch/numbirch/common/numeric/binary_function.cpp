@@ -76,8 +76,18 @@ template void gamma_q(const int m, const int n, const float* A,
 
 template void hadamard(const int m, const int n, const double* A,
     const int ldA, const double* B, const int ldB, double* C, const int ldC);
+template void hadamard(const int m, const int n, const double* A,
+    const int ldA, const int* B, const int ldB, double* C, const int ldC);
+template void hadamard(const int m, const int n, const int* A,
+    const int ldA, const double* B, const int ldB, double* C, const int ldC);
 template void hadamard(const int m, const int n, const float* A,
     const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void hadamard(const int m, const int n, const float* A,
+    const int ldA, const int* B, const int ldB, float* C, const int ldC);
+template void hadamard(const int m, const int n, const int* A,
+    const int ldA, const float* B, const int ldB, float* C, const int ldC);
+template void hadamard(const int m, const int n, const int* A,
+    const int ldA, const int* B, const int ldB, int* C, const int ldC);
 
 template void inner(const int m, const int n, const double* A, const int ldA,
     const double* x, const int incx, double* y, const int incy);
@@ -98,6 +108,13 @@ template void lchoose(const int m, const int n, const int* A, const int ldA,
     const int* B, const int ldB, double* C, const int ldC);
 template void lchoose(const int m, const int n, const int* A, const int ldA,
     const int* B, const int ldB, float* C, const int ldC);
+
+template void lchoose_grad(const int m, const int n, const double* G,
+    const int ldG, const int* A, const int ldA, const int* B,
+    const int ldB, double* GA, const int ldGA, double* GB, const int ldGB);
+template void lchoose_grad(const int m, const int n, const float* G,
+    const int ldG, const int* A, const int ldA, const int* B,
+    const int ldB, float* GA, const int ldGA, float* GB, const int ldGB);
 
 template void lgamma(const int m, const int n, const double* A,
     const int ldA, const int* B, const int ldB, double* C, const int ldC);

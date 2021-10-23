@@ -273,7 +273,9 @@ void gamma_q(const int m, const int n, const T* A, const int ldA, const T* B,
  * 
  * @ingroup cpp-raw
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -284,9 +286,9 @@ void gamma_q(const int m, const int n, const T* A, const int ldA, const T* B,
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T>
-void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC);
+template<class T, class U, class V>
+void hadamard(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC);
 
 /**
  * Logarithm of the beta function.
@@ -327,6 +329,31 @@ void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
 template<class T>
 void lchoose(const int m, const int n, const int* A, const int ldA,
     const int* B, const int ldB, T* C, const int ldC);
+
+/**
+ * Gradient of lchoose().
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param G Matrix.
+ * @param ldG Column stride of `G`.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param B Matrix.
+ * @param ldB Column stride of `B`.
+ * @param[out] GA Matrix.
+ * @param ldGA Column stride of `GA`.
+ * @param[out] GB Matrix.
+ * @param ldGB Column stride of `GB`.
+ */
+template<class T>
+void lchoose_grad(const int m, const int n, const T* G, const int ldG,
+    const T* A, const int ldA, const T* B, const int ldB, T* GA,
+    const int ldGA, T* GB, const int ldGB);
 
 /**
  * Logarithm of the multivariate gamma function.

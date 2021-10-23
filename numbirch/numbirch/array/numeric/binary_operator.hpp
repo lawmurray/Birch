@@ -84,7 +84,8 @@ Scalar<typename promote<T,U>::type> operator+(const T& x,
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -92,10 +93,11 @@ Scalar<typename promote<T,U>::type> operator+(const T& x,
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> operator/(const Array<T,D>& A, const Scalar<T>& b) {
-  Array<T,D> C(A.shape().compact());
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
+    const Scalar<U>& b) {
+  Array<typename promote<T,U>::type,D> C(A.shape().compact());
   div(A.width(), A.height(), A.data(), A.stride(), b.data(), C.data(),
       C.stride());
   return C;
@@ -106,7 +108,8 @@ Array<T,D> operator/(const Array<T,D>& A, const Scalar<T>& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -114,10 +117,11 @@ Array<T,D> operator/(const Array<T,D>& A, const Scalar<T>& b) {
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> operator/(const Array<T,D>& A, const T& b) {
-  return A/Scalar<T>(b);
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
+    const U& b) {
+  return A/Scalar<U>(b);
 }
 
 /**
@@ -125,15 +129,17 @@ Array<T,D> operator/(const Array<T,D>& A, const T& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x %Scalar.
  * @param y %Scalar.
  * 
  * @return %Scalar.
  */
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> operator/(const T& x, const Scalar<T>& y) {
+template<class T, class U, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Scalar<typename promote<T,U>::type> operator/(const T& x, const Scalar<U>& y) {
   return Scalar<T>(x)/y;
 }
 
@@ -235,7 +241,7 @@ Array<bool,D> operator>(const Array<T,D>& A, const Array<T,D>& B) {
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 Scalar<bool> operator>(const Scalar<T>& x, const T& y) {
-  return x > Scalar<U>(y);
+  return x > Scalar<T>(y);
 }
 
 /**
@@ -539,7 +545,8 @@ inline Scalar<bool> operator||(const bool& x, const Scalar<bool>& y) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param a %Scalar.
@@ -547,10 +554,11 @@ inline Scalar<bool> operator||(const bool& x, const Scalar<bool>& y) {
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> operator*(const Scalar<T>& a, const Array<T,D>& B) {
-  Array<T,D> C(B.shape().compact());
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator*(const Scalar<T>& a,
+    const Array<U,D>& B) {
+  Array<typename promote<T,U>::type,D> C(B.shape().compact());
   mul(C.width(), C.height(), a.data(), B.data(), B.stride(), C.data(),
       C.stride());
   return C;
@@ -561,7 +569,8 @@ Array<T,D> operator*(const Scalar<T>& a, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param a Scalar.
@@ -569,9 +578,10 @@ Array<T,D> operator*(const Scalar<T>& a, const Array<T,D>& B) {
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> operator*(const T& a, const Array<T,D>& B) {
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator*(const T& a,
+    const Array<U,D>& B) {
   return Scalar<T>(a)*B;
 }
 
@@ -580,7 +590,8 @@ Array<T,D> operator*(const T& a, const Array<T,D>& B) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -591,9 +602,10 @@ Array<T,D> operator*(const T& a, const Array<T,D>& B) {
  * @note Disabled for `D == 0` as signature would be identical with
  * `operator*(const Scalar<T>&, const Array<T,D>&)`.
  */
-template<class T, int D, std::enable_if_t<(D > 0) &&
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> operator*(const Array<T,D>& A, const Scalar<T>& b) {
+template<class T, class U, int D, std::enable_if_t<(D > 0) &&
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
+    const Scalar<U>& b) {
   return b*A;
 }
 
@@ -602,7 +614,8 @@ Array<T,D> operator*(const Array<T,D>& A, const Scalar<T>& b) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -610,9 +623,10 @@ Array<T,D> operator*(const Array<T,D>& A, const Scalar<T>& b) {
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> operator*(const Array<T,D>& A, const T& b) {
+template<class T, class U, int D, std::enable_if_t<
+    std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
+    const U& b) {
   return b*A;
 }
 

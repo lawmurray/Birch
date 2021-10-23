@@ -300,6 +300,44 @@ template<class T>
 void ldet(const int n, const T* A, const int ldA, T* b);
 
 /**
+ * Logarithm of the factorial function.
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param[out] B Matrix.
+ * @param ldB Column stride of `B`.
+ */
+template<class T>
+void lfact(const int m, const int n, const int* A, const int ldA, T* B,
+    const int ldB);
+
+/**
+ * Gradient of lfact().
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param G Matrix.
+ * @param ldG Column stride of `G`.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param[out] GA Matrix.
+ * @param ldGA Column stride of `GA`.
+ */
+template<class T>
+void lfact_grad(const int m, const int n, const T* G, const int ldG,
+    const int* A, const int ldA, T* GA, const int ldGA);
+
+/**
  * Logarithm of the gamma function.
  * 
  * @ingroup cpp-raw

@@ -251,13 +251,13 @@ void gamma_q(const int m, const int n, const T* A, const int ldA, const T* B,
   transform(m, n, A, ldA, B, ldB, C, ldC, gamma_q_functor<T>());
 }
 
-template<class T>
-void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
+template<class T, class U, class V>
+void hadamard(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, B, ldB, C, ldC, multiply_functor<T>());
+  transform(m, n, A, ldA, B, ldB, C, ldC, multiply_functor<V>());
 }
 
 template<class T>
@@ -296,6 +296,19 @@ void lchoose(const int m, const int n, const int* A, const int ldA,
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
   transform(m, n, A, ldA, B, ldB, C, ldC, lchoose_functor<T>());
+}
+
+template<class T>
+void lchoose_grad(const int m, const int n, const T* G, const int ldG,
+    const int* A, const int ldA, const int* B, const int ldB, T* GA,
+    const int ldGA, T* GB, const int ldGB) {
+  prefetch(G, m, n, ldG);
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  prefetch(GA, m, n, ldGA);
+  prefetch(GB, m, n, ldGB);
+  transform(m, n, G, ldG, A, ldA, B, ldB, GA, ldGA, GB, ldGB,
+      lchoose_grad_functor<T>());
 }
 
 template<class T>

@@ -22,12 +22,4 @@ struct if_then_else_functor {
   }
 };
 
-template<class T>
-struct lchoose_grad_functor {
-  HOST_DEVICE pair<T> operator()(const T d, const int x, const int y)
-      const {
-    return lchoose_grad<T>(d, x, y);
-  }
-};
-
 }

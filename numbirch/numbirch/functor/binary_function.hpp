@@ -50,6 +50,14 @@ struct lchoose_functor {
 };
 
 template<class T>
+struct lchoose_grad_functor {
+  HOST_DEVICE pair<T> operator()(const T d, const int x, const int y)
+      const {
+    return lchoose_grad<T>(d, x, y);
+  }
+};
+
+template<class T>
 struct lgammap_functor {
   HOST_DEVICE T operator()(const T x, const T y) const {
     return lgamma(x, y);

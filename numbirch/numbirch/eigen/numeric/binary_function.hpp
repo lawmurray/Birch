@@ -120,11 +120,11 @@ void gamma_q(const int m, const int n, const T* A, const int ldA, const T* B,
   C1.noalias() = A1.binaryExpr(B1, gamma_q_functor<T>());
 }
 
-template<class T>
-void hadamard(const int m, const int n, const T* A, const int ldA, const T* B,
-    const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, n, ldA);
-  auto B1 = make_eigen_matrix(B, m, n, ldB);
+template<class T, class U, class V>
+void hadamard(const int m, const int n, const T* A, const int ldA, const U* B,
+    const int ldB, V* C, const int ldC) {
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<V>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<V>();
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1.cwiseProduct(B1);
 }
@@ -163,6 +163,20 @@ void lchoose(const int m, const int n, const int* A, const int ldA,
   auto B1 = make_eigen_matrix(B, m, n, ldB).template cast<T>();
   auto C1 = make_eigen_matrix(C, m, n, ldC);
   C1.noalias() = A1.binaryExpr(B1, lchoose_functor<T>());
+}
+
+template<class T>
+void lchoose_grad(const int m, const int n, const T* G, const int ldG,
+    const int* A, const int ldA, const int* B, const int ldB, T* GA,
+    const int ldGA, T* GB, const int ldGB) {
+  ///@todo Implement a generic ternary transform for this purpose
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < n; ++j) {
+      auto pair = lchoose_grad(G[i + j*ldG], A[i + j*ldA], B[i + j*ldB]);
+      GA[i + j*ldGA] = pair.first;
+      GB[i + j*ldGB] = pair.second;
+    }
+  }
 }
 
 template<class T>

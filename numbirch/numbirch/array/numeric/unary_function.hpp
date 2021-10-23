@@ -364,6 +364,51 @@ Scalar<T> ldet(const Matrix<T>& A) {
 }
 
 /**
+ * Logarithm of the factorial function.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ * 
+ * @note The return type `T` must be explicitly specified.
+ */
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> lfact(const Array<int,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  lfact(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
+ * Gradient of lfact().
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ * 
+ * @note The return type `T` must be explicitly specified.
+ */
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> lfact_grad(const Array<T,D>& G, const Array<int,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  lfact_grad(A.width(), A.height(), G.data(), G.stride(), A.data(),
+      A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
  * Logarithm of the gamma function.
  * 
  * @ingroup array
@@ -512,12 +557,12 @@ Array<T,D> sin(const Array<T,D>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
  * 
  * @param i Index of single entry (1-based).
  * @param n Length of vector.
  */
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 Vector<T> single(const Scalar<int>& i, const int n) {
   Vector<T> x(make_shape(n));
   single(i.data(), n, x.data(), x.stride());
@@ -530,12 +575,12 @@ Vector<T> single(const Scalar<int>& i, const int n) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
  * 
  * @param i Index of single entry (1-based).
  * @param n Length of vector.
  */
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 Vector<T> single(const int& i, const int n) {
   return single<T>(Scalar<int>(i), n);
 }
@@ -585,7 +630,7 @@ Array<T,D> sqrt(const Array<T,D>& A) {
  * 
  * @ingroup array
  * 
- * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -593,7 +638,7 @@ Array<T,D> sqrt(const Array<T,D>& A) {
  * @return Sum of elements of the array.
  */
 template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
+    std::is_arithmetic<T>::value,int> = 0>
 Scalar<T> sum(const Array<T,D>& A) {
   Scalar<T> b;
   sum(A.width(), A.height(), A.data(), A.stride(), b.data());

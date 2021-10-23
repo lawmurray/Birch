@@ -103,10 +103,20 @@ template void lcholdet(const int n, const float* S, const int ldS,
 template void ldet(const int n, const double* A, const int ldA, double* b);
 template void ldet(const int n, const float* A, const int ldA, float* b);
 
-template void lgamma(const int m, const int n, const double* A,
-    const int ldA, double* B, const int ldB);
-template void lgamma(const int m, const int n, const float* A,
-    const int ldA, float* B, const int ldB);
+template void lfact(const int m, const int n, const int* A, const int ldA,
+    double* B, const int ldB);
+template void lfact(const int m, const int n, const int* A, const int ldA,
+    float* B, const int ldB);
+
+template void lfact_grad(const int m, const int n, const double* G,
+    const int ldG, const int* A, const int ldA, double* B, const int ldB);
+template void lfact_grad(const int m, const int n, const float* G,
+    const int ldG, const int* A, const int ldA, float* B, const int ldB);
+
+template void lgamma(const int m, const int n, const double* A, const int ldA,
+    double* B, const int ldB);
+template void lgamma(const int m, const int n, const float* A, const int ldA,
+    float* B, const int ldB);
 
 template void log(const int m, const int n, const double* A,
     const int ldA, double* B, const int ldB);

@@ -21,6 +21,7 @@ COMMON_SOURCES = \
     numbirch/common/numeric/ternary_operator.cpp \
     numbirch/common/numeric/unary_function.cpp \
     numbirch/common/numeric/unary_operator.cpp \
+    numbirch/common/function.cpp \
     numbirch/common/random.cpp
 
 if ONEAPI
