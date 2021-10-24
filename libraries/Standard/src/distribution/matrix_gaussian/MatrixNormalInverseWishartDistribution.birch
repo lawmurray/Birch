@@ -37,7 +37,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         peek(k));
   }
   
-  override function logpdf(X:Real[_,_]) -> Real {   
+  override function logpdf(X:Real[_,_]) -> Real! {   
     return logpdf_matrix_normal_inverse_wishart(X, value(N), value(Λ),
         value(Ψ), value(k));
   }

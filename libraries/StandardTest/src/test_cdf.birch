@@ -12,9 +12,9 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   if from? {
     /* test the lower bound against the quantile */
     let test <- q.quantile(0.0);
-    if test? && abs(from! - test!) > 1.0/N {
-      error("lower bound and quantile comparison failed, " + from! + " vs " +
-          test! + ".");
+    if test? && abs(from!! - test!!) > 1.0/N {
+      error("lower bound and quantile comparison failed, " + from!! + " vs " +
+          test!! + ".");
     }
   } else {
     from <- q.quantile(1.0/N);

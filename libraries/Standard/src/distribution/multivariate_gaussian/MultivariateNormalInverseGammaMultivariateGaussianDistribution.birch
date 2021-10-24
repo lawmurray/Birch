@@ -43,7 +43,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussianDistribution<Arg1,
         peek(ν), peek(Λ), peek(α), peek(β), peek(Σ));
   }
   
-  override function logpdf(x:Real[_]) -> Real {
+  override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, value(ν), value(Λ), value(α), value(β), value(Σ));
   }

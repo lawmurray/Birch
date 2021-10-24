@@ -49,7 +49,7 @@ final class ScaledMultivariateNormalInverseGammaMultivariateGaussianDistribution
         peek(A), peek(ν), peek(Λ), peek(α), peek(β), peek(Σ));
   }
   
-  override function logpdf(x:Real[_]) -> Real {
+  override function logpdf(x:Real[_]) -> Real! {
     return logpdf_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, value(A), value(ν), value(Λ), value(α), value(β), value(Σ));
   }

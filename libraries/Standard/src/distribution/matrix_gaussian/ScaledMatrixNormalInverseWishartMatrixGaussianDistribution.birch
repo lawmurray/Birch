@@ -49,7 +49,7 @@ final class ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2
         peek(A), peek(N), peek(Λ), peek(Ψ), peek(k), peek(U));
   }
   
-  override function logpdf(X:Real[_,_]) -> Real {
+  override function logpdf(X:Real[_,_]) -> Real! {
     return logpdf_scaled_matrix_normal_inverse_wishart_matrix_gaussian(
         X, value(A), value(N), value(Λ), value(Ψ), value(k), value(U));
   }

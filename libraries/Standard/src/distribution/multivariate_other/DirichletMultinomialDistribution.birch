@@ -25,7 +25,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return simulate_dirichlet_multinomial(peek(n), peek(α));
   }
 
-  override function logpdf(x:Integer[_]) -> Real {
+  override function logpdf(x:Integer[_]) -> Real! {
     return logpdf_dirichlet_multinomial(x, value(n), value(α));
   }
 

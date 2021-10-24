@@ -68,7 +68,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
         peek(α), peek(β));
   }
   
-  override function logpdf(x:Real[_]) -> Real {
+  override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma(x, value(ν), value(Λ),
         value(α), value(β));
   }

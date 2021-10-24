@@ -42,7 +42,7 @@ final class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
         peek(Λ), peek(Ψ), peek(k), peek(U));
   }
   
-  override function logpdf(X:Real[_,_]) -> Real {
+  override function logpdf(X:Real[_,_]) -> Real! {
     return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, value(N),
         value(Λ), value(Ψ), value(k), value(U));
   }

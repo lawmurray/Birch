@@ -32,7 +32,7 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,Arg3>
         peek(Σ), peek(S));
   }
   
-  override function logpdf(x:Real[_]) -> Real {
+  override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_gaussian_multivariate_gaussian(x, value(μ),
         value(Σ), value(S));
   }

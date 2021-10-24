@@ -51,7 +51,7 @@ final class InverseWishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) <
     return simulate_inverse_wishart(peek(Ψ), peek(k));
   }
   
-  override function logpdf(X:Real[_,_]) -> Real {
+  override function logpdf(X:Real[_,_]) -> Real! {
     return logpdf_inverse_wishart(X, value(Ψ), value(k));
   }
 
