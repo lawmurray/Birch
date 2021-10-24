@@ -73,11 +73,12 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
  */
 function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
-  /* wrap λ in another lambda function to translate 0-based serial indices
-   * into 1-based row/column indices */
-  return numbirch::Array([&](const int64_t s) {
-        int j = s/rows;
-        int i = s - j*rows;
+  /* wrap λ in another lambda function to translate serial index to row/column
+   * indices */
+  using T = decltype(wait(λ(1,1)));
+  return numbirch::Array<T,2>([&](const int64_t s) {
+        int j = (s - 1)/rows;
+        int i = s - 1 - j*rows;
         return λ(i + 1, j + 1);
       }, numbirch::make_shape(rows, columns));
   }}

@@ -50,46 +50,6 @@ function to_string(x:String) -> String {
 }
 
 /**
- * Convert to string.
- */
-function to_string(x:Boolean?) -> String? {
-  if x? {
-    return to_string(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:Real?) -> String? {
-  if x? {
-    return to_string(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:Integer?) -> String? {
-  if x? {
-    return to_string(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:String?) -> String? {
-  return x;
-}
-
-/**
  * Convert vector to String.
  */
 function to_string<Type>(x:Type[_]) -> String {
