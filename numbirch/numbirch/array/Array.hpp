@@ -51,6 +51,11 @@ public:
   using value_type = T;
   using shape_type = ArrayShape<D>;
 
+  /**
+   * Number of dimensions.
+   */
+  static constexpr int ndims = D;
+
   /* catch some common error cases */
   static_assert(std::is_arithmetic<T>::value,
       "Array is meant only for arithmetic types");

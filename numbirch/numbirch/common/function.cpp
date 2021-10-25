@@ -16,6 +16,8 @@
 #include <eigen3/unsupported/Eigen/SpecialFunctions>
 #endif
 
+namespace numbirch {
+
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE T digamma(const T x) {
   return Eigen::numext::digamma(x);
@@ -50,3 +52,5 @@ template double ibeta(double, double, double);
 template double ibeta(int, int, double);
 template float ibeta(float, float, float);
 template float ibeta(int, int, float);
+
+}

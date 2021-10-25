@@ -93,5 +93,5 @@ function logpdf_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
-  return Beta(α + x, β + 1.0 - x);
+  return Beta(if_then_else(x, α + 1.0, α), if_then_else(x, β, β + 1.0));
 }
