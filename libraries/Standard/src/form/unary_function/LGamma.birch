@@ -14,8 +14,8 @@ function eval<Middle>(x:LGamma<Middle>) -> {
   return lgamma(eval(x.m));
 }
 
-function grad<Middle,Gradient>(x:LGamma<Middle>, d:Gradient) {
-  return grad(x.m, d*digamma(peek(x.m)));
+function grad<Middle,Gradient>(x:LGamma<Middle>, d:Gradient) -> {
+  return grad(x.m, hadamard(d, digamma(peek(x.m))));
 }
 
 hpp{{

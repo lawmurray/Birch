@@ -102,13 +102,7 @@ function logpdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
-  assert 0 < k;
-  assert 0.0 <= ρ && ρ <= 1.0;
-  if x < 0 {
-    return 0.0;
-  } else {
-    return ibeta(k, x + 1.0,  ρ);
-  }
+  return ibeta(k, x + 1,  ρ);
 }
 
 /*
@@ -122,8 +116,6 @@ function cdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
  */
 function quantile_negative_binomial<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2,
     ρ:Arg3) -> {
-  assert 0 < k;
-  assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
   return boost::math::quantile(boost::math::negative_binomial_distribution<
       Real>(wait(k), wait(ρ)), wait(P));

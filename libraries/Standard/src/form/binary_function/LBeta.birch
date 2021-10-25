@@ -17,8 +17,8 @@ function eval<Left,Right>(x:LBeta<Left,Right>) -> {
 function grad<Left,Right,Gradient>(x:LBeta<Left,Right>, d:Gradient) {
   let l <- peek(x.l);
   let r <- peek(x.r);
-  grad(x.l, d*(digamma(l) - digamma(l + r)));
-  grad(x.r, d*(digamma(r) - digamma(l + r)));
+  grad(x.l, hadamard(d, digamma(l) - digamma(l + r)));
+  grad(x.r, hadamard(d, digamma(r) - digamma(l + r)));
 }
 
 hpp{{

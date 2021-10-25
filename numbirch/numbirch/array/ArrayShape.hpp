@@ -138,9 +138,13 @@ public:
   }
 
   template<class T>
-  T& slice(T* buffer, const int i) const {
+  auto slice(T* buffer, const int i) const {
     assert(1 <= i && i <= n && "index out of bounds");
-    return buffer[(i - 1)*int64_t(inc)];
+
+    using U = typename std::remove_const<T>::type;
+    U* buf = const_cast<U*>(buffer);
+
+    return Array<U,0>(buf + (i - 1)*int64_t(inc), ArrayShape<0>());
   }
 
   /**
@@ -326,10 +330,14 @@ public:
   }
 
   template<class T>
-  T& slice(T* buffer, const int i, const int j) const {
+  auto slice(T* buffer, const int i, const int j) const {
     assert(1 <= i && i <= m && "row index out of bounds");
     assert(1 <= j && j <= n && "column index out of bounds");
-    return buffer[(i - 1) + int64_t(ld)*(j - 1)];
+
+    using U = typename std::remove_const<T>::type;
+    U* buf = const_cast<U*>(buffer);
+
+    return Array<U,0>(buf + (i - 1) + int64_t(ld)*(j - 1), ArrayShape<0>());
   }
 
 private:

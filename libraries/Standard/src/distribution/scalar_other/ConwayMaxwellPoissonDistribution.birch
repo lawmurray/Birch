@@ -104,7 +104,7 @@ function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
  */
 function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  return if_then_else(0 <= x && x <= n, x*log(λ) - ν*lfact<Real>(x) -
+  return if_then_else(0 <= x && x <= n, x*log(λ) - ν*lfact(x) -
       logz_conway_maxwell_poisson(λ, ν, n), -inf);
 }
 

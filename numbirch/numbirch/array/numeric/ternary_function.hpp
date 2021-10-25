@@ -19,6 +19,7 @@ namespace numbirch {
  * @ingroup array
  * 
  * @tparam T Floating point type.
+ * @tparam U Arithmetic type.
  * @tparam D Number of dimensions.
  * 
  * @param A %Array.
@@ -27,9 +28,9 @@ namespace numbirch {
  * 
  * @return %Array.
  */
-template<class T, int D, std::enable_if_t<
-    std::is_floating_point<T>::value,int> = 0>
-Array<T,D> ibeta(const Array<T,D>& A, const Array<T,D>& B,
+template<class T, class U, int D, std::enable_if_t<
+    std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
+Array<T,D> ibeta(const Array<U,D>& A, const Array<U,D>& B,
     const Array<T,D>& X) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());

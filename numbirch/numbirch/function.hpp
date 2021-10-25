@@ -48,8 +48,9 @@ HOST_DEVICE T gamma_p(const T a, const T x);
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE T gamma_q(const T a, const T x);
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST_DEVICE T ibeta(const T a, const T b, const T x);
+template<class T, class U, std::enable_if_t<
+    std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
+HOST_DEVICE T ibeta(const U a, const U b, const T x);
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE T lbeta(const T x, const T y) {

@@ -25,29 +25,21 @@ function grad<Left,Middle,Right,Gradient>(x:MatrixElement<Left,Middle,Right>,
   grad(x.r, 0.0);
 }
 
-hpp{{
-namespace birch {
 /**
  * Element of a matrix.
  */
-template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay<Left,Middle,Right>::value,int> = 0>
-auto element(const Left& x, const Middle& i, const Right& j) {
+function element<Left,Middle,Right>(x:Left, i:Middle, j:Right) -> {
   return element(matrix_split(x), i, j);
 }
 
 /**
  * Element of a matrix.
  */
-template<class Value, class Form, class Middle, class Right, std::enable_if_t<
-    is_delay<Form,Middle,Right>::value,int> = 0>
-auto element(const MatrixSplitExpression<Value,Form>& x, const Middle& i,
-    const Right& j) {
+function element<Value,Form,Middle,Right>(x:MatrixSplitExpression<Value,Form>,
+    i:Middle, j:Right) -> {
   return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,
       Right>>(x, i, j);
 }
-}
-}}
 
 /**
  * Element of a matrix.

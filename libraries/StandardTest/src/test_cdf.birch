@@ -75,9 +75,9 @@ function test_cdf(q:Distribution<Integer>) {
   if from? {
     /* test the lower bound against the quantile */
     let test <- q.quantile(0.0);
-    if test? && abs(from! - test!) > 1.0e-6 {
-      error("lower bound and quantile comparison failed, " + from! + " vs " +
-          test! + ".");
+    if test? && abs(from!! - test!!) > 1.0e-6 {
+      error("lower bound and quantile comparison failed, " + from!! + " vs " +
+          test!! + ".");
     }
   } else {
     from <- q.quantile(1.0e-6);
@@ -89,9 +89,9 @@ function test_cdf(q:Distribution<Integer>) {
   if to? {
     /* test the upper bound against the quantile */
     let test <- q.quantile(1.0);
-    if test? && abs(to! - test!) > 1.0e-6 {
-      error("upper bound and quantile comparison failed, " + to! + " vs " +
-          test! + ".");
+    if test? && abs(to!! - test!!) > 1.0e-6 {
+      error("upper bound and quantile comparison failed, " + to!! + " vs " +
+          test!! + ".");
     }
   } else {
     to <- q.quantile(1.0 - 1.0e-6);

@@ -12,7 +12,7 @@ class ParticleFilter {
   /**
    * Particles.
    */
-  x:Particle[_];
+  x:Array<Particle>;
 
   /**
    * Log weights.
@@ -94,7 +94,10 @@ class ParticleFilter {
    * - input: Input buffer.
    */
   function filter(model:Model, input:Buffer) {
-    x <- global.copy(particle(model), nparticles);
+    x.clear();
+    for n in 1..nparticles {
+      x.pushBack(particle(global.copy(model)));
+    }
     w <- vector(0.0, nparticles);
     a <- iota(1, nparticles);
     b <- 1;
@@ -143,7 +146,7 @@ class ParticleFilter {
         h.w <- 0.0;
         m.read(input);
         m.simulate();
-        w[n] <- w[n] + h.w!;
+        w[n] <- w[n] + h.w;
       }
     }
   }
@@ -159,7 +162,7 @@ class ParticleFilter {
         h.w <- 0.0;
         m.read(t, input);
         m.simulate(t);
-        w[n] <- w[n] + h.w!;
+        w[n] <- w[n] + h.w;
       }
     }
   }
@@ -230,7 +233,7 @@ class ParticleFilter {
     parallel for n in 1..nparticles {
       α[n] <- κ.apply(t, x[n]);
     }
-    raccepts <- sum(α)!/nparticles;  // average acceptance rate
+    raccepts <- sum(α)/nparticles;  // average acceptance rate
   }
 
   override function read(buffer:Buffer) {

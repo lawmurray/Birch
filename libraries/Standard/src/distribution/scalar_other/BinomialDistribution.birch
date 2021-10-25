@@ -74,8 +74,6 @@ function Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
  * - ρ: Probability of a true result.
  */
 function simulate_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
-  assert 0 <= n;
-  assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
   return std::binomial_distribution<Integer>(wait(n), wait(ρ))(rng);
   }}
@@ -104,15 +102,7 @@ function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
-  assert 0 <= n;
-  assert 0.0 <= ρ && ρ <= 1.0;
-  if x < 0 {
-    return 0.0;
-  } else if x >= n {
-    return 1.0;
-  } else {
-    return ibeta(n - x, x + 1.0, 1.0 - ρ);
-  }
+  return ibeta(n - x, x + 1, 1.0 - ρ);
 }
 
 /*
@@ -125,8 +115,6 @@ function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
  * Return: the quantile.
  */
 function quantile_binomial<Arg1,Arg2,Arg3>(P:Arg1, n:Arg2, ρ:Arg3) -> {
-  assert 0 <= n;
-  assert 0.0 <= ρ && ρ <= 1.0;
   cpp{{
   return boost::math::quantile(boost::math::binomial_distribution<Real>(
       wait(n), wait(ρ)), wait(P));

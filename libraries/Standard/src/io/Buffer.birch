@@ -41,8 +41,8 @@ final class Buffer {
    * With the excepton of objects (in the JSON sense), where both `keys` and
    * `values` are defined, at most one of these values should be defined.
    */
-  keys:String[_]?;
-  values:Buffer[_]?;
+  keys:Array<String>?;
+  values:Array<Buffer>?;
   scalarString:String?;
   scalarReal:Real?;
   scalarInteger:Integer?;
@@ -141,10 +141,8 @@ final class Buffer {
    */
   function setEmptyObject() {
     setNil();
-    keys:String[_];
-    values:Buffer[_];
-    this.keys <- keys;
-    this.values <- values;
+    keys <- construct<Array<String>>();
+    values <- construct<Array<Buffer>>();
     cpp{{
     map.clear();
     }}
@@ -164,8 +162,10 @@ final class Buffer {
    */
   function setEmptyArray() {
     setNil();
-    values:Buffer[_];
-    this.values <- values;
+    values <- construct<Array<Buffer>>();
+    cpp{{
+    map.clear();
+    }}
   }
 
   /**
@@ -325,15 +325,15 @@ final class Buffer {
    * - keys: Keys.
    * - values: Values.
    */
-  function set(keys:String[_], values:Buffer[_]) {
-    assert length(keys) == length(values);
+  function set(keys:Array<String>, values:Array<Buffer>) {
+    assert keys.size() == values.size();
     setNil();
     this.keys <- keys;
     this.values <- values;
     cpp{{
     map.clear();
     }}
-    let len <- length(keys);
+    let len <- keys.size();
     for i in 1..len {
       cpp{{
       map.insert(std::make_pair(keys(i), i));
@@ -370,7 +370,7 @@ final class Buffer {
    * If the buffer value is not already an object, it is cleared before
    * setting the new entry.
    */
-  function set(key:String, keys:String[_], values:Buffer[_]) {
+  function set(key:String, keys:Array<String>, values:Array<Buffer>) {
     set(key, make_buffer(keys, values));
   }
 
@@ -412,15 +412,12 @@ final class Buffer {
    */
   function set(key:String, x:Buffer) {
     if !keys? {
-      setNil();
-      keys <- [key];
-      values <- [x];
-    } else {
-      keys <- stack(keys!, key);
-      values <- stack(values!, x);
+      setEmptyObject();
     }
+    keys!.pushBack(key);
+    values!.pushBack(x);
     cpp{{
-    map.insert(std::make_pair(key, length(values.value())));
+    map.insert(std::make_pair(key, values.value()->size()));
     }}
   }
 
@@ -509,10 +506,10 @@ final class Buffer {
    */
   function push(x:Buffer) {
     if isEmpty() {
-      keys <- nil;
-      values <- [x];
+      setEmptyArray();
+      values!.pushBack(x);
     } else if !keys? && values? {
-      values <- stack(values!, x);
+      values!.pushBack(x);
     } else {
       split();
       push(x);
@@ -870,23 +867,9 @@ final class Buffer {
     matrixReal <- x;
   }
 
-  function doSet(x:Object[_]) {
-    setEmptyArray();
-    for i in 1..length(x) {
-      push(make_buffer(x[i]));
-    }
-  }
-
   function doSet(t:Integer, x:Object) {
     setNil();
     x.write(t, this);
-  }
-
-  function doSet(t:Integer, x:Object[_]) {
-    setEmptyArray();
-    for i in 1..length(x) {
-      push(make_buffer(t, x[i]));
-    }
   }
 
   function doPush(x:Boolean) {
@@ -1029,15 +1012,7 @@ final class Buffer {
     }
   }
 
-  function doPush(x:Object[_]) {
-    push(make_buffer(x));
-  }
-
   function doPush(t:Integer, x:Object) {
-    push(make_buffer(t, x));
-  }
-
-  function doPush(t:Integer, x:Object[_]) {
     push(make_buffer(t, x));
   }
 }
@@ -1078,7 +1053,7 @@ function make_buffer<Type>(t:Integer, root:Type) -> Buffer {
  * - keys: Keys.
  * - values: Values.
  */
-function make_buffer(keys:String[_], values:Buffer[_]) -> Buffer {
+function make_buffer(keys:Array<String>, values:Array<Buffer>) -> Buffer {
   o:Buffer;
   o.set(keys, values);
   return o;

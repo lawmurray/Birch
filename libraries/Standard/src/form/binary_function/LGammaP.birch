@@ -15,7 +15,7 @@ function eval<Left,Right>(x:LGammaP<Left,Right>) -> {
 }
 
 function grad<Left,Right,Gradient>(x:LGammaP<Left,Right>, d:Gradient) {
-  grad(x.l, d*digamma(peek(x.l), peek(x.r)));
+  grad(x.l, hadamard(d, digamma(peek(x.l), peek(x.r))));
   grad(x.r, 0.0);
 }
 

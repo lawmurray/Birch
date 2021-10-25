@@ -14,8 +14,8 @@
 
 namespace numbirch {
 
-template<class T>
-void ibeta(const int m, const int n, const T* A, const int ldA, const T* B,
+template<class T, class U>
+void ibeta(const int m, const int n, const U* A, const int ldA, const U* B,
     const int ldB, const T* X, const int ldX, T* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(B, m, n, ldB);

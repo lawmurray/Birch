@@ -1,5 +1,5 @@
 class TestChainMultivariateGaussian < TestModel {
-  x:Random<Real[_]>[5];
+  x:Array<Random<Real[_]>>;
   μ:Real[3];
   Σ:Real[3,3];
 
@@ -47,7 +47,8 @@ class TestChainMultivariateGaussian < TestModel {
   }
 }
 
-program test_conjugacy_chain_multivariate_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_conjugacy_chain_multivariate_gaussian(N:Integer <- 10000,
+    lazy:Boolean <- false) {
   m:TestChainMultivariateGaussian;
   test_conjugacy(m, N, lazy);
 }

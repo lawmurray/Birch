@@ -21,7 +21,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return simulate_dirichlet_multinomial(value(n), value(α));
   }
 
-  override function simulateLazy() -> Integer[_] {
+  override function simulateLazy() -> Integer[_]? {
     return simulate_dirichlet_multinomial(peek(n), peek(α));
   }
 

@@ -129,7 +129,7 @@ function update_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return ibeta(k, x + 1.0,  1.0/(θ + 1.0));
+  return ibeta(k, x + 1.0, 1.0/(θ + 1.0));
 }
 
 /*

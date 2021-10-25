@@ -36,31 +36,6 @@ struct is_index<Arg,Args...> {
   static const bool value = is_index<Arg>::value && is_index<Args...>::value;
 };
 
-template<class T, class U>
-struct can_promote {
-  static const bool value = false;
-};
-
-template<class T>
-struct can_promote<T,T> {
-  static const bool value = true;
-};
-
-template<>
-struct can_promote<int,float> {
-  static const bool value = true;
-};
-
-template<>
-struct can_promote<int,double> {
-  static const bool value = true;
-};
-
-template<>
-struct can_promote<float,double> {
-  static const bool value = true;
-};
-
 /**
  * Multidimensional array with copy-on-write.
  * 
@@ -77,9 +52,14 @@ public:
   using shape_type = ArrayShape<D>;
 
   /* catch some common error cases */
-  static_assert(!std::is_same<T,Array<double,0>>::value);
-  static_assert(!std::is_same<T,Array<float,0>>::value);
-  static_assert(!std::is_same<T,Array<int,0>>::value);
+  static_assert(std::is_arithmetic<T>::value,
+      "Array is meant only for arithmetic types");
+  static_assert(!std::is_same<T,Array<double,0>>::value,
+      "Array of Array not supported (and not what you want anyway?)");
+  static_assert(!std::is_same<T,Array<float,0>>::value,
+      "Array of Array not supported (and not what you want anyway?)");
+  static_assert(!std::is_same<T,Array<int,0>>::value,
+      "Array of Array not supported (and not what you want anyway?)");
 
   /**
    * Constructor.
@@ -93,7 +73,7 @@ public:
       isElementWise(false) {
     // default allocation of a scalar has one element
     allocate();
-    if (!std::is_trivial<T>::value) {
+    if (!std::is_arithmetic<T>::value) {
       atomize();
       initialize();
     }
@@ -138,7 +118,7 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    if (!std::is_trivial<T>::value) {
+    if (!std::is_arithmetic<T>::value) {
       atomize();
       initialize();
     }
@@ -159,6 +139,7 @@ public:
     allocate();
     atomize();
     fill(value);
+    ///@todo Use asynchronous fill
   }
 
   /**
@@ -234,7 +215,8 @@ public:
   /**
    * Constructor.
    *
-   * @param l Lambda called to construct each element.
+   * @param l Lambda called to construct each element. Argument is a 1-based
+   * serial index.
    * @param shape Shape.
    */
   template<class L>
@@ -248,7 +230,7 @@ public:
     atomize();
     int64_t n = 0;
     for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
-      new (&*iter) T(l(n++));
+      new (&*iter) T(l(++n));
     }
   }
 
@@ -274,7 +256,7 @@ public:
       isView(false),
       isElementWise(false) {
     shp = o.shp;
-    if (!o.isView && std::is_trivial<T>::value) {
+    if (!o.isView && std::is_arithmetic<T>::value) {
       ArrayControl* ctl;
       std::tie(ctl, buf, isElementWise) = o.share();
       this->ctl.store(ctl);
@@ -349,6 +331,15 @@ public:
   }
 
   /**
+   * Value assignment (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  Array& operator=(const T& value) {
+    fill(value);
+    return *this;
+  }
+
+  /**
    * Iterator to the first element.
    */
   ArrayIterator<T,D> begin() {
@@ -379,21 +370,21 @@ public:
     return begin().operator+(size());
   }
 
-  // /**
-  //  * Value conversion (scalar only).
-  //  */
-  // template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  // operator T&() {
-  //   return value();
-  // }
+  /**
+   * Value conversion (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  operator T&() {
+    return value();
+  }
 
-  // /**
-  //  * Value conversion (scalar only).
-  //  */
-  // template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  // operator const T&() const {
-  //   return value();
-  // }
+  /**
+   * Value conversion (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  operator const T&() const {
+    return value();
+  }
 
   /**
    * Dereference (scalar only).
@@ -408,6 +399,24 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
   const T& operator*() const {
+    return value();
+  }
+
+  /**
+   * Member access (scalar only).
+   */
+  template<int E = D, std::enable_if_t<(E == 0) &&
+      !std::is_arithmetic<T>::value,int> = 0>
+  T& operator->() {
+    return value();
+  }
+
+  /**
+   * Member access (scalar only).
+   */
+  template<int E = D, std::enable_if_t<(E == 0) &&
+      !std::is_arithmetic<T>::value,int> = 0>
+  const T& operator->() const {
     return value();
   }
 
@@ -451,7 +460,7 @@ public:
    * it returns true.
    */
   bool has_value() const {
-    return !std::is_trivial<T>::value || isElementWise;
+    return !std::is_arithmetic<T>::value || isElementWise;
   }
 
 
@@ -466,11 +475,11 @@ public:
    *
    * @return The resulting view or element.
    * 
-   * @attention Currently ranges and indices for slices are 1-based rather
+   * @note Currently ranges and indices for slices are 1-based rather
    * than 0-based, as Array is used directly from Birch, in which arrays use
    * 1-based indexing, rather than C++, in which arrays use 0-based indexing.
    */
-  template<class... Args, std::enable_if_t<!is_index<Args...>::value,int> = 0>
+  template<class... Args>
   auto operator()(Args&&... args) {
     own();
     crystallize();
@@ -480,28 +489,9 @@ public:
   /**
    * @copydoc operator()()
    */
-  template<class... Args, std::enable_if_t<!is_index<Args...>::value,int> = 0>
+  template<class... Args>
   auto operator()(Args&&... args) const {
     crystallize();
-    return shp.slice(buf, std::forward<Args>(args)...);
-  }
-
-  /**
-   * @copydoc operator()()
-   */
-  template<class... Args, std::enable_if_t<is_index<Args...>::value,int> = 0>
-  decltype(auto) operator()(Args&&... args) {
-    own();
-    atomize();
-    return shp.slice(buf, std::forward<Args>(args)...);
-  }
-
-  /**
-   * @copydoc operator()()
-   */
-  template<class... Args, std::enable_if_t<is_index<Args...>::value,int> = 0>
-  auto operator()(Args&&... args) const {
-    atomize();
     return shp.slice(buf, std::forward<Args>(args)...);
   }
 
@@ -627,7 +617,7 @@ public:
       swap(tmp);
     } else {
       own();
-      if (std::is_trivial<T>::value) {
+      if (std::is_arithmetic<T>::value) {
         crystallize();
         buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
         atomize();
@@ -664,7 +654,7 @@ public:
       std::destroy(buf + i, buf + i + len);
       std::memmove((void*)(buf + i), (void*)(buf + i + len),
           (n - len - i)*sizeof(T));
-      if (std::is_trivial<T>::value) {
+      if (std::is_arithmetic<T>::value) {
         crystallize();
         buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
       } else {
@@ -718,7 +708,7 @@ private:
   void assign(const Array& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      if (std::is_trivial<T>::value) {
+      if (std::is_arithmetic<T>::value) {
         crystallize();
         memcpy(data(), shp.stride()*sizeof(T), o.data(),
             o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
@@ -780,7 +770,7 @@ private:
     assert(!ctl.load());
     assert(!isElementWise);
 
-    if (std::is_trivial<T>::value) {
+    if (std::is_arithmetic<T>::value) {
       crystallize();
       buf = (T*)malloc(volume()*sizeof(T));
     } else {
@@ -795,7 +785,7 @@ private:
     if (!isView) {
       auto ctl = this->ctl.exchange(nullptr);
       if (!ctl || ctl->decShared() == 0) {
-        if (std::is_trivial<T>::value) {
+        if (std::is_arithmetic<T>::value) {
           free((void*)buf);
         } else {
           std::destroy(beginInternal(), endInternal());
@@ -858,7 +848,7 @@ private:
         this->ctl.store(nullptr);
       } else {
         T* buf = nullptr;
-        if (std::is_trivial<T>::value) {
+        if (std::is_arithmetic<T>::value) {
           crystallize();
           buf = (T*)malloc(volume()*sizeof(T));
           memcpy(buf, shp.stride()*sizeof(T), this->buf,
@@ -901,7 +891,7 @@ private:
    */
   void atomize() {
     if (!isElementWise) {
-      if (std::is_trivial<T>::value) {
+      if (std::is_arithmetic<T>::value) {
         wait();
       }
       isElementWise = true;
@@ -945,7 +935,7 @@ private:
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible<U,T>::value,int> = 0>
   void uninitialized_copy(const Array<U,E>& o) {
-    if (std::is_trivial<T>::value && std::is_same<T,U>::value) {
+    if (std::is_arithmetic<T>::value && std::is_same<T,U>::value) {
       crystallize();
       memcpy(data(), shp.stride()*sizeof(T), o.data(),
           o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
@@ -999,12 +989,6 @@ Array(const std::initializer_list<std::initializer_list<T>>&) -> Array<T,2>;
 
 template<class T>
 Array(const std::initializer_list<T>&) -> Array<T,1>;
-
-template<class L>
-Array(const L& l, const ArrayShape<1>& shape) -> Array<decltype(l(0)),1>;
-
-template<class L>
-Array(const L& l, const ArrayShape<2>& shape) -> Array<decltype(l(0)),2>;
 
 template<class T>
 Array(const T& value) -> Array<T,0>;

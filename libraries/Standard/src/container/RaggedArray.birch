@@ -8,17 +8,7 @@ final class RaggedArray<Type> {
   /**
    * Elements.
    */
-  values:Type[_];
-
-  /**
-   * Offset into `values` for each row.
-   */
-  offsets:Integer[_];
-  
-  /**
-   * Number of columns in each row.
-   */
-  sizes:Integer[_];
+  values:Array<Array<Type>>;
 
   /**
    * Reference to an element.
@@ -27,7 +17,7 @@ final class RaggedArray<Type> {
    * - j: Column.
    */
   operator [i:Integer, j:Integer] -> Type {
-    return values[serial(i, j)];
+    return values[i][j];
   }
 
   /**
@@ -36,34 +26,32 @@ final class RaggedArray<Type> {
    * rows have no elements.
    */
   function empty() -> Boolean {
-    return length(offsets) == 0;
+    return values.empty();
   }
 
   /**
    * Clear all rows.
    */
   function clear() {
-    values:Type[_];
-    offsets:Integer[_];
-    sizes:Integer[_];
-    
-    this.values <- values;
-    this.offsets <- offsets;
-    this.sizes <- sizes;
+    values.clear();
   }
 
   /**
    * Number of elements.
    */
   function count() -> Integer {
-    return length(values);
+    let n <- 0;
+    for i in 1..size() {
+      n <- n + size(i);
+    }
+    return n;
   }
 
   /**
    * Number of rows.
    */
   function size() -> Integer {
-    return length(offsets);
+    return values.size();
   }
   
   /**
@@ -72,7 +60,7 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function size(i:Integer) -> Integer {
-    return sizes[i];
+    return values[i].size();
   }
   
   /**
@@ -82,7 +70,7 @@ final class RaggedArray<Type> {
    * - j: Column.
    */
   function get(i:Integer, j:Integer) -> Type {
-    return values[serial(i, j)];
+    return values[i][j];
   }
 
   /**
@@ -90,8 +78,8 @@ final class RaggedArray<Type> {
    *
    * - i: Row.
    */
-  function get(i:Integer) -> Type[_] {
-    return values[from(i)..to(i)];
+  function get(i:Integer) -> Array<Type> {
+    return values[i];
   }
 
   /**
@@ -102,7 +90,7 @@ final class RaggedArray<Type> {
    * - x: Value.
    */
   function set(i:Integer, j:Integer, x:Type) {
-    values[serial(i, j)] <- x;
+    values[i][j] <- x;
   }
 
   /**
@@ -110,36 +98,16 @@ final class RaggedArray<Type> {
    *
    * - i: Row.
    * - x: Values.
-   *
-   * The number of columns in the row must match the number of columns in
-   * `x`.
    */
-  function set(i:Integer, x:Type[_]) {
-    values[from(i)..to(i)] <- x;
+  function set(i:Integer, x:Array<Type>) {
+    values[i] <- x;
   } 
 
   /**
    * Remove the front row.
    */
   function popFront() {
-    assert size() > 0;
-    if size() == 1 {
-      clear();
-    } else {
-      let ncols <- sizes[1];
-      cpp{{
-      this->offsets.erase(0);
-      this->sizes.erase(0);
-      }}
-      if ncols > 0 {
-        cpp{{
-        this->values.erase(0, ncols);
-        }}
-        for k in 1..length(offsets) {
-          offsets[k] <- offsets[k] - ncols;
-        }
-      }
-    }
+    values.popFront();
   }
 
   /**
@@ -148,26 +116,14 @@ final class RaggedArray<Type> {
    * - i: Row.
    */
   function popFront(i:Integer) {
-    assert size(i) > 0;
-    let j <- offsets[i];
-    cpp{{
-    this->values.erase(j - 1);
-    }}
-    for k in (i + 1)..length(offsets) {
-      offsets[k] <- offsets[k] - 1;
-    }
-    sizes[i] <- sizes[i] - 1;
+    values[i].popFront();
   }
 
   /**
    * Add a new row at the back.
    */
   function pushBack() {
-    let nvalues <- length(values);
-    cpp{{    
-    this->offsets.push(nvalues + 1);
-    this->sizes.push(0);
-    }}
+    values.pushBack(construct<Array<Type>>());
   }
 
   /**
@@ -177,14 +133,7 @@ final class RaggedArray<Type> {
    * - x: Value.
    */
   function pushBack(i:Integer, x:Type) {
-    let j <- offsets[i] + sizes[i];
-    cpp{{
-    this->values.insert(j - 1, x);
-    }}
-    for k in (i + 1)..size() {
-      offsets[k] <- offsets[k] + 1;
-    }
-    sizes[i] <- sizes[i] + 1;
+    values[i].pushBack(x);
   }
 
   /**
@@ -206,8 +155,8 @@ final class RaggedArray<Type> {
    *
    * Return: an iterator across entire rows from top to bottom.
    */
-  function walk() -> Iterator<Type[_]> {
-    return construct<RaggedArrayRowIterator<Type>>(this);
+  function walk() -> Iterator<Array<Type>> {
+    return values.walk();
   }
 
   /**
@@ -219,63 +168,14 @@ final class RaggedArray<Type> {
    * right.
    */
   function walk(i:Integer) -> Iterator<Type> {
-    return construct<RaggedArrayElementIterator<Type>>(this, i);
-  }
-
-  /**
-   * First serial index of a row.
-   *
-   * - i: Row.
-   */
-  function from(i:Integer) -> Integer {
-    assert 1 <= i && i <= size();
-    assert offsets[i] != 0;  // not an empty row
-    return offsets[i];
-  }
-  
-  /**
-   * Last serial index of a row.
-   *
-   * - i: Row.
-   */
-  function to(i:Integer) -> Integer {
-    assert 1 <= i && i <= size();
-    assert offsets[i] != 0;  // not an empty row
-    return offsets[i] + sizes[i] - 1;
-  }
-  
-  /**
-   * Serial index of row and column.
-   *
-   * - i: Row.
-   * - j: Column.
-   */
-  function serial(i:Integer, j:Integer) -> Integer {
-    assert 1 <= i && i <= size();
-    assert 1 <= j && j <= sizes[i];
-    return from(i) + j - 1;
+    return values[i].walk();
   }
 
   override function read(buffer:Buffer) {
-    clear();
-    let row <- buffer.walk();
-    while row.hasNext() {
-      pushBack();
-      let col <- row.next().walk();
-      while col.hasNext() {
-        let x <- col.next().get<Type>();
-        if x? {
-          pushBack(size(), x!);
-        }
-      }
-    }
+    values.read(buffer);
   }
 
   override function write(buffer:Buffer) {
-    buffer.setEmptyArray();
-    let f <- walk();
-    while f.hasNext() {
-      buffer.push(f.next());
-    }
+    values.write(buffer);
   }
 }

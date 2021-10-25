@@ -129,9 +129,5 @@ function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
  */
 function cdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, α:Arg3,
     β:Arg4) -> {
-  if x <= 0.0 {
-    return 0.0;
-  } else {
-    return ibeta(k, α, x/(β + x));
-  }
+  return ibeta(k, α, x/(β + x));
 }

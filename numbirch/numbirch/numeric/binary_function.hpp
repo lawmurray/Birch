@@ -352,7 +352,7 @@ void lchoose(const int m, const int n, const int* A, const int ldA,
  */
 template<class T>
 void lchoose_grad(const int m, const int n, const T* G, const int ldG,
-    const T* A, const int ldA, const T* B, const int ldB, T* GA,
+    const int* A, const int ldA, const int* B, const int ldB, T* GA,
     const int ldGA, T* GB, const int ldGB);
 
 /**

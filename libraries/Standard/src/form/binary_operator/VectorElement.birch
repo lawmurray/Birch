@@ -22,28 +22,21 @@ function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
   grad(x.r, 0.0);
 }
 
-hpp{{
-namespace birch {
 /**
  * Element of a vector.
  */
-template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
-auto element(const Left& x, const Right& i) {
+function element<Left,Right>(x:Left, i:Right) -> {
   return element(vector_split(x), i);
 }
 
 /**
  * Element of a vector.
  */
-template<class Value, class Form, class Right, std::enable_if_t<
-    is_delay<Form,Right>::value,int> = 0>
-auto element(const VectorSplitExpression<Value,Form>& x, const Right& i) {
+function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>,
+    i:Right) -> {
   return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x,
       i);
 }
-}
-}}
 
 /**
  * Element of a vector.

@@ -17,8 +17,8 @@ function eval<Left,Right>(x:Pow<Left,Right>) -> {
 function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {
   let l <- peek(x.l);
   let r <- peek(x.r);
-  let dl <- d*r*pow(l, r - 1.0);
-  let dr <- d*pow(l, r)*log(l);   ///@todo Assumes l is positive
+  let dl <- hadamard(hadamard(d, r), pow(l, r - 1.0));
+  let dr <- hadamard(hadamard(d, pow(l, r)), log(l));
   grad(x.l, dl);
   grad(x.r, dr);
 }

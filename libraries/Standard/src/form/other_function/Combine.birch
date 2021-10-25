@@ -81,13 +81,13 @@ function eval<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Combine<Arg1,Arg2,
 
 function grad<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8,Gradient>(x:Combine<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>, d:Gradient) {
-  grad(x.a, d*peek(x.w));
+  grad(x.a, sum(hadamard(d, peek(x.w))));
   grad(x.w, d*peek(x.a));
-  grad(x.b, d*peek(x.x));
+  grad(x.b, sum(hadamard(d, peek(x.x))));
   grad(x.x, d*peek(x.b));
-  grad(x.c, d*peek(x.y));
+  grad(x.c, sum(hadamard(d, peek(x.y))));
   grad(x.y, d*peek(x.c));
-  grad(x.d, d*peek(x.z));
+  grad(x.d, sum(hadamard(d, peek(x.z))));
   grad(x.z, d*peek(x.d));
 }
 

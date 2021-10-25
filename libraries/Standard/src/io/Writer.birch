@@ -68,17 +68,15 @@ abstract class Writer {
    */
   abstract function close();
 
-  abstract function visit(keys:String[_], values:Buffer[_]);
-  abstract function visit(values:Buffer[_]);
+  abstract function visit(keys:Array<String>, values:Array<Buffer>);
+  abstract function visit(values:Array<Buffer>);
   abstract function visit(value:String);
   abstract function visit(value:Real);
   abstract function visit(value:Integer);
   abstract function visit(value:Boolean);
-  abstract function visit(value:String[_]);
   abstract function visit(value:Real[_]);
   abstract function visit(value:Integer[_]);
   abstract function visit(value:Boolean[_]);
-  abstract function visit(value:String[_,_]);
   abstract function visit(value:Real[_,_]);
   abstract function visit(value:Integer[_,_]);
   abstract function visit(value:Boolean[_,_]);

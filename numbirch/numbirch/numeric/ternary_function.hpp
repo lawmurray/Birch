@@ -10,6 +10,7 @@ namespace numbirch {
  * @ingroup cpp-raw
  * 
  * @tparam T Floating point type.
+ * @tparam T Arithmetic type.
  * 
  * @param m Number of rows.
  * @param n Number of columns.
@@ -22,8 +23,8 @@ namespace numbirch {
  * @param[out] C Matrix.
  * @param ldC Column stride of `C`.
  */
-template<class T>
-void ibeta(const int m, const int n, const T* A, const int ldA, const T* B,
+template<class T, class U>
+void ibeta(const int m, const int n, const U* A, const int ldA, const U* B,
     const int ldB, const T* X, const int ldX, T* C, const int ldC);
 
 }

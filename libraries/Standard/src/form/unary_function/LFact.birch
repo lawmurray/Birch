@@ -15,7 +15,7 @@ function eval<Middle>(x:LFact<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) {
-  return grad(x.m, d*lfact_grad(d, peek(x.m)));
+  return grad(x.m, hadamard(d, lfact_grad(d, peek(x.m))));
 }
 
 hpp{{

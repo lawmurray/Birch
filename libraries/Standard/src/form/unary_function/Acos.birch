@@ -15,7 +15,7 @@ function eval<Middle>(x:Acos<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:Acos<Middle>, d:Gradient) {
-  grad(x.m, -d/sqrt(1.0 - pow(peek(x.m), 2.0)));
+  grad(x.m, -d*rcp(sqrt(1.0 - pow(peek(x.m), 2.0))));
 }
 
 hpp{{

@@ -21,7 +21,7 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return simulate_multinomial(value(n), value(ρ));
   }
 
-  override function simulateLazy() -> Integer[_] {
+  override function simulateLazy() -> Integer[_]? {
     return simulate_multinomial(peek(n), peek(ρ));
   }
 

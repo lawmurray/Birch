@@ -16,8 +16,8 @@ function eval<Left,Right>(x:LChoose<Left,Right>) -> {
 
 function grad<Left,Right,Gradient>(x:LChoose<Left,Right>, d:Gradient) {
   let (dx, dy) <- lchoose_grad(d, peek(x.l), peek(x.r));
-  grad(x.l, d*dx);
-  grad(x.r, d*dy);
+  grad(x.l, hadamard(d, dx));
+  grad(x.r, hadamard(d, dy));
 }
 
 hpp{{

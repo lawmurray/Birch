@@ -1,5 +1,5 @@
 class TestLongDiscreteDelta < TestModel {
-  x:Random<Integer>[5];
+  x:Array<Random<Integer>>;
   s:Random<Integer>;
 
   override function initialize() {

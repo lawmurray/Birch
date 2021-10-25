@@ -290,12 +290,3 @@ function length(x:String) -> Integer {
   return x.length();
   }}
 }
-
-/**
- * Length of an array of strings.
- */
-function length(x:String[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
