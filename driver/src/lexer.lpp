@@ -113,6 +113,7 @@ E                                  [Ee][+-]?{D}+
 "assert"                            { return ASSERT; }
 "return"                            { return RETURN; }
 "factor"                            { return FACTOR; }
+"phantom"                           { return PHANTOM; }
 "cpp"                               { return CPP; }
 "hpp"                               { return HPP; }
 "parallel"                          { return PARALLEL; }

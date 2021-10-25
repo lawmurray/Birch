@@ -159,6 +159,10 @@ void birch::Visitor::visit(const MemberVariable* o) {
   o->value->accept(this);
 }
 
+void birch::Visitor::visit(const MemberPhantom* o) {
+  //
+}
+
 void birch::Visitor::visit(const LocalVariable* o) {
   o->type->accept(this);
   o->brackets->accept(this);

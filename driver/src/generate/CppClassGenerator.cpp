@@ -18,8 +18,10 @@ void birch::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
     Gatherer<MemberFunction> memberFunctions;
     Gatherer<MemberVariable> memberVariables;
+    Gatherer<MemberPhantom> memberPhantoms;
     o->accept(&memberFunctions);
     o->accept(&memberVariables);
+    o->accept(&memberPhantoms);
 
     if (header) {
       genDoc(o->loc);
@@ -58,13 +60,21 @@ void birch::CppClassGenerator::visit(const Class* o) {
       
       genSourceLine(o->loc);
       start("LIBBIRCH_CLASS_MEMBERS(");
-      if (memberVariables.size() > 0) {
-        for (auto iter = memberVariables.begin(); iter != memberVariables.end();
-            ++iter) {
-          if (iter != memberVariables.begin()) {
+      if (memberVariables.size() + memberPhantoms.size() > 0) {
+        bool first = true;
+        for (auto o : memberVariables) {
+          if (!first) {
             middle(", ");
           }
-          middle((*iter)->name);
+          first = false;
+          middle(o->name);
+        }
+        for (auto o : memberPhantoms) {
+          if (!first) {
+            middle(", ");
+          }
+          first = false;
+          middle(o->name);
         }
       } else {
         middle("LIBBIRCH_NO_MEMBERS");

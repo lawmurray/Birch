@@ -48,6 +48,7 @@ public:
   virtual void visit(const Generic* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
+  virtual void visit(const MemberPhantom* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const TupleVariable* o);
   virtual void visit(const NamedExpression* o);

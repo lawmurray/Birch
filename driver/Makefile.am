@@ -93,6 +93,7 @@ birch_SOURCES = \
   src/statement/If.cpp \
   src/statement/LocalVariable.cpp \
   src/statement/MemberFunction.cpp \
+  src/statement/MemberPhantom.cpp \
   src/statement/MemberVariable.cpp \
   src/statement/Package.cpp \
   src/statement/Parallel.cpp \
@@ -214,6 +215,7 @@ noinst_HEADERS = \
   src/statement/If.hpp \
   src/statement/LocalVariable.hpp \
   src/statement/MemberFunction.hpp \
+  src/statement/MemberPhantom.hpp \
   src/statement/MemberVariable.hpp \
   src/statement/Package.hpp \
   src/statement/Parallel.hpp \

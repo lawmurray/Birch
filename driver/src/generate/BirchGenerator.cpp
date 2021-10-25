@@ -177,6 +177,10 @@ void birch::BirchGenerator::visit(const MemberVariable* o) {
   finish(';');
 }
 
+void birch::BirchGenerator::visit(const MemberPhantom* o) {
+  line("phantom " << o->name << ';');
+}
+
 void birch::BirchGenerator::visit(const LocalVariable* o) {
   if (o->has(LET)) {
     start("let " << o->name);

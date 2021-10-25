@@ -98,7 +98,7 @@
 //   inheritance, but closing '>' disambiguates
 
 %token <valString> PROGRAM CLASS STRUCT TYPE FUNCTION OPERATOR AUTO LET
-%token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
+%token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR PHANTOM
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
 %token <valString> ABSTRACT OVERRIDE FINAL ACYCLIC
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
@@ -137,6 +137,7 @@
 %type <valStatement> for_variable_declaration function_declaration
 %type <valStatement> program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
+%type <valStatement> member_phantom_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> assignment_operator_declaration conversion_operator_declaration
 %type <valStatement> slice_operator_declaration
@@ -500,6 +501,10 @@ member_variable_declaration
     | name ':' type brackets arguments ';'        { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
     ;
 
+member_phantom_declaration
+    : PHANTOM name ';'  { push_raw(); $$ = new birch::MemberPhantom(birch::NONE, $2, make_doc_loc(@$)); }
+    ;
+
 local_variable_declaration
     : AUTO name init_operator expression ';'      { yywarn("the auto keyword is deprecated, use let instead"); push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, $4, make_doc_loc(@$)); }
     | LET name init_operator expression ';'       { push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, $4, make_doc_loc(@$)); }
@@ -698,6 +703,7 @@ optional_statements
 
 class_statement
     : member_variable_declaration
+    | member_phantom_declaration
     | member_function_declaration
     | assignment_operator_declaration
     | conversion_operator_declaration

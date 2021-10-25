@@ -58,11 +58,9 @@ public:
 
   virtual void visit(const File* o);
   virtual void visit(const GlobalVariable* o);
-  virtual void visit(const MemberVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const TupleVariable* o);
   virtual void visit(const Function* o);
-  virtual void visit(const MemberFunction* o);
   virtual void visit(const Program* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);

@@ -248,10 +248,6 @@ void birch::CppGenerator::visit(const GlobalVariable* o) {
   --inGlobal;
 }
 
-void birch::CppGenerator::visit(const MemberVariable* o) {
-  assert(false);  // should be in CppClassGenerator
-}
-
 void birch::CppGenerator::visit(const LocalVariable* o) {
   if (o->has(LET)) {
     start("auto " << o->name);
@@ -293,10 +289,6 @@ void birch::CppGenerator::visit(const Function* o) {
       line("}\n");
     }
   }
-}
-
-void birch::CppGenerator::visit(const MemberFunction* o) {
-  assert(false);  // should be in CppClassGenerator
 }
 
 void birch::CppGenerator::visit(const Program* o) {

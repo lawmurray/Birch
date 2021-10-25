@@ -22,6 +22,7 @@
 #include "src/statement/LocalVariable.hpp"
 #include "src/statement/MemberFunction.hpp"
 #include "src/statement/MemberVariable.hpp"
+#include "src/statement/MemberPhantom.hpp"
 #include "src/statement/Package.hpp"
 #include "src/statement/Parallel.hpp"
 #include "src/statement/Program.hpp"
