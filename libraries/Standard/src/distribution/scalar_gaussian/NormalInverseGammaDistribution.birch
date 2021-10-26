@@ -108,6 +108,10 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
 
 function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
     β:Arg4) -> {
+  return wrap_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β));
+}
+function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+    α:Arg3, β:Arg4) -> {
   return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ,
       α, β);
 }
@@ -123,7 +127,7 @@ function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
     σ2.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Arg,Random<Real>>>(μ, σ2);
+    return Gaussian(wrap(μ), wrap(σ2));
   }
 }
 
@@ -139,8 +143,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
     σ2.r.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Arg1,Multiply<Arg2,Random<Real>>>>(
-        μ, σ2);
+    return Gaussian(wrap(μ), wrap(σ2));
   }
 }
 
@@ -156,8 +159,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
     σ2.l.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Arg1,Multiply<Random<Real>,Arg2>>>(
-        μ, σ2);
+    return Gaussian(wrap(μ), wrap(σ2));
   }
 }
 
@@ -179,8 +181,7 @@ function Gaussian<Arg>(μ:Arg, σ2:Multiply<Random<Real>,Random<Real>>) ->
     σ2.r.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Arg,Multiply<Random<Real>,
-        Random<Real>>>>(μ, σ2);
+    return Gaussian(wrap(μ), wrap(σ2));
   }
 }
 

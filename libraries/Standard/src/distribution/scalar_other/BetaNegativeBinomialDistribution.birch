@@ -52,13 +52,18 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
 }
 
 function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
+  return wrap_beta_negative_binomial(wrap(k), wrap(α), wrap(β));
+}
+function wrap_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
   return construct<BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>>(k, α, β);
 }
 
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
+function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
+    Distribution<Integer> {
   ρ.prune();
   if ρ.hasBeta() {
     let (α, β) <- ρ.getBeta();
@@ -66,7 +71,7 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) -> Distribution<Integer
     ρ.graft(p);
     return p;
   } else {
-    return construct<NegativeBinomialDistribution<Arg1,Random<Real>>>(k, ρ);
+    return NegativeBinomial(wrap(k), wrap(ρ));
   }
 }
 

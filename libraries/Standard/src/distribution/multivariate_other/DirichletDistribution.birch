@@ -45,6 +45,9 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
  * Create Dirichlet distribution.
  */
 function Dirichlet<Arg>(α:Arg) -> {
+  return wrap_dirichlet(wrap(α));
+}
+function wrap_dirichlet<Arg>(α:Arg) -> {
   return construct<DirichletDistribution<Arg>>(α);
 }
 

@@ -64,6 +64,9 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:A
 }
 
 function GaussianGaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) -> {
+  return wrap_gaussian_gaussian(wrap(μ), wrap(σ2), wrap(s2));
+}
+function wrap_gaussian_gaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) -> {
   return construct<GaussianGaussianDistribution<Arg1,Arg2,Arg3>>(μ, σ2, s2);
 }
 
@@ -78,7 +81,7 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
     μ.graft(p);
     return p;
   } else {
-    return construct<GaussianDistribution<Random<Real>,Arg>>(μ, σ2);
+    return Gaussian(wrap(μ), wrap(σ2));
   }
 }
 

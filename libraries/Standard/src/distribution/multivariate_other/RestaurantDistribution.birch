@@ -68,9 +68,13 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
  *
  * - α: Concentration.
  * - θ: Strength.
- * - n: Vector of number of draws of each element.
+ * - n: Vector of number of draws of each element, also defining, by its
+ *      length, the maximum number of components.
  */
 function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
+  return wrap_restaurant(wrap(α), wrap(θ), wrap(n));
+}
+function wrap_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
   return construct<RestaurantDistribution<Arg1,Arg2,Arg3>>(α, θ, n);
 }
 

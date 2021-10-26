@@ -42,6 +42,9 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distributio
 }
 
 function BetaBernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
+  return wrap_beta_bernoulli(wrap(α), wrap(β));
+}
+function wrap_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return construct<BetaBernoulliDistribution<Arg1,Arg2>>(α, β);
 }
 
@@ -56,7 +59,7 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
     ρ.graft(p);
     return p;
   } else {
-    return construct<BernoulliDistribution<Random<Real>>>(ρ);
+    return Bernoulli(wrap(ρ));
   }
 }
 

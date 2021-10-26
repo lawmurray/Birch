@@ -70,8 +70,13 @@ final class ScaledMultivariateNormalInverseGammaMultivariateGaussianDistribution
   }
 }
 
-function ScaledMultivariateNormalInverseGammaMultivariateGaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5,
+function ScaledMultivariateNormalInverseGammaMultivariateGaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6>(A:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, Σ:Arg6) -> {
+  return wrap_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian(
+      wrap(A), wrap(ν), wrap(Λ), wrap(α), wrap(β), wrap(Σ));
+}
+function wrap_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5,
     Σ:Arg6) -> {
   return construct<ScaledMultivariateNormalInverseGammaMultivariateGaussianDistribution<
       Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(A, ν, Λ, α, β, Σ);
@@ -99,8 +104,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
       Σ.r.graft(p);
       return p;
     } else {
-      return construct<MultivariateGaussianDistribution<Multiply<Arg1,Random<Real[_]>>,
-          Multiply<Arg2,Random<Real>>>>(μ, Σ);
+      return MultivariateGaussian(wrap(μ), wrap(Σ));
     }
   }
 }
@@ -127,8 +131,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
       Σ.l.graft(p);
       return p;
     } else {
-      return construct<MultivariateGaussianDistribution<Multiply<Arg1,Random<Real[_]>>,
-          Multiply<Arg2,Random<Real>>>>(μ, Σ);
+      return MultivariateGaussian(wrap(μ), wrap(Σ));
     }
   }
 }

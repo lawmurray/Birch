@@ -56,6 +56,9 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
  * Create uniform distribution over integers.
  */
 function UniformInteger<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
+  return wrap_uniform_integer(wrap(l), wrap(u));
+}
+function wrap_uniform_integer<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   return construct<UniformIntegerDistribution<Arg1,Arg2>>(l, u);
 }
 

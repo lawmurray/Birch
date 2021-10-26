@@ -88,8 +88,8 @@ function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) ->
   μ.l.prune();
   μ.r.prune();
   if μ.l.hasBoundedDiscrete() && μ.r.hasBoundedDiscrete() {
-    let p <- construct<SubtractDiscreteDeltaDistribution>(μ.l.getBoundedDiscrete(),
-        μ.r.getBoundedDiscrete());
+    let p <- construct<SubtractDiscreteDeltaDistribution>(
+        μ.l.getBoundedDiscrete(), μ.r.getBoundedDiscrete());
     μ.l.graft(p, 1);
     μ.r.graft(p, 2);
     μ.l.join(μ.r);
@@ -101,7 +101,7 @@ function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) ->
     let l ~ Delta(μ.l);
     return Delta(l - μ.r);
   } else {
-		return construct<DeltaDistribution<Subtract<Random<Integer>,Random<Integer>>>>(μ);
+		return Delta(wrap(μ));
 	}
 }
 

@@ -40,6 +40,9 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
 }
 
 function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+  return wrap_dirichlet_multinomial(wrap(n), wrap(α));
+}
+function wrap_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
   return construct<DirichletMultinomialDistribution<Arg1,Arg2>>(n, α);
 }
 
@@ -55,7 +58,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
     ρ.graft(p);
     return p;
   } else {
-    return construct<MultinomialDistribution<Arg,Random<Real[_]>>>(n, ρ);
+    return Multinomial(wrap(n), wrap(ρ));
   }
 }
 

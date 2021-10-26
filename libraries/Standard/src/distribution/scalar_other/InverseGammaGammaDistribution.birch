@@ -56,6 +56,9 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
 }
 
 function InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
+  return wrap_inverse_gamma_gamma(wrap(k), wrap(α), wrap(β));
+}
+function wrap_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
   return construct<InverseGammaGammaDistribution<Arg1,Arg2,Arg3>>(k, α, β);
 }
 
@@ -70,7 +73,7 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
     θ.graft(p);
     return p;
   } else {
-    return construct<GammaDistribution<Arg,Random<Real>>>(k, θ);
+    return Gamma(wrap(k), wrap(θ));
   }
 }
 

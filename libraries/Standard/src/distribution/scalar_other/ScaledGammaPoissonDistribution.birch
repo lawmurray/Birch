@@ -60,6 +60,10 @@ final class ScaledGammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
 }
 
 function ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  return wrap_scaled_gamma_poisson(wrap(a), wrap(k), wrap(θ));
+}
+function wrap_scaled_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
+    θ:Arg3) -> {
   return construct<ScaledGammaPoissonDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
 }
 
@@ -75,7 +79,7 @@ function Poisson<Arg>(λ:Multiply<Arg,Random<Real>>) ->
     λ.r.graft(p);
     return p;
   } else {
-    return construct<PoissonDistribution<Multiply<Arg,Random<Real>>>>(λ);
+    return Poisson(wrap(λ));
   }
 }
 
@@ -91,7 +95,7 @@ function Poisson<Arg>(λ:Multiply<Random<Real>,Arg>) ->
     λ.l.graft(p);
     return p;
   } else {
-    return construct<PoissonDistribution<Multiply<Random<Real>,Arg>>>(λ);
+    return Poisson(wrap(λ));
   }
 }
 
@@ -114,7 +118,7 @@ function Poisson(λ:Multiply<Random<Real>,Random<Real>>) ->
       λ.r.graft(p);
       return p;
     } else {
-      return construct<PoissonDistribution<Multiply<Random<Real>,Random<Real>>>>(λ);
+      return Poisson(wrap(λ));
     }
   }
 }

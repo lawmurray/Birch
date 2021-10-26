@@ -72,15 +72,20 @@ final class ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2
 
 function ScaledMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, U:Arg6) -> {
-  return construct<ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,
-      Arg3,Arg4,Arg5,Arg6>>(A, N, Λ, Ψ, k, U);
+  return wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian(wrap(A),
+      wrap(N), wrap(Λ), wrap(Ψ), wrap(k), wrap(U));
+}
+function wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, U:Arg6) -> {
+  return construct<ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(A, N, Λ, Ψ, k, U);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
-function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>,
-    U:Arg2, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
+function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>, U:Arg2,
+    V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
   M.prune();
   if M.hasMatrixNormalInverseWishart() && M.isGrandChildOf(V) {
     let (N, Λ, Ψ, k) <- M.getMatrixNormalInverseWishart();
@@ -99,8 +104,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>,
       V.graft(p);
       return p;
     } else {
-      return construct<MatrixGaussianDistribution<Multiply<Arg1,
-          Random<Real[_,_]>>,Arg2,Random<Real[_,_]>>>(M, U, V);
+      return MatrixGaussian(wrap(M), wrap(U), wrap(V));
     }
   }
 }

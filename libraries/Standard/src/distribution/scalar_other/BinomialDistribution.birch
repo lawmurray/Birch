@@ -64,6 +64,9 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
  * Create binomial distribution.
  */
 function Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return wrap_binomial(wrap(n), wrap(ρ));
+}
+function wrap_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
   return construct<BinomialDistribution<Arg1,Arg2>>(n, ρ);
 }
 

@@ -36,5 +36,8 @@ final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
  * Create delta distribution.
  */
 function Delta<Arg>(μ:Arg) -> Distribution<Integer> {
+  return wrap_delta(wrap(μ));
+}
+function wrap_delta<Arg>(μ:Arg) -> Distribution<Integer> {
   return construct<DeltaDistribution<Arg>>(μ);
 }

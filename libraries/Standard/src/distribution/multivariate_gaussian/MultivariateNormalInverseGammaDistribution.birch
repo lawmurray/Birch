@@ -106,6 +106,11 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 
 function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, Λ:Arg2,
     α:Arg3, β:Arg4) -> {
+  return wrap_multivariate_normal_inverse_gamma(wrap(ν), wrap(Λ), wrap(α),
+      wrap(β));
+}
+function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
+    Λ:Arg2, α:Arg3, β:Arg4) -> {
   return construct<MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,
       Arg4>>(ν, Λ, α, β);
 }
@@ -123,8 +128,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ.r.graft(p);
     return p;
   } else {
-    return construct<MultivariateGaussianDistribution<Arg1,Multiply<Arg2,
-        Random<Real>>>>(μ, Σ);
+    return MultivariateGaussian(wrap(μ), wrap(Σ));
   }
 }
 
@@ -141,8 +145,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ.l.graft(p);
     return p;
   } else {
-    return construct<MultivariateGaussianDistribution<Arg1,Multiply<
-        Random<Real>,Arg2>>>(μ, Σ);
+    return MultivariateGaussian(wrap(μ), wrap(Σ));
   }
 }
 

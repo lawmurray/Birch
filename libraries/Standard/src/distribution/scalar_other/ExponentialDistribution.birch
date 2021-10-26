@@ -53,6 +53,9 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
  * Create Exponential distribution.
  */
 function Exponential<Arg>(λ:Arg) -> {
+  return wrap_exponential(wrap(λ));
+}
+function wrap_exponential<Arg>(λ:Arg) -> {
   return construct<ExponentialDistribution<Arg>>(λ);
 }
 

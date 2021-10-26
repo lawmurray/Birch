@@ -103,7 +103,7 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     let l ~ Delta(μ.l);
     return Delta(l + μ.r);
   } else {
-		return construct<DeltaDistribution<Add<Random<Integer>,Random<Integer>>>>(μ);
+		return Delta(wrap(μ));
 	}
 }
 

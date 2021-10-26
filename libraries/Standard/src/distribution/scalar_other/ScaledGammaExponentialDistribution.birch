@@ -60,7 +60,12 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
 }
 
 function ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
-  return construct<ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
+  return wrap_scaled_gamma_exponential(wrap(a), wrap(k), wrap(θ));
+}
+function wrap_scaled_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
+    θ:Arg3) -> {
+  return construct<ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>>(a, k,
+      θ);
 }
 
 /**
@@ -75,7 +80,7 @@ function Exponential<Arg>(λ:Multiply<Arg,Random<Real>>) ->
     λ.r.graft(p);
     return p;
   } else {
-    return construct<ExponentialDistribution<Multiply<Arg,Random<Real>>>>(λ);
+    return Exponential(wrap(λ));
   }
 }
 
@@ -91,7 +96,7 @@ function Exponential<Arg>(λ:Multiply<Random<Real>,Arg>) ->
     λ.l.graft(p);
     return p;
   } else {
-    return construct<ExponentialDistribution<Multiply<Random<Real>,Arg>>>(λ);
+    return Exponential(wrap(λ));
   }
 }
 
@@ -114,7 +119,7 @@ function Exponential(λ:Multiply<Random<Real>,Random<Real>>) ->
       λ.r.graft(p);
       return p;
     } else {
-      return construct<ExponentialDistribution<Multiply<Random<Real>,Random<Real>>>>(λ);
+      return Exponential(wrap(λ));
     }
   }
 }

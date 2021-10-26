@@ -59,6 +59,9 @@ final class GammaPoissonDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
 }
 
 function GammaPoisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+  return wrap_gamma_poisson(wrap(k), wrap(θ));
+}
+function wrap_gamma_poisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   return construct<GammaPoissonDistribution<Arg1,Arg2>>(k, θ);
 }
 
@@ -73,7 +76,7 @@ function Poisson(λ:Random<Real>) -> Distribution<Integer> {
     λ.graft(p);
     return p;
   } else {
-    return construct<PoissonDistribution<Random<Real>>>(λ);
+    return Poisson(wrap(λ));
   }
 }
 

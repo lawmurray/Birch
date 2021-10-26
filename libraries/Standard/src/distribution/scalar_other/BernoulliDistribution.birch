@@ -37,6 +37,9 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
  * Create Bernoulli distribution.
  */
 function Bernoulli<Arg>(ρ:Arg) -> {
+  return wrap_bernoulli(wrap(ρ));
+}
+function wrap_bernoulli<Arg>(ρ:Arg) -> {
   return construct<BernoulliDistribution<Arg>>(ρ);
 }
 

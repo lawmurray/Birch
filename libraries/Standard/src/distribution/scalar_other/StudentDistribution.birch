@@ -62,6 +62,9 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
  * Create Student's $t$-distribution.
  */
 function Student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return wrap_student(wrap(k), wrap(μ), wrap(σ2));
+}
+function wrap_student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
   return construct<StudentDistribution<Arg1,Arg2,Arg3>>(k, μ, σ2);
 }
 

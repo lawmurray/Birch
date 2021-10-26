@@ -67,8 +67,13 @@ final class ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg
 
 function ScaledMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
-  return construct<ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,
-      Arg2,Arg3,Arg4,Arg5>>(a, N, Λ, Ψ, k);
+  return wrap_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+      wrap(a), wrap(N), wrap(Λ), wrap(Ψ), wrap(k));
+}
+function wrap_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
+    Arg2,Arg3,Arg4,Arg5>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
+  return construct<ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5>>(a, N, Λ, Ψ, k);
 }
 
 /**
@@ -88,11 +93,9 @@ function MultivariateGaussian<Arg>(μ:Dot<Arg,Random<Real[_,_]>>,
   } else {
     Σ.prune();
     // if Σ.hasInverseWishart() {
-    //   return construct<MultivariateGaussianDistribution<Dot<Arg,Random<Real[_,_]>>,
-    //       Random<Real[_,_]>>>(μ, Σ);
+    // 
     // } else {
-      return construct<MultivariateGaussianDistribution<Dot<Arg,Random<Real[_,_]>>,
-          Random<Real[_,_]>>>(μ, Σ);
+      return MultivariateGaussian(wrap(μ), wrap(Σ));
     // }
   }
 }

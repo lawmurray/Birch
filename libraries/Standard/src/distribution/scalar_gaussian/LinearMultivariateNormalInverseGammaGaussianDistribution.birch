@@ -92,6 +92,12 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
 function LinearMultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
     s2:Arg7) -> {
+  return wrap_linear_multivariate_normal_inverse_gamma_gaussian(wrap(a),
+      wrap(ν), wrap(Λ), wrap(α), wrap(β), wrap(c), wrap(s2));
+}
+function wrap_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
+    s2:Arg7) -> {
   return construct<LinearMultivariateNormalInverseGammaGaussianDistribution<
       Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, ν, Λ, α, β, c, s2);
 }
@@ -139,8 +145,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
       μ.l.r.graft(p);
       return p;
     } else {
-      return construct<GaussianDistribution<Add<Dot<Arg1,Random<Real[_]>>,
-          Arg2>,Multiply<Arg3,Random<Real>>>>(μ, σ2);
+      return Gaussian(wrap(μ), wrap(σ2));
     }
   }
 }
@@ -187,8 +192,7 @@ function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
       μ.l.r.graft(p);
       return p;
     } else {
-      return construct<GaussianDistribution<Add<Dot<Arg1,Random<Real[_]>>,
-          Arg2>,Multiply<Random<Real>,Random<Real>>>>(μ, σ2);
+      return Gaussian(wrap(μ), wrap(σ2));
     }
   }
 }

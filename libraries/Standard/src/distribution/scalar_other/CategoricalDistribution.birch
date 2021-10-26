@@ -56,6 +56,9 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
  * Create categorical distribution.
  */
 function Categorical<Arg>(ρ:Arg) -> {
+  return wrap_categorical(wrap(ρ));
+}
+function wrap_categorical<Arg>(ρ:Arg) -> {
   return construct<CategoricalDistribution<Arg>>(ρ);
 }
 
