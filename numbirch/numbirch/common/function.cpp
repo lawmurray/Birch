@@ -36,7 +36,15 @@ HOST_DEVICE T gamma_q(const T a, const T x) {
 template<class T, class U, std::enable_if_t<
     std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
 HOST_DEVICE T ibeta(const U a, const U b, const T x) {
-  return Eigen::numext::betainc(T(a), T(b), x);
+  /* as of Eigen 3.4.0, the edge cases of a = 0 and b = 0 are not handled
+   * internally, see https://gitlab.com/libeigen/eigen/-/issues/2359 */
+  if (a == U(0) && b != U(0)) {
+    return T(1);
+  } else if (a != U(0) && b == U(0)) {
+    return T(0);
+  } else {
+    return Eigen::numext::betainc(T(a), T(b), x);
+  }
 }
 
 template double digamma(double);
