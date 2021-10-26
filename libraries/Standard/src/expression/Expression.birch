@@ -208,8 +208,12 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Returns: The result.
    */
   final function value() -> Value! {
+    /* need to call peek() before constant() for Random in particular; a
+     * Random may have an associated distribution from which it is yet to
+     * simulate, constant() will remove this */
+    peek();
     constant();
-    return peek();
+    return x!;
   }
 
   /**
@@ -217,12 +221,14 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    *
    * Returns: The result.
    */
-  final function peek() -> Value! {
+  function peek() -> Value! {
     if !x? {
-      return eval();
-    } else {
-      return x!;
+      doPeek();
     }
+    return x!;
+  }
+  function doPeek() {
+    assert x?;
   }
 
   /**
@@ -243,7 +249,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
     return x!;
   }
   function doEval() {
-    //
+    assert x?;
   }
 
   /**

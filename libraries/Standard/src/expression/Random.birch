@@ -23,7 +23,7 @@ final class Random<Value> < Expression<Value>(nil, false) {
     assert !this.hasValue();
     prune();
     this.x <- x;
-    if this.hasDistribution() {
+    if this.p? {
       handle_delay_observe(this);
     }
     this.constant();
@@ -45,8 +45,7 @@ final class Random<Value> < Expression<Value>(nil, false) {
    * - p: The distribution.
    */
   function assume(p:Distribution<Value>) {
-    assert !this.child?;
-    assert !this.hasDistribution();
+    assert !hasDistribution();
     p.graft(this);
     this.p <- p;
   }
@@ -55,13 +54,16 @@ final class Random<Value> < Expression<Value>(nil, false) {
     return true;
   }
 
+  override function doPeek() {
+    prune();
+    handle_delay_simulate(this);
+    assert this.x?;
+  }
+
   override function doEval() {
-    /* when evaluating for the first time, simulate; on subsequent occasions
-     * assumed to be set externally */
-    if !this.hasValue() {
-      prune();
-      handle_delay_simulate(this);
-    }
+    prune();
+    handle_delay_simulate(this);
+    assert this.x?;
   }
 
   override function doConstant() {
@@ -79,25 +81,25 @@ final class Random<Value> < Expression<Value>(nil, false) {
   }
 
   override function prune() -> Delay {
+    assert !this.coparent? || this.child?;
     if this.child? {
       if this.coparent? && this.n != 1 {
         /* defer to co-parent to restore the $M$-path between this and it */
         this.coparent!.prune();
+        assert !this.coparent?;
       }
 
       /* restore distribution, conditioned on the value of the child */
-      this.p <- Distribution<Value>?(this.child!.prune());
-      assert this.hasDistribution();
+      this.p <- Distribution<Value>?(this.child!.prune())!;
       this.child <- nil;
 
       if this.coparent? && this.n == 1 {
         /* restore the $M$-path between this and the co-parent */
-        this.coparent!.graftReplace(this.getDistribution());
-        this.getDistribution().graft(this);
+        this.coparent!.graftReplace(p!);
+        this.p!.graft(this);
         this.coparent!.coparent <- nil;
         this.coparent <- nil;
       }
-      assert this.hasDistribution();
     }
     assert !this.coparent?;
     assert !this.child?;
@@ -108,17 +110,17 @@ final class Random<Value> < Expression<Value>(nil, false) {
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return this.hasDistribution() || this.child?;
+    return this.p? || this.child?;
   }
 
   /**
    * Get the distribution.
    */
   function getDistribution() -> Distribution<Value> {
-    assert this.hasDistribution() || this.child?;
+    assert this.p? || this.child?;
     prune();
-    assert this.hasDistribution();
-    return this.getDistribution();
+    assert this.p?;
+    return this.p!;
   }
 
   function hasGaussian() -> Boolean {
