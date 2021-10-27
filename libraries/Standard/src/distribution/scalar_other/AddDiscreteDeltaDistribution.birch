@@ -74,11 +74,11 @@ final class AddDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
   }
   
   override function lower() -> Integer!? {
-    return p.lower()!! + q.lower()!!;
+    return p.lower()! + q.lower()!;
   }
   
   override function upper() -> Integer!? {
-    return p.upper()!! + q.upper()!!;
+    return p.upper()! + q.upper()!;
   }
 }
 

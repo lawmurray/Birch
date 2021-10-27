@@ -168,7 +168,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    */
   final function rows() -> Integer {
     peek();
-    return global.rows(x);
+    return global.rows(x!);
   }
   
   /**
@@ -176,7 +176,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    */
   final function columns() -> Integer {
     peek();
-    return global.columns(x);
+    return global.columns(x!);
   }
 
   /**
@@ -225,6 +225,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
     if !x? {
       doPeek();
     }
+    assert x?;
     return x!;
   }
   function doPeek() {
@@ -235,7 +236,6 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Evaluate.
    */
   final function eval() -> Value! {
-    assert !d?;
     if !flagConstant {
       if visitCount == 0 {
         doEval();
@@ -250,6 +250,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
   function doEval() {
     assert x?;
+    assert !d?;
   }
 
   /**
@@ -298,8 +299,8 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   final function grad<Gradient>(d:Gradient) {
     if !flagConstant {
       if visitCount == 0 {
-        assert !this.d?;
-        this.d <- d;  // start accumulation
+        assert isRandom() || !this.d?;
+        this.d <- d;  // start accumulation, or possibly restart for Randoms
       } else {
         assert this.d?;
         this.d <- this.d! + d;

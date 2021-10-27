@@ -222,7 +222,7 @@ template<class T>
 void single(const int* i, const int n, T* x, const int incx) {
   auto x1 = make_eigen_vector(x, n, incx);
   x1.noalias() = x1.Zero(n, 1);
-  x1(*i) = T(1);
+  x1(*i - 1) = T(1);
 }
 
 template<class T>

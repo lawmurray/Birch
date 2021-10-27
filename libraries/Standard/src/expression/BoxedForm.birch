@@ -17,6 +17,7 @@ class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value>(x, false) {
 
   final override function doGrad() {
     global.grad(f!, this.d!);
+    this.d <- nil;  // clear intermediate gradients to save memory
   }
 
   final override function doLabel(gen:Integer) {

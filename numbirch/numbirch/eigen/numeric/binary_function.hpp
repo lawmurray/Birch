@@ -220,7 +220,7 @@ void single(const int* i, const int* j, const int m, const int n, T* A,
     const int ldA) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);
   A1.noalias() = A1.Zero(m, n);
-  A1(*i, *j) = T(1);
+  A1(*i - 1, *j - 1) = T(1);
 }
 
 template<class T>

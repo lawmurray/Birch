@@ -36,7 +36,7 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
   }
 
   override function lower() -> Integer!? {
-    let l <- p.upper()!;
+    let l <- p.upper();
 		if l? {
 			return -l!;
 		} else {
@@ -45,7 +45,7 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
   }
   
   override function upper() -> Integer!? {
-    let l <- p.lower()!;
+    let l <- p.lower();
 		if l? {
 			return -l!;
 		} else {

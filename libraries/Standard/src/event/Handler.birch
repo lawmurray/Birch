@@ -268,7 +268,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       let iter1 <- r1!.walk();
       while iter1.hasNext() {
         let v <- iter1.next();
-        x[i] <- v.peek()!;
+        x[i] <- v.peek();
         i <- i + 1;
       }
     }
@@ -310,7 +310,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         while iter1.hasNext() {
           let v <- iter1.next();
           assert v.d?;
-          d[i] <- v.d!!;
+          d[i] <- v.d!;
           i <- i + 1;
         }
       }

@@ -64,7 +64,7 @@ function simulate_dirichlet<Arg1>(α:Arg1) -> {
 /*
  * Simulate a Dirichlet distribution.
  *
- * - α: Concentration.
+ * - α: Concentrations.
  * - D: Number of dimensions.
  */
 function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {

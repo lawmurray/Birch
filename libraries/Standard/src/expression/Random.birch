@@ -55,15 +55,27 @@ final class Random<Value> < Expression<Value>(nil, false) {
   }
 
   override function doPeek() {
+    assert !this.x?;
     prune();
     handle_delay_simulate(this);
     assert this.x?;
   }
 
   override function doEval() {
-    prune();
-    handle_delay_simulate(this);
+    /* don't re-evaluate here; the purpose of calling eval() on an Expression
+     * is to re-evaluate it after modifying the value of one or more Random
+     * arguments using move(), so if this has a value, it is the intended
+     * value already */
+    if !this.x? {
+      prune();
+      handle_delay_simulate(this);
+    }
     assert this.x?;
+  }
+
+  override function doGrad() {
+    // specifically, don't clear the gradient here, unlike in Expression, as
+    // Randoms form the arguments with respect to which gradients are computed
   }
 
   override function doConstant() {

@@ -72,11 +72,11 @@ final class SubtractDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
   }
   
   override function lower() -> Integer!? {
-    return p.lower()!! - q.upper()!!;
+    return p.lower()! - q.upper()!;
   }
   
   override function upper() -> Integer!? {
-    return p.upper()!! - q.lower()!!;
+    return p.upper()! - q.lower()!;
   }
 }
 
