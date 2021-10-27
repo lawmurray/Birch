@@ -34,6 +34,10 @@ final class DiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
     return Delta(x);
   }
 
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return Delta(x);
+  }
+
   override function lower() -> Integer!? {
 		return p.lower();
   }

@@ -35,6 +35,10 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
     return Delta(-x);
   }
 
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return Delta(-x);
+  }
+
   override function lower() -> Integer!? {
     let l <- p.upper();
 		if l? {
