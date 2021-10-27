@@ -139,11 +139,11 @@ void birch::CppGenerator::visit(const Slice* o) {
 }
 
 void birch::CppGenerator::visit(const Query* o) {
-  middle(o->single << ".has_value()");
+  middle("(bool(" << o->single << "))");
 }
 
 void birch::CppGenerator::visit(const Get* o) {
-  middle(o->single << ".value()");
+  middle("(*(" << o->single << "))");
 }
 
 void birch::CppGenerator::visit(const LambdaFunction* o) {
