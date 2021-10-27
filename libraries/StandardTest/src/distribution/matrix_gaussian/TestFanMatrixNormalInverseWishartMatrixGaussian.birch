@@ -39,39 +39,39 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
-    X.eval();
-    Y1.eval();
-    Y2.eval();
-    Y3.eval();
-    Y4.eval();
-    Y5.eval();
+    Σ.peek();
+    X.peek();
+    Y1.peek();
+    Y2.peek();
+    Y3.peek();
+    Y4.peek();
+    Y5.peek();
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !Y5.hasValue();
-    Y5.eval();
-    Y4.eval();
-    Y3.eval();
-    Y2.eval();
-    Y1.eval();
+    Y5.peek();
+    Y4.peek();
+    Y3.peek();
+    Y2.peek();
+    Y1.peek();
     assert !X.hasValue();
-    X.eval();
+    X.peek();
     assert !Σ.hasValue();
-    Σ.eval();
+    Σ.peek();
     return vectorize();
   }
 
   override function backwardGrad() {
     assert !Y5.hasValue();
-    Y5.eval();
-    Y4.eval();
-    Y3.eval();
-    Y2.eval();
-    Y1.eval();
+    Y5.peek();
+    Y4.peek();
+    Y3.peek();
+    Y2.peek();
+    Y1.peek();
     assert !X.hasValue();
-    X.eval();
+    X.peek();
     assert !Σ.hasValue();
     // ^ currently can't do finite difference gradient estimates on symmetric
     //   matrices
@@ -84,19 +84,19 @@ class TestFanMatrixNormalInverseWishartMatrixGaussian < TestModel {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    z[k + 1.. k + p*p] <- vec(Σ.peek());
     k <- k + p*p;
-    z[k + 1.. k + n*p] <- vec(X.eval());
+    z[k + 1.. k + n*p] <- vec(X.peek());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y1.eval());
+    z[k + 1.. k + n*p] <- vec(Y1.peek());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y2.eval());
+    z[k + 1.. k + n*p] <- vec(Y2.peek());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y3.eval());
+    z[k + 1.. k + n*p] <- vec(Y3.peek());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y4.eval());
+    z[k + 1.. k + n*p] <- vec(Y4.peek());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y5.eval());
+    z[k + 1.. k + n*p] <- vec(Y5.peek());
     return z;
   }
 

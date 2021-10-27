@@ -33,8 +33,8 @@ final class Random<Value> < Expression<Value>(nil, false) {
    * Move the value.
    */
   function move(x:Value!) {
-    this.d <- nil;
     this.x <- x;
+    this.d <- nil;
   }
 
   /**
@@ -100,6 +100,8 @@ final class Random<Value> < Expression<Value>(nil, false) {
         this.coparent!.coparent <- nil;
         this.coparent <- nil;
       }
+
+      assert this.p?;
     }
     assert !this.coparent?;
     assert !this.child?;

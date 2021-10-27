@@ -27,17 +27,17 @@ class TestMultivariateGaussianMultivariateGaussian < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[2*n];
-    y[1..n] <- μ_1.eval();
-    y[(n + 1)..2*n] <- x.eval();
+    y[1..n] <- μ_1.peek();
+    y[(n + 1)..2*n] <- x.peek();
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[2*n];
     assert !x.hasValue();
-    y[(n + 1)..2*n] <- x.eval();
+    y[(n + 1)..2*n] <- x.peek();
     assert !μ_1.hasValue();
-    y[1..n] <- μ_1.eval();
+    y[1..n] <- μ_1.peek();
     return y;
   }
 

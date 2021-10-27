@@ -35,27 +35,27 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
-    X.eval();
-    Y.eval();
+    Σ.peek();
+    X.peek();
+    Y.peek();
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !Y.hasValue();
-    Y.eval();
+    Y.peek();
     assert !X.hasValue();
-    X.eval();
+    X.peek();
     assert !Σ.hasValue();
-    Σ.eval();
+    Σ.peek();
     return vectorize();
   }
 
   override function backwardGrad() {
     assert !Y.hasValue();
-    Y.eval();
+    Y.peek();
     assert !X.hasValue();
-    X.eval();
+    X.peek();
     assert !Σ.hasValue();
     // ^ currently can't do finite difference gradient estimates on symmetric
     //   matrices
@@ -68,11 +68,11 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < TestModel {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    z[k + 1.. k + p*p] <- vec(Σ.peek());
     k <- k + p*p;
-    z[k + 1.. k + n*p] <- vec(X.eval());
+    z[k + 1.. k + n*p] <- vec(X.peek());
     k <- k + n*p;
-    z[k + 1.. k + n*p] <- vec(Y.eval());
+    z[k + 1.. k + n*p] <- vec(Y.peek());
     return z;
   }
 

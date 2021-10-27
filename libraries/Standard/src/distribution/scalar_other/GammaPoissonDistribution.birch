@@ -104,9 +104,10 @@ function simulate_gamma_poisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
  */
 function logpdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   /* same as for a negative binomial distribution, except that k can be a
-   * real, not just an integer, so we expand out the lchoose() call */
+   * real, not just an integer, so we expand out the lchoose() call into
+   * lgamma() functions */
   let ρ <- 1.0/(θ + 1.0);
-  return k*log(ρ) + x*log1p(-ρ) - log(1.0*x) - lbeta(1.0*x, k);
+  return k*log(ρ) + x*log1p(-ρ) + lgamma(x + k) - lfact(x) - lgamma(k);
 }
 
 /*

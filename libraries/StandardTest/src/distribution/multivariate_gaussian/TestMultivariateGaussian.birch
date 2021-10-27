@@ -18,11 +18,11 @@ class TestMultivariateGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return x.eval();
+    return x.peek();
   }
 
   override function backward() -> Real[_] {
-    return x.eval();
+    return x.peek();
   }
 
   function marginal() -> Distribution<Real[_]> {

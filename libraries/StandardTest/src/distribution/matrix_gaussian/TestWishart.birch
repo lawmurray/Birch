@@ -16,12 +16,12 @@ class TestWishart < TestModel {
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
+    Σ.peek();
     return vectorize();
   }
 
   override function backward() -> Real[_] {
-    Σ.eval();
+    Σ.peek();
     return vectorize();
   }
 
@@ -30,7 +30,7 @@ class TestWishart < TestModel {
   }
 
   function vectorize() -> Real[_] {
-    return vec(Σ.eval());
+    return vec(Σ.peek());
   }
 
   override function size() -> Integer {

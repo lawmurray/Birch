@@ -15,19 +15,19 @@ class TestAddDiscreteDelta < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[size()];
-    y[1] <- x1.eval();
-    y[2] <- x2.eval();
-    y[3] <- s.eval();
+    y[1] <- x1.peek();
+    y[2] <- x2.peek();
+    y[3] <- s.peek();
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[size()];
-    y[3] <- s.eval();
+    y[3] <- s.peek();
     assert !x1.hasValue();
     assert !x2.hasValue();
-    y[2] <- x2.eval();
-    y[1] <- x1.eval();
+    y[2] <- x2.peek();
+    y[1] <- x1.peek();
     return y;
   }
 

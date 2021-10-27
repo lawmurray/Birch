@@ -308,13 +308,12 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
       if visitCount >= linkCount {
         assert visitCount == linkCount || linkCount == 0;
         doGrad();
-        this.d <- nil;  // clear intermediate gradients to save memory
         visitCount <- 0;  // reset for next time
       }
     }
   }
   function doGrad() {
-    //
+    this.d <- nil;  // clear intermediate gradients to save memory
   }
 
   /**
