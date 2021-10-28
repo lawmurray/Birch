@@ -392,22 +392,6 @@ public:
   }
 
   /**
-   * Dereference (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  T& operator*() {
-    return value();
-  }
-
-  /**
-   * Dereference (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  const T& operator*() const {
-    return value();
-  }
-
-  /**
    * Member access (scalar only).
    */
   template<int E = D, std::enable_if_t<(E == 0) &&
@@ -422,6 +406,20 @@ public:
   template<int E = D, std::enable_if_t<(E == 0) &&
       !std::is_arithmetic<T>::value,int> = 0>
   const T& operator->() const {
+    return value();
+  }
+
+  /**
+   * Dereference. As for value().
+   */
+  auto& operator*() {
+    return value();
+  }
+
+  /**
+   * Dereference. As for value().
+   */
+  const auto& operator*() const {
     return value();
   }
 
@@ -467,7 +465,6 @@ public:
   bool has_value() const {
     return !std::is_arithmetic<T>::value || isElementWise;
   }
-
 
   /**
    * Slice.
