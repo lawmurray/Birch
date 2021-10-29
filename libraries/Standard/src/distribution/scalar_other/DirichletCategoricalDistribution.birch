@@ -103,6 +103,5 @@ function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
  * Returns: the posterior hyperparameters `α'`.
  */
 function update_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
-  let α' <- α + single<Real>(x, length(α));
-  return Dirichlet(α');
+  return Dirichlet(α + single<Real>(x, length(α)));
 }

@@ -34,6 +34,15 @@ Scalar<Value,Middle> scalar(const Middle& m) {
 /**
  * Convert to scalar.
  */
+function scalar<Value,Type>(m:Type) -> Value {
+  cpp{{
+  return static_cast<Value>(m);
+  }}
+}
+
+/**
+ * Convert to scalar.
+ */
 function scalar<Value,Type>(m:Type[_]) -> Value {
   assert length(m) == 1;
   return scalar<Value>(m[1]);
@@ -45,33 +54,6 @@ function scalar<Value,Type>(m:Type[_]) -> Value {
 function scalar<Value,Type>(m:Type[_,_]) -> Value {
   assert rows(m) == 1 && columns(m) == 1;
   return scalar<Value>(m[1,1]);
-}
-
-/**
- * Convert to scalar.
- */
-function scalar<Value>(m:Boolean) -> Value {
-  cpp{{
-  return static_cast<Value>(m);
-  }}
-}
-
-/**
- * Convert to scalar.
- */
-function scalar<Value>(m:Integer) -> Value {
-  cpp{{
-  return static_cast<Value>(m);
-  }}
-}
-
-/**
- * Convert to scalar.
- */
-function scalar<Value>(m:Real) -> Value {
-  cpp{{
-  return static_cast<Value>(m);
-  }}
 }
 
 function grad_scalar<Gradient,Type>(d:Gradient, m:Type) -> {

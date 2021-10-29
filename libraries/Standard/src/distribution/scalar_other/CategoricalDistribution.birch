@@ -39,11 +39,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function lower() -> Integer!? {
-    return if_then_else(length(peek(ρ)) > 0, 1, 0);
+    return if_then_else(length(ρ) > 0, 1, 0);
   }
 
   override function upper() -> Integer!? {
-    return length(peek(ρ));
+    return length(ρ);
   }
 
   override function write(buffer:Buffer) {
@@ -78,19 +78,14 @@ function simulate_categorical<Arg1>(ρ:Arg1) -> {
  * - Z: Sum of the unnormalized category probabilities.
  */
 function simulate_categorical<Arg1,Arg2>(ρ:Arg1, Z:Arg2) -> {
-  if length(ρ) == 0 {
-    return 0;
-  } else {
-    let u <- simulate_uniform(0.0, Z);
-    let x <- 1;
-    let P <- ρ[1];
-    while P < u {
-      assert x < length(ρ);
-      x <- x + 1;
-      P <- P + ρ[x];
-    }
-    return x;
+  let u <- simulate_uniform(0.0, Z);
+  let x <- 0;
+  let P <- 0.0;
+  while u > P {
+    x <- x + 1;
+    P <- P + ρ[x];
   }
+  return x;
 }
 
 /*

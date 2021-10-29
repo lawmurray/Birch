@@ -44,15 +44,6 @@ function ibeta(a:Real, b:Real, x:Real) -> Real {
 }
 
 /**
- * Incomplete beta function.
- */
-function ibeta(a:Integer, b:Integer, x:Real) -> Real {
-  cpp{{
-  return numbirch::ibeta(a, b, x);
-  }}
-}
-
-/**
  * Reciprocal.
  */
 function rcp(x:Real) -> Real {

@@ -138,7 +138,7 @@ function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
 function cdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
     β:Arg4) -> {
   let P <- 0.0;
-  for i in 0..min(n, x) {
+  for i in 0..x {
     P <- P + exp(logpdf_beta_binomial(i, n, α, β));
   }
   return P;

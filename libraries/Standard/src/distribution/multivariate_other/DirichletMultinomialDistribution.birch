@@ -104,6 +104,5 @@ function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
  */
 function update_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
     α:Arg3) -> {
-  let α' <- α + x;
-  return Dirichlet(α');
+  return Dirichlet(α + x);
 }
