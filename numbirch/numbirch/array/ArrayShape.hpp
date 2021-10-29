@@ -17,7 +17,7 @@ template<class T, int D> class Array;
  */
 template<int D>
 class ArrayShape {
-  static_assert(D <= 2, "arrays support only up to two dimensions");
+  static_assert(0 <= D && D <= 2, "Array supports up to two dimensions");
 };
 
 /**
@@ -145,6 +145,18 @@ public:
     U* buf = const_cast<U*>(buffer);
 
     return Array<U,0>(buf + (i - 1)*int64_t(inc), ArrayShape<0>());
+  }
+
+  template<class T>
+  auto& dice(T* buffer, const int i) {
+    assert(1 <= i && i <= n && "index out of bounds");
+    return buffer[(i - 1)*int64_t(inc)];
+  }
+
+  template<class T>
+  const auto& dice(T* buffer, const int i) const {
+    assert(1 <= i && i <= n && "index out of bounds");
+    return buffer[(i - 1)*int64_t(inc)];
   }
 
   /**
@@ -310,7 +322,7 @@ public:
     int r = std::max(0, rows.second - rows.first + 1);
 
     return Array<U,1>(buf + (i - 1) + int64_t(ld)*(j - 1),
-        ArrayShape<1>(r, 1));
+        ArrayShape<1>(r));
   }
 
   template<class T>
@@ -338,6 +350,20 @@ public:
     U* buf = const_cast<U*>(buffer);
 
     return Array<U,0>(buf + (i - 1) + int64_t(ld)*(j - 1), ArrayShape<0>());
+  }
+
+  template<class T>
+  auto& dice(T* buffer, const int i, const int j) {
+    assert(1 <= i && i <= m && "row index out of bounds");
+    assert(1 <= j && j <= n && "column index out of bounds");
+    return buffer[(i - 1) + int64_t(ld)*(j - 1)];
+  }
+
+  template<class T>
+  const auto& dice(T* buffer, const int i, const int j) const {
+    assert(1 <= i && i <= m && "row index out of bounds");
+    assert(1 <= j && j <= n && "column index out of bounds");
+    return buffer[(i - 1) + int64_t(ld)*(j - 1)];
   }
 
 private:

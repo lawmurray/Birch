@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/memory.hpp"
+#include "numbirch/type.hpp"
 #include "numbirch/array/external.hpp"
 #include "numbirch/array/ArrayControl.hpp"
 #include "numbirch/array/ArrayShape.hpp"
@@ -13,36 +14,37 @@
 
 namespace numbirch {
 /**
- * @internal
- * 
- * Are all argument types integral? This is used to determine whether a slice
- * will return a view of an array, or a single element.
- * 
- * @ingroup array
- */
-template<class... Args>
-struct is_index {
-  //
-};
-
-template<class Arg>
-struct is_index<Arg> {
-  static const bool value = std::is_integral<
-      typename std::decay<Arg>::type>::value;
-};
-
-template<class Arg, class... Args>
-struct is_index<Arg,Args...> {
-  static const bool value = is_index<Arg>::value && is_index<Args...>::value;
-};
-
-/**
  * Multidimensional array with copy-on-write.
  * 
  * @ingroup array
  * 
  * @tparam T Value type.
- * @tparam D Number of dimensions.
+ * @tparam D Number of dimensions, where `0 <= D <= 2`.
+ * 
+ * An Array supports the operations slice() and dice():
+ * 
+ * @li A slice() returns an Array of `D` dimensions or fewer. This includes an
+ * `Array<T,0>` a.k.a. `Scalar<T>` of one element.
+ * @li A dice() returns a reference of type `const T&` or `T&` to an
+ * individual element.
+ * 
+ * The "slice and dice" operator()() combines the two, acting as slice() when
+ * the result would have one or more dimensions, and a dice() if the result
+ * would have zero dimensions. 
+ * 
+ * Internally, an Array is in one of two corresponding states according to the
+ * most recent such operation:
+ * 
+ * @li *sliced*, where it supports further slice() operations without
+ * transition, or
+ * @li *diced*, where it supports further dice() operations without transition.
+ * 
+ * The transition between the two states is automatic, on demand. The only
+ * implication is that of performance: a transition from *sliced* to *diced*
+ * may require synchronization with the device to ensure that all device reads
+ * and writes have concluded before the host can access an individual element.
+ * A performance consideration is to be careful with the interleaving of
+ * slice() and dice() to minimize the number of potential synchronizations.
  */
 template<class T, int D>
 class Array {
@@ -67,7 +69,7 @@ public:
       "Array of Array not supported (and not what you want anyway?)");
 
   /**
-   * Constructor.
+   * Default constructor for scalar. The array contains one element.
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array() :
@@ -76,16 +78,15 @@ public:
       shp(),
       isView(false),
       isElementWise(false) {
-    // default allocation of a scalar has one element
     allocate();
     if (!std::is_arithmetic<T>::value) {
-      atomize();
+      dicer();
       initialize();
     }
   }
 
   /**
-   * Constructor.
+   * Constructor for non-scalar. The array is empty.
    */
   template<int E = D, std::enable_if_t<E != 0,int> = 0>
   Array() :
@@ -94,11 +95,13 @@ public:
       shp(),
       isView(false),
       isElementWise(false) {
-    // default allocation of non-scalar has zero elements
+    //
   }
 
   /**
-   * Constructor.
+   * Constructor (scalar only).
+   * 
+   * @param value 
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array(const T& value) :
@@ -124,7 +127,7 @@ public:
       isElementWise(false) {
     allocate();
     if (!std::is_arithmetic<T>::value) {
-      atomize();
+      dicer();
       initialize();
     }
   }
@@ -142,7 +145,7 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    atomize();
+    dicer();
     fill(value);
     ///@todo Use asynchronous fill
   }
@@ -174,7 +177,7 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    atomize();
+    dicer();
     initialize(std::forward<Args>(args)...);
   }
 
@@ -191,7 +194,7 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    atomize();
+    dicer();
     std::uninitialized_copy(values.begin(), values.end(), beginInternal());
   }
 
@@ -208,7 +211,7 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    atomize();
+    dicer();
     int64_t t = 0;
     for (auto row : values) {
       for (auto x : row) {
@@ -232,7 +235,7 @@ public:
       isView(false),
       isElementWise(false) {
     allocate();
-    atomize();
+    dicer();
     int64_t n = 0;
     for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
       new (&*iter) T(l(++n));
@@ -349,7 +352,7 @@ public:
    */
   ArrayIterator<T,D> begin() {
     own();
-    atomize();
+    dicer();
     return ArrayIterator<T,D>(buf, shp);
   }
 
@@ -357,7 +360,7 @@ public:
    * @copydoc begin()
    */
   ArrayIterator<T,D> begin() const {
-    atomize();
+    dicer();
     return ArrayIterator<T,D>(buf, shp);
   }
 
@@ -392,6 +395,15 @@ public:
   }
 
   /**
+   * Value conversion (scalar only).
+   */
+  template<class U, int E = D, std::enable_if_t<E == 0 &&
+      promotes_to<T,U>::value,int> = 0>
+  operator U() const {
+    return value();
+  }
+
+  /**
    * Member access (scalar only).
    */
   template<int E = D, std::enable_if_t<(E == 0) &&
@@ -410,14 +422,16 @@ public:
   }
 
   /**
-   * Dereference. As for value().
+   * @copydoc value()
+   * 
+   * @see value()
    */
   auto& operator*() {
     return value();
   }
 
   /**
-   * Dereference. As for value().
+   * @copydoc operator*()
    */
   const auto& operator*() const {
     return value();
@@ -431,7 +445,7 @@ public:
   auto& value() {
     if constexpr (D == 0) {
       own();
-      atomize();
+      dicer();
       return *buf;
     } else {
       return *this;
@@ -445,7 +459,7 @@ public:
    */
   const auto& value() const {
     if constexpr (D == 0) {
-      atomize();
+      dicer();
       return *buf;
     } else {
       return *this;
@@ -469,32 +483,112 @@ public:
   /**
    * Slice.
    *
-   * @tparam Args Slice argument types.
+   * @tparam Args Argument types.
    * 
-   * @param args Ranges or indices defining slice. An index should be of type
-   * `int`, and a range of type `std::pair<int,int>` giving the first and last
-   * indices of the range of elements to select.
+   * @param args Ranges or indices defining a slice. An index should be of
+   * type `int`, and a range of type `std::pair` giving the first and last
+   * indices of the range of elements to select. Indices and ranges are
+   * 1-based.
    *
-   * @return The resulting view or element.
+   * @return Array, giving a view of the selected elements of the original
+   * array.
    * 
-   * @note Currently ranges and indices for slices are 1-based rather
-   * than 0-based, as Array is used directly from Birch, in which arrays use
-   * 1-based indexing, rather than C++, in which arrays use 0-based indexing.
+   * The number of dimensions of the returned Array is `D` minus the number of
+   * indices among @p args. In particular, if @p args are all indices, the
+   * return value will be of type `Array<T,0>` a.k.a. `Scalar<T>` (c.f.
+   * dice()).
    */
   template<class... Args>
-  auto operator()(Args&&... args) {
+  auto slice(Args&&... args) {
     own();
-    crystallize();
+    slicer();
     return shp.slice(buf, std::forward<Args>(args)...);
   }
 
   /**
-   * @copydoc operator()()
+   * @copydoc slice()
    */
   template<class... Args>
-  auto operator()(Args&&... args) const {
-    crystallize();
+  const auto slice(Args&&... args) const {
+    slicer();
     return shp.slice(buf, std::forward<Args>(args)...);
+  }
+
+  /**
+   * Dice.
+   * 
+   * @param args Indices defining the element to select. The indices are
+   * 1-based.
+   *
+   * @return Reference to the selected element.
+   * 
+   * @see slice(), which returns a `Scalar<T>` rather than `T&` for the same
+   * arguments.
+   */
+  template<class... Args, std::enable_if_t<
+      all_integral<Args...>::value,int> = 0>
+  T& dice(const Args&... args) {
+    own();
+    dicer();
+    return shp.dice(buf, args...);
+  }
+
+  /**
+   * @copydoc dice()
+   */
+  template<class... Args, std::enable_if_t<
+      all_integral<Args...>::value,int> = 0>
+  const T& dice(const Args&... args) const {
+    slicer();
+    return shp.dice(buf, args...);
+  }
+
+  /**
+   * @copydoc slice()
+   * 
+   * @note operator()() is overloaded to behave as slice() when one or more
+   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
+   */
+  template<class... Args, std::enable_if_t<
+      !all_integral<Args...>::value,int> = 0>
+  auto operator()(Args&&... args) {
+    return slice(std::forward<Args>(args)...);
+  }
+
+  /**
+   * @copydoc slice()
+   * 
+   * @note operator()() is overloaded to behave as slice() when one or more
+   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
+   */
+  template<class... Args, std::enable_if_t<
+      !all_integral<Args...>::value,int> = 0>
+  auto operator()(Args&&... args) const {
+    return slice(std::forward<Args>(args)...);
+  }
+
+  /**
+   * @copydoc dice()
+   * 
+   * @note operator()() is overloaded to behave as slice() when one or more
+   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
+   */
+  template<class... Args, std::enable_if_t<
+      all_integral<Args...>::value,int> = 0>
+  T& operator()(const Args&... args) {
+    return dice(args...);
+  }
+
+  /**
+   * @copydoc dice()
+   * 
+   * @note operator()() is overloaded to behave as slice() when one or more
+   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
+   */
+  template<class... Args, std::enable_if_t<
+      all_integral<Args...>::value,int> = 0>
+  const T& operator()(const Args&... args) const {
+    return dice(args...);
   }
 
   /**
@@ -502,7 +596,7 @@ public:
    */
   T* data() {
     own();
-    crystallize();
+    slicer();
     return buf;
   }
 
@@ -510,7 +604,7 @@ public:
    * @copydoc data()
    */
   const T* data() const {
-    crystallize();
+    slicer();
     return buf;
   }
 
@@ -620,9 +714,9 @@ public:
     } else {
       own();
       if (std::is_arithmetic<T>::value) {
-        crystallize();
+        slicer();
         buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
-        atomize();
+        dicer();
       } else {
         buf = (T*)std::realloc((void*)buf, s.volume()*sizeof(T));
       }
@@ -652,12 +746,12 @@ public:
       release();
     } else {
       own();
-      atomize();
+      dicer();
       std::destroy(buf + i, buf + i + len);
       std::memmove((void*)(buf + i), (void*)(buf + i + len),
           (n - len - i)*sizeof(T));
       if (std::is_arithmetic<T>::value) {
-        crystallize();
+        slicer();
         buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
       } else {
         buf = (T*)std::realloc((void*)buf, s.volume()*sizeof(T));
@@ -711,7 +805,7 @@ private:
     if (isView) {
       assert(conforms(o) && "array sizes are different");
       if (std::is_arithmetic<T>::value) {
-        crystallize();
+        slicer();
         memcpy(data(), shp.stride()*sizeof(T), o.data(),
             o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
             shp.height());
@@ -773,7 +867,7 @@ private:
     assert(!isElementWise);
 
     if (std::is_arithmetic<T>::value) {
-      crystallize();
+      slicer();
       buf = (T*)malloc(volume()*sizeof(T));
     } else {
       buf = (T*)std::malloc(volume()*sizeof(T));
@@ -851,7 +945,7 @@ private:
       } else {
         T* buf = nullptr;
         if (std::is_arithmetic<T>::value) {
-          crystallize();
+          slicer();
           buf = (T*)malloc(volume()*sizeof(T));
           memcpy(buf, shp.stride()*sizeof(T), this->buf,
               shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
@@ -875,15 +969,15 @@ private:
    * Prepare for block-wise access. This allows asynchronous read or write by
    * a device.
    */
-  void crystallize() {
+  void slicer() {
     isElementWise = false;
   }
 
   /**
-   * @copydoc crystallize()
+   * @copydoc slicer()
    */
-  void crystallize() const {
-    const_cast<Array*>(this)->crystallize();
+  void slicer() const {
+    const_cast<Array*>(this)->slicer();
   }
 
   /**
@@ -891,7 +985,7 @@ private:
    * block-wise access, this requires synchronization with the device to
    * ensure that all asynchronous reads and writes have completed.
    */
-  void atomize() {
+  void dicer() {
     if (!isElementWise) {
       if (std::is_arithmetic<T>::value) {
         wait();
@@ -901,10 +995,10 @@ private:
   }
 
   /**
-   * @copydoc atomize()
+   * @copydoc dicer()
    */
-  void atomize() const {
-    const_cast<Array*>(this)->atomize();
+  void dicer() const {
+    const_cast<Array*>(this)->dicer();
   }
 
   /**
@@ -938,7 +1032,7 @@ private:
       std::is_convertible<U,T>::value,int> = 0>
   void uninitialized_copy(const Array<U,E>& o) {
     if (std::is_arithmetic<T>::value && std::is_same<T,U>::value) {
-      crystallize();
+      slicer();
       memcpy(data(), shp.stride()*sizeof(T), o.data(),
           o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
           shp.height());
