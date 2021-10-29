@@ -29,7 +29,13 @@ public:
       !is_visitable<T,Destroyer>::value &&
       is_iterable<T>::value,int> = 0>
   void visit(T& o) {
-    o.clear();
+    if (!std::is_trivial<typename T::value_type>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
   }
 
   template<class T, std::enable_if_t<
