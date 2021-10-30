@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cstddef>
+#include <type_traits>
 
 namespace numbirch {
 /**
@@ -16,6 +17,14 @@ namespace numbirch {
  * @ingroup memory
  */
 void init();
+
+/**
+ * Synchronize with the device. This waits for all operations to complete for
+ * the current thread.
+ * 
+ * @ingroup memory
+ */
+void wait();
 
 /**
  * Terminate NumBirch.
@@ -60,7 +69,7 @@ void* malloc(const size_t size);
 void* realloc(void* ptr, const size_t size);
 
 /**
- * Free allocation.
+ * Free memory.
  * 
  * @ingroup memory
  * 
@@ -69,7 +78,7 @@ void* realloc(void* ptr, const size_t size);
 void free(void* ptr);
 
 /**
- * Batch copy.
+ * Copy memory.
  * 
  * @ingroup memory
  * 
@@ -84,10 +93,20 @@ void memcpy(void* dst, const size_t dpitch, const void* src,
     const size_t spitch, const size_t width, const size_t height);
 
 /**
- * Synchronize with the device. This waits for all operations to complete for
- * the current thread.
+ * Set memory by repeating a single value.
  * 
  * @ingroup memory
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param[out] dst Destination.
+ * @param dpitch Stride between batches of `dst`, in bytes.
+ * @param value Value to set.
+ * @param width Width of each batch, in bytes.
+ * @param height Number of batches.
  */
-void wait();
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+void memset(void* dst, const size_t dpitch, const T value, const size_t width,
+    const size_t height);
+
 }

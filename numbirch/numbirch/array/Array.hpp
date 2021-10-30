@@ -77,7 +77,7 @@ public:
       ctl(nullptr),
       shp(),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
     if (!std::is_arithmetic<T>::value) {
       dicer();
@@ -94,7 +94,7 @@ public:
       ctl(nullptr),
       shp(),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     //
   }
 
@@ -109,9 +109,9 @@ public:
       ctl(nullptr),
       shp(),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
-    *buf = value;  ///@todo Use asynchronous fill
+    fill(value);
   }
 
   /**
@@ -124,7 +124,7 @@ public:
       ctl(nullptr),
       shp(shape),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
     if (!std::is_arithmetic<T>::value) {
       dicer();
@@ -143,22 +143,9 @@ public:
       ctl(nullptr),
       shp(shape),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
-    dicer();
     fill(value);
-    ///@todo Use asynchronous fill
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param shape Shape.
-   * @param value Fill value.
-   */
-  Array(const shape_type& shape, const Array<T,0>& value) :
-      Array(shape, *value) {
-    ///@todo Use asynchronous fill
   }
 
   /**
@@ -175,7 +162,7 @@ public:
       ctl(nullptr),
       shp(shape),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
     dicer();
     initialize(std::forward<Args>(args)...);
@@ -192,7 +179,7 @@ public:
       ctl(nullptr),
       shp(values.size()),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
     dicer();
     std::uninitialized_copy(values.begin(), values.end(), beginInternal());
@@ -209,7 +196,7 @@ public:
       ctl(nullptr),
       shp(values.size(), values.begin()->size()),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
     dicer();
     int64_t t = 0;
@@ -233,7 +220,7 @@ public:
       ctl(nullptr),
       shp(shape),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     allocate();
     dicer();
     int64_t n = 0;
@@ -250,7 +237,7 @@ public:
       ctl(nullptr),
       shp(shape),
       isView(true),
-      isElementWise(false) {
+      isDiced(false) {
     //
   }
 
@@ -262,11 +249,11 @@ public:
       ctl(nullptr),
       shp(),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     shp = o.shp;
     if (!o.isView && std::is_arithmetic<T>::value) {
       ArrayControl* ctl;
-      std::tie(ctl, buf, isElementWise) = o.share();
+      std::tie(ctl, buf, isDiced) = o.share();
       this->ctl.store(ctl);
     } else {
       compact();
@@ -285,7 +272,7 @@ public:
       ctl(nullptr),
       shp(),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     shp = o.shp;
     compact();
     allocate();
@@ -300,7 +287,7 @@ public:
       ctl(nullptr),
       shp(),
       isView(false),
-      isElementWise(false) {
+      isDiced(false) {
     if (!o.isView) {
       swap(o);
     } else {
@@ -477,7 +464,7 @@ public:
    * it returns true.
    */
   bool has_value() const {
-    return !std::is_arithmetic<T>::value || isElementWise;
+    return !std::is_arithmetic<T>::value || isDiced;
   }
 
   /**
@@ -836,7 +823,7 @@ private:
     std::swap(shp, o.shp);
     std::swap(buf, o.buf);
     std::swap(ctl, o.ctl);
-    std::swap(isElementWise, o.isElementWise);
+    std::swap(isDiced, o.isDiced);
   }
 
   /**
@@ -864,7 +851,7 @@ private:
   void allocate() {
     assert(!buf);
     assert(!ctl.load());
-    assert(!isElementWise);
+    assert(!isDiced);
 
     if (std::is_arithmetic<T>::value) {
       slicer();
@@ -892,7 +879,7 @@ private:
     }
     buf = nullptr;
     isView = false;
-    isElementWise = false;
+    isDiced = false;
   }
 
   /**
@@ -916,7 +903,7 @@ private:
       }
       lock.unset();
     }
-    return std::make_tuple(ctl, buf, isElementWise);
+    return std::make_tuple(ctl, buf, isDiced);
   }
 
   /**
@@ -958,7 +945,7 @@ private:
          * become visible to other threads until after the buffer is set, if
          * the use of the control block as a lock is to be successful */
         this->buf = buf;
-        this->isElementWise = false;
+        this->isDiced = false;
         this->ctl.store(nullptr);
       }
       lock.unset();
@@ -970,7 +957,7 @@ private:
    * a device.
    */
   void slicer() {
-    isElementWise = false;
+    isDiced = false;
   }
 
   /**
@@ -986,11 +973,11 @@ private:
    * ensure that all asynchronous reads and writes have completed.
    */
   void dicer() {
-    if (!isElementWise) {
+    if (!isDiced) {
       if (std::is_arithmetic<T>::value) {
         wait();
       }
-      isElementWise = true;
+      isDiced = true;
     }
   }
 
@@ -1022,7 +1009,8 @@ private:
    * @param value The value.
    */
   void fill(const T& value) {
-    std::uninitialized_fill(beginInternal(), endInternal(), value);
+    memset(data(), shp.stride()*sizeof(T), value, shp.width()*sizeof(T),
+        shp.height());
   }
 
   /**
@@ -1072,7 +1060,7 @@ private:
    * synchronizes with its own device anyway to convert from block-wise to
    * element-wise operations.
    */
-  bool isElementWise;
+  bool isDiced;
 
   /**
    * Lock for operations requiring mutual exclusion.
