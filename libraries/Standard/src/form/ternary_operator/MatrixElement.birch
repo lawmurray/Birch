@@ -45,26 +45,28 @@ function element<Value,Form,Middle,Right>(x:MatrixSplitExpression<Value,Form>,
  * Element of a matrix.
  */
 function element<Type>(x:Type[_,_], i:Integer, j:Integer) -> Type {
-  return x[i,j];
+  cpp{{
+  x.slice(i, j);
+  }}
 }
 
 /**
  * Element of a matrix.
  */
 function element<Type>(x:Type[_,_], i:Integer!, j:Integer) -> Type {
-  return x[i!,j];
+  return element(x, i!, j);
 }
 
 /**
  * Element of a matrix.
  */
 function element<Type>(x:Type[_,_], i:Integer, j:Integer!) -> Type {
-  return x[i,j!];
+  return element(x, i, j!);
 }
 
 /**
  * Element of a matrix.
  */
 function element<Type>(x:Type[_,_], i:Integer!, j:Integer!) -> Type {
-  return x[i!,j!];
+  return element(x, i!, j!);
 }

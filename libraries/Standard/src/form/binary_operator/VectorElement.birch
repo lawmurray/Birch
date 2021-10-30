@@ -41,13 +41,15 @@ function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>,
 /**
  * Element of a vector.
  */
-function element<Type>(x:Type[_], i:Integer) -> Type {
-  return x[i];
+function element<Type>(x:Type[_], i:Integer) -> Type! {
+  cpp{{
+  return x.slice(i);
+  }}
 }
 
 /**
  * Element of a vector.
  */
-function element<Type>(x:Type[_], i:Integer!) -> Type {
-  return x[i!];
+function element<Type>(x:Type[_], i:Integer!) -> Type! {
+  return element(x, i!);
 }
