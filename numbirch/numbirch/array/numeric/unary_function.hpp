@@ -512,6 +512,27 @@ Array<T,D> rectify(const Array<T,D>& A) {
 }
 
 /**
+ * Gradient of rectify().
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Floating point type.
+ * @tparam D Number of dimensions.
+ * 
+ * @param A %Array.
+ * 
+ * @return %Array.
+ */
+template<class T, int D, std::enable_if_t<
+    std::is_floating_point<T>::value,int> = 0>
+Array<T,D> rectify_grad(const Array<T,D>& G, const Array<T,D>& A) {
+  Array<T,D> B(A.shape().compact());
+  rectify_grad(A.width(), A.height(), G.data(), G.stride(), A.data(),
+      A.stride(), B.data(), B.stride());
+  return B;
+}
+
+/**
  * Round to nearest integer value.
  * 
  * @ingroup array

@@ -15,9 +15,7 @@ function eval<Middle>(x:Rectify<Middle>) -> {
 }
 
 function grad<Middle,Gradient>(x:Rectify<Middle>, d:Gradient) {
-  grad(x.m, transform(d, peek(x.m), \(d:Real, m:Real) -> Real {
-        return if_then_else(m > 0.0, d, 0.0);
-      }));
+  grad(x.m, rectify_grad(d, peek(x.m)));
 }
 
 hpp{{
@@ -37,4 +35,13 @@ Rectify<Middle> rectify(const Middle& m) {
  */
 function rectify(x:Real) -> Real {
   return max(0.0, x);
+}
+
+/*
+ * Gradient of `rectify()`.
+ */
+function rectify_grad<Gradient,Type>(d:Gradient, x:Type) -> {
+  cpp{{
+  return numbirch::rectify_grad(d, x);
+  }}
 }

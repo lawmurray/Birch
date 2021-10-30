@@ -431,6 +431,26 @@ void rectify(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB);
 
 /**
+ * Gradient of rectify().
+ * 
+ * @ingroup cpp-raw
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * @param G Matrix.
+ * @param ldG Column stride of `G`.
+ * @param A Matrix.
+ * @param ldA Column stride of `A`.
+ * @param[out] GA Matrix.
+ * @param ldGA Column stride of `GA`.
+ */
+template<class T>
+void rectify_grad(const int m, const int n, const T* G, const int ldG,
+    const T* A, const int ldA, T* GA, const int ldGA);
+
+/**
  * Round to nearest integer value.
  * 
  * @ingroup cpp-raw

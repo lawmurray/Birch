@@ -203,6 +203,15 @@ void rectify(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void rectify_grad(const int m, const int n, const T* G, const int ldG,
+    const T* A, const int ldA, T* B, const int ldB) {
+  auto G1 = make_eigen_matrix(G, m, n, ldG);
+  auto A1 = make_eigen_matrix(A, m, n, ldA).template cast<T>();
+  auto B1 = make_eigen_matrix(B, m, n, ldB);
+  B1.noalias() = G1.binaryExpr(A1, rectify_grad_functor<T>());
+}
+
+template<class T>
 void round(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_eigen_matrix(A, m, n, ldA);

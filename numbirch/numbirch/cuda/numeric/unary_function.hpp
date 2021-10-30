@@ -323,6 +323,15 @@ void rectify(const int m, const int n, const T* A, const int ldA, T* B,
 }
 
 template<class T>
+void rectify_grad(const int m, const int n, const T* G, const int ldG,
+    const T* A, const int ldA, T* B, const int ldB) {
+  prefetch(G, m, n, ldG);
+  prefetch(A, m, n, ldA);
+  prefetch(B, m, n, ldB);
+  transform(m, n, G, ldG, A, ldA, B, ldB, rectify_grad_functor<T>());
+}
+
+template<class T>
 void round(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   prefetch(A, m, n, ldA);

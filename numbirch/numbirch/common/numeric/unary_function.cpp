@@ -138,6 +138,11 @@ template void rectify(const int m, const int n, const double* A,
 template void rectify(const int m, const int n, const float* A,
     const int ldA, float* B, const int ldB);
 
+template void rectify_grad(const int m, const int n, const double* G,
+    const int ldG, const double* A, const int ldA, double* B, const int ldB);
+template void rectify_grad(const int m, const int n, const float* G,
+    const int ldG, const float* A, const int ldA, float* B, const int ldB);
+
 template void round(const int m, const int n, const double* A,
     const int ldA, double* B, const int ldB);
 template void round(const int m, const int n, const float* A,

@@ -104,6 +104,11 @@ HOST_DEVICE T rectify(const T x) {
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+HOST_DEVICE T rectify_grad(const T d, const T x) {
+  return (x > 0) ? d : T(0);
+}
+
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST_DEVICE T round(const T x) {
   return std::round(x);
 }

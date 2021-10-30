@@ -167,6 +167,13 @@ struct rectify_functor {
 };
 
 template<class T>
+struct rectify_grad_functor {
+  HOST_DEVICE T operator()(const T g, const T x) const {
+    return rectify_grad(g, x);
+  }
+};
+
+template<class T>
 struct round_functor {
   HOST_DEVICE T operator()(const T x) const {
     return std::round(x);
