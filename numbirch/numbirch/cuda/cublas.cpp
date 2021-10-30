@@ -12,6 +12,8 @@ double* oneD;
 double* zeroD;
 float* oneS;
 float* zeroS;
+int* oneI;
+int* zeroI;
 
 void cublas_init() {
   /* double-precision scalars */

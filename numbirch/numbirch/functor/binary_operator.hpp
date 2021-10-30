@@ -20,16 +20,16 @@ struct divide_functor {
   }
 };
 
-template<class T>
+template<class T, class U>
 struct divide_scalar_functor {
-  divide_scalar_functor(const T* a) :
+  divide_scalar_functor(const U* a) :
       a(a) {
     //
   }
   HOST_DEVICE T operator()(const T x) const {
-    return x/(*a);
+    return x/T(*a);
   }
-  const T* a;
+  const U* a;
 };
 
 template<class T>
@@ -86,16 +86,16 @@ struct multiply_functor {
   }
 };
 
-template<class T>
+template<class T, class U>
 struct multiply_scalar_functor {
-  multiply_scalar_functor(const T* a) :
+  multiply_scalar_functor(const U* a) :
       a(a) {
     //
   }
   HOST_DEVICE T operator()(const T x) const {
-    return x*(*a);
+    return x*T(*a);
   }
-  const T* a;
+  const U* a;
 };
 
 template<class T>

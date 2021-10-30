@@ -28,7 +28,7 @@ void div(const int m, const int n, const T* A, const int ldA, const U* b,
     V* C, const int ldC) {
   prefetch(A, m, n, ldA);
   prefetch(C, m, n, ldC);
-  transform(m, n, A, ldA, C, ldC, divide_scalar_functor<V>(b));
+  transform(m, n, A, ldA, C, ldC, divide_scalar_functor<V,U>(b));
 }
 
 template<class T>
@@ -98,7 +98,7 @@ void mul(const int m, const int n, const T* a, const U* B, const int ldB,
     V* C, const int ldC) {
   prefetch(B, m, n, ldB);
   prefetch(C, m, n, ldC);
-  transform(m, n, B, ldB, C, ldC, multiply_scalar_functor<V>(a));
+  transform(m, n, B, ldB, C, ldC, multiply_scalar_functor<V,T>(a));
 }
 
 template<class T>

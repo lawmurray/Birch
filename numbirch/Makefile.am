@@ -35,7 +35,7 @@ if ONEAPI
 else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA 
-  AM_CXXFLAGS += -x cu -G -arch=sm_75 -expt-relaxed-constexpr -default-stream=per-thread -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result" -Xcompiler="-Wno-unknown-pragmas" -Xcompiler="-Wno-deprecated-declarations"
+  AM_CXXFLAGS += -x cu -G -rdc=true -default-stream=per-thread -expt-relaxed-constexpr -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result" -Xcompiler="-Wno-unknown-pragmas" -Xcompiler="-Wno-deprecated-declarations"
   COMMON_SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \

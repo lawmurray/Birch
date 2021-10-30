@@ -18,23 +18,23 @@
 
 namespace numbirch {
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int>>
 HOST_DEVICE T digamma(const T x) {
   return Eigen::numext::digamma(x);
 }
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int>>
 HOST_DEVICE T gamma_p(const T a, const T x) {
   return Eigen::numext::igamma(a, x);
 }
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_floating_point<T>::value,int>>
 HOST_DEVICE T gamma_q(const T a, const T x) {
   return Eigen::numext::igammac(a, x);
 }
 
 template<class T, class U, std::enable_if_t<
-    std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
+    std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int>>
 HOST_DEVICE T ibeta(const U a, const U b, const T x) {
   /* as of Eigen 3.4.0, the edge cases of a = 0 and b = 0 are not handled
    * internally, see https://gitlab.com/libeigen/eigen/-/issues/2359 */
@@ -47,18 +47,19 @@ HOST_DEVICE T ibeta(const U a, const U b, const T x) {
   }
 }
 
-template double digamma(double);
-template float digamma(float);
-
-template double gamma_p(double, double);
-template float gamma_p(float, float);
-
-template double gamma_q(double, double);
-template float gamma_q(float, float);
-
-template double ibeta(double, double, double);
-template double ibeta(int, int, double);
-template float ibeta(float, float, float);
-template float ibeta(int, int, float);
-
 }
+
+template HOST_DEVICE double numbirch::digamma<double,0>(double);
+template HOST_DEVICE float numbirch::digamma<float,0>(float);
+
+template HOST_DEVICE double numbirch::gamma_p(double, double);
+template HOST_DEVICE float numbirch::gamma_p(float, float);
+
+template HOST_DEVICE double numbirch::gamma_q(double, double);
+template HOST_DEVICE float numbirch::gamma_q(float, float);
+
+template HOST_DEVICE double numbirch::ibeta(double, double, double);
+template HOST_DEVICE double numbirch::ibeta(int, int, double);
+template HOST_DEVICE float numbirch::ibeta(float, float, float);
+template HOST_DEVICE float numbirch::ibeta(int, int, float);
+

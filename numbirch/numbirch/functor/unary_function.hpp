@@ -70,7 +70,7 @@ struct diagonal_functor {
     //
   }
   HOST_DEVICE T operator()(const int i, const int j) const {
-    return (i == j) ? *a : T(0);
+    return (i == j) ? T(*a) : T(0);
   }
   const T* a;
 };
