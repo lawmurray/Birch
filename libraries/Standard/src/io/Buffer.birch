@@ -54,6 +54,7 @@ final class Buffer {
   matrixInteger:Integer[_,_]?;
   matrixBoolean:Boolean[_,_]?;
 
+  phantom map;
   hpp{{
   /**
    * Map for fast lookup of keys, in lieu of proper dictionary implementation.
@@ -876,11 +877,11 @@ final class Buffer {
     if isEmpty() {
       set(x);
     } else if scalarBoolean? {
-      set([scalarBoolean!, x]);
+      set(stack(scalarBoolean!, x));
     } else if scalarInteger? {
-      set([scalarInteger!, scalar<Integer>(x)]);
+      set(stack(scalarInteger!, scalar<Integer>(x)));
     } else if scalarReal? {
-      set([scalarReal!, scalar<Real>(x)]);
+      set(stack(scalarReal!, scalar<Real>(x)));
     } else if vectorBoolean? {
       cpp{{
       vectorBoolean.value().push(x);
@@ -902,11 +903,11 @@ final class Buffer {
     if isEmpty() {
       set(x);
     } else if scalarBoolean? {
-      set([scalar<Integer>(scalarBoolean!), x]);
+      set(stack(scalar<Integer>(scalarBoolean!), x));
     } else if scalarInteger? {
-      set([scalarInteger!, x]);
+      set(stack(scalarInteger!, x));
     } else if scalarReal? {
-      set([scalarReal!, scalar<Real>(x)]);
+      set(stack(scalarReal!, scalar<Real>(x)));
     } else if vectorBoolean? {
       set(stack(vector<Integer>(vectorBoolean!), x));
     } else if vectorInteger? {
@@ -928,11 +929,11 @@ final class Buffer {
     if isEmpty() {
       set(x);
     } else if scalarBoolean? {
-      set([scalar<Real>(scalarBoolean!), x]);
+      set(stack(scalar<Real>(scalarBoolean!), x));
     } else if scalarInteger? {
-      set([scalar<Real>(scalarInteger!), x]);
+      set(stack(scalar<Real>(scalarInteger!), x));
     } else if scalarReal? {
-      set([scalarReal!, x]);
+      set(stack(scalarReal!, x));
     } else if vectorBoolean? {
       set(stack(vector<Real>(vectorBoolean!), x));
     } else if vectorInteger? {
