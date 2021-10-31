@@ -47,3 +47,36 @@ function if_then_else<Type>(cond:Boolean, x:Type, y:Type) -> Type {
     return y;
   }
 }
+
+/**
+ * If `cond` is true then return `x`, else return `y`.
+ */
+function if_then_else<Type>(cond:Boolean, x:Type!, y:Type) -> Type! {
+  if cond {
+    return x;
+  } else {
+    return y;
+  }
+}
+
+/**
+ * If `cond` is true then return `x`, else return `y`.
+ */
+function if_then_else<Type>(cond:Boolean, x:Type, y:Type!) -> Type! {
+  if cond {
+    return x;
+  } else {
+    return y;
+  }
+}
+
+/**
+ * If `cond` is true then return `x`, else return `y`.
+ */
+function if_then_else<Type>(cond:Boolean, x:Type!, y:Type!) -> Type! {
+  if cond {
+    return x;
+  } else {
+    return y;
+  }
+}
