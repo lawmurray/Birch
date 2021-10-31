@@ -13,7 +13,9 @@ final class VectorSplitExpression<Value,Form>(x:Value[_], f:Form) <
         this.d <- vector<Value>(0, this.length());
       }
       assert this.d?;
-      this.d![i] <- this.d![i] + wait(d);
+      cpp{{
+      this->d.value().slice(i) = this->d.value().slice(i) + d;
+      }}
       this.visitCount <- this.visitCount + 1;
       if this.visitCount >= this.linkCount {
         assert this.visitCount == this.linkCount || this.linkCount == 0;

@@ -63,7 +63,9 @@ function stack<Type>(x:Type[_], y:Type) -> Type[_] {
   let l1 <- length(x);
   z:Type[l1 + 1];
   z[1..l1] <- x;
-  z[l1 + 1] <- y;
+  cpp{{
+  z.slice(l1 + 1) = y;
+  }}
   return z;
 }
 
@@ -74,8 +76,10 @@ function stack<Type>(x:Type[_], y:Type) -> Type[_] {
 function stack<Type>(x:Type, y:Type[_]) -> Type[_] {
   let l2 <- length(y);
   z:Type[1 + l2];
+  cpp{{
+  z.slice(1) = x;
+  }}
   z[2..(1 + l2)] <- y;
-  z[1] <- x;
   return z;
 }
 
@@ -95,15 +99,22 @@ function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
 }
 
 function grad_stack<Gradient,Left,Right>(d:Gradient, l:Left, r:Right) -> {
-  return (d[1], d[2]);
+  cpp{{
+  return std::make_tuple(d.slice(1), d.slice(2));
+  }}
 }
 
 function grad_stack<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right) -> {
-  return (d[1..(length(d) - 1)], d[length(d)]);
+  cpp{{
+  return std::make_tuple(d.slice(std::make_pair(1, length(d) - 1)),
+      d.slice(length(d)));
+  }}
 }
 
 function grad_stack<Gradient,Left,Right>(d:Gradient, l:Left, r:Right[_]) -> {
-  return (d[1], d[2..length(d)]);
+  cpp{{
+  return std::make_tuple(d.slice(1), d.slice(std::make_pair(2, length(d))));
+  }}
 }
 
 function grad_stack<Gradient,Left,Right>(d:Gradient, l:Left[_],

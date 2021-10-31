@@ -6,15 +6,15 @@ struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 }
 
 function value<Left,Right>(x:VectorElement<Left,Right>) -> {
-  return value(x.l)[wait(value(x.r))];
+  return element(value(x.l), value(x.r));
 }
 
 function peek<Left,Right>(x:VectorElement<Left,Right>) -> {
-  return peek(x.l)[wait(peek(x.r))];
+  return element(peek(x.l), peek(x.r));
 }
 
 function eval<Left,Right>(x:VectorElement<Left,Right>) -> {
-  return eval(x.l)[wait(eval(x.r))];
+  return element(eval(x.l), eval(x.r));
 }
 
 function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
