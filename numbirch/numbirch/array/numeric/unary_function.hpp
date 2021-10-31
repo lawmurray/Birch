@@ -28,7 +28,7 @@ namespace numbirch {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> abs(const Array<T,D>& A) {
+PURE Array<T,D> abs(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   abs(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -48,7 +48,7 @@ Array<T,D> abs(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> acos(const Array<T,D>& A) {
+PURE Array<T,D> acos(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   acos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -68,7 +68,7 @@ Array<T,D> acos(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> asin(const Array<T,D>& A) {
+PURE Array<T,D> asin(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   asin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -88,7 +88,7 @@ Array<T,D> asin(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> atan(const Array<T,D>& A) {
+PURE Array<T,D> atan(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   atan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -108,7 +108,7 @@ Array<T,D> atan(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> ceil(const Array<T,D>& A) {
+PURE Array<T,D> ceil(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   ceil(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -127,7 +127,7 @@ Array<T,D> ceil(const Array<T,D>& A) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> cholinv(const Matrix<T>& S) {
+PURE Matrix<T> cholinv(const Matrix<T>& S) {
   Matrix<T> B(make_shape(S.rows(), S.columns()));
   cholinv(S.rows(), S.data(), S.stride(), B.data(), B.stride());
   return B;
@@ -147,7 +147,7 @@ Matrix<T> cholinv(const Matrix<T>& S) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> cos(const Array<T,D>& A) {
+PURE Array<T,D> cos(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   cos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -167,7 +167,7 @@ Array<T,D> cos(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> cosh(const Array<T,D>& A) {
+PURE Array<T,D> cosh(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   cosh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -187,7 +187,7 @@ Array<T,D> cosh(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Scalar<int> count(const Array<T,D>& A) {
+PURE Scalar<int> count(const Array<T,D>& A) {
   Scalar<int> b;
   count(A.width(), A.height(), A.data(), A.stride(), b.data());
   return b;
@@ -205,7 +205,7 @@ Scalar<int> count(const Array<T,D>& A) {
  * @param n Number of rows and columns.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> diagonal(const Scalar<T>& x, const int n) {
+PURE Matrix<T> diagonal(const Scalar<T>& x, const int n) {
   Matrix<T> B(make_shape(n, n));
   diagonal(x.data(), n, B.data(), B.stride());
   return B;
@@ -223,7 +223,7 @@ Matrix<T> diagonal(const Scalar<T>& x, const int n) {
  * @param n Number of rows and columns.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> diagonal(const T& x, const int n) {
+PURE Matrix<T> diagonal(const T& x, const int n) {
   return diagonal(Scalar<T>(x), n);
 }
 
@@ -241,7 +241,7 @@ Matrix<T> diagonal(const T& x, const int n) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> digamma(const Array<T,D>& A) {
+PURE Array<T,D> digamma(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   digamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -261,7 +261,7 @@ Array<T,D> digamma(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> exp(const Array<T,D>& A) {
+PURE Array<T,D> exp(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   exp(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -281,7 +281,7 @@ Array<T,D> exp(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> expm1(const Array<T,D>& A) {
+PURE Array<T,D> expm1(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   expm1(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -301,7 +301,7 @@ Array<T,D> expm1(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> floor(const Array<T,D>& A) {
+PURE Array<T,D> floor(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   floor(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -319,7 +319,7 @@ Array<T,D> floor(const Array<T,D>& A) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> inv(const Matrix<T>& A) {
+PURE Matrix<T> inv(const Matrix<T>& A) {
   Matrix<T> B(make_shape(A.rows(), A.columns()));
   inv(A.rows(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -339,7 +339,7 @@ Matrix<T> inv(const Matrix<T>& A) {
  * @return Logarithm of the determinant of `S`.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lcholdet(const Matrix<T>& S) {
+PURE Scalar<T> lcholdet(const Matrix<T>& S) {
   Scalar<T> b;
   lcholdet(S.rows(), S.data(), S.stride(), b.data());
   return b;
@@ -357,7 +357,7 @@ Scalar<T> lcholdet(const Matrix<T>& S) {
  * @return Logarithm of the absolute value of the determinant of `A`.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> ldet(const Matrix<T>& A) {
+PURE Scalar<T> ldet(const Matrix<T>& A) {
   Scalar<T> b;
   ldet(A.rows(), A.data(), A.stride(), b.data());
   return b;
@@ -379,7 +379,7 @@ Scalar<T> ldet(const Matrix<T>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lfact(const Array<int,D>& A) {
+PURE Array<T,D> lfact(const Array<int,D>& A) {
   Array<T,D> B(A.shape().compact());
   lfact(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -401,7 +401,7 @@ Array<T,D> lfact(const Array<int,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lfact_grad(const Array<T,D>& G, const Array<int,D>& A) {
+PURE Array<T,D> lfact_grad(const Array<T,D>& G, const Array<int,D>& A) {
   Array<T,D> B(A.shape().compact());
   lfact_grad(A.width(), A.height(), G.data(), G.stride(), A.data(),
       A.stride(), B.data(), B.stride());
@@ -422,7 +422,7 @@ Array<T,D> lfact_grad(const Array<T,D>& G, const Array<int,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lgamma(const Array<T,D>& A) {
+PURE Array<T,D> lgamma(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   lgamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -442,7 +442,7 @@ Array<T,D> lgamma(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> log(const Array<T,D>& A) {
+PURE Array<T,D> log(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   log(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -462,7 +462,7 @@ Array<T,D> log(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> log1p(const Array<T,D>& A) {
+PURE Array<T,D> log1p(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   log1p(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -484,7 +484,7 @@ Array<T,D> log1p(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> rcp(const Array<T,D>& A) {
+PURE Array<T,D> rcp(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   rcp(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -505,7 +505,7 @@ Array<T,D> rcp(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> rectify(const Array<T,D>& A) {
+PURE Array<T,D> rectify(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   rectify(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -525,7 +525,7 @@ Array<T,D> rectify(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> rectify_grad(const Array<T,D>& G, const Array<T,D>& A) {
+PURE Array<T,D> rectify_grad(const Array<T,D>& G, const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   rectify_grad(A.width(), A.height(), G.data(), G.stride(), A.data(),
       A.stride(), B.data(), B.stride());
@@ -546,7 +546,7 @@ Array<T,D> rectify_grad(const Array<T,D>& G, const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> round(const Array<T,D>& A) {
+PURE Array<T,D> round(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   round(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -566,7 +566,7 @@ Array<T,D> round(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> sin(const Array<T,D>& A) {
+PURE Array<T,D> sin(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   sin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -584,7 +584,7 @@ Array<T,D> sin(const Array<T,D>& A) {
  * @param n Length of vector.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Vector<T> single(const Scalar<int>& i, const int n) {
+PURE Vector<T> single(const Scalar<int>& i, const int n) {
   Vector<T> x(make_shape(n));
   single(i.data(), n, x.data(), x.stride());
   return x;
@@ -602,7 +602,7 @@ Vector<T> single(const Scalar<int>& i, const int n) {
  * @param n Length of vector.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Vector<T> single(const int& i, const int n) {
+PURE Vector<T> single(const int& i, const int n) {
   return single<T>(Scalar<int>(i), n);
 }
 
@@ -620,7 +620,7 @@ Vector<T> single(const int& i, const int n) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> sinh(const Array<T,D>& A) {
+PURE Array<T,D> sinh(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   sinh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -640,7 +640,7 @@ Array<T,D> sinh(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> sqrt(const Array<T,D>& A) {
+PURE Array<T,D> sqrt(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   sqrt(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -660,7 +660,7 @@ Array<T,D> sqrt(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Scalar<T> sum(const Array<T,D>& A) {
+PURE Scalar<T> sum(const Array<T,D>& A) {
   Scalar<T> b;
   sum(A.width(), A.height(), A.data(), A.stride(), b.data());
   return b;
@@ -680,7 +680,7 @@ Scalar<T> sum(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> tan(const Array<T,D>& A) {
+PURE Array<T,D> tan(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   tan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -700,7 +700,7 @@ Array<T,D> tan(const Array<T,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> tanh(const Array<T,D>& A) {
+PURE Array<T,D> tanh(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   tanh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;
@@ -718,7 +718,7 @@ Array<T,D> tanh(const Array<T,D>& A) {
  * @return Trace of the matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> trace(const Matrix<T>& A) {
+PURE Scalar<T> trace(const Matrix<T>& A) {
   Scalar<T> b;
   trace(A.rows(), A.columns(), A.data(), A.stride(), b.data());
   return b;
@@ -736,7 +736,7 @@ Scalar<T> trace(const Matrix<T>& A) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> transpose(const Matrix<T>& A) {
+PURE Matrix<T> transpose(const Matrix<T>& A) {
   Matrix<T> B(make_shape(A.columns(), A.rows()));
   transpose(B.rows(), B.columns(), A.data(), A.stride(), B.data(),
       B.stride());

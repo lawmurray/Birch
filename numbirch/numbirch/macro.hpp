@@ -3,10 +3,22 @@
  */
 #pragma once
 
-#ifdef BACKEND_CUDA
-#define HOST_DEVICE __host__ __device__
+#ifdef __CUDACC__
+#define HOST __host__
 #else
-#define HOST_DEVICE
+#define HOST
+#endif
+
+#ifdef __CUDACC__
+#define DEVICE __device__
+#else
+#define DEVICE
+#endif
+
+#ifdef __GNUG__
+#define PURE __attribute__((const))
+#else
+#define PURE
 #endif
 
 #define PI 3.1415926535897932384626433832795

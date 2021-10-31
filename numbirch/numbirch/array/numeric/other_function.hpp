@@ -32,7 +32,7 @@ namespace numbirch {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> combine(const T a, const Array<T,D>& A, const T b,
+PURE Array<T,D> combine(const T a, const Array<T,D>& A, const T b,
     const Array<T,D>& B, const T c, const Array<T,D>& C, const T e,
     const Array<T,D>& E) {
   assert(A.rows() == B.rows());

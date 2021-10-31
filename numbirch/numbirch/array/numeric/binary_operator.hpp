@@ -28,7 +28,7 @@ namespace numbirch {
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator+(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> operator+(const Array<T,D>& A,
     const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
@@ -54,7 +54,7 @@ Array<typename promote<T,U>::type,D> operator+(const Array<T,D>& A,
  */
 template<class T, class U, std::enable_if_t<std::is_arithmetic<T>::value &&
     std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> operator+(const Scalar<T>& x,
+PURE Scalar<typename promote<T,U>::type> operator+(const Scalar<T>& x,
     const U& y) {
   return x + Scalar<U>(y);
 }
@@ -74,7 +74,7 @@ Scalar<typename promote<T,U>::type> operator+(const Scalar<T>& x,
  */
 template<class T, class U, std::enable_if_t<std::is_arithmetic<T>::value &&
     std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> operator+(const T& x,
+PURE Scalar<typename promote<T,U>::type> operator+(const T& x,
     const Scalar<U>& y) {
   return Scalar<T>(x) + y;
 }
@@ -95,7 +95,7 @@ Scalar<typename promote<T,U>::type> operator+(const T& x,
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
     const Scalar<U>& b) {
   Array<typename promote<T,U>::type,D> C(A.shape().compact());
   div(A.width(), A.height(), A.data(), A.stride(), b.data(), C.data(),
@@ -119,7 +119,7 @@ Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
     const U& b) {
   return A/Scalar<U>(b);
 }
@@ -139,7 +139,7 @@ Array<typename promote<T,U>::type,D> operator/(const Array<T,D>& A,
  */
 template<class T, class U, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> operator/(const T& x, const Scalar<U>& y) {
+PURE Scalar<typename promote<T,U>::type> operator/(const T& x, const Scalar<U>& y) {
   return Scalar<T>(x)/y;
 }
 
@@ -158,7 +158,7 @@ Scalar<typename promote<T,U>::type> operator/(const T& x, const Scalar<U>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<bool,D> operator==(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<bool,D> operator==(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -181,7 +181,7 @@ Array<bool,D> operator==(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator==(const Scalar<T>& x, const T& y) {
+PURE Scalar<bool> operator==(const Scalar<T>& x, const T& y) {
   return x == Scalar<T>(y);
 }
 
@@ -198,7 +198,7 @@ Scalar<bool> operator==(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator==(const T& x, const Scalar<T>& y) {
+PURE Scalar<bool> operator==(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) == y;
 }
 
@@ -217,7 +217,7 @@ Scalar<bool> operator==(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<bool,D> operator>(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<bool,D> operator>(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -240,7 +240,7 @@ Array<bool,D> operator>(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator>(const Scalar<T>& x, const T& y) {
+PURE Scalar<bool> operator>(const Scalar<T>& x, const T& y) {
   return x > Scalar<T>(y);
 }
 
@@ -257,7 +257,7 @@ Scalar<bool> operator>(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator>(const T& x, const Scalar<T>& y) {
+PURE Scalar<bool> operator>(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) > y;
 }
 
@@ -276,7 +276,7 @@ Scalar<bool> operator>(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<bool,D> operator>=(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<bool,D> operator>=(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -299,7 +299,7 @@ Array<bool,D> operator>=(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator>=(const Scalar<T>& x, const T& y) {
+PURE Scalar<bool> operator>=(const Scalar<T>& x, const T& y) {
   return x >= Scalar<T>(y);
 }
 
@@ -316,7 +316,7 @@ Scalar<bool> operator>=(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator>=(const T& x, const Scalar<T>& y) {
+PURE Scalar<bool> operator>=(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) >= y;
 }
 
@@ -335,7 +335,7 @@ Scalar<bool> operator>=(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<bool,D> operator<(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<bool,D> operator<(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -358,7 +358,7 @@ Array<bool,D> operator<(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator<(const Scalar<T>& x, const T& y) {
+PURE Scalar<bool> operator<(const Scalar<T>& x, const T& y) {
   return x < Scalar<T>(y);
 }
 
@@ -375,7 +375,7 @@ Scalar<bool> operator<(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator<(const T& x, const Scalar<T>& y) {
+PURE Scalar<bool> operator<(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) < y;
 }
 
@@ -394,7 +394,7 @@ Scalar<bool> operator<(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<bool,D> operator<=(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<bool,D> operator<=(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -417,7 +417,7 @@ Array<bool,D> operator<=(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator<=(const Scalar<T>& x, const T& y) {
+PURE Scalar<bool> operator<=(const Scalar<T>& x, const T& y) {
   return x <= Scalar<T>(y);
 }
 
@@ -434,7 +434,7 @@ Scalar<bool> operator<=(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator<=(const T& x, const Scalar<T>& y) {
+PURE Scalar<bool> operator<=(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) <= y;
 }
 
@@ -451,7 +451,7 @@ Scalar<bool> operator<=(const T& x, const Scalar<T>& y) {
  * @return %Array.
  */
 template<int D>
-Array<bool,D> operator&&(const Array<bool,D>& A, const Array<bool,D>& B) {
+PURE Array<bool,D> operator&&(const Array<bool,D>& A, const Array<bool,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -471,7 +471,7 @@ Array<bool,D> operator&&(const Array<bool,D>& A, const Array<bool,D>& B) {
  * 
  * @return %Scalar.
  */
-inline Scalar<bool> operator&&(const Scalar<bool>& x, const bool& y) {
+PURE inline Scalar<bool> operator&&(const Scalar<bool>& x, const bool& y) {
   return x && Scalar<bool>(y);
 }
 
@@ -485,7 +485,7 @@ inline Scalar<bool> operator&&(const Scalar<bool>& x, const bool& y) {
  * 
  * @return %Scalar.
  */
-inline Scalar<bool> operator&&(const bool& x, const Scalar<bool>& y) {
+PURE inline Scalar<bool> operator&&(const bool& x, const Scalar<bool>& y) {
   return Scalar<bool>(x) && y;
 }
 
@@ -502,7 +502,7 @@ inline Scalar<bool> operator&&(const bool& x, const Scalar<bool>& y) {
  * @return %Array.
  */
 template<int D>
-Array<bool,D> operator||(const Array<bool,D>& A, const Array<bool,D>& B) {
+PURE Array<bool,D> operator||(const Array<bool,D>& A, const Array<bool,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -522,7 +522,7 @@ Array<bool,D> operator||(const Array<bool,D>& A, const Array<bool,D>& B) {
  * 
  * @return %Scalar.
  */
-inline Scalar<bool> operator||(const Scalar<bool>& x, const bool& y) {
+PURE inline Scalar<bool> operator||(const Scalar<bool>& x, const bool& y) {
   return x || Scalar<bool>(y);
 }
 
@@ -536,7 +536,7 @@ inline Scalar<bool> operator||(const Scalar<bool>& x, const bool& y) {
  * 
  * @return %Scalar.
  */
-inline Scalar<bool> operator||(const bool& x, const Scalar<bool>& y) {
+PURE inline Scalar<bool> operator||(const bool& x, const Scalar<bool>& y) {
   return Scalar<bool>(x) || y;
 }
 
@@ -556,7 +556,7 @@ inline Scalar<bool> operator||(const bool& x, const Scalar<bool>& y) {
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator*(const Scalar<T>& a,
+PURE Array<typename promote<T,U>::type,D> operator*(const Scalar<T>& a,
     const Array<U,D>& B) {
   Array<typename promote<T,U>::type,D> C(B.shape().compact());
   mul(C.width(), C.height(), a.data(), B.data(), B.stride(), C.data(),
@@ -580,7 +580,7 @@ Array<typename promote<T,U>::type,D> operator*(const Scalar<T>& a,
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator*(const T& a,
+PURE Array<typename promote<T,U>::type,D> operator*(const T& a,
     const Array<U,D>& B) {
   return Scalar<T>(a)*B;
 }
@@ -604,7 +604,7 @@ Array<typename promote<T,U>::type,D> operator*(const T& a,
  */
 template<class T, class U, int D, std::enable_if_t<(D > 0) &&
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
     const Scalar<U>& b) {
   return b*A;
 }
@@ -625,7 +625,7 @@ Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
     const U& b) {
   return b*A;
 }
@@ -643,7 +643,7 @@ Array<typename promote<T,U>::type,D> operator*(const Array<T,D>& A,
  * @return %Vector.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Vector<T> operator*(const Matrix<T>& A, const Vector<T>& x) {
+PURE Vector<T> operator*(const Matrix<T>& A, const Vector<T>& x) {
   assert(A.columns() == x.length());
 
   Vector<T> y(make_shape(A.rows()));
@@ -665,7 +665,7 @@ Vector<T> operator*(const Matrix<T>& A, const Vector<T>& x) {
  * @return %Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
+PURE Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.columns() == B.rows());
 
   Matrix<T> C(make_shape(A.rows(), B.columns()));
@@ -689,7 +689,7 @@ Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<bool,D> operator!=(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<bool,D> operator!=(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
 
@@ -712,7 +712,7 @@ Array<bool,D> operator!=(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator!=(const Scalar<T>& x, const T& y) {
+PURE Scalar<bool> operator!=(const Scalar<T>& x, const T& y) {
   return x != Scalar<T>(y);
 }
 
@@ -729,7 +729,7 @@ Scalar<bool> operator!=(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<bool> operator!=(const T& x, const Scalar<T>& y) {
+PURE Scalar<bool> operator!=(const T& x, const Scalar<T>& y) {
   return Scalar<T>(x) != y;
 }
 
@@ -749,7 +749,7 @@ Scalar<bool> operator!=(const T& x, const Scalar<T>& y) {
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> operator-(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> operator-(const Array<T,D>& A,
     const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(B.columns() == B.columns());
@@ -775,7 +775,7 @@ Array<typename promote<T,U>::type,D> operator-(const Array<T,D>& A,
  */
 template<class T, class U, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> operator-(const Scalar<T>& x,
+PURE Scalar<typename promote<T,U>::type> operator-(const Scalar<T>& x,
     const U& y) {
   return x - Scalar<T>(y);
 }
@@ -795,7 +795,7 @@ Scalar<typename promote<T,U>::type> operator-(const Scalar<T>& x,
  */
 template<class T, class U, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> operator-(const T& x,
+PURE Scalar<typename promote<T,U>::type> operator-(const T& x,
     const Scalar<U>& y) {
   return Scalar<T>(x) - y;
 }

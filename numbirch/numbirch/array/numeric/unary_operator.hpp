@@ -23,7 +23,7 @@ namespace numbirch {
  * @return %Array.
  */
 template<int D>
-Array<bool,D> operator!(const Array<bool,D>& A) {
+PURE Array<bool,D> operator!(const Array<bool,D>& A) {
   Array<bool,D> B(A.shape().compact());
   logical_not(A.width(), A.height(), A.data(), A.stride(), B.data(),
       B.stride());
@@ -44,7 +44,7 @@ Array<bool,D> operator!(const Array<bool,D>& A) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<T,D> operator-(const Array<T,D>& A) {
+PURE Array<T,D> operator-(const Array<T,D>& A) {
   Array<T,D> B(A.shape().compact());
   neg(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
   return B;

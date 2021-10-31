@@ -27,7 +27,7 @@ namespace numbirch {
  * @return Vector.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
+PURE Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
   assert(S.rows() == S.columns());
   assert(S.columns() == x.length());
 
@@ -51,7 +51,7 @@ Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
+PURE Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
   assert(S.rows() == S.columns());
   assert(S.columns() == S.rows());
 
@@ -75,7 +75,7 @@ Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
+PURE Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
   assert(A.columns() == S.columns());
   assert(S.rows() == S.columns());
 
@@ -99,7 +99,7 @@ Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
  * @return Vector.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
+PURE Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
   assert(S.rows() == S.columns());
   assert(S.rows() == y.length());
 
@@ -123,7 +123,7 @@ Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
+PURE Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
   assert(S.rows() == S.columns());
   assert(S.rows() == B.rows());
 
@@ -148,7 +148,7 @@ Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_arithmetic<T>::value,int> = 0>
-Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -172,7 +172,7 @@ Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value &&
     std::is_arithmetic<T>::value,int> = 0>
-Scalar<T> copysign(const Scalar<T>& x, const T& y) {
+PURE Scalar<T> copysign(const Scalar<T>& x, const T& y) {
   return copysign(x, Scalar<T>(y));
 }
 
@@ -190,7 +190,7 @@ Scalar<T> copysign(const Scalar<T>& x, const T& y) {
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value &&
     std::is_arithmetic<T>::value,int> = 0>
-Scalar<T> copysign(const T& x, const Scalar<T>& y) {
+PURE Scalar<T> copysign(const T& x, const Scalar<T>& y) {
   return copysign(Scalar<T>(x), y);
 }
 
@@ -209,7 +209,7 @@ Scalar<T> copysign(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> digamma(const Array<T,D>& A, const Array<int,D>& B) {
+PURE Array<T,D> digamma(const Array<T,D>& A, const Array<int,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -232,7 +232,7 @@ Array<T,D> digamma(const Array<T,D>& A, const Array<int,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> digamma(const Scalar<T>& x, const int& y) {
+PURE Scalar<T> digamma(const Scalar<T>& x, const int& y) {
   return digamma(x, Scalar<int>(y));
 }
 
@@ -249,7 +249,7 @@ Scalar<T> digamma(const Scalar<T>& x, const int& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> digamma(const T& x, const Scalar<int>& y) {
+PURE Scalar<T> digamma(const T& x, const Scalar<int>& y) {
   return digamma(Scalar<T>(x), y);
 }
 
@@ -266,7 +266,7 @@ Scalar<T> digamma(const T& x, const Scalar<int>& y) {
  * @return Dot product.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
+PURE Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
   assert(x.length() == y.length());
   Scalar<T> z;
   dot(x.length(), x.data(), x.stride(), y.data(), y.stride(), z.data());
@@ -287,7 +287,7 @@ Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
  * @return Vector giving the dot product of @p x with each column of @p A.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
+PURE Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
   return inner(A, x);
 }
 
@@ -306,7 +306,7 @@ Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
  * @return Frobenius product.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
+PURE Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
   Scalar<T> c;
@@ -330,7 +330,7 @@ Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> gamma_p(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<T,D> gamma_p(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -353,7 +353,7 @@ Array<T,D> gamma_p(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> gamma_p(const Scalar<T>& x, const T& y) {
+PURE Scalar<T> gamma_p(const Scalar<T>& x, const T& y) {
   return gamma_p(x, Scalar<T>(y));
 }
 
@@ -370,7 +370,7 @@ Scalar<T> gamma_p(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> gamma_p(const T& x, const Scalar<T>& y) {
+PURE Scalar<T> gamma_p(const T& x, const Scalar<T>& y) {
   return gamma_p(Scalar<T>(x), y);
 }
 
@@ -389,7 +389,7 @@ Scalar<T> gamma_p(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> gamma_q(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<T,D> gamma_q(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -412,7 +412,7 @@ Array<T,D> gamma_q(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> gamma_q(const Scalar<T>& x, const T& y) {
+PURE Scalar<T> gamma_q(const Scalar<T>& x, const T& y) {
   return gamma_q(x, Scalar<T>(y));
 }
 
@@ -429,7 +429,7 @@ Scalar<T> gamma_q(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> gamma_q(const T& x, const Scalar<T>& y) {
+PURE Scalar<T> gamma_q(const T& x, const Scalar<T>& y) {
   return gamma_q(Scalar<T>(x), y);
 }
 
@@ -449,7 +449,7 @@ Scalar<T> gamma_q(const T& x, const Scalar<T>& y) {
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<typename promote<T,U>::type,D> hadamard(const Array<T,D>& A,
+PURE Array<typename promote<T,U>::type,D> hadamard(const Array<T,D>& A,
     const Array<U,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
@@ -475,7 +475,7 @@ Array<typename promote<T,U>::type,D> hadamard(const Array<T,D>& A,
  */
 template<class T, class U, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> hadamard(const Scalar<T>& x, const U& y) {
+PURE Scalar<typename promote<T,U>::type> hadamard(const Scalar<T>& x, const U& y) {
   return hadamard(x, Scalar<U>(y));
 }
 
@@ -494,7 +494,7 @@ Scalar<typename promote<T,U>::type> hadamard(const Scalar<T>& x, const U& y) {
  */
 template<class T, class U, std::enable_if_t<
     std::is_arithmetic<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Scalar<typename promote<T,U>::type> hadamard(const T& x, const Scalar<U>& y) {
+PURE Scalar<typename promote<T,U>::type> hadamard(const T& x, const Scalar<U>& y) {
   return hadamard(Scalar<T>(x), y);
 }
 
@@ -511,7 +511,7 @@ Scalar<typename promote<T,U>::type> hadamard(const T& x, const Scalar<U>& y) {
  * @return Vector.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
+PURE Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
   assert(A.rows() == x.length());
   
   Vector<T> y(make_shape(A.columns()));
@@ -533,7 +533,7 @@ Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
+PURE Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.rows() == B.rows());
 
   Matrix<T> C(make_shape(A.columns(), B.columns()));
@@ -557,7 +557,7 @@ Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -580,7 +580,7 @@ Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lbeta(const Scalar<T>& x, const T& y) {
+PURE Scalar<T> lbeta(const Scalar<T>& x, const T& y) {
   return lbeta(x, Scalar<T>(y));
 }
 
@@ -597,7 +597,7 @@ Scalar<T> lbeta(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lbeta(const T& x, const Scalar<T>& y) {
+PURE Scalar<T> lbeta(const T& x, const Scalar<T>& y) {
   return lbeta(Scalar<T>(x), y);
 }
 
@@ -618,7 +618,7 @@ Scalar<T> lbeta(const T& x, const Scalar<T>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lchoose(const Array<int,D>& A, const Array<int,D>& B) {
+PURE Array<T,D> lchoose(const Array<int,D>& A, const Array<int,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -643,7 +643,7 @@ Array<T,D> lchoose(const Array<int,D>& A, const Array<int,D>& B) {
  * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lchoose(const Scalar<int>& x, const int& y) {
+PURE Scalar<T> lchoose(const Scalar<int>& x, const int& y) {
   return lchoose<T>(x, Scalar<int>(y));
 }
 
@@ -662,7 +662,7 @@ Scalar<T> lchoose(const Scalar<int>& x, const int& y) {
  * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lchoose(const int& x, const Scalar<int>& y) {
+PURE Scalar<T> lchoose(const int& x, const Scalar<int>& y) {
   return lchoose<T>(Scalar<int>(x), y);
 }
 
@@ -682,7 +682,7 @@ Scalar<T> lchoose(const int& x, const Scalar<int>& y) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-std::pair<Array<T,D>,Array<T,D>> lchoose_grad(const Array<T,D>& G,
+PURE std::pair<Array<T,D>,Array<T,D>> lchoose_grad(const Array<T,D>& G,
     const Array<int,D>& A, const Array<int,D>& B) {
   assert(G.rows() == A.rows());
   assert(G.columns() == A.columns());
@@ -712,7 +712,7 @@ std::pair<Array<T,D>,Array<T,D>> lchoose_grad(const Array<T,D>& G,
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
+PURE Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -735,7 +735,7 @@ Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lgamma(const Scalar<T>& x, const int& y) {
+PURE Scalar<T> lgamma(const Scalar<T>& x, const int& y) {
   return lgamma(x, Scalar<int>(y));
 }
 
@@ -752,7 +752,7 @@ Scalar<T> lgamma(const Scalar<T>& x, const int& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Scalar<T> lgamma(const T& x, const Scalar<int>& y) {
+PURE Scalar<T> lgamma(const T& x, const Scalar<int>& y) {
   return lgamma(Scalar<T>(x), y);
 }
 
@@ -769,7 +769,7 @@ Scalar<T> lgamma(const T& x, const Scalar<int>& y) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
+PURE Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
   Matrix<T> C(make_shape(x.length(), y.length()));
   outer(C.rows(), C.columns(), x.data(), x.stride(), y.data(), y.stride(),
       C.data(), C.stride());
@@ -789,7 +789,7 @@ Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
+PURE Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
   assert(A.columns() == B.columns());
 
   Matrix<T> C(make_shape(A.rows(), B.rows()));
@@ -813,7 +813,7 @@ Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
  */
 template<class T, int D, std::enable_if_t<
     std::is_floating_point<T>::value,int> = 0>
-Array<T,D> pow(const Array<T,D>& A, const Array<T,D>& B) {
+PURE Array<T,D> pow(const Array<T,D>& A, const Array<T,D>& B) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());
 
@@ -836,7 +836,7 @@ Array<T,D> pow(const Array<T,D>& A, const Array<T,D>& B) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<T> pow(const Scalar<T>& x, const T& y) {
+PURE Scalar<T> pow(const Scalar<T>& x, const T& y) {
   return pow(x, Scalar<T>(y));
 }
 
@@ -853,7 +853,7 @@ Scalar<T> pow(const Scalar<T>& x, const T& y) {
  * @return %Scalar.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Scalar<T> pow(const T& x, const Scalar<T>& y) {
+PURE Scalar<T> pow(const T& x, const Scalar<T>& y) {
   return pow(Scalar<T>(x), y);
 }
 
@@ -875,7 +875,7 @@ Scalar<T> pow(const T& x, const Scalar<T>& y) {
  * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
+PURE Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
     const int n) {
   Matrix<T> A(make_shape(m, n));
   single(i.data(), j.data(), m, n, A.data(), A.stride());
@@ -900,7 +900,7 @@ Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
  * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Matrix<T> single(const int& i, const Scalar<int>& j, const int m,
+PURE Matrix<T> single(const int& i, const Scalar<int>& j, const int m,
     const int n) {
   return single<T>(Scalar<int>(i), j, m, n);
 }
@@ -923,7 +923,7 @@ Matrix<T> single(const int& i, const Scalar<int>& j, const int m,
  * @note The return type `T` must be explicitly specified.
  */
 template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
-Matrix<T> single(const Scalar<int>& i, const int& j, const int m,
+PURE Matrix<T> single(const Scalar<int>& i, const int& j, const int m,
     const int n) {
   return single<T>(i, Scalar<int>(j), m, n);
 }
@@ -941,7 +941,7 @@ Matrix<T> single(const Scalar<int>& i, const int& j, const int m,
  * @return Vector.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
+PURE Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
   assert(A.rows() == A.columns());
   assert(A.rows() == y.length());
 
@@ -964,7 +964,7 @@ Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
  * @return Matrix.
  */
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-Matrix<T> solve(const Matrix<T>& A, const Matrix<T>& C) {
+PURE Matrix<T> solve(const Matrix<T>& A, const Matrix<T>& C) {
   assert(A.rows() == A.columns());
   assert(A.rows() == C.rows());
 

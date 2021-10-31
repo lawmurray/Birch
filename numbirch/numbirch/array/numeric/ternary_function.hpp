@@ -30,7 +30,7 @@ namespace numbirch {
  */
 template<class T, class U, int D, std::enable_if_t<
     std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
-Array<T,D> ibeta(const Array<U,D>& A, const Array<U,D>& B,
+PURE Array<T,D> ibeta(const Array<U,D>& A, const Array<U,D>& B,
     const Array<T,D>& X) {
   assert(A.rows() == B.rows());
   assert(A.columns() == B.columns());

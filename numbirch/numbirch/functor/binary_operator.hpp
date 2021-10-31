@@ -8,14 +8,14 @@
 namespace numbirch {
 template<class T>
 struct add_functor {
-  HOST_DEVICE T operator()(const T x, const T y) const {
+  HOST DEVICE T operator()(const T x, const T y) const {
     return x + y;
   }
 };
 
 template<class T>
 struct divide_functor {
-  HOST_DEVICE T operator()(const T x, const T y) const {
+  HOST DEVICE T operator()(const T x, const T y) const {
     return x/y;
   }
 };
@@ -26,7 +26,7 @@ struct divide_scalar_functor {
       a(a) {
     //
   }
-  HOST_DEVICE T operator()(const T x) const {
+  HOST DEVICE T operator()(const T x) const {
     return x/T(*a);
   }
   const U* a;
@@ -34,54 +34,54 @@ struct divide_scalar_functor {
 
 template<class T>
 struct equal_functor {
-  HOST_DEVICE bool operator()(const T x, const T y) const {
+  HOST DEVICE bool operator()(const T x, const T y) const {
     return x == y;
   }
 };
 
 template<class T>
 struct greater_functor {
-  HOST_DEVICE bool operator()(const T x, const T y) const {
+  HOST DEVICE bool operator()(const T x, const T y) const {
     return x > y;
   }
 };
 
 template<class T>
 struct greater_or_equal_functor {
-  HOST_DEVICE bool operator()(const T x, const T y) const {
+  HOST DEVICE bool operator()(const T x, const T y) const {
     return x >= y;
   }
 };
 
 template<class T>
 struct less_functor {
-  HOST_DEVICE bool operator()(const T x, const T y) const {
+  HOST DEVICE bool operator()(const T x, const T y) const {
     return x < y;
   }
 };
 
 template<class T>
 struct less_or_equal_functor {
-  HOST_DEVICE bool operator()(const T x, const T y) const {
+  HOST DEVICE bool operator()(const T x, const T y) const {
     return x <= y;
   }
 };
 
 struct logical_and_functor {
-  HOST_DEVICE bool operator()(const bool x, const bool y) const {
+  HOST DEVICE bool operator()(const bool x, const bool y) const {
     return x && y;
   }
 };
 
 struct logical_or_functor {
-  HOST_DEVICE bool operator()(const bool x, const bool y) const {
+  HOST DEVICE bool operator()(const bool x, const bool y) const {
     return x || y;
   }
 };
 
 template<class T>
 struct multiply_functor {
-  HOST_DEVICE auto operator()(const T x, const T y) const {
+  HOST DEVICE auto operator()(const T x, const T y) const {
     return x*y;
   }
 };
@@ -92,7 +92,7 @@ struct multiply_scalar_functor {
       a(a) {
     //
   }
-  HOST_DEVICE T operator()(const T x) const {
+  HOST DEVICE T operator()(const T x) const {
     return x*T(*a);
   }
   const U* a;
@@ -100,14 +100,14 @@ struct multiply_scalar_functor {
 
 template<class T>
 struct not_equal_functor {
-  HOST_DEVICE bool operator()(const T x, const T y) const {
+  HOST DEVICE bool operator()(const T x, const T y) const {
     return x != y;
   }
 };
 
 template<class T>
 struct subtract_functor {
-  HOST_DEVICE auto operator()(const T x, const T y) const {
+  HOST DEVICE auto operator()(const T x, const T y) const {
     return x - y;
   }
 };

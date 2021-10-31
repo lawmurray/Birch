@@ -16,7 +16,7 @@ struct combine_functor {
       a(a), b(b), c(c), d(d) {
     //
   }
-  HOST_DEVICE T operator()(const T w, const T x, const T y, const T z) const {
+  HOST DEVICE T operator()(const T w, const T x, const T y, const T z) const {
     return a*w + b*x + c*y + d*z;
   }
   const T a, b, c, d;
@@ -28,7 +28,7 @@ struct combine4_functor {
       a(a), b(b), c(c), d(d) {
     //
   }
-  HOST_DEVICE T operator()(const quad<T>& o) const {
+  HOST DEVICE T operator()(const quad<T>& o) const {
     return a*o.first + b*o.second + c*o.third + d*o.fourth;
   }
   const T a, b, c, d;
