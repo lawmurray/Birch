@@ -29,7 +29,12 @@ MatrixStack<Left,Right> stack(const Left& l, const Right& r) {
  * new vector of length two.
  */
 function stack<Type>(x:Type, y:Type) -> Type[_] {
-  return [x, y];
+  z:Type[2];
+  cpp{{
+  z.slice(1) = x;
+  z.slice(2) = y;
+  }}
+  return z;
 }
 
 /**

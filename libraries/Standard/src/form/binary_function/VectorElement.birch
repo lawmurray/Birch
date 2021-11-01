@@ -8,25 +8,23 @@ struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 }
 
 function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
-  grad(x.l, d, wait(peek(x.r)));
+  let l <- peek(x.l);
+  grad(x.l, d*single<Real>(peek(x.r), length(l)));
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Element of a vector.
  */
-function element<Left,Right>(x:Left, i:Right) -> {
-  return element(vector_split(x), i);
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
+VectorElement<Left,Right> element(const Left& l, const Right& r) {
+  return construct<VectorElement<Left,Right>>(l, r);
 }
-
-/**
- * Element of a vector.
- */
-function element<Value,Form,Right>(x:VectorSplitExpression<Value,Form>,
-    i:Right) -> {
-  return construct<VectorElement<VectorSplitExpression<Value,Form>,Right>>(x,
-      i);
 }
+}}
 
 /**
  * Element of a vector.

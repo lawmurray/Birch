@@ -25,14 +25,13 @@ template<class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
 auto lfact(const T& x) {
   return numbirch::lfact<Real>(x);
 }
+
+/**
+ * Gradient of lfact().
+ */
+template<class G, class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
+auto lfact_grad(const G& d, const T& x) {
+  return numbirch::lfact_grad<Real>(d, x);
+}
 }
 }}
-
-/*
- * Gradient of `lfact()`.
- */
-function lfact_grad<Gradient,Type>(d:Gradient, x:Type) -> {
-  cpp{{
-  return numbirch::lfact_grad(d, x);
-  }}
-}

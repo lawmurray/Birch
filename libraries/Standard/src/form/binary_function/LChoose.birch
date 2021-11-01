@@ -28,15 +28,16 @@ template<class T, class U, std::enable_if_t<!is_delay<T,U>::value,int> = 0>
 auto lchoose(const T& x, const U& y) {
   return numbirch::lchoose<Real>(x, y);
 }
-}
-}}
 
 /**
- * Gradient of `lchoose()`.
+ * Gradient of lchoose().
  */
-function lchoose_grad(d:Real, x:Integer, y:Integer) -> (Real, Real) {
-  cpp{{
-  auto pair = numbirch::lchoose_grad(d, x, y);
+template<class G, class T, class U, std::enable_if_t<
+    !is_delay<T,U>::value,int> = 0>
+auto lchoose_grad(const G& d, const T& x, const U& y) {
+  auto pair = numbirch::lchoose_grad<Real>(d, x, y);
   return std::make_pair(pair.first, pair.second);
-  }}
 }
+
+}
+}}

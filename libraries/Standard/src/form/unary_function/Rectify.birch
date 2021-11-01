@@ -17,21 +17,21 @@ template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
 Rectify<Middle> rectify(const Middle& m) {
   return construct<Rectify<Middle>>(m);
 }
-}
-}}
 
 /**
  * Rectification.
  */
-function rectify(x:Real) -> Real {
-  return max(0.0, x);
+template<class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
+auto rectify(const T& x) {
+  return numbirch::rectify(x);
 }
 
-/*
- * Gradient of `rectify()`.
+/**
+ * Gradient of rectify().
  */
-function rectify_grad<Gradient,Type>(d:Gradient, x:Type) -> {
-  cpp{{
+template<class G, class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
+auto rectify_grad(const G& d, const T& x) {
   return numbirch::rectify_grad(d, x);
-  }}
 }
+}
+}}

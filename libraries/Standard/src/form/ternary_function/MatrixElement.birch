@@ -10,26 +10,25 @@ struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
 
 function grad<Left,Middle,Right,Gradient>(x:MatrixElement<Left,Middle,Right>,
     d:Gradient) {
-  grad(x.l, d, wait(peek(x.m)), wait(peek(x.r)));
+  let l <- peek(x.l);
+  grad(x.l, d*single<Real>(peek(x.m), peek(x.r), rows(l), columns(l)));
   grad(x.m, 0.0);
   grad(x.r, 0.0);
 }
 
+hpp{{
+namespace birch {
 /**
  * Element of a matrix.
  */
-function element<Left,Middle,Right>(x:Left, i:Middle, j:Right) -> {
-  return element(matrix_split(x), i, j);
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay<Left,Middle,Right>::value,int> = 0>
+MatrixElement<Left,Middle,Right> element(const Left& l, const Middle& m,
+    const Right& r) {
+  return construct<MatrixElement<Left,Middle,Right>>(l, m, r);
 }
-
-/**
- * Element of a matrix.
- */
-function element<Value,Form,Middle,Right>(x:MatrixSplitExpression<Value,Form>,
-    i:Middle, j:Right) -> {
-  return construct<MatrixElement<MatrixSplitExpression<Value,Form>,Middle,
-      Right>>(x, i, j);
 }
+}}
 
 /**
  * Element of a matrix.
