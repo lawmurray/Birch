@@ -1,17 +1,7 @@
 struct LGammaP<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:LGammaP<Left,Right>) -> {
-  return lgamma(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:LGammaP<Left,Right>) -> {
-  return lgamma(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:LGammaP<Left,Right>) -> {
-  return lgamma(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(lgamma)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:LGammaP<Left,Right>, d:Gradient) {

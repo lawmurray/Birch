@@ -46,7 +46,6 @@ struct is_future<numbirch::Scalar<T>> {
 template<class T>
 struct is_arithmetic {
   static constexpr bool value =
-      is_array<typename std::decay<T>::type>::value ||
       std::is_arithmetic<typename std::decay<T>::type>::value;
 };
 
@@ -82,31 +81,30 @@ public:
 };
 
 /**
- * Is `T` either arithmetic, or a Form, or an Expression?
+ * Is `T` either of arithmetic, array, form, or expression type?
  */
 template<class T>
-struct is_arithmetic_or_form_or_expression {
+struct is_numerical {
   static constexpr bool value = is_arithmetic<T>::value ||
-      is_form<T>::value || is_expression<T>::value;
+      is_array<T>::value || is_form<T>::value || is_expression<T>::value;
 };
 
 /**
- * Are all of the given types either arithmetic, or a Form, or an Expression?
+ * Are all of the given types either of arithmetic, array, Form, or Expression
+ * type?
  */
 template<class Arg, class... Args>
-struct all_basic_or_form_or_expression {
-  static constexpr bool value =
-      is_arithmetic_or_form_or_expression<Arg>::value &&
-      all_basic_or_form_or_expression<Args...>::value;
+struct all_numerical {
+  static constexpr bool value = is_numerical<Arg>::value &&
+      all_numerical<Args...>::value;
 };
 template<class Arg>
-struct all_basic_or_form_or_expression<Arg> {
-  static constexpr bool value =
-      is_arithmetic_or_form_or_expression<Arg>::value;
+struct all_numerical<Arg> {
+  static constexpr bool value = is_numerical<Arg>::value;
 };
 
 /**
- * Are any of the given types a Form or Expression?
+ * Are any of the given types of a form or expression type?
  */
 template<class Arg, class... Args>
 struct any_form_or_expression {
@@ -124,8 +122,7 @@ struct any_form_or_expression<Arg> {
  */
 template<class... Args>
 struct is_delay {
-  static constexpr bool value =
-      all_basic_or_form_or_expression<Args...>::value &&
+  static constexpr bool value = all_numerical<Args...>::value &&
       any_form_or_expression<Args...>::value;
 };
 
@@ -447,7 +444,12 @@ function box<Type>(x:Type) -> ;
 
 hpp{{
 namespace birch {
-template<class T, std::enable_if_t<is_arithmetic<T>::value &&
+template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
+Expression<T> box(const T& x) {
+  return Expression<T>(construct<BoxedValue<T>>(x));
+}
+
+template<class T, std::enable_if_t<is_array<T>::value &&
     !is_future<T>::value,int> = 0>
 Expression<T> box(const T& x) {
   return Expression<T>(construct<BoxedValue<T>>(x));
@@ -603,8 +605,17 @@ T wrap(const T& x) {
   return x;
 }
 
-template<class T, std::enable_if_t<is_form<T>::value ||
-    is_expression<T>::value,int> = 0>
+template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+T wrap(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto wrap(const T& x) {
+  return box(x);
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
 auto wrap(const T& x) {
   return box(x);
 }
@@ -715,3 +726,68 @@ function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x1:Value1, x2:Va
 function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7, x8:Value8) -> {
   return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
 }
+
+hpp{{
+namespace birch {
+template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
+auto value(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+auto value(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto value(const T& x) {
+  return x.value();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto value(const T& x) {
+  return x->value();
+}
+
+template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
+auto eval(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+auto eval(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto eval(const T& x) {
+  return x.eval();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto eval(const T& x) {
+  return x->eval();
+}
+
+template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
+auto peek(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+auto peek(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto peek(const T& x) {
+  return x.peek();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto peek(const T& x) {
+  return x->peek();
+}
+
+}
+}}

@@ -1,18 +1,8 @@
 struct GreaterOrEqual<Left,Right>(l:Left, r:Right) <
     Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:GreaterOrEqual<Left,Right>) -> {
-  return value(x.l) >= value(x.r);
-}
-
-function peek<Left,Right>(x:GreaterOrEqual<Left,Right>) -> {
-  return peek(x.l) >= peek(x.r);
-}
-
-function eval<Left,Right>(x:GreaterOrEqual<Left,Right>) -> {
-  return eval(x.l) >= eval(x.r);
+  hpp{{
+  BIRCH_BINARY_OPERATOR_FORM(>=)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:GreaterOrEqual<Left,Right>, d:Gradient) {

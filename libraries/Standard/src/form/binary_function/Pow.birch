@@ -1,17 +1,7 @@
 struct Pow<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:Pow<Left,Right>) -> {
-  return pow(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:Pow<Left,Right>) -> {
-  return pow(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:Pow<Left,Right>) -> {
-  return pow(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(pow)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {

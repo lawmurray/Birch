@@ -1,17 +1,7 @@
 struct LGamma<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:LGamma<Middle>) -> {
-  return lgamma(value(x.m));
-}
-
-function peek<Middle>(x:LGamma<Middle>) -> {
-  return lgamma(peek(x.m));
-}
-
-function eval<Middle>(x:LGamma<Middle>) -> {
-  return lgamma(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(lgamma)
+  }}
 }
 
 function grad<Middle,Gradient>(x:LGamma<Middle>, d:Gradient) -> {

@@ -23,3 +23,53 @@ function constant<Middle>(x:Unary<Middle>, gen:Integer) {
 function constant<Middle>(x:Unary<Middle>) {
   constant(x.m);
 }
+
+hpp{{
+#define BIRCH_UNARY_FUNCTION_FORM(f) \
+  using Value = decltype(f( \
+        std::declval<decltype(birch::peek(std::declval<Middle>()))>())); \
+  std::optional<Value> x; \
+  \
+  const Value& value() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = f(birch::value(this->m)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& peek() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->m)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& eval() const { \
+    const_cast<std::optional<Value>&>(x) = f(birch::eval(this->m)); \
+    return *x; \
+  }
+
+#define BIRCH_UNARY_OPERATOR_FORM(op) \
+  using Value = decltype(op( \
+        std::declval<decltype(birch::peek(std::declval<Middle>()))>())); \
+  std::optional<Value> x; \
+  \
+  const Value& value() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = op(birch::value(this->m)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& peek() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = op(birch::peek(this->m)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& eval() const { \
+    const_cast<std::optional<Value>&>(x) = op(birch::eval(this->m)); \
+    return *x; \
+  }
+}}

@@ -1,17 +1,7 @@
 struct Divide<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:Divide<Left,Right>) -> {
-  return value(x.l)/value(x.r);
-}
-
-function peek<Left,Right>(x:Divide<Left,Right>) -> {
-  return peek(x.l)/peek(x.r);
-}
-
-function eval<Left,Right>(x:Divide<Left,Right>) -> {
-  return eval(x.l)/eval(x.r);
+  hpp{{
+  BIRCH_BINARY_OPERATOR_FORM(/)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:Divide<Left,Right>, d:Gradient) {

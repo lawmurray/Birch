@@ -1,17 +1,7 @@
 struct Trace<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Trace<Middle>) -> {
-  return trace(value(x.m));
-}
-
-function peek<Middle>(x:Trace<Middle>) -> {
-  return trace(peek(x.m));
-}
-
-function eval<Middle>(x:Trace<Middle>) -> {
-  return trace(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(trace)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Trace<Middle>, d:Gradient) {

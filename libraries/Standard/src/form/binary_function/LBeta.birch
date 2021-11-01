@@ -1,17 +1,7 @@
 struct LBeta<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:LBeta<Left,Right>) -> {
-  return lbeta(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:LBeta<Left,Right>) -> {
-  return lbeta(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:LBeta<Left,Right>) -> {
-  return lbeta(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(lbeta)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:LBeta<Left,Right>, d:Gradient) {

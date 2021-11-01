@@ -1,17 +1,7 @@
 struct Cosh<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Cosh<Middle>) -> {
-  return cosh(value(x.m));
-}
-
-function peek<Middle>(x:Cosh<Middle>) -> {
-  return cosh(peek(x.m));
-}
-
-function eval<Middle>(x:Cosh<Middle>) -> {
-  return cosh(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(cosh)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Cosh<Middle>, d:Gradient) {

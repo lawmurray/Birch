@@ -1,17 +1,7 @@
 struct Log1p<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Log1p<Middle>) -> {
-  return log1p(value(x.m));
-}
-
-function peek<Middle>(x:Log1p<Middle>) -> {
-  return log1p(peek(x.m));
-}
-
-function eval<Middle>(x:Log1p<Middle>) -> {
-  return log1p(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(log1p)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Log1p<Middle>, d:Gradient) {

@@ -1,17 +1,7 @@
 struct Inv<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Inv<Middle>) -> {
-  return inv(value(x.m));
-}
-
-function peek<Middle>(x:Inv<Middle>) -> {
-  return inv(peek(x.m));
-}
-
-function eval<Middle>(x:Inv<Middle>) -> {
-  return inv(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(inv)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Inv<Middle>, d:Gradient) {

@@ -32,3 +32,61 @@ function constant<Left,Right>(x:Binary<Left,Right>) {
   constant(x.l);
   constant(x.r);
 }
+
+hpp{{
+#define BIRCH_BINARY_FUNCTION_FORM(f) \
+  using Value = decltype(f( \
+        std::declval<decltype(birch::peek(std::declval<Left>()))>(), \
+        std::declval<decltype(birch::peek(std::declval<Right>()))>())); \
+  std::optional<Value> x; \
+  \
+  const Value& value() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = f(birch::value(this->l), \
+          birch::value(this->r)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& peek() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->l), \
+          birch::peek(this->r)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& eval() const { \
+    const_cast<std::optional<Value>&>(x) = f(birch::eval(this->l), \
+        birch::eval(this->r)); \
+    return *x; \
+  }
+
+#define BIRCH_BINARY_OPERATOR_FORM(op) \
+  using Value = decltype( \
+        std::declval<decltype(birch::peek(std::declval<Left>()))>() op \
+        std::declval<decltype(birch::peek(std::declval<Right>()))>()); \
+  std::optional<Value> x; \
+  \
+  const Value& value() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = birch::value(this->l) op \
+          birch::value(this->r); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& peek() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = birch::peek(this->l) op \
+          birch::peek(this->r); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& eval() const { \
+    const_cast<std::optional<Value>&>(x) = birch::eval(this->l) op \
+        birch::eval(this->r); \
+    return *x; \
+  }
+}}

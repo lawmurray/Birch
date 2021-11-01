@@ -1,17 +1,7 @@
 struct Not<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Not<Middle>) -> {
-  return !value(x.m);
-}
-
-function peek<Middle>(x:Not<Middle>) -> {
-  return !peek(x.m);
-}
-
-function eval<Middle>(x:Not<Middle>) -> {
-  return !eval(x.m);
+  hpp{{
+  BIRCH_UNARY_OPERATOR_FORM(!)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Not<Middle>, d:Gradient) {

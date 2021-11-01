@@ -1,17 +1,7 @@
 struct Exp<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Exp<Middle>) -> {
-  return exp(value(x.m));
-}
-
-function peek<Middle>(x:Exp<Middle>) -> {
-  return exp(peek(x.m));
-}
-
-function eval<Middle>(x:Exp<Middle>) -> {
-  return exp(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(exp)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Exp<Middle>, d:Gradient) {

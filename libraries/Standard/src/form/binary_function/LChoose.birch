@@ -1,17 +1,7 @@
 struct LChoose<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:LChoose<Left,Right>) -> {
-  return lchoose(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:LChoose<Left,Right>) -> {
-  return lchoose(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:LChoose<Left,Right>) -> {
-  return lchoose(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(lchoose)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:LChoose<Left,Right>, d:Gradient) {

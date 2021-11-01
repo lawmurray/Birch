@@ -1,17 +1,7 @@
 struct LCholDet<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:LCholDet<Middle>) -> {
-  return lcholdet(value(x.m));
-}
-
-function peek<Middle>(x:LCholDet<Middle>) -> {
-  return lcholdet(peek(x.m));
-}
-
-function eval<Middle>(x:LCholDet<Middle>) -> {
-  return lcholdet(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(lcholdet)
+  }}
 }
 
 function grad<Middle,Gradient>(x:LCholDet<Middle>, d:Gradient) {

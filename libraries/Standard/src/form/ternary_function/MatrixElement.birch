@@ -3,19 +3,9 @@
  */
 struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
     Ternary<Left,Middle,Right>(l, m, r) {
-  //
-}
-
-function value<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
-  return element(value(x.l), value(x.m), value(x.r));
-}
-
-function peek<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
-  return element(peek(x.l), peek(x.m), peek(x.r));
-}
-
-function eval<Left,Middle,Right>(x:MatrixElement<Left,Middle,Right>) -> {
-  return element(eval(x.l), eval(x.m), eval(x.r));
+  hpp{{
+  BIRCH_TERNARY_FUNCTION_FORM(element)
+  }}
 }
 
 function grad<Left,Middle,Right,Gradient>(x:MatrixElement<Left,Middle,Right>,

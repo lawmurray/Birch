@@ -1,17 +1,7 @@
 struct Sum<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Sum<Middle>) -> {
-  return sum(value(x.m));
-}
-
-function peek<Middle>(x:Sum<Middle>) -> {
-  return sum(peek(x.m));
-}
-
-function eval<Middle>(x:Sum<Middle>) -> {
-  return sum(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(sum)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {

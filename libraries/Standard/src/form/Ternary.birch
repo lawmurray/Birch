@@ -42,3 +42,34 @@ function constant<Left,Middle,Right>(x:Ternary<Left,Middle,Right>) {
   constant(x.m);
   constant(x.r);
 }
+
+hpp{{
+#define BIRCH_TERNARY_FUNCTION_FORM(f) \
+  using Value = decltype(f( \
+        std::declval<decltype(birch::peek(std::declval<Left>()))>(), \
+        std::declval<decltype(birch::peek(std::declval<Middle>()))>(), \
+        std::declval<decltype(birch::peek(std::declval<Right>()))>())); \
+  std::optional<Value> x; \
+  \
+  const Value& value() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = f(birch::value(this->l), \
+          birch::value(this->m), birch::value(this->r)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& peek() const { \
+    if (!x) { \
+      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->l), \
+          birch::peek(this->m), birch::peek(this->r)); \
+    } \
+    return *x; \
+  } \
+  \
+  const Value& eval() const { \
+    const_cast<std::optional<Value>&>(x) = f(birch::eval(this->l), \
+        birch::peek(this->m), birch::eval(this->r)); \
+    return *x; \
+  }
+}}

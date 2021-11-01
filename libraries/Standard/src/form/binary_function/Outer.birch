@@ -1,17 +1,7 @@
 struct Outer<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:Outer<Left,Right>) -> {
-  return outer(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:Outer<Left,Right>) -> {
-  return outer(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:Outer<Left,Right>) -> {
-  return outer(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(outer)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:Outer<Left,Right>, d:Gradient) {

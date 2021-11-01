@@ -1,17 +1,7 @@
 struct Sin<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Sin<Middle>) -> {
-  return sin(value(x.m));
-}
-
-function peek<Middle>(x:Sin<Middle>) -> {
-  return sin(peek(x.m));
-}
-
-function eval<Middle>(x:Sin<Middle>) -> {
-  return sin(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(sin)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Sin<Middle>, d:Gradient) {

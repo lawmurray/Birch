@@ -1,17 +1,7 @@
 struct Transpose<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Transpose<Middle>) -> {
-  return transpose(value(x.m));
-}
-
-function peek<Middle>(x:Transpose<Middle>) -> {
-  return transpose(peek(x.m));
-}
-
-function eval<Middle>(x:Transpose<Middle>) -> {
-  return transpose(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(transpose)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Transpose<Middle>, d:Gradient) {

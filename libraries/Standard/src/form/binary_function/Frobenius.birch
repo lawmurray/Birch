@@ -1,17 +1,7 @@
 struct Frobenius<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:Frobenius<Left,Right>) -> {
-  return frobenius(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:Frobenius<Left,Right>) -> {
-  return frobenius(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:Frobenius<Left,Right>) -> {
-  return frobenius(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(frobenius)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:Frobenius<Left,Right>, d:Gradient) {

@@ -1,30 +1,8 @@
 struct LogZConwayMaxwellPoisson<Left,Middle,Right>(l:Left, m:Middle,
     r:Right) < Ternary<Left,Middle,Right>(l, m, r) {
-  //
-}
-
-function value<Left,Middle,Right>(
-      x:LogZConwayMaxwellPoisson<Left,Middle,Right>) -> {
-  let λ <- value(x.l);
-  let ν <- value(x.m);
-  let n <- value(x.r);
-  return logz_conway_maxwell_poisson(λ, ν, n);
-}
-
-function peek<Left,Middle,Right>(
-      x:LogZConwayMaxwellPoisson<Left,Middle,Right>) -> {
-  let λ <- peek(x.l);
-  let ν <- peek(x.m);
-  let n <- peek(x.r);
-  return logz_conway_maxwell_poisson(λ, ν, n);
-}
-
-function eval<Left,Middle,Right>(
-      x:LogZConwayMaxwellPoisson<Left,Middle,Right>) -> {
-  let λ <- eval(x.l);
-  let ν <- eval(x.m);
-  let n <- eval(x.r);
-  return logz_conway_maxwell_poisson(λ, ν, n);
+  hpp{{
+  BIRCH_TERNARY_FUNCTION_FORM(logz_conway_maxwell_poisson)
+  }}
 }
 
 function grad<Left,Middle,Right,Gradient>(

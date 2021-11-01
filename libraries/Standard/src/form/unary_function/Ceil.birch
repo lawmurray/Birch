@@ -1,17 +1,7 @@
 struct Ceil<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Ceil<Middle>) -> {
-  return ceil(value(x.m));
-}
-
-function peek<Middle>(x:Ceil<Middle>) -> {
-  return ceil(peek(x.m));
-}
-
-function eval<Middle>(x:Ceil<Middle>) -> {
-  return ceil(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(ceil)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Ceil<Middle>, d:Gradient) {

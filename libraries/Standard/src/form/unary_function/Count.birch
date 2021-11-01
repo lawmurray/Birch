@@ -1,17 +1,7 @@
 struct Count<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Count<Middle>) -> {
-  return count(value(x.m));
-}
-
-function peek<Middle>(x:Count<Middle>) -> {
-  return count(peek(x.m));
-}
-
-function eval<Middle>(x:Count<Middle>) -> {
-  return count(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(count)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Count<Middle>, d:Gradient) {

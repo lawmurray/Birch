@@ -1,17 +1,7 @@
 struct MatrixStack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:MatrixStack<Left,Right>) -> {
-  return stack(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:MatrixStack<Left,Right>) -> {
-  return stack(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:MatrixStack<Left,Right>) -> {
-  return stack(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(stack)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:MatrixStack<Left,Right>, d:Gradient) {

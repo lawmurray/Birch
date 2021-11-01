@@ -1,17 +1,7 @@
 struct LFact<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:LFact<Middle>) -> {
-  return lfact(value(x.m));
-}
-
-function peek<Middle>(x:LFact<Middle>) -> {
-  return lfact(peek(x.m));
-}
-
-function eval<Middle>(x:LFact<Middle>) -> {
-  return lfact(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(lfact)
+  }}
 }
 
 function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) {

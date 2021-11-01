@@ -1,17 +1,7 @@
 struct Solve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:Solve<Left,Right>) -> {
-  return solve(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:Solve<Left,Right>) -> {
-  return solve(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:Solve<Left,Right>) -> {
-  return solve(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(solve)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:Solve<Left,Right>, d:Gradient) {

@@ -1,17 +1,7 @@
 struct Atan<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Atan<Middle>) -> {
-  return atan(value(x.m));
-}
-
-function peek<Middle>(x:Atan<Middle>) -> {
-  return atan(peek(x.m));
-}
-
-function eval<Middle>(x:Atan<Middle>) -> {
-  return atan(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(atan)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Atan<Middle>, d:Gradient) {

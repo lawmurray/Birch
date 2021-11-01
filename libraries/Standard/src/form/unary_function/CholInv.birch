@@ -1,17 +1,7 @@
 struct CholInv<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:CholInv<Middle>) -> {
-  return cholinv(value(x.m));
-}
-
-function peek<Middle>(x:CholInv<Middle>) -> {
-  return cholinv(peek(x.m));
-}
-
-function eval<Middle>(x:CholInv<Middle>) -> {
-  return cholinv(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(cholinv)
+  }}
 }
 
 function grad<Middle,Gradient>(x:CholInv<Middle>, d:Gradient) {

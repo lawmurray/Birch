@@ -1,17 +1,7 @@
 struct Tanh<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Tanh<Middle>) -> {
-  return tanh(value(x.m));
-}
-
-function peek<Middle>(x:Tanh<Middle>) -> {
-  return tanh(peek(x.m));
-}
-
-function eval<Middle>(x:Tanh<Middle>) -> {
-  return tanh(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(tanh)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Tanh<Middle>, d:Gradient) {

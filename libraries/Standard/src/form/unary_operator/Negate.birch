@@ -1,17 +1,7 @@
 struct Negate<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Negate<Middle>) -> {
-  return -value(x.m);
-}
-
-function peek<Middle>(x:Negate<Middle>) -> {
-  return -peek(x.m);
-}
-
-function eval<Middle>(x:Negate<Middle>) -> {
-  return -eval(x.m);
+  hpp{{
+  BIRCH_UNARY_OPERATOR_FORM(-)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Negate<Middle>, d:Gradient) {

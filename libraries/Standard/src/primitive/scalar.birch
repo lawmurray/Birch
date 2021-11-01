@@ -18,18 +18,6 @@ function link<Type>(x:Type) {
   //
 }
 
-function value<Type>(x:Type) -> Type {
-  return x;
-}
-
-function peek<Type>(x:Type) -> Type {
-  return x;
-}
-
-function eval<Type>(x:Type) -> Type {
-  return x;
-}
-
 function grad<Type,Gradient>(x:Type, d:Gradient) {
   //
 }

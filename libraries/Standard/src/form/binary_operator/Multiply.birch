@@ -1,17 +1,7 @@
 struct Multiply<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:Multiply<Left,Right>) -> {
-  return value(x.l)*value(x.r);
-}
-
-function peek<Left,Right>(x:Multiply<Left,Right>) -> {
-  return peek(x.l)*peek(x.r);
-}
-
-function eval<Left,Right>(x:Multiply<Left,Right>) -> {
-  return eval(x.l)*eval(x.r);
+  hpp{{
+  BIRCH_BINARY_OPERATOR_FORM(*)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:Multiply<Left,Right>, d:Gradient) {

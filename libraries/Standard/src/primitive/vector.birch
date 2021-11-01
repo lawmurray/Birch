@@ -57,18 +57,6 @@ function link<Type>(x:Type[_]) {
   //
 }
 
-function value<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function peek<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function eval<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
 function grad<Type,Gradient>(x:Type[_], d:Gradient) {
   //
 }

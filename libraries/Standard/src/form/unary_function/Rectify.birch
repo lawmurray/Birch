@@ -1,17 +1,7 @@
 struct Rectify<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Rectify<Middle>) -> {
-  return rectify(value(x.m));
-}
-
-function peek<Middle>(x:Rectify<Middle>) -> {
-  return rectify(peek(x.m));
-}
-
-function eval<Middle>(x:Rectify<Middle>) -> {
-  return rectify(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(rectify)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Rectify<Middle>, d:Gradient) {

@@ -1,17 +1,7 @@
 struct MatrixPack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
-  //
-}
-
-function value<Left,Right>(x:MatrixPack<Left,Right>) -> {
-  return pack(value(x.l), value(x.r));
-}
-
-function peek<Left,Right>(x:MatrixPack<Left,Right>) -> {
-  return pack(peek(x.l), peek(x.r));
-}
-
-function eval<Left,Right>(x:MatrixPack<Left,Right>) -> {
-  return pack(eval(x.l), eval(x.r));
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(pack)
+  }}
 }
 
 function grad<Left,Right,Gradient>(x:MatrixPack<Left,Right>, d:Gradient) {

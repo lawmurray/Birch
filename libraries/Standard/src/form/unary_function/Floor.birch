@@ -1,17 +1,7 @@
 struct Floor<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Floor<Middle>) -> {
-  return floor(value(x.m));
-}
-
-function peek<Middle>(x:Floor<Middle>) -> {
-  return floor(peek(x.m));
-}
-
-function eval<Middle>(x:Floor<Middle>) -> {
-  return floor(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(floor)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Floor<Middle>, d:Gradient) {

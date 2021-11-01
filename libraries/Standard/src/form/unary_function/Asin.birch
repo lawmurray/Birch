@@ -1,17 +1,7 @@
 struct Asin<Middle>(m:Middle) < Unary<Middle>(m) {
-  //
-}
-
-function value<Middle>(x:Asin<Middle>) -> {
-  return asin(value(x.m));
-}
-
-function peek<Middle>(x:Asin<Middle>) -> {
-  return asin(peek(x.m));
-}
-
-function eval<Middle>(x:Asin<Middle>) -> {
-  return asin(eval(x.m));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(asin)
+  }}
 }
 
 function grad<Middle,Gradient>(x:Asin<Middle>, d:Gradient) {
