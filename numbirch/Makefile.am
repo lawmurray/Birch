@@ -14,15 +14,8 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 COMMON_SOURCES = \
-    numbirch/common/numeric/binary_function.cpp \
-    numbirch/common/numeric/binary_operator.cpp \
-    numbirch/common/numeric/other_function.cpp \
-    numbirch/common/numeric/ternary_function.cpp \
-    numbirch/common/numeric/ternary_operator.cpp \
-    numbirch/common/numeric/unary_function.cpp \
-    numbirch/common/numeric/unary_operator.cpp \
-    numbirch/common/function.cpp \
-    numbirch/common/random.cpp
+    numbirch/function.cpp \
+    numbirch/random.cpp
 
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI -Wno-deprecated-declarations -Wno-unused-command-line-argument
@@ -67,13 +60,6 @@ libnumbirch_la_SOURCES = $(COMMON_SOURCES)
 include_HEADERS = numbirch/numbirch.hpp
 
 nobase_include_HEADERS = \
-  numbirch/array/numeric/binary_function.hpp \
-  numbirch/array/numeric/binary_operator.hpp \
-  numbirch/array/numeric/other_function.hpp \
-  numbirch/array/numeric/ternary_function.hpp \
-  numbirch/array/numeric/ternary_operator.hpp \
-  numbirch/array/numeric/unary_function.hpp \
-  numbirch/array/numeric/unary_operator.hpp \
   numbirch/array/Array.hpp \
   numbirch/array/ArrayControl.hpp \
   numbirch/array/ArrayIterator.hpp \
@@ -83,18 +69,11 @@ nobase_include_HEADERS = \
   numbirch/array/Future.hpp \
   numbirch/array/Lock.hpp \
   numbirch/array/Matrix.hpp \
-  numbirch/array/random.hpp \
   numbirch/array/Scalar.hpp \
   numbirch/array/Vector.hpp \
-  numbirch/numeric/binary_function.hpp \
-  numbirch/numeric/binary_operator.hpp \
-  numbirch/numeric/other_function.hpp \
-  numbirch/numeric/ternary_function.hpp \
-  numbirch/numeric/ternary_operator.hpp \
-  numbirch/numeric/unary_function.hpp \
-  numbirch/numeric/unary_operator.hpp \
   numbirch/array.hpp \
   numbirch/function.hpp \
+  numbirch/functor.hpp \
   numbirch/macro.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
@@ -103,41 +82,16 @@ nobase_include_HEADERS = \
   numbirch/type.hpp
 
 noinst_HEADERS = \
-  numbirch/cuda/numeric/binary_function.hpp \
-  numbirch/cuda/numeric/binary_operator.hpp \
-  numbirch/cuda/numeric/other_function.hpp \
-  numbirch/cuda/numeric/ternary_function.hpp \
-  numbirch/cuda/numeric/ternary_operator.hpp \
-  numbirch/cuda/numeric/unary_function.hpp \
-  numbirch/cuda/numeric/unary_operator.hpp \
   numbirch/cuda/cub.hpp \
   numbirch/cuda/cublas.hpp \
   numbirch/cuda/cuda.hpp \
   numbirch/cuda/cusolver.hpp \
-  numbirch/eigen/numeric/binary_function.hpp \
-  numbirch/eigen/numeric/binary_operator.hpp \
-  numbirch/eigen/numeric/other_function.hpp \
-  numbirch/eigen/numeric/ternary_function.hpp \
-  numbirch/eigen/numeric/ternary_operator.hpp \
-  numbirch/eigen/numeric/unary_function.hpp \
-  numbirch/eigen/numeric/unary_operator.hpp \
+  numbirch/cuda/numeric.hpp \
   numbirch/eigen/eigen.hpp \
-  numbirch/functor/binary_function.hpp \
-  numbirch/functor/binary_operator.hpp \
-  numbirch/functor/other_function.hpp \
-  numbirch/functor/ternary_function.hpp \
-  numbirch/functor/ternary_operator.hpp \
-  numbirch/functor/unary_function.hpp \
-  numbirch/functor/unary_operator.hpp \
+  numbirch/eigen/numeric.hpp \
   numbirch/jemalloc/jemalloc.hpp \
-  numbirch/oneapi/numeric/binary_function.hpp \
-  numbirch/oneapi/numeric/binary_operator.hpp \
-  numbirch/oneapi/numeric/other_function.hpp \
-  numbirch/oneapi/numeric/ternary_function.hpp \
-  numbirch/oneapi/numeric/ternary_operator.hpp \
-  numbirch/oneapi/numeric/unary_function.hpp \
-  numbirch/oneapi/numeric/unary_operator.hpp \
   numbirch/oneapi/dpl.hpp \
+  numbirch/oneapi/numeric.hpp \
   numbirch/oneapi/sycl.hpp \
   numbirch/docs.hpp
 

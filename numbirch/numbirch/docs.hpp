@@ -1,13 +1,13 @@
 /**
  * @defgroup array Array
- * Multidimensional arrays with copy-on-write, and interface to numeric
- * functions via these.
+ * Multidimensional arrays with copy-on-write and streamlined device
+ * synchronization.
+ * 
+ * @defgroup numeric Numeric
+ * Asynchronous numerics.
  *
  * @defgroup memory Memory
- * Memory management functions.
- * 
- * @defgroup cpp-raw C++ lower-level interface
- * Interface to numerical functions using raw pointers.
+ * Asynchronous unified memory management.
  * 
  * @mainpage
  * 
