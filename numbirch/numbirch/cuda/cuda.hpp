@@ -112,8 +112,7 @@ static const int TRANSPOSE_SIZE = 16;
  */
 template<class T>
 void prefetch(const T* x, const int n, const int incx) {
-  ///@todo Currently disabled, performance worse
-  //CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(T), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(T), device, stream));
 }
 
 /*
@@ -121,8 +120,7 @@ void prefetch(const T* x, const int n, const int incx) {
  */
 template<class T>
 void prefetch(const T* A, const int m, const int n, const int ldA) {
-  ///@todo Currently disabled, performance worse
-  //CUDA_CHECK(cudaMemPrefetchAsync(A, n*ldA*sizeof(T), device, stream));
+  CUDA_CHECK(cudaMemPrefetchAsync(A, n*ldA*sizeof(T), device, stream));
 }
 
 /*
