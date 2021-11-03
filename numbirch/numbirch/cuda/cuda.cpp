@@ -12,7 +12,7 @@ void cuda_init() {
   #pragma omp parallel
   {
     CUDA_CHECK(cudaGetDevice(&device));
-    CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferL1));
+    CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
   }
 }
