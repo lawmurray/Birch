@@ -1,21 +1,173 @@
 /**
  * @file
+ * 
+ * @defgroup array Array
+ * Multidimensional arrays with copy-on-write and streamlined device
+ * synchronization.
  */
 #pragma once
 
 #include "numbirch/array/Array.hpp"
-#include "numbirch/array/Future.hpp"
 #include "numbirch/array/Scalar.hpp"
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
-#include "numbirch/array/numeric/unary_function.hpp"
-#include "numbirch/array/numeric/unary_operator.hpp"
-#include "numbirch/array/numeric/binary_function.hpp"
-#include "numbirch/array/numeric/binary_operator.hpp"
-#include "numbirch/array/numeric/ternary_function.hpp"
-#include "numbirch/array/numeric/ternary_operator.hpp"
-#include "numbirch/array/numeric/other_function.hpp"
-#include "numbirch/memory.hpp"
-#include "numbirch/numeric.hpp"
-#include "numbirch/random.hpp"
-#include "numbirch/type.hpp"
+#include "numbirch/array/Future.hpp"
+
+namespace numbirch {
+/**
+ * Number of rows in array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+int rows(const Array<T,D>& x) {
+  return x.rows();
+}
+
+/**
+ * Number of rows in scalar---i.e. 1.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int rows(const T& x) {
+  return 1;
+}
+
+/**
+ * Number of columns in array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+int columns(const Array<T,D>& x) {
+  return x.columns();
+}
+
+/**
+ * Number of columns in scalar---i.e. 1.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int columns(const T& x) {
+  return 1;
+}
+
+/**
+ * Stride of an array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+int stride(const Array<T,D>& x) {
+  return x.stride();
+}
+
+/**
+ * Stride of a scalar---zero, although typically ignored by functions.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int stride(const T& x) {
+  return 0;
+}
+
+/**
+ * Shape of an array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+ArrayShape<D> shape(const Array<T,D>& x) {
+  return x.shape();
+}
+
+/**
+ * Shape of a scalar.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+ArrayShape<0> shape(const T& x) {
+  return make_shape();
+}
+
+/**
+ * Buffer of an array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+const T* data(const Array<T,D>& x) {
+  return x.data();
+}
+
+/**
+ * Buffer of an array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+T* data(Array<T,D>& x) {
+  return x.data();
+}
+
+/**
+ * Buffer of a scalar---just the scalar itself.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr const T& data(const T& x) {
+  return x;
+}
+
+/**
+ * Do the shapes of two arrays conform?---Yes, if they have the same number of
+ * dimensions and same length along them.
+ * 
+ * @ingroup array
+ */
+template<class T, int D, class U, int E>
+bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
+  return x.conforms(y);
+}
+
+/**
+ * Does the shape of an array conform with that of a scalar?---Yes, if it has
+ * zero dimensions.
+ * 
+ * @ingroup array
+ */
+template<class T, int D, class U, class = std::enable_if_t<
+    is_scalar<U>::value,int>>
+constexpr bool conforms(const Array<T,D>& x, const U& y) {
+  return D == 0;
+}
+
+/**
+ * Does the shape of an array conform with that of a scalar?---Yes, if it has
+ * zero dimensions.
+ * 
+ * @ingroup array
+ */
+template<class T, class U, int D, class = std::enable_if_t<
+    is_scalar<T>::value,int>>
+constexpr bool conforms(const T& x, const Array<U,D>& y) {
+  return D == 0;
+}
+
+/**
+ * Do the shapes of two scalars conform?---Yes.
+ * 
+ * @ingroup array
+ */
+template<class T, class U, class = std::enable_if_t<is_scalar<T>::value &&
+    is_scalar<U>::value,int>>
+constexpr bool conforms(const T& x, const U& y) {
+  return true;
+}
+
+}

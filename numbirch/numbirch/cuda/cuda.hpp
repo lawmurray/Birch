@@ -5,6 +5,10 @@
  */
 #pragma once
 
+#include "numbirch/array.hpp"
+#include "numbirch/type.hpp"
+#include "numbirch/macro.hpp"
+
 #include <cassert>
 
 /*
@@ -35,6 +39,11 @@ extern thread_local cudaStream_t stream;
  * Preferred thread block size for CUDA kernels.
  */
 static const int CUDA_PREFERRED_BLOCK_SIZE = 256;
+
+/*
+ * Tile size (number of rows, number of columns) for transpose().
+ */
+static const int CUDA_TRANSPOSE_SIZE = 16;
 
 /*
  * Initialize CUDA integrations. This should be called during init() by the
@@ -103,24 +112,36 @@ inline dim3 make_grid(const int m, const int n) {
 }
 
 /*
- * Tile size (number of rows, number of columns) for transpose().
+ * Prefetch an array onto device.
  */
-static const int TRANSPOSE_SIZE = 16;
-
-/*
- * Prefetch a vector onto device.
- */
-template<class T>
-void prefetch(const T* x, const int n, const int incx) {
-  CUDA_CHECK(cudaMemPrefetchAsync(x, n*incx*sizeof(T), device, stream));
+template<class T, int D>
+void prefetch(const Array<T,D>& x) {
+  CUDA_CHECK(cudaMemPrefetchAsync(x.data(), x.volume()*sizeof(T), device,
+      stream));
 }
 
 /*
- * Prefetch a matrix onto device.
+ * Prefetch a scalar onto device---null operation.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic<T>::value,int>>
+void prefetch(const T& x) {
+  //
+}
+
+/*
+ * Element of a matrix.
  */
 template<class T>
-void prefetch(const T* A, const int m, const int n, const int ldA) {
-  CUDA_CHECK(cudaMemPrefetchAsync(A, n*ldA*sizeof(T), device, stream));
+HOST DEVICE T& element(T* x, const int i, const int j, const int ld) {
+  return x[i + j*ld];
+}
+
+/*
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T>
+HOST DEVICE T& element(T& x, const int i, const int j, const int ld) {
+  return x;
 }
 
 /*
@@ -132,7 +153,7 @@ __global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    A[i + j*ldA] = f(i, j);
+    element(A, i, j, ldA) = f(i, j);
   }
 }
 template<class T, class Functor>
@@ -143,7 +164,7 @@ void for_each(const int m, const int n, T* A, const int ldA, Functor f) {
 }
 
 /*
- * Matrix unary transform.
+ * Unary transform.
  */
 template<class T, class U, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T* A,
@@ -151,36 +172,45 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    B[i + j*ldB] = f(A[i + j*ldA]);
+    element(B, i, j, ldB) = f(element(A, i, j, ldA));
   }
 }
-template<class T, class U, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA, U* B,
-    const int ldB, Functor f) {
+template<class T, class Functor>
+T transform(const T& x, Functor f) {
+  auto m = rows(x);
+  auto n = columns(x);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, f);
+  auto y = T(shape(x));
+  kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
+      stride(y), f);
+  return y;
 }
 
 /*
- * Matrix binary transform.
+ * Binary transform.
  */
 template<class T, class U, class V, class Functor>
-__global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const U* B, const int ldB, V* C, const int ldC,
+__global__ void kernel_transform(const int m, const int n, const T A,
+    const int ldA, const U B, const int ldB, V C, const int ldC,
     Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    C[i + j*ldC] = f(A[i + j*ldA], B[i + j*ldB]);
+    element(C, i, j, ldC) = f(element(A, i, j, ldA), element(B, i, j, ldB));
   }
 }
-template<class T, class U, class V, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, V* C, const int ldC, Functor f) {
+template<class T, class U, class Functor>
+auto transform(const T& x, const U& y, Functor f) {
+  assert(conforms(x, y));
+  Array<decltype(f(value_t<T>(),value_t<U>())),dimension_v<T>> z(shape(x));
+  auto m = rows(x);
+  auto n = columns(x);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, f);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
+      stride(y), data(z), stride(z), f);
+  return z;
 }
 
 /*
@@ -193,7 +223,8 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    D[i + j*ldD] = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC]);
+    element(D, i, j, ldD) = f(element(A, i, j, ldA), element(B, i, j, ldB),
+        element(C, i, j, ldC));
   }
 }
 template<class T, class U, class V, class W, class Functor>
@@ -216,9 +247,10 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    auto pair = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC]);
-    D[i + j*ldD] = pair.first;
-    E[i + j*ldE] = pair.second;
+    auto pair = f(element(A, i, j, ldA), element(B, i, j, ldB),
+        element(C, i, j, ldC));
+    element(D, i, j, ldD) = pair.first;
+    element(E, i, j, ldE) = pair.second;
   }
 }
 template<class T, class U, class V, class W, class X, class Functor>
@@ -241,7 +273,8 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    E[i + j*ldE] = f(A[i + j*ldA], B[i + j*ldB], C[i + j*ldC], D[i + j*ldD]);
+    element(E, i, j, ldE) = f(element(A, i, j, ldA), element(B, i, j, ldB),
+        element(C, i, j, ldC), element(D, i, j, ldD));
   }
 }
 template<class T, class U, class V, class W, class X, class Functor>
@@ -260,19 +293,19 @@ void transform(const int m, const int n, const T* A, const int ldA,
 template<class T>
 __global__ void kernel_transpose(const int m, const int n, const T* A,
     const int ldA, T* B, const int ldB) {
-  __shared__ T tile[TRANSPOSE_SIZE][TRANSPOSE_SIZE + 1];
+  __shared__ T tile[CUDA_TRANSPOSE_SIZE][CUDA_TRANSPOSE_SIZE + 1];
   // ^ +1 reduce shared memory bank conflicts
 
   auto i = blockIdx.y*blockDim.y + threadIdx.x;
   auto j = blockIdx.x*blockDim.x + threadIdx.y;
   if (i < n && j < m) {
-    tile[threadIdx.x][threadIdx.y] = A[i + j*ldA];
+    tile[threadIdx.x][threadIdx.y] = element(A, i, j, ldA);
   }
   __syncthreads();
   i = blockIdx.x*blockDim.x + threadIdx.x;
   j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    B[i + j*ldB] = tile[threadIdx.y][threadIdx.x];
+    element(B, i, j, ldB) = tile[threadIdx.y][threadIdx.x];
   }
 }
 

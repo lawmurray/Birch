@@ -60,6 +60,11 @@ public:
     return true;
   }
 
+  template<int D>
+  static constexpr bool conforms(const ArrayShape<D>& o) {
+    return false;
+  }
+
   static constexpr ArrayShape<0> compact() {
     return ArrayShape<0>();
   }
@@ -72,6 +77,15 @@ public:
     return t;
   }
 };
+
+/**
+ * Make a scalar shape.
+ * 
+ * @ingroup array
+ */
+inline ArrayShape<0> make_shape() {
+  return ArrayShape<0>();
+}
 
 /**
  * Shape and layout of a vector (one-dimensional array).
@@ -117,6 +131,11 @@ public:
 
   bool conforms(const ArrayShape<1>& o) const {
     return n == o.n;
+  }
+
+  template<int D>
+  static constexpr bool conforms(const ArrayShape<D>& o) {
+    return false;
   }
 
   ArrayShape<1> compact() const {
@@ -259,6 +278,11 @@ public:
 
   bool conforms(const ArrayShape<2>& o) const {
     return m == o.m && n == o.n;
+  }
+
+  template<int D>
+  static constexpr bool conforms(const ArrayShape<D>& o) {
+    return false;
   }
 
   ArrayShape<2> compact() const {

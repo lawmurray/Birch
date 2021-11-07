@@ -6,141 +6,128 @@
 #include "numbirch/function.hpp"
 
 namespace numbirch {
-struct logical_not_functor {
+struct negate_functor {
+  template<class T>
+  HOST DEVICE T operator()(const T x) const {
+    return -x;
+  }
+};
+
+struct add_functor {
+  template<class T, class U>
+  HOST DEVICE promote_t<T,U> operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) + V(y);
+  }
+};
+
+struct subtract_functor {
+  template<class T, class U>
+  HOST DEVICE promote_t<T,U> operator()(const T x, const U y)
+      const {
+    using V = promote_t<T,U>;
+    return V(x) - V(y);
+  }
+};
+
+struct multiply_functor {
+  template<class T, class U>
+  HOST DEVICE promote_t<T,U> operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x)*V(y);
+  }
+};
+
+struct divide_functor {
+  template<class T, class U>
+  HOST DEVICE promote_t<T,U> operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x)/V(y);
+  }
+};
+
+struct not_functor {
   HOST DEVICE bool operator()(const bool x) const {
     return !x;
   }
 };
 
-template<class T>
-struct negate_functor {
-  HOST DEVICE auto operator()(const T x) const {
-    return -x;
-  }
-};
-
-template<class T>
-struct add_functor {
-  HOST DEVICE T operator()(const T x, const T y) const {
-    return x + y;
-  }
-};
-
-template<class T>
-struct divide_functor {
-  HOST DEVICE T operator()(const T x, const T y) const {
-    return x/y;
-  }
-};
-
-template<class T, class U>
-struct divide_scalar_functor {
-  divide_scalar_functor(const U* a) :
-      a(a) {
-    //
-  }
-  HOST DEVICE T operator()(const T x) const {
-    return x/T(*a);
-  }
-  const U* a;
-};
-
-template<class T>
-struct equal_functor {
-  HOST DEVICE bool operator()(const T x, const T y) const {
-    return x == y;
-  }
-};
-
-template<class T>
-struct greater_functor {
-  HOST DEVICE bool operator()(const T x, const T y) const {
-    return x > y;
-  }
-};
-
-template<class T>
-struct greater_or_equal_functor {
-  HOST DEVICE bool operator()(const T x, const T y) const {
-    return x >= y;
-  }
-};
-
-template<class T>
-struct less_functor {
-  HOST DEVICE bool operator()(const T x, const T y) const {
-    return x < y;
-  }
-};
-
-template<class T>
-struct less_or_equal_functor {
-  HOST DEVICE bool operator()(const T x, const T y) const {
-    return x <= y;
-  }
-};
-
-struct logical_and_functor {
+struct and_functor {
   HOST DEVICE bool operator()(const bool x, const bool y) const {
     return x && y;
   }
 };
 
-struct logical_or_functor {
+struct or_functor {
   HOST DEVICE bool operator()(const bool x, const bool y) const {
     return x || y;
   }
 };
 
-template<class T>
-struct multiply_functor {
-  HOST DEVICE auto operator()(const T x, const T y) const {
-    return x*y;
+struct equal_functor {
+  template<class T, class U>
+  HOST DEVICE bool operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) == V(y);
   }
 };
 
-template<class T, class U>
-struct multiply_scalar_functor {
-  multiply_scalar_functor(const U* a) :
-      a(a) {
-    //
-  }
-  HOST DEVICE T operator()(const T x) const {
-    return x*T(*a);
-  }
-  const U* a;
-};
-
-template<class T>
 struct not_equal_functor {
-  HOST DEVICE bool operator()(const T x, const T y) const {
-    return x != y;
+  template<class T, class U>
+  HOST DEVICE bool operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) != V(y);
   }
 };
 
-template<class T>
-struct subtract_functor {
-  HOST DEVICE auto operator()(const T x, const T y) const {
-    return x - y;
+struct less_functor {
+  template<class T, class U>
+  HOST DEVICE bool operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) < V(y);
   }
 };
 
-template<class T>
+struct less_or_equal_functor {
+  template<class T, class U>
+  HOST DEVICE bool operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) <= V(y);
+  }
+};
+
+struct greater_functor {
+  template<class T, class U>
+  HOST DEVICE bool operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) > V(y);
+  }
+};
+
+struct greater_or_equal_functor {
+  template<class T, class U>
+  HOST DEVICE bool operator()(const T x, const U y) const {
+    using V = promote_t<T,U>;
+    return V(x) >= V(y);
+  }
+};
+
 struct abs_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::abs(x);
   }
 };
 
-template<class T>
 struct acos_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::acos(x);
   }
 };
 
-template<class T>
 struct asin_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::asin(x);
   }
@@ -153,29 +140,29 @@ struct atan_functor {
   }
 };
 
-template<class T>
 struct ceil_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::ceil(x);
   }
 };
 
-template<class T>
 struct cos_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::cos(x);
   }
 };
 
-template<class T>
 struct cosh_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::cosh(x);
   }
 };
 
-template<class T>
 struct count_functor {
+  template<class T>
   HOST DEVICE int operator()(const T x) const {
     return (x == T(0)) ? 0 : 1;
   }
@@ -183,39 +170,39 @@ struct count_functor {
 
 template<class T>
 struct diagonal_functor {
-  diagonal_functor(const T* a) :
+  diagonal_functor(const T a) :
       a(a) {
     //
   }
   HOST DEVICE T operator()(const int i, const int j) const {
-    return (i == j) ? T(*a) : T(0);
+    return (i == j) ? value(a) : T(0);
   }
-  const T* a;
+  const T a;
 };
 
-template<class T>
 struct digamma_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return digamma(x);
   }
 };
 
-template<class T>
 struct exp_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::exp(x);
   }
 };
 
-template<class T>
 struct expm1_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::expm1(x);
   }
 };
 
-template<class T>
 struct floor_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::floor(x);
   }
@@ -235,29 +222,29 @@ struct lfact_grad_functor {
   }
 };
 
-template<class T>
 struct lgamma_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::lgamma(x);
   }
 };
 
-template<class T>
 struct log_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::log(x);
   }
 };
 
-template<class T>
 struct log1p_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::log1p(x);
   }
 };
 
-template<class T>
 struct log_abs_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::log(std::abs(x));
   }

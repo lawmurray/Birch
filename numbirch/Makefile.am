@@ -15,6 +15,7 @@ AM_LDFLAGS =
 
 COMMON_SOURCES = \
     numbirch/function.cpp \
+    numbirch/numeric.cpp \
     numbirch/random.cpp
 
 if ONEAPI
@@ -92,8 +93,7 @@ noinst_HEADERS = \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
   numbirch/oneapi/numeric.hpp \
-  numbirch/oneapi/sycl.hpp \
-  numbirch/docs.hpp
+  numbirch/oneapi/sycl.hpp
 
 dist_noinst_DATA =  \
   Doxyfile \

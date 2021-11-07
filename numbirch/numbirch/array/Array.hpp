@@ -59,13 +59,15 @@ public:
   static constexpr int ndims = D;
 
   /* catch some common error cases */
-  static_assert(std::is_arithmetic<T>::value,
-      "Array is meant only for arithmetic types");
+  static_assert(is_basic<T>::value,
+      "Array is meant only for basic types");
   static_assert(!std::is_same<T,Array<double,0>>::value,
       "Array of Array not supported (and not what you want anyway?)");
   static_assert(!std::is_same<T,Array<float,0>>::value,
       "Array of Array not supported (and not what you want anyway?)");
   static_assert(!std::is_same<T,Array<int,0>>::value,
+      "Array of Array not supported (and not what you want anyway?)");
+  static_assert(!std::is_same<T,Array<bool,0>>::value,
       "Array of Array not supported (and not what you want anyway?)");
 
   /**
@@ -672,6 +674,16 @@ public:
   }
 
   /**
+   * Does the shape of this array conform to that of another? Two shapes
+   * conform if they have the same number of dimensions and lengths along
+   * those dimensions. Strides may differ.
+   */
+  template<class U, int E>
+  bool conforms(const Array<U,E>& o) const {
+    return shp.conforms(o.shp);
+  }
+
+  /**
    * Push an element onto the end of a vector. The vector length is increased
    * by one.
    *
@@ -824,16 +836,6 @@ private:
     std::swap(buf, o.buf);
     std::swap(ctl, o.ctl);
     std::swap(isDiced, o.isDiced);
-  }
-
-  /**
-   * Does the shape of this array conform to that of another? Two shapes
-   * conform if they have the same number of dimensions and lengths along
-   * those dimensions. Strides may differ.
-   */
-  template<class U>
-  bool conforms(const Array<U,D>& o) const {
-    return shp.conforms(o.shp);
   }
 
   /**

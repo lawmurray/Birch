@@ -786,6 +786,7 @@ INPUT                  = numbirch/array.hpp \
                          numbirch/memory.hpp \
                          numbirch/numeric.hpp \
                          numbirch/random.hpp \
+                         numbirch/type.hpp \
                          numbirch/array/Array.hpp \
                          numbirch/array/ArrayIterator.hpp \
                          numbirch/array/ArrayShape.hpp \

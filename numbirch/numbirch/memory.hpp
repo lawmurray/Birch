@@ -1,7 +1,8 @@
 /**
  * @file
  * 
- * Memory interface.
+ * @defgroup memory Memory
+ * Asynchronous unified memory management.
  */
 #pragma once
 

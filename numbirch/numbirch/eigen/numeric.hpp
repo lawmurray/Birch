@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "numbirch/numeric/unary_operator.hpp"
-#include "numbirch/functor/unary_operator.hpp"
 #include "numbirch/eigen/eigen.hpp"
 
 namespace numbirch {
