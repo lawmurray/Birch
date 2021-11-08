@@ -314,6 +314,13 @@ public:
   }
 
   template<class T>
+  auto diagonal(T* buffer) const {
+    using U = typename std::remove_const<T>::type;
+    U* buf = const_cast<U*>(buffer);
+    return Array<U,1>(buf, ArrayShape<1>(std::min(m, n), ld + 1));
+  }
+
+  template<class T>
   auto slice(T* buffer, const std::pair<int,int>& rows,
      const std::pair<int,int>& cols) const {
     assert(1 <= rows.first && rows.first <= m && "start of row range out of bounds");

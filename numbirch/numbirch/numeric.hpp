@@ -504,24 +504,20 @@ promote_t<T,U> atan(const U& x);
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 T ceil(const T& x);
 
-// /**
-//  * Inverse of a symmetric positive definite square matrix, via the Cholesky
-//  * factorization.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param S Symmetric positive definite matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> cholinv(const Matrix<T>& S) {
-//   Matrix<T> B(make_shape(S.rows(), S.columns()));
-//   cholinv(S.rows(), S.data(), S.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Inverse of a symmetric positive definite square matrix, via the Cholesky
+ * factorization.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix.
+ * 
+ * @return Matrix.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholinv(const Array<T,2>& S);
 
 /**
  * Cosine.
@@ -591,25 +587,19 @@ template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
    is_integral_v<U> && is_compatible_v<U,U>,int>>
 promote_t<T,U> cosh(const U& x);
 
-// /**
-//  * Count of non-zero elements.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Arithmetic type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return Count of non-zero elements in the array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     is_arithmetic_v<T>,int> = 0>
-// Scalar<int> count(const Array<T,D>& A) {
-//   Scalar<int> b;
-//   count(A.width(), A.height(), A.data(), A.stride(), b.data());
-//   return b;
-// }
+/**
+ * Count of non-zero elements.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<int,0> count(const T& x);
 
 // /**
 //  * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
@@ -745,61 +735,50 @@ promote_t<T,U> expm1(const U& x);
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 T floor(const T& x);
 
-// /**
-//  * Inverse of a square matrix.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> inv(const Matrix<T>& A) {
-//   Matrix<T> B(make_shape(A.rows(), A.columns()));
-//   inv(A.rows(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Inverse of a square matrix.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Square matrix.
+ * 
+ * @return Inverse.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> inv(const Array<T,2>& A);
 
-// /**
-//  * Logarithm of the determinant of a symmetric positive definite matrix, via
-//  * the Cholesky factorization. The determinant of a positive definite matrix
-//  * is always positive.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param S Symmetric positive definite matrix.
-//  * 
-//  * @return Logarithm of the determinant of `S`.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Scalar<T> lcholdet(const Matrix<T>& S) {
-//   Scalar<T> b;
-//   lcholdet(S.rows(), S.data(), S.stride(), b.data());
-//   return b;
-// }
+/**
+ * Logarithm of the determinant of a symmetric positive definite matrix, via
+ * the Cholesky factorization. The determinant of a positive definite matrix
+ * is always positive.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix.
+ * 
+ * @return Logarithm of the determinant.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,0> lcholdet(const Array<T,2>& S);
 
-// /**
-//  * Logarithm of the absolute value of the determinant of a square matrix.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * 
-//  * @return Logarithm of the absolute value of the determinant of `A`.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Scalar<T> ldet(const Matrix<T>& A) {
-//   Scalar<T> b;
-//   ldet(A.rows(), A.data(), A.stride(), b.data());
-//   return b;
-// }
+
+/**
+ * Logarithm of the absolute value of the determinant of a square matrix.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix.
+ * 
+ * @return Logarithm of the absolute value of the determinant.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,0> ldet(const Array<T,2>& A);
 
 /**
  * Logarithm of the factorial function.
@@ -1183,25 +1162,19 @@ template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
    is_integral_v<U> && is_compatible_v<U,U>,int>>
 promote_t<T,U> sqrt(const U& x);
 
-// /**
-//  * Sum of elements.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Arithmetic type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return Sum of elements of the array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     is_arithmetic_v<T>,int> = 0>
-// Scalar<T> sum(const Array<T,D>& A) {
-//   Scalar<T> b;
-//   sum(A.width(), A.height(), A.data(), A.stride(), b.data());
-//   return b;
-// }
+/**
+ * Sum of elements.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<value_t<T>,0> sum(const T& x);
 
 /**
  * Tangent.
@@ -1271,42 +1244,33 @@ template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
    is_integral_v<U> && is_compatible_v<U,U>,int>>
 promote_t<T,U> tanh(const U& x);
 
-// /**
-//  * Matrix trace.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * 
-//  * @return Trace of the matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Scalar<T> trace(const Matrix<T>& A) {
-//   Scalar<T> b;
-//   trace(A.rows(), A.columns(), A.data(), A.stride(), b.data());
-//   return b;
-// }
+/**
+ * Matrix trace.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix.
+ * 
+ * @return Trace.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,0> trace(const Array<T,2>& A);
 
-// /**
-//  * Scalar product and transpose. Computes @f$B = xA^\top@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> transpose(const Matrix<T>& A) {
-//   Matrix<T> B(make_shape(A.columns(), A.rows()));
-//   transpose(B.rows(), B.columns(), A.data(), A.stride(), B.data(),
-//       B.stride());
-//   return B;
-// }
+/**
+ * Matrix transpose.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix.
+ * 
+ * @return Transpose.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> transpose(const Array<T,2>& A);
 
 /**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.

@@ -5,6 +5,8 @@
  */
 #pragma once
 
+#include "numbirch/macro.hpp"
+
 #include <cub/cub.cuh>
 
 namespace numbirch {
@@ -34,13 +36,25 @@ static auto make_cub_range(Iterator first, Iterator second) {
 }
 
 template<class T>
+static auto make_cub(Array<T,0>& x) {
+  auto begin = data(x);
+  return make_cub_range(begin, begin + size(x));
+}
+
+template<class T>
+static auto make_cub(const Array<T,0>& x) {
+  auto begin = data(x);
+  return make_cub_range(begin, begin + size(x));
+}
+
+template<class T>
 struct vector_element_functor {
   vector_element_functor(T* x, int incx) :
       x(x),
       incx(incx) {
     //
   }
-  __device__ T operator()(const int i) const {
+  DEVICE T operator()(const int i) const {
     return x[i*incx];
   }
   T* x;
@@ -48,12 +62,21 @@ struct vector_element_functor {
 };
 
 template<class T>
-static auto make_cub_vector(T* x, const int n, const int incx) {
-  auto elem = vector_element_functor<T>(x, incx);
+static auto make_cub(Array<T,1>& x) {
+  auto elem = vector_element_functor<T>(data(x), stride(x));
   auto count = cub::CountingInputIterator<int>(0);
-  auto begin = cub::TransformInputIterator<T,decltype(elem),decltype(count)>(
-      count, elem);
-  return make_cub_range(begin, begin + n);
+  auto begin = cub::TransformInputIterator<T,decltype(elem),
+      decltype(count)>(count, elem);
+  return make_cub_range(begin, begin + size(x));
+}
+
+template<class T>
+static auto make_cub(const Array<T,1>& x) {
+  auto elem = vector_element_functor<const T>(data(x), stride(x));
+  auto count = cub::CountingInputIterator<int>(0);
+  auto begin = cub::TransformInputIterator<const T,decltype(elem),
+      decltype(count)>(count, elem);
+  return make_cub_range(begin, begin + size(x));
 }
 
 template<class T>
@@ -64,7 +87,7 @@ struct matrix_element_functor {
       ldA(ldA) {
     //
   }
-  __device__ T operator()(const int i) const {
+  DEVICE T operator()(const int i) const {
     int c = i/m;
     int r = i - c*m;
     return A[r + c*ldA];
@@ -75,40 +98,21 @@ struct matrix_element_functor {
 };
 
 template<class T>
-static auto make_cub_matrix(T* A, const int m, const int n, const int ldA) {
-  auto elem = matrix_element_functor<T>(A, m, ldA);
+static auto make_cub(Array<T,2>& A) {
+  auto elem = matrix_element_functor<T>(data(A), rows(A), stride(A));
   auto count = cub::CountingInputIterator<int>(0);
-  auto begin = cub::TransformInputIterator<T,decltype(elem),decltype(count)>(
-      count, elem);
-  return make_cub_range(begin, begin + m*n);
+  auto begin = cub::TransformInputIterator<T,decltype(elem),
+      decltype(count)>(count, elem);
+  return make_cub_range(begin, begin + size(A));
 }
 
 template<class T>
-struct matrix_transpose_element_functor {
-  matrix_transpose_element_functor(T* A, int m, int ldA) :
-      A(A),
-      m(m),
-      ldA(ldA) {
-    //
-  }
-  __device__ T operator()(const int i) const {
-    int r = i/m;
-    int c = i - r*m;
-    return A[r + c*ldA];
-  }
-  T* A;
-  int m;
-  int ldA;
-};
-
-template<class T>
-static auto make_cub_matrix_transpose(T* A, const int m, const int n,
-    const int ldA) {
-  auto elem = matrix_transpose_element_functor<T>(A, m, ldA);
+static auto make_cub(const Array<T,2>& A) {
+  auto elem = matrix_element_functor<const T>(data(A), rows(A), stride(A));
   auto count = cub::CountingInputIterator<int>(0);
-  auto begin = cub::TransformInputIterator<T,decltype(elem),decltype(count)>(
-      count, elem);
-  return make_cub_range(begin, begin + m*n);
+  auto begin = cub::TransformInputIterator<const T,decltype(elem),
+      decltype(count)>(count, elem);
+  return make_cub_range(begin, begin + size(A));
 }
 
 }

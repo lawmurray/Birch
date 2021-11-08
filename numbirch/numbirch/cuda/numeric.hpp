@@ -195,40 +195,39 @@ T ceil(const T& x) {
   return transform(x, ceil_functor());
 }
 
-// template<class T>
-// void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
-//   prefetch(S, n, n, ldS);
-//   prefetch(B, n, n, ldB);
+template<class T, class>
+Array<T,2> cholinv(const Array<T,2>& S) {
+  assert(rows(S) == columns(S));
+  Array<T,2> L(S);
+  Array<T,2> B(shape(S));
 
-//   /* write identity matrix into B */
-//   CUDA_CHECK(cudaMemset2DAsync(B, ldB*sizeof(T), 0, n*sizeof(T), n, stream));
-//   CUBLAS_CHECK(cublas<T>::copy(cublasHandle, n, scalar<T>::one, 0, B,
-//       ldB + 1));
+  /* write identity matrix into B */
+  CUDA_CHECK(cudaMemset2DAsync(data(B), stride(B)*sizeof(T), 0,
+      rows(B)*sizeof(T), columns(B), stream));
+  CUBLAS_CHECK(cublas<T>::copy(cublasHandle, rows(B), scalar<T>::one, 0,
+      data(B), stride(B) + 1));
 
-//   auto L = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
-//   auto ldL = n;
-//   memcpy(L, ldL*sizeof(T), S, ldS*sizeof(T), n*sizeof(T), n);
+  /* invert via Cholesky factorization */
+  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
+      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      &bufferOnHostBytes));
+  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+  void* bufferOnHost = malloc(bufferOnHostBytes);
 
-//   /* solve via Cholesky factorization */
-//   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-//   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-//       cusolverDnParams, CUBLAS_FILL_MODE_LOWER, n, cusolver<T>::CUDA_R, L,
-//       ldL, cusolver<T>::CUDA_R, &bufferOnDeviceBytes, &bufferOnHostBytes));
-//   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-//   void* bufferOnHost = malloc(bufferOnHostBytes);
+  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
+      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+      bufferOnHost, bufferOnHostBytes, info));
+  CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
+      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
 
-//   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-//       CUBLAS_FILL_MODE_LOWER, n, cusolver<T>::CUDA_R, L, ldL,
-//       cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
-//       bufferOnHostBytes, info));
-//   CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
-//       CUBLAS_FILL_MODE_LOWER, n, n, cusolver<T>::CUDA_R, L, ldL,
-//       cusolver<T>::CUDA_R, B, ldB, info));
-
-//   free(bufferOnHost);
-//   device_free(bufferOnDevice);
-//   device_free(L);
-// }
+  free(bufferOnHost);
+  device_free(bufferOnDevice);
+  return B;
+}
 
 template<class T, class>
 T cos(const T& x) {
@@ -254,17 +253,11 @@ promote_t<T,U> cosh(const U& x) {
   return transform(x, cosh_functor<T>());
 }
 
-// template<class T>
-// void count(const int m, const int n, const T* A, const int ldA, int* b) {
-//   prefetch(A, m, n, ldA);
-
-//   ///@todo Remove temporary
-//   auto B = (int*)device_malloc(m*n*sizeof(int));
-//   int ldB = m;
-//   transform(m, n, A, ldA, B, ldB, count_functor<T>());
-//   sum(m, n, B, ldB, b);
-//   device_free(B);
-// }
+template<class T, class>
+Array<int,0> count(const T& x) {
+  ///@todo Avoid temporary
+  return sum(transform(x, count_functor()));
+}
 
 // template<class T>
 // void diagonal(const T* a, const int n, T* B, const int ldB) {
@@ -313,116 +306,102 @@ T floor(const T& x) {
   return transform(x, floor_functor());
 }
 
-// template<class T>
-// void inv(const int n, const T* A, const int ldA, T* B, const int ldB) {
-//   prefetch(A, n, n, ldA);
-//   prefetch(B, n, n, ldB);
+template<class T, class>
+Array<T,2> inv(const Array<T,2>& A) {
+  assert(rows(A) == columns(A));
+  Array<T,2> LU(A);
+  Array<T,2> B(shape(A));
 
-//   /* write identity matrix into B */
-//   CUDA_CHECK(cudaMemset2DAsync(B, ldB*sizeof(T), 0, n*sizeof(T), n, stream));
-//   CUBLAS_CHECK(cublas<T>::copy(cublasHandle, n, scalar<T>::one, 0, B,
-//       ldB + 1));
+  /* write identity matrix into B */
+  CUDA_CHECK(cudaMemset2DAsync(data(B), stride(B)*sizeof(T), 0,
+      rows(B)*sizeof(T), columns(B), stream));
+  CUBLAS_CHECK(cublas<T>::copy(cublasHandle, rows(B), scalar<T>::one, 0,
+      data(B), stride(B) + 1));
 
-//   auto LU = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
-//   auto ldLU = n;
-//   memcpy(LU, ldLU*sizeof(T), A, ldA*sizeof(T), n*sizeof(T), n);
+  /* invert via LU factorization with partial pivoting */
+  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
+  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU),
+      stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      &bufferOnHostBytes));
+  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+  void* bufferOnHost = malloc(bufferOnHostBytes);
+  auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*std::min(rows(LU),
+      columns(LU)));
 
-//   /* solve via LU factorization with partial pivoting */
-//   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-//   CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-//       cusolverDnParams, n, n, cusolver<T>::CUDA_R, LU, ldLU,
-//       cusolver<T>::CUDA_R, &bufferOnDeviceBytes, &bufferOnHostBytes));
-//   void *bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-//   void *bufferOnHost = malloc(bufferOnHostBytes);
-//   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*n);
+  CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
+      rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU), stride(LU), ipiv,
+      cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
+      bufferOnHostBytes, info));
+  CUSOLVER_CHECK_INFO(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_OP_N, rows(B), columns(B), cusolver<T>::CUDA_R, data(LU),
+      stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), info));
 
-//   CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n,
-//       n, cusolver<T>::CUDA_R, LU, ldLU, ipiv, cusolver<T>::CUDA_R,
-//       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
-//       info));
-//   CUSOLVER_CHECK_INFO(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
-//       CUBLAS_OP_N, n, n, cusolver<T>::CUDA_R, LU, ldLU, ipiv,
-//       cusolver<T>::CUDA_R, B, ldB, info));
+  device_free(ipiv);
+  free(bufferOnHost);
+  device_free(bufferOnDevice);
+  return B;
+}
 
-//   device_free(ipiv);
-//   free(bufferOnHost);
-//   device_free(bufferOnDevice);
-//   device_free(LU);
-// }
+template<class T, class>
+Array<T,0> lcholdet(const Array<T,2>& S) {
+  Array<T,2> L(S);
+  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
+      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      &bufferOnHostBytes));
+  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+  void* bufferOnHost = malloc(bufferOnHostBytes);
 
-// template<class T>
-// void lcholdet(const int n, const T* S, const int ldS, T* b) {
-//   prefetch(S, n, n, ldS);
+  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
+      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+      bufferOnHost, bufferOnHostBytes, info));
 
-//   auto L = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
-//   auto ldL = n;
-//   memcpy(L, ldL*sizeof(T), S, ldS*sizeof(T), n*sizeof(T), n);
+  /* log-determinant is twice the sum of logarithms of elements on the main
+   * diagonal, all of which should be positive */
+  ///@todo Avoid temporary
+  Array<T,0> ldet = sum(transform(L.diagonal(), log_square_functor<T>()));
 
-//   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-//   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-//       cusolverDnParams, CUBLAS_FILL_MODE_LOWER, n, cusolver<T>::CUDA_R, L,
-//       ldL, cusolver<T>::CUDA_R, &bufferOnDeviceBytes, &bufferOnHostBytes));
-//   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-//   void* bufferOnHost = malloc(bufferOnHostBytes);
+  free(bufferOnHost);
+  device_free(bufferOnDevice);
+  return ldet;
+}
 
-//   /* solve via Cholesky factorization */
-//   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-//       CUBLAS_FILL_MODE_LOWER, n, cusolver<T>::CUDA_R, L, ldL,
-//       cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
-//       bufferOnHostBytes, info));
+template<class T, class>
+Array<T,0> ldet(const Array<T,2>& A) {
+  Array<T,2> LU(A);
 
-//   /* log-determinant is twice the sum of logarithms of elements on the main
-//    * diagonal, all of which should be positive */
-//   ///@todo Remove temporary
-//   auto d = (T*)device_malloc(n*sizeof(T));
-//   transform(1, n, L, ldL + 1, d, 1, log_square_functor<T>());
-//   sum(1, n, d, 1, b);
+  /* LU factorization with partial pivoting */
+  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
+  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU),
+      stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      &bufferOnHostBytes));
+  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+  void* bufferOnHost = malloc(bufferOnHostBytes);
+  auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*rows(LU));
 
-//   device_free(d);
-//   free(bufferOnHost);
-//   device_free(bufferOnDevice);
-//   device_free(L);
-// }
+  CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
+      rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU), stride(LU),
+      ipiv, cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+      bufferOnHost, bufferOnHostBytes, info));
 
-// template<class T>
-// void ldet(const int n, const T* A, const int ldA, T* b) {
-//   prefetch(A, n, n, ldA);
+  /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
+   * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
+   * we're taking the logarithm of its absolute value, so can ignore the first
+   * term, and the second term is just 1 as $L$ has a unit diagonal; just need
+   * $|U|$ here; the logarithm of its absolute value is just the sum of the
+   * logarithms of the absolute values of elements on the main diagonal */
+  ///@todo Avoid temporary
+  Array<T,0> ldet = sum(transform(LU.diagonal(), log_abs_functor<T>()));
 
-//   auto LU = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
-//   auto ldLU = n;
-//   memcpy(LU, ldLU*sizeof(T), A, ldA*sizeof(T), n*sizeof(T), n);
-
-//   /* LU factorization with partial pivoting */
-//   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-//   CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-//       cusolverDnParams, n, n, cusolver<T>::CUDA_R, LU, ldLU,
-//       cusolver<T>::CUDA_R, &bufferOnDeviceBytes, &bufferOnHostBytes));
-//   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-//   void* bufferOnHost = malloc(bufferOnHostBytes);
-//   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*n);
-
-//   CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams, n,
-//       n, cusolver<T>::CUDA_R, LU, ldLU, nullptr/*ipiv*/, cusolver<T>::CUDA_R,
-//       bufferOnDevice, bufferOnDeviceBytes, bufferOnHost, bufferOnHostBytes,
-//       info));
-
-//   /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
-//    * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
-//    * we're taking the logarithm of its absolute value, so can ignore the first
-//    * term, and the second term is just 1 as $L$ has a unit diagonal; just need
-//    * $|U|$ here; the logarithm of its absolute value is just the sum of the
-//    * logarithms of the absolute values of elements on the main diagonal */
-//   ///@todo Remove temporary
-//   auto d = (T*)device_malloc(n*sizeof(T));
-//   transform(1, n, LU, ldLU + 1, d, 1, log_abs_functor<T>());
-//   sum(1, n, d, 1, b);
-
-//   device_free(d);
-//   device_free(ipiv);
-//   free(bufferOnHost);
-//   device_free(bufferOnDevice);
-//   device_free(LU);
-// }
+  device_free(ipiv);
+  free(bufferOnHost);
+  device_free(bufferOnDevice);
+  return ldet;
+}
 
 template<class T, class>
 T lfact(const T& x) {
@@ -561,19 +540,22 @@ promote_t<T,U> sqrt(const U& x) {
   return transform(x, sqrt_functor<T>());
 }
 
-// template<class T>
-// void sum(const int m, const int n, const T* A, const int ldA, T* b) {
-//   prefetch(A, m, n, ldA);
+template<class T, class>
+Array<value_t<T>,0> sum(const T& x) {
+  prefetch(x);
+  Array<value_t<T>,0> z;
+  auto y = make_cub(x);
+  void* tmp = nullptr;
+  size_t bytes = 0;
 
-//   auto A1 = make_cub_matrix(A, m, n, ldA);
-//   void* tmp = nullptr;
-//   size_t bytes = 0;
-
-//   CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), b, m*n, stream));
-//   tmp = device_malloc(bytes);
-//   CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, A1.begin(), b, m*n, stream));
-//   device_free(tmp);
-// }
+  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y.begin(), data(z), size(x),
+      stream));
+  tmp = device_malloc(bytes);
+  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y.begin(), data(z), size(x),
+      stream));
+  device_free(tmp);
+  return z;
+}
 
 template<class T, class>
 T tan(const T& x) {
@@ -599,30 +581,33 @@ promote_t<T,U> tanh(const U& x) {
   return transform(x, tanh_functor<T>());
 }
 
-// template<class T>
-// void trace(const int m, const int n, const T* A, const int ldA, T* b) {
-//   return sum(1, std::min(m, n), A, ldA + 1, b);
-// }
+template<class T, class>
+Array<T,0> trace(const Array<T,2>& A) {
+  assert(rows(A) == columns(A));
+  return sum(A.diagonal());
+}
 
-// template<class T>
-// void transpose(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, n, m, ldA);
-//   prefetch(B, m, n, ldB);
+template<class T, class>
+Array<T,2> transpose(const Array<T,2>& A) {
+  prefetch(A);
+  Array<T,2> B(make_shape(columns(A), rows(A)));
 
-//   dim3 block;
-//   block.x = TRANSPOSE_SIZE;
-//   block.y = TRANSPOSE_SIZE;
-//   block.z = 1;
+  dim3 block;
+  block.x = CUDA_TRANSPOSE_SIZE;
+  block.y = CUDA_TRANSPOSE_SIZE;
+  block.z = 1;
 
-//   dim3 grid;
-//   grid.x = (m + TRANSPOSE_SIZE - 1)/TRANSPOSE_SIZE;
-//   grid.y = (n + TRANSPOSE_SIZE - 1)/TRANSPOSE_SIZE;
-//   grid.z = 1;
+  dim3 grid;
+  grid.x = (rows(B) + CUDA_TRANSPOSE_SIZE - 1)/CUDA_TRANSPOSE_SIZE;
+  grid.y = (columns(B) + CUDA_TRANSPOSE_SIZE - 1)/CUDA_TRANSPOSE_SIZE;
+  grid.z = 1;
 
-//   auto shared = TRANSPOSE_SIZE*TRANSPOSE_SIZE*sizeof(T);
-//   kernel_transpose<<<grid,block,shared,stream>>>(m, n, A, ldA, B, ldB);
-// }
+  size_t shared = CUDA_TRANSPOSE_SIZE*CUDA_TRANSPOSE_SIZE*sizeof(T);
+
+  kernel_transpose<<<grid,block,shared,stream>>>(rows(B), columns(B), data(A),
+      stride(A), data(B), stride(B));
+  return B;
+}
 
 template<class T, class>
 Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {

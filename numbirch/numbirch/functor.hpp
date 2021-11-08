@@ -255,15 +255,15 @@ struct log1p_functor {
   }
 };
 
+template<class T>
 struct log_abs_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::log(std::abs(x));
   }
 };
 
+template<class T>
 struct log_square_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return 2.0*std::log(x);
   }

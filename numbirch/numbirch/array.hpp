@@ -93,13 +93,35 @@ int stride(const Array<T,D>& x) {
 }
 
 /**
- * Stride of a scalar---zero, although typically ignored by functions.
+ * Stride of a scalar---i.e. 1, although typically ignored by functions.
  * 
  * @ingroup array
  */
 template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
 constexpr int stride(const T& x) {
   return 0;
+}
+
+/**
+ * Size of an array.
+ * 
+ * @ingroup array
+ * 
+ * @see Array::size()
+ */
+template<class T, int D>
+int size(const Array<T,D>& x) {
+  return x.size();
+}
+
+/**
+ * Size of a scalar---i.e. 1.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int size(const T& x) {
+  return 1;
 }
 
 /**

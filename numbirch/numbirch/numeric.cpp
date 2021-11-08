@@ -61,6 +61,69 @@
 /**
  * @internal
  * 
+ * @def UNARY_MATRIX
+ * 
+ * Explicitly instantiate a unary function `f` for a matrix for floating point
+ * types only. Use cases include inv(), cholinv(), transpose().
+ */
+#define UNARY_MATRIX(f) \
+    template Array<double,2> f(const Array<double,2>&); \
+    template Array<float,2> f(const Array<float,2>&);
+
+/**
+ * @internal
+ * 
+ * @def REDUCE_MATRIX
+ * 
+ * Explicitly instantiate a reduction function `f` for a matrix for floating
+ * point types only. Use cases include ldet(), lcholdet(), trace().
+ */
+#define REDUCE_MATRIX(f) \
+    template Array<double,0> f(const Array<double,2>&); \
+    template Array<float,0> f(const Array<float,2>&);
+
+/**
+ * @internal
+ * 
+ * @def REDUCE_SUM
+ * 
+ * Explicitly instantiate a reduction function `f`. Archetype is sum().
+ */
+#define REDUCE_SUM_INSTANTIATION(f, T) \
+    template Array<value_t<T>,0> f(const T&);
+#define REDUCE_SUM_INSTANTIATIONS(f, T) \
+    REDUCE_SUM_INSTANTIATION(f, ARRAY(T, 2)) \
+    REDUCE_SUM_INSTANTIATION(f, ARRAY(T, 1)) \
+    REDUCE_SUM_INSTANTIATION(f, ARRAY(T, 0))
+#define REDUCE_SUM(f) \
+    REDUCE_SUM_INSTANTIATIONS(f, double) \
+    REDUCE_SUM_INSTANTIATIONS(f, float) \
+    REDUCE_SUM_INSTANTIATIONS(f, int) \
+    REDUCE_SUM_INSTANTIATIONS(f, bool)
+
+/**
+ * @internal
+ * 
+ * @def REDUCE_COUNT
+ * 
+ * Explicitly instantiate a reduction function `f` with integral return type.
+ * Archetype is count().
+ */
+#define REDUCE_COUNT_INSTANTIATION(f, T) \
+    template Array<int,0> f(const T&);
+#define REDUCE_COUNT_INSTANTIATIONS(f, T) \
+    REDUCE_COUNT_INSTANTIATION(f, ARRAY(T, 2)) \
+    REDUCE_COUNT_INSTANTIATION(f, ARRAY(T, 1)) \
+    REDUCE_COUNT_INSTANTIATION(f, ARRAY(T, 0))
+#define REDUCE_COUNT(f) \
+    REDUCE_COUNT_INSTANTIATIONS(f, double) \
+    REDUCE_COUNT_INSTANTIATIONS(f, float) \
+    REDUCE_COUNT_INSTANTIATIONS(f, int) \
+    REDUCE_COUNT_INSTANTIATIONS(f, bool)
+
+/**
+ * @internal
+ * 
  * @def UNARY_EXPLICIT
  * 
  * Explicitly instantiate a unary transformation `f` for all types and sizes,
@@ -260,17 +323,22 @@ UNARY_EXPLICIT(acos)
 UNARY_EXPLICIT(asin)
 UNARY_EXPLICIT(atan)
 UNARY_ARITHMETIC(ceil)
+UNARY_MATRIX(cholinv)
 MATRIX_MULTIPLY(cholmul)
 MATRIX_MULTIPLY(cholsolve)
 BINARY_COPYSIGN(copysign)
 UNARY_EXPLICIT(cos)
 UNARY_EXPLICIT(cosh)
+REDUCE_COUNT(count)
 UNARY_EXPLICIT(digamma)
 UNARY_EXPLICIT(exp)
 UNARY_EXPLICIT(expm1)
 UNARY_ARITHMETIC(floor)
 BINARY_ARITHMETIC(hadamard)
 MATRIX_MULTIPLY(inner)
+UNARY_MATRIX(inv)
+REDUCE_MATRIX(lcholdet)
+REDUCE_MATRIX(ldet)
 UNARY_EXPLICIT(lgamma)
 UNARY_EXPLICIT(log)
 UNARY_EXPLICIT(log1p)
@@ -281,7 +349,10 @@ UNARY_EXPLICIT(sin)
 UNARY_EXPLICIT(sinh)
 MATRIX_MULTIPLY(solve)
 UNARY_EXPLICIT(sqrt)
+REDUCE_SUM(sum)
 UNARY_EXPLICIT(tan)
 UNARY_EXPLICIT(tanh)
+REDUCE_MATRIX(trace)
+UNARY_MATRIX(transpose)
 
 }

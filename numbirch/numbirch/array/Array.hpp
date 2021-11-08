@@ -50,6 +50,7 @@ template<class T, int D>
 class Array {
   template<class U, int E> friend class Array;
 public:
+  static_assert(is_basic<T>::value, "Array is meant only for basic types");
   using value_type = T;
   using shape_type = ArrayShape<D>;
 
@@ -57,18 +58,6 @@ public:
    * Number of dimensions.
    */
   static constexpr int ndims = D;
-
-  /* catch some common error cases */
-  static_assert(is_basic<T>::value,
-      "Array is meant only for basic types");
-  static_assert(!std::is_same<T,Array<double,0>>::value,
-      "Array of Array not supported (and not what you want anyway?)");
-  static_assert(!std::is_same<T,Array<float,0>>::value,
-      "Array of Array not supported (and not what you want anyway?)");
-  static_assert(!std::is_same<T,Array<int,0>>::value,
-      "Array of Array not supported (and not what you want anyway?)");
-  static_assert(!std::is_same<T,Array<bool,0>>::value,
-      "Array of Array not supported (and not what you want anyway?)");
 
   /**
    * Default constructor for scalar. The array contains one element.
@@ -681,6 +670,14 @@ public:
   template<class U, int E>
   bool conforms(const Array<U,E>& o) const {
     return shp.conforms(o.shp);
+  }
+
+  /**
+   * Get the diagonal of a matrix as a vector.
+   */
+  template<int E = D, std::enable_if_t<E == 2,int> = 0>
+  Array<T,1> diagonal() const {
+    return shp.diagonal(buf);
   }
 
   /**
