@@ -15,13 +15,16 @@ HOST DEVICE T ceil(const T x) {
   return std::ceil(x);
 }
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST DEVICE T copysign(const T x, const T y) {
+template<class T, class U, std::enable_if_t<
+    std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
+HOST DEVICE T copysign(const T x, const U y) {
   return std::copysign(x, y);
 }
 
-inline HOST DEVICE int copysign(const int x, const int y) {
-  // don't use std::copysign, as it promotes to return floating point
+template<class T, class U, std::enable_if_t<
+    std::is_integral<T>::value && std::is_arithmetic<U>::value,int> = 0>
+HOST DEVICE int copysign(const T x, const U y) {
+  // don't use std::copysign, as it promotes to floating point
   return (y >= 0) ? std::abs(x) : -std::abs(x);
 }
 

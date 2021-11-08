@@ -53,7 +53,7 @@ promote_t<T,U> operator/(const T& x, const U& y) {
   return transform(x, y, divide_functor());
 }
 
-template<class T, class U, class>
+template<class T, class>
 T operator!(const T& x) {
   prefetch(x);
   return transform(x, not_functor());
@@ -135,29 +135,47 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //       k, scalar<T>::one, A, ldA, B, ldB, scalar<T>::zero, C, ldC));
 // }
 
-// template<class T>
-// void abs(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, abs_functor<T>());
-// }
+template<class T, class>
+T abs(const T& x) {
+  prefetch(x);
+  return transform(x, abs_functor());
+}
 
-// template<class T>
-// void acos(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, acos_functor<T>());
-// }
+template<class T, class>
+T acos(const T& x) {
+  prefetch(x);
+  return transform(x, acos_functor<value_t<T>>());
+}
 
-// template<class T>
-// void asin(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, asin_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> acos(const U& x) {
+  prefetch(x);
+  return transform(x, acos_functor<T>());
+}
+
+template<class T, class>
+T asin(const T& x) {
+  prefetch(x);
+  return transform(x, asin_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> asin(const U& x) {
+  prefetch(x);
+  return transform(x, asin_functor<T>());
+}
+
+template<class T, class>
+T atan(const T& x) {
+  prefetch(x);
+  return transform(x, atan_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> atan(const U& x) {
+  prefetch(x);
+  return transform(x, atan_functor<T>());
+}
 
 // template<class T>
 // void atan(const int m, const int n, const T* A, const int ldA, T* B,
@@ -167,13 +185,11 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   transform(m, n, A, ldA, B, ldB, atan_functor<T>());
 // }
 
-// template<class T>
-// void ceil(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, ceil_functor<T>());
-// }
+template<class T, class>
+T ceil(const T& x) {
+  prefetch(x);
+  return transform(x, ceil_functor());
+}
 
 // template<class T>
 // void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
@@ -210,21 +226,29 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   device_free(L);
 // }
 
-// template<class T>
-// void cos(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, cos_functor<T>());
-// }
+template<class T, class>
+T cos(const T& x) {
+  prefetch(x);
+  return transform(x, cos_functor<value_t<T>>());
+}
 
-// template<class T>
-// void cosh(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, cosh_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> cos(const U& x) {
+  prefetch(x);
+  return transform(x, cos_functor<T>());
+}
+
+template<class T, class>
+T cosh(const T& x) {
+  prefetch(x);
+  return transform(x, cosh_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> cosh(const U& x) {
+  prefetch(x);
+  return transform(x, cosh_functor<T>());
+}
 
 // template<class T>
 // void count(const int m, const int n, const T* A, const int ldA, int* b) {
@@ -243,37 +267,47 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   for_each(n, n, B, ldB, diagonal_functor<T>(a));
 // }
 
-// template<class T>
-// void digamma(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, digamma_functor<T>());
-// }
+template<class T, class>
+T digamma(const T& x) {
+  prefetch(x);
+  return transform(x, digamma_functor<value_t<T>>());
+}
 
-// template<class T>
-// void exp(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, exp_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> digamma(const U& x) {
+  prefetch(x);
+  return transform(x, digamma_functor<T>());
+}
 
-// template<class T>
-// void expm1(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, expm1_functor<T>());
-// }
+template<class T, class>
+T exp(const T& x) {
+  prefetch(x);
+  return transform(x, exp_functor<value_t<T>>());
+}
 
-// template<class T>
-// void floor(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, floor_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> exp(const U& x) {
+  prefetch(x);
+  return transform(x, exp_functor<T>());
+}
+
+template<class T, class>
+T expm1(const T& x) {
+  prefetch(x);
+  return transform(x, expm1_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> expm1(const U& x) {
+  prefetch(x);
+  return transform(x, expm1_functor<T>());
+}
+
+template<class T, class>
+T floor(const T& x) {
+  prefetch(x);
+  return transform(x, floor_functor());
+}
 
 // template<class T>
 // void inv(const int n, const T* A, const int ldA, T* B, const int ldB) {
@@ -386,13 +420,17 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   device_free(LU);
 // }
 
-// template<class T>
-// void lfact(const int m, const int n, const int* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, lfact_functor<T>());
-// }
+template<class T, class>
+T lfact(const T& x) {
+  prefetch(x);
+  return transform(x, lfact_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> lfact(const U& x) {
+  prefetch(x);
+  return transform(x, lfact_functor<T>());
+}
 
 // template<class T>
 // void lfact_grad(const int m, const int n, const T* G, const int ldG,
@@ -403,45 +441,65 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   transform(m, n, G, ldG, A, ldA, B, ldB, lfact_grad_functor<T>());
 // }
 
-// template<class T>
-// void lgamma(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, lgamma_functor<T>());
-// }
+template<class T, class>
+T lgamma(const T& x) {
+  prefetch(x);
+  return transform(x, lgamma_functor<value_t<T>>());
+}
 
-// template<class T>
-// void log(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, log_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> lgamma(const U& x) {
+  prefetch(x);
+  return transform(x, lgamma_functor<T>());
+}
 
-// template<class T>
-// void log1p(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, log1p_functor<T>());
-// }
+template<class T, class>
+T log(const T& x) {
+  prefetch(x);
+  return transform(x, log_functor<value_t<T>>());
+}
 
-// template<class T>
-// void rcp(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, rcp_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> log(const U& x) {
+  prefetch(x);
+  return transform(x, log_functor<T>());
+}
 
-// template<class T>
-// void rectify(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, rectify_functor<T>());
-// }
+template<class T, class>
+T log1p(const T& x) {
+  prefetch(x);
+  return transform(x, log1p_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> log1p(const U& x) {
+  prefetch(x);
+  return transform(x, log1p_functor<T>());
+}
+
+template<class T, class>
+T rcp(const T& x) {
+  prefetch(x);
+  return transform(x, rcp_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> rcp(const U& x) {
+  prefetch(x);
+  return transform(x, rcp_functor<T>());
+}
+
+template<class T, class>
+T rectify(const T& x) {
+  prefetch(x);
+  return transform(x, rectify_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> rectify(const U& x) {
+  prefetch(x);
+  return transform(x, rectify_functor<T>());
+}
 
 // template<class T>
 // void rectify_grad(const int m, const int n, const T* G, const int ldG,
@@ -452,42 +510,52 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   transform(m, n, G, ldG, A, ldA, B, ldB, rectify_grad_functor<T>());
 // }
 
-// template<class T>
-// void round(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, round_functor<T>());
-// }
+template<class T, class>
+T round(const T& x) {
+  prefetch(x);
+  return transform(x, round_functor());
+}
 
-// template<class T>
-// void sin(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, sin_functor<T>());
-// }
+template<class T, class>
+T sin(const T& x) {
+  prefetch(x);
+  return transform(x, sin_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> sin(const U& x) {
+  prefetch(x);
+  return transform(x, sin_functor<T>());
+}
 
 // template<class T>
 // void single(const int* i, const int n, T* x, const int incx) {
 //   for_each(1, n, x, incx, single_functor<T>(scalar<int>::one, i));
 // }
 
-// template<class T>
-// void sinh(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, sinh_functor<T>());
-// }
+template<class T, class>
+T sinh(const T& x) {
+  prefetch(x);
+  return transform(x, sinh_functor<value_t<T>>());
+}
 
-// template<class T>
-// void sqrt(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, sqrt_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> sinh(const U& x) {
+  prefetch(x);
+  return transform(x, sinh_functor<T>());
+}
+
+template<class T, class>
+T sqrt(const T& x) {
+  prefetch(x);
+  return transform(x, sqrt_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> sqrt(const U& x) {
+  prefetch(x);
+  return transform(x, sqrt_functor<T>());
+}
 
 // template<class T>
 // void sum(const int m, const int n, const T* A, const int ldA, T* b) {
@@ -503,21 +571,29 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   device_free(tmp);
 // }
 
-// template<class T>
-// void tan(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, tan_functor<T>());
-// }
+template<class T, class>
+T tan(const T& x) {
+  prefetch(x);
+  return transform(x, tan_functor<value_t<T>>());
+}
 
-// template<class T>
-// void tanh(const int m, const int n, const T* A, const int ldA, T* B,
-//     const int ldB) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, A, ldA, B, ldB, tanh_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> tan(const U& x) {
+  prefetch(x);
+  return transform(x, tan_functor<T>());
+}
+
+template<class T, class>
+T tanh(const T& x) {
+  prefetch(x);
+  return transform(x, tanh_functor<value_t<T>>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> tanh(const U& x) {
+  prefetch(x);
+  return transform(x, tanh_functor<T>());
+}
 
 // template<class T>
 // void trace(const int m, const int n, const T* A, const int ldA, T* b) {
@@ -722,14 +798,12 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y) {
 //   device_free(L);
 // }
 
-// template<class T>
-// void copysign(const int m, const int n, const T* A, const int ldA, const T* B,
-//     const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, copysign_functor<T>());
-// }
+template<class T, class U, class>
+T copysign(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, copysign_functor());
+}
 
 // template<class T>
 // void digamma(const int m, const int n, const T* A, const int ldA,

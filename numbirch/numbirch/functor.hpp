@@ -119,15 +119,15 @@ struct abs_functor {
   }
 };
 
+template<class T>
 struct acos_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::acos(x);
   }
 };
 
+template<class T>
 struct asin_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::asin(x);
   }
@@ -145,17 +145,23 @@ struct ceil_functor {
   HOST DEVICE T operator()(const T x) const {
     return std::ceil(x);
   }
+  HOST DEVICE int operator()(const int x) const {
+    return x;
+  }
+  HOST DEVICE bool operator()(const bool x) const {
+    return x;
+  }
 };
 
+template<class T>
 struct cos_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::cos(x);
   }
 };
 
+template<class T>
 struct cosh_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::cosh(x);
   }
@@ -180,22 +186,22 @@ struct diagonal_functor {
   const T a;
 };
 
+template<class T>
 struct digamma_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return digamma(x);
   }
 };
 
+template<class T>
 struct exp_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::exp(x);
   }
 };
 
+template<class T>
 struct expm1_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::expm1(x);
   }
@@ -206,12 +212,18 @@ struct floor_functor {
   HOST DEVICE T operator()(const T x) const {
     return std::floor(x);
   }
+  HOST DEVICE int operator()(const int x) const {
+    return x;
+  }
+  HOST DEVICE bool operator()(const bool x) const {
+    return x;
+  }
 };
 
 template<class T>
 struct lfact_functor {
-  HOST DEVICE T operator()(const int x) const {
-    return lfact<T>(x);
+  HOST DEVICE T operator()(const T x) const {
+    return lfact(x);
   }
 };
 
@@ -222,22 +234,22 @@ struct lfact_grad_functor {
   }
 };
 
+template<class T>
 struct lgamma_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::lgamma(x);
   }
 };
 
+template<class T>
 struct log_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::log(x);
   }
 };
 
+template<class T>
 struct log1p_functor {
-  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::log1p(x);
   }
@@ -250,8 +262,8 @@ struct log_abs_functor {
   }
 };
 
-template<class T>
 struct log_square_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return 2.0*std::log(x);
   }
@@ -278,10 +290,16 @@ struct rectify_grad_functor {
   }
 };
 
-template<class T>
 struct round_functor {
+  template<class T>
   HOST DEVICE T operator()(const T x) const {
     return std::round(x);
+  }
+  HOST DEVICE int operator()(const int x) const {
+    return x;
+  }
+  HOST DEVICE bool operator()(const bool x) const {
+    return x;
   }
 };
 
@@ -320,9 +338,9 @@ struct tanh_functor {
   }
 };
 
-template<class T>
 struct copysign_functor {
-  HOST DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  HOST DEVICE T operator()(const T x, const U y) const {
     return copysign(x, y);
   }
 };

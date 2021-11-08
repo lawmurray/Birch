@@ -101,7 +101,7 @@ namespace numbirch {
  * 
  * @param x Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 T operator+(const T& x);
@@ -115,7 +115,7 @@ T operator+(const T& x);
  * 
  * @param x Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 T operator-(const T& x);
@@ -131,7 +131,7 @@ T operator-(const T& x);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -148,7 +148,7 @@ promote_t<T,U> operator+(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -165,7 +165,7 @@ promote_t<T,U> operator-(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && (!is_scalar_v<T> || is_scalar_v<U>),int>>
@@ -182,7 +182,7 @@ promote_t<T,U> operator*(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_scalar_v<U>,int>>
@@ -197,10 +197,10 @@ promote_t<T,U> operator/(const T& x, const U& y);
  * 
  * @param x Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class = std::enable_if_t<is_integral_v<T>,int>>
-Array<bool,dimension_v<T>> operator!(const T& x);
+T operator!(const T& x);
 
 /**
  * Logical `and`.
@@ -213,7 +213,7 @@ Array<bool,dimension_v<T>> operator!(const T& x);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_integral_v<T> &&
     is_integral_v<U> && is_compatible_v<T,U>,int>>
@@ -230,7 +230,7 @@ Array<bool,dimension_v<T>> operator&&(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_integral_v<T> &&
     is_integral_v<U> && is_compatible_v<T,U>,int>>
@@ -247,7 +247,7 @@ Array<bool,dimension_v<T>> operator||(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -264,7 +264,7 @@ Array<bool,dimension_v<T>> operator==(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -281,7 +281,7 @@ Array<bool,dimension_v<T>> operator!=(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -298,7 +298,7 @@ Array<bool,dimension_v<T>> operator<(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -315,7 +315,7 @@ Array<bool,dimension_v<T>> operator<=(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -332,7 +332,7 @@ Array<bool,dimension_v<T>> operator>(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -382,105 +382,135 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return C;
 // }
 
-// /**
-//  * Absolute value.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Arithmetic type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> abs(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   abs(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Absolute value.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+T abs(const T& x);
 
-// /**
-//  * Arc cosine.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> acos(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   acos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Arc cosine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T acos(const T& x);
 
-// /**
-//  * Arc sine.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> asin(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   asin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Arc cosine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> acos(const U& x);
 
-// /**
-//  * Arc tangent.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> atan(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   atan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Arc sine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T asin(const T& x);
 
-// /**
-//  * Round to smallest integer value not less than argument.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> ceil(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   ceil(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Arc sine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> asin(const U& x);
+
+/**
+ * Arc tangent.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T atan(const T& x);
+
+/**
+ * Arc tangent.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> atan(const U& x);
+
+/**
+ * Round to smallest integer value not less than argument.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+T ceil(const T& x);
 
 // /**
 //  * Inverse of a symmetric positive definite square matrix, via the Cholesky
@@ -501,45 +531,73 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return B;
 // }
 
-// /**
-//  * Cosine.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> cos(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   cos(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Cosine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T cos(const T& x);
 
-// /**
-//  * Hyperbolic cosine.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> cosh(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   cosh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Cosine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> cos(const U& x);
+
+/**
+ * Hyperbolic cosine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T cosh(const T& x);
+
+/**
+ * Hyperbolic cosine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> cosh(const U& x);
 
 // /**
 //  * Count of non-zero elements.
@@ -579,85 +637,121 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return B;
 // }
 
-// /**
-//  * Digamma.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> digamma(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   digamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Digamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T digamma(const T& x);
 
-// /**
-//  * Exponential.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> exp(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   exp(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Digamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> digamma(const U& x);
 
-// /**
-//  * Exponential minus one.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> expm1(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   expm1(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Exponential.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T exp(const T& x);
 
-// /**
-//  * Round to largest integer value not greater than argument.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> floor(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   floor(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Exponential.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> exp(const U& x);
+
+/**
+ * Exponential minus one.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T expm1(const T& x);
+
+/**
+ * Exponential minus one.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> expm1(const U& x);
+
+/**
+ * Round to largest integer value not greater than argument.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+T floor(const T& x);
 
 // /**
 //  * Inverse of a square matrix.
@@ -715,27 +809,39 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return b;
 // }
 
-// /**
-//  * Logarithm of the factorial function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  * 
-//  * @note The return type `T` must be explicitly specified.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> lfact(const Array<int,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   lfact(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Logarithm of the factorial function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T lfact(const T& x);
+
+/**
+ * Logarithm of the factorial function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> lfact(const U& x);
 
 // /**
 //  * Gradient of lfact().
@@ -747,7 +853,7 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //  * 
 //  * @param A %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  * 
 //  * @note The return type `T` must be explicitly specified.
 //  */
@@ -760,108 +866,175 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return B;
 // }
 
-// /**
-//  * Logarithm of the gamma function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> lgamma(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   lgamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Logarithm of the gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T lgamma(const T& x);
 
-// /**
-//  * Logarithm.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> log(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   log(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Logarithm of the gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> lgamma(const U& x);
 
-// /**
-//  * Logarithm of one plus argument.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> log1p(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   log1p(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Logarithm.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T log(const T& x);
 
-// /**
-//  * Reciprocal. For element @f$(i,j)@f$, computes @f$B_{ij} = 1/A_{ij}@f$. The
-//  * division is as for the type `T`; this will always return zero for an
-//  * integer type.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> rcp(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   rcp(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Logarithm.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> log(const U& x);
 
-// /**
-//  * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
-//  * 0)@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> rectify(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   rectify(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Logarithm of one plus argument.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T log1p(const T& x);
+
+/**
+ * Logarithm of one plus argument.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> log1p(const U& x);
+
+/**
+ * Reciprocal. For element @f$(i,j)@f$, computes @f$B_{ij} = 1/A_{ij}@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T rcp(const T& x);
+
+/**
+ * Reciprocal. For element @f$(i,j)@f$, computes @f$B_{ij} = 1/A_{ij}@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> rcp(const U& x);
+
+/**
+ * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T rectify(const T& x);
+
+/**
+ * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> rectify(const U& x);
 
 // /**
 //  * Gradient of rectify().
@@ -873,7 +1046,7 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //  * 
 //  * @param A %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -884,45 +1057,53 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return B;
 // }
 
-// /**
-//  * Round to nearest integer value.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> round(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   round(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Round to nearest integer value.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+T round(const T& x);
 
-// /**
-//  * Sine.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> sin(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   sin(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Sine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T sin(const T& x);
+
+/**
+ * Sine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> sin(const U& x);
 
 // /**
 //  * Construct single-entry vector. One of the elements of the vector is one,
@@ -942,45 +1123,73 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return x;
 // }
 
-// /**
-//  * Hyperbolic sine.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> sinh(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   sinh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Hyperbolic sine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T sinh(const T& x);
 
-// /**
-//  * Square root.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> sqrt(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   sqrt(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Hyperbolic sine.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> sinh(const U& x);
+
+/**
+ * Square root.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T sqrt(const T& x);
+
+/**
+ * Square root.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> sqrt(const U& x);
 
 // /**
 //  * Sum of elements.
@@ -1002,45 +1211,73 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return b;
 // }
 
-// /**
-//  * Tangent.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> tan(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   tan(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Tangent.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T tan(const T& x);
 
-// /**
-//  * Hyperbolic tangent.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> tanh(const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   tanh(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Tangent.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> tan(const U& x);
+
+/**
+ * Hyperbolic tangent.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_compatible_v<T,T>,int>>
+T tanh(const T& x);
+
+/**
+ * Hyperbolic tangent.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point basic type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument type is integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+   is_integral_v<U> && is_compatible_v<U,U>,int>>
+promote_t<T,U> tanh(const U& x);
 
 // /**
 //  * Matrix trace.
@@ -1199,30 +1436,22 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //   return A;
 // }
 
-// /**
-//  * Copy sign of a number.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Arithmetic type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return %Array.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     is_arithmetic_v<T>,int> = 0>
-// Array<T,D> copysign(const Array<T,D>& A, const Array<T,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
-
-//   Array<T,D> C(A.shape().compact());
-//   copysign(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Copy sign of a number.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
+T copysign(const T& x, const U& y);
 
 // /**
 //  * Multivariate digamma function.
@@ -1235,7 +1464,7 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1322,7 +1551,7 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1347,7 +1576,7 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1372,7 +1601,7 @@ Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return %Array.
+ * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
@@ -1433,7 +1662,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1458,7 +1687,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  * 
 //  * @note The return type `T` must be explicitly specified.
 //  */
@@ -1486,7 +1715,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1516,7 +1745,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1583,7 +1812,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param A %Array.
 //  * @param B %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
@@ -1681,7 +1910,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param B %Array.
 //  * @param X %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, class U, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value && is_arithmetic_v<U>,int> = 0>
@@ -1715,7 +1944,7 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //  * @param e Coefficient on `D`.
 //  * @param E %Array.
 //  * 
-//  * @return %Array.
+//  * @return Result.
 //  */
 // template<class T, int D, std::enable_if_t<
 //     std::is_floating_point<T>::value,int> = 0>
