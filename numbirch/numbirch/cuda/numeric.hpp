@@ -259,10 +259,10 @@ Array<int,0> count(const T& x) {
   return sum(transform(x, count_functor()));
 }
 
-// template<class T>
-// void diagonal(const T* a, const int n, T* B, const int ldB) {
-//   for_each(n, n, B, ldB, diagonal_functor<T>(a));
-// }
+template<class T, class>
+Array<value_t<T>,2> diagonal(const T& x, const int n) {
+  return for_each(n, n, diagonal_functor(data(x)));
+}
 
 template<class T, class>
 T digamma(const T& x) {
@@ -511,10 +511,16 @@ promote_t<T,U> sin(const U& x) {
   return transform(x, sin_functor<T>());
 }
 
-// template<class T>
-// void single(const int* i, const int n, T* x, const int incx) {
-//   for_each(1, n, x, incx, single_functor<T>(scalar<int>::one, i));
-// }
+template<class T, class U, class>
+Array<T,1> single(const U& i, const int n) {
+  return for_each(n, single_functor<T,decltype(data(i))>(data(i)));
+}
+
+template<class T, class U, class V, class>
+Array<T,2> single(const U& i, const V& j, const int m, const int n) {
+  return for_each(m, n, single_functor<T,decltype(data(i)),decltype(data(j))>(
+      data(i), data(j)));
+}
 
 template<class T, class>
 T sinh(const T& x) {

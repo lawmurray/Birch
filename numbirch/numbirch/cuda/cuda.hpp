@@ -129,22 +129,6 @@ void prefetch(const T& x) {
 }
 
 /*
- * Element of a matrix.
- */
-template<class T>
-HOST DEVICE T& element(T* x, const int i, const int j, const int ld) {
-  return x[i + j*ld];
-}
-
-/*
- * Element of a scalar---just returns the scalar.
- */
-template<class T>
-HOST DEVICE T& element(T& x, const int i, const int j, const int ld) {
-  return x;
-}
-
-/*
  * Matrix for-each.
  */
 template<class T, class Functor>
@@ -156,11 +140,21 @@ __global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
     element(A, i, j, ldA) = f(i, j);
   }
 }
-template<class T, class Functor>
-void for_each(const int m, const int n, T* A, const int ldA, Functor f) {
+template<class Functor>
+auto for_each(const int m, const int n, Functor f) {
+  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  kernel_for_each<<<grid,block,0,stream>>>(m, n, A, ldA, f);
+  kernel_for_each<<<grid,block,0,stream>>>(m, n, data(A), stride(A), f);
+  return A;
+}
+template<class Functor>
+auto for_each(const int n, Functor f) {
+  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
+  auto grid = make_grid(n, 1);
+  auto block = make_block(n, 1);
+  kernel_for_each<<<grid,block,0,stream>>>(n, 1, data(x), stride(x), f);
+  return x;
 }
 
 /*
@@ -176,12 +170,14 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
   }
 }
 template<class T, class Functor>
-T transform(const T& x, Functor f) {
+auto transform(const T& x, Functor f) {
+  using V = decltype(f(value_t<T>()));
+  constexpr int D = dimension_v<T>;
+  auto y = Array<V,D>(shape(x));
   auto m = rows(x);
   auto n = columns(x);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  auto y = T(shape(x));
   kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
       stride(y), f);
   return y;
@@ -203,7 +199,9 @@ __global__ void kernel_transform(const int m, const int n, const T A,
 template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
   assert(conforms(x, y));
-  Array<decltype(f(value_t<T>(),value_t<U>())),dimension_v<T>> z(shape(x));
+  using V = decltype(f(value_t<T>(),value_t<U>()));
+  constexpr int D = dimension_v<T>;
+  auto z = Array<V,D>(shape(x));
   auto m = rows(x);
   auto n = columns(x);
   auto grid = make_grid(m, n);

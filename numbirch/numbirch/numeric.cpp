@@ -85,6 +85,62 @@
 /**
  * @internal
  * 
+ * @def SINGLE_VECTOR
+ * 
+ * For single().
+ */
+#define SINGLE_VECTOR_INSTANTIATION(f, T, U) \
+    template Array<T,1> f(const U& i, const int n);
+#define SINGLE_VECTOR_INSTANTIATIONS(f, T) \
+    SINGLE_VECTOR_INSTANTIATION(f, T, int) \
+    SINGLE_VECTOR_INSTANTIATION(f, T, ARRAY(int, 0))
+#define SINGLE_VECTOR(f) \
+    SINGLE_VECTOR_INSTANTIATIONS(f, double) \
+    SINGLE_VECTOR_INSTANTIATIONS(f, float) \
+    SINGLE_VECTOR_INSTANTIATIONS(f, int) \
+    SINGLE_VECTOR_INSTANTIATIONS(f, bool)
+
+/**
+ * @internal
+ * 
+ * @def SINGLE_MATRIX
+ * 
+ * For single().
+ */
+#define SINGLE_MATRIX_INSTANTIATION(f, T, U, V) \
+    template Array<T,2> f(const U& i, const V& j, const int m, const int n);
+#define SINGLE_MATRIX_INSTANTIATIONS(f, T) \
+    SINGLE_MATRIX_INSTANTIATION(f, T, ARRAY(int, 0), ARRAY(int, 0)) \
+    SINGLE_MATRIX_INSTANTIATION(f, T, ARRAY(int, 0), int) \
+    SINGLE_MATRIX_INSTANTIATION(f, T, int, ARRAY(int, 0)) \
+    SINGLE_MATRIX_INSTANTIATION(f, T, int, int)
+#define SINGLE_MATRIX(f) \
+    SINGLE_MATRIX_INSTANTIATIONS(f, double) \
+    SINGLE_MATRIX_INSTANTIATIONS(f, float) \
+    SINGLE_MATRIX_INSTANTIATIONS(f, int) \
+    SINGLE_MATRIX_INSTANTIATIONS(f, bool)
+
+/**
+ * @internal
+ * 
+ * @def DIAGONAL_MATRIX
+ * 
+ * For diagonal().
+ */
+#define DIAGONAL_MATRIX_INSTANTIATION(f, T) \
+    template Array<value_t<T>,2> f(const T& x, const int n);
+#define DIAGONAL_MATRIX_INSTANTIATIONS(f, T) \
+    DIAGONAL_MATRIX_INSTANTIATION(f, T) \
+    DIAGONAL_MATRIX_INSTANTIATION(f, ARRAY(T, 0))
+#define DIAGONAL_MATRIX(f) \
+    DIAGONAL_MATRIX_INSTANTIATIONS(f, double) \
+    DIAGONAL_MATRIX_INSTANTIATIONS(f, float) \
+    DIAGONAL_MATRIX_INSTANTIATIONS(f, int) \
+    DIAGONAL_MATRIX_INSTANTIATIONS(f, bool)
+
+/**
+ * @internal
+ * 
  * @def REDUCE_SUM
  * 
  * Explicitly instantiate a reduction function `f`. Archetype is sum().
@@ -330,6 +386,7 @@ BINARY_COPYSIGN(copysign)
 UNARY_EXPLICIT(cos)
 UNARY_EXPLICIT(cosh)
 REDUCE_COUNT(count)
+DIAGONAL_MATRIX(diagonal)
 UNARY_EXPLICIT(digamma)
 UNARY_EXPLICIT(exp)
 UNARY_EXPLICIT(expm1)
@@ -346,6 +403,8 @@ UNARY_EXPLICIT(rcp)
 UNARY_EXPLICIT(rectify)
 UNARY_ARITHMETIC(round)
 UNARY_EXPLICIT(sin)
+SINGLE_VECTOR(single)
+SINGLE_MATRIX(single)
 UNARY_EXPLICIT(sinh)
 MATRIX_MULTIPLY(solve)
 UNARY_EXPLICIT(sqrt)

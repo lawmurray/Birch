@@ -601,23 +601,19 @@ promote_t<T,U> cosh(const U& x);
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<int,0> count(const T& x);
 
-// /**
-//  * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
-//  * value, while all off-diagonal elements are assigned zero.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param x Scalar to assign to diagonal.
-//  * @param n Number of rows and columns.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> diagonal(const Scalar<T>& x, const int n) {
-//   Matrix<T> B(make_shape(n, n));
-//   diagonal(x.data(), n, B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
+ * value, while all off-diagonal elements are assigned zero.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<value_t<T>,2> diagonal(const T& x, const int n);
 
 /**
  * Digamma function.
@@ -1076,23 +1072,44 @@ template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
    is_integral_v<U> && is_compatible_v<U,U>,int>>
 promote_t<T,U> sin(const U& x);
 
-// /**
-//  * Construct single-entry vector. One of the elements of the vector is one,
-//  * all others are zero.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Arithmetic type.
-//  * 
-//  * @param i Index of single entry (1-based).
-//  * @param n Length of vector.
-//  */
-// template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
-// Vector<T> single(const Scalar<int>& i, const int n) {
-//   Vector<T> x(make_shape(n));
-//   single(i.data(), n, x.data(), x.stride());
-//   return x;
-// }
+/**
+ * Construct single-entry vector. One of the elements of the vector is one,
+ * all others are zero.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Integral type.
+ * 
+ * @param i Index of single entry (1-based).
+ * @param n Length of vector.
+ * 
+ * @return Single-entry vector.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_integral_v<U>,int>>
+Array<T,1> single(const U& i, const int n);
+
+/**
+ * Construct single-entry matrix. One of the elements of the matrix is one,
+ * all others are zero.
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param i Row index of single entry (1-based).
+ * @param j Column index of single entry (1-based).
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Single-entry matrix.
+ * 
+ * @note The return type `T` must be explicitly specified.
+*/
+template<class T, class U, class V, class = std::enable_if_t<
+    is_arithmetic_v<T> && is_integral_v<U> && is_integral_v<V>,int>>
+Array<T,2> single(const U& i, const V& j, const int m, const int n);
 
 /**
  * Hyperbolic sine.
@@ -1752,31 +1769,6 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
 //   pow(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
 //       C.data(), C.stride());
 //   return C;
-// }
-
-// /**
-//  * Construct single-entry matrix. One of the elements of the matrix is one,
-//  * all others are zero.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Arithmetic type.
-//  * 
-//  * @param i Row index of single entry (1-based).
-//  * @param j Column index of single entry (1-based).
-//  * @param m Number of rows.
-//  * @param n Number of columns.
-//  * 
-//  * @return %Matrix.
-//  * 
-//  * @note The return type `T` must be explicitly specified.
-//  */
-// template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
-// Matrix<T> single(const Scalar<int>& i, const Scalar<int>& j, const int m,
-//     const int n) {
-//   Matrix<T> A(make_shape(m, n));
-//   single(i.data(), j.data(), m, n, A.data(), A.stride());
-//   return A;
 // }
 
 /**

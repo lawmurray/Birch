@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/function.hpp"
+#include "numbirch/type.hpp"
 
 namespace numbirch {
 struct negate_functor {
@@ -180,8 +181,8 @@ struct diagonal_functor {
       a(a) {
     //
   }
-  HOST DEVICE T operator()(const int i, const int j) const {
-    return (i == j) ? value(a) : T(0);
+  HOST DEVICE auto operator()(const int i, const int j) const {
+    return (i == j) ? element(a) : 0;
   }
   const T a;
 };
@@ -402,16 +403,17 @@ struct pow_functor {
   }
 };
 
-template<class T>
+template<class T, class U, class V = int>
 struct single_functor {
-  single_functor(const int* i, const int* j) :
-      i(i), j(j) {
+  single_functor(const U k, const V l = 1) :
+      k(k), l(l) {
     //
   }
   HOST DEVICE T operator()(const int i, const int j) const {
-    return (i == *this->i - 1 && j == *this->j - 1) ? T(1) : T(0);
+    return (i == element(k) - 1 && j == element(l) - 1) ? T(1) : T(0);
   }
-  const int *i, *j;
+  const U k;
+  const V l;
 };
 
 template<class T>

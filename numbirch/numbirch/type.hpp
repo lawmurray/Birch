@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "numbirch/macro.hpp"
+
 #include <type_traits>
 
 namespace numbirch {
@@ -349,5 +351,49 @@ template<class T>
 struct quad {
   T first, second, third, fourth;
 };
+
+/**
+ * @internal
+ *
+ * Element of a matrix.
+ */
+template<class T>
+HOST DEVICE T& element(T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x[i + j*ld];
+}
+
+/**
+ * @internal
+ *
+ * Element of a matrix.
+ */
+template<class T>
+HOST DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x[i + j*ld];
+}
+
+/**
+ * @internal
+ * 
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T>
+HOST DEVICE T& element(T& x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x;
+}
+
+/**
+ * @internal
+ * 
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T>
+HOST DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x;
+}
 
 }
