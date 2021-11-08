@@ -15,9 +15,33 @@
 
 namespace numbirch {
 /**
+ * Length of an array.
+ * 
+ * @ingroup array
+ * 
+ * @see Array::length()
+ */
+template<class T, int D>
+int length(const Array<T,D>& x) {
+  return x.length();
+}
+
+/**
+ * Length of a scalar---i.e. 1.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int length(const T& x) {
+  return 1;
+}
+
+/**
  * Number of rows in array.
  * 
  * @ingroup array
+ * 
+ * @see Array::rows()
  */
 template<class T, int D>
 int rows(const Array<T,D>& x) {
@@ -38,6 +62,8 @@ constexpr int rows(const T& x) {
  * Number of columns in array.
  * 
  * @ingroup array
+ * 
+ * @see Array::columns()
  */
 template<class T, int D>
 int columns(const Array<T,D>& x) {
@@ -58,6 +84,8 @@ constexpr int columns(const T& x) {
  * Stride of an array.
  * 
  * @ingroup array
+ * 
+ * @see Array::stride()
  */
 template<class T, int D>
 int stride(const Array<T,D>& x) {
@@ -78,6 +106,8 @@ constexpr int stride(const T& x) {
  * Shape of an array.
  * 
  * @ingroup array
+ * 
+ * @see Array::shape()
  */
 template<class T, int D>
 ArrayShape<D> shape(const Array<T,D>& x) {
@@ -98,6 +128,8 @@ ArrayShape<0> shape(const T& x) {
  * Buffer of an array.
  * 
  * @ingroup array
+ * 
+ * @see Array::data()
  */
 template<class T, int D>
 const T* data(const Array<T,D>& x) {
@@ -129,6 +161,8 @@ constexpr const T& data(const T& x) {
  * dimensions and same length along them.
  * 
  * @ingroup array
+ * 
+ * @see Array::conforms()
  */
 template<class T, int D, class U, int E>
 bool conforms(const Array<T,D>& x, const Array<U,E>& y) {

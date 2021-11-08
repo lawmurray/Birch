@@ -195,8 +195,8 @@
  * @def BINARY_COPYSIGN
  * 
  * Explicitly instantiate a binary transformation `f` for all pairs of
- * compatible types, where the return type is `T`. The archetype is
- * `copysign()`.
+ * compatible types, where the return type is that of the first parameter. The
+ * archetype is `copysign()`.
  */
 #define BINARY_COPYSIGN_INSTANTIATION(f, T, U) \
     template T f(const T&, const U&);
@@ -224,6 +224,20 @@
     BINARY_COPYSIGN_INSTANTIATIONS(f, bool, int) \
     BINARY_COPYSIGN_INSTANTIATIONS(f, bool, bool)
 
+/**
+ * @internal
+ * 
+ * @def MATRIX_MULTIPLY
+ * 
+ * Explicitly instantiation matrix multiplications.
+ */
+#define MATRIX_MULTIPLY_INSTANTIATIONS(f, T) \
+    template Array<T,1> f(const Array<T,2>&, const Array<T,1>&); \
+    template Array<T,2> f(const Array<T,2>&, const Array<T,2>&);
+#define MATRIX_MULTIPLY(f) \
+    MATRIX_MULTIPLY_INSTANTIATIONS(f, double) \
+    MATRIX_MULTIPLY_INSTANTIATIONS(f, float)
+
 namespace numbirch {
 
 UNARY_ARITHMETIC(operator+)
@@ -231,6 +245,7 @@ UNARY_ARITHMETIC(operator-)
 BINARY_ARITHMETIC(operator+)
 BINARY_ARITHMETIC(operator-)
 BINARY_SCALAR(operator*)
+MATRIX_MULTIPLY(operator*)
 BINARY_SCALAR(operator/)
 UNARY_INTEGRAL(operator!)
 BINARY_COMPARE(operator==)
@@ -245,6 +260,8 @@ UNARY_EXPLICIT(acos)
 UNARY_EXPLICIT(asin)
 UNARY_EXPLICIT(atan)
 UNARY_ARITHMETIC(ceil)
+MATRIX_MULTIPLY(cholmul)
+MATRIX_MULTIPLY(cholsolve)
 BINARY_COPYSIGN(copysign)
 UNARY_EXPLICIT(cos)
 UNARY_EXPLICIT(cosh)
@@ -253,6 +270,7 @@ UNARY_EXPLICIT(exp)
 UNARY_EXPLICIT(expm1)
 UNARY_ARITHMETIC(floor)
 BINARY_ARITHMETIC(hadamard)
+MATRIX_MULTIPLY(inner)
 UNARY_EXPLICIT(lgamma)
 UNARY_EXPLICIT(log)
 UNARY_EXPLICIT(log1p)
@@ -261,6 +279,7 @@ UNARY_EXPLICIT(rectify)
 UNARY_ARITHMETIC(round)
 UNARY_EXPLICIT(sin)
 UNARY_EXPLICIT(sinh)
+MATRIX_MULTIPLY(solve)
 UNARY_EXPLICIT(sqrt)
 UNARY_EXPLICIT(tan)
 UNARY_EXPLICIT(tanh)

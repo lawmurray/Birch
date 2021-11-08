@@ -172,6 +172,42 @@ template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
 promote_t<T,U> operator*(const T& x, const U& y);
 
 /**
+ * Matrix-vector multiplication. Computes @f$y = Ax@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param x Vector @f$x@f$.
+ * 
+ * @return Result @f$y@f$.
+ * 
+ * @note @p A and @p x must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
+
+/**
+ * Matrix-matrix multiplication. Computes @f$C = AB@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param B Matrix @f$B@f$.
+ * 
+ * @return Result @f$C@f$.
+ * 
+ * @note @p A and @p B must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& x);
+
+/**
  * Division by scalar.
  * 
  * @ingroup numeric
@@ -337,50 +373,6 @@ Array<bool,dimension_v<T>> operator>(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
 Array<bool,dimension_v<T>> operator>=(const T& x, const U& y);
-
-// /**
-//  * Matrix-vector multiplication. Computes @f$y = Ax@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A %Matrix.
-//  * @param x %Vector.
-//  * 
-//  * @return %Vector.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Vector<T> operator*(const Matrix<T>& A, const Vector<T>& x) {
-//   assert(A.columns() == x.length());
-
-//   Vector<T> y(make_shape(A.rows()));
-//   mul(A.rows(), A.columns(), A.data(), A.stride(), x.data(), x.stride(),
-//       y.data(), y.stride());
-//   return y;
-// }
-
-// /**
-//  * Matrix-matrix multiplication. Computes @f$C = AB@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A %Matrix.
-//  * @param B %Matrix.
-//  * 
-//  * @return %Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> operator*(const Matrix<T>& A, const Matrix<T>& B) {
-//   assert(A.columns() == B.rows());
-
-//   Matrix<T> C(make_shape(A.rows(), B.columns()));
-//   mul(C.rows(), C.columns(), A.columns(), A.data(), A.stride(), B.data(),
-//       B.stride(), C.data(), C.stride());
-//   return C;
-// }
 
 /**
  * Absolute value.
@@ -1316,53 +1308,43 @@ promote_t<T,U> tanh(const U& x);
 //   return B;
 // }
 
-// /**
-//  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
-//  * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param S Symmetric positive definite matrix.
-//  * @param x Vector.
-//  * 
-//  * @return Vector.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Vector<T> cholmul(const Matrix<T>& S, const Vector<T>& x) {
-//   assert(S.rows() == S.columns());
-//   assert(S.columns() == x.length());
+/**
+ * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
+ * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix @f$S@f$.
+ * @param x Vector @f$x@f$.
+ * 
+ * @return Result @f$y@f$.
+ * 
+ * @note @p S and @p x must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x);
 
-//   Vector<T> y(make_shape(S.rows()));
-//   cholmul(y.rows(), S.data(), S.stride(), x.data(), x.stride(), y.data(),
-//       y.stride());
-//   return y;
-// }
-
-// /**
-//  * Lower-triangular Cholesky factor of a matrix multiplied by a matrix.
-//  * Computes @f$C = LB@f$, where @f$S = LL^\top@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param S Symmetric positive definite matrix.
-//  * @param B Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> cholmul(const Matrix<T>& S, const Matrix<T>& B) {
-//   assert(S.rows() == S.columns());
-//   assert(S.columns() == S.rows());
-
-//   Matrix<T> C(make_shape(S.rows(), B.columns()));
-//   cholmul(C.rows(), C.columns(), S.data(), S.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Lower-triangular Cholesky factor of a matrix multiplied by a matrix.
+ * Computes @f$C = LB@f$, where @f$S = LL^\top@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix @f$S@f$.
+ * @param B Matrix @f$B@f$.
+ * 
+ * @return Result @f$C@f$.
+ * 
+ * @note @p S and @p B must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B);
 
 // /**
 //  * Outer product of matrix and lower-triangular Cholesky factor of another
@@ -1388,53 +1370,43 @@ promote_t<T,U> tanh(const U& x);
 //   return C;
 // }
 
-// /**
-//  * Matrix-vector solve, via the Cholesky factorization. Solves for @f$x@f$ in
-//  * @f$Sx = y@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param S Symmetric positive definite matrix.
-//  * @param y Vector.
-//  * 
-//  * @return Vector.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Vector<T> cholsolve(const Matrix<T>& S, const Vector<T>& y) {
-//   assert(S.rows() == S.columns());
-//   assert(S.rows() == y.length());
+/**
+ * Matrix-vector solve, via the Cholesky factorization. Solves for @f$x@f$ in
+ * @f$Sx = y@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix @f$S@f$.
+ * @param y Vector @f$y@f$.
+ * 
+ * @return Result @f$x@f$.
+ * 
+ * @note @p S and @p y must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
 
-//   Vector<T> x(make_shape(y.length()));
-//   cholsolve(x.rows(), S.data(), S.stride(), x.data(), x.stride(), y.data(),
-//       y.stride());
-//   return x;
-// }
-
-// /**
-//  * Matrix-matrix solve, via the Cholesky factorization. Solves for @f$A@f$ in
-//  * @f$SA = B@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param S Symmetric positive definite matrix.
-//  * @param B Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> cholsolve(const Matrix<T>& S, const Matrix<T>& B) {
-//   assert(S.rows() == S.columns());
-//   assert(S.rows() == B.rows());
-
-//   Matrix<T> A(make_shape(B.rows(), B.columns()));
-//   cholsolve(A.rows(), A.columns(), S.data(), S.stride(), A.data(), A.stride(),
-//       B.data(), B.stride());
-//   return A;
-// }
+/**
+ * Matrix-matrix solve, via the Cholesky factorization. Solves for @f$B@f$ in
+ * @f$SB = C@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param S Symmetric positive definite matrix @f$S@f$.
+ * @param C Matrix @f$C@f$.
+ * 
+ * @return Result @f$B@f$.
+ * 
+ * @note @p S and @p C must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
 
 /**
  * Copy sign of a number.
@@ -1607,49 +1579,41 @@ template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
 promote_t<T,U> hadamard(const T& x, const U& y);
 
-// /**
-//  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param x Vector.
-//  * 
-//  * @return Vector.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Vector<T> inner(const Matrix<T>& A, const Vector<T>& x) {
-//   assert(A.rows() == x.length());
-  
-//   Vector<T> y(make_shape(A.columns()));
-//   inner(y.rows(), A.rows(), A.data(), A.stride(), x.data(), x.stride(),
-//       y.data(), y.stride());
-//   return y;
-// }
+/**
+ * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param x Vector @f$x@f$.
+ * 
+ * @return Result @f$y@f$.
+ * 
+ * @note @p A and @p x must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 
-// /**
-//  * Matrix-matrix inner product. Computes @f$C = A^\top B@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param B Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> inner(const Matrix<T>& A, const Matrix<T>& B) {
-//   assert(A.rows() == B.rows());
-
-//   Matrix<T> C(make_shape(A.columns(), B.columns()));
-//   inner(C.rows(), C.columns(), A.rows(), A.data(), A.stride(), B.data(),
-//       B.stride(), C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param B Matrix @f$B@f$.
+ * 
+ * @return Result @f$C@f$.
+ * 
+ * @note @p A and @p B must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
 
 // /**
 //  * Logarithm of the beta function.
@@ -1851,51 +1815,41 @@ promote_t<T,U> hadamard(const T& x, const U& y);
 //   return A;
 // }
 
-// /**
-//  * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param y Vector.
-//  * 
-//  * @return Vector.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Vector<T> solve(const Matrix<T>& A, const Vector<T>& y) {
-//   assert(A.rows() == A.columns());
-//   assert(A.rows() == y.length());
+/**
+ * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param y Vector @f$y@f$.
+ * 
+ * @return Result @f$x@f$.
+ * 
+ * @note @p A and @p y must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y);
 
-//   Vector<T> x(make_shape(y.length()));
-//   solve(x.rows(), A.data(), A.stride(), x.data(), x.stride(), y.data(),
-//       y.stride());
-//   return x;
-// }
-
-// /**
-//  * Matrix-matrix solve. Solves for @f$B@f$ in @f$AB = C@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param C Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> solve(const Matrix<T>& A, const Matrix<T>& C) {
-//   assert(A.rows() == A.columns());
-//   assert(A.rows() == C.rows());
-
-//   Matrix<T> B(make_shape(C.rows(), C.columns()));
-//   solve(A.rows(), A.columns(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return A;
-// }
+/**
+ * Matrix-matrix solve. Solves for @f$B@f$ in @f$AB = C@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param C Matrix @f$C@f$.
+ * 
+ * @return Result @f$B@f$.
+ * 
+ * @note @p A and @p C must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C);
 
 // /**
 //  * Normalized incomplete beta function.
