@@ -673,39 +673,34 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
   return C;
 }
 
-// template<class T>
-// void cholouter(const int m, const int n, const T* A, const int ldA,
-//     const T* S, const int ldS, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(S, n, n, ldS);
-//   prefetch(C, m, n, ldC);
+template<class T, class>
+Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
+  assert(columns(A) == columns(S));
+  assert(rows(S) == columns(S));
+  Array<T,2> L(S);
+  Array<T,2> C(A.shape());
 
-//   auto ldL = n;
-//   auto L = (T*)device_malloc(sizeof(T)*std::max(1, n*n));
-//   memcpy(L, ldL*sizeof(T), S, ldS*sizeof(T), n*sizeof(T), n);
+  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
+      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      &bufferOnHostBytes));
+  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+  void* bufferOnHost = malloc(bufferOnHostBytes);
 
-//   /* Cholesky factorization */
-//   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-//   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-//       cusolverDnParams, CUBLAS_FILL_MODE_UPPER, n, cusolver<T>::CUDA_R, L,
-//       ldL, cusolver<T>::CUDA_R, &bufferOnDeviceBytes, &bufferOnHostBytes));
-//   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-//   void* bufferOnHost = malloc(bufferOnHostBytes);
+  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
+      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+      bufferOnHost, bufferOnHostBytes, info));
+  CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
+      CUBLAS_FILL_MODE_UPPER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(C),
+      columns(C), scalar<T>::one, data(L), stride(L), data(A), stride(A),
+      data(C), stride(C)));
 
-//   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-//       CUBLAS_FILL_MODE_UPPER, n, cusolver<T>::CUDA_R, L, ldL,
-//       cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
-//       bufferOnHostBytes, info));
-
-//   /* multiplication */
-//   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
-//       CUBLAS_FILL_MODE_UPPER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, m, n,
-//       scalar<T>::one, L, ldL, A, ldA, C, ldC));
-
-//   free(bufferOnHost);
-//   device_free(bufferOnDevice);
-//   device_free(L);
-// }
+  free(bufferOnHost);
+  device_free(bufferOnDevice);
+  return C;
+}
 
 template<class T, class>
 Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
@@ -793,19 +788,11 @@ promote_t<T,U> digamma(const U& x, const V& y) {
 //   CUBLAS_CHECK(cublas<T>::dot(cublasHandle, n, x, incx, y, incy, z));
 // }
 
-// template<class T>
-// void frobenius(const int m, const int n, const T* A, const int ldA, const T* B,
-//     const int ldB, T* c) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-
-//   ///@todo Remove temporary
-//   auto C = (T*)device_malloc(m*n*sizeof(T));
-//   auto ldC = m;
-//   hadamard(m, n, A, ldA, B, ldB, C, ldC);
-//   sum(m, n, C, ldC, c);
-//   device_free(C);
-// }
+template<class T, class U, class>
+Array<value_t<promote_t<T,U>>,0> frobenius(const T& x, const U& y) {
+  ///@todo Avoid temporary
+  return sum(hadamard(x, y));
+}
 
 template<class T, class U, class>
 promote_t<T,U> gamma_p(const T& x, const U& y) {
@@ -875,14 +862,19 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
 //   transform(m, n, A, ldA, B, ldB, C, ldC, lbeta_functor<T>());
 // }
 
-// template<class T>
-// void lchoose(const int m, const int n, const int* A, const int ldA,
-//     const int* B, const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, lchoose_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> lchoose(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, lchoose_functor<value_t<promote_t<T,U>>>());
+}
+
+template<class T, class U, class V, class>
+promote_t<T,U> lchoose(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, lchoose_functor<T>());
+}
 
 // template<class T>
 // void lchoose_grad(const int m, const int n, const T* G, const int ldG,
@@ -926,15 +918,17 @@ promote_t<T,U> lgamma(const U& x, const V& y) {
 //       1, scalar<T>::one, x, incx, y, incy, scalar<T>::zero, A, ldA));
 // }
 
-// template<class T>
-// void outer(const int m, const int n, const int k, const T* A, const int ldA,
-//     const T* B, const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, k, ldA);
-//   prefetch(B, n, k, ldB);
-//   prefetch(C, m, n, ldC);
-//   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T, m, n,
-//       k, scalar<T>::one, A, ldA, B, ldB, scalar<T>::zero, C, ldC));
-// }
+template<class T, class>
+Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
+  assert(rows(A) == rows(B));
+  prefetch(A);
+  prefetch(B);
+  Array<T,2> C(make_shape(rows(A), rows(B)));
+  CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T,
+      rows(C), columns(C), rows(A), scalar<T>::one, data(A), stride(A),
+      data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
+  return C;
+}
 
 template<class T, class U, class>
 promote_t<T,U> pow(const T& x, const U& y) {

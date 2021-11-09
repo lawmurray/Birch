@@ -1327,29 +1327,24 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B);
 
-// /**
-//  * Outer product of matrix and lower-triangular Cholesky factor of another
-//  * matrix. Computes @f$C = AL^\top@f$, where @f$S = LL^\top@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param S Symmetric positive definite matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> cholouter(const Matrix<T>& A, const Matrix<T>& S) {
-//   assert(A.columns() == S.columns());
-//   assert(S.rows() == S.columns());
-
-//   Matrix<T> C(make_shape(A.rows(), S.rows()));
-//   cholouter(C.rows(), C.columns(), A.data(), A.stride(), S.data(), S.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Outer product of matrix and lower-triangular Cholesky factor of another
+ * matrix. Computes @f$C = AL^\top@f$, where @f$S = LL^\top@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param S Symmetric positive definite matrix @f$S@f$.
+ * 
+ * @return Result @f$C@f$.
+ * 
+ * @note @p A and @p S must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S);
 
 /**
  * Matrix-vector solve, via the Cholesky factorization. Solves for @f$x@f$ in
@@ -1415,7 +1410,7 @@ promote_t<T,U> copysign(const T& x, const U& y);
  * @tparam U Floating point type.
  * 
  * @param x Argument.
- * @param y Argument. Rounded down to nearest integer.
+ * @param y Argument. Will be rounded down to nearest integer.
  * 
  * @return Result.
  */
@@ -1484,29 +1479,24 @@ promote_t<T,U> digamma(const U& x, const V& y);
 //   return inner(A, x);
 // }
 
-// /**
-//  * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
-//  * \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}@f$,
-//  * resulting in a scalar.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param B Matrix.
-//  * 
-//  * @return Frobenius product.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Scalar<T> frobenius(const Matrix<T>& A, const Matrix<T>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
-//   Scalar<T> c;
-//   frobenius(A.rows(), A.columns(), A.data(), A.stride(), B.data(), B.stride(),
-//       c.data());
-//   return c;
-// }
+/**
+ * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
+ * \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}@f$,
+ * resulting in a scalar.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param B Matrix @f$B@f$.
+ * 
+ * @return Frobenius product.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
+Array<value_t<promote_t<T,U>>,0> frobenius(const T& x, const U& y);
 
 /**
  * Normalized upper incomplete gamma function.
@@ -1624,7 +1614,7 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
- * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
+ * Matrix-matrix inner product. Computes @f$y = A^\top x@f$.
  * 
  * @ingroup numeric
  * 
@@ -1665,6 +1655,46 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
 //       C.data(), C.stride());
 //   return C;
 // }
+
+/**
+ * Logarithm of the binomial coefficient.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point type.
+ * 
+ * @param x Argument. Will be rounded down to nearest integer.
+ * @param y Argument. Will be rounded down to nearest integer.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
+promote_t<T,U> lchoose(const T& x, const U& y);
+
+/**
+ * Logarithm of the binomial coefficient.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> lchoose(const U& x, const V& y);
 
 // /**
 //  * Logarithm of the binomial coefficient.
@@ -1733,7 +1763,7 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
  * @tparam U Floating point type.
  * 
  * @param x Argument.
- * @param y Argument. Rounded down to nearest integer.
+ * @param y Argument. Will be rounded down to nearest integer.
  * 
  * @return Result.
  */
@@ -1784,27 +1814,23 @@ promote_t<T,U> lgamma(const U& x, const V& y);
 //   return C;
 // }
 
-// /**
-//  * Matrix-matrix outer product. Computes @f$C = AB^\top@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param A Matrix.
-//  * @param B Matrix.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> outer(const Matrix<T>& A, const Matrix<T>& B) {
-//   assert(A.columns() == B.columns());
-
-//   Matrix<T> C(make_shape(A.rows(), B.rows()));
-//   outer(C.rows(), C.columns(), A.columns(), A.data(), A.stride(), B.data(),
-//       B.stride(), C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Matrix-matrix outer product. Computes @f$C = AB^\top@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix @f$A@f$.
+ * @param B Matrix @f$B@f$.
+ * 
+ * @return Result @f$C@f$.
+ * 
+ * @note @p A and @p B must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& x);
 
 /**
  * Power.

@@ -160,10 +160,44 @@
 /**
  * @internal
  * 
+ * @def BINARY_REDUCE
+ * 
+ * Explicitly instantiate a binary transform-and-reduce `f` for all pairs of
+ * compatible types.
+ */
+#define BINARY_REDUCE_INSTANTIATION(f, T, U) \
+    template Array<value_t<promote_t<T,U>>,0> f(const T&, const U&);
+#define BINARY_REDUCE_INSTANTIATIONS(f, T, U) \
+    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 2), ARRAY(U, 2)) \
+    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 1), ARRAY(U, 1)) \
+    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 0)) \
+    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 0), U) \
+    BINARY_REDUCE_INSTANTIATION(f, T, ARRAY(U, 0))
+#define BINARY_REDUCE(f) \
+    BINARY_REDUCE_INSTANTIATIONS(f, double, double) \
+    BINARY_REDUCE_INSTANTIATIONS(f, double, float) \
+    BINARY_REDUCE_INSTANTIATIONS(f, double, int) \
+    BINARY_REDUCE_INSTANTIATIONS(f, double, bool) \
+    BINARY_REDUCE_INSTANTIATIONS(f, float, double) \
+    BINARY_REDUCE_INSTANTIATIONS(f, float, float) \
+    BINARY_REDUCE_INSTANTIATIONS(f, float, int) \
+    BINARY_REDUCE_INSTANTIATIONS(f, float, bool) \
+    BINARY_REDUCE_INSTANTIATIONS(f, int, double) \
+    BINARY_REDUCE_INSTANTIATIONS(f, int, float) \
+    BINARY_REDUCE_INSTANTIATIONS(f, int, int) \
+    BINARY_REDUCE_INSTANTIATIONS(f, int, bool) \
+    BINARY_REDUCE_INSTANTIATIONS(f, bool, double) \
+    BINARY_REDUCE_INSTANTIATIONS(f, bool, float) \
+    BINARY_REDUCE_INSTANTIATIONS(f, bool, int) \
+    BINARY_REDUCE_INSTANTIATIONS(f, bool, bool)
+
+/**
+ * @internal
+ * 
  * @def BINARY_SCALAR
  * 
- * Explicitly instantiate a binary comparison `f` for all pairs of
- * compatible types.
+ * Explicitly instantiate a binary function `f` for all pairs of compatible
+ * types.
  */
 #define BINARY_SCALAR_INSTANTIATION(f, T, U) \
     template promote_t<T,U> f(const T&, const U&);
@@ -330,16 +364,28 @@
 /**
  * @internal
  * 
- * @def MATRIX_MULTIPLY
+ * @def MATRIX_VECTOR
  * 
  * Explicitly instantiation matrix multiplications.
  */
-#define MATRIX_MULTIPLY_INSTANTIATIONS(f, T) \
-    template Array<T,1> f(const Array<T,2>&, const Array<T,1>&); \
+#define MATRIX_VECTOR_INSTANTIATIONS(f, T) \
+    template Array<T,1> f(const Array<T,2>&, const Array<T,1>&);
+#define MATRIX_VECTOR(f) \
+    MATRIX_VECTOR_INSTANTIATIONS(f, double) \
+    MATRIX_VECTOR_INSTANTIATIONS(f, float)
+
+/**
+ * @internal
+ * 
+ * @def MATRIX_MATRIX
+ * 
+ * Explicitly instantiation matrix multiplications.
+ */
+#define MATRIX_MATRIX_INSTANTIATIONS(f, T) \
     template Array<T,2> f(const Array<T,2>&, const Array<T,2>&);
-#define MATRIX_MULTIPLY(f) \
-    MATRIX_MULTIPLY_INSTANTIATIONS(f, double) \
-    MATRIX_MULTIPLY_INSTANTIATIONS(f, float)
+#define MATRIX_MATRIX(f) \
+    MATRIX_MATRIX_INSTANTIATIONS(f, double) \
+    MATRIX_MATRIX_INSTANTIATIONS(f, float)
 
 namespace numbirch {
 
@@ -348,7 +394,8 @@ UNARY_ARITHMETIC(operator-)
 BINARY_ARITHMETIC(operator+)
 BINARY_ARITHMETIC(operator-)
 BINARY_SCALAR(operator*)
-MATRIX_MULTIPLY(operator*)
+MATRIX_VECTOR(operator*)
+MATRIX_MATRIX(operator*)
 BINARY_SCALAR(operator/)
 UNARY_ARITHMETIC(operator!)
 BINARY_COMPARE(operator&&)
@@ -366,8 +413,11 @@ UNARY_EXPLICIT(asin)
 UNARY_EXPLICIT(atan)
 UNARY_ARITHMETIC(ceil)
 UNARY_MATRIX(cholinv)
-MATRIX_MULTIPLY(cholmul)
-MATRIX_MULTIPLY(cholsolve)
+MATRIX_VECTOR(cholmul)
+MATRIX_MATRIX(cholmul)
+MATRIX_MATRIX(cholouter)
+MATRIX_VECTOR(cholsolve)
+MATRIX_MATRIX(cholsolve)
 BINARY_ARITHMETIC(copysign)
 UNARY_EXPLICIT(cos)
 UNARY_EXPLICIT(cosh)
@@ -381,14 +431,17 @@ UNARY_ARITHMETIC(floor)
 BINARY_EXPLICIT(gamma_p)
 BINARY_EXPLICIT(gamma_q)
 BINARY_ARITHMETIC(hadamard)
-MATRIX_MULTIPLY(inner)
+MATRIX_VECTOR(inner)
+MATRIX_MATRIX(inner)
 UNARY_MATRIX(inv)
 REDUCE_MATRIX(lcholdet)
+BINARY_EXPLICIT(lchoose)
 REDUCE_MATRIX(ldet)
 UNARY_EXPLICIT(lgamma)
 BINARY_EXPLICIT(lgamma)
 UNARY_EXPLICIT(log)
 UNARY_EXPLICIT(log1p)
+MATRIX_MATRIX(outer)
 BINARY_EXPLICIT(pow)
 UNARY_EXPLICIT(rcp)
 UNARY_EXPLICIT(rectify)
@@ -397,7 +450,8 @@ UNARY_EXPLICIT(sin)
 SINGLE_VECTOR(single)
 SINGLE_MATRIX(single)
 UNARY_EXPLICIT(sinh)
-MATRIX_MULTIPLY(solve)
+MATRIX_VECTOR(solve)
+MATRIX_MATRIX(solve)
 UNARY_EXPLICIT(sqrt)
 SUM(sum)
 UNARY_EXPLICIT(tan)
