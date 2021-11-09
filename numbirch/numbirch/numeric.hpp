@@ -229,13 +229,13 @@ promote_t<T,U> operator/(const T& x, const U& y);
  * 
  * @ingroup numeric
  * 
- * @tparam T Integral type.
+ * @tparam T Arithmetic type.
  * 
  * @param x Argument.
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_integral_v<T>,int>>
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 T operator!(const T& x);
 
 /**
@@ -243,16 +243,16 @@ T operator!(const T& x);
  * 
  * @ingroup numeric
  * 
- * @tparam T Integral type.
- * @tparam U Integral type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x Argument.
  * @param y Argument.
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_integral_v<T> &&
-    is_integral_v<U> && is_compatible_v<T,U>,int>>
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
 Array<bool,dimension_v<T>> operator&&(const T& x, const U& y);
 
 /**
@@ -260,16 +260,16 @@ Array<bool,dimension_v<T>> operator&&(const T& x, const U& y);
  * 
  * @ingroup numeric
  * 
- * @tparam T Integral type.
- * @tparam U Integral type.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x Argument.
  * @param y Argument.
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_integral_v<T> &&
-    is_integral_v<U> && is_compatible_v<T,U>,int>>
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
 Array<bool,dimension_v<T>> operator||(const T& x, const U& y);
 
 /**
@@ -1404,7 +1404,7 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
-T copysign(const T& x, const U& y);
+promote_t<T,U> copysign(const T& x, const U& y);
 
 /**
  * Multivariate digamma function.
@@ -1412,15 +1412,16 @@ T copysign(const T& x, const U& y);
  * @ingroup numeric
  * 
  * @tparam T Floating point type.
- * @tparam U Integral type.
+ * @tparam U Floating point type.
  * 
  * @param x Argument.
- * @param y Argument.
+ * @param y Argument. Rounded down to nearest integer.
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
-    is_integral_v<U> && is_compatible_v<T,U>,int>>
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
 promote_t<T,U> digamma(const T& x, const U& y);
 
 /**
@@ -1729,15 +1730,16 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
  * @ingroup numeric
  * 
  * @tparam T Floating point type.
- * @tparam U Integral type.
+ * @tparam U Floating point type.
  * 
  * @param x Argument.
- * @param y Argument.
+ * @param y Argument. Rounded down to nearest integer.
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
-    is_integral_v<U> && is_compatible_v<T,U>,int>>
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
 promote_t<T,U> lgamma(const T& x, const U& y);
 
 /**

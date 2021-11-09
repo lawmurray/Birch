@@ -764,7 +764,7 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
 }
 
 template<class T, class U, class>
-T copysign(const T& x, const U& y) {
+promote_t<T,U> copysign(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, copysign_functor());
@@ -774,7 +774,7 @@ template<class T, class U, class>
 promote_t<T,U> digamma(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
-  return transform(x, y, digamma_functor<value_t<T>>());
+  return transform(x, y, digamma_functor<value_t<promote_t<T,U>>>());
 }
 
 template<class T, class U, class V, class>
@@ -901,7 +901,7 @@ template<class T, class U, class>
 promote_t<T,U> lgamma(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
-  return transform(x, y, lgamma_functor<value_t<T>>());
+  return transform(x, y, lgamma_functor<value_t<promote_t<T,U>>>());
 }
 
 template<class T, class U, class V, class>
