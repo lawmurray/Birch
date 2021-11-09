@@ -1406,30 +1406,44 @@ template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_arithmetic_v<U> && is_compatible_v<T,U>,int>>
 T copysign(const T& x, const U& y);
 
-// /**
-//  * Multivariate digamma function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> digamma(const Array<T,D>& A, const Array<int,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
+/**
+ * Multivariate digamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_integral_v<U> && is_compatible_v<T,U>,int>>
+promote_t<T,U> digamma(const T& x, const U& y);
 
-//   Array<T,D> C(A.shape().compact());
-//   digamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Multivariate digamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> digamma(const U& x, const V& y);
 
 // /**
 //  * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
@@ -1493,55 +1507,85 @@ T copysign(const T& x, const U& y);
 //   return c;
 // }
 
-// /**
-//  * Normalized lower incomplete gamma function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> gamma_p(const Array<T,D>& A, const Array<T,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
+promote_t<T,U> gamma_p(const T& x, const U& y);
 
-//   Array<T,D> C(A.shape().compact());
-//   gamma_p(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> gamma_p(const U& x, const V& y);
 
-// /**
-//  * Normalized upper incomplete gamma function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> gamma_q(const Array<T,D>& A, const Array<T,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
+promote_t<T,U> gamma_q(const T& x, const U& y);
 
-//   Array<T,D> C(A.shape().compact());
-//   gamma_q(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Normalized upper incomplete gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> gamma_q(const U& x, const V& y);
 
 /**
  * Hadamard (element-wise) multiplication.
@@ -1679,30 +1723,44 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
 //   return std::make_pair(GA, GB);
 // }
 
-// /**
-//  * Logarithm of the multivariate gamma function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> lgamma(const Array<T,D>& A, const Array<int,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
+/**
+ * Logarithm of the multivariate gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
+    is_integral_v<U> && is_compatible_v<T,U>,int>>
+promote_t<T,U> lgamma(const T& x, const U& y);
 
-//   Array<T,D> C(A.shape().compact());
-//   lgamma(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Logarithm of the multivariate gamma function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> lgamma(const U& x, const V& y);
 
 // /**
 //  * Vector-vector outer product. Computes @f$A = xy^\top@f$.
@@ -1746,30 +1804,45 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
 //   return C;
 // }
 
-// /**
-//  * Power.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> pow(const Array<T,D>& A, const Array<T,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
+/**
+ * Power.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
+promote_t<T,U> pow(const T& x, const U& y);
 
-//   Array<T,D> C(A.shape().compact());
-//   pow(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Power.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> pow(const U& x, const V& y);
 
 /**
  * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.

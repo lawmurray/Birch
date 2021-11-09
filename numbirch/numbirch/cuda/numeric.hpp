@@ -770,14 +770,19 @@ T copysign(const T& x, const U& y) {
   return transform(x, y, copysign_functor());
 }
 
-// template<class T>
-// void digamma(const int m, const int n, const T* A, const int ldA,
-//     const int* B, const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, digammap_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> digamma(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, digamma_functor<value_t<T>>());
+}
+
+template<class T, class U, class V, class>
+promote_t<T,U> digamma(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, digamma_functor<T>());
+}
 
 // template<class T>
 // void dot(const int n, const T* x, const int incx, const T* y, const int incy,
@@ -802,23 +807,33 @@ T copysign(const T& x, const U& y) {
 //   device_free(C);
 // }
 
-// template<class T>
-// void gamma_p(const int m, const int n, const T* A, const int ldA, const T* B,
-//     const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, gamma_p_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> gamma_p(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, gamma_p_functor<value_t<promote_t<T,U>>>());
+}
 
-// template<class T>
-// void gamma_q(const int m, const int n, const T* A, const int ldA, const T* B,
-//     const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, gamma_q_functor<T>());
-// }
+template<class T, class U, class V, class>
+promote_t<T,U> gamma_p(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, gamma_p_functor<T>());
+}
+
+template<class T, class U, class>
+promote_t<T,U> gamma_q(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, gamma_q_functor<value_t<promote_t<T,U>>>());
+}
+
+template<class T, class U, class V, class>
+promote_t<T,U> gamma_q(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, gamma_q_functor<T>());
+}
 
 template<class T, class U, class>
 typename promote<T,U>::type hadamard(const T& x, const U& y) {
@@ -882,14 +897,19 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
 //       lchoose_grad_functor<T>());
 // }
 
-// template<class T>
-// void lgamma(const int m, const int n, const T* A, const int ldA, const int* B,
-//     const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, lgammap_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> lgamma(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, lgamma_functor<value_t<T>>());
+}
+
+template<class T, class U, class V, class>
+promote_t<T,U> lgamma(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, lgamma_functor<T>());
+}
 
 // template<class T>
 // void outer(const int m, const int n, const T* x, const int incx, const T* y,
@@ -916,20 +936,19 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
 //       k, scalar<T>::one, A, ldA, B, ldB, scalar<T>::zero, C, ldC));
 // }
 
-// template<class T>
-// void pow(const int m, const int n, const T* A, const int ldA, const T* B,
-//     const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, pow_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> pow(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, pow_functor<value_t<promote_t<T,U>>>());
+}
 
-// template<class T>
-// void single(const int* i, const int* j, const int m, const int n, T* A,
-//     const int ldA) {
-//   for_each(m, n, A, ldA, single_functor<T>(i, j));
-// }
+template<class T, class U, class V, class>
+promote_t<T,U> pow(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, pow_functor<T>());
+}
 
 template<class T, class>
 Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {

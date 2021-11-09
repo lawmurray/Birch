@@ -192,6 +192,9 @@ struct digamma_functor {
   HOST DEVICE T operator()(const T x) const {
     return digamma(x);
   }
+  HOST DEVICE T operator()(const T x, const int y) const {
+    return digamma(x, y);
+  }
 };
 
 template<class T>
@@ -239,6 +242,9 @@ template<class T>
 struct lgamma_functor {
   HOST DEVICE T operator()(const T x) const {
     return std::lgamma(x);
+  }
+  HOST DEVICE T operator()(const T x, const T y) const {
+    return lgamma(x, y);
   }
 };
 
@@ -347,13 +353,6 @@ struct copysign_functor {
 };
 
 template<class T>
-struct digammap_functor {
-  HOST DEVICE T operator()(const T x, const int y) const {
-    return digamma(x, y);
-  }
-};
-
-template<class T>
 struct gamma_p_functor {
   HOST DEVICE T operator()(const T a, const T x) const {
     return gamma_p(a, x);
@@ -386,13 +385,6 @@ struct lchoose_grad_functor {
   HOST DEVICE pair<T> operator()(const T d, const int x, const int y)
       const {
     return lchoose_grad<T>(d, x, y);
-  }
-};
-
-template<class T>
-struct lgammap_functor {
-  HOST DEVICE T operator()(const T x, const T y) const {
-    return lgamma(x, y);
   }
 };
 

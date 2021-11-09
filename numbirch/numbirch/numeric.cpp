@@ -311,6 +311,76 @@
 /**
  * @internal
  * 
+ * @def BINARY_LGAMMA
+ * 
+ * Explicitly instantiate a binary transformation `f` for all types and sizes,
+ * where the result type must be explicitly specified in the case of integral
+ * arguments.
+ */
+#define BINARY_LGAMMA_INSTANTIATION(f, T, U, V) \
+    template promote_t<T,U> f<T>(const U&, const V&);
+#define BINARY_LGAMMA_INSTANTIATIONS(f, T, U, V) \
+    BINARY_LGAMMA_INSTANTIATION(f, T, ARRAY(U, 2), ARRAY(V, 2)) \
+    BINARY_LGAMMA_INSTANTIATION(f, T, ARRAY(U, 1), ARRAY(V, 1)) \
+    BINARY_LGAMMA_INSTANTIATION(f, T, ARRAY(U, 0), ARRAY(V, 0)) \
+    BINARY_LGAMMA_INSTANTIATION(f, T, ARRAY(U, 0), V) \
+    BINARY_LGAMMA_INSTANTIATION(f, T, U, ARRAY(V, 0))
+#define BINARY_LGAMMA(f) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, int) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, bool) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, int) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, bool) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, double, int, int) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, float, int, int) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, double, int, bool) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, float, int, bool) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, double, bool, int) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, float, bool, int) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, double, bool, bool) \
+    BINARY_LGAMMA_INSTANTIATIONS(f, float, bool, bool)
+
+/**
+ * @internal
+ * 
+ * @def BINARY_EXPLICIT
+ * 
+ * Explicitly instantiate a binary transformation `f` for all types and sizes,
+ * where the result type must be explicitly specified in the case of integral
+ * arguments.
+ */
+#define BINARY_EXPLICIT_INSTANTIATION(f, T, U, V) \
+    template promote_t<T,U> f<T>(const U&, const V&);
+#define BINARY_EXPLICIT_INSTANTIATIONS(f, T, U, V) \
+    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 2), ARRAY(V, 2)) \
+    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 1), ARRAY(V, 1)) \
+    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 0), ARRAY(V, 0)) \
+    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 0), V) \
+    BINARY_EXPLICIT_INSTANTIATION(f, T, U, ARRAY(V, 0))
+#define BINARY_EXPLICIT(f) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, double) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, float) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, int) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, bool) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, double) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, float) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, int) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, bool) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, double) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, float) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, double) \
+    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, float) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, double, int, int) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, float, int, int) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, double, int, bool) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, float, int, bool) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, double, bool, int) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, float, bool, int) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, double, bool, bool) \
+    BINARY_EXPLICIT_INSTANTIATIONS(f, float, bool, bool)
+
+/**
+ * @internal
+ * 
  * @def BINARY_COPYSIGN
  * 
  * Explicitly instantiate a binary transformation `f` for all pairs of
@@ -388,17 +458,22 @@ UNARY_EXPLICIT(cosh)
 REDUCE_COUNT(count)
 DIAGONAL_MATRIX(diagonal)
 UNARY_EXPLICIT(digamma)
+BINARY_LGAMMA(digamma)
 UNARY_EXPLICIT(exp)
 UNARY_EXPLICIT(expm1)
 UNARY_ARITHMETIC(floor)
+BINARY_EXPLICIT(gamma_p)
+BINARY_EXPLICIT(gamma_q)
 BINARY_ARITHMETIC(hadamard)
 MATRIX_MULTIPLY(inner)
 UNARY_MATRIX(inv)
 REDUCE_MATRIX(lcholdet)
 REDUCE_MATRIX(ldet)
 UNARY_EXPLICIT(lgamma)
+BINARY_LGAMMA(lgamma)
 UNARY_EXPLICIT(log)
 UNARY_EXPLICIT(log1p)
+BINARY_EXPLICIT(pow)
 UNARY_EXPLICIT(rcp)
 UNARY_EXPLICIT(rectify)
 UNARY_ARITHMETIC(round)
