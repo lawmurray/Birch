@@ -15,6 +15,11 @@ HOST DEVICE T ceil(const T x) {
   return std::ceil(x);
 }
 
+template<class T, std::enable_if_t<std::is_integral<T>::value,int> = 0>
+HOST DEVICE T ceil(const T x) {
+  return x;
+}
+
 template<class T, class U, std::enable_if_t<
     std::is_floating_point<T>::value && std::is_arithmetic<U>::value,int> = 0>
 HOST DEVICE T copysign(const T x, const U y) {
@@ -45,6 +50,11 @@ HOST DEVICE T floor(const T x) {
   return std::floor(x);
 }
 
+template<class T, std::enable_if_t<std::is_integral<T>::value,int> = 0>
+HOST DEVICE T floor(const T x) {
+  return x;
+}
+
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST DEVICE T gamma_p(const T a, const T x);
 
@@ -61,25 +71,25 @@ HOST DEVICE T lbeta(const T x, const T y) {
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST DEVICE T lfact(const int x) {
+HOST DEVICE T lfact(const T x) {
   return std::lgamma(T(x + 1));
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST DEVICE T lfact_grad(const T d, const int x) {
+HOST DEVICE T lfact_grad(const T d, const T x) {
   return d*digamma(T(x + 1));
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST DEVICE T lchoose(const int x, const int y) {
-  return lfact<T>(x) - lfact<T>(y) - lfact<T>(x - y);
+HOST DEVICE T lchoose(const T x, const T y) {
+  return lfact(x) - lfact(y) - lfact(x - y);
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-HOST DEVICE pair<T> lchoose_grad(const T d, const int x, const int y) {
-  T dx = lfact_grad<T>(d, x) - lfact_grad<T>(d, x - y);
-  T dy = -lfact_grad<T>(d, y) + lfact_grad<T>(d, x - y);
-  return pair<T>{dx, dy};
+HOST DEVICE pair<T,T> lchoose_grad(const T d, const T x, const T y) {
+  T dx = lfact_grad(d, x) - lfact_grad(d, x - y);
+  T dy = -lfact_grad(d, y) + lfact_grad(d, x - y);
+  return pair<T,T>{dx, dy};
 }
 
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
@@ -101,12 +111,12 @@ HOST DEVICE T rcp(const T x) {
   return T(0)/x;
 }
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 HOST DEVICE T rectify(const T x) {
   return std::max(T(0), x);
 }
 
-template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
+template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
 HOST DEVICE T rectify_grad(const T d, const T x) {
   return (x > 0) ? d : T(0);
 }
@@ -114,6 +124,11 @@ HOST DEVICE T rectify_grad(const T d, const T x) {
 template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
 HOST DEVICE T round(const T x) {
   return std::round(x);
+}
+
+template<class T, std::enable_if_t<std::is_integral<T>::value,int> = 0>
+HOST DEVICE T round(const T x) {
+  return x;
 }
 
 }

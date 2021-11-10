@@ -11,6 +11,110 @@ namespace numbirch {
 template<class T, int D> class Array;
 
 /**
+ * Pair of values.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ */
+template<class T, class U>
+struct pair {
+  using first_type = T;
+  using second_type = U;
+
+  T first;
+  U second;
+};
+
+/**
+ * Triple of values of a given type.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
+ */
+template<class T, class U, class V>
+struct triple {
+  using first_type = T;
+  using second_type = U;
+  using third_type = V;
+
+  T first;
+  U second;
+  V third;
+};
+
+/**
+ * Quad of values of a given type.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
+ * @tparam W Arithmetic type.
+ */
+template<class T, class U, class V, class W>
+struct quad {
+  using first_type = T;
+  using second_type = U;
+  using third_type = V;
+  using fourth_type = W;
+
+  T first;
+  U second;
+  V third;
+  W fourth;
+};
+
+/**
+ * @internal
+ *
+ * Element of a matrix.
+ */
+template<class T>
+HOST DEVICE T& element(T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x[i + j*ld];
+}
+
+/**
+ * @internal
+ *
+ * Element of a matrix.
+ */
+template<class T>
+HOST DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x[i + j*ld];
+}
+
+/**
+ * @internal
+ * 
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T>
+HOST DEVICE T& element(T& x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x;
+}
+
+/**
+ * @internal
+ * 
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T>
+HOST DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x;
+}
+
+/**
  * Is `T` an integral type?
  * 
  * @ingroup numeric
@@ -173,31 +277,96 @@ template<class T>
 inline constexpr bool is_basic_v = is_basic<T>::value;
 
 /**
- * Are two arithmetic types compatible for a binary transform?---Yes, if they
- * have the same number of dimensions, excluding the case where both are a
- * basic. In that latter case the built-in function on host is preferred.
+ * Is `T` a pair?
  * 
  * @ingroup numeric
  */
+template<class T>
+struct is_pair {
+  static constexpr bool value = false;
+};
 template<class T, class U>
+struct is_pair<pair<T,U>> {
+  static constexpr bool value = true;
+};
+template<class T>
+inline constexpr bool is_pair_v = is_pair<T>::value;
+
+/**
+ * Is `T` a triple?
+ * 
+ * @ingroup numeric
+ */
+template<class T>
+struct is_triple {
+  static constexpr bool value = false;
+};
+template<class T, class U, class V>
+struct is_triple<triple<T,U,V>> {
+  static constexpr bool value = true;
+};
+template<class T>
+inline constexpr bool is_triple_v = is_triple<T>::value;
+
+/**
+ * Is `T` a quad?
+ * 
+ * @ingroup numeric
+ */
+template<class T>
+struct is_quad {
+  static constexpr bool value = false;
+};
+template<class T, class U, class V, class W>
+struct is_quad<quad<T,U,V,W>> {
+  static constexpr bool value = true;
+};
+template<class T>
+inline constexpr bool is_quad_v = is_quad<T>::value;
+
+/**
+ * Are arithmetic types compatible for a transform?---Yes, if they have the
+ * same number of dimensions, excluding the case where all are basic, as in
+ * that case a built-in function on host is preferred.
+ * 
+ * @ingroup numeric
+ * 
+ * @todo The latter constraint can be relaxed if basic wrappers are created
+ * for all functions.
+ */
+template<class... Args>
 struct is_compatible {
+  static constexpr bool value = false;
+};
+template<class T, class U, class... Args>
+struct is_compatible<T,U,Args...> {
+  static constexpr bool value = is_compatible<T,U>::value &&
+      is_compatible<U,Args...>::value;
+};
+template<class T, class U>
+struct is_compatible<T,U> {
   static constexpr bool value = dimension<T>::value == dimension<U>::value &&
       !(is_basic<T>::value && is_basic<U>::value);
 };
-template<class T, class U>
-inline constexpr bool is_compatible_v = is_compatible<T,U>::value;
+template<class T>
+struct is_compatible<T> {
+  static constexpr bool value = !is_basic<T>::value;
+};
+template<class... Args>
+inline constexpr bool is_compatible_v = is_compatible<Args...>::value;
 
 /**
- * Promoted arithmetic type for a binary operation.
+ * Promoted arithmetic type for a collection of types.
  * 
  * @ingroup numeric
- * 
- * @tparam T Arithmetic type.
- * @tparam U Arithmetic type.
  */
-template<class T, class U>
+template<class... Args>
 struct promote {
   using type = void;
+};
+template<class T, class U, class... Args>
+struct promote<T,U,Args...> {
+  using type = typename promote<typename promote<T,U>::type,Args...>::type;
 };
 template<>
 struct promote<double,double> {
@@ -276,7 +445,15 @@ struct promote<T,Array<U,E>> {
   using type = Array<typename promote<T,U>::type,E>;
 };
 template<class T, class U>
-using promote_t = typename promote<T,U>::type;
+struct promote<T,U> {
+  using type = void;
+};
+template<class T>
+struct promote<T> {
+  using type = T;
+};
+template<class... Args>
+using promote_t = typename promote<Args...>::type;
 
 /**
  * Does arithmetic type `T` promote to `U` under promotion rules?
@@ -315,85 +492,5 @@ struct all_integral<Arg,Args...> {
 };
 template<class T, class U>
 inline constexpr bool all_integral_v = all_integral<T,U>::value;
-
-/**
- * Pair of values of a given type.
- * 
- * @ingroup numeric
- * 
- * @tparam T Arithmetic type.
- */
-template<class T>
-struct pair {
-  T first, second;
-};
-
-/**
- * Triple of values of a given type.
- * 
- * @ingroup numeric
- * 
- * @tparam T Arithmetic type.
- */
-template<class T>
-struct triple {
-  T first, second, third;
-};
-
-/**
- * Quad of values of a given type.
- * 
- * @ingroup numeric
- * 
- * @tparam T Arithmetic type.
- */
-template<class T>
-struct quad {
-  T first, second, third, fourth;
-};
-
-/**
- * @internal
- *
- * Element of a matrix.
- */
-template<class T>
-HOST DEVICE T& element(T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
-}
-
-/**
- * @internal
- *
- * Element of a matrix.
- */
-template<class T>
-HOST DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T>
-HOST DEVICE T& element(T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T>
-HOST DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
 
 }

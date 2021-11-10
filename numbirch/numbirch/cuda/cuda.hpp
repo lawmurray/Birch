@@ -200,10 +200,10 @@ template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
   assert(conforms(x, y));
   using V = decltype(f(value_t<T>(),value_t<U>()));
-  constexpr int D = dimension_v<T>;
-  auto z = Array<V,D>(shape(x));
-  auto m = rows(x);
-  auto n = columns(x);
+  constexpr int D = std::max(dimension_v<T>, dimension_v<U>);
+  auto m = std::max(rows(x), rows(y));
+  auto n = std::max(columns(x), columns(y));
+  auto z = Array<V,D>(m, n);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
@@ -225,14 +225,21 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
         element(C, i, j, ldC));
   }
 }
-template<class T, class U, class V, class W, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, const V* C, const int ldC, W* D, const int ldD,
-    Functor f) {
+template<class T, class U, class V, class Functor, std::enable_if_t<
+    is_basic_v<decltype(f(value_t<T>(),value_t<U>(),value_t<V>()))>,int> = 0>
+auto transform(const T& x, const U& y, const V& z, Functor f) {
+  assert(conforms(x, y) && conforms(y, x));
+  using W = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
+  constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
+      dimension_v<V>);
+  auto m = std::max(std::max(rows(x), rows(y)), rows(z));
+  auto n = std::max(std::max(columns(x), columns(y)), columns(z));
+  auto a = Array<W,D>(m, n);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,
-      ldD, f);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
+      stride(y), data(z), stride(z), data(a), stride(a), f);
+  return a;
 }
 
 /*
@@ -251,38 +258,25 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
     element(E, i, j, ldE) = pair.second;
   }
 }
-template<class T, class U, class V, class W, class X, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, const V* C, const int ldC, W* D, const int ldD,
-    X* E, const int ldE, Functor f) {
+template<class T, class U, class V, class Functor, std::enable_if_t<
+    is_pair_v<decltype(f(value_t<T>(),value_t<U>(),value_t<V>()))>,int> = 0>
+auto transform(const T& x, const U& y, const V& z, Functor f) {
+  assert(conforms(x, y) && conforms(y, x));
+  using P = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
+  using W = typename P::first_type;
+  using X = typename P::second_type;
+  constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
+      dimension_v<V>);
+  auto m = std::max(std::max(rows(x), rows(y)), rows(z));
+  auto n = std::max(std::max(columns(x), columns(y)), columns(z));
+  auto a = Array<W,D>(m, n);
+  auto b = Array<X,D>(m, n);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,
-      ldD, E, ldE, f);
-}
-
-/*
- * Matrix quaternary transform.
- */
-template<class T, class U, class V, class W, class X, class Functor>
-__global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const U* B, const int ldB, const V* C, const int ldC,
-    const W* D, const int ldD, X* E, const int ldE, Functor f) {
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    element(E, i, j, ldE) = f(element(A, i, j, ldA), element(B, i, j, ldB),
-        element(C, i, j, ldC), element(D, i, j, ldD));
-  }
-}
-template<class T, class U, class V, class W, class X, class Functor>
-void transform(const int m, const int n, const T* A, const int ldA,
-    const U* B, const int ldB, const V* C, const int ldC, const W* D,
-    const int ldD, X* E, const int ldE, Functor f) {
-  auto grid = make_grid(m, n);
-  auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, A, ldA, B, ldB, C, ldC, D,
-      ldD, E, ldE, f);
+  kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
+      stride(y), data(z), stride(z), data(a), stride(a), data(b), stride(b),
+      f);
+  return std::make_pair(a, b);
 }
 
 /*

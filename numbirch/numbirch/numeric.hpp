@@ -168,7 +168,8 @@ promote_t<T,U> operator-(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_arithmetic_v<U> && (!is_scalar_v<T> || is_scalar_v<U>),int>>
+    is_arithmetic_v<U> && (is_scalar_v<T> || is_scalar_v<U>) &&
+    (!is_basic_v<T> || !is_basic_v<U>),int>>
 promote_t<T,U> operator*(const T& x, const U& y);
 
 /**
@@ -221,7 +222,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& x);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U>,int>>
+    is_scalar_v<U> && (!is_basic_v<T> || !is_basic_v<U>),int>>
 promote_t<T,U> operator/(const T& x, const U& y);
 
 /**
@@ -501,7 +502,8 @@ promote_t<T,U> atan(const U& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>
+    && !is_basic_v<T>,int>>
 T ceil(const T& x);
 
 /**
@@ -728,7 +730,8 @@ promote_t<T,U> expm1(const U& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>
+    && !is_basic_v<T>,int>>
 T floor(const T& x);
 
 /**
@@ -810,28 +813,22 @@ template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
    is_integral_v<U> && is_compatible_v<U,U>,int>>
 promote_t<T,U> lfact(const U& x);
 
-// /**
-//  * Gradient of lfact().
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return Result.
-//  * 
-//  * @note The return type `T` must be explicitly specified.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> lfact_grad(const Array<T,D>& G, const Array<int,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   lfact_grad(A.width(), A.height(), G.data(), G.stride(), A.data(),
-//       A.stride(), B.data(), B.stride());
-//   return B;
-// }
+/**
+ * Gradient of lfact().
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam G Floating point type.
+ * @tparam T Arithmetic type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class G, class T, class = std::enable_if_t<is_floating_point_v<G> &&
+    is_arithmetic_v<T> && is_compatible_v<G,T>,int>>
+promote_t<G,T> lfact_grad(const G& g, const T& x);
 
 /**
  * Logarithm of the gamma function.
@@ -980,49 +977,26 @@ promote_t<T,U> rcp(const U& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T> &&
+template<class T, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_compatible_v<T,T>,int>>
 T rectify(const T& x);
 
 /**
- * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
+ * Gradient of rectify().
  * 
  * @ingroup numeric
  * 
- * @tparam T Floating point basic type.
- * @tparam U Integral type.
+ * @tparam G Floating point type.
+ * @tparam T Arithmetic type.
  * 
+ * @param g Gradient with respect to result.
  * @param x Argument.
  * 
- * @return Result.
- * 
- * @note In this overload, the argument type is integral, and so the return
- * type must be explicitly specified as floating point.
+ * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_floating_point_v<T> &&
-   is_integral_v<U> && is_compatible_v<U,U>,int>>
-promote_t<T,U> rectify(const U& x);
-
-// /**
-//  * Gradient of rectify().
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> rectify_grad(const Array<T,D>& G, const Array<T,D>& A) {
-//   Array<T,D> B(A.shape().compact());
-//   rectify_grad(A.width(), A.height(), G.data(), G.stride(), A.data(),
-//       A.stride(), B.data(), B.stride());
-//   return B;
-// }
+template<class G, class T, class = std::enable_if_t<is_floating_point_v<G> &&
+    is_arithmetic_v<T> && is_compatible_v<G,T>,int>>
+promote_t<G,T> rectify_grad(const G& g, const T& x);
 
 /**
  * Round to nearest integer value.
@@ -1035,7 +1009,8 @@ promote_t<T,U> rectify(const U& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>
+    && !is_basic_v<T>,int>>
 T round(const T& x);
 
 /**
@@ -1441,43 +1416,24 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_compatible_v<U,V>,int>>
 promote_t<T,U> digamma(const U& x, const V& y);
 
-// /**
-//  * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param x Vector.
-//  * @param y Vector.
-//  * 
-//  * @return Dot product.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Scalar<T> dot(const Vector<T>& x, const Vector<T>& y) {
-//   assert(x.length() == y.length());
-//   Scalar<T> z;
-//   dot(x.length(), x.data(), x.stride(), y.data(), y.stride(), z.data());
-//   return z;
-// }
-
-// /**
-//  * Vector-matrix dot product. Equivalent to inner() with the arguments
-//  * reversed: computes @f$A^\top x@f$, resulting in a vector.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param x Vector.
-//  * @param A Matrix.
-//  * 
-//  * @return Vector giving the dot product of @p x with each column of @p A.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Vector<T> dot(const Vector<T>& x, const Matrix<T>& A) {
-//   return inner(A, x);
-// }
+/**
+ * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point type.
+ * 
+ * @param A Vector @f$x@f$.
+ * @param B Vector @f$y@f$.
+ * 
+ * @return Dot product.
+ * 
+ * @note @p x and @p y must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
 
 /**
  * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
@@ -1596,6 +1552,51 @@ template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
 promote_t<T,U> hadamard(const T& x, const U& y);
 
 /**
+ * Normalized incomplete beta function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_arithmetic_v<T> && is_arithmetic_v<U> && is_arithmetic_v<V> &&
+    is_compatible_v<T,U,V> && !(is_integral_v<T> && is_integral_v<U> &&
+    is_integral_v<U>),int>>
+promote_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
+
+/**
+ * Normalized incomplete beta function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * @tparam W Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class W, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_integral_v<W> && is_compatible_v<U,V,W>,int>>
+promote_t<T,U> ibeta(const U& x, const V& y, const W& z);
+
+/**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
  * 
  * @ingroup numeric
@@ -1631,30 +1632,45 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
 
-// /**
-//  * Logarithm of the beta function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> lbeta(const Array<T,D>& A, const Array<T,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
+/**
+ * Logarithm of the beta function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_arithmetic_v<U> && is_compatible_v<T,U> &&
+    !(is_integral_v<T> && is_integral_v<U>),int>>
+promote_t<T,U> lbeta(const T& x, const U& y);
 
-//   Array<T,D> C(A.shape().compact());
-//   lbeta(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Logarithm of the beta function.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Integral type.
+ * @tparam V Integral type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note In this overload, the argument types are integral, and so the return
+ * type must be explicitly specified as floating point.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
+    is_compatible_v<U,V>,int>>
+promote_t<T,U> lbeta(const U& x, const V& y);
 
 /**
  * Logarithm of the binomial coefficient.
@@ -1695,33 +1711,6 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_floating_point_v<T> && is_integral_v<U> && is_integral_v<V> &&
     is_compatible_v<U,V>,int>>
 promote_t<T,U> lchoose(const U& x, const V& y);
-
-// /**
-//  * Logarithm of the binomial coefficient.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * 
-//  * @return Result.
-//  * 
-//  * @note The return type `T` must be explicitly specified.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> lchoose(const Array<int,D>& A, const Array<int,D>& B) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
-
-//   Array<T,D> C(A.shape().compact());
-//   lchoose(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
 
 // /**
 //  * Gradient of lchoose().
@@ -1794,25 +1783,23 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_compatible_v<U,V>,int>>
 promote_t<T,U> lgamma(const U& x, const V& y);
 
-// /**
-//  * Vector-vector outer product. Computes @f$A = xy^\top@f$.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * 
-//  * @param x Vector.
-//  * @param y Vector.
-//  * 
-//  * @return Matrix.
-//  */
-// template<class T, std::enable_if_t<std::is_floating_point<T>::value,int> = 0>
-// Matrix<T> outer(const Vector<T>& x, const Vector<T>& y) {
-//   Matrix<T> C(make_shape(x.length(), y.length()));
-//   outer(C.rows(), C.columns(), x.data(), x.stride(), y.data(), y.stride(),
-//       C.data(), C.stride());
-//   return C;
-// }
+/**
+ * Vector-vector outer product. Computes @f$A = xy^\top@f$.
+ * 
+ * @ingroup numeric
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Vector @f$x@f$.
+ * @param y Vector @f$y@f$.
+ * 
+ * @return Result @f$A@f$.
+ * 
+ * @note @p x and @p y must have the same floating point value type `T`; this
+ * is for backend compatibility.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
 
 /**
  * Matrix-matrix outer product. Computes @f$C = AB^\top@f$.
@@ -1907,73 +1894,5 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C);
-
-// /**
-//  * Normalized incomplete beta function.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam U Arithmetic type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param A %Array.
-//  * @param B %Array.
-//  * @param X %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, class U, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value && is_arithmetic_v<U>,int> = 0>
-// Array<T,D> ibeta(const Array<U,D>& A, const Array<U,D>& B,
-//     const Array<T,D>& X) {
-//   assert(A.rows() == B.rows());
-//   assert(A.columns() == B.columns());
-//   assert(A.rows() == X.rows());
-//   assert(A.columns() == X.columns());
-
-//   Array<T,D> C(A.shape().compact());
-//   ibeta(A.width(), A.height(), A.data(), A.stride(), B.data(), B.stride(),
-//       X.data(), X.stride(), C.data(), C.stride());
-//   return C;
-// }
-
-// /**
-//  * Linear combination of matrices.
-//  * 
-//  * @ingroup numeric
-//  * 
-//  * @tparam T Floating point type.
-//  * @tparam D Number of dimensions.
-//  * 
-//  * @param a Coefficient on `A`.
-//  * @param A %Array.
-//  * @param b Coefficient on `B`.
-//  * @param B %Array.
-//  * @param c Coefficient on `C`.
-//  * @param C %Array.
-//  * @param e Coefficient on `D`.
-//  * @param E %Array.
-//  * 
-//  * @return Result.
-//  */
-// template<class T, int D, std::enable_if_t<
-//     std::is_floating_point<T>::value,int> = 0>
-// Array<T,D> combine(const T a, const Array<T,D>& A, const T b,
-//     const Array<T,D>& B, const T c, const Array<T,D>& C, const T e,
-//     const Array<T,D>& E) {
-//   assert(A.rows() == B.rows());
-//   assert(A.rows() == C.rows());
-//   assert(A.rows() == E.rows());
-//   assert(A.columns() == B.columns());
-//   assert(A.columns() == C.columns());
-//   assert(A.columns() == E.columns());
-
-//   Array<T,D> F(A.shape().compact());
-//   combine(F.width(), F.height(), a, A.data(), A.stride(), b, B.data(),
-//       B.stride(), c, C.data(), C.stride(), e, E.data(), E.stride(), F.data(),
-//       F.stride());
-//   return F;
-// }
 
 }

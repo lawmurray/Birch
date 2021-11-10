@@ -415,14 +415,11 @@ promote_t<T,U> lfact(const U& x) {
   return transform(x, lfact_functor<T>());
 }
 
-// template<class T>
-// void lfact_grad(const int m, const int n, const T* G, const int ldG,
-//     const int* A, const int ldA, T* B, const int ldB) {
-//   prefetch(G, m, n, ldG);
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, G, ldG, A, ldA, B, ldB, lfact_grad_functor<T>());
-// }
+template<class G, class T, class>
+promote_t<G,T> lfact_grad(const G& g, const T& x) {
+  prefetch(x);
+  return transform(g, x, lfact_grad_functor<value_t<promote_t<G,T>>>());
+}
 
 template<class T, class>
 T lgamma(const T& x) {
@@ -484,14 +481,11 @@ promote_t<T,U> rectify(const U& x) {
   return transform(x, rectify_functor<T>());
 }
 
-// template<class T>
-// void rectify_grad(const int m, const int n, const T* G, const int ldG,
-//     const T* A, const int ldA, T* B, const int ldB) {
-//   prefetch(G, m, n, ldG);
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   transform(m, n, G, ldG, A, ldA, B, ldB, rectify_grad_functor<T>());
-// }
+template<class G, class T, class>
+promote_t<G,T> rectify_grad(const G& g, const T& x) {
+  prefetch(x);
+  return transform(g, x, rectify_grad_functor<value_t<promote_t<G,T>>>());
+}
 
 template<class T, class>
 T round(const T& x) {
@@ -779,14 +773,16 @@ promote_t<T,U> digamma(const U& x, const V& y) {
   return transform(x, y, digamma_functor<T>());
 }
 
-// template<class T>
-// void dot(const int n, const T* x, const int incx, const T* y, const int incy,
-//     T* z) {
-//   prefetch(x, n, incx);
-//   prefetch(y, n, incy);
-
-//   CUBLAS_CHECK(cublas<T>::dot(cublasHandle, n, x, incx, y, incy, z));
-// }
+template<class T, class>
+Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
+  assert(length(x) == length(y));
+  prefetch(x);
+  prefetch(y);
+  Array<T,0> z;
+  CUBLAS_CHECK(cublas<T>::dot(cublasHandle, length(x), data(x), stride(x),
+      data(y), stride(y), data(z)));
+  return z;
+}
 
 template<class T, class U, class>
 Array<value_t<promote_t<T,U>>,0> frobenius(const T& x, const U& y) {
@@ -823,10 +819,26 @@ promote_t<T,U> gamma_q(const U& x, const V& y) {
 }
 
 template<class T, class U, class>
-typename promote<T,U>::type hadamard(const T& x, const U& y) {
+promote_t<T,U> hadamard(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, multiply_functor());
+}
+
+template<class T, class U, class V, class>
+promote_t<T,U,V> ibeta(const T& x, const U& y, class V& z) {
+  prefetch(x);
+  prefetch(y);
+  prefetch(z);
+  return transform(x, y, z, ibeta_functor<value_t<promote_t<T,U,V>>>());
+}
+
+template<class T, class U, class V, class W, class>
+promote_t<T,U,V> ibeta(const U& x, const V& y, const W& z) {
+  prefetch(x);
+  prefetch(y);
+  prefetch(z);
+  return transform(x, y, z, ibeta_functor<T>());
 }
 
 template<class T, class>
@@ -853,14 +865,19 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
   return C;
 }
 
-// template<class T>
-// void lbeta(const int m, const int n, const T* A, const int ldA, const T* B,
-//     const int ldB, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, C, ldC, lbeta_functor<T>());
-// }
+template<class T, class U, class>
+promote_t<T,U> lbeta(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, lbeta_functor<value_t<promote_t<T,U>>>());
+}
+
+template<class T, class U, class V, class>
+promote_t<T,U> lbeta(const U& x, const V& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, lbeta_functor<T>());
+}
 
 template<class T, class U, class>
 promote_t<T,U> lchoose(const T& x, const U& y) {
@@ -903,20 +920,21 @@ promote_t<T,U> lgamma(const U& x, const V& y) {
   return transform(x, y, lgamma_functor<T>());
 }
 
-// template<class T>
-// void outer(const int m, const int n, const T* x, const int incx, const T* y,
-//     const int incy, T* A, const int ldA) {
-//   prefetch(x, m, incx);
-//   prefetch(y, n, incy);
-//   prefetch(A, m, n, ldA);
+template<class T, class>
+Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
+  prefetch(x);
+  prefetch(y);
+  Array<T,2> A(make_shape(length(x), length(y)));
 
-//   /* here, the two vectors are interpreted as single-row matrices, so that the
-//    * stride between elements becomes the stride between columns; to create the
-//    * outer product, the first matrix is transposed to a single-column matrix,
-//    * while the second is not */
-//   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N, m, n,
-//       1, scalar<T>::one, x, incx, y, incy, scalar<T>::zero, A, ldA));
-// }
+  /* here, the two vectors are interpreted as single-row matrices, so that the
+   * stride between elements becomes the stride between columns; to create the
+   * outer product, the first matrix is transposed to a single-column matrix,
+   * while the second is not */
+  CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
+      rows(A), columns(A), 1, scalar<T>::one, data(x), stride(x), data(y),
+      stride(y), scalar<T>::zero, data(A), stride(A)));
+  return A;
+}
 
 template<class T, class>
 Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
@@ -1006,30 +1024,5 @@ Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
   device_free(bufferOnDevice);
   return B;
 }
-
-// template<class T, class U>
-// void ibeta(const int m, const int n, const U* A, const int ldA, const U* B,
-//     const int ldB, const T* X, const int ldX, T* C, const int ldC) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(X, m, n, ldX);
-//   prefetch(C, m, n, ldC);
-//   transform(m, n, A, ldA, B, ldB, X, ldX, C, ldC, ibeta_functor<T>());
-// }
-
-// template<class T>
-// void combine(const int m, const int n, const T a, const T* A, const int ldA,
-//     const T b, const T* B, const int ldB, const T c, const T* C,
-//     const int ldC, const T d, const T* D, const int ldD, T* E,
-//     const int ldE) {
-//   prefetch(A, m, n, ldA);
-//   prefetch(B, m, n, ldB);
-//   prefetch(C, m, n, ldC);
-//   prefetch(D, m, n, ldD);
-//   prefetch(E, m, n, ldE);
-
-//   transform(m, n, A, ldA, B, ldB, C, ldC, D, ldD, E, ldE,
-//       combine_functor<T>(a, b, c, d));
-// }
 
 }

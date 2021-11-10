@@ -16,12 +16,12 @@
  */
 #define ARRAY(T, D) Array<T,D>
 
-#define UNARY_ARITHMETIC_INSTANTIATION(f, T) \
+#define UNARY_INSTANTIATION(f, T) \
     template T f(const T&);
-#define UNARY_ARITHMETIC_INSTANTIATIONS(f, T) \
-    UNARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 2)) \
-    UNARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 1)) \
-    UNARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 0))
+#define UNARY_INSTANTIATIONS(f, T) \
+    UNARY_INSTANTIATION(f, ARRAY(T, 2)) \
+    UNARY_INSTANTIATION(f, ARRAY(T, 1)) \
+    UNARY_INSTANTIATION(f, ARRAY(T, 0))
 
 #define UNARY_EXPLICIT_INSTANTIATION(f, T, U) \
     template promote_t<T,U> f<T>(const U&);
@@ -33,15 +33,15 @@
 /**
  * @internal
  * 
- * @def UNARY_ARITHMETIC
+ * @def UNARY
  * 
  * Explicitly instantiate a unary transformation `f` for all types.
  */
-#define UNARY_ARITHMETIC(f) \
-    UNARY_ARITHMETIC_INSTANTIATIONS(f, double) \
-    UNARY_ARITHMETIC_INSTANTIATIONS(f, float) \
-    UNARY_ARITHMETIC_INSTANTIATIONS(f, int) \
-    UNARY_ARITHMETIC_INSTANTIATIONS(f, bool)
+#define UNARY(f) \
+    UNARY_INSTANTIATIONS(f, double) \
+    UNARY_INSTANTIATIONS(f, float) \
+    UNARY_INSTANTIATIONS(f, int) \
+    UNARY_INSTANTIATIONS(f, bool)
 
 /**
  * @internal
@@ -58,12 +58,23 @@
  * the case of an integral argument.
  */
 #define UNARY_EXPLICIT(f) \
-    UNARY_ARITHMETIC_INSTANTIATIONS(f, double) \
-    UNARY_ARITHMETIC_INSTANTIATIONS(f, float) \
+    UNARY_INSTANTIATIONS(f, double) \
+    UNARY_INSTANTIATIONS(f, float) \
     UNARY_EXPLICIT_INSTANTIATIONS(f, double, int) \
     UNARY_EXPLICIT_INSTANTIATIONS(f, double, bool) \
     UNARY_EXPLICIT_INSTANTIATIONS(f, float, int) \
     UNARY_EXPLICIT_INSTANTIATIONS(f, float, bool)
+
+/**
+ * @internal
+ * 
+ * @def UNARY_GRAD
+ * 
+ * Explicitly instantiate a unary gradient `f` for all types.
+ */
+#define UNARY_GRAD(f) \
+    BINARY_SECOND(f, double) \
+    BINARY_SECOND(f, float)
 
 /**
  * @internal
@@ -92,70 +103,60 @@
 /**
  * @internal
  * 
- * @def BINARY_ARITHMETIC
+ * @def BINARY
  * 
  * Explicitly instantiate a binary transformation `f` for all pairs of
  * compatible types.
  */
-#define BINARY_ARITHMETIC_INSTANTIATION(f, T, U) \
+#define BINARY_SIG(f, T, U) \
     template promote_t<T,U> f(const T&, const U&);
-#define BINARY_ARITHMETIC_INSTANTIATIONS(f, T, U) \
-    BINARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 2), ARRAY(U, 2)) \
-    BINARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 1), ARRAY(U, 1)) \
-    BINARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 0)) \
-    BINARY_ARITHMETIC_INSTANTIATION(f, ARRAY(T, 0), U) \
-    BINARY_ARITHMETIC_INSTANTIATION(f, T, ARRAY(U, 0))
-#define BINARY_ARITHMETIC(f) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, int) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, bool) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, int) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, bool) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, int) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, bool) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, int) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, bool)
+#define BINARY_DIM(f, T, U) \
+    BINARY_SIG(f, ARRAY(T, 2), ARRAY(U, 2)) \
+    BINARY_SIG(f, ARRAY(T, 1), ARRAY(U, 1)) \
+    BINARY_SIG(f, ARRAY(T, 0), ARRAY(U, 0)) \
+    BINARY_SIG(f, ARRAY(T, 0), U) \
+    BINARY_SIG(f, T, ARRAY(U, 0))
+#define BINARY_SECOND(f, T) \
+    BINARY_DIM(f, T, double) \
+    BINARY_DIM(f, T, float) \
+    BINARY_DIM(f, T, int) \
+    BINARY_DIM(f, T, bool)
+#define BINARY_FIRST(f) \
+    BINARY_SECOND(f, double) \
+    BINARY_SECOND(f, float) \
+    BINARY_SECOND(f, int) \
+    BINARY_SECOND(f, bool)
+#define BINARY(f) \
+    BINARY_FIRST(f)
 
 /**
  * @internal
  * 
- * @def BINARY_COMPARE
+ * @def COMPARE
  * 
  * Explicitly instantiate a binary comparison `f` for all pairs of
  * compatible types.
  */
-#define BINARY_COMPARE_INSTANTIATION(f, T, U) \
+#define COMPARE_SIG(f, T, U) \
     template Array<bool,dimension_v<T>> f(const T&, const U&);
-#define BINARY_COMPARE_INSTANTIATIONS(f, T, U) \
-    BINARY_COMPARE_INSTANTIATION(f, ARRAY(T, 2), ARRAY(U, 2)) \
-    BINARY_COMPARE_INSTANTIATION(f, ARRAY(T, 1), ARRAY(U, 1)) \
-    BINARY_COMPARE_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 0)) \
-    BINARY_COMPARE_INSTANTIATION(f, ARRAY(T, 0), U) \
-    BINARY_COMPARE_INSTANTIATION(f, T, ARRAY(U, 0))
-#define BINARY_COMPARE(f) \
-    BINARY_COMPARE_INSTANTIATIONS(f, double, double) \
-    BINARY_COMPARE_INSTANTIATIONS(f, double, float) \
-    BINARY_COMPARE_INSTANTIATIONS(f, double, int) \
-    BINARY_COMPARE_INSTANTIATIONS(f, double, bool) \
-    BINARY_COMPARE_INSTANTIATIONS(f, float, double) \
-    BINARY_COMPARE_INSTANTIATIONS(f, float, float) \
-    BINARY_COMPARE_INSTANTIATIONS(f, float, int) \
-    BINARY_COMPARE_INSTANTIATIONS(f, float, bool) \
-    BINARY_COMPARE_INSTANTIATIONS(f, int, double) \
-    BINARY_COMPARE_INSTANTIATIONS(f, int, float) \
-    BINARY_COMPARE_INSTANTIATIONS(f, int, int) \
-    BINARY_COMPARE_INSTANTIATIONS(f, int, bool) \
-    BINARY_COMPARE_INSTANTIATIONS(f, bool, double) \
-    BINARY_COMPARE_INSTANTIATIONS(f, bool, float) \
-    BINARY_COMPARE_INSTANTIATIONS(f, bool, int) \
-    BINARY_COMPARE_INSTANTIATIONS(f, bool, bool)
+#define COMPARE_DIM(f, T, U) \
+    COMPARE_SIG(f, ARRAY(T, 2), ARRAY(U, 2)) \
+    COMPARE_SIG(f, ARRAY(T, 1), ARRAY(U, 1)) \
+    COMPARE_SIG(f, ARRAY(T, 0), ARRAY(U, 0)) \
+    COMPARE_SIG(f, ARRAY(T, 0), U) \
+    COMPARE_SIG(f, T, ARRAY(U, 0))
+#define COMPARE_SECOND(f, T) \
+    COMPARE_DIM(f, T, double) \
+    COMPARE_DIM(f, T, float) \
+    COMPARE_DIM(f, T, int) \
+    COMPARE_DIM(f, T, bool)
+#define COMPARE_FIRST(f) \
+    COMPARE_SECOND(f, double) \
+    COMPARE_SECOND(f, float) \
+    COMPARE_SECOND(f, int) \
+    COMPARE_SECOND(f, bool)
+#define COMPARE(f) \
+    COMPARE_FIRST(f)
 
 /**
  * @internal
@@ -165,67 +166,96 @@
  * Explicitly instantiate a binary transform-and-reduce `f` for all pairs of
  * compatible types.
  */
-#define BINARY_REDUCE_INSTANTIATION(f, T, U) \
+#define BINARY_REDUCE_SIG(f, T, U) \
     template Array<value_t<promote_t<T,U>>,0> f(const T&, const U&);
-#define BINARY_REDUCE_INSTANTIATIONS(f, T, U) \
-    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 2), ARRAY(U, 2)) \
-    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 1), ARRAY(U, 1)) \
-    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 0)) \
-    BINARY_REDUCE_INSTANTIATION(f, ARRAY(T, 0), U) \
-    BINARY_REDUCE_INSTANTIATION(f, T, ARRAY(U, 0))
+#define BINARY_REDUCE_DIM(f, T, U) \
+    BINARY_REDUCE_SIG(f, ARRAY(T, 2), ARRAY(U, 2)) \
+    BINARY_REDUCE_SIG(f, ARRAY(T, 1), ARRAY(U, 1)) \
+    BINARY_REDUCE_SIG(f, ARRAY(T, 0), ARRAY(U, 0)) \
+    BINARY_REDUCE_SIG(f, ARRAY(T, 0), U) \
+    BINARY_REDUCE_SIG(f, T, ARRAY(U, 0))
+#define BINARY_REDUCE_SECOND(f, T) \
+    BINARY_REDUCE_DIM(f, T, double) \
+    BINARY_REDUCE_DIM(f, T, float) \
+    BINARY_REDUCE_DIM(f, T, int) \
+    BINARY_REDUCE_DIM(f, T, bool)
+#define BINARY_REDUCE_FIRST(f) \
+    BINARY_REDUCE_SECOND(f, double) \
+    BINARY_REDUCE_SECOND(f, float) \
+    BINARY_REDUCE_SECOND(f, int) \
+    BINARY_REDUCE_SECOND(f, bool)
 #define BINARY_REDUCE(f) \
-    BINARY_REDUCE_INSTANTIATIONS(f, double, double) \
-    BINARY_REDUCE_INSTANTIATIONS(f, double, float) \
-    BINARY_REDUCE_INSTANTIATIONS(f, double, int) \
-    BINARY_REDUCE_INSTANTIATIONS(f, double, bool) \
-    BINARY_REDUCE_INSTANTIATIONS(f, float, double) \
-    BINARY_REDUCE_INSTANTIATIONS(f, float, float) \
-    BINARY_REDUCE_INSTANTIATIONS(f, float, int) \
-    BINARY_REDUCE_INSTANTIATIONS(f, float, bool) \
-    BINARY_REDUCE_INSTANTIATIONS(f, int, double) \
-    BINARY_REDUCE_INSTANTIATIONS(f, int, float) \
-    BINARY_REDUCE_INSTANTIATIONS(f, int, int) \
-    BINARY_REDUCE_INSTANTIATIONS(f, int, bool) \
-    BINARY_REDUCE_INSTANTIATIONS(f, bool, double) \
-    BINARY_REDUCE_INSTANTIATIONS(f, bool, float) \
-    BINARY_REDUCE_INSTANTIATIONS(f, bool, int) \
-    BINARY_REDUCE_INSTANTIATIONS(f, bool, bool)
+    BINARY_REDUCE_FIRST(f)
 
 /**
  * @internal
  * 
- * @def BINARY_SCALAR
+ * @def LEFT_SCALAR
  * 
- * Explicitly instantiate a binary function `f` for all pairs of compatible
- * types.
+ * Explicitly instantiate a binary function `f` with a scalar as the right
+ * argument, for all pairs of compatible types. Excludes scalar-scalar
+ * instantiations, as if these are required `RIGHT_SCALAR` will include them.
  */
-#define BINARY_SCALAR_INSTANTIATION(f, T, U) \
+#define LEFT_SCALAR_INSTANTIATION(f, T, U) \
     template promote_t<T,U> f(const T&, const U&);
-#define BINARY_SCALAR_INSTANTIATIONS(f, T, U) \
-    BINARY_SCALAR_INSTANTIATION(f, ARRAY(T, 2), ARRAY(U, 0)) \
-    BINARY_SCALAR_INSTANTIATION(f, ARRAY(T, 2), U) \
-    BINARY_SCALAR_INSTANTIATION(f, ARRAY(T, 1), ARRAY(U, 0)) \
-    BINARY_SCALAR_INSTANTIATION(f, ARRAY(T, 1), U) \
-    BINARY_SCALAR_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 0)) \
-    BINARY_SCALAR_INSTANTIATION(f, ARRAY(T, 0), U) \
-    BINARY_SCALAR_INSTANTIATION(f, T, ARRAY(U, 0))
-#define BINARY_SCALAR(f) \
-    BINARY_SCALAR_INSTANTIATIONS(f, double, double) \
-    BINARY_SCALAR_INSTANTIATIONS(f, double, float) \
-    BINARY_SCALAR_INSTANTIATIONS(f, double, int) \
-    BINARY_SCALAR_INSTANTIATIONS(f, double, bool) \
-    BINARY_SCALAR_INSTANTIATIONS(f, float, double) \
-    BINARY_SCALAR_INSTANTIATIONS(f, float, float) \
-    BINARY_SCALAR_INSTANTIATIONS(f, float, int) \
-    BINARY_SCALAR_INSTANTIATIONS(f, float, bool) \
-    BINARY_SCALAR_INSTANTIATIONS(f, int, double) \
-    BINARY_SCALAR_INSTANTIATIONS(f, int, float) \
-    BINARY_SCALAR_INSTANTIATIONS(f, int, int) \
-    BINARY_SCALAR_INSTANTIATIONS(f, int, bool) \
-    BINARY_SCALAR_INSTANTIATIONS(f, bool, double) \
-    BINARY_SCALAR_INSTANTIATIONS(f, bool, float) \
-    BINARY_SCALAR_INSTANTIATIONS(f, bool, int) \
-    BINARY_SCALAR_INSTANTIATIONS(f, bool, bool)
+#define LEFT_SCALAR_INSTANTIATIONS(f, T, U) \
+    LEFT_SCALAR_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 2)) \
+    LEFT_SCALAR_INSTANTIATION(f, T, ARRAY(U, 2)) \
+    LEFT_SCALAR_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 1)) \
+    LEFT_SCALAR_INSTANTIATION(f, T, ARRAY(U, 1))
+#define LEFT_SCALAR(f) \
+    LEFT_SCALAR_INSTANTIATIONS(f, double, double) \
+    LEFT_SCALAR_INSTANTIATIONS(f, double, float) \
+    LEFT_SCALAR_INSTANTIATIONS(f, double, int) \
+    LEFT_SCALAR_INSTANTIATIONS(f, double, bool) \
+    LEFT_SCALAR_INSTANTIATIONS(f, float, double) \
+    LEFT_SCALAR_INSTANTIATIONS(f, float, float) \
+    LEFT_SCALAR_INSTANTIATIONS(f, float, int) \
+    LEFT_SCALAR_INSTANTIATIONS(f, float, bool) \
+    LEFT_SCALAR_INSTANTIATIONS(f, int, double) \
+    LEFT_SCALAR_INSTANTIATIONS(f, int, float) \
+    LEFT_SCALAR_INSTANTIATIONS(f, int, int) \
+    LEFT_SCALAR_INSTANTIATIONS(f, int, bool) \
+    LEFT_SCALAR_INSTANTIATIONS(f, bool, double) \
+    LEFT_SCALAR_INSTANTIATIONS(f, bool, float) \
+    LEFT_SCALAR_INSTANTIATIONS(f, bool, int) \
+    LEFT_SCALAR_INSTANTIATIONS(f, bool, bool)
+
+/**
+ * @internal
+ * 
+ * @def RIGHT_SCALAR
+ * 
+ * Explicitly instantiate a binary function `f` with a scalar as the right
+ * argument, for all pairs of compatible types.
+ */
+#define RIGHT_SCALAR_INSTANTIATION(f, T, U) \
+    template promote_t<T,U> f(const T&, const U&);
+#define RIGHT_SCALAR_INSTANTIATIONS(f, T, U) \
+    RIGHT_SCALAR_INSTANTIATION(f, ARRAY(T, 2), ARRAY(U, 0)) \
+    RIGHT_SCALAR_INSTANTIATION(f, ARRAY(T, 2), U) \
+    RIGHT_SCALAR_INSTANTIATION(f, ARRAY(T, 1), ARRAY(U, 0)) \
+    RIGHT_SCALAR_INSTANTIATION(f, ARRAY(T, 1), U) \
+    RIGHT_SCALAR_INSTANTIATION(f, ARRAY(T, 0), ARRAY(U, 0)) \
+    RIGHT_SCALAR_INSTANTIATION(f, ARRAY(T, 0), U) \
+    RIGHT_SCALAR_INSTANTIATION(f, T, ARRAY(U, 0))
+#define RIGHT_SCALAR(f) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, double, double) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, double, float) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, double, int) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, double, bool) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, float, double) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, float, float) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, float, int) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, float, bool) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, int, double) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, int, float) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, int, int) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, int, bool) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, bool, double) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, bool, float) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, bool, int) \
+    RIGHT_SCALAR_INSTANTIATIONS(f, bool, bool)
 
 /**
  * @internal
@@ -236,35 +266,31 @@
  * where the result type must be explicitly specified in the case of integral
  * arguments.
  */
-#define BINARY_EXPLICIT_INSTANTIATION(f, T, U, V) \
+#define BINARY_EXPLICIT_SIG(f, T, U, V) \
     template promote_t<T,U> f<T>(const U&, const V&);
-#define BINARY_EXPLICIT_INSTANTIATIONS(f, T, U, V) \
-    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 2), ARRAY(V, 2)) \
-    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 1), ARRAY(V, 1)) \
-    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 0), ARRAY(V, 0)) \
-    BINARY_EXPLICIT_INSTANTIATION(f, T, ARRAY(U, 0), V) \
-    BINARY_EXPLICIT_INSTANTIATION(f, T, U, ARRAY(V, 0))
+#define BINARY_EXPLICIT_DIM(f, T, U, V) \
+    BINARY_EXPLICIT_SIG(f, T, ARRAY(U, 2), ARRAY(V, 2)) \
+    BINARY_EXPLICIT_SIG(f, T, ARRAY(U, 1), ARRAY(V, 1)) \
+    BINARY_EXPLICIT_SIG(f, T, ARRAY(U, 0), ARRAY(V, 0)) \
+    BINARY_EXPLICIT_SIG(f, T, ARRAY(U, 0), V) \
+    BINARY_EXPLICIT_SIG(f, T, U, ARRAY(V, 0))
+#define BINARY_EXPLICIT_THIRD(f, T, U) \
+    BINARY_EXPLICIT_DIM(f, T, U, int) \
+    BINARY_EXPLICIT_DIM(f, T, U, bool)
+#define BINARY_EXPLICIT_SECOND(f, T) \
+    BINARY_EXPLICIT_THIRD(f, T, int) \
+    BINARY_EXPLICIT_THIRD(f, T, bool)
+#define BINARY_EXPLICIT_FIRST(f) \
+    BINARY_EXPLICIT_SECOND(f, double) \
+    BINARY_EXPLICIT_SECOND(f, float)
 #define BINARY_EXPLICIT(f) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, int) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, double, bool) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, int) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, float, bool) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, int, float) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, double) \
-    BINARY_ARITHMETIC_INSTANTIATIONS(f, bool, float) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, double, int, int) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, float, int, int) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, double, int, bool) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, float, int, bool) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, double, bool, int) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, float, bool, int) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, double, bool, bool) \
-    BINARY_EXPLICIT_INSTANTIATIONS(f, float, bool, bool)
+    BINARY_EXPLICIT_FIRST(f) \
+    BINARY_SECOND(f, double) \
+    BINARY_SECOND(f, float) \
+    BINARY_DIM(f, int, double) \
+    BINARY_DIM(f, int, float) \
+    BINARY_DIM(f, bool, double) \
+    BINARY_DIM(f, bool, float)
 
 /**
  * @internal
@@ -364,9 +390,35 @@
 /**
  * @internal
  * 
+ * @def DOT
+ * 
+ * Explicitly instantiate dot product of vectors.
+ */
+#define DOT_SIG(f, T) \
+    template Array<T,0> f(const Array<T,1>&, const Array<T,1>&);
+#define DOT(f) \
+    DOT_SIG(f, double) \
+    DOT_SIG(f, float)
+
+/**
+ * @internal
+ * 
+ * @def OUTER
+ * 
+ * Explicitly instantiate outer product of vectors.
+ */
+#define OUTER_SIG(f, T) \
+    template Array<T,2> f(const Array<T,1>&, const Array<T,1>&);
+#define OUTER(f) \
+    OUTER_SIG(f, double) \
+    OUTER_SIG(f, float)
+
+/**
+ * @internal
+ * 
  * @def MATRIX_VECTOR
  * 
- * Explicitly instantiation matrix multiplications.
+ * Explicitly instantiate matrix multiplications.
  */
 #define MATRIX_VECTOR_INSTANTIATIONS(f, T) \
     template Array<T,1> f(const Array<T,2>&, const Array<T,1>&);
@@ -379,7 +431,7 @@
  * 
  * @def MATRIX_MATRIX
  * 
- * Explicitly instantiation matrix multiplications.
+ * Explicitly instantiate matrix multiplications.
  */
 #define MATRIX_MATRIX_INSTANTIATIONS(f, T) \
     template Array<T,2> f(const Array<T,2>&, const Array<T,2>&);
@@ -389,64 +441,72 @@
 
 namespace numbirch {
 
-UNARY_ARITHMETIC(operator+)
-UNARY_ARITHMETIC(operator-)
-BINARY_ARITHMETIC(operator+)
-BINARY_ARITHMETIC(operator-)
-BINARY_SCALAR(operator*)
+UNARY(operator+)
+UNARY(operator-)
+BINARY(operator+)
+BINARY(operator-)
+LEFT_SCALAR(operator*)
+RIGHT_SCALAR(operator*)
 MATRIX_VECTOR(operator*)
 MATRIX_MATRIX(operator*)
-BINARY_SCALAR(operator/)
-UNARY_ARITHMETIC(operator!)
-BINARY_COMPARE(operator&&)
-BINARY_COMPARE(operator||)
-BINARY_COMPARE(operator==)
-BINARY_COMPARE(operator!=)
-BINARY_COMPARE(operator<)
-BINARY_COMPARE(operator<=)
-BINARY_COMPARE(operator>)
-BINARY_COMPARE(operator>=)
+RIGHT_SCALAR(operator/)
+UNARY(operator!)
+COMPARE(operator&&)
+COMPARE(operator||)
+COMPARE(operator==)
+COMPARE(operator!=)
+COMPARE(operator<)
+COMPARE(operator<=)
+COMPARE(operator>)
+COMPARE(operator>=)
 
-UNARY_ARITHMETIC(abs)
+UNARY(abs)
 UNARY_EXPLICIT(acos)
 UNARY_EXPLICIT(asin)
 UNARY_EXPLICIT(atan)
-UNARY_ARITHMETIC(ceil)
+UNARY(ceil)
 UNARY_MATRIX(cholinv)
 MATRIX_VECTOR(cholmul)
 MATRIX_MATRIX(cholmul)
 MATRIX_MATRIX(cholouter)
 MATRIX_VECTOR(cholsolve)
 MATRIX_MATRIX(cholsolve)
-BINARY_ARITHMETIC(copysign)
+BINARY(copysign)
 UNARY_EXPLICIT(cos)
 UNARY_EXPLICIT(cosh)
 COUNT(count)
 DIAGONAL(diagonal)
 UNARY_EXPLICIT(digamma)
 BINARY_EXPLICIT(digamma)
+DOT(dot)
 UNARY_EXPLICIT(exp)
 UNARY_EXPLICIT(expm1)
-UNARY_ARITHMETIC(floor)
+UNARY(floor)
 BINARY_REDUCE(frobenius)
 BINARY_EXPLICIT(gamma_p)
 BINARY_EXPLICIT(gamma_q)
-BINARY_ARITHMETIC(hadamard)
+BINARY(hadamard)
+//TERNARY_EXPLICIT(ibeta)
 MATRIX_VECTOR(inner)
 MATRIX_MATRIX(inner)
 UNARY_MATRIX(inv)
+BINARY_EXPLICIT(lbeta)
 REDUCE_MATRIX(lcholdet)
 BINARY_EXPLICIT(lchoose)
 REDUCE_MATRIX(ldet)
+UNARY_EXPLICIT(lfact)
+UNARY_GRAD(lfact_grad)
 UNARY_EXPLICIT(lgamma)
 BINARY_EXPLICIT(lgamma)
 UNARY_EXPLICIT(log)
 UNARY_EXPLICIT(log1p)
+OUTER(outer)
 MATRIX_MATRIX(outer)
 BINARY_EXPLICIT(pow)
 UNARY_EXPLICIT(rcp)
-UNARY_EXPLICIT(rectify)
-UNARY_ARITHMETIC(round)
+UNARY(rectify)
+UNARY_GRAD(rectify_grad)
+UNARY(round)
 UNARY_EXPLICIT(sin)
 SINGLE_VECTOR(single)
 SINGLE_MATRIX(single)

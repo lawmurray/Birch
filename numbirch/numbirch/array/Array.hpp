@@ -126,6 +126,25 @@ public:
   /**
    * Constructor.
    *
+   * @param r Number of rows.
+   * @param c Number of columns.
+   */
+  Array(const int r = 1, const int c = 1) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(make_shape<D>(r, c)),
+      isView(false),
+      isDiced(false) {
+    allocate();
+    if (!std::is_arithmetic<T>::value) {
+      dicer();
+      initialize();
+    }
+  }
+
+  /**
+   * Constructor.
+   *
    * @param shape Shape.
    * @param value Fill value.
    */

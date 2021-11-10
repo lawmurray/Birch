@@ -144,13 +144,7 @@ struct atan_functor {
 struct ceil_functor {
   template<class T>
   HOST DEVICE T operator()(const T x) const {
-    return std::ceil(x);
-  }
-  HOST DEVICE int operator()(const int x) const {
-    return x;
-  }
-  HOST DEVICE bool operator()(const bool x) const {
-    return x;
+    return ceil(x);
   }
 };
 
@@ -214,13 +208,7 @@ struct expm1_functor {
 struct floor_functor {
   template<class T>
   HOST DEVICE T operator()(const T x) const {
-    return std::floor(x);
-  }
-  HOST DEVICE int operator()(const int x) const {
-    return x;
-  }
-  HOST DEVICE bool operator()(const bool x) const {
-    return x;
+    return floor(x);
   }
 };
 
@@ -233,7 +221,7 @@ struct lfact_functor {
 
 template<class T>
 struct lfact_grad_functor {
-  HOST DEVICE T operator()(const T g, const int x) const {
+  HOST DEVICE T operator()(const T g, const T x) const {
     return lfact_grad(g, x);
   }
 };
@@ -300,13 +288,7 @@ struct rectify_grad_functor {
 struct round_functor {
   template<class T>
   HOST DEVICE T operator()(const T x) const {
-    return std::round(x);
-  }
-  HOST DEVICE int operator()(const int x) const {
-    return x;
-  }
-  HOST DEVICE bool operator()(const bool x) const {
-    return x;
+    return round(x);
   }
 };
 
@@ -382,9 +364,9 @@ struct lchoose_functor {
 
 template<class T>
 struct lchoose_grad_functor {
-  HOST DEVICE pair<T> operator()(const T d, const int x, const int y)
+  HOST DEVICE pair<T,T> operator()(const T d, const int x, const int y)
       const {
-    return lchoose_grad<T>(d, x, y);
+    return lchoose_grad<T,T>(d, x, y);
   }
 };
 
@@ -420,30 +402,6 @@ struct if_then_else_functor {
   HOST DEVICE T operator()(const bool x, const T y, const T z) const {
     return x ? y : z;
   }
-};
-
-template<class T>
-struct combine_functor {
-  combine_functor(const T a , const T b, const T c, const T d) :
-      a(a), b(b), c(c), d(d) {
-    //
-  }
-  HOST DEVICE T operator()(const T w, const T x, const T y, const T z) const {
-    return a*w + b*x + c*y + d*z;
-  }
-  const T a, b, c, d;
-};
-
-template<class T>
-struct combine4_functor {
-  combine4_functor(const T a , const T b, const T c, const T d) :
-      a(a), b(b), c(c), d(d) {
-    //
-  }
-  HOST DEVICE T operator()(const quad<T>& o) const {
-    return a*o.first + b*o.second + c*o.third + d*o.fourth;
-  }
-  const T a, b, c, d;
 };
 
 }

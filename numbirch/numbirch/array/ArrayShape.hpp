@@ -422,4 +422,31 @@ private:
 inline ArrayShape<2> make_shape(const int m, const int n) {
   return ArrayShape<2>(m, n);
 }
+
+/**
+ * Make a scalar shape.
+ * 
+ * @ingroup array
+ * 
+ * @tparam D Number of dimensions.
+ * 
+ * @param r Number of rows. For a scalar, should be 1.
+ * @param c Number of columns. For a scalar or vector, should be 1.
+ * 
+ * @return Shape.
+ */
+template<int D>
+ArrayShape<D> make_shape(const int r, const int c) {
+  if constexpr (D == 0) {
+    assert(r == 1);
+    assert(c == 1);
+    return make_shape();
+  } else if constexpr (D == 1) {
+    assert(c == 1);
+    return make_shape(r);
+  } else {
+    return make_shape(r, c);
+  }
+}
+
 }
