@@ -14,7 +14,6 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 COMMON_SOURCES = \
-    numbirch/function.cpp \
     numbirch/numeric.cpp \
     numbirch/random.cpp
 
@@ -28,8 +27,8 @@ if ONEAPI
       numbirch/oneapi/sycl.cpp
 else
 if CUDA
-  AM_CPPFLAGS += -DBACKEND_CUDA 
-  AM_CXXFLAGS += -x cu -G -rdc=true -default-stream=per-thread -expt-relaxed-constexpr -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result" -Xcompiler="-Wno-unknown-pragmas" -Xcompiler="-Wno-deprecated-declarations"
+  AM_CPPFLAGS += -DBACKEND_CUDA
+  AM_CXXFLAGS += -x cu -G -default-stream=per-thread -expt-relaxed-constexpr -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result" -Xcompiler="-Wno-unknown-pragmas" -Xcompiler="-Wno-deprecated-declarations"
   COMMON_SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \
@@ -73,9 +72,6 @@ nobase_include_HEADERS = \
   numbirch/array/Scalar.hpp \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
-  numbirch/function.hpp \
-  numbirch/functor.hpp \
-  numbirch/macro.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
   numbirch/numeric.hpp \
@@ -93,10 +89,11 @@ noinst_HEADERS = \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
   numbirch/oneapi/numeric.hpp \
-  numbirch/oneapi/sycl.hpp
+  numbirch/oneapi/sycl.hpp \
+  numbirch/functor.hpp \
+  numbirch/macro.hpp
 
 dist_noinst_DATA =  \
   Doxyfile \
   dpcpp_wrapper \
-  LICENSE \
-  nvcc_wrapper
+  LICENSE

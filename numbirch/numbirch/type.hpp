@@ -76,7 +76,7 @@ struct quad {
  * Element of a matrix.
  */
 template<class T>
-HOST DEVICE T& element(T* x, const int i = 0, const int j = 0,
+NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
     const int ld = 0) {
   return x[i + j*ld];
 }
@@ -87,7 +87,7 @@ HOST DEVICE T& element(T* x, const int i = 0, const int j = 0,
  * Element of a matrix.
  */
 template<class T>
-HOST DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
+NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
     const int ld = 0) {
   return x[i + j*ld];
 }
@@ -98,7 +98,7 @@ HOST DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
  * Element of a scalar---just returns the scalar.
  */
 template<class T>
-HOST DEVICE T& element(T& x, const int i = 0, const int j = 0,
+NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
     const int ld = 0) {
   return x;
 }
@@ -109,7 +109,7 @@ HOST DEVICE T& element(T& x, const int i = 0, const int j = 0,
  * Element of a scalar---just returns the scalar.
  */
 template<class T>
-HOST DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
+NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
     const int ld = 0) {
   return x;
 }
@@ -119,7 +119,10 @@ HOST DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
  * 
  * @ingroup numeric
  * 
- * An integral type is one of `int` or `bool`, or an Array of such.
+ * An integral type is one of `int` or `bool`.
+ * 
+ * @see c.f. [std::is_integral]
+ * (https://en.cppreference.com/w/cpp/types/is_integral)
  */
 template<class T>
 struct is_integral {
@@ -133,10 +136,6 @@ template<>
 struct is_integral<bool> {
   static constexpr bool value = true;
 };
-template<class T, int D>
-struct is_integral<Array<T,D>> {
-  static constexpr bool value = is_integral<T>::value;
-};
 template<class T>
 inline constexpr bool is_integral_v = is_integral<T>::value;
 
@@ -145,7 +144,10 @@ inline constexpr bool is_integral_v = is_integral<T>::value;
  * 
  * @ingroup numeric
  * 
- * A floating point type is one of `double` or `float`, or an Array of such.
+ * A floating point type is one of `double` or `float`.
+ * 
+ * @see c.f. [std::is_floating_point]
+ * (https://en.cppreference.com/w/cpp/types/is_floating_point)
  */
 template<class T>
 struct is_floating_point {
@@ -159,10 +161,6 @@ template<>
 struct is_floating_point<float> {
   static constexpr bool value = true;
 };
-template<class T, int D>
-struct is_floating_point<Array<T,D>> {
-  static constexpr bool value = is_floating_point<T>::value;
-};
 template<class T>
 inline constexpr bool is_floating_point_v = is_floating_point<T>::value;
 
@@ -173,7 +171,8 @@ inline constexpr bool is_floating_point_v = is_floating_point<T>::value;
  * 
  * An arithmetic type is an integral or floating point type.
  * 
- * @see is_integral, is_floating_point
+ * @see is_integral, is_floating_point, c.f. [std::is_arithmetic]
+ * (https://en.cppreference.com/w/cpp/types/is_arithmetic)
  */
 template<class T>
 struct is_arithmetic {
@@ -225,7 +224,7 @@ inline constexpr int dimension_v = dimension<T>::value;
  */
 template<class T>
 struct is_array {
-  static constexpr bool value = is_arithmetic<T>::value &&
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
       dimension<T>::value > 0;
 };
 template<class T>
@@ -240,11 +239,27 @@ inline constexpr bool is_array_v = is_array<T>::value;
  */
 template<class T>
 struct is_scalar {
-  static constexpr bool value = is_arithmetic<T>::value &&
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
       dimension<T>::value == 0;
 };
 template<class T>
 inline constexpr bool is_scalar_v = is_scalar<T>::value;
+
+/**
+ * Is `T` a numeric type?
+ * 
+ * @ingroup numeric
+ * 
+ * An numeric type is an array or scalar type.
+ * 
+ * @see is_array, is_scalar
+ */
+template<class T>
+struct is_numeric {
+  static constexpr bool value = is_array<T>::value || is_scalar<T>::value;
+};
+template<class T>
+inline constexpr bool is_numeric_v = is_numeric<T>::value;
 
 /**
  * Is `T` a basic type?
@@ -326,13 +341,9 @@ inline constexpr bool is_quad_v = is_quad<T>::value;
 
 /**
  * Are arithmetic types compatible for a transform?---Yes, if they have the
- * same number of dimensions, excluding the case where all are basic, as in
- * that case a built-in function on host is preferred.
+ * same number of dimensions.
  * 
  * @ingroup numeric
- * 
- * @todo The latter constraint can be relaxed if basic wrappers are created
- * for all functions.
  */
 template<class... Args>
 struct is_compatible {
@@ -345,12 +356,11 @@ struct is_compatible<T,U,Args...> {
 };
 template<class T, class U>
 struct is_compatible<T,U> {
-  static constexpr bool value = dimension<T>::value == dimension<U>::value &&
-      !(is_basic<T>::value && is_basic<U>::value);
+  static constexpr bool value = dimension<T>::value == dimension<U>::value;
 };
 template<class T>
 struct is_compatible<T> {
-  static constexpr bool value = !is_basic<T>::value;
+  static constexpr bool value = true;
 };
 template<class... Args>
 inline constexpr bool is_compatible_v = is_compatible<Args...>::value;
@@ -456,6 +466,33 @@ template<class... Args>
 using promote_t = typename promote<Args...>::type;
 
 /**
+ * Convert arithmetic type for a collection of types.
+ * 
+ * @ingroup numeric
+ * 
+ * This works as for promote, before replacing the element type with `R`.
+ */
+template<class... Args>
+struct convert {
+  using type = void;
+};
+template<class R, class... Args>
+struct convert<R,Args...> {
+  using type = typename convert<R,typename promote<Args...>::type>::type;
+};
+template<class R, class T, int D>
+struct convert<R,Array<T,D>> {
+  using type = Array<R,D>;
+};
+template<class R, class T>
+struct convert<R,T> {
+  using type = R;
+};
+template<class... Args>
+using convert_t = typename convert<Args...>::type;
+
+
+/**
  * Does arithmetic type `T` promote to `U` under promotion rules?
  * 
  * @ingroup numeric
@@ -482,7 +519,7 @@ struct all_integral {
 };
 template<class Arg>
 struct all_integral<Arg> {
-  static const bool value = std::is_integral<
+  static const bool value = is_integral<
       typename std::decay<Arg>::type>::value;
 };
 template<class Arg, class... Args>

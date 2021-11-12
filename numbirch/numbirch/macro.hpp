@@ -4,21 +4,19 @@
 #pragma once
 
 #ifdef __CUDACC__
-#define HOST __host__
+#define NUMBIRCH_HOST __host__
 #else
-#define HOST
+#define NUMBIRCH_HOST
 #endif
 
 #ifdef __CUDACC__
-#define DEVICE __device__
+#define NUMBIRCH_DEVICE __device__
 #else
-#define DEVICE
+#define NUMBIRCH_DEVICE
 #endif
 
-#ifdef __GNUG__
-#define PURE __attribute__((const))
+#ifdef __CUDACC__
+#define NUMBIRCH_HOST_DEVICE __host__ __device__
 #else
-#define PURE
+#define NUMBIRCH_HOST_DEVICE
 #endif
-
-#define PI 3.1415926535897932384626433832795

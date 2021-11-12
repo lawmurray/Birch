@@ -160,9 +160,9 @@ auto for_each(const int n, Functor f) {
 /*
  * Unary transform.
  */
-template<class T, class U, class Functor>
-__global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, U* B, const int ldB, Functor f) {
+template<class T, class R, class Functor>
+__global__ void kernel_transform(const int m, const int n, const T A,
+    const int ldA, R B, const int ldB, Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
@@ -171,9 +171,9 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
 }
 template<class T, class Functor>
 auto transform(const T& x, Functor f) {
-  using V = decltype(f(value_t<T>()));
+  using R = decltype(f(value_t<T>()));
   constexpr int D = dimension_v<T>;
-  auto y = Array<V,D>(shape(x));
+  auto y = Array<R,D>(shape(x));
   auto m = rows(x);
   auto n = columns(x);
   auto grid = make_grid(m, n);
@@ -184,11 +184,19 @@ auto transform(const T& x, Functor f) {
 }
 
 /*
+ * Gradient of unary transform.
+ */
+template<class G, class T, class Functor>
+auto transform_grad(const G& g, const T& x, Functor f) {
+  return transform(g, x, f);  // same as binary transform
+}
+
+/*
  * Binary transform.
  */
-template<class T, class U, class V, class Functor>
+template<class T, class U, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
-    const int ldA, const U B, const int ldB, V C, const int ldC,
+    const int ldA, const U B, const int ldB, R C, const int ldC,
     Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
@@ -199,11 +207,11 @@ __global__ void kernel_transform(const int m, const int n, const T A,
 template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
   assert(conforms(x, y));
-  using V = decltype(f(value_t<T>(),value_t<U>()));
+  using R = decltype(f(value_t<T>(),value_t<U>()));
   constexpr int D = std::max(dimension_v<T>, dimension_v<U>);
   auto m = std::max(rows(x), rows(y));
   auto n = std::max(columns(x), columns(y));
-  auto z = Array<V,D>(m, n);
+  auto z = Array<R,D>(m, n);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
@@ -212,12 +220,48 @@ auto transform(const T& x, const U& y, Functor f) {
 }
 
 /*
- * Matrix ternary transform.
+ * Gradient of binary transform.
  */
-template<class T, class U, class V, class W, class Functor>
-__global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const U* B, const int ldB, const V* C, const int ldC,
-    W* D, const int ldD, Functor f) {
+template<class G, class T, class U, class V, class W, class Functor>
+__global__ void kernel_transform_grad(const int m, const int n, const G g,
+    const int ldg, const T A, const int ldA, const U B, const int ldB,
+    V GA, const int ldGA, W GB, const int ldGB, Functor f) {
+  auto i = blockIdx.x*blockDim.x + threadIdx.x;
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    auto pair = f(element(g, i, j, ldg), element(A, i, j, ldA),
+        element(B, i, j, ldB));
+    element(GA, i, j, ldGA) = pair.first;
+    element(GB, i, j, ldGB) = pair.second;
+  }
+}
+template<class G, class T, class U, class Functor>
+auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
+  assert(conforms(x, y));
+  using P = decltype(f(value_t<G>(),value_t<T>(),value_t<U>()));
+  using V = typename P::first_type;
+  using W = typename P::second_type;
+  constexpr int D = std::max(std::max(dimension_v<G>, dimension_v<T>),
+      dimension_v<U>);
+  auto m = std::max(std::max(rows(g), rows(x)), rows(y));
+  auto n = std::max(std::max(columns(g), columns(x)), columns(y));
+  auto a = Array<V,D>(m, n);
+  auto b = Array<W,D>(m, n);
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_transform_grad<<<grid,block,0,stream>>>(m, n, data(g), stride(g),
+      data(x), stride(x), data(y), stride(y), data(a), stride(a), data(b),
+      stride(b), f);
+  return std::make_pair(a, b);
+}
+
+/*
+ * Ternary transform.
+ */
+template<class T, class U, class V, class R, class Functor>
+__global__ void kernel_transform(const int m, const int n, const T A,
+    const int ldA, const U B, const int ldB, const V C, const int ldC,
+    R D, const int ldD, Functor f) {
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
@@ -225,58 +269,20 @@ __global__ void kernel_transform(const int m, const int n, const T* A,
         element(C, i, j, ldC));
   }
 }
-template<class T, class U, class V, class Functor, std::enable_if_t<
-    is_basic_v<decltype(f(value_t<T>(),value_t<U>(),value_t<V>()))>,int> = 0>
+template<class T, class U, class V, class Functor>
 auto transform(const T& x, const U& y, const V& z, Functor f) {
-  assert(conforms(x, y) && conforms(y, x));
-  using W = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
+  assert(conforms(x, y) && conforms(y, z));
+  using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
   constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
       dimension_v<V>);
   auto m = std::max(std::max(rows(x), rows(y)), rows(z));
   auto n = std::max(std::max(columns(x), columns(y)), columns(z));
-  auto a = Array<W,D>(m, n);
+  auto a = Array<R,D>(m, n);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
       stride(y), data(z), stride(z), data(a), stride(a), f);
   return a;
-}
-
-/*
- * Matrix ternary transform with two outputs.
- */
-template<class T, class U, class V, class W, class X, class Functor>
-__global__ void kernel_transform(const int m, const int n, const T* A,
-    const int ldA, const U* B, const int ldB, const V* C, const int ldC,
-    W* D, const int ldD, X* E, const int ldE, Functor f) {
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    auto pair = f(element(A, i, j, ldA), element(B, i, j, ldB),
-        element(C, i, j, ldC));
-    element(D, i, j, ldD) = pair.first;
-    element(E, i, j, ldE) = pair.second;
-  }
-}
-template<class T, class U, class V, class Functor, std::enable_if_t<
-    is_pair_v<decltype(f(value_t<T>(),value_t<U>(),value_t<V>()))>,int> = 0>
-auto transform(const T& x, const U& y, const V& z, Functor f) {
-  assert(conforms(x, y) && conforms(y, x));
-  using P = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
-  using W = typename P::first_type;
-  using X = typename P::second_type;
-  constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
-      dimension_v<V>);
-  auto m = std::max(std::max(rows(x), rows(y)), rows(z));
-  auto n = std::max(std::max(columns(x), columns(y)), columns(z));
-  auto a = Array<W,D>(m, n);
-  auto b = Array<X,D>(m, n);
-  auto grid = make_grid(m, n);
-  auto block = make_block(m, n);
-  kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
-      stride(y), data(z), stride(z), data(a), stride(a), data(b), stride(b),
-      f);
-  return std::make_pair(a, b);
 }
 
 /*
