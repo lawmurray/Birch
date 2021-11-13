@@ -95,7 +95,6 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
   return C;
 }
 
-
 template<class T, class>
 Array<T,2> cholinv(const Array<T,2>& S) {
   assert(rows(S) == columns(S));
@@ -459,7 +458,7 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
   assert(rows(A) == length(x));
   prefetch(A);
   prefetch(x);
-  Array<T,1> y(make_shape(rows(A)));
+  Array<T,1> y(make_shape(columns(A)));
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_T, rows(A), columns(A),
       scalar<T>::one, data(A), stride(A), data(x), stride(x), scalar<T>::zero,
       data(y), stride(y)));
@@ -471,7 +470,7 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
   assert(rows(A) == rows(B));
   prefetch(A);
   prefetch(B);
-  Array<T,2> C(make_shape(rows(A), columns(B)));
+  Array<T,2> C(make_shape(columns(A), columns(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
       rows(C), columns(C), rows(A), scalar<T>::one, data(A), stride(A),
       data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
@@ -496,7 +495,7 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
 
 template<class T, class>
 Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
-  assert(rows(A) == rows(B));
+  assert(columns(A) == columns(B));
   prefetch(A);
   prefetch(B);
   Array<T,2> C(make_shape(rows(A), rows(B)));

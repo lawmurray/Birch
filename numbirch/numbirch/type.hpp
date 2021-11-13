@@ -71,50 +71,6 @@ struct quad {
 };
 
 /**
- * @internal
- *
- * Element of a matrix.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
-}
-
-/**
- * @internal
- *
- * Element of a matrix.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
-
-/**
  * Is `T` an integral type?
  * 
  * @ingroup numeric
@@ -444,7 +400,7 @@ struct promote<bool,bool> {
 };
 template<class T, int D, class U, int E>
 struct promote<Array<T,D>,Array<U,E>> {
-  using type = Array<typename promote<T,U>::type,std::max(D, E)>;
+  using type = Array<typename promote<T,U>::type,(D > E) ? D : E>;
 };
 template<class T, int D, class U>
 struct promote<Array<T,D>,U> {
@@ -529,5 +485,49 @@ struct all_integral<Arg,Args...> {
 };
 template<class T, class U>
 inline constexpr bool all_integral_v = all_integral<T,U>::value;
+
+/**
+ * @internal
+ *
+ * Element of a matrix.
+ */
+template<class T>
+NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x[i + j*ld];
+}
+
+/**
+ * @internal
+ *
+ * Element of a matrix.
+ */
+template<class T>
+NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x[i + j*ld];
+}
+
+/**
+ * @internal
+ * 
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x;
+}
+
+/**
+ * @internal
+ * 
+ * Element of a scalar---just returns the scalar.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0,
+    const int j = 0, const int ld = 0) {
+  return x;
+}
 
 }

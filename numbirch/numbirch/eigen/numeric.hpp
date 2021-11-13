@@ -4,277 +4,70 @@
 #pragma once
 
 #include "numbirch/eigen/eigen.hpp"
+#include "numbirch/common/functor.hpp"
 
 namespace numbirch {
 
-template<class R, class T, class>
-convert_t<R,T> operator+(const T& x) {
-  if constexpr (std::is_same_v<R,T>) {
-    return x;
-  } else {
-    convert_t<R,T> y(x.shape());
-    auto x1 = make_eigen_matrix(x);
-    auto y1 = make_eigen_matrix(y);
-    y1.noalias() = x1.unaryExpr(identity_functor<R>());
-    return y1;
-  }
-}
-
-template<class R, class T, class>
-convert_t<R,T> operator-(const T& x) {
-  convert_t<R,T> y(x.shape());
-  auto x1 = make_eigen_matrix(x);
-  auto y1 = make_eigen_matrix(y);
-  y1.noalias() = x1.unaryExpr(negate_functor<R>());
-  return y1;
-}
-
-template<class T, class U, class>
-convert_t<R,T,U> operator+(const T& x, const U& y) {
-  assert(conforms(x, y));
-  convert_t<R,T,U> y(x.shape());
-  auto A1 = make_eigen_matrix(x).template cast<R>();
-  auto B1 = make_eigen_matrix(y).template cast<R>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1 + B1;
-}
-
-template<class T, class U, class>
-void div(const T& x, const U* b,
-    V* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x).template cast<V>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1/(*b);
-}
-
-template<class T>
-void equal(const T& x, const U& y, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, equal_functor<T>());
-}
-
-template<class T>
-void greater(const T& x, const U& y, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, greater_functor<T>());
-}
-
-template<class T>
-void greater_or_equal(const T& x,
-    const T* B, const int ldB, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, greater_or_equal_functor<T>());
-}
-
-template<class T>
-void less(const T& x, const U& y, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, less_functor<T>());
-}
-
-template<class T>
-void less_or_equal(const T& x,
-    const T* B, const int ldB, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, less_or_equal_functor<T>());
-}
-
-template<class T>
-void neg(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = -A1;
-}
-
-void logical_and(const T& x,
-    const bool* B, const int ldB, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, logical_and_functor());
-}
-
-void logical_or(const T& x,
-    const bool* B, const int ldB, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, logical_or_functor());
-}
-
-template<class T, class U, class>
-void mul(const T* a, const U* B, const int ldB,
-    V* C, const int ldC) {
-  auto B1 = make_eigen_matrix(b).template cast<V>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = (*a)*B1;
-}
-
-template<class T>
-void mul(const T& x, const T* x,
-    const int incx, T* y, const int incy) {
-  auto A1 = make_eigen_matrix(x);
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, m, incy);
+template<class T, class>
+Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x) {
+  assert(columns(A) == length(x));
+  Array<T,1> y(make_shape(rows(A)));
+  auto A1 = make_eigen(A);
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
   y1.noalias() = A1*x1;
+  return y;
 }
 
-template<class T>
-void mul(const int k, const T& x,
-    const T* B, const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, k, ldA);
-  auto B1 = make_eigen_matrix(B, k, n, ldB);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
+template<class T, class>
+Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
+  assert(columns(A) == rows(B));
+  Array<T,2> C(make_shape(rows(A), columns(B)));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
   C1.noalias() = A1*B1;
+  return C;
 }
 
-template<class T>
-void not_equal(const T& x,
-    const T* B, const int ldB, bool* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, not_equal_functor<T>());
-}
-
-template<class T, class U, class>
-void sub(const T& x, const U& y) {
-  auto A1 = make_eigen_matrix(x).template cast<V>();
-  auto B1 = make_eigen_matrix(b).template cast<V>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1 - B1;
-}
-
-template<class T>
-void abs(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().abs();
-}
-
-template<class T>
-void acos(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().acos();
-}
-
-template<class T>
-void asin(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().asin();
-}
-
-template<class T>
-void atan(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().atan();
-}
-
-template<class T>
-void ceil(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().ceil();
-}
-
-template<class T>
-void cholinv(const int n, const T* S, const int ldS, T* B, const int ldB) {
-  auto S1 = make_eigen_matrix(S, n, n, ldS);
-  auto B1 = make_eigen_matrix(B, n, n, ldB);
+template<class T, class>
+Array<T,2> cholinv(const Array<T,2>& S) {
+  assert(rows(S) == columns(S));
+  Array<T,2> B(shape(S));
+  auto S1 = make_eigen(S);
+  auto B1 = make_eigen(B);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
-  B1.noalias() = ldlt.solve(B1.Identity(n, n));
+  B1.noalias() = ldlt.solve(B1.Identity(rows(B), columns(B)));
+  return B;
 }
 
-template<class T>
-void cos(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().cos();
+template<class R, class T, class>
+Array<R,0> count(const T& x) {
+  return make_eigen(x).unaryExpr(count_functor<R>()).sum();
 }
 
-template<class T>
-void cosh(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().cosh();
+template<class R, class T, class>
+Array<R,2> diagonal(const T& x, const int n) {
+  Array<R,2> B;
+  auto B1 = make_eigen(B);
+  B1.noalias() = R(element(data(x)))*B1.Identity(n, n);
+  return B;
 }
 
-template<class T>
-void count(const T& x, int* b) {
-  auto A1 = make_eigen_matrix(x);
-  *b = A1.unaryExpr(count_functor<T>()).sum();
-}
-
-template<class T>
-void diagonal(const T* a, const int n, T* B, const int ldB) {
-  auto B1 = make_eigen_matrix(B, n, n, ldB);
-  B1.noalias() = (*a)*B1.Identity(n, n);
-}
-
-template<class T>
-void digamma(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = A1.unaryExpr(digamma_functor<T>());
-}
-
-template<class T>
-void exp(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().exp();
-}
-
-template<class T>
-void expm1(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = A1.unaryExpr(expm1_functor<T>());
-}
-
-template<class T>
-void floor(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().floor();
-}
-
-template<class T>
-void inv(const int n, const T& x, T* B, const int ldB) {
-  auto A1 = make_eigen_matrix(A, n, n, ldA);
-  auto B1 = make_eigen_matrix(B, n, n, ldB);
+template<class T, class>
+Array<T,2> inv(const Array<T,2>& A) {
+  assert(rows(A) == columns(A));
+  Array<T,2> B(shape(A));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
   B1.noalias() = A1.inverse();
+  return B;
 }
 
-template<class T>
-void lcholdet(const int n, const T* S, const int ldS, T* b) {
-  auto S1 = make_eigen_matrix(S, n, n, ldS);
+template<class T, class>
+Array<T,0> lcholdet(const Array<T,2>& S) {
+  auto S1 = make_eigen(S);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
 
@@ -283,389 +76,210 @@ void lcholdet(const int n, const T* S, const int ldS, T* b) {
    * permutation matrix and thus has determinant $\pm 1$, which squares to 1,
    * leaving only the $D$ matrix with its determinant being the product along
    * the main diagonal (log and sum) */
-  *b = ldlt.vectorD().array().log().sum();
+  return ldlt.vectorD().array().log().sum();
 }
 
-template<class T>
-void ldet(const int n, const T& x, T* b) {
-  auto A1 = make_eigen_matrix(A, n, n, ldA);
-  *b = A1.householderQr().logAbsDeterminant();
+template<class T, class>
+Array<T,0> ldet(const Array<T,2>& A) {
+  auto A1 = make_eigen(A);
+  return A1.householderQr().logAbsDeterminant();
 }
 
-template<class T>
-void lfact(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = A1.unaryExpr(lfact_functor<T>());
-}
-
-template<class T>
-void lfact_grad(const T* G, const int ldG,
-    const T& x, T* B, const int ldB) {
-  auto G1 = make_eigen_matrix(G, m, n, ldG);
-  auto A1 = make_eigen_matrix(x).template cast<T>();
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = G1.binaryExpr(A1, lfact_grad_functor<T>());
-}
-
-template<class T>
-void lgamma(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = A1.unaryExpr(lgamma_functor<T>());
-}
-
-template<class T>
-void log(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().log();
-}
-
-template<class T>
-void log1p(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().log1p();
-}
-
-template<class T>
-void rcp(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = A1.unaryExpr(rcp_functor<T>());
-}
-
-template<class T>
-void rectify(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().max(T(0));
-}
-
-template<class T>
-void rectify_grad(const T* G, const int ldG,
-    const T& x, T* B, const int ldB) {
-  auto G1 = make_eigen_matrix(G, m, n, ldG);
-  auto A1 = make_eigen_matrix(x).template cast<T>();
-  auto B1 = make_eigen_matrix(b);
-  B1.noalias() = G1.binaryExpr(A1, rectify_grad_functor<T>());
-}
-
-template<class T>
-void round(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().round();
-}
-
-template<class T>
-void sin(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().sin();
-}
-
-template<class T>
-void single(const int* i, const int n, T* x, const int incx) {
-  auto x1 = make_eigen_vector(x, n, incx);
+template<class R, class T, class>
+Array<R,1> single(const T& i, const int n) {
+  Array<R,1> x(n);
+  auto x1 = make_eigen(x);
   x1.noalias() = x1.Zero(n, 1);
-  x1(*i - 1) = T(1);
+  x1(element(data(i)) - 1) = R(1);
+  return x;
 }
 
-template<class T>
-void sinh(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().sinh();
+template<class R, class T, class U, class>
+Array<R,2> single(const T& i, const U& j, const int m, const int n) {
+  Array<R,2> x(m, n);
+  auto x1 = make_eigen(x);
+  x1.noalias() = x1.Zero(m, n);
+  x1(element(data(i)) - 1, element(data(j)) - 1) = R(1);
+  return x;
 }
 
-template<class T>
-void sqrt(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().sqrt();
+template<class R, class T, class>
+Array<R,0> sum(const T& x) {
+  return make_eigen(x).sum();
 }
 
-template<class T>
-void sum(const T& x, T* b) {
-  auto A1 = make_eigen_matrix(x);
-  *b = A1.sum();
+template<class T, class>
+Array<T,0> trace(const Array<T,2>& A) {
+  return make_eigen(A).trace();
 }
 
-template<class T>
-void tan(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().tan();
-}
-
-template<class T>
-void tanh(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  B1.array() = A1.array().tanh();
-}
-
-template<class T>
-void trace(const T& x, T* b) {
-  auto A1 = make_eigen_matrix(x);
-  *b = A1.trace();
-}
-
-template<class T>
-void transpose(const T& x, T* B,
-    const int ldB) {
-  auto A1 = make_eigen_matrix(A, n, m, ldA);
-  auto B1 = make_eigen_matrix(b);
+template<class T, class>
+Array<T,2> transpose(const Array<T,2>& A) {
+  Array<T,2> B(columns(A), rows(A));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
   B1.noalias() = A1.transpose();
+  return B;
 }
 
-template<class T>
-void cholmul(const int n, const T* S, const int ldS, const T* x,
-    const int incx, T* y, const int incy) {
-  auto S1 = make_eigen_matrix(S, n, n, ldS);
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
+template<class T, class>
+Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
+  assert(rows(S) == columns(S));
+  assert(columns(S) == length(x));
+  Array<T,1> y(rows(S));
+  auto S1 = make_eigen(S);
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
   y1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().cwiseProduct(x1)));
+  return y;
 }
 
-template<class T>
-void cholmul(const T* S, const int ldS, const U& y, T* C, const int ldC) {
-  auto S1 = make_eigen_matrix(S, m, m, ldS);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
+template<class T, class>
+Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
+  assert(rows(S) == columns(S));
+  assert(columns(S) == rows(B));
+  Array<T,2> C(B.shape());
+  auto S1 = make_eigen(S);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
   C1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*B1));
+  return C;
 }
 
-template<class T>
-void cholouter(const T& x,
-    const T* S, const int ldS, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto S1 = make_eigen_matrix(S, n, n, ldS);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
+template<class T, class>
+Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
+  assert(columns(A) == columns(S));
+  assert(rows(S) == columns(S));
+  Array<T,2> C(rows(A), rows(S));
+  auto A1 = make_eigen(A);
+  auto S1 = make_eigen(S);
+  auto C1 = make_eigen(C);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
   C1.noalias() = (ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*
       A1.transpose()))).transpose();
+  return C;
 }
 
-template<class T>
-void cholsolve(const int n, const T* S, const int ldS, T* x, const int incx,
-    const T* y, const int incy) {
-  auto S1 = make_eigen_matrix(S, n, n, ldS);
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
+template<class T, class>
+Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
+  assert(rows(S) == columns(S));
+  assert(columns(S) == length(y));
+  Array<T,1> x(y.shape());
+  auto S1 = make_eigen(S);
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
   x1.noalias() = ldlt.solve(y1);
+  return x;
 }
 
-template<class T>
-void cholsolve(const T* S, const int ldS, T* X,
-    const int ldX, const T* Y, const int ldY) {
-  auto S1 = make_eigen_matrix(S, m, m, ldS);
-  auto X1 = make_eigen_matrix(X, m, n, ldX);
-  auto Y1 = make_eigen_matrix(Y, m, n, ldY);
+template<class T, class>
+Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
+  assert(rows(S) == columns(S));
+  assert(columns(S) == rows(C));
+  Array<T,2> B(C.shape());
+  auto S1 = make_eigen(S);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
   auto ldlt = S1.ldlt();
   assert(ldlt.info() == Eigen::Success);
-  X1.noalias() = ldlt.solve(Y1);
+  B1.noalias() = ldlt.solve(C1);
+  return B;
 }
 
-template<class T>
-void copysign(const T& x, const U& y, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, copysign_functor<T>());
+template<class T, class>
+Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
+  assert(length(x) == length(y));
+  Array<T,0> z;
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
+  z = x1.dot(y1);
+  return z;
 }
 
-template<class T>
-void digamma(const T& x,
-    const int* B, const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b).template cast<T>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, digammap_functor<T>());
+template<class T, class>
+Array<T,0> frobenius(const Array<T,2>& x, const Array<T,2>& y) {
+  Array<T,0> z;
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
+  z = (x1.array()*y1.array()).sum();
+  return z;
 }
 
-template<class T>
-void dot(const int n, const T* x, const int incx, const T* y, const int incy,
-    T* z) {
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
-  *z = x1.dot(y1);
-}
-
-template<class T>
-void frobenius(const T& x,
-    const T* B, const int ldB, T* c) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  *c = (A1.array()*B1.array()).sum();
-}
-
-template<class T>
-void gamma_p(const T& x, const U& y, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, gamma_p_functor<T>());
-}
-
-template<class T>
-void gamma_q(const T& x, const U& y, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, gamma_q_functor<T>());
-}
-
-template<class T, class U, class>
-void hadamard(const T& x, const U& y) {
-  auto A1 = make_eigen_matrix(x).template cast<V>();
-  auto B1 = make_eigen_matrix(b).template cast<V>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.cwiseProduct(B1);
-}
-
-template<class T>
-void inner(const T& x, const T* x,
-    const int incx, T* y, const int incy) {
-  auto A1 = make_eigen_matrix(A, n, m, ldA);
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, m, incy);
+template<class T, class>
+Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
+  assert(rows(A) == length(x));
+  Array<T,1> y(make_shape(columns(A)));
+  auto A1 = make_eigen(A);
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
   y1.noalias() = A1.transpose()*x1;
+  return y;
 }
 
-template<class T>
-void inner(const int k, const T& x,
-    const T* B, const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, k, m, ldA);
-  auto B1 = make_eigen_matrix(B, k, n, ldB);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
+template<class T, class>
+Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
+  assert(rows(A) == rows(B));
+  Array<T,2> C(make_shape(columns(A), columns(B)));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
   C1.noalias() = A1.transpose()*B1;
+  return C;
 }
 
-template<class T>
-void lbeta(const T& x,
-    const T* B, const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, lbeta_functor<T>());
-}
-
-template<class T>
-void lchoose(const T& x,
-    const int* B, const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x).template cast<T>();
-  auto B1 = make_eigen_matrix(b).template cast<T>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, lchoose_functor<T>());
-}
-
-template<class T>
-void lchoose_grad(const T* G, const int ldG,
-    const T& x, const int* B, const int ldB, T* GA,
-    const int ldGA, T* GB, const int ldGB) {
-  ///@todo Implement a generic ternary transform for this purpose
-  for (int i = 0; i < m; ++i) {
-    for (int j = 0; j < n; ++j) {
-      auto pair = lchoose_grad(G[i + j*ldG], A[i + j*ldA], B[i + j*ldB]);
-      GA[i + j*ldGA] = pair.first;
-      GB[i + j*ldGB] = pair.second;
-    }
-  }
-}
-
-template<class T>
-void lgamma(const T& x, const U& y, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b).template cast<T>();
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, lgammap_functor<T>());
-}
-
-template<class T>
-void outer(const T* x, const int incx, const T* y,
-    const int incy, T* A, const int ldA) {
-  auto x1 = make_eigen_vector(x, m, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
-  auto A1 = make_eigen_matrix(x);
+template<class T, class>
+Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
+  Array<T,2> A(make_shape(length(x), length(y)));
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
+  auto A1 = make_eigen(A);
   A1.noalias() = x1*y1.transpose();
+  return A;
 }
 
-template<class T>
-void outer(const int k, const T& x,
-    const T* B, const int ldB, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(A, m, k, ldA);
-  auto B1 = make_eigen_matrix(B, n, k, ldB);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
+template<class T, class>
+Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
+  assert(columns(A) == columns(B));
+  Array<T,2> C(make_shape(rows(A), rows(B)));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
   C1.noalias() = A1*B1.transpose();
+  return C;
 }
 
-template<class T>
-void pow(const T& x, const U& y, T* C, const int ldC) {
-  auto A1 = make_eigen_matrix(x);
-  auto B1 = make_eigen_matrix(b);
-  auto C1 = make_eigen_matrix(C, m, n, ldC);
-  C1.noalias() = A1.binaryExpr(B1, pow_functor<T>());
-}
-
-template<class T>
-void single(const int* i, const int* j, T* A,
-    const int ldA) {
-  auto A1 = make_eigen_matrix(x);
-  A1.noalias() = A1.Zero(m, n);
-  A1(*i - 1, *j - 1) = T(1);
-}
-
-template<class T>
-void solve(const int n, const T& x, T* x, const int incx,
-    const T* y, const int incy) {
-  auto A1 = make_eigen_matrix(A, n, n, ldA);
-  auto x1 = make_eigen_vector(x, n, incx);
-  auto y1 = make_eigen_vector(y, n, incy);
+template<class T, class>
+Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
+  assert(rows(A) == columns(A));
+  assert(columns(A) == length(y));
+  Array<T,1> x(shape(y));
+  auto A1 = make_eigen(A);
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
   x1.noalias() = A1.householderQr().solve(y1);
+  return x;
 }
 
-template<class T>
-void solve(const T& x, T* X,
-    const int ldX, const T* Y, const int ldY) {
-  auto A1 = make_eigen_matrix(A, m, m, ldA);
-  auto X1 = make_eigen_matrix(X, m, n, ldX);
-  auto Y1 = make_eigen_matrix(Y, m, n, ldY);
-  X1.noalias() = A1.householderQr().solve(Y1);
-}
-
-template<class T, class U>
-void ibeta(const T& x, const U& y, const T* X, const int ldX, T* C, const int ldC) {
-  ///@todo Implement a generic ternary transform for this purpose
-  for (int i = 0; i < m; ++i) {
-    for (int j = 0; j < n; ++j) {
-      C[i + j*ldC] = ibeta(A[i + j*ldA], B[i + j*ldB], X[i + j*ldX]);
-    }
-  }
+template<class T, class>
+Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
+  assert(rows(A) == columns(A));
+  assert(columns(A) == rows(C));
+  Array<T,2> B(shape(C));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
+  B1.noalias() = A1.householderQr().solve(C1);
+  return B;
 }
 
 }
