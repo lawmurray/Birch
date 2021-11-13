@@ -14,7 +14,10 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 COMMON_SOURCES = \
-    numbirch/numeric.cpp \
+    numbirch/numeric/binary.cpp \
+    numbirch/numeric/other.cpp \
+    numbirch/numeric/ternary.cpp \
+    numbirch/numeric/unary.cpp \
     numbirch/random.cpp
 
 if ONEAPI

@@ -20,3 +20,12 @@
 #else
 #define NUMBIRCH_HOST_DEVICE
 #endif
+
+/**
+ * @internal
+ * 
+ * @def ARRAY
+ * 
+ * Constructs the type `Array<T,D>`.
+ */
+#define ARRAY(T, D) Array<T,D>
