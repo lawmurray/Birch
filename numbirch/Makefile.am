@@ -14,11 +14,10 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 COMMON_SOURCES = \
-    numbirch/numeric/binary.cpp \
-    numbirch/numeric/other.cpp \
-    numbirch/numeric/ternary.cpp \
-    numbirch/numeric/unary.cpp \
-    numbirch/random.cpp
+    numbirch/common/binary.cpp \
+    numbirch/common/numeric.cpp \
+    numbirch/common/ternary.cpp \
+    numbirch/common/unary.cpp
 
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI -Wno-deprecated-declarations -Wno-unused-command-line-argument
@@ -75,25 +74,33 @@ nobase_include_HEADERS = \
   numbirch/array/Scalar.hpp \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
+  numbirch/binary.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
   numbirch/numeric.hpp \
   numbirch/random.hpp \
-  numbirch/type.hpp
+  numbirch/ternary.hpp \
+  numbirch/type.hpp \
+  numbirch/unary.hpp
 
 noinst_HEADERS = \
+  numbirch/common/binary.hpp \
+  numbirch/common/functor.hpp \
+  numbirch/common/ternary.hpp \
+  numbirch/common/unary.hpp \
   numbirch/cuda/cub.hpp \
   numbirch/cuda/cublas.hpp \
   numbirch/cuda/cuda.hpp \
   numbirch/cuda/cusolver.hpp \
   numbirch/cuda/numeric.hpp \
+  numbirch/cuda/transform.hpp \
   numbirch/eigen/eigen.hpp \
   numbirch/eigen/numeric.hpp \
+  numbirch/eigen/transform.hpp \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
   numbirch/oneapi/numeric.hpp \
   numbirch/oneapi/sycl.hpp \
-  numbirch/functor.hpp \
   numbirch/macro.hpp
 
 dist_noinst_DATA =  \

@@ -4,11 +4,12 @@
 #include "numbirch/numeric.hpp"
 
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/numeric.hpp"
+#include "numbirch/cuda/transform.hpp"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/numeric.hpp"
+#include "numbirch/eigen/transform.hpp"
 #endif
+#include "numbirch/common/ternary.hpp"
 
 /**
  * @internal

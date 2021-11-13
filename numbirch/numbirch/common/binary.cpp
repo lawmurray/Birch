@@ -4,11 +4,12 @@
 #include "numbirch/numeric.hpp"
 
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/numeric.hpp"
+#include "numbirch/cuda/transform.hpp"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/numeric.hpp"
+#include "numbirch/eigen/transform.hpp"
 #endif
+#include "numbirch/common/binary.hpp"
 
 /**
  * @internal
@@ -90,46 +91,6 @@
 /**
  * @internal
  * 
- * @def BINARY_MATRIX_VECTOR
- * 
- * Explicitly instantiate a binary function `f` over a floating point matrix
- * and vector. Use cases include solve(), matrix-vector multiplication.
- */
-#define BINARY_MATRIX_VECTOR(f) \
-    BINARY_MATRIX_VECTOR_SIG(f, double) \
-    BINARY_MATRIX_VECTOR_SIG(f, float)
-#define BINARY_MATRIX_VECTOR_SIG(f, T) \
-    template Array<T,1> f(const Array<T,2>&, const Array<T,1>&);
-
-/**
- * @internal
- * 
- * @def BINARY_MATRIX_MATRIX
- * 
- * Explicitly instantiate a binary function `f` over floating point matrices.
- * Use cases include inner(), outer(), matrix-matrix multiplication.
- */
-#define BINARY_MATRIX_MATRIX(f) \
-    BINARY_MATRIX_MATRIX_SIG(f, double) \
-    BINARY_MATRIX_MATRIX_SIG(f, float)
-#define BINARY_MATRIX_MATRIX_SIG(f, T) \
-    template Array<T,2> f(const Array<T,2>&, const Array<T,2>&);
-
-/**
- * @internal
- * 
- * @def BINARY_REDUCE_MATRIX
- * 
- * Explicitly instantiate a binary reduction function `f` for matrices of
- * floating point types only. Use cases include frobenius().
- */
-#define BINARY_REDUCE_MATRIX(f) \
-    template Array<double,0> f(const Array<double,2>&, const Array<double,2>&); \
-    template Array<float,0> f(const Array<float,2>&, const Array<float,2>&);
-
-/**
- * @internal
- * 
  * @def BINARY_SCALAR_MULTIPLY
  * 
  * Explicitly instantiate matrix-scalar multiplication.
@@ -207,8 +168,6 @@ namespace numbirch {
 BINARY_ARITHMETIC(operator+)
 BINARY_ARITHMETIC(operator-)
 BINARY_SCALAR_MULTIPLY(operator*)
-BINARY_MATRIX_VECTOR(operator*)
-BINARY_MATRIX_MATRIX(operator*)
 BINARY_SCALAR_DIVIDE(operator/)
 BINARY_ARITHMETIC(operator&&)
 BINARY_ARITHMETIC(operator||)
@@ -218,27 +177,15 @@ BINARY_ARITHMETIC(operator<)
 BINARY_ARITHMETIC(operator<=)
 BINARY_ARITHMETIC(operator>)
 BINARY_ARITHMETIC(operator>=)
-
-BINARY_MATRIX_VECTOR(cholmul)
-BINARY_MATRIX_MATRIX(cholmul)
-BINARY_MATRIX_MATRIX(cholouter)
-BINARY_MATRIX_VECTOR(cholsolve)
-BINARY_MATRIX_MATRIX(cholsolve)
 BINARY_ARITHMETIC(copysign)
 BINARY_FLOATING_POINT(digamma)
-BINARY_REDUCE_MATRIX(frobenius)
 BINARY_FLOATING_POINT(gamma_p)
 BINARY_FLOATING_POINT(gamma_q)
 BINARY_ARITHMETIC(hadamard)
-BINARY_MATRIX_VECTOR(inner)
-BINARY_MATRIX_MATRIX(inner)
 BINARY_FLOATING_POINT(lbeta)
 BINARY_FLOATING_POINT(lchoose)
 BINARY_GRAD(lchoose_grad)
 BINARY_FLOATING_POINT(lgamma)
-BINARY_MATRIX_MATRIX(outer)
 BINARY_FLOATING_POINT(pow)
-BINARY_MATRIX_VECTOR(solve)
-BINARY_MATRIX_MATRIX(solve)
 
 }

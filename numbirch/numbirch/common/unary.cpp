@@ -4,11 +4,12 @@
 #include "numbirch/numeric.hpp"
 
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/numeric.hpp"
+#include "numbirch/cuda/transform.hpp"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/numeric.hpp"
+#include "numbirch/eigen/transform.hpp"
 #endif
+#include "numbirch/common/unary.hpp"
 
 /**
  * @internal
@@ -74,50 +75,21 @@
 #define UNARY_GRAD_SIG(f, G, T) \
     template promote_t<G,T> f<G,T>(const G&, const T&);
 
-/**
- * @internal
- * 
- * @def UNARY_MATRIX
- * 
- * Explicitly instantiate a unary function `f` over floating point matrices.
- * Use cases include transpose(), inv().
- */
-#define UNARY_MATRIX(f) \
-    template Array<double,2> f(const Array<double,2>&); \
-    template Array<float,2> f(const Array<float,2>&);
-
-/**
- * @internal
- * 
- * @def UNARY_REDUCE_MATRIX
- * 
- * Explicitly instantiate a unary reduction function `f` for matrices of
- * floating point types only. Use cases include ldet(), trace().
- */
-#define UNARY_REDUCE_MATRIX(f) \
-    template Array<double,0> f(const Array<double,2>&); \
-    template Array<float,0> f(const Array<float,2>&);
-
 namespace numbirch {
 UNARY_ARITHMETIC(operator+)
 UNARY_ARITHMETIC(operator-)
 UNARY_ARITHMETIC(operator!)
-
 UNARY_ARITHMETIC(abs)
 UNARY_FLOATING_POINT(acos)
 UNARY_FLOATING_POINT(asin)
 UNARY_FLOATING_POINT(atan)
 UNARY_ARITHMETIC(ceil)
-UNARY_MATRIX(cholinv)
 UNARY_FLOATING_POINT(cos)
 UNARY_FLOATING_POINT(cosh)
 UNARY_FLOATING_POINT(digamma)
 UNARY_FLOATING_POINT(exp)
 UNARY_FLOATING_POINT(expm1)
 UNARY_ARITHMETIC(floor)
-UNARY_MATRIX(inv)
-UNARY_REDUCE_MATRIX(lcholdet)
-UNARY_REDUCE_MATRIX(ldet)
 UNARY_FLOATING_POINT(lfact)
 UNARY_GRAD(lfact_grad)
 UNARY_FLOATING_POINT(lgamma)
@@ -132,7 +104,5 @@ UNARY_FLOATING_POINT(sinh)
 UNARY_FLOATING_POINT(sqrt)
 UNARY_FLOATING_POINT(tan)
 UNARY_FLOATING_POINT(tanh)
-UNARY_REDUCE_MATRIX(trace)
-UNARY_MATRIX(transpose)
 
 }

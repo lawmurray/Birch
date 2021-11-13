@@ -13,6 +13,34 @@
 /**
  * @internal
  * 
+ * @def MATRIX_VECTOR
+ * 
+ * Explicitly instantiate a binary function `f` over a floating point matrix
+ * and vector. Use cases include solve(), matrix-vector multiplication.
+ */
+#define MATRIX_VECTOR(f) \
+    MATRIX_VECTOR_SIG(f, double) \
+    MATRIX_VECTOR_SIG(f, float)
+#define MATRIX_VECTOR_SIG(f, T) \
+    template Array<T,1> f(const Array<T,2>&, const Array<T,1>&);
+
+/**
+ * @internal
+ * 
+ * @def MATRIX_MATRIX
+ * 
+ * Explicitly instantiate a binary function `f` over floating point matrices.
+ * Use cases include inner(), outer(), matrix-matrix multiplication.
+ */
+#define MATRIX_MATRIX(f) \
+    MATRIX_MATRIX_SIG(f, double) \
+    MATRIX_MATRIX_SIG(f, float)
+#define MATRIX_MATRIX_SIG(f, T) \
+    template Array<T,2> f(const Array<T,2>&, const Array<T,2>&);
+
+/**
+ * @internal
+ * 
  * @def SINGLE_VECTOR
  * 
  * For single().
@@ -124,13 +152,26 @@
  * 
  * @def DOT
  * 
- * Explicitly instantiate dot product of vectors.
+ * Explicitly instantiate dot().
  */
 #define DOT(f) \
     DOT_SIG(f, double) \
     DOT_SIG(f, float)
 #define DOT_SIG(f, T) \
     template Array<T,0> f(const Array<T,1>&, const Array<T,1>&);
+
+/**
+ * @internal
+ * 
+ * @def FROBENIUS
+ * 
+ * Explicitly instantiate frobenius().
+ */
+#define FROBENIUS(f) \
+    FROBENIUS_SIG(f, double) \
+    FROBENIUS_SIG(f, float)
+#define FROBENIUS_SIG(f, T) \
+    template Array<T,0> f(const Array<T,2>&, const Array<T,2>&);
 
 /**
  * @internal
@@ -145,14 +186,56 @@
 #define OUTER_SIG(f, T) \
     template Array<T,2> f(const Array<T,1>&, const Array<T,1>&);
 
-namespace numbirch {
+/**
+ * @internal
+ * 
+ * @def MATRIX
+ * 
+ * Explicitly instantiate a unary function `f` over floating point matrices.
+ * Use cases include transpose(), inv().
+ */
+#define MATRIX(f) \
+    template Array<double,2> f(const Array<double,2>&); \
+    template Array<float,2> f(const Array<float,2>&);
 
+/**
+ * @internal
+ * 
+ * @def REDUCE_MATRIX
+ * 
+ * Explicitly instantiate a unary reduction function `f` for matrices of
+ * floating point types only. Use cases include ldet(), trace().
+ */
+#define REDUCE_MATRIX(f) \
+    template Array<double,0> f(const Array<double,2>&); \
+    template Array<float,0> f(const Array<float,2>&);
+
+namespace numbirch {
+MATRIX_VECTOR(operator*)
+MATRIX_MATRIX(operator*)
+MATRIX(cholinv)
+MATRIX_VECTOR(cholmul)
+MATRIX_MATRIX(cholmul)
+MATRIX_MATRIX(cholouter)
+MATRIX_VECTOR(cholsolve)
+MATRIX_MATRIX(cholsolve)
 COUNT(count)
 DIAGONAL(diagonal)
 DOT(dot)
+FROBENIUS(frobenius)
+MATRIX_VECTOR(inner)
+MATRIX_MATRIX(inner)
+MATRIX(inv)
+REDUCE_MATRIX(lcholdet)
+REDUCE_MATRIX(ldet)
 OUTER(outer)
+MATRIX_MATRIX(outer)
+MATRIX_VECTOR(solve)
+MATRIX_MATRIX(solve)
 SINGLE_VECTOR(single)
 SINGLE_MATRIX(single)
 SUM(sum)
+REDUCE_MATRIX(trace)
+MATRIX(transpose)
 
 }

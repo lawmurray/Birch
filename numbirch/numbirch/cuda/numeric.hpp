@@ -7,47 +7,68 @@
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"
 #include "numbirch/cuda/cub.hpp"
+#include "numbirch/cuda/transform.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
-#include "numbirch/functor.hpp"
+#include "numbirch/common/functor.hpp"
+#include "numbirch/binary.hpp"
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
 
 namespace numbirch {
+/*
+ * Tile size (number of rows, number of columns) for transpose().
+ */
+static const int CUDA_TRANSPOSE_SIZE = 16;
 
-template<class R, class T, class>
-convert_t<R,T> operator+(const T& x) {
-  if constexpr (std::is_same_v<R,T>) {
-    return x;
-  } else {
-    return transform(x, identity_functor<R>());
+/*
+ * Matrix for-each.
+ */
+template<class T, class Functor>
+__global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
+    Functor f) {
+  auto i = blockIdx.x*blockDim.x + threadIdx.x;
+  auto j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    element(A, i, j, ldA) = f(i, j);
   }
 }
-
-template<class R, class T, class>
-convert_t<R,T> operator-(const T& x) {
-  prefetch(x);
-  return transform(x, negate_functor<R>());
+template<class Functor>
+auto for_each(const int m, const int n, Functor f) {
+  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  kernel_for_each<<<grid,block,0,stream>>>(m, n, data(A), stride(A), f);
+  return A;
+}
+template<class Functor>
+auto for_each(const int n, Functor f) {
+  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
+  auto grid = make_grid(n, 1);
+  auto block = make_block(n, 1);
+  kernel_for_each<<<grid,block,0,stream>>>(n, 1, data(x), stride(x), f);
+  return x;
 }
 
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator+(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, add_functor<R>());
-}
+/*
+ * Matrix transpose kernel.
+ */
+template<class T>
+__global__ void kernel_transpose(const int m, const int n, const T* A,
+    const int ldA, T* B, const int ldB) {
+  __shared__ T tile[CUDA_TRANSPOSE_SIZE][CUDA_TRANSPOSE_SIZE + 1];
+  // ^ +1 reduce shared memory bank conflicts
 
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator-(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, subtract_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator*(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, multiply_functor<R>());
+  auto i = blockIdx.y*blockDim.y + threadIdx.x;
+  auto j = blockIdx.x*blockDim.x + threadIdx.y;
+  if (i < n && j < m) {
+    tile[threadIdx.x][threadIdx.y] = element(A, i, j, ldA);
+  }
+  __syncthreads();
+  i = blockIdx.x*blockDim.x + threadIdx.x;
+  j = blockIdx.y*blockDim.y + threadIdx.y;
+  if (i < m && j < n) {
+    element(B, i, j, ldB) = tile[threadIdx.y][threadIdx.x];
+  }
 }
 
 template<class T, class>
@@ -74,104 +95,6 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
   return C;
 }
 
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator/(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, divide_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> operator!(const T& x) {
-  prefetch(x);
-  return transform(x, not_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator&&(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, and_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator||(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, or_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator==(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, equal_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator!=(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, not_equal_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator<(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, less_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator<=(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, less_or_equal_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator>(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, greater_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> operator>=(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, greater_or_equal_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> abs(const T& x) {
-  prefetch(x);
-  return transform(x, abs_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> acos(const T& x) {
-  prefetch(x);
-  return transform(x, acos_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> asin(const T& x) {
-  prefetch(x);
-  return transform(x, asin_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> atan(const T& x) {
-  prefetch(x);
-  return transform(x, atan_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> ceil(const T& x) {
-  prefetch(x);
-  return transform(x, ceil_functor<R>());
-}
 
 template<class T, class>
 Array<T,2> cholinv(const Array<T,2>& S) {
@@ -208,18 +131,6 @@ Array<T,2> cholinv(const Array<T,2>& S) {
 }
 
 template<class R, class T, class>
-convert_t<R,T> cos(const T& x) {
-  prefetch(x);
-  return transform(x, cos_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> cosh(const T& x) {
-  prefetch(x);
-  return transform(x, cosh_functor<R>());
-}
-
-template<class R, class T, class>
 Array<R,0> count(const T& x) {
   ///@todo Avoid temporary
   return sum(transform(x, count_functor<R>()));
@@ -228,30 +139,6 @@ Array<R,0> count(const T& x) {
 template<class R, class T, class>
 Array<R,2> diagonal(const T& x, const int n) {
   return for_each(n, n, diagonal_functor<R,decltype(data(x))>(data(x)));
-}
-
-template<class R, class T, class>
-convert_t<R,T> digamma(const T& x) {
-  prefetch(x);
-  return transform(x, digamma_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> exp(const T& x) {
-  prefetch(x);
-  return transform(x, exp_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> expm1(const T& x) {
-  prefetch(x);
-  return transform(x, expm1_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> floor(const T& x) {
-  prefetch(x);
-  return transform(x, floor_functor<R>());
 }
 
 template<class T, class>
@@ -352,67 +239,6 @@ Array<T,0> ldet(const Array<T,2>& A) {
 }
 
 template<class R, class T, class>
-convert_t<R,T> lfact(const T& x) {
-  prefetch(x);
-  return transform(x, lfact_functor<R>());
-}
-
-template<class G, class T, class>
-promote_t<G,T> lfact_grad(const G& g, const T& x) {
-  prefetch(x);
-  return transform_grad(g, x, lfact_grad_functor<value_t<promote_t<G,T>>>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> lgamma(const T& x) {
-  prefetch(x);
-  return transform(x, lgamma_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> log(const T& x) {
-  prefetch(x);
-  return transform(x, log_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> log1p(const T& x) {
-  prefetch(x);
-  return transform(x, log1p_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> rcp(const T& x) {
-  prefetch(x);
-  return transform(x, rcp_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> rectify(const T& x) {
-  prefetch(x);
-  return transform(x, rectify_functor<R>());
-}
-
-template<class G, class T, class>
-promote_t<G,T> rectify_grad(const G& g, const T& x) {
-  prefetch(x);
-  return transform_grad(g, x, rectify_grad_functor<
-      value_t<promote_t<G,T>>>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> round(const T& x) {
-  prefetch(x);
-  return transform(x, round_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> sin(const T& x) {
-  prefetch(x);
-  return transform(x, sin_functor<R>());
-}
-
-template<class R, class T, class>
 Array<R,1> single(const T& i, const int n) {
   return for_each(n, single_functor<R,decltype(data(i))>(data(i)));
 }
@@ -421,18 +247,6 @@ template<class R, class T, class U, class>
 Array<R,2> single(const T& i, const U& j, const int m, const int n) {
   return for_each(m, n, single_functor<R,decltype(data(i)),decltype(data(j))>(
       data(i), data(j)));
-}
-
-template<class R, class T, class>
-convert_t<R,T> sinh(const T& x) {
-  prefetch(x);
-  return transform(x, sinh_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> sqrt(const T& x) {
-  prefetch(x);
-  return transform(x, sqrt_functor<R>());
 }
 
 template<class R, class T, class>
@@ -450,18 +264,6 @@ Array<R,0> sum(const T& x) {
       stream));
   device_free(tmp);
   return z;
-}
-
-template<class R, class T, class>
-convert_t<R,T> tan(const T& x) {
-  prefetch(x);
-  return transform(x, tan_functor<R>());
-}
-
-template<class R, class T, class>
-convert_t<R,T> tanh(const T& x) {
-  prefetch(x);
-  return transform(x, tanh_functor<R>());
 }
 
 template<class T, class>
@@ -635,20 +437,6 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
   return B;
 }
 
-template<class R, class T, class U, class>
-convert_t<R,T,U> copysign(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, copysign_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> digamma(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, digamma_functor<R>());
-}
-
 template<class T, class>
 Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
   assert(length(x) == length(y));
@@ -664,35 +452,6 @@ template<class T, class>
 Array<T,0> frobenius(const Array<T,2>& x, const Array<T,2>& y) {
   ///@todo Avoid temporary
   return sum(hadamard(x, y));
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> gamma_p(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, gamma_p_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> gamma_q(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, gamma_q_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> hadamard(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, multiply_functor<R>());
-}
-
-template<class R, class T, class U, class V, class>
-convert_t<R,T,U,V> ibeta(const T& x, const U& y, const V& z) {
-  prefetch(x);
-  prefetch(y);
-  prefetch(z);
-  return transform(x, y, z, ibeta_functor<R>());
 }
 
 template<class T, class>
@@ -717,37 +476,6 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
       rows(C), columns(C), rows(A), scalar<T>::one, data(A), stride(A),
       data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
   return C;
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> lbeta(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, lbeta_functor<R>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> lchoose(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, lchoose_functor<R>());
-}
-
-template<class G, class T, class U, class>
-std::pair<promote_t<G,T,U>,promote_t<G,T,U>> lchoose_grad(const G& g,
-    const T& x, const U& y) {
-  prefetch(g);
-  prefetch(x);
-  prefetch(y);
-  return transform_grad(g, x, y,
-      lchoose_grad_functor<value_t<promote_t<G,T,U>>>());
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> lgamma(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, lgamma_functor<R>());
 }
 
 template<class T, class>
@@ -776,13 +504,6 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
       rows(C), columns(C), rows(A), scalar<T>::one, data(A), stride(A),
       data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
   return C;
-}
-
-template<class R, class T, class U, class>
-convert_t<R,T,U> pow(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, pow_functor<R>());
 }
 
 template<class T, class>

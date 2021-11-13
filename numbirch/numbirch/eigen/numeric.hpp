@@ -31,6 +31,7 @@ convert_t<R,T> operator-(const T& x) {
 
 template<class T, class U, class>
 convert_t<R,T,U> operator+(const T& x, const U& y) {
+  assert(conforms(x, y));
   convert_t<R,T,U> y(x.shape());
   auto A1 = make_eigen_matrix(x).template cast<R>();
   auto B1 = make_eigen_matrix(y).template cast<R>();
