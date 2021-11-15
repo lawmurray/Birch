@@ -35,9 +35,40 @@
 #define UNARY_DIM(f, R, T) \
     UNARY_SIG(f, R, ARRAY(T, 2)) \
     UNARY_SIG(f, R, ARRAY(T, 1)) \
-    UNARY_SIG(f, R, ARRAY(T, 0))
+    UNARY_SIG(f, R, ARRAY(T, 0)) \
+    UNARY_SIG(f, R, T)
 #define UNARY_SIG(f, R, T) \
-    template convert_t<R,T> f<R>(const T&);
+    template convert_t<R,T> f<R,T,int>(const T&);
+
+/**
+ * @internal
+ * 
+ * @def UNARY_ARITHMETIC_OPERATOR
+ * 
+ * Explicitly instantiate a unary transformation `f` where the return type is
+ * any arithmetic type. This version is used for operators, where the overload
+ * for basic types is omitted, as this is not allowed in C++ (e.g.
+ * `operator-(double)`).
+ */
+#define UNARY_OPERATOR(f) \
+    UNARY_OPERATOR_FIRST(f, double) \
+    UNARY_OPERATOR_FIRST(f, float) \
+    UNARY_OPERATOR_FIRST(f, int) \
+    UNARY_OPERATOR_FIRST(f, bool)
+#define UNARY_OPERATOR_RETURN(f) \
+    UNARY_OPERATOR_FIRST(f, double) \
+    UNARY_OPERATOR_FIRST(f, float)
+#define UNARY_OPERATOR_FIRST(f, R) \
+    UNARY_OPERATOR_DIM(f, R, double) \
+    UNARY_OPERATOR_DIM(f, R, float) \
+    UNARY_OPERATOR_DIM(f, R, int) \
+    UNARY_OPERATOR_DIM(f, R, bool)
+#define UNARY_OPERATOR_DIM(f, R, T) \
+    UNARY_OPERATOR_SIG(f, R, ARRAY(T, 2)) \
+    UNARY_OPERATOR_SIG(f, R, ARRAY(T, 1)) \
+    UNARY_OPERATOR_SIG(f, R, ARRAY(T, 0))
+#define UNARY_OPERATOR_SIG(f, R, T) \
+    template convert_t<R,T> f<R,T,int>(const T&);
 
 /**
  * @internal
@@ -71,14 +102,15 @@
     UNARY_GRAD_SIG(f, ARRAY(G, 1), ARRAY(T, 1)) \
     UNARY_GRAD_SIG(f, ARRAY(G, 0), ARRAY(T, 0)) \
     UNARY_GRAD_SIG(f, ARRAY(G, 0), T) \
-    UNARY_GRAD_SIG(f, G, ARRAY(T, 0))
+    UNARY_GRAD_SIG(f, G, ARRAY(T, 0)) \
+    UNARY_GRAD_SIG(f, G, T)
 #define UNARY_GRAD_SIG(f, G, T) \
-    template promote_t<G,T> f<G,T>(const G&, const T&);
+    template promote_t<G,T> f<G,T,int>(const G&, const T&);
 
 namespace numbirch {
-UNARY_ARITHMETIC(operator+)
-UNARY_ARITHMETIC(operator-)
-UNARY_ARITHMETIC(operator!)
+UNARY_OPERATOR(operator+)
+UNARY_OPERATOR(operator-)
+UNARY_OPERATOR(operator!)
 UNARY_ARITHMETIC(abs)
 UNARY_FLOATING_POINT(acos)
 UNARY_FLOATING_POINT(asin)
