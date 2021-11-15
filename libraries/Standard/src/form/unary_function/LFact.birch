@@ -1,10 +1,10 @@
 struct LFact<Middle>(m:Middle) < Unary<Middle>(m) {
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(lfact)
+  BIRCH_UNARY_FUNCTION_FORM(lfact<Real>)
   }}
 }
 
-function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) {
+function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) -> {
   return grad(x.m, hadamard(d, lfact_grad(d, peek(x.m))));
 }
 
@@ -29,9 +29,10 @@ auto lfact(const T& x) {
 /**
  * Gradient of lfact().
  */
-template<class G, class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
+template<class G, class T, std::enable_if_t<numbirch::is_arithmetic_v<G> &&
+    numbirch::is_arithmetic_v<T>,int> = 0>
 auto lfact_grad(const G& d, const T& x) {
-  return numbirch::lfact_grad<Real>(d, x);
+  return numbirch::lfact_grad(d, x);
 }
 }
 }}

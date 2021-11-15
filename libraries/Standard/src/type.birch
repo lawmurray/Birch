@@ -21,7 +21,7 @@ struct is_array<numbirch::Array<T,D>> {
 };
 
 /**
- * Is `T` a future or array type?
+ * Is `T` a future type?
  */
 template<class T>
 struct is_future {
@@ -41,7 +41,7 @@ struct is_future<numbirch::Scalar<T>> {
 };
 
 /**
- * Is `T` an arithmetic, future, or array type?
+ * Is `T` an arithmetic type?
  */
 template<class T>
 struct is_arithmetic {
@@ -50,7 +50,7 @@ struct is_arithmetic {
 };
 
 /**
- * Is `T` a Form?
+ * Is `T` a form type?
  */
 template<class T>
 struct is_form {
@@ -59,7 +59,7 @@ struct is_form {
 };
 
 /**
- * Is `T` an Expression?
+ * Is `T` an expression type?
  */
 template<class T>
 struct is_expression {

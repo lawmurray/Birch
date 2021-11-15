@@ -160,8 +160,7 @@ function update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
   let N' <- N + outer(a, x);
   let M <- cholsolve(Λ, N);
   let M' <- cholsolve(Λ', N');
-  let Ψ' <- combine(1.0, Ψ, 1.0, outer(x, x), 1.0, inner(M, N), -1.0,
-      inner(M', N'));
+  let Ψ' <- Ψ + outer(x, x) + inner(M, N) - inner(M', N');
   let k' <- k + 1.0;
   return MatrixNormalInverseWishart(N', Λ', Ψ', k');
 }

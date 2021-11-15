@@ -35,8 +35,7 @@ auto lchoose(const T& x, const U& y) {
 template<class G, class T, class U, std::enable_if_t<
     !is_delay<T,U>::value,int> = 0>
 auto lchoose_grad(const G& d, const T& x, const U& y) {
-  auto pair = numbirch::lchoose_grad<Real>(d, x, y);
-  return std::make_pair(pair.first, pair.second);
+  return numbirch::lchoose_grad<Real>(d, x, y);
 }
 
 }
