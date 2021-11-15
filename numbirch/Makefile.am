@@ -75,6 +75,7 @@ nobase_include_HEADERS = \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
   numbirch/binary.hpp \
+  numbirch/macro.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
   numbirch/numeric.hpp \
@@ -100,8 +101,7 @@ noinst_HEADERS = \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
   numbirch/oneapi/numeric.hpp \
-  numbirch/oneapi/sycl.hpp \
-  numbirch/macro.hpp
+  numbirch/oneapi/sycl.hpp
 
 dist_noinst_DATA =  \
   Doxyfile \

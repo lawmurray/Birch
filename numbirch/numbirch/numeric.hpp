@@ -30,7 +30,7 @@
  * `is_floating_point`      | `{double, float}`                                              |
  * `is_scalar`              | `{T: is_boolean<T> or is_integral<T> or is_floating_point<T>}` |
  * `is_array`               | `{Array<T,D>: is_scalar<T>}`                                   |
- * #is_numeric           | `{T: is_scalar<T> or is_array<T>}`                             |
+ * #is_numeric              | `{T: is_scalar<T> or is_array<T>}`                             |
  * 
  * Where the return type is `promote<T,U>`. The numerical promotion rules are
  * defined as follows (these are symmetric, i.e. swap `T` and `U` if

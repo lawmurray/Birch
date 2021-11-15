@@ -44,7 +44,7 @@ convert_t<R,T,U> operator+(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && is_compatible_v<T,U>,int>>
 promote_t<T,U> operator+(const T& x, const U& y) {
-  return operator+<value_t<T>>(x, y);
+  return operator+<value_t<T>,T,U,int>(x, y);
 }
 
 /**
@@ -82,7 +82,7 @@ convert_t<R,T,U> operator-(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 promote_t<T,U> operator-(const T& x, const U& y) {
-  return operator-<value_t<promote_t<T,U>>>(x, y);
+  return operator-<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -122,7 +122,7 @@ template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> &&
     (is_scalar_v<T> || is_scalar_v<U>),int>>
 promote_t<T,U> operator*(const T& x, const U& y) {
-  return operator*<value_t<promote_t<T,U>>>(x, y);
+  return operator*<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -160,7 +160,7 @@ convert_t<R,T,U> operator/(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_scalar_v<U>,int>>
 promote_t<T,U> operator/(const T& x, const U& y) {
-  return operator/<value_t<promote_t<T,U>>>(x, y);
+  return operator/<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -198,7 +198,7 @@ convert_t<R,T,U> operator&&(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator&&(const T& x, const U& y) {
-  return operator&&<bool>(x, y);
+  return operator&&<bool,T,U,int>(x, y);
 }
 
 /**
@@ -236,7 +236,7 @@ convert_t<R,T,U> operator||(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator||(const T& x, const U& y) {
-  return operator||<bool>(x, y);
+  return operator||<bool,T,U,int>(x, y);
 }
 
 /**
@@ -274,7 +274,7 @@ convert_t<R,T,U> operator==(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator==(const T& x, const U& y) {
-  return operator==<bool>(x, y);
+  return operator==<bool,T,U,int>(x, y);
 }
 
 /**
@@ -312,7 +312,7 @@ convert_t<R,T,U> operator!=(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator!=(const T& x, const U& y) {
-  return operator!=<bool>(x, y);
+  return operator!=<bool,T,U,int>(x, y);
 }
 
 /**
@@ -350,7 +350,7 @@ convert_t<R,T,U> operator<(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator<(const T& x, const U& y) {
-  return operator< <bool>(x, y);
+  return operator< <bool,T,U,int>(x, y);
   // ^ preserve the space after operator<, needed for successful parse
 }
 
@@ -389,7 +389,7 @@ convert_t<R,T,U> operator<=(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator<=(const T& x, const U& y) {
-  return operator<=<bool>(x, y);
+  return operator<=<bool,T,U,int>(x, y);
 }
 
 /**
@@ -427,7 +427,7 @@ convert_t<R,T,U> operator>(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator>(const T& x, const U& y) {
-  return operator><bool>(x, y);
+  return operator><bool,T,U,int>(x, y);
 }
 
 /**
@@ -465,7 +465,7 @@ convert_t<R,T,U> operator>=(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 convert_t<bool,T,U> operator>=(const T& x, const U& y) {
-  return operator>=<bool>(x, y);
+  return operator>=<bool,T,U,int>(x, y);
 }
 
 /**
@@ -503,7 +503,7 @@ convert_t<R,T,U> copysign(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 promote_t<T,U> copysign(const T& x, const U& y) {
-  return copysign<value_t<promote_t<T,U>>>(x, y);
+  return copysign<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -537,9 +537,10 @@ convert_t<R,T,U> digamma(const T& x , const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> digamma(const T& x, const U& y) {
-  return digamma<value_t<promote_t<T,U>>>(x, y);
+  return digamma<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -557,7 +558,8 @@ promote_t<T,U> digamma(const T& x, const U& y) {
  * @return Result.
  */
 template<class R, class T, class U, class = std::enable_if_t<
-    is_floating_point_v<R> && is_numeric_v<T> && is_numeric_v<U>,int>>
+    is_floating_point_v<R> &&
+    is_numeric_v<T> && is_numeric_v<U>,int>>
 convert_t<R,T,U> gamma_p(const T& x, const U& y);
 
 /**
@@ -573,10 +575,11 @@ convert_t<R,T,U> gamma_p(const T& x, const U& y);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
+    is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> gamma_p(const T& x, const U& y) {
-  return gamma_p<value_t<promote_t<T,U>>>(x, y);
+  return gamma_p<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -594,7 +597,8 @@ promote_t<T,U> gamma_p(const T& x, const U& y) {
  * @return Result.
  */
 template<class R, class T, class U, class = std::enable_if_t<
-    is_floating_point_v<R> && is_numeric_v<T> && is_numeric_v<U>,int>>
+    is_floating_point_v<R> &&
+    is_numeric_v<T> && is_numeric_v<U>,int>>
 convert_t<R,T,U> gamma_q(const T& x, const U& y);
 
 /**
@@ -610,10 +614,11 @@ convert_t<R,T,U> gamma_q(const T& x, const U& y);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
+    is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> gamma_q(const T& x, const U& y) {
-  return gamma_q<value_t<promote_t<T,U>>>(x, y);
+  return gamma_q<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -651,7 +656,7 @@ convert_t<R,T,U> hadamard(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 promote_t<T,U> hadamard(const T& x, const U& y) {
-  return hadamard<value_t<promote_t<T,U>>>(x, y);
+  return hadamard<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -669,7 +674,8 @@ promote_t<T,U> hadamard(const T& x, const U& y) {
  * @return Result.
  */
 template<class R, class T, class U, class = std::enable_if_t<
-    is_floating_point_v<R> && is_numeric_v<T> && is_numeric_v<U>,int>>
+    is_floating_point_v<R> &&
+    is_numeric_v<T> && is_numeric_v<U>,int>>
 convert_t<R,T,U> lbeta(const T& x, const U& y);
 
 /**
@@ -686,9 +692,10 @@ convert_t<R,T,U> lbeta(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> lbeta(const T& x, const U& y) {
-  return lbeta<value_t<promote_t<T,U>>>(x, y);
+  return lbeta<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -724,9 +731,10 @@ convert_t<R,T,U> lchoose(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> lchoose(const T& x, const U& y) {
-  return lchoose<value_t<promote_t<T,U>>>(x, y);
+  return lchoose<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -784,9 +792,10 @@ convert_t<R,T,U> lgamma(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> lgamma(const T& x, const U& y) {
-  return lgamma<value_t<promote_t<T,U>>>(x, y);
+  return lgamma<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -804,7 +813,8 @@ promote_t<T,U> lgamma(const T& x, const U& y) {
  * @return Result.
  */
 template<class R, class T, class U, class = std::enable_if_t<
-    is_floating_point_v<R> && is_numeric_v<T> && is_numeric_v<U>,int>>
+    is_floating_point_v<R> &&
+    is_numeric_v<T> && is_numeric_v<U>,int>>
 convert_t<R,T,U> pow(const T& x, const U& y);
 
 /**
@@ -821,9 +831,10 @@ convert_t<R,T,U> pow(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
 promote_t<T,U> pow(const T& x, const U& y) {
-  return pow<value_t<promote_t<T,U>>>(x, y);
+  return pow<value_t<promote_t<T,U>>,T,U,int>(x, y);
 }
 
 }

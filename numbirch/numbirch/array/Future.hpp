@@ -15,8 +15,7 @@ namespace numbirch {
  * @ingroup array
  */
 template<class T>
-using Future = typename std::conditional<is_array<T>::value,T,
-    Scalar<T>>::type;
+using Future = std::conditional_t<is_array_v<T>,T,Scalar<T>>;
 
 ///@todo Deduction guides for type aliases require C++20
 // template<class T>

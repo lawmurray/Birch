@@ -26,8 +26,9 @@ namespace numbirch {
  * @return Result.
  */
 template<class R, class T, class U, class V, class = std::enable_if_t<
-    is_floating_point_v<R> && is_numeric_v<T> && is_numeric_v<U> &&
-    is_numeric_v<V> && is_compatible_v<T,U,V>,int>>
+    is_floating_point_v<R> &&
+    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V> &&
+    is_compatible_v<T,U,V>,int>>
 convert_t<R,T,U,V> ibeta(const T& x, const U& y, const V& z);
 
 /**
@@ -46,10 +47,11 @@ convert_t<R,T,U,V> ibeta(const T& x, const U& y, const V& z);
  * @return Result.
  */
 template<class T, class U, class V, class = std::enable_if_t<
+    is_floating_point_v<value_t<promote_t<T,U>>> &&
     is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V> &&
     is_compatible_v<T,U,V>,int>>
 promote_t<T,U,V> ibeta(const T& x, const U& y, const V& z) {
-  return ibeta<value_t<promote_t<T,U,V>>>(x, y, z);
+  return ibeta<value_t<promote_t<T,U,V>>,T,U,V,int>(x, y, z);
 }
 
 }

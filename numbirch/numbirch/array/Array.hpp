@@ -50,7 +50,7 @@ template<class T, int D>
 class Array {
   template<class U, int E> friend class Array;
 public:
-  static_assert(is_basic<T>::value, "Array is meant only for basic types");
+  static_assert(is_arithmetic_v<T>, "Array is only for arithmetic types");
   using value_type = T;
   using shape_type = ArrayShape<D>;
 

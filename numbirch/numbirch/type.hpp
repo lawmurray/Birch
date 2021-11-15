@@ -176,12 +176,16 @@ inline constexpr int dimension_v = dimension<T>::value;
  * 
  * @ingroup numeric
  * 
- * An array type is any arithmetic type with one or more dimensions.
+ * An array type is any instantiation of Array, including one with zero
+ * dimensions.
  */
 template<class T>
 struct is_array {
-  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
-      dimension<T>::value > 0;
+  static constexpr bool value = false;
+};
+template<class T, int D>
+struct is_array<Array<T,D>> {
+  static constexpr bool value = true;
 };
 template<class T>
 inline constexpr bool is_array_v = is_array<T>::value;
@@ -216,36 +220,6 @@ struct is_numeric {
 };
 template<class T>
 inline constexpr bool is_numeric_v = is_numeric<T>::value;
-
-/**
- * Is `T` a basic type?
- * 
- * @ingroup numeric
- * 
- * A basic type is one of `double`, `float`, `int` or `bool`.
- */
-template<class T>
-struct is_basic {
-  static constexpr bool value = false;
-};
-template<>
-struct is_basic<double> {
-  static constexpr bool value = true;
-};
-template<>
-struct is_basic<float> {
-  static constexpr bool value = true;
-};
-template<>
-struct is_basic<int> {
-  static constexpr bool value = true;
-};
-template<>
-struct is_basic<bool> {
-  static constexpr bool value = true;
-};
-template<class T>
-inline constexpr bool is_basic_v = is_basic<T>::value;
 
 /**
  * Is `T` a pair?
@@ -485,49 +459,5 @@ struct all_integral<Arg,Args...> {
 };
 template<class T, class U>
 inline constexpr bool all_integral_v = all_integral<T,U>::value;
-
-/**
- * @internal
- *
- * Element of a matrix.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
-}
-
-/**
- * @internal
- *
- * Element of a matrix.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0,
-    const int j = 0, const int ld = 0) {
-  return x;
-}
 
 }
