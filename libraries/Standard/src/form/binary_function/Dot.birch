@@ -26,8 +26,3 @@ Dot<Left,Right> dot(const Left& l, const Right& r) {
 function grad_dot<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right[_]) -> {
   return (r*d, l*d);
 }
-
-function grad_dot<Gradient,Left,Right>(d:Gradient, l:Left[_],
-    r:Right[_,_]) -> {
-  return (r*d, outer(l, d));
-}

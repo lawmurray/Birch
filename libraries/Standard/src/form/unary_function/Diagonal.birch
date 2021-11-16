@@ -33,8 +33,6 @@ template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
 Diagonal<Middle> diagonal(const Middle& m, const int n) {
   return construct<Diagonal<Middle>>(m, n);
 }
-}
-}}
 
 /**
  * Create diagonal matrix, filling the diagonal with a given scalar value.
@@ -42,8 +40,10 @@ Diagonal<Middle> diagonal(const Middle& m, const int n) {
  * - x: The value.
  * - n: Number of rows/columns.
  */
-function diagonal<Type>(m:Type, n:Integer) -> {
-  cpp{{
-  return numbirch::diagonal(m, n);
-  }}
+template<class T, std::enable_if_t<numbirch::is_arithmetic_v<T>,int> = 0>
+auto diagonal(const T& x, const int& n) {
+  return numbirch::diagonal(x, n);
 }
+
+}
+}}

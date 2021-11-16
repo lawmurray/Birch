@@ -37,7 +37,7 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   override function simulate() {
     V ~ InverseWishart(Ψ, k);
     X ~ MatrixGaussian(M, U, V);
-    y ~ MultivariateGaussian(dot(a, X) + c, V);
+    y ~ MultivariateGaussian(inner(X, a) + c, V);
   }
 
   override function forward() -> Real[_] {

@@ -95,7 +95,7 @@ inline ArrayShape<0> make_shape() {
 template<>
 class ArrayShape<1> {
 public:
-  ArrayShape(const int n = 0, const int inc = 1) :
+  explicit ArrayShape(const int n = 0, const int inc = 1) :
       n(n),
       inc(inc) {
     //
@@ -234,14 +234,14 @@ public:
     //
   }
 
-  ArrayShape(const int m, const int n) :
+  explicit ArrayShape(const int m, const int n) :
       m(m),
       n(n),
       ld(m) {
     //
   }
 
-  ArrayShape(const int m, const int n, const int ld) :
+  explicit ArrayShape(const int m, const int n, const int ld) :
       m(m),
       n(n),
       ld(ld) {

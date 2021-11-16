@@ -127,10 +127,6 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& x);
 
-
-
-
-
 /**
  * Inverse of a symmetric positive definite square matrix, via the Cholesky
  * factorization.
@@ -175,7 +171,7 @@ Array<R,0> count(const T& x);
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<int,0> count(const T& x) {
-  return count<int>(x);
+  return count<int,T,int>(x);
 }
 
 /**
@@ -207,7 +203,7 @@ Array<R,2> diagonal(const T& x, const int n);
  */
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<value_t<T>,2> diagonal(const T& x, const int n) {
-  return diagonal<value_t<T>>(x, n);
+  return diagonal<value_t<T>,T,int>(x, n);
 }
 
 /**
@@ -321,7 +317,7 @@ Array<R,0> sum(const T& x);
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<value_t<T>,0> sum(const T& x) {
-  return sum<value_t<T>>(x);
+  return sum<value_t<T>,T,int>(x);
 }
 
 /**

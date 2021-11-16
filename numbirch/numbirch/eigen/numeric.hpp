@@ -49,7 +49,7 @@ Array<R,0> count(const T& x) {
 
 template<class R, class T, class>
 Array<R,2> diagonal(const T& x, const int n) {
-  Array<R,2> B;
+  Array<R,2> B(make_shape(n, n));
   auto B1 = make_eigen(B);
   B1.noalias() = R(element(data(x)))*B1.Identity(n, n);
   return B;
@@ -87,7 +87,7 @@ Array<T,0> ldet(const Array<T,2>& A) {
 
 template<class R, class T, class>
 Array<R,1> single(const T& i, const int n) {
-  Array<R,1> x(n);
+  Array<R,1> x(make_shape(n));
   auto x1 = make_eigen(x);
   x1.noalias() = x1.Zero(n, 1);
   x1(element(data(i)) - 1) = R(1);
@@ -96,7 +96,7 @@ Array<R,1> single(const T& i, const int n) {
 
 template<class R, class T, class U, class>
 Array<R,2> single(const T& i, const U& j, const int m, const int n) {
-  Array<R,2> x(m, n);
+  Array<R,2> x(make_shape(m, n));
   auto x1 = make_eigen(x);
   x1.noalias() = x1.Zero(m, n);
   x1(element(data(i)) - 1, element(data(j)) - 1) = R(1);
@@ -115,7 +115,7 @@ Array<T,0> trace(const Array<T,2>& A) {
 
 template<class T, class>
 Array<T,2> transpose(const Array<T,2>& A) {
-  Array<T,2> B(columns(A), rows(A));
+  Array<T,2> B(make_shape(columns(A), rows(A)));
   auto A1 = make_eigen(A);
   auto B1 = make_eigen(B);
   B1.noalias() = A1.transpose();
@@ -126,7 +126,7 @@ template<class T, class>
 Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
   assert(rows(S) == columns(S));
   assert(columns(S) == length(x));
-  Array<T,1> y(rows(S));
+  Array<T,1> y(make_shape(rows(S)));
   auto S1 = make_eigen(S);
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
@@ -141,7 +141,7 @@ template<class T, class>
 Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
   assert(rows(S) == columns(S));
   assert(columns(S) == rows(B));
-  Array<T,2> C(B.shape());
+  Array<T,2> C(shape(B));
   auto S1 = make_eigen(S);
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
@@ -156,7 +156,7 @@ template<class T, class>
 Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
   assert(columns(A) == columns(S));
   assert(rows(S) == columns(S));
-  Array<T,2> C(rows(A), rows(S));
+  Array<T,2> C(make_shape(rows(A), rows(S)));
   auto A1 = make_eigen(A);
   auto S1 = make_eigen(S);
   auto C1 = make_eigen(C);
@@ -172,7 +172,7 @@ template<class T, class>
 Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
   assert(rows(S) == columns(S));
   assert(columns(S) == length(y));
-  Array<T,1> x(y.shape());
+  Array<T,1> x(shape(y));
   auto S1 = make_eigen(S);
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
@@ -186,7 +186,7 @@ template<class T, class>
 Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
   assert(rows(S) == columns(S));
   assert(columns(S) == rows(C));
-  Array<T,2> B(C.shape());
+  Array<T,2> B(shape(C));
   auto S1 = make_eigen(S);
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);

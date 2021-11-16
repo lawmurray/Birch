@@ -33,7 +33,9 @@ auto lchoose(const T& x, const U& y) {
  * Gradient of lchoose().
  */
 template<class G, class T, class U, std::enable_if_t<
-    !is_delay<T,U>::value,int> = 0>
+    numbirch::is_arithmetic_v<G> &&
+    numbirch::is_arithmetic_v<T> &&
+    numbirch::is_arithmetic_v<U>,int> = 0>
 auto lchoose_grad(const G& d, const T& x, const U& y) {
   return numbirch::lchoose_grad<Real>(d, x, y);
 }

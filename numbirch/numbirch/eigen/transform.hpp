@@ -73,7 +73,7 @@ auto transform(const T& x, const U& y, Functor f) {
   constexpr int D = std::max(dimension_v<T>, dimension_v<U>);
   auto m = std::max(rows(x), rows(y));
   auto n = std::max(columns(x), columns(y));
-  auto z = Array<R,D>(m, n);
+  auto z = Array<R,D>(make_shape<D>(m, n));
   kernel_transform(m, n, data(x), stride(x), data(y), stride(y), data(z),
       stride(z), f);
   return z;
@@ -105,8 +105,8 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
       dimension_v<U>);
   auto m = std::max(std::max(rows(g), rows(x)), rows(y));
   auto n = std::max(std::max(columns(g), columns(x)), columns(y));
-  auto a = Array<V,D>(m, n);
-  auto b = Array<W,D>(m, n);
+  auto a = Array<V,D>(make_shape<D>(m, n));
+  auto b = Array<W,D>(make_shape<D>(m, n));
   kernel_transform_grad(m, n, data(g), stride(g), data(x), stride(x), data(y),
       stride(y), data(a), stride(a), data(b), stride(b), f);
   return std::make_pair(a, b);
@@ -134,7 +134,7 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
       dimension_v<V>);
   auto m = std::max(std::max(rows(x), rows(y)), rows(z));
   auto n = std::max(std::max(columns(x), columns(y)), columns(z));
-  auto a = Array<R,D>(m, n);
+  auto a = Array<R,D>(make_shape<D>(m, n));
   kernel_transform(m, n, data(x), stride(x), data(y), stride(y), data(z),
       stride(z), data(a), stride(a), f);
   return a;

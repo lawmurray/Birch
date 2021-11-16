@@ -457,7 +457,7 @@ struct all_integral<Arg,Args...> {
   static const bool value = all_integral<Arg>::value &&
       all_integral<Args...>::value;
 };
-template<class T, class U>
-inline constexpr bool all_integral_v = all_integral<T,U>::value;
+template<class... Args>
+inline constexpr bool all_integral_v = all_integral<Args...>::value;
 
 }

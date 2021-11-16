@@ -86,16 +86,16 @@ function wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(
-    μ:Add<Dot<Arg1,Random<Real[_,_]>>,Arg2>, Σ:Random<Real[_,_]>) ->
+    μ:Add<Inner<Random<Real[_,_]>,Arg1>,Arg2>, Σ:Random<Real[_,_]>) ->
     Distribution<Real[_]> {
-  μ.l.r.prune();
-  if μ.l.r.hasMatrixNormalInverseWishart()&& μ.l.r.isGrandChildOf(Σ) {
-    let (N, Λ, Ψ, k) <- μ.l.r.getMatrixNormalInverseWishart();
-    let p <- LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l.l, N, Λ,
+  μ.l.l.prune();
+  if μ.l.l.hasMatrixNormalInverseWishart()&& μ.l.l.isGrandChildOf(Σ) {
+    let (N, Λ, Ψ, k) <- μ.l.l.getMatrixNormalInverseWishart();
+    let p <- LinearMatrixNormalInverseWishartMultivariateGaussian(μ.l.r, N, Λ,
         Ψ, k, μ.r);
-    μ.l.r.graft(p, 1);
+    μ.l.l.graft(p, 1);
     Σ.graftReplace(p, 2);
-    μ.l.r.join(Σ);
+    μ.l.l.join(Σ);
     return p;
   } else {
     Σ.prune();

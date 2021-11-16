@@ -50,8 +50,8 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let z <- x;
         y[i] <- y[i] - 0.5*h';
         z[i] <- z[i] + 0.5*h';
-        let q <- handler.move(y);
-        let r <- handler.move(z);
+        let q <- handler.move(y)!;
+        let r <- handler.move(z)!;
         let fd <- (r - q)/h';
         let δ <- abs(d[i] - fd);
 

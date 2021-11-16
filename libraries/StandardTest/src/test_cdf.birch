@@ -27,8 +27,8 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     /* test the upper bound against the quantile */
     let test <- q.quantile(1.0);
     if test? && abs(to! - test!) > 1.0/N {
-      error("upper bound and quantile comparison failed, " + to! + " vs " +
-          test! + ".");
+      error("upper bound and quantile comparison failed, " + to!! + " vs " +
+          test!! + ".");
     }
   } else {
     to <- q.quantile(1.0 - 1.0/N);
@@ -46,9 +46,9 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   /* compare sum of pdf to cdf evaluations */
   let P <- 0.5/N;
   for n in 1..N {
-    let x <- from! + (n - 0.5)*(to! - from!)/N;
-    let C <- q.cdf(x)!;
-    P <- P + q.pdf(x)*(to! - from!)/N;
+    let x <- from!! + (n - 0.5)*(to!! - from!!)/N;
+    let C <- q.cdf(x)!!;
+    P <- P + q.pdf(x)*(to!! - from!!)/N;
 
     let δ <- abs(C - P);
     let ε <- 2.0/sqrt(N);
@@ -100,8 +100,8 @@ function test_cdf(q:Distribution<Integer>) {
 
   /* compare sum of pdf to cdf evaluations */
   let P <- 0.0;
-  for x in from!..to! {
-    let C <- q.cdf(x)!;
+  for x in from!!..to!! {
+    let C <- q.cdf(x)!!;
     P <- P + q.pdf(x);
 
     let δ <- abs(C - P);

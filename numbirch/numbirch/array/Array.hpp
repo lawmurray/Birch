@@ -70,7 +70,7 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    if (!std::is_arithmetic<T>::value) {
+    if (!is_arithmetic_v<T>) {
       dicer();
       initialize();
     }
@@ -117,26 +117,7 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    if (!std::is_arithmetic<T>::value) {
-      dicer();
-      initialize();
-    }
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param r Number of rows.
-   * @param c Number of columns.
-   */
-  Array(const int r = 1, const int c = 1) :
-      buf(nullptr),
-      ctl(nullptr),
-      shp(make_shape<D>(r, c)),
-      isView(false),
-      isDiced(false) {
-    allocate();
-    if (!std::is_arithmetic<T>::value) {
+    if (!is_arithmetic_v<T>) {
       dicer();
       initialize();
     }
@@ -224,7 +205,7 @@ public:
    * serial index.
    * @param shape Shape.
    */
-  template<class L>
+  template<class L, std::enable_if_t<std::is_invocable_r_v<T,L,int>,int> = 0>
   Array(const L& l, const shape_type& shape) :
       buf(nullptr),
       ctl(nullptr),
@@ -261,7 +242,7 @@ public:
       isView(false),
       isDiced(false) {
     shp = o.shp;
-    if (!o.isView && std::is_arithmetic<T>::value) {
+    if (!o.isView && is_arithmetic_v<T>) {
       ArrayControl* ctl;
       std::tie(ctl, buf, isDiced) = o.share();
       this->ctl.store(ctl);
@@ -275,9 +256,8 @@ public:
   /**
    * Generic copy constructor.
    */
-  template<class U, int E, std::enable_if_t<D == E &&
-      std::is_convertible<U,T>::value,int> = 0>
-  Array(const Array<U,E>& o) :
+  template<class U, std::enable_if_t<std::is_convertible_v<U,T>,int> = 0>
+  Array(const Array<U,D>& o) :
       buf(nullptr),
       ctl(nullptr),
       shp(),
@@ -345,6 +325,65 @@ public:
   }
 
   /**
+   * Value conversion (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  operator T&() {
+    return value();
+  }
+
+  /**
+   * Value conversion (scalar only).
+   */
+  template<int E = D, std::enable_if_t<E == 0,int> = 0>
+  operator const T&() const {
+    return value();
+  }
+
+  /**
+   * Value conversion (scalar only).
+   */
+  template<class U, int E = D, std::enable_if_t<E == 0 &&
+      is_scalar_v<U> && promotes_to_v<T,U>,int> = 0>
+  operator U() const {
+    return value();
+  }
+
+  /**
+   * Member access (scalar only).
+   */
+  template<int E = D, std::enable_if_t<(E == 0) &&
+      !is_arithmetic_v<T>,int> = 0>
+  T& operator->() {
+    return value();
+  }
+
+  /**
+   * Member access (scalar only).
+   */
+  template<int E = D, std::enable_if_t<(E == 0) &&
+      !is_arithmetic_v<T>,int> = 0>
+  const T& operator->() const {
+    return value();
+  }
+
+  /**
+   * @copydoc value()
+   * 
+   * @see value()
+   */
+  auto& operator*() {
+    return value();
+  }
+
+  /**
+   * @copydoc operator*()
+   */
+  const auto& operator*() const {
+    return value();
+  }
+
+  /**
    * Iterator to the first element.
    */
   ArrayIterator<T,D> begin() {
@@ -373,65 +412,6 @@ public:
    */
   ArrayIterator<T,D> end() const {
     return begin().operator+(size());
-  }
-
-  /**
-   * Value conversion (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator T&() {
-    return value();
-  }
-
-  /**
-   * Value conversion (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator const T&() const {
-    return value();
-  }
-
-  /**
-   * Value conversion (scalar only).
-   */
-  template<class U, int E = D, std::enable_if_t<E == 0 &&
-      promotes_to<T,U>::value,int> = 0>
-  operator U() const {
-    return value();
-  }
-
-  /**
-   * Member access (scalar only).
-   */
-  template<int E = D, std::enable_if_t<(E == 0) &&
-      !std::is_arithmetic<T>::value,int> = 0>
-  T& operator->() {
-    return value();
-  }
-
-  /**
-   * Member access (scalar only).
-   */
-  template<int E = D, std::enable_if_t<(E == 0) &&
-      !std::is_arithmetic<T>::value,int> = 0>
-  const T& operator->() const {
-    return value();
-  }
-
-  /**
-   * @copydoc value()
-   * 
-   * @see value()
-   */
-  auto& operator*() {
-    return value();
-  }
-
-  /**
-   * @copydoc operator*()
-   */
-  const auto& operator*() const {
-    return value();
   }
 
   /**
@@ -474,7 +454,7 @@ public:
    * it returns true.
    */
   bool has_value() const {
-    return !std::is_arithmetic<T>::value || isDiced;
+    return !is_arithmetic_v<T> || isDiced;
   }
 
   /**
@@ -522,8 +502,7 @@ public:
    * @see slice(), which returns a `Scalar<T>` rather than `T&` for the same
    * arguments.
    */
-  template<class... Args, std::enable_if_t<
-      all_integral<Args...>::value,int> = 0>
+  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   T& dice(const Args&... args) {
     own();
     dicer();
@@ -533,8 +512,7 @@ public:
   /**
    * @copydoc dice()
    */
-  template<class... Args, std::enable_if_t<
-      all_integral<Args...>::value,int> = 0>
+  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   const T& dice(const Args&... args) const {
     slicer();
     return shp.dice(buf, args...);
@@ -546,8 +524,7 @@ public:
    * @note operator()() is overloaded to behave as slice() when one or more
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
-  template<class... Args, std::enable_if_t<
-      !all_integral<Args...>::value,int> = 0>
+  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
   auto operator()(Args&&... args) {
     return slice(std::forward<Args>(args)...);
   }
@@ -558,8 +535,7 @@ public:
    * @note operator()() is overloaded to behave as slice() when one or more
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
-  template<class... Args, std::enable_if_t<
-      !all_integral<Args...>::value,int> = 0>
+  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
   auto operator()(Args&&... args) const {
     return slice(std::forward<Args>(args)...);
   }
@@ -570,8 +546,7 @@ public:
    * @note operator()() is overloaded to behave as slice() when one or more
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
-  template<class... Args, std::enable_if_t<
-      all_integral<Args...>::value,int> = 0>
+  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   T& operator()(const Args&... args) {
     return dice(args...);
   }
@@ -582,8 +557,7 @@ public:
    * @note operator()() is overloaded to behave as slice() when one or more
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
-  template<class... Args, std::enable_if_t<
-      all_integral<Args...>::value,int> = 0>
+  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   const T& operator()(const Args&... args) const {
     return dice(args...);
   }
@@ -728,7 +702,7 @@ public:
       swap(tmp);
     } else {
       own();
-      if (std::is_arithmetic<T>::value) {
+      if (is_arithmetic_v<T>) {
         slicer();
         buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
         dicer();
@@ -765,7 +739,7 @@ public:
       std::destroy(buf + i, buf + i + len);
       std::memmove((void*)(buf + i), (void*)(buf + i + len),
           (n - len - i)*sizeof(T));
-      if (std::is_arithmetic<T>::value) {
+      if (is_arithmetic_v<T>) {
         slicer();
         buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
       } else {
@@ -819,7 +793,7 @@ private:
   void assign(const Array& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      if (std::is_arithmetic<T>::value) {
+      if (is_arithmetic_v<T>) {
         slicer();
         memcpy(data(), shp.stride()*sizeof(T), o.data(),
             o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
@@ -871,7 +845,7 @@ private:
     assert(!ctl.load());
     assert(!isDiced);
 
-    if (std::is_arithmetic<T>::value) {
+    if (is_arithmetic_v<T>) {
       slicer();
       buf = (T*)malloc(volume()*sizeof(T));
     } else {
@@ -886,7 +860,7 @@ private:
     if (!isView) {
       auto ctl = this->ctl.exchange(nullptr);
       if (!ctl || ctl->decShared() == 0) {
-        if (std::is_arithmetic<T>::value) {
+        if (is_arithmetic_v<T>) {
           free((void*)buf);
         } else {
           std::destroy(beginInternal(), endInternal());
@@ -949,7 +923,7 @@ private:
         this->ctl.store(nullptr);
       } else {
         T* buf = nullptr;
-        if (std::is_arithmetic<T>::value) {
+        if (is_arithmetic_v<T>) {
           slicer();
           buf = (T*)malloc(volume()*sizeof(T));
           memcpy(buf, shp.stride()*sizeof(T), this->buf,
@@ -992,7 +966,7 @@ private:
    */
   void dicer() {
     if (!isDiced) {
-      if (std::is_arithmetic<T>::value) {
+      if (is_arithmetic_v<T>) {
         wait();
       }
       isDiced = true;
@@ -1012,7 +986,7 @@ private:
    * @param args Constructor arguments.
    */
   template<class ... Args, std::enable_if_t<
-      std::is_constructible<T,Args...>::value,int> = 0>
+      std::is_constructible_v<T,Args...>,int> = 0>
   void initialize(Args&&... args) {
     auto iter = beginInternal();
     auto last = endInternal();
@@ -1035,9 +1009,9 @@ private:
    * Copy from another array.
    */
   template<class U, int E, std::enable_if_t<D == E &&
-      std::is_convertible<U,T>::value,int> = 0>
+      std::is_convertible_v<U,T>,int> = 0>
   void uninitialized_copy(const Array<U,E>& o) {
-    if (std::is_arithmetic<T>::value && std::is_same<T,U>::value) {
+    if (is_arithmetic_v<T> && std::is_same_v<T,U>) {
       slicer();
       memcpy(data(), shp.stride()*sizeof(T), o.data(),
           o.shp.stride()*sizeof(T), shp.width()*sizeof(T),

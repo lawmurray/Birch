@@ -327,7 +327,7 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
   assert(rows(S) == columns(S));
   assert(columns(S) == rows(B));
   Array<T,2> L(S);
-  Array<T,2> C(B.shape());
+  Array<T,2> C(shape(B));
 
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
@@ -356,7 +356,7 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
   assert(columns(A) == columns(S));
   assert(rows(S) == columns(S));
   Array<T,2> L(S);
-  Array<T,2> C(A.shape());
+  Array<T,2> C(shape(A));
 
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
