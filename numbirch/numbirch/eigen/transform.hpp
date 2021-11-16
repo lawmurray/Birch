@@ -68,7 +68,6 @@ void kernel_transform(const int m, const int n, const T A, const int ldA,
 }
 template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
-  assert(conforms(x, y));
   using R = decltype(f(value_t<T>(),value_t<U>()));
   constexpr int D = std::max(dimension_v<T>, dimension_v<U>);
   auto m = std::max(rows(x), rows(y));
@@ -97,7 +96,6 @@ void kernel_transform_grad(const int m, const int n, const G g, const int ldg,
 }
 template<class G, class T, class U, class Functor>
 auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
-  assert(conforms(x, y));
   using P = decltype(f(value_t<G>(),value_t<T>(),value_t<U>()));
   using V = typename P::first_type;
   using W = typename P::second_type;
@@ -128,7 +126,6 @@ void kernel_transform(const int m, const int n, const T A, const int ldA,
 }
 template<class T, class U, class V, class Functor>
 auto transform(const T& x, const U& y, const V& z, Functor f) {
-  assert(conforms(x, y) && conforms(y, z));
   using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
   constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
       dimension_v<V>);
