@@ -53,7 +53,7 @@ public:
   }
 
   static constexpr int stride() {
-    return 1;
+    return 0;
   }
 
   static constexpr bool conforms(const ArrayShape<0>& o) {

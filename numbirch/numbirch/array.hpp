@@ -94,7 +94,7 @@ int stride(const Array<T,D>& x) {
 }
 
 /**
- * Stride of a scalar---i.e. 1, although typically ignored by functions.
+ * Stride of a scalar---i.e. 0, although typically ignored by functions.
  * 
  * @ingroup array
  */
@@ -230,23 +230,27 @@ constexpr bool conforms(const T& x, const U& y) {
 /**
  * @internal
  *
- * Element of a matrix.
+ * Element of a matrix, vector, or scalar. A scalar is identified by having
+ * `ld == 0`.
  */
 template<class T>
 NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
     const int ld = 0) {
-  return x[i + j*ld];
+  int k = (ld == 0) ? 0 : i + j*ld;
+  return x[k];
 }
 
 /**
  * @internal
  *
- * Element of a matrix.
+ * Element of a matrix, vector, or scalar. A scalar is identified by having
+ * `ld == 0`.
  */
 template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x[i + j*ld];
+NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0,
+    const int j = 0, const int ld = 0) {
+  int k = (ld == 0) ? 0 : i + j*ld;
+  return x[k];
 }
 
 /**

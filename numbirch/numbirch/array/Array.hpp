@@ -647,7 +647,7 @@ public:
   /**
    * Stride, in number of elements. This refers to the 2d memory layout of the
    * array, where the stride is the number of elements between the first
-   * element of each contiguous block. For a scalar it is 1, for a vector it
+   * element of each contiguous block. For a scalar it is 0, for a vector it
    * is the stride between elements, for a matrix it is the stride between
    * columns.
    */
