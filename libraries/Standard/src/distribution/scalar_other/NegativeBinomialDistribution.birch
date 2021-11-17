@@ -105,7 +105,7 @@ function logpdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
-  return ibeta(k, x + 1,  ρ);
+  return ibeta(k, x + 1, ρ);
 }
 
 /*
