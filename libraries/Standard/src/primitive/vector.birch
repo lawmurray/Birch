@@ -12,8 +12,6 @@
  */
 function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   cpp{{
-  /* wrap λ in another lambda function to translate 0-based indices into
-   * 1-based indices */
   using T = decltype(wait(λ(1)));
   return numbirch::Array<T,1>(λ, numbirch::make_shape(length));
   }}
