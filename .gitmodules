@@ -1,0 +1,6 @@
+[submodule "numbirch/docs/doxygen-awesome-css"]
+	path = numbirch/docs/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git
+[submodule "numbirch/docs/markdeep"]
+	path = numbirch/docs/markdeep
+	url = https://github.com/morgan3d/markdeep

@@ -1,8 +1,5 @@
 /**
  * @file
- * 
- * @defgroup memory Memory
- * Asynchronous unified memory management.
  */
 #pragma once
 
@@ -47,6 +44,7 @@ void term();
  * safely available by the time it is used again by NumBirch. To safely use
  * the allocation outside of NumBirch, one should use wait() either before or
  * after the call to malloc() to ensure that the memory is no longer in use.
+ * Array handles this for you.
  */
 void* malloc(const size_t size);
 
@@ -65,7 +63,8 @@ void* malloc(const size_t size);
  * memory that is still in use but that will be safely available by the time
  * it is used again by NumBirch. To safely use the allocation outside of
  * NumBirch, one should use wait() either before or after the call to
- * realloc() to ensure that the memory is no longer in use.
+ * realloc() to ensure that the memory is no longer in use. Array handles this
+ * for you.
  */
 void* realloc(void* ptr, const size_t size);
 

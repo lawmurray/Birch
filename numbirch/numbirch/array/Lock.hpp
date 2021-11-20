@@ -12,7 +12,7 @@ namespace numbirch {
  * 
  * Lock with exclusive use semantics.
  * 
- * @ingroup memory
+ * @ingroup array
  */
 class Lock {
 public:

@@ -9,7 +9,7 @@ namespace numbirch {
 /**
  * Iterator over Array.
  * 
- * @ingroup memory
+ * @ingroup array
  * 
  * @tparam T Value type.
  * @tparam D Number of dimensions.

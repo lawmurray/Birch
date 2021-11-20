@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * @defgroup array Array
- * Multidimensional arrays with copy-on-write and streamlined device
- * synchronization.
  */
 #pragma once
 
@@ -16,6 +12,8 @@
 
 namespace numbirch {
 /**
+ * @internal
+ *
  * Length of an array.
  * 
  * @ingroup array
@@ -28,6 +26,8 @@ int length(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Length of a scalar---i.e. 1.
  * 
  * @ingroup array
@@ -38,6 +38,8 @@ constexpr int length(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Number of rows in array.
  * 
  * @ingroup array
@@ -50,6 +52,8 @@ int rows(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Number of rows in scalar---i.e. 1.
  * 
  * @ingroup array
@@ -60,6 +64,8 @@ constexpr int rows(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Number of columns in array.
  * 
  * @ingroup array
@@ -72,6 +78,8 @@ int columns(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Number of columns in scalar---i.e. 1.
  * 
  * @ingroup array
@@ -82,6 +90,8 @@ constexpr int columns(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Stride of an array.
  * 
  * @ingroup array
@@ -94,6 +104,8 @@ int stride(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Stride of a scalar---i.e. 0, although typically ignored by functions.
  * 
  * @ingroup array
@@ -104,6 +116,8 @@ constexpr int stride(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Size of an array.
  * 
  * @ingroup array
@@ -116,6 +130,8 @@ int size(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Size of a scalar---i.e. 1.
  * 
  * @ingroup array
@@ -126,6 +142,8 @@ constexpr int size(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Shape of an array.
  * 
  * @ingroup array
@@ -138,6 +156,8 @@ ArrayShape<D> shape(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Shape of a scalar.
  * 
  * @ingroup array
@@ -148,6 +168,8 @@ ArrayShape<0> shape(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Buffer of an array.
  * 
  * @ingroup array
@@ -160,6 +182,8 @@ const T* data(const Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Buffer of an array.
  * 
  * @ingroup array
@@ -170,6 +194,8 @@ T* data(Array<T,D>& x) {
 }
 
 /**
+ * @internal
+ *
  * Buffer of a scalar---just the scalar itself.
  * 
  * @ingroup array
@@ -180,6 +206,8 @@ constexpr const T& data(const T& x) {
 }
 
 /**
+ * @internal
+ *
  * Do the shapes of two arrays conform?---Yes, if they have the same number of
  * dimensions and same length along them.
  * 
@@ -193,6 +221,8 @@ bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
 }
 
 /**
+ * @internal
+ *
  * Does the shape of an array conform with that of a scalar?---Yes, if it has
  * zero dimensions.
  * 
@@ -205,6 +235,8 @@ constexpr bool conforms(const Array<T,D>& x, const U& y) {
 }
 
 /**
+ * @internal
+ *
  * Does the shape of an array conform with that of a scalar?---Yes, if it has
  * zero dimensions.
  * 
@@ -217,6 +249,8 @@ constexpr bool conforms(const T& x, const Array<U,D>& y) {
 }
 
 /**
+ * @internal
+ *
  * Do the shapes of two scalars conform?---Yes.
  * 
  * @ingroup array
@@ -274,5 +308,76 @@ NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0,
     const int j = 0, const int ld = 0) {
   return x;
 }
+
+/**
+ * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
+ * value, while all off-diagonal elements are assigned zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam T Scalar type.
+ * 
+ * @param x Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ */
+template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
+    is_scalar_v<T>,int>>
+Array<R,2> diagonal(const T& x, const int n);
+
+/**
+ * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
+ * value, while all off-diagonal elements are assigned zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<value_t<T>,2> diagonal(const T& x, const int n) {
+  return diagonal<value_t<T>,T,int>(x, n);
+}
+
+/**
+ * Construct single-entry vector. One of the elements of the vector is one,
+ * all others are zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam T Scalar type.
+ * 
+ * @param i Index of single entry (1-based).
+ * @param n Length of vector.
+ * 
+ * @return Single-entry vector.
+ */
+template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
+    is_scalar_v<T>,int>>
+Array<R,1> single(const T& i, const int n);
+
+/**
+ * Construct single-entry matrix. One of the elements of the matrix is one,
+ * all others are zero.
+ * 
+ * @ingroup array
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam T Scalar type.
+ * @tparam U Scalar type.
+ * 
+ * @param i Row index of single entry (1-based).
+ * @param j Column index of single entry (1-based).
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Single-entry matrix.
+*/
+template<class R, class T, class U, class = std::enable_if_t<
+    is_arithmetic_v<R> && is_scalar_v<T> && is_scalar_v<U>,int>>
+Array<R,2> single(const T& i, const U& j, const int m, const int n);
 
 }

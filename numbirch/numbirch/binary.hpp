@@ -12,7 +12,7 @@ namespace numbirch {
 /**
  * Element-wise addition.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -31,7 +31,7 @@ convert_t<R,T,U> operator+(const T& x, const U& y);
 /**
  * Element-wise addition.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -50,7 +50,7 @@ promote_t<T,U> operator+(const T& x, const U& y) {
 /**
  * Element-wise subtraction.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -69,7 +69,7 @@ convert_t<R,T,U> operator-(const T& x, const U& y);
 /**
  * Element-wise subtraction.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -88,7 +88,7 @@ promote_t<T,U> operator-(const T& x, const U& y) {
 /**
  * Multiplication by scalar.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -108,7 +108,7 @@ convert_t<R,T,U> operator*(const T& x, const U& y);
 /**
  * Multiplication by scalar.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -128,7 +128,7 @@ promote_t<T,U> operator*(const T& x, const U& y) {
 /**
  * Division by scalar.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -147,7 +147,7 @@ convert_t<R,T,U> operator/(const T& x, const U& y);
 /**
  * Division by scalar.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -166,7 +166,7 @@ promote_t<T,U> operator/(const T& x, const U& y) {
 /**
  * Logical `and`.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -185,7 +185,7 @@ convert_t<R,T,U> operator&&(const T& x, const U& y);
 /**
  * Logical `and`.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -204,7 +204,7 @@ convert_t<bool,T,U> operator&&(const T& x, const U& y) {
 /**
  * Logical `or`.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -223,7 +223,7 @@ convert_t<R,T,U> operator||(const T& x, const U& y);
 /**
  * Logical `or`.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -242,7 +242,7 @@ convert_t<bool,T,U> operator||(const T& x, const U& y) {
 /**
  * Element-wise equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -261,7 +261,7 @@ convert_t<R,T,U> operator==(const T& x, const U& y);
 /**
  * Element-wise equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -280,7 +280,7 @@ convert_t<bool,T,U> operator==(const T& x, const U& y) {
 /**
  * Element-wise not equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -299,7 +299,7 @@ convert_t<R,T,U> operator!=(const T& x, const U& y);
 /**
  * Element-wise not equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -318,7 +318,7 @@ convert_t<bool,T,U> operator!=(const T& x, const U& y) {
 /**
  * Element-wise less than comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -337,7 +337,7 @@ convert_t<R,T,U> operator<(const T& x, const U& y);
 /**
  * Element-wise less than comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -357,7 +357,7 @@ convert_t<bool,T,U> operator<(const T& x, const U& y) {
 /**
  * Element-wise less than or equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -376,7 +376,7 @@ convert_t<R,T,U> operator<=(const T& x, const U& y);
 /**
  * Element-wise less than or equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -395,7 +395,7 @@ convert_t<bool,T,U> operator<=(const T& x, const U& y) {
 /**
  * Element-wise greater than comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -414,7 +414,7 @@ convert_t<R,T,U> operator>(const T& x, const U& y);
 /**
  * Element-wise greater than comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -433,7 +433,7 @@ convert_t<bool,T,U> operator>(const T& x, const U& y) {
 /**
  * Element-wise greater than or equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -452,7 +452,7 @@ convert_t<R,T,U> operator>=(const T& x, const U& y);
 /**
  * Element-wise greater than or equal to comparison.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -471,7 +471,7 @@ convert_t<bool,T,U> operator>=(const T& x, const U& y) {
 /**
  * Copy sign of a number.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -490,7 +490,7 @@ convert_t<R,T,U> copysign(const T& x, const U& y);
 /**
  * Copy sign of a number.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -509,7 +509,7 @@ promote_t<T,U> copysign(const T& x, const U& y) {
 /**
  * Multivariate digamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -527,7 +527,7 @@ convert_t<R,T,U> digamma(const T& x , const U& y);
 /**
  * Multivariate digamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -546,7 +546,7 @@ promote_t<T,U> digamma(const T& x, const U& y) {
 /**
  * Normalized lower incomplete gamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -565,7 +565,7 @@ convert_t<R,T,U> gamma_p(const T& x, const U& y);
 /**
  * Normalized lower incomplete gamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -585,7 +585,7 @@ promote_t<T,U> gamma_p(const T& x, const U& y) {
 /**
  * Normalized upper incomplete gamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -604,7 +604,7 @@ convert_t<R,T,U> gamma_q(const T& x, const U& y);
 /**
  * Normalized upper incomplete gamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -624,7 +624,7 @@ promote_t<T,U> gamma_q(const T& x, const U& y) {
 /**
  * Hadamard (element-wise) multiplication.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -643,7 +643,7 @@ convert_t<R,T,U> hadamard(const T& x, const U& y);
 /**
  * Hadamard (element-wise) multiplication.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -662,7 +662,7 @@ promote_t<T,U> hadamard(const T& x, const U& y) {
 /**
  * Logarithm of beta.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -681,7 +681,7 @@ convert_t<R,T,U> lbeta(const T& x, const U& y);
 /**
  * Logarithm of beta.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -701,7 +701,7 @@ promote_t<T,U> lbeta(const T& x, const U& y) {
 /**
  * Logarithm of the binomial coefficient.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -720,7 +720,7 @@ convert_t<R,T,U> lchoose(const T& x, const U& y);
 /**
  * Logarithm of the binomial coefficient.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -740,7 +740,7 @@ promote_t<T,U> lchoose(const T& x, const U& y) {
 /**
  * Gradient of lchoose().
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam G Numeric type.
  * @tparam T Numeric type.
@@ -762,7 +762,7 @@ std::pair<promote_t<G,T,U>,promote_t<G,T,U>> lchoose_grad(const G& g, const T& x
 /**
  * Logarithm of multivariate gamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -781,7 +781,7 @@ convert_t<R,T,U> lgamma(const T& x, const U& y);
 /**
  * Logarithm of multivariate gamma.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -801,7 +801,7 @@ promote_t<T,U> lgamma(const T& x, const U& y) {
 /**
  * Power.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -820,7 +820,7 @@ convert_t<R,T,U> pow(const T& x, const U& y);
 /**
  * Power.
  * 
- * @ingroup numeric
+ * @ingroup binary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.

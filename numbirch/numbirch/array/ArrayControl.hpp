@@ -12,7 +12,7 @@ namespace numbirch {
  * 
  * Control block for reference counting of Array buffers.
  * 
- * @ingroup memory
+ * @ingroup array
  */
 class ArrayControl {
 public:

@@ -11,9 +11,9 @@ namespace numbirch {
 template<class T, int D> class Array;
 
 /**
+ * @internal
+ *
  * Pair of values.
- * 
- * @ingroup numeric
  * 
  * @tparam T Arithmetic type.
  * @tparam U Arithmetic type.
@@ -28,9 +28,9 @@ struct pair {
 };
 
 /**
+ * @internal
+ *
  * Triple of values of a given type.
- * 
- * @ingroup numeric
  * 
  * @tparam T Arithmetic type.
  * @tparam U Arithmetic type.
@@ -48,9 +48,9 @@ struct triple {
 };
 
 /**
+ * @internal
+ *
  * Quad of values of a given type.
- * 
- * @ingroup numeric
  * 
  * @tparam T Arithmetic type.
  * @tparam U Arithmetic type.
@@ -71,9 +71,11 @@ struct quad {
 };
 
 /**
+ * @var is_integral_v
+ * 
  * Is `T` an integral type?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * An integral type is one of `int` or `bool`.
  * 
@@ -96,9 +98,11 @@ template<class T>
 inline constexpr bool is_integral_v = is_integral<T>::value;
 
 /**
+ * @var is_floating_point_v
+ * 
  * Is `T` a floating point type?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * A floating point type is one of `double` or `float`.
  * 
@@ -121,9 +125,11 @@ template<class T>
 inline constexpr bool is_floating_point_v = is_floating_point<T>::value;
 
 /**
+ * @var is_arithmetic_v
+ * 
  * Is `T` an arithmetic type?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * An arithmetic type is an integral or floating point type.
  * 
@@ -139,10 +145,12 @@ template<class T>
 inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
 
 /**
+ * @internal
+ *
  * Value type of an arithmetic type. For a basic type this is an identity
  * function, for an array type it is the element type.
  * 
- * @ingroup numeric
+ * @ingroup trait
  */
 template<class T>
 struct value {
@@ -156,9 +164,11 @@ template<class T>
 using value_t = typename value<T>::type;
 
 /**
+ * @internal
+ *
  * Dimension of an arithmetic type.
  * 
- * @ingroup numeric
+ * @ingroup trait
  */
 template<class T>
 struct dimension {
@@ -172,9 +182,11 @@ template<class T>
 inline constexpr int dimension_v = dimension<T>::value;
 
 /**
+ * @var is_array_v
+ * 
  * Is `T` an array type?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * An array type is any instantiation of Array, including one with zero
  * dimensions.
@@ -191,9 +203,11 @@ template<class T>
 inline constexpr bool is_array_v = is_array<T>::value;
 
 /**
+ * @var is_scalar_v
+ * 
  * Is `T` a scalar type?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * A scalar type is any arithmetic type with zero dimensions.
  */
@@ -206,9 +220,11 @@ template<class T>
 inline constexpr bool is_scalar_v = is_scalar<T>::value;
 
 /**
+ * @var is_numeric_v
+ * 
  * Is `T` a numeric type?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * An numeric type is an array or scalar type.
  * 
@@ -222,58 +238,12 @@ template<class T>
 inline constexpr bool is_numeric_v = is_numeric<T>::value;
 
 /**
- * Is `T` a pair?
+ * @var is_compatible_v
  * 
- * @ingroup numeric
- */
-template<class T>
-struct is_pair {
-  static constexpr bool value = false;
-};
-template<class T, class U>
-struct is_pair<pair<T,U>> {
-  static constexpr bool value = true;
-};
-template<class T>
-inline constexpr bool is_pair_v = is_pair<T>::value;
-
-/**
- * Is `T` a triple?
- * 
- * @ingroup numeric
- */
-template<class T>
-struct is_triple {
-  static constexpr bool value = false;
-};
-template<class T, class U, class V>
-struct is_triple<triple<T,U,V>> {
-  static constexpr bool value = true;
-};
-template<class T>
-inline constexpr bool is_triple_v = is_triple<T>::value;
-
-/**
- * Is `T` a quad?
- * 
- * @ingroup numeric
- */
-template<class T>
-struct is_quad {
-  static constexpr bool value = false;
-};
-template<class T, class U, class V, class W>
-struct is_quad<quad<T,U,V,W>> {
-  static constexpr bool value = true;
-};
-template<class T>
-inline constexpr bool is_quad_v = is_quad<T>::value;
-
-/**
  * Are arithmetic types compatible for a transform?---Yes, if they have the
  * same number of dimensions.
  * 
- * @ingroup numeric
+ * @ingroup trait
  */
 template<class... Args>
 struct is_compatible {
@@ -296,9 +266,11 @@ template<class... Args>
 inline constexpr bool is_compatible_v = is_compatible<Args...>::value;
 
 /**
+ * @typedef promote_t
+ * 
  * Promoted arithmetic type for a collection of types.
  * 
- * @ingroup numeric
+ * @ingroup trait
  */
 template<class... Args>
 struct promote {
@@ -396,9 +368,11 @@ template<class... Args>
 using promote_t = typename promote<Args...>::type;
 
 /**
+ * @typedef convert_t
+ * 
  * Convert arithmetic type for a collection of types.
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * This works as for promote, before replacing the element type with `R`.
  */
@@ -423,9 +397,11 @@ using convert_t = typename convert<Args...>::type;
 
 
 /**
+ * @internal
+ * 
  * Does arithmetic type `T` promote to `U` under promotion rules?
  * 
- * @ingroup numeric
+ * @ingroup trait
  * 
  * @tparam T Arithmetic type.
  * @tparam U Arithmetic type.
@@ -439,9 +415,11 @@ template<class T, class U>
 inline constexpr bool promotes_to_v = promotes_to<T,U>::value;
 
 /**
+ * @var all_integral_v
+ * 
  * Are all argument types integral?
  * 
- * @ingroup numeric
+ * @ingroup trait
  */
 template<class... Args>
 struct all_integral {

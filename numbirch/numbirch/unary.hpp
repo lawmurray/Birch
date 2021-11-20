@@ -12,7 +12,7 @@ namespace numbirch {
 /**
  * Identity.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -28,7 +28,7 @@ convert_t<R,T> operator+(const T& x);
 /**
  * Identity.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -44,7 +44,7 @@ T operator+(const T& x) {
 /**
  * Negation.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -60,7 +60,7 @@ convert_t<R,T> operator-(const T& x);
 /**
  * Negation.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -76,7 +76,7 @@ T operator-(const T& x) {
 /**
  * Logical `not`.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -92,7 +92,7 @@ convert_t<R,T> operator!(const T& x);
 /**
  * Logical `not`.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -108,7 +108,7 @@ convert_t<bool,T> operator!(const T& x) {
 /**
  * Absolute value.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -124,7 +124,7 @@ convert_t<R,T> abs(const T& x);
 /**
  * Absolute value.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -140,7 +140,7 @@ T abs(const T& x) {
 /**
  * Arc cosine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -156,7 +156,7 @@ convert_t<R,T> acos(const T& x);
 /**
  * Arc cosine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -173,7 +173,7 @@ T acos(const T& x) {
 /**
  * Arc sine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -189,7 +189,7 @@ convert_t<R,T> asin(const T& x);
 /**
  * Arc sine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -206,7 +206,7 @@ T asin(const T& x) {
 /**
  * Arc tangent.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -222,7 +222,7 @@ convert_t<R,T> atan(const T& x);
 /**
  * Arc tangent.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -239,7 +239,7 @@ T atan(const T& x) {
 /**
  * Round to smallest integer value not less than argument.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -255,7 +255,7 @@ convert_t<R,T> ceil(const T& x);
 /**
  * Round to smallest integer value not less than argument.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -271,7 +271,7 @@ T ceil(const T& x) {
 /**
  * Cosine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -287,7 +287,7 @@ convert_t<R,T> cos(const T& x);
 /**
  * Cosine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -304,7 +304,7 @@ T cos(const T& x) {
 /**
  * Hyperbolic cosine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -320,7 +320,7 @@ convert_t<R,T> cosh(const T& x);
 /**
  * Hyperbolic cosine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -337,7 +337,7 @@ T cosh(const T& x) {
 /**
  * Digamma.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -353,7 +353,7 @@ convert_t<R,T> digamma(const T& x);
 /**
  * Digamma.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -370,7 +370,7 @@ T digamma(const T& x) {
 /**
  * Exponential.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -386,7 +386,7 @@ convert_t<R,T> exp(const T& x);
 /**
  * Exponential.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -403,7 +403,7 @@ T exp(const T& x) {
 /**
  * Exponential minus one.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -419,7 +419,7 @@ convert_t<R,T> expm1(const T& x);
 /**
  * Exponential minus one.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -436,7 +436,7 @@ T expm1(const T& x) {
 /**
  * Round to largest integer value not greater than argument.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -452,7 +452,7 @@ convert_t<R,T> floor(const T& x);
 /**
  * Round to largest integer value not greater than argument.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -468,7 +468,7 @@ T floor(const T& x) {
 /**
  * Logarithm of the factorial function.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -484,7 +484,7 @@ convert_t<R,T> lfact(const T& x);
 /**
  * Logarithm of the factorial function.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -501,7 +501,7 @@ T lfact(const T& x) {
 /**
  * Gradient of lfact().
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam G Floating point type.
  * @tparam T Numeric type.
@@ -518,7 +518,7 @@ promote_t<G,T> lfact_grad(const G& g, const T& x);
 /**
  * Logarithm of gamma.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -534,7 +534,7 @@ convert_t<R,T> lgamma(const T& x);
 /**
  * Logarithm of gamma.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -551,7 +551,7 @@ T lgamma(const T& x) {
 /**
  * Logarithm.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -567,7 +567,7 @@ convert_t<R,T> log(const T& x);
 /**
  * Logarithm.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -584,7 +584,7 @@ T log(const T& x) {
 /**
  * Logarithm of one plus argument.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -600,7 +600,7 @@ convert_t<R,T> log1p(const T& x);
 /**
  * Logarithm of one plus argument.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -617,7 +617,7 @@ T log1p(const T& x) {
 /**
  * Reciprocal. For element @f$(i,j)@f$, computes @f$B_{ij} = 1/A_{ij}@f$.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -633,7 +633,7 @@ convert_t<R,T> rcp(const T& x);
 /**
  * Reciprocal. For element @f$(i,j)@f$, computes @f$B_{ij} = 1/A_{ij}@f$.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -650,7 +650,7 @@ T rcp(const T& x) {
 /**
  * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -666,7 +666,7 @@ convert_t<R,T> rectify(const T& x);
 /**
  * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -682,7 +682,7 @@ T rectify(const T& x) {
 /**
  * Gradient of rectify().
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam G Numeric type.
  * @tparam T Numeric type.
@@ -699,7 +699,7 @@ promote_t<G,T> rectify_grad(const G& g, const T& x);
 /**
  * Round to nearest integer value.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -715,7 +715,7 @@ convert_t<R,T> round(const T& x);
 /**
  * Round to nearest integer value.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -731,7 +731,7 @@ T round(const T& x) {
 /**
  * Sine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -747,7 +747,7 @@ convert_t<R,T> sin(const T& x);
 /**
  * Sine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -764,7 +764,7 @@ T sin(const T& x) {
 /**
  * Hyperbolic sine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -780,7 +780,7 @@ convert_t<R,T> sinh(const T& x);
 /**
  * Hyperbolic sine.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -797,7 +797,7 @@ T sinh(const T& x) {
 /**
  * Square root.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -813,7 +813,7 @@ convert_t<R,T> sqrt(const T& x);
 /**
  * Square root.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -830,7 +830,7 @@ T sqrt(const T& x) {
 /**
  * Tangent.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -846,7 +846,7 @@ convert_t<R,T> tan(const T& x);
 /**
  * Tangent.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 
@@ -863,7 +863,7 @@ T tan(const T& x) {
 /**
  * Hyperbolic tangent.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -879,7 +879,7 @@ convert_t<R,T> tanh(const T& x);
 /**
  * Hyperbolic tangent.
  * 
- * @ingroup numeric
+ * @ingroup unary
  * 
  * @tparam T Numeric type.
  * 

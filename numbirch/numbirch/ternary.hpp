@@ -12,7 +12,7 @@ namespace numbirch {
 /**
  * Normalized incomplete beta.
  * 
- * @ingroup numeric
+ * @ingroup ternary
  * 
  * @tparam R Floating point type.
  * @tparam T Numeric type.
@@ -34,7 +34,7 @@ convert_t<R,T,U,V> ibeta(const T& x, const U& y, const V& z);
 /**
  * Normalized incomplete beta.
  * 
- * @ingroup numeric
+ * @ingroup ternary
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
