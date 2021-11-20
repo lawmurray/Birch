@@ -87,18 +87,6 @@ void birch::CppStructGenerator::visit(const Struct* o) {
       out();
       line("}\n");
 
-      line("auto& operator*() {");
-      in();
-      line("return *this;");
-      out();
-      line("}\n");
-
-      line("const auto& operator*() const {");
-      in();
-      line("return *this;");
-      out();
-      line("}\n");
-
       line("auto operator->() {");
       in();
       line("return this;");
