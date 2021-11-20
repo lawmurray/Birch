@@ -51,7 +51,7 @@
     TERNARY_SIG(f, R, T, U, ARRAY(V, 0)) \
     TERNARY_SIG(f, R, T, U, V)
 #define TERNARY_SIG(f, R, T, U, V) \
-    template convert_t<R,T,U,V> f<R,T,U,V,int>(const T&, const U&, const V&);
+    template explicit_t<R,implicit_t<T,U,V>> f<R,T,U,V,int>(const T&, const U&, const V&);
 
 /**
  * @internal

@@ -182,7 +182,12 @@ The parameter types are generic: `T` and `U`, but according to the type traits i
 
 ### Implicit conversion
 
-Arithmetic types promote in the order `bool`, `int`, `float`, `double`. The return type of an operation between two or more different types will be the furthest through this list, unless explicitly specified otherwise; e.g. an operation between a `bool` and `int` yields an `int`, between a `float` and `double` yields a `double`, between an `int` and `float` yields a `float`.
+Arithmetic types promote in the order `bool` to `int` to `float` to `double`.
+The return type of an operation between two or more different types will be
+the highest type in this promotion order, unless explicitly specified
+otherwise; e.g. an operation between a `bool` and `int` yields an `int`,
+between a `float` and `double` yields a `double`, between an `int` and `float`
+yields a `float`.
 
 The same extends to arrays; e.g. an operation between an `Array<int,D>` and `Array<float,D>` yields an `Array<float,D>`.
 

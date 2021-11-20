@@ -2,6 +2,8 @@
  * @file
  */
 #include "numbirch/numeric.hpp"
+#include "numbirch/array.hpp"
+#include "numbirch/reduce.hpp"
 
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.hpp"

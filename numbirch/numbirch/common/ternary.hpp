@@ -9,7 +9,7 @@
 namespace numbirch {
 
 template<class R, class T, class U, class V, class>
-convert_t<R,T,U,V> ibeta(const T& x, const U& y, const V& z) {
+explicit_t<R,implicit_t<T,U,V>> ibeta(const T& x, const U& y, const V& z) {
   prefetch(x);
   prefetch(y);
   prefetch(z);

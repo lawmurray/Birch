@@ -7,8 +7,28 @@
 
 #include <type_traits>
 
+/**
+ * @internal
+ * 
+ * @def NUMBIRCH_REAL
+ * 
+ * Macro to set the default floating point type. Valid values are `float` and
+ * `double`.
+ */
+#ifndef NUMBIRCH_REAL
+#define NUMBIRCH_REAL double
+#endif
+
 namespace numbirch {
 template<class T, int D> class Array;
+
+/**
+ * Default floating point type. This is set to the value of the macro
+ * `NUMBIRCH_REAL`, or `double` if undefined.
+ * 
+ * @ingroup trait
+ */
+using real = NUMBIRCH_REAL;
 
 /**
  * @internal
@@ -268,7 +288,12 @@ inline constexpr bool is_compatible_v = is_compatible<Args...>::value;
 /**
  * @typedef promote_t
  * 
- * Promoted arithmetic type for a collection of types.
+ * Promoted arithmetic type for a collection of arithmetic types.
+ * 
+ * @tparam Args Arithmetic types.
+ * 
+ * Gives the type, among that collection, that is highest in the promotion
+ * order (`bool` to `int` to `float` to `double`).
  * 
  * @ingroup trait
  */
@@ -344,18 +369,6 @@ template<>
 struct promote<bool,bool> {
   using type = bool;
 };
-template<class T, int D, class U, int E>
-struct promote<Array<T,D>,Array<U,E>> {
-  using type = Array<typename promote<T,U>::type,(D > E) ? D : E>;
-};
-template<class T, int D, class U>
-struct promote<Array<T,D>,U> {
-  using type = Array<typename promote<T,U>::type,D>;
-};
-template<class T, class U, int E>
-struct promote<T,Array<U,E>> {
-  using type = Array<typename promote<T,U>::type,E>;
-};
 template<class T, class U>
 struct promote<T,U> {
   using type = void;
@@ -368,33 +381,104 @@ template<class... Args>
 using promote_t = typename promote<Args...>::type;
 
 /**
- * @typedef convert_t
+ * @typedef implicit_t
  * 
- * Convert arithmetic type for a collection of types.
+ * Implicit return type for a collection of argument types.
+ * 
+ * @tparam Args Numeric types.
+ * 
+ * For arithmetic types this works as promote_t. If one or more of the
+ * argument types is an array type, then gives an array type `Array<T,D>`
+ * where `T` is the promotion of all the element types among all arguments,
+ * and `D` the largest number of dimensions among all arguments.
+ * 
+ * @ingroup trait
+ */
+template<class... Args>
+struct implicit {
+  using type = void;
+};
+template<class T, class U, class... Args>
+struct implicit<T,U,Args...> {
+  using type = typename implicit<typename implicit<T,U>::type,Args...>::type;
+};
+template<class T, int D, class U, int E>
+struct implicit<Array<T,D>,Array<U,E>> {
+  using type = Array<typename implicit<T,U>::type,(D > E) ? D : E>;
+};
+template<class T, int D, class U>
+struct implicit<Array<T,D>,U> {
+  using type = Array<typename implicit<T,U>::type,D>;
+};
+template<class T, class U, int E>
+struct implicit<T,Array<U,E>> {
+  using type = Array<typename implicit<T,U>::type,E>;
+};
+template<class T, class U>
+struct implicit<T,U> {
+  using type = typename promote<T,U>::type;
+};
+template<class T>
+struct implicit<T> {
+  using type = T;
+};
+template<class... Args>
+using implicit_t = typename implicit<Args...>::type;
+
+/**
+ * @typedef explicit_t
+ * 
+ * Explicit override of return type. This is typically used around
+ * `implicit_t`, e.g. `explicit_t<R,implicit_t<Args...>>`.
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam T Numeric type.
+ * 
+ * This replaces the element type of `T` with `R`.
+ * 
+ * @ingroup trait
+ */
+template<class R, class T>
+struct explicit_s {
+  using type = R;
+};
+template<class R, class T, int D>
+struct explicit_s<R,Array<T,D>> {
+  using type = Array<R,D>;
+};
+template<class R, class... Args>
+using explicit_t = typename explicit_s<R,Args...>::type;
+
+/**
+ * @typedef default_t
  * 
  * @ingroup trait
  * 
- * This works as for promote, before replacing the element type with `R`.
+ * Default floating point override of return type. This is typically used
+ * around `implicit_t`, e.g. `default_t<implicit_t<Args...>>`. If the element
+ * type of `T` is an integral type, then replaces it with the default floating
+ * point type (see numbirch::real).
+ * 
+ * @tparam T Numeric type.
  */
+template<class T>
+struct default_s {
+  using type = T;
+};
+template<>
+struct default_s<bool> {
+  using type = real;
+};
+template<>
+struct default_s<int> {
+  using type = real;
+};
+template<class T, int D>
+struct default_s<Array<T,D>> {
+  using type = Array<typename default_s<T>::type,D>;
+};
 template<class... Args>
-struct convert {
-  using type = void;
-};
-template<class R, class... Args>
-struct convert<R,Args...> {
-  using type = typename convert<R,typename promote<Args...>::type>::type;
-};
-template<class R, class T, int D>
-struct convert<R,Array<T,D>> {
-  using type = Array<R,D>;
-};
-template<class R, class T>
-struct convert<R,T> {
-  using type = R;
-};
-template<class... Args>
-using convert_t = typename convert<Args...>::type;
-
+using default_t = typename default_s<Args...>::type;
 
 /**
  * @internal

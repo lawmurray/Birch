@@ -42,7 +42,7 @@
     BINARY_SIG(f, R, T, ARRAY(U, 0)) \
     BINARY_SIG(f, R, T, U)
 #define BINARY_SIG(f, R, T, U) \
-    template convert_t<R,T,U> f<R,T,U,int>(const T&, const U&);
+    template explicit_t<R,implicit_t<T,U>> f<R,T,U,int>(const T&, const U&);
 
 /**
  * @internal
@@ -76,7 +76,7 @@
     BINARY_OPERATOR_SIG(f, R, ARRAY(T, 0), U) \
     BINARY_OPERATOR_SIG(f, R, T, ARRAY(U, 0))
 #define BINARY_OPERATOR_SIG(f, R, T, U) \
-    template convert_t<R,T,U> f<R,T,U,int>(const T&, const U&);
+    template explicit_t<R,implicit_t<T,U>> f<R,T,U,int>(const T&, const U&);
 
 /**
  * @internal
@@ -120,7 +120,7 @@
     BINARY_GRAD_SIG(f, G, ARRAY(T, 0), U) \
     BINARY_GRAD_SIG(f, G, T, ARRAY(U, 0))
 #define BINARY_GRAD_SIG(f, G, T, U) \
-    template std::pair<promote_t<G,T,U>,promote_t<G,T,U>> f<G,T,U>(const G&, \
+    template std::pair<implicit_t<G,T,U>,implicit_t<G,T,U>> f<G,T,U>(const G&, \
         const T&, const U&);
 
 /**
@@ -163,7 +163,7 @@
     BINARY_SCALAR_MULTIPLY_SIG(f, R, ARRAY(T, 1), U) \
     BINARY_SCALAR_MULTIPLY_SIG(f, R, ARRAY(T, 0), U)
 #define BINARY_SCALAR_MULTIPLY_SIG(f, R, T, U) \
-    template convert_t<R,T,U> f<R,T,U,int>(const T&, const U&);
+    template explicit_t<R,implicit_t<T,U>> f<R,T,U,int>(const T&, const U&);
 
 
 /**
@@ -197,7 +197,7 @@
     BINARY_SCALAR_DIVIDE_SIG(f, R, ARRAY(T, 0), U) \
     BINARY_SCALAR_DIVIDE_SIG(f, R, T, ARRAY(U, 0))
 #define BINARY_SCALAR_DIVIDE_SIG(f, R, T, U) \
-    template convert_t<R,T,U> f<R,T,U,int>(const T&, const U&);
+    template explicit_t<R,implicit_t<T,U>> f<R,T,U,int>(const T&, const U&);
 
 namespace numbirch {
 BINARY_OPERATOR(operator+)

@@ -23,7 +23,7 @@ namespace numbirch {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> operator+(const T& x);
+explicit_t<R,T> operator+(const T& x);
 
 /**
  * Identity.
@@ -55,7 +55,7 @@ T operator+(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> operator-(const T& x);
+explicit_t<R,T> operator-(const T& x);
 
 /**
  * Negation.
@@ -87,7 +87,7 @@ T operator-(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> operator!(const T& x);
+explicit_t<R,T> operator!(const T& x);
 
 /**
  * Logical `not`.
@@ -101,7 +101,7 @@ convert_t<R,T> operator!(const T& x);
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-convert_t<bool,T> operator!(const T& x) {
+explicit_t<bool,T> operator!(const T& x) {
   return operator!<bool,T,int>(x);
 }
 
@@ -119,7 +119,7 @@ convert_t<bool,T> operator!(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> abs(const T& x);
+explicit_t<R,T> abs(const T& x);
 
 /**
  * Absolute value.
@@ -151,7 +151,7 @@ T abs(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> acos(const T& x);
+explicit_t<R,T> acos(const T& x);
 
 /**
  * Arc cosine.
@@ -164,10 +164,9 @@ convert_t<R,T> acos(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T acos(const T& x) {
-  return acos<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> acos(const T& x) {
+  return acos<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -184,7 +183,7 @@ T acos(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> asin(const T& x);
+explicit_t<R,T> asin(const T& x);
 
 /**
  * Arc sine.
@@ -197,10 +196,9 @@ convert_t<R,T> asin(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T asin(const T& x) {
-  return asin<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> asin(const T& x) {
+  return asin<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -217,7 +215,7 @@ T asin(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> atan(const T& x);
+explicit_t<R,T> atan(const T& x);
 
 /**
  * Arc tangent.
@@ -230,10 +228,9 @@ convert_t<R,T> atan(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T atan(const T& x) {
-  return atan<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> atan(const T& x) {
+  return atan<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -250,7 +247,7 @@ T atan(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> ceil(const T& x);
+explicit_t<R,T> ceil(const T& x);
 
 /**
  * Round to smallest integer value not less than argument.
@@ -282,7 +279,7 @@ T ceil(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> cos(const T& x);
+explicit_t<R,T> cos(const T& x);
 
 /**
  * Cosine.
@@ -295,10 +292,9 @@ convert_t<R,T> cos(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T cos(const T& x) {
-  return cos<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> cos(const T& x) {
+  return cos<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -315,7 +311,7 @@ T cos(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> cosh(const T& x);
+explicit_t<R,T> cosh(const T& x);
 
 /**
  * Hyperbolic cosine.
@@ -328,10 +324,9 @@ convert_t<R,T> cosh(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T cosh(const T& x) {
-  return cosh<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> cosh(const T& x) {
+  return cosh<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -348,7 +343,7 @@ T cosh(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> digamma(const T& x);
+explicit_t<R,T> digamma(const T& x);
 
 /**
  * Digamma.
@@ -361,10 +356,9 @@ convert_t<R,T> digamma(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T digamma(const T& x) {
-  return digamma<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> digamma(const T& x) {
+  return digamma<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -381,7 +375,7 @@ T digamma(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> exp(const T& x);
+explicit_t<R,T> exp(const T& x);
 
 /**
  * Exponential.
@@ -394,10 +388,9 @@ convert_t<R,T> exp(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T exp(const T& x) {
-  return exp<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> exp(const T& x) {
+  return exp<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -414,7 +407,7 @@ T exp(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> expm1(const T& x);
+explicit_t<R,T> expm1(const T& x);
 
 /**
  * Exponential minus one.
@@ -427,10 +420,9 @@ convert_t<R,T> expm1(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T expm1(const T& x) {
-  return expm1<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> expm1(const T& x) {
+  return expm1<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -447,7 +439,7 @@ T expm1(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> floor(const T& x);
+explicit_t<R,T> floor(const T& x);
 
 /**
  * Round to largest integer value not greater than argument.
@@ -479,7 +471,7 @@ T floor(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> lfact(const T& x);
+explicit_t<R,T> lfact(const T& x);
 
 /**
  * Logarithm of the factorial function.
@@ -492,10 +484,9 @@ convert_t<R,T> lfact(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T lfact(const T& x) {
-  return lfact<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> lfact(const T& x) {
+  return lfact<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -513,7 +504,7 @@ T lfact(const T& x) {
  */
 template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-promote_t<G,T> lfact_grad(const G& g, const T& x);
+implicit_t<G,T> lfact_grad(const G& g, const T& x);
 
 /**
  * Logarithm of gamma.
@@ -529,7 +520,7 @@ promote_t<G,T> lfact_grad(const G& g, const T& x);
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> lgamma(const T& x);
+explicit_t<R,T> lgamma(const T& x);
 
 /**
  * Logarithm of gamma.
@@ -542,10 +533,9 @@ convert_t<R,T> lgamma(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T lgamma(const T& x) {
-  return lgamma<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> lgamma(const T& x) {
+  return lgamma<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -562,7 +552,7 @@ T lgamma(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> log(const T& x);
+explicit_t<R,T> log(const T& x);
 
 /**
  * Logarithm.
@@ -575,10 +565,9 @@ convert_t<R,T> log(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T log(const T& x) {
-  return log<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> log(const T& x) {
+  return log<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -595,7 +584,7 @@ T log(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> log1p(const T& x);
+explicit_t<R,T> log1p(const T& x);
 
 /**
  * Logarithm of one plus argument.
@@ -608,10 +597,9 @@ convert_t<R,T> log1p(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T log1p(const T& x) {
-  return log1p<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> log1p(const T& x) {
+  return log1p<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -628,7 +616,7 @@ T log1p(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> rcp(const T& x);
+explicit_t<R,T> rcp(const T& x);
 
 /**
  * Reciprocal. For element @f$(i,j)@f$, computes @f$B_{ij} = 1/A_{ij}@f$.
@@ -641,10 +629,9 @@ convert_t<R,T> rcp(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T rcp(const T& x) {
-  return rcp<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> rcp(const T& x) {
+  return rcp<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -661,7 +648,7 @@ T rcp(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> rectify(const T& x);
+explicit_t<R,T> rectify(const T& x);
 
 /**
  * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
@@ -694,7 +681,7 @@ T rectify(const T& x) {
  */
 template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-promote_t<G,T> rectify_grad(const G& g, const T& x);
+implicit_t<G,T> rectify_grad(const G& g, const T& x);
 
 /**
  * Round to nearest integer value.
@@ -710,7 +697,7 @@ promote_t<G,T> rectify_grad(const G& g, const T& x);
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-convert_t<R,T> round(const T& x);
+explicit_t<R,T> round(const T& x);
 
 /**
  * Round to nearest integer value.
@@ -742,7 +729,7 @@ T round(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> sin(const T& x);
+explicit_t<R,T> sin(const T& x);
 
 /**
  * Sine.
@@ -755,10 +742,9 @@ convert_t<R,T> sin(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T sin(const T& x) {
-  return sin<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> sin(const T& x) {
+  return sin<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -775,7 +761,7 @@ T sin(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> sinh(const T& x);
+explicit_t<R,T> sinh(const T& x);
 
 /**
  * Hyperbolic sine.
@@ -788,10 +774,9 @@ convert_t<R,T> sinh(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T sinh(const T& x) {
-  return sinh<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> sinh(const T& x) {
+  return sinh<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -808,7 +793,7 @@ T sinh(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> sqrt(const T& x);
+explicit_t<R,T> sqrt(const T& x);
 
 /**
  * Square root.
@@ -821,10 +806,9 @@ convert_t<R,T> sqrt(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T sqrt(const T& x) {
-  return sqrt<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> sqrt(const T& x) {
+  return sqrt<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -841,7 +825,7 @@ T sqrt(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> tan(const T& x);
+explicit_t<R,T> tan(const T& x);
 
 /**
  * Tangent.
@@ -854,10 +838,9 @@ convert_t<R,T> tan(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T tan(const T& x) {
-  return tan<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> tan(const T& x) {
+  return tan<value_t<default_t<T>>,T,int>(x);
 }
 
 /**
@@ -874,7 +857,7 @@ T tan(const T& x) {
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
    is_numeric_v<T>,int>>
-convert_t<R,T> tanh(const T& x);
+explicit_t<R,T> tanh(const T& x);
 
 /**
  * Hyperbolic tangent.
@@ -887,10 +870,9 @@ convert_t<R,T> tanh(const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<value_t<T>> &&
-    is_numeric_v<T>,int>>
-T tanh(const T& x) {
-  return tanh<value_t<T>,T,int>(x);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+default_t<T> tanh(const T& x) {
+  return tanh<value_t<default_t<T>>,T,int>(x);
 }
 
 }

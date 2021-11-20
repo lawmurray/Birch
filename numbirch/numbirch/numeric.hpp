@@ -37,7 +37,7 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
  * @return Result @f$C@f$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& x);
+Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
  * Inverse of a symmetric positive definite square matrix, via the Cholesky
@@ -92,7 +92,7 @@ Array<T,0> lcholdet(const Array<T,2>& S);
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix.
+ * @param A Matrix.
  * 
  * @return Logarithm of the absolute value of the determinant.
  */
@@ -214,8 +214,8 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
  * 
  * @tparam T Floating point type.
  * 
- * @param A Vector @f$x@f$.
- * @param B Vector @f$y@f$.
+ * @param x Vector @f$x@f$.
+ * @param y Vector @f$y@f$.
  * 
  * @return Dot product.
  */
@@ -237,7 +237,7 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
  * @return Frobenius product.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,0> frobenius(const Array<T,2>& x, const Array<T,2>& y);
+Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
  * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
@@ -255,7 +255,7 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
- * Matrix-matrix inner product. Computes @f$y = A^\top x@f$.
+ * Matrix-matrix inner product. Computes @f$y = A^\top B@f$.
  * 
  * @ingroup la
  * 
@@ -267,7 +267,7 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
  * @return Result @f$C@f$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& x);
+Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
  * Vector-vector outer product. Computes @f$A = xy^\top@f$.
@@ -297,7 +297,7 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
  * @return Result @f$C@f$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& x);
+Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
  * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.

@@ -12,7 +12,6 @@
 #include "numbirch/common/functor.hpp"
 #include "numbirch/binary.hpp"
 #include "numbirch/memory.hpp"
-#include "numbirch/numeric.hpp"
 
 namespace numbirch {
 /*

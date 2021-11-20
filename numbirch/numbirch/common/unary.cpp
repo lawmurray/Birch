@@ -38,7 +38,7 @@
     UNARY_SIG(f, R, ARRAY(T, 0)) \
     UNARY_SIG(f, R, T)
 #define UNARY_SIG(f, R, T) \
-    template convert_t<R,T> f<R,T,int>(const T&);
+    template explicit_t<R,T> f<R,T,int>(const T&);
 
 /**
  * @internal
@@ -68,7 +68,7 @@
     UNARY_OPERATOR_SIG(f, R, ARRAY(T, 1)) \
     UNARY_OPERATOR_SIG(f, R, ARRAY(T, 0))
 #define UNARY_OPERATOR_SIG(f, R, T) \
-    template convert_t<R,T> f<R,T,int>(const T&);
+    template explicit_t<R,T> f<R,T,int>(const T&);
 
 /**
  * @internal
@@ -105,7 +105,7 @@
     UNARY_GRAD_SIG(f, G, ARRAY(T, 0)) \
     UNARY_GRAD_SIG(f, G, T)
 #define UNARY_GRAD_SIG(f, G, T) \
-    template promote_t<G,T> f<G,T,int>(const G&, const T&);
+    template implicit_t<G,T> f<G,T,int>(const G&, const T&);
 
 namespace numbirch {
 UNARY_OPERATOR(operator+)
