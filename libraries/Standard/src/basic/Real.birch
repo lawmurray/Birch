@@ -7,11 +7,7 @@
 type Real;
 
 hpp{{
-#ifdef BIRCH_SINGLE
-using Real = float;
-#else
-using Real = double;
-#endif
+using Real = numbirch::real;
 }}
 
 /**
