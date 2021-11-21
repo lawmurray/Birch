@@ -54,7 +54,7 @@ function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
   let R <- length(x)/columns;
   let C <- columns;
   return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-        return x[(j - 1)*R + i];
+        return x[i + (j - 1)*R];
       }, R, C);
 }
 
@@ -76,7 +76,7 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   using T = decltype(wait(λ(1,1)));
   return numbirch::Array<T,2>([&](const int64_t s) {
         int j = (s - 1)/rows + 1;
-        int i = s - 1 - j*rows + 1;
+        int i = (s - 1)%rows + 1;
         return λ(i, j);
       }, numbirch::make_shape(rows, columns));
   }}
