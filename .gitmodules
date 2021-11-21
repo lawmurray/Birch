@@ -4,3 +4,6 @@
 [submodule "numbirch/docs/markdeep"]
 	path = numbirch/docs/markdeep
 	url = https://github.com/morgan3d/markdeep
+[submodule "numbirch/docs/MathJax"]
+	path = numbirch/docs/MathJax
+	url = https://github.com/mathjax/MathJax

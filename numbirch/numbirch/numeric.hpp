@@ -1,5 +1,5 @@
 /**
- * @file
+ * ile
  */
 #pragma once
 
@@ -10,31 +10,31 @@
 
 namespace numbirch {
 /**
- * Matrix-vector multiplication. Computes @f$y = Ax@f$.
+ * Matrix-vector multiplication. Computes $y = Ax$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param x Vector @f$x@f$.
+ * @param A Matrix $A$.
+ * @param x Vector $x$.
  * 
- * @return Result @f$y@f$.
+ * @return Result $y$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
- * Matrix-matrix multiplication. Computes @f$C = AB@f$.
+ * Matrix-matrix multiplication. Computes $C = AB$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param B Matrix @f$B@f$.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
  * 
- * @return Result @f$C@f$.
+ * @return Result $C$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
@@ -129,93 +129,93 @@ Array<T,2> transpose(const Array<T,2>& A);
 
 /**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
- * Computes @f$y = Lx@f$, where @f$S = LL^\top@f$.
+ * Computes $y = Lx$, where $S = LL^\top$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix @f$S@f$.
- * @param x Vector @f$x@f$.
+ * @param S Symmetric positive definite matrix $S$.
+ * @param x Vector $x$.
  * 
- * @return Result @f$y@f$.
+ * @return Result $y$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x);
 
 /**
  * Lower-triangular Cholesky factor of a matrix multiplied by a matrix.
- * Computes @f$C = LB@f$, where @f$S = LL^\top@f$.
+ * Computes $C = LB$, where $S = LL^\top$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix @f$S@f$.
- * @param B Matrix @f$B@f$.
+ * @param S Symmetric positive definite matrix $S$.
+ * @param B Matrix $B$.
  * 
- * @return Result @f$C@f$.
+ * @return Result $C$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B);
 
 /**
  * Outer product of matrix and lower-triangular Cholesky factor of another
- * matrix. Computes @f$C = AL^\top@f$, where @f$S = LL^\top@f$.
+ * matrix. Computes $C = AL^\top$, where $S = LL^\top$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param S Symmetric positive definite matrix @f$S@f$.
+ * @param A Matrix $A$.
+ * @param S Symmetric positive definite matrix $S$.
  * 
- * @return Result @f$C@f$.
+ * @return Result $C$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S);
 
 /**
- * Matrix-vector solve, via the Cholesky factorization. Solves for @f$x@f$ in
- * @f$Sx = y@f$.
+ * Matrix-vector solve, via the Cholesky factorization. Solves for $x$ in
+ * $Sx = y$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix @f$S@f$.
- * @param y Vector @f$y@f$.
+ * @param S Symmetric positive definite matrix $S$.
+ * @param y Vector $y$.
  * 
- * @return Result @f$x@f$.
+ * @return Result $x$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
 
 /**
- * Matrix-matrix solve, via the Cholesky factorization. Solves for @f$B@f$ in
- * @f$SB = C@f$.
+ * Matrix-matrix solve, via the Cholesky factorization. Solves for $B$ in
+ * $SB = C$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix @f$S@f$.
- * @param C Matrix @f$C@f$.
+ * @param S Symmetric positive definite matrix $S$.
+ * @param C Matrix $C$.
  * 
- * @return Result @f$B@f$.
+ * @return Result $B$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
 
 /**
- * Vector-vector dot product. Computes @f$x^\top y@f$, resulting in a scalar.
+ * Vector-vector dot product. Computes $x^\top y$, resulting in a scalar.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param x Vector @f$x@f$.
- * @param y Vector @f$y@f$.
+ * @param x Vector $x$.
+ * @param y Vector $y$.
  * 
  * @return Dot product.
  */
@@ -223,16 +223,16 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
 
 /**
- * Matrix-matrix Frobenius product. Computes @f$\langle A, B 
- * \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}@f$,
+ * Matrix-matrix Frobenius product. Computes $\langle A, B 
+ * \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}$,
  * resulting in a scalar.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param B Matrix @f$B@f$.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
  * 
  * @return Frobenius product.
  */
@@ -240,91 +240,91 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
- * Matrix-vector inner product. Computes @f$y = A^\top x@f$.
+ * Matrix-vector inner product. Computes $y = A^\top x$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param x Vector @f$x@f$.
+ * @param A Matrix $A$.
+ * @param x Vector $x$.
  * 
- * @return Result @f$y@f$.
+ * @return Result $y$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
- * Matrix-matrix inner product. Computes @f$y = A^\top B@f$.
+ * Matrix-matrix inner product. Computes $y = A^\top B$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param B Matrix @f$B@f$.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
  * 
- * @return Result @f$C@f$.
+ * @return Result $C$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
- * Vector-vector outer product. Computes @f$A = xy^\top@f$.
+ * Vector-vector outer product. Computes $A = xy^\top$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param x Vector @f$x@f$.
- * @param y Vector @f$y@f$.
+ * @param x Vector $x$.
+ * @param y Vector $y$.
  * 
- * @return Result @f$A@f$.
+ * @return Result $A$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
 
 /**
- * Matrix-matrix outer product. Computes @f$C = AB^\top@f$.
+ * Matrix-matrix outer product. Computes $C = AB^\top$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param B Matrix @f$B@f$.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
  * 
- * @return Result @f$C@f$.
+ * @return Result $C$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
- * Matrix-vector solve. Solves for @f$x@f$ in @f$Ax = y@f$.
+ * Matrix-vector solve. Solves for $x$ in $Ax = y$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param y Vector @f$y@f$.
+ * @param A Matrix $A$.
+ * @param y Vector $y$.
  * 
- * @return Result @f$x@f$.
+ * @return Result $x$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y);
 
 /**
- * Matrix-matrix solve. Solves for @f$B@f$ in @f$AB = C@f$.
+ * Matrix-matrix solve. Solves for $B$ in $AB = C$.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix @f$A@f$.
- * @param C Matrix @f$C@f$.
+ * @param A Matrix $A$.
+ * @param C Matrix $C$.
  * 
- * @return Result @f$B@f$.
+ * @return Result $B$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C);
