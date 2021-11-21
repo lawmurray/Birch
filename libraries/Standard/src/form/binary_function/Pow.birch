@@ -15,6 +15,8 @@ function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::pow;
+
 /**
  * Power.
  */
@@ -25,9 +27,3 @@ Pow<Left,Right> pow(const Left& l, const Right& r) {
 }
 }
 }}
-
-function pow(l:Real, r:Real) -> Real {
-  cpp{{
-  return numbirch::pow(l, r);
-  }}
-}

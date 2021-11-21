@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Not<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::operator!;
+
 /**
  * Logical `not`.
  */

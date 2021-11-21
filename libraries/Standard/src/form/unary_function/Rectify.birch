@@ -10,28 +10,15 @@ function grad<Middle,Gradient>(x:Rectify<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::rectify;
+using numbirch::rectify_grad;
+
 /**
  * Rectification.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
 Rectify<Middle> rectify(const Middle& m) {
   return construct<Rectify<Middle>>(m);
-}
-
-/**
- * Rectification.
- */
-template<class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
-auto rectify(const T& x) {
-  return numbirch::rectify(x);
-}
-
-/**
- * Gradient of rectify().
- */
-template<class G, class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
-auto rectify_grad(const G& d, const T& x) {
-  return numbirch::rectify_grad(d, x);
 }
 }
 }}

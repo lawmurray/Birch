@@ -8,10 +8,17 @@ function grad<Middle,Gradient>(x:LCholDet<Middle>, d:Gradient) {
   grad(x.m, d*cholinv(peek(x.m)));
 }
 
+hpp{{
+namespace birch {
+using numbirch::lcholdet;
+
 /**
  * Log-determinant of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
-function lcholdet<Middle>(m:Middle) -> LCholDet<Middle> {
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+LCholDet<Middle> lcholdet(const Middle& m) {
   return construct<LCholDet<Middle>>(m);
 }
+}
+}}

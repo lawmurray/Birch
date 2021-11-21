@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Sqrt<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::sqrt;
+
 /**
  * Square root.
  */
@@ -19,12 +21,3 @@ Sqrt<Middle> sqrt(const Middle& m) {
 }
 }
 }}
-
-/**
- * Square root.
- */
-function sqrt(m:Real) -> Real {
-  cpp{{
-  return std::sqrt(m);
-  }}
-}

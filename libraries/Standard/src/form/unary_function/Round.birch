@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Round<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::round;
+
 /**
  * Round to nearest integer value.
  */
@@ -19,12 +21,3 @@ Round<Middle> round(const Middle& m) {
 }
 }
 }}
-
-/**
- * Round to nearest integer value.
- */
-function round(m:Real) -> Real {
-  cpp{{
-  return std::round(m);
-  }}
-}

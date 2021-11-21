@@ -13,6 +13,8 @@ function grad<Left,Right,Gradient>(x:CopySign<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::copysign;
+
 /**
  * Copy sign of a number.
  */
@@ -23,12 +25,3 @@ CopySign<Left,Right> copysign(const Left& l, const Right& r) {
 }
 }
 }}
-
-/**
- * Copy sign of a number.
- */
-function copysign(l:Real, r:Real) -> Real {
-  cpp{{
-  return numbirch::copysign(l, r);
-  }}
-}

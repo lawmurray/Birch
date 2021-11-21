@@ -55,10 +55,10 @@ class InputStream {
     assert file?;
     x:Integer?;
     cpp{{
-    long long int y;  // ensure fscanf gets exactly the type it expects
+    long long int y;  // ensure that fscanf gets the exact type it expects
     auto res = ::fscanf(this->file.value(), "%lld", &y);
     if (res == 1) {
-      x = (Integer)y;
+      x = Integer(y);
     } 
     }}
     return x;
@@ -70,15 +70,10 @@ class InputStream {
   function scanReal() -> Real? {
     assert file?;
     x:Real?;
-    y:Real;
     cpp{{
-    #ifdef BIRCH_SINGLE
-    auto res = ::fscanf(this->file.value(), "%f", &y);
-    #else
-    auto res = ::fscanf(this->file.value(), "%lf", &y);
-    #endif
-    if (res == 1) {
-      x = y;
+    double y;  // ensure that fscanf gets the exact type it expects
+    if (::fscanf(this->file.value(), "%lf", &y) == 1) {
+      x = Real(y);
     } 
     }}
     return x;

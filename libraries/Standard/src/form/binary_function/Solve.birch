@@ -14,6 +14,8 @@ function grad<Left,Right,Gradient>(x:Solve<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::solve;
+
 /**
  * Solve a system of equations.
  */

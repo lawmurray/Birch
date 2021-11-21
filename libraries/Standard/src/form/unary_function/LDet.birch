@@ -8,9 +8,16 @@ function grad<Middle,Gradient>(x:LDet<Middle>, d:Gradient) {
   grad(x.m, d*transpose(inv(peek(x.m))));
 }
 
+hpp{{
+namespace birch {
+using numbirch::ldet;
+
 /**
  * Log-determinant of a matrix.
  */
-function ldet<Middle>(m:Middle) -> LDet<Middle> {
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+LDet<Middle> ldet(const Middle& m) {
   return construct<LDet<Middle>>(m);
 }
+}
+}}

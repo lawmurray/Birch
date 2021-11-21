@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Tanh<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::tanh;
+
 /**
  * Hyperbolic tangent.
  */
@@ -19,12 +21,3 @@ Tanh<Middle> tanh(const Middle& m) {
 }
 }
 }}
-
-/**
- * Hyperbolic tangent.
- */
-function tanh(m:Real) -> Real {
-  cpp{{
-  return std::tanh(m);
-  }}
-}

@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Acos<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::acos;
+
 /**
  * Arc cosine.
  */
@@ -19,12 +21,3 @@ Acos<Middle> acos(const Middle& m) {
 }
 }
 }}
-
-/**
- * Arc cosine.
- */
-function acos(m:Real) -> Real {
-  cpp{{
-  return std::acos(m);
-  }}
-}

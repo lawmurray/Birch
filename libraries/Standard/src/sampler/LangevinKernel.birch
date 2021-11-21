@@ -21,7 +21,7 @@ class LangevinKernel < Kernel {
 
     if nmoves > 0 {
       /* scale */
-      let δ <- scale/pow(min(t, nlags), 3);
+      let δ <- scale/pow(min(t, nlags), 3.0);
 
       /* initial state */
       let x <- π.args();

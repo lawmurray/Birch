@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Tan<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::tan;
+
 /**
  * Tangent.
  */
@@ -19,12 +21,3 @@ Tan<Middle> tan(const Middle& m) {
 }
 }
 }}
-
-/**
- * Tangent.
- */
-function tan(m:Real) -> Real {
-  cpp{{
-  return std::tan(m);
-  }}
-}

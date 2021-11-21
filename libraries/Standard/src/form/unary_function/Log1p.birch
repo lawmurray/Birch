@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Log1p<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::log1p;
+
 /**
  * Logarithm of one plus argument.
  */
@@ -19,12 +21,3 @@ Log1p<Middle> log1p(const Middle& m) {
 }
 }
 }}
-
-/**
- * Logarithm of one plus argument.
- */
-function log1p(m:Real) -> Real {
-  cpp{{
-  return std::log1p(m);
-  }}
-}

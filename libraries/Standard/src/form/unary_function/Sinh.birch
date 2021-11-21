@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Sinh<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::sinh;
+
 /**
  * Hyperbolic sine.
  */
@@ -19,12 +21,3 @@ Sinh<Middle> sinh(const Middle& m) {
 }
 }
 }}
-
-/**
- * Hyperbolic sine.
- */
-function sinh(m:Real) -> Real {
-  cpp{{
-  return std::sinh(m);
-  }}
-}

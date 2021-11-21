@@ -11,6 +11,8 @@ function grad<Left,Right,Gradient>(x:LGammaP<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::lgamma;
+
 /**
  * Logarithm of the multivariate gamma function.
  */
@@ -21,12 +23,3 @@ LGammaP<Left,Right> lgamma(const Left& l, const Right& r) {
 }
 }
 }}
-
-/**
- * Logarithm of the multivariate gamma function.
- */
-function lgamma(x:Real, y:Integer) -> Real {
-  cpp{{
-  return numbirch::lgamma(x, y);
-  }}
-}

@@ -13,6 +13,8 @@ function grad<Left,Right,Gradient>(x:LBeta<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::lbeta;
+
 /**
  * Logarithm of the beta function.
  */
@@ -23,12 +25,3 @@ LBeta<Left,Right> lbeta(const Left& l, const Right& r) {
 }
 }
 }}
-
-/**
- * Logarithm of the beta function.
- */
-function lbeta(x:Real, y:Real) -> Real {
-  cpp{{
-  return numbirch::lbeta(x, y);
-  }}
-}

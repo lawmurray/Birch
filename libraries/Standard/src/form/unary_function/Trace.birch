@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Trace<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::trace;
+
 /**
  * Trace.
  */

@@ -11,6 +11,8 @@ function grad<Left,Right,Gradient>(x:Hadamard<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::hadamard;
+
 /**
  * Hadamard (element-wise) product.
  */

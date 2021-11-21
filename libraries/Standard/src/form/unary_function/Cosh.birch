@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Cosh<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::cosh;
+
 /**
  * Hyperbolic cosine.
  */
@@ -19,12 +21,3 @@ Cosh<Middle> cosh(const Middle& m) {
 }
 }
 }}
-
-/**
- * Hyperbolic cosine.
- */
-function cosh(m:Real) -> Real {
-  cpp{{
-  return std::cosh(m);
-  }}
-}

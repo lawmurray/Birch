@@ -11,6 +11,8 @@ function grad<Left,Right,Gradient>(x:Frobenius<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::frobenius;
+
 /**
  * Frobenius product.
  */

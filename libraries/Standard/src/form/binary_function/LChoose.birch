@@ -12,6 +12,9 @@ function grad<Left,Right,Gradient>(x:LChoose<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::lchoose;
+using numbirch::lchoose_grad;
+
 /**
  * Logarithm of the binomial coefficient.
  */
@@ -20,25 +23,5 @@ template<class Left, class Right, std::enable_if_t<
 LChoose<Left,Right> lchoose(const Left& l, const Right& r) {
   return construct<LChoose<Left,Right>>(l, r);
 }
-
-/**
- * Logarithm of the binomial coefficient.
- */
-template<class T, class U, std::enable_if_t<!is_delay<T,U>::value,int> = 0>
-auto lchoose(const T& x, const U& y) {
-  return numbirch::lchoose<Real>(x, y);
-}
-
-/**
- * Gradient of lchoose().
- */
-template<class G, class T, class U, std::enable_if_t<
-    numbirch::is_arithmetic_v<G> &&
-    numbirch::is_arithmetic_v<T> &&
-    numbirch::is_arithmetic_v<U>,int> = 0>
-auto lchoose_grad(const G& d, const T& x, const U& y) {
-  return numbirch::lchoose_grad<Real>(d, x, y);
-}
-
 }
 }}

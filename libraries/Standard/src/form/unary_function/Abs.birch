@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Abs<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::abs;
+
 /**
  * Absolute value.
  */
@@ -19,12 +21,3 @@ Abs<Middle> abs(const Middle& m) {
 }
 }
 }}
-
-/**
- * Absolute value.
- */
-function abs(m:Real) -> Real {
-  cpp{{
-  return std::abs(m);
-  }}
-}

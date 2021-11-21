@@ -29,3 +29,15 @@
  * Constructs the type `Array<T,D>`.
  */
 #define ARRAY(T, D) Array<T,D>
+
+/**
+ * @internal
+ * 
+ * @def NUMBIRCH_REAL
+ * 
+ * Macro to set the default floating point type. Valid values are `float` and
+ * `double`.
+ */
+#ifndef NUMBIRCH_REAL
+#define NUMBIRCH_REAL double
+#endif

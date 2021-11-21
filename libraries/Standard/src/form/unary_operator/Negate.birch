@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Negate<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::operator-;
+
 /**
  * Negation.
  */

@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Sin<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::sin;
+
 /**
  * Sine.
  */
@@ -19,12 +21,3 @@ Sin<Middle> sin(const Middle& m) {
 }
 }
 }}
-
-/**
- * Sine.
- */
-function sin(m:Real) -> Real {
-  cpp{{
-  return std::sin(m);
-  }}
-}

@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Cos<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::cos;
+
 /**
  * Cosine.
  */
@@ -19,12 +21,3 @@ Cos<Middle> cos(const Middle& m) {
 }
 }
 }}
-
-/**
- * Cosine.
- */
-function cos(m:Real) -> Real {
-  cpp{{
-  return std::cos(m);
-  }}
-}

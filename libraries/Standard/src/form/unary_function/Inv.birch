@@ -9,9 +9,16 @@ function grad<Middle,Gradient>(x:Inv<Middle>, d:Gradient) {
   grad(x.m, -outer(inner(A, d), A));
 }
 
+hpp{{
+namespace birch {
+using numbirch::inv;
+
 /**
  * Inverse of a matrix.
  */
-function inv<Middle>(m:Middle) -> Inv<Middle> {
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Inv<Middle> inv(const Middle& m) {
   return construct<Inv<Middle>>(m);
 }
+}
+}}

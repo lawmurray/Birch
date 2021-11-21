@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::sum;
+
 /**
  * Sum of elements.
  */

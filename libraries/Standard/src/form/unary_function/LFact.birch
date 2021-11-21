@@ -10,29 +10,15 @@ function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) -> {
 
 hpp{{
 namespace birch {
+using numbirch::lfact;
+using numbirch::lfact_grad;
+
 /**
  * Logarithm of the factorial function.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
 LFact<Middle> lfact(const Middle& m) {
   return construct<LFact<Middle>>(m);
-}
-
-/**
- * Logarithm of the factorial function.
- */
-template<class T, std::enable_if_t<!is_delay<T>::value,int> = 0>
-auto lfact(const T& x) {
-  return numbirch::lfact<Real>(x);
-}
-
-/**
- * Gradient of lfact().
- */
-template<class G, class T, std::enable_if_t<numbirch::is_arithmetic_v<G> &&
-    numbirch::is_arithmetic_v<T>,int> = 0>
-auto lfact_grad(const G& d, const T& x) {
-  return numbirch::lfact_grad(d, x);
 }
 }
 }}

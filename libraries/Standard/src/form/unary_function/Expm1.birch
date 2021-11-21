@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Expm1<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::expm1;
+
 /**
  * Exponential minus one.
  */
@@ -19,12 +21,3 @@ Expm1<Middle> expm1(const Middle& m) {
 }
 }
 }}
-
-/**
- * Exponential minus one.
- */
-function expm1(m:Real) -> Real {
-  cpp{{
-  return std::expm1(m);
-  }}
-}

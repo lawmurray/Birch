@@ -30,6 +30,8 @@ function grad<Value,Left,Right,Gradient>(x:MatrixSingle<Value,Left,Right>,
 
 hpp{{
 namespace birch {
+using numbirch::single;
+
 /**
  * Create single-entry matrix. One of the elements of the matrix is one, all
  * others are zero.
@@ -47,19 +49,3 @@ MatrixSingle<Value,Left,Right> single(const Left& i, const Right& j,
 }
 }
 }}
-
-/**
- * Create single-entry matrix. One of the elements of the matrix is one, all
- * others are zero.
- *
- * - i: Row of single entry.
- * - j: Column of single entry.
- * - m: Number of rows.
- * - n: Number of columns.
- */
-function single<Value>(i:Integer, j:Integer, m:Integer, n:Integer) ->
-    Value[_,_] {
-  cpp{{
-  return numbirch::single<Value>(i, j, m, n);
-  }}
-}

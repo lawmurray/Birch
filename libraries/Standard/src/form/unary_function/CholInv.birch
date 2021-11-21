@@ -9,10 +9,17 @@ function grad<Middle,Gradient>(x:CholInv<Middle>, d:Gradient) {
   grad(x.m, -y*d*y);
 }
 
+hpp{{
+namespace birch {
+using numbirch::cholinv;
+
 /**
  * Inverse of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
-function cholinv<Middle>(m:Middle) -> CholInv<Middle> {
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+CholInv<Middle> cholinv(const Middle& m) {
   return construct<CholInv<Middle>>(m);
 }
+}
+}}

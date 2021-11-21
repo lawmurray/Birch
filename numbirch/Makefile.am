@@ -80,6 +80,7 @@ nobase_include_HEADERS = \
   numbirch/numbirch.hpp \
   numbirch/numeric.hpp \
   numbirch/random.hpp \
+  numbirch/reduce.hpp \
   numbirch/ternary.hpp \
   numbirch/type.hpp \
   numbirch/unary.hpp

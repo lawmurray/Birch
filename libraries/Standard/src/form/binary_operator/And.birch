@@ -1,6 +1,6 @@
 struct And<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   hpp{{
-  BIRCH_BINARY_OPERATOR_FORM(&&)
+  BIRCH_BINARY_FUNCTION_FORM(operator&&)
   }}
 }
 
@@ -11,6 +11,8 @@ function grad<Left,Right,Gradient>(x:And<Left,Right>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::operator&&;
+
 /**
  * Logical `and`.
  */

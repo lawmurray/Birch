@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Ceil<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::ceil;
+
 /**
  * Round to smallest integer value not less than argument.
  */
@@ -19,12 +21,3 @@ Ceil<Middle> ceil(const Middle& m) {
 }
 }
 }}
-
-/**
- * Round to smallest integer value not less than argument.
- */
-function ceil(m:Real) -> Real {
-  cpp{{
-  return std::ceil(m);
-  }}
-}

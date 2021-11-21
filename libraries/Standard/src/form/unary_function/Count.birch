@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Count<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::count;
+
 /**
  * Count of nonzero elements.
  */

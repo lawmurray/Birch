@@ -10,6 +10,8 @@ function grad<Middle,Gradient>(x:Asin<Middle>, d:Gradient) {
 
 hpp{{
 namespace birch {
+using numbirch::asin;
+
 /**
  * Arc sine.
  */
@@ -19,12 +21,3 @@ Asin<Middle> asin(const Middle& m) {
 }
 }
 }}
-
-/**
- * Arc sine.
- */
-function asin(m:Real) -> Real {
-  cpp{{
-  return std::asin(m);
-  }}
-}

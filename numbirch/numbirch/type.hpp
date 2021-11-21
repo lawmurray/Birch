@@ -7,18 +7,6 @@
 
 #include <type_traits>
 
-/**
- * @internal
- * 
- * @def NUMBIRCH_REAL
- * 
- * Macro to set the default floating point type. Valid values are `float` and
- * `double`.
- */
-#ifndef NUMBIRCH_REAL
-#define NUMBIRCH_REAL double
-#endif
-
 namespace numbirch {
 template<class T, int D> class Array;
 

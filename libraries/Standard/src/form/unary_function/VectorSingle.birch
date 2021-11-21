@@ -24,6 +24,8 @@ function grad<Value,Middle,Gradient>(x:VectorSingle<Value,Middle>,
 
 hpp{{
 namespace birch {
+using numbirch::single;
+
 /**
  * Create single-entry vector. One of the elements of the vector is one, all
  * others are zero.
@@ -38,16 +40,3 @@ VectorSingle<Value,Middle> single(const Middle& i, const int n) {
 }
 }
 }}
-
-/**
- * Create single-entry vector. One of the elements of the vector is one, all
- * others are zero.
- *
- * - i: Index of single entry.
- * - n: Length of vector.
- */
-function single<Value>(i:Integer, n:Integer) -> Value[_] {
-  cpp{{
-  return numbirch::single<Value>(i, n);
-  }}
-}
