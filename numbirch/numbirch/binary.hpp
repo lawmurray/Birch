@@ -44,7 +44,7 @@ explicit_t<R,implicit_t<T,U>> operator+(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && is_compatible_v<T,U>,int>>
 implicit_t<T,U> operator+(const T& x, const U& y) {
-  return operator+<value_t<T>,T,U,int>(x, y);
+  return operator+<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -82,7 +82,7 @@ explicit_t<R,implicit_t<T,U>> operator-(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 implicit_t<T,U> operator-(const T& x, const U& y) {
-  return operator-<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+  return operator-<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -122,7 +122,7 @@ template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> &&
     (is_scalar_v<T> || is_scalar_v<U>),int>>
 implicit_t<T,U> operator*(const T& x, const U& y) {
-  return operator*<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+  return operator*<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -160,7 +160,7 @@ explicit_t<R,implicit_t<T,U>> operator/(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_scalar_v<U>,int>>
 implicit_t<T,U> operator/(const T& x, const U& y) {
-  return operator/<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+  return operator/<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -503,7 +503,7 @@ explicit_t<R,implicit_t<T,U>> copysign(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 implicit_t<T,U> copysign(const T& x, const U& y) {
-  return copysign<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+  return copysign<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -653,7 +653,7 @@ explicit_t<R,implicit_t<T,U>> hadamard(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
 implicit_t<T,U> hadamard(const T& x, const U& y) {
-  return hadamard<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+  return hadamard<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }
 
 /**

@@ -103,7 +103,7 @@ function simulate_gamma_poisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
  * Returns: the log probability mass.
  */
 function logpdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  let ρ <- 1.0/(θ + 1.0);
+  let ρ <- θ/(θ + 1.0);
   return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
 }
 
@@ -130,7 +130,7 @@ function update_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return ibeta(k, x + 1, 1.0/(θ + 1.0));
+  return ibeta(k, x + 1, θ/(θ + 1.0));
 }
 
 /*
@@ -143,7 +143,7 @@ function cdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  * Return: the quantile.
  */
 function quantile_gamma_poisson<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, θ:Arg3) -> {
-  let ρ <- 1.0/(θ + 1.0);
+  let ρ <- θ/(θ + 1.0);
   cpp{{
   return boost::math::quantile(boost::math::negative_binomial_distribution<
       Real>(wait(k), wait(ρ)), wait(P));

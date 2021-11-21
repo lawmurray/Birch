@@ -393,7 +393,7 @@ struct lbeta_functor {
 
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 struct lchoose_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const int x, const int y) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
     return std::lgamma(x + T(1)) - std::lgamma(y + T(1)) -
         std::lgamma(x - y + T(1));
   }
