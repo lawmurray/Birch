@@ -18,143 +18,152 @@
 namespace numbirch {
 static const long double PI = 3.1415926535897932384626433832795;
 
-template<class T>
+template<class R>
 struct identity_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return x;
   }
 };
 
-template<class T>
+template<class R>
 struct negate_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return -x;
   }
 };
 
-template<class T>
+template<class R>
 struct add_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return x + y;
   }
 };
 
-template<class T>
+template<class R>
 struct subtract_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return x - y;
   }
 };
 
-template<class T>
+template<class R>
 struct multiply_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return x*y;
   }
 };
 
-template<class T>
+template<class R>
 struct divide_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return x/y;
   }
 };
 
-template<class T>
+template<class R>
 struct not_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  template<class T>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x) const {
     return !x;
   }
 };
 
-template<class T>
+template<class R>
 struct and_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x && y;
   }
 };
 
-template<class T>
+template<class R>
 struct or_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x || y;
   }
 };
 
-template<class T>
+template<class R>
 struct equal_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x == y;
   }
 };
 
-template<class T>
+template<class R>
 struct not_equal_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x != y;
   }
 };
 
-template<class T>
+template<class R>
 struct less_functor {
-  NUMBIRCH_HOST_DEVICE bool operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x < y;
   }
 };
 
-template<class T>
+template<class R>
 struct less_or_equal_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x <= y;
   }
 };
 
-template<class T>
+template<class R>
 struct greater_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x > y;
   }
 };
 
-template<class T>
+template<class R>
 struct greater_or_equal_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x >= y;
   }
 };
 
-template<class T>
+template<class R>
 struct abs_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::abs(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct acos_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::acos(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct asin_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::asin(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct atan_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::atan(x);
   }
 };
 
-template<class T>
+template<class R>
 struct ceil_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    if constexpr (is_integral_v<T>) {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    if constexpr (is_integral_v<R>) {
       return x;
     } else {
       return std::ceil(x);
@@ -162,71 +171,71 @@ struct ceil_functor {
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct cos_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::cos(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct cosh_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::cosh(x);
   }
 };
 
-template<class T>
+template<class R>
 struct count_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return (x == 0) ? 0 : 1;
   }
 };
 
-template<class T, class U>
+template<class R, class U>
 struct diagonal_functor {
   diagonal_functor(const U a) :
       a(a) {
     //
   }
   NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
-    return (i == j) ? T(element(a)) : 0;
+    return (i == j) ? R(element(a)) : 0;
   }
   const U a;
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct digamma_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return Eigen::numext::digamma(x);
   }
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
-    T z = 0;
-    for (T i = 1; i <= y; ++i) {
-      z += Eigen::numext::digamma(x + T(0.5)*(1 - i));
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
+    R z = 0;
+    for (R i = 1; i <= y; ++i) {
+      z += Eigen::numext::digamma(x + R(0.5)*(1 - i));
     }
     return z;
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct exp_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::exp(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct expm1_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::expm1(x);
   }
 };
 
-template<class T>
+template<class R>
 struct floor_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    if constexpr (is_integral_v<T>) {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    if constexpr (is_integral_v<R>) {
       return x;
     } else {
       return std::floor(x);
@@ -234,87 +243,87 @@ struct floor_functor {
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct lfact_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    return std::lgamma(x + T(1));
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    return std::lgamma(x + R(1));
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct lfact_grad_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T g, const T x) const {
-    return g*Eigen::numext::digamma(x + T(1));
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*Eigen::numext::digamma(x + R(1));
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct lgamma_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::lgamma(x);
   }
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
-    T z = T(0.25)*y*(y - T(1))*std::log(T(PI));
-    for (T i = T(1); i <= y; ++i) {
-      z += std::lgamma(x + T(0.5)*(T(1) - i));
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
+    R z = R(0.25)*y*(y - R(1))*std::log(R(PI));
+    for (R i = R(1); i <= y; ++i) {
+      z += std::lgamma(x + R(0.5)*(R(1) - i));
     }
     return z;
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct log_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::log(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct log1p_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::log1p(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct log_abs_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::log(std::abs(x));
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct log_square_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    return T(2)*std::log(x);
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    return R(2)*std::log(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct rcp_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    return T(1)/x;
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    return R(1)/x;
   }
 };
 
-template<class T>
+template<class R>
 struct rectify_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    return std::max(T(0), x);
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    return std::max(R(0), x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct rectify_grad_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T g, const T x) const {
-    return (x > T(0)) ? g : T(0);
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return (x > R(0)) ? g : R(0);
   }
 };
 
-template<class T>
+template<class R>
 struct round_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    if constexpr (is_integral_v<T>) {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    if constexpr (is_integral_v<R>) {
       return x;
     } else {
       return std::round(x);
@@ -322,124 +331,124 @@ struct round_functor {
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct sin_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::sin(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct sinh_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::sinh(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct sqrt_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::sqrt(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct tan_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::tan(x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct tanh_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::tanh(x);
   }
 };
 
-template<class T>
+template<class R>
 struct copysign_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
-    if constexpr (is_integral_v<T>) {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
+    if constexpr (is_integral_v<R>) {
       // don't use std::copysign, as it promotes to floating point, which
       // we don't wish to do here
-      return (y >= T(0)) ? std::abs(x) : -std::abs(x);
+      return (y >= R(0)) ? std::abs(x) : -std::abs(x);
     } else {
       return std::copysign(x, y);
     }
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct gamma_p_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T a, const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R a, const R x) const {
     return Eigen::numext::igamma(a, x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct gamma_q_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T a, const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R a, const R x) const {
     return Eigen::numext::igammac(a, x);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct lbeta_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return std::lgamma(x) + std::lgamma(y) - std::lgamma(x + y);
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct lchoose_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
-    return std::lgamma(x + T(1)) - std::lgamma(y + T(1)) -
-        std::lgamma(x - y + T(1));
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
+    return std::lgamma(x + R(1)) - std::lgamma(y + R(1)) -
+        std::lgamma(x - y + R(1));
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct lchoose_grad_functor {
-  NUMBIRCH_HOST_DEVICE pair<T,T> operator()(const T g, const T x, const T y)
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
       const {
-    T gx = Eigen::numext::digamma(x + T(1)) -
-        Eigen::numext::digamma(x - y + T(1));
-    T gy = -Eigen::numext::digamma(y + T(1)) +
-        Eigen::numext::digamma(x - y + T(1));
-    return pair<T,T>{g*gx, g*gy};
+    R gx = Eigen::numext::digamma(x + R(1)) -
+        Eigen::numext::digamma(x - y + R(1));
+    R gy = -Eigen::numext::digamma(y + R(1)) +
+        Eigen::numext::digamma(x - y + R(1));
+    return pair<R,R>{g*gx, g*gy};
   }
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct pow_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const T y) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return std::pow(x, y);
   }
 };
 
-template<class T, class U, class V = int>
+template<class R, class U, class V = int>
 struct single_functor {
   single_functor(const U k, const V l = 1) :
       k(k), l(l) {
     //
   }
-  NUMBIRCH_HOST_DEVICE T operator()(const int i, const int j) const {
-    return (i == element(k) - 1 && j == element(l) - 1) ? T(1) : T(0);
+  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) const {
+    return (i == element(k) - 1 && j == element(l) - 1) ? R(1) : R(0);
   }
   const U k;
   const V l;
 };
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class R>
 struct ibeta_functor {
-  NUMBIRCH_HOST_DEVICE T operator()(const T a, const T b, const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const R a, const R b, const R x) const {
     /* as of Eigen 3.4.0, the edge cases of a == 0 and b == 0 are not handled
     * internally, see https://gitlab.com/libeigen/eigen/-/issues/2359 */
-    if (a == T(0) && b != T(0)) {
-      return T(1);
-    } else if (a != T(0) && b == T(0)) {
-      return T(0);
+    if (a == R(0) && b != R(0)) {
+      return R(1);
+    } else if (a != R(0) && b == R(0)) {
+      return R(0);
     } else {
       return Eigen::numext::betainc(a, b, x);
     }
