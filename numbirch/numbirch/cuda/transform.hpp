@@ -12,6 +12,7 @@
 #include "numbirch/macro.hpp"
 #include "numbirch/memory.hpp"
 #include "numbirch/type.hpp"
+#include "numbirch/common/functor.hpp"
 
 namespace numbirch {
 /*
