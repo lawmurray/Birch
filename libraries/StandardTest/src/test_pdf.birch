@@ -241,7 +241,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   let μ <- vector(0.0, D);
-  let Σ <- matrix<Real>(0.0, D, D);
+  let Σ <- matrix(0.0, D, D);
   for n in 1..N {
     let x <- X1[n,1..D];
     μ <- μ + x;
@@ -356,7 +356,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   let μ <- vector(0.0, R*C);
-  let Σ <- matrix<Real>(0.0, R*C, R*C);
+  let Σ <- matrix(0.0, R*C, R*C);
   for n in 1..N {
     let x <- X1[n,1..R*C];
     μ <- μ + x;

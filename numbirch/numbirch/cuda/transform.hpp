@@ -48,8 +48,8 @@ auto transform(const T& x, Functor f) {
   using R = decltype(f(value_t<T>()));
   constexpr int D = dimension_v<T>;
   auto y = Array<R,D>(shape(x));
-  auto m = rows(x);
-  auto n = columns(x);
+  auto m = width(x);
+  auto n = height(x);
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
@@ -82,8 +82,8 @@ template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
   using R = decltype(f(value_t<T>(),value_t<U>()));
   constexpr int D = std::max(dimension_v<T>, dimension_v<U>);
-  auto m = std::max(rows(x), rows(y));
-  auto n = std::max(columns(x), columns(y));
+  auto m = std::max(width(x), width(y));
+  auto n = std::max(height(x), height(y));
   auto z = Array<R,D>(make_shape<D>(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
@@ -115,8 +115,8 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
   using W = typename P::second_type;
   constexpr int D = std::max(std::max(dimension_v<G>, dimension_v<T>),
       dimension_v<U>);
-  auto m = std::max(std::max(rows(g), rows(x)), rows(y));
-  auto n = std::max(std::max(columns(g), columns(x)), columns(y));
+  auto m = std::max(std::max(width(g), width(x)), width(y));
+  auto n = std::max(std::max(height(g), height(x)), height(y));
   auto a = Array<V,D>(make_shape<D>(m, n));
   auto b = Array<W,D>(make_shape<D>(m, n));
   auto grid = make_grid(m, n);
@@ -146,8 +146,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
   using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
   constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
       dimension_v<V>);
-  auto m = std::max(std::max(rows(x), rows(y)), rows(z));
-  auto n = std::max(std::max(columns(x), columns(y)), columns(z));
+  auto m = std::max(std::max(width(x), width(y)), width(z));
+  auto n = std::max(std::max(height(x), height(y)), height(z));
   auto a = Array<R,D>(make_shape<D>(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);

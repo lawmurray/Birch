@@ -92,6 +92,58 @@ constexpr int columns(const T& x) {
 /**
  * @internal
  *
+ * Width of array.
+ * 
+ * @ingroup array
+ * 
+ * @see Array::width()
+ */
+template<class T, int D>
+int width(const Array<T,D>& x) {
+  return x.width();
+}
+
+/**
+ * @internal
+ *
+ * Width of scalar---i.e. 1.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int width(const T& x) {
+  return 1;
+}
+
+/**
+ * @internal
+ *
+ * Height of array.
+ * 
+ * @ingroup array
+ * 
+ * @see Array::height()
+ */
+template<class T, int D>
+int height(const Array<T,D>& x) {
+  return x.height();
+}
+
+/**
+ * @internal
+ *
+ * Height of scalar---i.e. 1.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+constexpr int height(const T& x) {
+  return 1;
+}
+
+/**
+ * @internal
+ *
  * Stride of an array.
  * 
  * @ingroup array
@@ -259,54 +311,6 @@ template<class T, class U, class = std::enable_if_t<is_scalar<T>::value &&
     is_scalar<U>::value,int>>
 constexpr bool conforms(const T& x, const U& y) {
   return true;
-}
-
-/**
- * @internal
- *
- * Element of a matrix, vector, or scalar. A scalar is identified by having
- * `ld == 0`.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  int k = (ld == 0) ? 0 : i + j*ld;
-  return x[k];
-}
-
-/**
- * @internal
- *
- * Element of a matrix, vector, or scalar. A scalar is identified by having
- * `ld == 0`.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0,
-    const int j = 0, const int ld = 0) {
-  int k = (ld == 0) ? 0 : i + j*ld;
-  return x[k];
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
-
-/**
- * @internal
- * 
- * Element of a scalar---just returns the scalar.
- */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0,
-    const int j = 0, const int ld = 0) {
-  return x;
 }
 
 /**

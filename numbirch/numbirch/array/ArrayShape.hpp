@@ -214,6 +214,10 @@ private:
  * Make a vector shape.
  * 
  * @ingroup array
+ * 
+ * @param n Length.
+ * 
+ * @return Shape.
  */
 inline ArrayShape<1> make_shape(const int n) {
   return ArrayShape<1>(n);
@@ -418,34 +422,43 @@ private:
  * Make a matrix shape.
  * 
  * @ingroup array
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Shape.
  */
 inline ArrayShape<2> make_shape(const int m, const int n) {
   return ArrayShape<2>(m, n);
 }
 
 /**
- * Make a scalar shape.
+ * Make a scalar, vector or matrix shape.
  * 
  * @ingroup array
  * 
  * @tparam D Number of dimensions.
  * 
- * @param r Number of rows. For a scalar, should be 1.
- * @param c Number of columns. For a scalar or vector, should be 1.
+ * @param m Width. For a scalar or vector this is 1, for a matrix this is its
+ * number of rows.
+ * @param n Height. For a scalar this is 1, for a vector this is its length,
+ * for a matrix this is its number of columns.
  * 
  * @return Shape.
+ * 
+ * @see width(), height()
  */
 template<int D>
-ArrayShape<D> make_shape(const int r, const int c) {
+ArrayShape<D> make_shape(const int m, const int n) {
   if constexpr (D == 0) {
-    assert(r == 1);
-    assert(c == 1);
+    assert(m == 1);
+    assert(n == 1);
     return make_shape();
   } else if constexpr (D == 1) {
-    assert(c == 1);
-    return make_shape(r);
+    assert(m == 1);
+    return make_shape(n);
   } else {
-    return make_shape(r, c);
+    return make_shape(m, n);
   }
 }
 

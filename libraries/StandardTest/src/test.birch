@@ -47,7 +47,6 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
 
   /* compare marginals using 1-Wasserstein distance */
   for c in 1..C {
-    /* project onto a random unit vector for univariate comparison */
     let x1 <- X1[1..R,c];
     let x2 <- X2[1..R,c];
 
@@ -70,7 +69,6 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
    * 1-Wasserstein distance, repeating as many times as there are
    * dimensions */
   for c in 1..C {
-    /* project onto a random unit vector for univariate comparison */
     let u <- vector_lambda(\(i:Integer) -> {
           return simulate_gaussian(0.0, 1.0);
         }, C);
