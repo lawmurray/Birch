@@ -89,7 +89,7 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
  * - rows: Number of rows.
  * - columns: Number of columns.
  */
-function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> {
+function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
   cpp{{
   return numbirch::Array(numbirch::make_shape(rows, columns), x);
   }}
