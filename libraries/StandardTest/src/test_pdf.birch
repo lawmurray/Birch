@@ -78,7 +78,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   }
 
   /* simulate, counting the occurrence of each value */
-  let count <- vector(0, to! - from! + 1);
+  let count <- vector(0, to!! - from!! + 1);
   for n in 1..N {
     j:Integer;
     if lazy && π.supportsLazy() {
@@ -86,22 +86,22 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     } else {
       j <- π.simulate();
     }
-    let i <- j - from! + 1;
+    let i <- j - from!! + 1;
     if 1 <= i && i <= length(count) {
       count[i] <- count[i] + 1;
     }
   }
 
-  /* compare sum of pdf to counts */
+  /* compare pdf to counts */
   let failed <- false;
-  for x in from!..to! {
+  for x in from!!..to!! {
     p:Real;
     if lazy && π.supportsLazy() {
       p <- exp(π.logpdfLazy(box(x))!.value());
     } else {
       p <- π.pdf(x);
     }
-    let δ <- abs(p - scalar<Real>(count[x - from! + 1])/N);
+    let δ <- abs(p - scalar<Real>(count[x - from!! + 1])/N);
     let ε <- 5.0/sqrt(N);
     if 100 < N && !(δ <= ε) {  // careful of nans
       failed <- true;
