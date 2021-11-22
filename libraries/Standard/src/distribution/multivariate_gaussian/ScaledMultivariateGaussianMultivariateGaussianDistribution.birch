@@ -90,7 +90,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
     μ.r.graft(p);
     return p;
   } else {
-    return MultiariateGaussian(wrap(μ), wrap(Σ));
+    return MultivariateGaussian(wrap(μ), wrap(Σ));
   }
 }
 
