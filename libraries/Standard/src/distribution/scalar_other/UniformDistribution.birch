@@ -76,7 +76,6 @@ function wrap_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
  * - u: Upper bound of interval.
  */
 function simulate_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
-  assert l <= u;
   cpp{{
   return std::uniform_real_distribution<Real>(wait(l), wait(u))(rng);
   }}
