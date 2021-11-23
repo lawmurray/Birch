@@ -14,13 +14,32 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 COMMON_SOURCES = \
-    numbirch/common/binary.cpp \
-    numbirch/common/numeric.cpp \
-    numbirch/common/ternary.cpp \
-    numbirch/common/unary.cpp
+    numbirch/common/binary_function.cpp \
+    numbirch/common/binary_grad.cpp \
+    numbirch/common/binary_operator.cpp \
+    numbirch/common/binary_scalar_divide.cpp \
+    numbirch/common/binary_scalar_multiply.cpp \
+    numbirch/common/numeric_count.cpp \
+    numbirch/common/numeric_diagonal.cpp \
+    numbirch/common/numeric_dot.cpp \
+    numbirch/common/numeric_frobenius.cpp \
+    numbirch/common/numeric_matrix.cpp \
+    numbirch/common/numeric_matrix_matrix.cpp \
+    numbirch/common/numeric_matrix_vector.cpp \
+    numbirch/common/numeric_outer.cpp \
+    numbirch/common/numeric_reduce_matrix.cpp \
+    numbirch/common/numeric_single_matrix.cpp \
+    numbirch/common/numeric_single_vector.cpp \
+    numbirch/common/numeric_sum.cpp \
+    numbirch/common/ternary_function.cpp \
+    numbirch/common/unary_function.cpp \
+    numbirch/common/unary_grad.cpp \
+    numbirch/common/unary_operator.cpp
 
 if ONEAPI
-  AM_CPPFLAGS += -DBACKEND_ONEAPI -Wno-deprecated-declarations -Wno-unused-command-line-argument
+  AM_CPPFLAGS += -DBACKEND_ONEAPI \
+      -Wno-deprecated-declarations \
+      -Wno-unused-command-line-argument
   AM_CXXFLAGS += -fsycl -qmkl
   AM_LDFLAGS += $(AM_CXXFLAGS)
   COMMON_SOURCES += \
@@ -30,7 +49,15 @@ if ONEAPI
 else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA
-  AM_CXXFLAGS += -x cu -G -default-stream=per-thread -expt-relaxed-constexpr -Xcompiler="-Wall" -Xcompiler="-Wno-unused-result" -Xcompiler="-Wno-unknown-pragmas" -Xcompiler="-Wno-deprecated-declarations"
+  AM_CXXFLAGS += -x cu -G \
+      -default-stream=per-thread \
+      -expt-relaxed-constexpr \
+      -arch=all-major \
+      -Wno-deprecated-gpu-targets \
+      -Xcompiler="-Wall" \
+      -Xcompiler="-Wno-unused-result" \
+      -Xcompiler="-Wno-unknown-pragmas" \
+      -Xcompiler="-Wno-deprecated-declarations"
   COMMON_SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \
@@ -38,7 +65,9 @@ if CUDA
       numbirch/cuda/memory.cpp \
       numbirch/jemalloc/jemalloc.cpp
 else
-  AM_CPPFLAGS += -DBACKEND_EIGEN -DEIGEN_NO_AUTOMATIC_RESIZING=1 -DEIGEN_DONT_PARALLELIZE=1
+  AM_CPPFLAGS += -DBACKEND_EIGEN \
+      -DEIGEN_NO_AUTOMATIC_RESIZING=1 \
+      -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += \
       numbirch/eigen/memory.cpp
 endif

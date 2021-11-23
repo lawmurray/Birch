@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cassert>
+#include <iostream>
 
 /*
  * If true, all CUDA calls are synchronous, which can be helpful to determine
@@ -22,6 +23,9 @@
       assert(err == cudaSuccess); \
       if (CUDA_SYNC) { \
         cudaError_t err = cudaStreamSynchronize(stream); \
+        if (err != cudaSuccess) { \
+          std::cerr << cudaGetErrorString(err) << std::endl; \
+        } \
         assert(err == cudaSuccess); \
       } \
     }

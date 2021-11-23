@@ -8,12 +8,12 @@ namespace numbirch {
 thread_local cublasHandle_t cublasHandle;
 thread_local void* cublasWorkspace;
 
-double* oneD;
-double* zeroD;
-float* oneS;
-float* zeroS;
-int* oneI;
-int* zeroI;
+double* oneD = nullptr;
+double* zeroD = nullptr;
+float* oneS = nullptr;
+float* zeroS = nullptr;
+int* oneI = nullptr;
+int* zeroI = nullptr;
 
 void cublas_init() {
   /* double-precision scalars */
@@ -25,8 +25,8 @@ void cublas_init() {
   CUBLAS_CHECK(cublasSetVector(1, sizeof(double), &zeroD1, 1, zeroD, 1));
 
   /* single-precision scalars */
-  float oneS1 = 1.0;
-  float zeroS1 = 0.0;
+  float oneS1 = 1.0f;
+  float zeroS1 = 0.0f;
   CUDA_CHECK(cudaMalloc(&oneS, sizeof(float)));
   CUDA_CHECK(cudaMalloc(&zeroS, sizeof(float)));  
   CUBLAS_CHECK(cublasSetVector(1, sizeof(float), &oneS1, 1, oneS, 1));

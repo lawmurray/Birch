@@ -352,7 +352,7 @@ public:
   /**
    * Member access (scalar only).
    */
-  template<int E = D, std::enable_if_t<(E == 0) &&
+  template<int E = D, std::enable_if_t<E == 0 &&
       !is_arithmetic_v<T>,int> = 0>
   T& operator->() {
     return value();
@@ -361,7 +361,7 @@ public:
   /**
    * Member access (scalar only).
    */
-  template<int E = D, std::enable_if_t<(E == 0) &&
+  template<int E = D, std::enable_if_t<E == 0 &&
       !is_arithmetic_v<T>,int> = 0>
   const T& operator->() const {
     return value();
