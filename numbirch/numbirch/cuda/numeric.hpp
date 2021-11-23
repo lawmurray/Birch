@@ -370,7 +370,7 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
       stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
       bufferOnHost, bufferOnHostBytes, info));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
-      CUBLAS_FILL_MODE_UPPER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(C),
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(C),
       columns(C), scalar<T>::one, data(L), stride(L), data(A), stride(A),
       data(C), stride(C)));
 
@@ -499,7 +499,7 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
   prefetch(B);
   Array<T,2> C(make_shape(rows(A), rows(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T,
-      rows(C), columns(C), rows(A), scalar<T>::one, data(A), stride(A),
+      rows(C), columns(C), columns(A), scalar<T>::one, data(A), stride(A),
       data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
   return C;
 }
