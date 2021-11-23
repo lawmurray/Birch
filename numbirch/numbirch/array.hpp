@@ -253,7 +253,7 @@ T* data(Array<T,D>& x) {
  * @ingroup array
  */
 template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
-constexpr const T& data(const T& x) {
+constexpr const T data(const T& x) {
   return x;
 }
 
