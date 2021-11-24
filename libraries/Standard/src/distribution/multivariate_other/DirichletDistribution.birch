@@ -57,7 +57,11 @@ function wrap_dirichlet<Arg>(α:Arg) -> {
  * - α: Concentrations.
  */
 function simulate_dirichlet<Arg1>(α:Arg1) -> {
-  let x <- transform(α, \(α:Real) -> Real { return simulate_gamma(α, 1.0); });
+  let x <- transform(α, \(α:Real) -> Real {
+        cpp{{
+        return std::gamma_distribution<Real>(α, 1.0)(rng);
+        }}
+      });
   return x/sum(x);
 }
 
@@ -69,7 +73,10 @@ function simulate_dirichlet<Arg1>(α:Arg1) -> {
  */
 function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
   let x <- vector_lambda(\(i:Integer) -> Real {
-        return simulate_gamma(α, 1.0); }, D);
+        cpp{{
+        return std::gamma_distribution<Real>(α, 1.0)(rng);
+        }}
+      }, D);
   return x/sum(x);
 }
 

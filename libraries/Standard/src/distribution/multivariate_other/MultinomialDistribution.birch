@@ -92,7 +92,9 @@ function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
   let x <- vector(0, D);
 
   while i > 0 {
-    let u <- simulate_uniform(0.0, 1.0);
+    cpp{{
+    auto u = std::uniform_real_distribution<Real>()(rng);
+    }}
     lnMax <- lnMax + log(u)/i;
     u <- Z*exp(lnMax);
     while u < Z - R {

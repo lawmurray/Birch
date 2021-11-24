@@ -87,8 +87,10 @@ function Exponential(λ:Random<Real>) -> Distribution<Real> {
  * - α: Shape.
  */
 function simulate_lomax<Arg1,Arg2>(λ:Arg1, α:Arg2) -> {
-  let u <- simulate_uniform(0.0, 1.0);
-  return λ*(pow(u, -1.0/α)-1.0);
+  cpp{{
+  auto u = std::uniform_real_distribution<Real>()(rng);
+  }}
+  return λ*(pow(u, -1.0/α) - 1.0);
 }
 
 /*
