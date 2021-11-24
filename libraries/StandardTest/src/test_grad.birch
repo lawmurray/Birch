@@ -35,6 +35,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     }
 
     /* compute gradient */
+    let p <- handler.peek();
     let x <- handler.args();
     assert length(x) > 0;
     let d <- handler.grad();
@@ -54,8 +55,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let r <- handler.move(z)!;
         let fd <- (r - q)/h';
         let δ <- abs(d[i] - fd);
-
-        pass <- 100 <= N || δ <= ε*abs(fd);  // if N <= 100, smoke test only
+        pass <- δ <= ε*abs(fd);
         if pass {
           /* success */
           t <- ntrials + 1;
@@ -76,7 +76,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
 
   /* check that failure rate within bounds */
   let rfail <- sum(failed)/N;
-  if !(rfail <= γ) {
+  if N > 10 && !(rfail <= γ) {  // if N <= 10, smoke test only
     error("***failed*** in aggregate, rate " + rfail + " > " + γ + "\n");
   }
 }
