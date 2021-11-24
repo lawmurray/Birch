@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eov pipefail
 
-N=100
+N=10
 B=100
 S=0
 
