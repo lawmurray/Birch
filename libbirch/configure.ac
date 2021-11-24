@@ -56,6 +56,7 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 
 # Checks for libraries
 AC_CHECK_LIB([atomic], [main], [], [], [])
+AC_CHECK_LIB([omp], [main], [], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])

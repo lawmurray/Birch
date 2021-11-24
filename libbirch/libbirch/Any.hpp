@@ -30,9 +30,22 @@ namespace libbirch {
  */
 class Any {
 public:
-  LIBBIRCH_CLASS(Any, LIBBIRCH_NO_BASE)
-  LIBBIRCH_CLASS_MEMBERS(LIBBIRCH_NO_MEMBERS)
-
+  using this_type_ = Any;
+  using base_type_ = LIBBIRCH_NO_BASE;
+ 
+  friend class Marker;
+  friend class Scanner;
+  friend class Reacher;
+  friend class Collector;
+  friend class BiconnectedCollector;
+  friend class Spanner;
+  friend class Bridger;
+  friend class Copier;
+  friend class Memo;
+  friend class BiconnectedCopier;
+  friend class BiconnectedMemo;
+  friend class Destroyer;
+ 
   /**
    * Constructor.
    */
@@ -153,6 +166,56 @@ public:
    * Unset buffered flag.
    */
   void unbuffer_();
+
+  virtual const char* getClassName_() const {
+    return "Any";
+  }
+ 
+  virtual Any* copy_() const {
+    return libbirch::make_object<Any>(*this);
+  }
+
+  virtual void accept_(libbirch::Marker& visitor_) {
+    //
+  }
+ 
+  virtual void accept_(libbirch::Scanner& visitor_) {
+    //
+  }
+ 
+  virtual void accept_(libbirch::Reacher& visitor_) {
+    //
+  }
+ 
+  virtual void accept_(libbirch::Collector& visitor_) {
+    //
+  }
+ 
+  virtual void accept_(libbirch::BiconnectedCollector& visitor_) {
+    //
+  }
+ 
+  virtual std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_,
+      const int i_, const int j_) {
+    return visitor_.visit(i_, j_);
+  }
+ 
+  virtual std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_,
+      const int j_, const int k_) {
+    return visitor_.visit(j_, k_);
+  }
+ 
+  virtual void accept_(libbirch::Copier& visitor_) {
+    //
+  }
+ 
+  virtual void accept_(libbirch::BiconnectedCopier& visitor_) {
+    //
+  }
+ 
+  virtual void accept_(libbirch::Destroyer& visitor_) {
+    //
+  }
 
 private:
   /**

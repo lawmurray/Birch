@@ -86,6 +86,7 @@ fi
 
 # Checks for libraries
 AC_CHECK_LIB([stdc++fs], [main], [], [], [])
+AC_CHECK_LIB([omp], [main], [], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])

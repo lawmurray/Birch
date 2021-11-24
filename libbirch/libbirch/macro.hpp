@@ -77,11 +77,11 @@ static int no_members = 0;
   friend class BiconnectedMemo; \
   friend class Destroyer; \
   \
-  virtual const char* getClassName_() const { \
+  virtual const char* getClassName_() const override { \
     return #Name; \
   } \
   \
-  virtual Name* copy_() const { \
+  virtual Name* copy_() const override { \
     return libbirch::make_object<Name>(*this); \
   }
 
@@ -116,32 +116,32 @@ static int no_members = 0;
     return T::accept_(visitor_, std::forward<Args>(args)...); \
   } \
   \
-  virtual void accept_(libbirch::Marker& visitor_) { \
+  virtual void accept_(libbirch::Marker& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual void accept_(libbirch::Scanner& visitor_) { \
+  virtual void accept_(libbirch::Scanner& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual void accept_(libbirch::Reacher& visitor_) { \
+  virtual void accept_(libbirch::Reacher& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual void accept_(libbirch::Collector& visitor_) { \
+  virtual void accept_(libbirch::Collector& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual void accept_(libbirch::BiconnectedCollector& visitor_) { \
+  virtual void accept_(libbirch::BiconnectedCollector& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) { \
+  virtual std::tuple<int,int,int> accept_(libbirch::Spanner& visitor_, const int i_, const int j_) override { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = accept_base_(visitor_, i_, j_); \
     std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_, members); \
@@ -151,7 +151,7 @@ static int no_members = 0;
     return std::make_tuple(l_, h_, m_); \
   } \
   \
-  virtual std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) { \
+  virtual std::tuple<int,int,int,int> accept_(libbirch::Bridger& visitor_, const int j_, const int k_) override { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = accept_base_(visitor_, j_, k_); \
     std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_, members); \
@@ -162,17 +162,17 @@ static int no_members = 0;
     return std::make_tuple(l_, h_, m_, n_); \
   } \
   \
-  virtual void accept_(libbirch::Copier& visitor_) { \
+  virtual void accept_(libbirch::Copier& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual void accept_(libbirch::BiconnectedCopier& visitor_) { \
+  virtual void accept_(libbirch::BiconnectedCopier& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   } \
   \
-  virtual void accept_(libbirch::Destroyer& visitor_) { \
+  virtual void accept_(libbirch::Destroyer& visitor_) override { \
     accept_base_(visitor_); \
     visitor_.visit(members); \
   }

@@ -200,26 +200,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* generic class definitions, generic member definitions */
-    for (auto o : classes) {
-      if (o->isGeneric() && !o->isAlias()) {
-        /* whole class (which may include generic members) */
-        auxDefinition << o;
-      } else {
-        /* just generic members of the class */
-        CppClassGenerator auxMember(base, level, false, true, includeLines,
-            o);
-
-        Gatherer<MemberFunction> memberFunctions;
-         o->accept(&memberFunctions);
-        for (auto o : memberFunctions) {
-          if (o->isGeneric()) {
-            auxMember << o;
-          }
-        }
-      }
-    }
-
     /* generic function and operator definitions; those with deduced return
      * types first to reduce occurrences of use before deduction */
     for (auto o : functions) {
@@ -252,6 +232,27 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         auxDefinition << o;
       }
     }
+
+    /* generic class definitions, generic member definitions */
+    for (auto o : classes) {
+      if (o->isGeneric() && !o->isAlias()) {
+        /* whole class (which may include generic members) */
+        auxDefinition << o;
+      } else {
+        /* just generic members of the class */
+        CppClassGenerator auxMember(base, level, false, true, includeLines,
+            o);
+
+        Gatherer<MemberFunction> memberFunctions;
+         o->accept(&memberFunctions);
+        for (auto o : memberFunctions) {
+          if (o->isGeneric()) {
+            auxMember << o;
+          }
+        }
+      }
+    }
+
     line("}\n");  // close namespace
     line("#endif");
   }
