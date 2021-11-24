@@ -6,22 +6,24 @@ struct Unary<Middle>(m:Middle) < Form {
    * Argument.
    */
   m:Middle <- m;
-}
 
-function link<Middle>(x:Unary<Middle>) {
-  link(x.m);
-}
+  hpp{{
+  void link() {
+    birch::link(m);
+  }
 
-function label<Middle>(x:Unary<Middle>, gen:Integer) {
-  label(x.m, gen);
-}
+  void label(const Integer gen) {
+    birch::label(m, gen);
+  }
 
-function constant<Middle>(x:Unary<Middle>, gen:Integer) {
-  constant(x.m, gen);
-}
+  void constant(const Integer gen) {
+    birch::constant(m, gen);
+  }
 
-function constant<Middle>(x:Unary<Middle>) {
-  constant(x.m);
+  void constant() {
+    birch::constant(m);
+  }
+  }}
 }
 
 hpp{{

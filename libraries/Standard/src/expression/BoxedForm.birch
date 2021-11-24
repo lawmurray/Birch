@@ -20,6 +20,10 @@ class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value>(x, false) {
     this.d <- nil;  // clear intermediate gradients to save memory
   }
 
+  final override function doLink() {
+    global.link(f!);
+  }
+
   final override function doLabel(gen:Integer) {
     global.label(f!, this.gen);
   }
@@ -32,52 +36,4 @@ class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value>(x, false) {
     global.constant(f!);
     f <- nil;
   }
-}
-
-function length<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
-  return x.length();
-}
-
-function size<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
-  return x.size();
-}
-
-function rows<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
-  return x.rows();
-}
-
-function columns<Value,Form>(x:BoxedForm<Value,Form>) -> Integer {
-  return x.columns();
-}
-
-function link<Value,Form>(x:BoxedForm<Value,Form>) {
-  x.link();
-}
-
-function value<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
-  return x.value();
-}
-
-function peek<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
-  return x.peek();
-}
-
-function eval<Value,Form>(x:BoxedForm<Value,Form>) -> Value! {
-  return x.eval();
-}
-
-function grad<Value,Form,Gradient>(x:BoxedForm<Value,Form>, d:Gradient) {
-  x.grad(d);
-}
-
-function label<Value,Form>(x:BoxedForm<Value,Form>, gen:Integer) {
-  x.label(gen);
-}
-
-function constant<Value,Form>(x:BoxedForm<Value,Form>, gen:Integer) {
-  x.constant(gen);
-}
-
-function constant<Value,Form>(x:BoxedForm<Value,Form>) {
-  x.constant();
 }

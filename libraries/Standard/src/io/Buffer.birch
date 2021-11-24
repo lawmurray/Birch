@@ -121,7 +121,7 @@ final class Buffer {
    * an empty array.
    */
   function isEmpty() -> Boolean {
-    return isNil() || (values? && length(values!) == 0);
+    return isNil() || (values? && values!.empty());
   }
 
   /**
@@ -203,7 +203,7 @@ final class Buffer {
         scalarBoolean? {
       return 1;
     } else if values? {
-      return length(values!);
+      return values!.size();
     } else if vectorReal? {
       return length(vectorReal!);
     } else if vectorInteger? {

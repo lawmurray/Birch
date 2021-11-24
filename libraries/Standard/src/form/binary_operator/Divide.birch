@@ -26,14 +26,14 @@ Divide<Left,Right> operator/(const Left& l, const Right& r) {
 }}
 
 function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left, r:Right) -> {
-  return (d/r, d*l/-pow(r, 2.0));
+  return (d/r, -d*l*pow(r, -2.0));
 }
 
 function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right) -> {
-  return (d/r, dot(d, l)/-pow(r, 2.0));
+  return (d/r, -dot(d, l)*pow(r, -2.0));
 }
 
 function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left[_,_],
     r:Right) -> {
-  return (d/r, frobenius(d, l)/-pow(r, 2.0));
+  return (d/r, -frobenius(d, l)*pow(r, -2.0));
 }

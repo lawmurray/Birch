@@ -463,10 +463,11 @@ Expression<typename T::value_type> box(const T& x) {
 
 template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
 auto box(const T& x) {
-  link(x);
   auto y = peek(x);
   using U = typename std::decay<decltype(wait(y))>::type;
-  return Expression<U>(construct<BoxedForm<U,T>>(y, x));
+  auto r = construct<BoxedForm<U,T>>(y, x);
+  r->doLink();  ///@todo Implement as RAII
+  return Expression<U>(r);
 }
 
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
@@ -729,12 +730,52 @@ function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1
 
 hpp{{
 namespace birch {
-template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
-auto value(const T& x) {
-  return x;
+using numbirch::rows;
+using numbirch::columns;
+using numbirch::length;
+using numbirch::size;
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto rows(const T& x) {
+  return x.rows();
 }
 
-template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto rows(const T& x) {
+  return x->rows();
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto columns(const T& x) {
+  return x.columns();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto columns(const T& x) {
+  return x->columns();
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto length(const T& x) {
+  return x.length();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto length(const T& x) {
+  return x->length();
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto size(const T& x) {
+  return x.size();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto size(const T& x) {
+  return x->size();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 auto value(const T& x) {
   return x;
 }
@@ -749,12 +790,7 @@ auto value(const T& x) {
   return x->value();
 }
 
-template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
-auto eval(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 auto eval(const T& x) {
   return x;
 }
@@ -769,12 +805,7 @@ auto eval(const T& x) {
   return x->eval();
 }
 
-template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
-auto peek(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 auto peek(const T& x) {
   return x;
 }
@@ -787,6 +818,81 @@ auto peek(const T& x) {
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
 auto peek(const T& x) {
   return x->peek();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void link(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void link(T& x) {
+  x.link();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void link(const T& x) {
+  x->link();
+}
+
+template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void grad(const T& x, const G& g) {
+  //
+}
+
+template<class T, class G, std::enable_if_t<is_form<T>::value,int> = 0>
+void grad(T& x, const G& g) {
+  x.grad(g);
+}
+
+template<class T, class G, std::enable_if_t<is_expression<T>::value,int> = 0>
+void grad(const T& x, const G& g) {
+  x->grad(g);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void label(const T& x, const int gen) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void label(T& x, const int gen) {
+  return x.label(gen);
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void label(const T& x, const int gen) {
+  return x->label(gen);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void constant(const T& x, const int gen) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void constant(T& x, const int gen) {
+  x.constant(gen);
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void constant(const T& x, const int gen) {
+  x->constant(gen);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void constant(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void constant(T& x) {
+  x.constant();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void constant(const T& x) {
+  x->constant();
 }
 
 }

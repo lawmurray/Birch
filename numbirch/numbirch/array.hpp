@@ -12,8 +12,6 @@
 
 namespace numbirch {
 /**
- * @internal
- *
  * Length of an array.
  * 
  * @ingroup array
@@ -26,8 +24,6 @@ int length(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Length of a scalar---i.e. 1.
  * 
  * @ingroup array
@@ -38,8 +34,6 @@ constexpr int length(const T& x) {
 }
 
 /**
- * @internal
- *
  * Number of rows in array.
  * 
  * @ingroup array
@@ -52,8 +46,6 @@ int rows(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Number of rows in scalar---i.e. 1.
  * 
  * @ingroup array
@@ -64,8 +56,6 @@ constexpr int rows(const T& x) {
 }
 
 /**
- * @internal
- *
  * Number of columns in array.
  * 
  * @ingroup array
@@ -78,8 +68,6 @@ int columns(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Number of columns in scalar---i.e. 1.
  * 
  * @ingroup array
@@ -90,8 +78,6 @@ constexpr int columns(const T& x) {
 }
 
 /**
- * @internal
- *
  * Width of array.
  * 
  * @ingroup array
@@ -104,8 +90,6 @@ int width(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Width of scalar---i.e. 1.
  * 
  * @ingroup array
@@ -116,8 +100,6 @@ constexpr int width(const T& x) {
 }
 
 /**
- * @internal
- *
  * Height of array.
  * 
  * @ingroup array
@@ -130,8 +112,6 @@ int height(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Height of scalar---i.e. 1.
  * 
  * @ingroup array
@@ -142,8 +122,6 @@ constexpr int height(const T& x) {
 }
 
 /**
- * @internal
- *
  * Stride of an array.
  * 
  * @ingroup array
@@ -156,8 +134,6 @@ int stride(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Stride of a scalar---i.e. 0, although typically ignored by functions.
  * 
  * @ingroup array
@@ -168,8 +144,6 @@ constexpr int stride(const T& x) {
 }
 
 /**
- * @internal
- *
  * Size of an array.
  * 
  * @ingroup array
@@ -182,8 +156,6 @@ int size(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Size of a scalar---i.e. 1.
  * 
  * @ingroup array
@@ -194,8 +166,6 @@ constexpr int size(const T& x) {
 }
 
 /**
- * @internal
- *
  * Shape of an array.
  * 
  * @ingroup array
@@ -208,8 +178,6 @@ ArrayShape<D> shape(const Array<T,D>& x) {
 }
 
 /**
- * @internal
- *
  * Shape of a scalar.
  * 
  * @ingroup array
@@ -258,8 +226,6 @@ constexpr const T data(const T& x) {
 }
 
 /**
- * @internal
- *
  * Do the shapes of two arrays conform?---Yes, if they have the same number of
  * dimensions and same length along them.
  * 
@@ -273,8 +239,6 @@ bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
 }
 
 /**
- * @internal
- *
  * Does the shape of an array conform with that of a scalar?---Yes, if it has
  * zero dimensions.
  * 
@@ -287,8 +251,6 @@ constexpr bool conforms(const Array<T,D>& x, const U& y) {
 }
 
 /**
- * @internal
- *
  * Does the shape of an array conform with that of a scalar?---Yes, if it has
  * zero dimensions.
  * 
@@ -301,8 +263,6 @@ constexpr bool conforms(const T& x, const Array<U,D>& y) {
 }
 
 /**
- * @internal
- *
  * Do the shapes of two scalars conform?---Yes.
  * 
  * @ingroup array

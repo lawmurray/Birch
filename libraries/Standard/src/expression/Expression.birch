@@ -194,15 +194,6 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Register this object as a dependency of another expression. This is
-   * called implicitly when boxing forms.
-   */
-  final function link() {
-    assert visitCount == 0;
-    linkCount <- linkCount + 1;
-  }
-
-  /**
    * Get result and render constant.
    *
    * Returns: The result.
@@ -299,8 +290,8 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   final function grad<Gradient>(d:Gradient) {
     if !flagConstant {
       if visitCount == 0 {
-        assert isRandom() || !this.d?;
-        this.d <- d;  // start accumulation, or possibly restart for Randoms
+        assert !this.d?;
+        this.d <- d;  // start accumulation
       } else {
         assert this.d?;
         this.d <- this.d! + d;
@@ -315,6 +306,18 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
   function doGrad() {
     this.d <- nil;  // clear intermediate gradients to save memory
+  }
+
+  /**
+   * Register this object as a dependency of another expression.
+   */
+  final function link() {
+    assert visitCount == 0;
+    linkCount <- linkCount + 1;
+  }
+  function doLink() {
+    // internally, called when this is construct to recursively call link()
+    // on dependencies
   }
 
   /**
@@ -378,52 +381,4 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   override function write(buffer:Buffer) {
     buffer.set(value()!);
   }
-}
-
-function length<Value>(x:Expression<Value>) -> Integer {
-  return x.length();
-}
-
-function size<Value>(x:Expression<Value>) -> Integer {
-  return x.size();
-}
-
-function rows<Value>(x:Expression<Value>) -> Integer {
-  return x.rows();
-}
-
-function columns<Value>(x:Expression<Value>) -> Integer {
-  return x.columns();
-}
-
-function link<Value>(x:Expression<Value>) {
-  x.link();
-}
-
-function value<Value>(x:Expression<Value>) -> Value! {
-  return x.value();
-}
-
-function peek<Value>(x:Expression<Value>) -> Value! {
-  return x.peek();
-}
-
-function eval<Value>(x:Expression<Value>) -> Value! {
-  return x.eval();
-}
-
-function grad<Value,Gradient>(x:Expression<Value>, d:Gradient) {
-  x.grad(d);
-}
-
-function label<Value>(x:Expression<Value>, gen:Integer) {
-  x.label(gen);
-}
-
-function constant<Value>(x:Expression<Value>, gen:Integer) {
-  x.constant(gen);
-}
-
-function constant<Value>(x:Expression<Value>) {
-  x.constant();
 }

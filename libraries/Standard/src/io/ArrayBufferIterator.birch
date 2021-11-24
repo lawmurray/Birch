@@ -19,7 +19,7 @@ final class ArrayBufferIterator(values:Array<Buffer>) < Iterator<Buffer> {
    * Is there a next element?
    */
   override function hasNext() -> Boolean {
-    return i < length(values);
+    return i < values.size();
   }
 
   /**

@@ -11,26 +11,28 @@ struct Binary<Left,Right>(l:Left, r:Right) < Form {
    * Right argument.
    */
   r:Right <- r;
-}
 
-function link<Left,Right>(x:Binary<Left,Right>) {
-  link(x.l);
-  link(x.r);
-}
+  hpp{{
+  void link() {
+    birch::link(l);
+    birch::link(r);
+  }
 
-function label<Left,Right>(x:Binary<Left,Right>, gen:Integer) {
-  label(x.l, gen);
-  label(x.r, gen);
-}
+  void label(const Integer gen) {
+    birch::label(l, gen);
+    birch::label(r, gen);
+  }
 
-function constant<Left,Right>(x:Binary<Left,Right>, gen:Integer) {
-  constant(x.l, gen);
-  constant(x.r, gen);
-}
+  void constant(const Integer gen) {
+    birch::constant(l, gen);
+    birch::constant(r, gen);
+  }
 
-function constant<Left,Right>(x:Binary<Left,Right>) {
-  constant(x.l);
-  constant(x.r);
+  void constant() {
+    birch::constant(l);
+    birch::constant(r);
+  }
+  }}
 }
 
 hpp{{

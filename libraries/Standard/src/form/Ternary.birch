@@ -16,31 +16,32 @@ struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
    * Right argument.
    */
   r:Right <- r;
-}
 
-function link<Left,Middle,Right>(x:Ternary<Left,Middle,Right>) {
-  link(x.l);
-  link(x.m);
-  link(x.r);
-}
+  hpp{{
+  void link() {
+    birch::link(l);
+    birch::link(m);
+    birch::link(r);
+  }
 
-function label<Left,Middle,Right>(x:Ternary<Left,Middle,Right>, gen:Integer) {
-  label(x.l, gen);
-  label(x.m, gen);
-  label(x.r, gen);
-}
+  void label(const Integer gen) {
+    birch::label(l, gen);
+    birch::label(m, gen);
+    birch::label(r, gen);
+  }
 
-function constant<Left,Middle,Right>(x:Ternary<Left,Middle,Right>,
-    gen:Integer) {
-  constant(x.l, gen);
-  constant(x.m, gen);
-  constant(x.r, gen);
-}
+  void constant(const Integer gen) {
+    birch::constant(l, gen);
+    birch::constant(m, gen);
+    birch::constant(r, gen);
+  }
 
-function constant<Left,Middle,Right>(x:Ternary<Left,Middle,Right>) {
-  constant(x.l);
-  constant(x.m);
-  constant(x.r);
+  void constant() {
+    birch::constant(l);
+    birch::constant(m);
+    birch::constant(r);
+  }
+  }}
 }
 
 hpp{{

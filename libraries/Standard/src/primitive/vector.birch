@@ -19,54 +19,12 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
 
 /**
  * Create vector filled with a given value.
+ *
+ * - x: The value.
+ * - length: Length.
  */
 function vector<Type>(x:Type, length:Integer) -> {
   cpp{{
   return numbirch::Array(numbirch::make_shape(length), x);
   }}
-}
-
-/**
- * Create vector filled with a given value.
- */
-function vector<Type>(x:Type!, length:Integer) -> Type[_] {
-  return vector<Type>(x!, length);
-}
-
-function rows<Type>(x:Type[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-function columns<Type>(x:Type[_]) -> Integer {
-  return 1;
-}
-
-function length<Type>(x:Type[_]) -> Integer {
-  return rows(x);
-}
-
-function size<Type>(x:Type[_]) -> Integer {
-  return rows(x)*columns(x);
-}
-
-function link<Type>(x:Type[_]) {
-  //
-}
-
-function grad<Type,Gradient>(x:Type[_], d:Gradient) {
-  //
-}
-
-function label<Type>(x:Type[_], gen:Integer) {
-  //
-}
-
-function constant<Type>(x:Type[_], gen:Integer) {
-  //
-}
-
-function constant<Type>(x:Type[_]) {
-  //
 }

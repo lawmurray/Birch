@@ -1,53 +1,7 @@
-/**
- * Digamma function (derivative of `lgamma`).
- */
-function digamma(x:Real) -> Real {
-  cpp{{
-  return numbirch::digamma(x);
-  }}
-}
-
-/**
- * Multivariate digamma function (derivative of multivariate `lgamma`).
- */
-function digamma(x:Real, p:Integer) -> Real {
-  cpp{{
-  return numbirch::digamma(x, p);
-  }}
-}
-
-/**
- * Regularized lower incomplete gamma function.
- */
-function gamma_p(a:Real, x:Real) -> Real {
-  cpp{{
-  return numbirch::gamma_p(a, x);
-  }}
-}
-
-/**
- * Regularized upper incomplete gamma function.
- */
-function gamma_q(a:Real, x:Real) -> Real {
-  cpp{{
-  return numbirch::gamma_q(a, x);
-  }}
-}
-
-/**
- * Incomplete beta function.
- */
-function ibeta(a:Real, b:Real, x:Real) -> Real {
-  cpp{{
-  return numbirch::ibeta(a, b, x);
-  }}
-}
-
-/**
- * Reciprocal.
- */
-function rcp(x:Real) -> Real {
-  cpp{{
-  return numbirch::rcp(x);
-  }}
-}
+hpp{{
+using numbirch::digamma;
+using numbirch::gamma_p;
+using numbirch::gamma_q;
+using numbirch::ibeta;
+using numbirch::rcp;
+}}
