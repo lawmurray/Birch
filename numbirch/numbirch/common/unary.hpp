@@ -31,8 +31,12 @@ explicit_t<R,T> operator!(const T& x) {
 
 template<class R, class T, class>
 explicit_t<R,T> abs(const T& x) {
-  prefetch(x);
-  return transform(x, abs_functor<R>());
+  if constexpr (std::is_signed_v<R>) {
+    prefetch(x);
+    return transform(x, abs_functor<R>());
+  } else {
+    return x;
+  }
 }
 
 template<class R, class T, class>
