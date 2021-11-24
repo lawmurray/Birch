@@ -514,7 +514,7 @@ public:
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   const T& dice(const Args&... args) const {
-    slicer();
+    dicer();
     return shp.dice(buf, args...);
   }
 
