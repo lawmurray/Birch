@@ -840,10 +840,10 @@ void grad(const T& x, const G& g) {
   //
 }
 
-template<class T, class G, std::enable_if_t<is_form<T>::value,int> = 0>
-void grad(T& x, const G& g) {
-  x.grad(g);
-}
+// template<class T, class G, std::enable_if_t<is_form<T>::value,int> = 0>
+// void grad(T& x, const G& g) {
+//   x.grad(g);
+// }
 
 template<class T, class G, std::enable_if_t<is_expression<T>::value,int> = 0>
 void grad(const T& x, const G& g) {
