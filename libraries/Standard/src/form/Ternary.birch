@@ -70,7 +70,7 @@ hpp{{
   \
   const Value& eval() const { \
     const_cast<std::optional<Value>&>(x) = f(birch::eval(this->l), \
-        birch::peek(this->m), birch::eval(this->r)); \
+        birch::eval(this->m), birch::eval(this->r)); \
     return *x; \
   }
 }}
