@@ -6,6 +6,8 @@
 #include "numbirch/eigen/eigen.hpp"
 #include "numbirch/common/functor.hpp"
 
+#include <iostream>
+
 namespace numbirch {
 
 template<class T, class>
@@ -161,6 +163,10 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
   auto S1 = make_eigen(S);
   auto C1 = make_eigen(C);
   auto ldlt = S1.ldlt();
+  if (ldlt.info() != Eigen::Success) {
+    std::cerr << "-----------------------------------------" << std::endl;
+    std::cerr << S1 << std::endl;
+  }
   assert(ldlt.info() == Eigen::Success);
   C1.noalias() = (ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
       (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*

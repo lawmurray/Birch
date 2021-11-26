@@ -40,11 +40,15 @@ template<class T, class Functor>
 auto transform(const T& x, Functor f) {
   using R = decltype(f(value_t<T>()));
   constexpr int D = dimension_v<T>;
-  auto y = Array<R,D>(shape(x));
-  auto m = width(x);
-  auto n = height(x);
-  kernel_transform(m, n, data(x), stride(x), data(y), stride(y), f);
-  return y;
+  if (size(x) > 0) {
+    auto y = Array<R,D>(shape(x));
+    auto m = width(x);
+    auto n = height(x);
+    kernel_transform(m, n, data(x), stride(x), data(y), stride(y), f);
+    return y;
+  } else {
+    return Array<R,D>();
+  }
 }
 
 /*
@@ -71,12 +75,16 @@ template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
   using R = decltype(f(value_t<T>(),value_t<U>()));
   constexpr int D = std::max(dimension_v<T>, dimension_v<U>);
-  auto m = std::max(width(x), width(y));
-  auto n = std::max(height(x), height(y));
-  auto z = Array<R,D>(make_shape<D>(m, n));
-  kernel_transform(m, n, data(x), stride(x), data(y), stride(y), data(z),
-      stride(z), f);
-  return z;
+  if (size(x) > 0 && size(y) > 0) {
+    auto m = std::max(width(x), width(y));
+    auto n = std::max(height(x), height(y));
+    auto z = Array<R,D>(make_shape<D>(m, n));
+    kernel_transform(m, n, data(x), stride(x), data(y), stride(y), data(z),
+        stride(z), f);
+    return z;
+  } else {
+    return Array<R,D>();
+  }
 }
 
 /*
@@ -102,13 +110,19 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
   using W = typename P::second_type;
   constexpr int D = std::max(std::max(dimension_v<G>, dimension_v<T>),
       dimension_v<U>);
-  auto m = std::max(std::max(width(g), width(x)), width(y));
-  auto n = std::max(std::max(height(g), height(x)), height(y));
-  auto a = Array<V,D>(make_shape<D>(m, n));
-  auto b = Array<W,D>(make_shape<D>(m, n));
-  kernel_transform_grad(m, n, data(g), stride(g), data(x), stride(x), data(y),
-      stride(y), data(a), stride(a), data(b), stride(b), f);
-  return std::make_pair(a, b);
+  if (size(g) > 0 && size(x) > 0 && size(y) > 0) {
+    auto m = std::max(std::max(width(g), width(x)), width(y));
+    auto n = std::max(std::max(height(g), height(x)), height(y));
+    auto a = Array<V,D>(make_shape<D>(m, n));
+    auto b = Array<W,D>(make_shape<D>(m, n));
+    kernel_transform_grad(m, n, data(g), stride(g), data(x), stride(x), data(y),
+        stride(y), data(a), stride(a), data(b), stride(b), f);
+    return std::make_pair(a, b);
+  } else {
+    auto a = Array<V,D>();
+    auto b = Array<W,D>();
+    return std::make_pair(a, b);
+  }
 }
 
 /*
@@ -130,12 +144,16 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
   using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
   constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
       dimension_v<V>);
-  auto m = std::max(std::max(width(x), width(y)), width(z));
-  auto n = std::max(std::max(height(x), height(y)), height(z));
-  auto a = Array<R,D>(make_shape<D>(m, n));
-  kernel_transform(m, n, data(x), stride(x), data(y), stride(y), data(z),
-      stride(z), data(a), stride(a), f);
-  return a;
+  if (size(x) > 0 && size(y) > 0 && size(z) > 0) {
+    auto m = std::max(std::max(width(x), width(y)), width(z));
+    auto n = std::max(std::max(height(x), height(y)), height(z));
+    auto a = Array<R,D>(make_shape<D>(m, n));
+    kernel_transform(m, n, data(x), stride(x), data(y), stride(y), data(z),
+        stride(z), data(a), stride(a), f);
+    return a;
+  } else {
+    return Array<R,D>();
+  }
 }
 
 }
