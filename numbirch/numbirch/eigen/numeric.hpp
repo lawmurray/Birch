@@ -6,8 +6,6 @@
 #include "numbirch/eigen/eigen.hpp"
 #include "numbirch/common/functor.hpp"
 
-#include <iostream>
-
 namespace numbirch {
 
 template<class T, class>
@@ -38,9 +36,14 @@ Array<T,2> cholinv(const Array<T,2>& S) {
   Array<T,2> B(shape(S));
   auto S1 = make_eigen(S);
   auto B1 = make_eigen(B);
-  auto ldlt = S1.ldlt();
-  assert(ldlt.info() == Eigen::Success);
-  B1.noalias() = ldlt.solve(B1.Identity(rows(B), columns(B)));
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    B1.noalias() = llt.solve(B1.Identity(rows(B), columns(B)));
+  } else {
+    /* try again with a more stable factorization */
+    auto qr = S1.fullPivHouseholderQr();
+    B1.noalias() = qr.solve(B1.Identity(rows(B), columns(B)));
+  }
   return B;
 }
 
@@ -70,15 +73,17 @@ Array<T,2> inv(const Array<T,2>& A) {
 template<class T, class>
 Array<T,0> lcholdet(const Array<T,2>& S) {
   auto S1 = make_eigen(S);
-  auto ldlt = S1.ldlt();
-  assert(ldlt.info() == Eigen::Success);
-
-  /* Eigen's LDLT decomposition factorizes as $S = P^\top LDL^\top P$; the $L$
-   * matrix has unit diagonal and thus determinant 1, the $P$ matrix is a
-   * permutation matrix and thus has determinant $\pm 1$, which squares to 1,
-   * leaving only the $D$ matrix with its determinant being the product along
-   * the main diagonal (log and sum) */
-  return ldlt.vectorD().array().log().sum();
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    /* we have $S = LL^\top$; the determinant of $S$ is the square of the
+     * determinant of $L$, the determinant of $L$ is the product of the
+     * elements along the diagonal, as it is a triangular matrix; adjust for
+     * log-determinant */
+    return 2.0*llt.matrixLLT().diagonal().array().log().sum();
+  } else {
+    /* try again with a more stable factorization */
+    return S1.fullPivHouseholderQr().logAbsDeterminant();
+  }
 }
 
 template<class T, class>
@@ -132,10 +137,18 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
   auto S1 = make_eigen(S);
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
-  auto ldlt = S1.ldlt();
-  assert(ldlt.info() == Eigen::Success);
-  y1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
-      (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().cwiseProduct(x1)));
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    y1.noalias() = llt.matrixL()*x1;
+  } else if constexpr (std::is_same_v<T,float>) {
+    /* try again in double precision */
+    auto S2 = S1.template cast<double>();
+    auto x2 = x1.template cast<double>();
+    auto llt = S2.llt();
+    y1.noalias() = (llt.matrixL()*x2).template cast<T>();
+  } else {
+    assert(llt.info() == Eigen::Success);
+  }
   return y;
 }
 
@@ -147,10 +160,18 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
   auto S1 = make_eigen(S);
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
-  auto ldlt = S1.ldlt();
-  assert(ldlt.info() == Eigen::Success);
-  C1.noalias() = ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
-      (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*B1));
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    C1.noalias() = llt.matrixL()*B1;
+  } else if constexpr (std::is_same_v<T,float>) {
+    /* try again in double precision */
+    auto S2 = S1.template cast<double>();
+    auto B2 = B1.template cast<double>();
+    auto llt = S2.llt();
+    C1.noalias() = (llt.matrixL()*B2).template cast<T>();
+  } else {
+    assert(llt.info() == Eigen::Success);
+  }
   return C;
 }
 
@@ -162,15 +183,18 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
   auto A1 = make_eigen(A);
   auto S1 = make_eigen(S);
   auto C1 = make_eigen(C);
-  auto ldlt = S1.ldlt();
-  if (ldlt.info() != Eigen::Success) {
-    std::cerr << "-----------------------------------------" << std::endl;
-    std::cerr << S1 << std::endl;
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    C1.noalias() = A1*llt.matrixU();
+  } else if constexpr (std::is_same_v<T,float>) {
+    /* try again in double precision */
+    auto A2 = A1.template cast<double>();
+    auto S2 = S1.template cast<double>();
+    auto llt = S2.llt();
+    C1.noalias() = (A2*llt.matrixU()).template cast<T>();
+  } else {
+    assert(llt.info() == Eigen::Success);
   }
-  assert(ldlt.info() == Eigen::Success);
-  C1.noalias() = (ldlt.transpositionsP().transpose()*(ldlt.matrixL()*
-      (ldlt.vectorD().cwiseMax(0.0).cwiseSqrt().asDiagonal()*
-      A1.transpose()))).transpose();
   return C;
 }
 
@@ -182,9 +206,12 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
   auto S1 = make_eigen(S);
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
-  auto ldlt = S1.ldlt();
-  assert(ldlt.info() == Eigen::Success);
-  x1.noalias() = ldlt.solve(y1);
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    x1.noalias() = llt.solve(y1);
+  } else {
+    x1.noalias() = S1.fullPivHouseholderQr().solve(y1);
+  }
   return x;
 }
 
@@ -196,9 +223,13 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
   auto S1 = make_eigen(S);
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
-  auto ldlt = S1.ldlt();
-  assert(ldlt.info() == Eigen::Success);
-  B1.noalias() = ldlt.solve(C1);
+  auto llt = S1.llt();
+  if (llt.info() == Eigen::Success) {
+    B1.noalias() = llt.solve(C1);
+  } else {
+    /* try again with a more stable factorization */
+    B1.noalias() = S1.fullPivHouseholderQr().solve(C1);
+  }
   return B;
 }
 

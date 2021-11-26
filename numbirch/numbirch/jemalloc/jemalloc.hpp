@@ -34,6 +34,16 @@ void* device_malloc(const size_t size);
 void device_free(void* ptr);
 
 /*
+ * Allocate for the host arena.
+ */
+void* host_malloc(const size_t size);
+
+/*
+ * Free for the free arena.
+ */
+void host_free(void* ptr);
+
+/*
  * Custom alloc() extent hook. This is implemented by the specific backend.
  */
 void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
@@ -68,5 +78,24 @@ bool device_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
  * Custom destroy() extent hook. This is implemented by the specific backend.
  */
 void device_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind);
+
+/*
+ * Custom alloc() extent hook.
+ */
+void* host_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
+    size_t size, size_t alignment, bool *zero, bool *commit,
+    unsigned arena_ind);
+
+/*
+ * Custom dalloc() extent hook.
+ */
+bool host_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind);
+
+/*
+ * Custom destroy() extent hook.
+ */
+void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
     size_t size, bool committed, unsigned arena_ind);
 }

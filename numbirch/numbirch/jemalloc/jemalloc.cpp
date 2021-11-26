@@ -4,11 +4,12 @@
 #include "numbirch/jemalloc/jemalloc.hpp"
 #include "numbirch/memory.hpp"
 
-#include <omp.h>
 #include <cassert>
+#include <cstring>
+#include <omp.h>
 
 /*
- * Host-device shared arena and thread cache for jemalloc. Allocations in this
+ * Unified shared arena and thread cache for jemalloc. Allocations in this
  * arena will migrate between host and device on demand.
  */
 static thread_local unsigned shared_arena = 0;
@@ -25,6 +26,13 @@ static thread_local int shared_flags = 0;
 static thread_local unsigned device_arena = 0;
 static thread_local unsigned device_tcache = 0;
 static thread_local int device_flags = 0;
+
+/*
+ * Host arena and thread cache for jemalloc. These use host memory only.
+ */
+static thread_local unsigned host_arena = 0;
+static thread_local unsigned host_tcache = 0;
+static thread_local int host_flags = 0;
 
 /*
  * Disable retention of extents by jemalloc. This is critical as the custom
@@ -72,6 +80,21 @@ static extent_hooks_t device_hooks = {
   nullptr
 };
 
+/**
+ * Custom extent hooks structure.
+ */
+static extent_hooks_t host_hooks = {
+  numbirch::host_extent_alloc,
+  numbirch::host_extent_dalloc,
+  numbirch::host_extent_destroy,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr
+};
+
 unsigned make_arena(extent_hooks_t* hooks) {
   [[maybe_unused]] int ret;
   unsigned arena = 0;
@@ -102,6 +125,11 @@ void numbirch::jemalloc_init() {
     device_arena = make_arena(&device_hooks);
     device_tcache = make_tcache();
     device_flags = MALLOCX_ARENA(device_arena)|MALLOCX_TCACHE(device_tcache);
+
+    /* host arena setup */
+    host_arena = make_arena(&host_hooks);
+    host_tcache = make_tcache();
+    host_flags = MALLOCX_ARENA(host_arena)|MALLOCX_TCACHE(host_tcache);
   }
 }
 
@@ -142,5 +170,17 @@ void numbirch::device_free(void* ptr) {
   assert(device_arena > 0);
   if (ptr) {
     dallocx(ptr, device_flags);
+  }
+}
+
+void* numbirch::host_malloc(const size_t size) {
+  assert(host_arena > 0);
+  return size == 0 ? nullptr : mallocx(size, host_flags);
+}
+
+void numbirch::host_free(void* ptr) {
+  assert(host_arena > 0);
+  if (ptr) {
+    dallocx(ptr, host_flags);
   }
 }

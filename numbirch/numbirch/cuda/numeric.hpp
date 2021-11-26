@@ -113,7 +113,7 @@ Array<T,2> cholinv(const Array<T,2>& S) {
       data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
@@ -123,7 +123,7 @@ Array<T,2> cholinv(const Array<T,2>& S) {
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
       data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return B;
 }
@@ -158,7 +158,7 @@ Array<T,2> inv(const Array<T,2>& A) {
       stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*std::min(rows(LU),
       columns(LU)));
 
@@ -171,7 +171,7 @@ Array<T,2> inv(const Array<T,2>& A) {
       stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), info));
 
   device_free(ipiv);
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return B;
 }
@@ -185,7 +185,7 @@ Array<T,0> lcholdet(const Array<T,2>& S) {
       data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
@@ -197,7 +197,7 @@ Array<T,0> lcholdet(const Array<T,2>& S) {
   ///@todo Avoid temporary
   Array<T,0> ldet = sum(transform(L.diagonal(), log_square_functor<T>()));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return ldet;
 }
@@ -213,7 +213,7 @@ Array<T,0> ldet(const Array<T,2>& A) {
       stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*rows(LU));
 
   CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
@@ -231,7 +231,7 @@ Array<T,0> ldet(const Array<T,2>& A) {
   Array<T,0> ldet = sum(transform(LU.diagonal(), log_abs_functor<T>()));
 
   device_free(ipiv);
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return ldet;
 }
@@ -305,7 +305,7 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
       data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void *bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void *bufferOnHost = malloc(bufferOnHostBytes);
+  void *bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
@@ -316,7 +316,7 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(y), data(L), stride(L),
       data(y), stride(y)));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return y;
 }
@@ -334,7 +334,7 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
       data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
@@ -345,7 +345,7 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
       columns(C), scalar<T>::one, data(L), stride(L), data(B), stride(B),
       data(C), stride(C)));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return C;
 }
@@ -363,7 +363,7 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
       data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
@@ -374,7 +374,7 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
       columns(C), scalar<T>::one, data(L), stride(L), data(A), stride(A),
       data(C), stride(C)));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return C;
 }
@@ -392,7 +392,7 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
       cusolver<T>::CUDA_R, data(L), stride(L), cusolver<T>::CUDA_R,
       &bufferOnDeviceBytes, &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void *bufferOnHost = malloc(bufferOnHostBytes);
+  void *bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, length(x), cusolver<T>::CUDA_R, data(L),
@@ -402,7 +402,7 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
       CUBLAS_FILL_MODE_LOWER, length(x), 1, cusolver<T>::CUDA_R, data(L),
       stride(L), cusolver<T>::CUDA_R, data(x), length(x), info));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return x;
 }
@@ -420,7 +420,7 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
       data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
 
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
@@ -430,7 +430,7 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
       data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
 
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return B;
 }
@@ -517,7 +517,7 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
       stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void *bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void *bufferOnHost = malloc(bufferOnHostBytes);
+  void *bufferOnHost = host_malloc(bufferOnHostBytes);
   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*std::max(1, rows(LU)));
 
   /* solve via LU factorization with partial pivoting */
@@ -530,7 +530,7 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y) {
       ipiv, cusolver<T>::CUDA_R, data(x), length(x), info));
 
   device_free(ipiv);
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return x;
 }
@@ -549,7 +549,7 @@ Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
       stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = malloc(bufferOnHostBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*std::min(rows(LU),
       columns(LU)));
 
@@ -562,7 +562,7 @@ Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
       stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), info));
 
   device_free(ipiv);
-  free(bufferOnHost);
+  host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return B;
 }

@@ -50,6 +50,10 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
  * @param S Symmetric positive definite matrix.
  * 
  * @return Matrix.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholinv(const Array<T,2>& S);
@@ -80,6 +84,10 @@ Array<T,2> inv(const Array<T,2>& A);
  * @param S Symmetric positive definite matrix.
  * 
  * @return Logarithm of the determinant.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> lcholdet(const Array<T,2>& S);
@@ -139,6 +147,10 @@ Array<T,2> transpose(const Array<T,2>& A);
  * @param x Vector $x$.
  * 
  * @return Result $y$.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x);
@@ -155,6 +167,10 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x);
  * @param B Matrix $B$.
  * 
  * @return Result $C$.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B);
@@ -171,6 +187,10 @@ Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B);
  * @param S Symmetric positive definite matrix $S$.
  * 
  * @return Result $C$.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S);
@@ -187,6 +207,10 @@ Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S);
  * @param y Vector $y$.
  * 
  * @return Result $x$.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
@@ -203,6 +227,10 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
  * @param C Matrix $C$.
  * 
  * @return Result $B$.
+ * 
+ * @note Backends may implement this in various ways to improve robustness,
+ * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
+ * failed single precision factorization in double precision.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
