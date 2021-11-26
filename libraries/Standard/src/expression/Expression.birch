@@ -290,8 +290,10 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   final function grad<Gradient>(d:Gradient) {
     if !flagConstant {
       if visitCount == 0 {
-        assert !this.d?;
-        this.d <- d;  // start accumulation
+        /* start accumulation, or restart for Random, which does not clear in
+         * doGrad() */
+        assert isRandom() || !this.d?;
+        this.d <- d;
       } else {
         assert this.d?;
         this.d <- this.d! + d;
