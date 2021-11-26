@@ -2,8 +2,8 @@
  * Multivariate Gaussian distribution with linear transformation of
  * matrix-normal-inverse-Wishart prior.
  */
-final class ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
-    Arg3,Arg4,Arg5>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) <
+final class ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<
+    Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) <
     Distribution<Real[_]> {
   /**
    * Scale.
@@ -41,7 +41,8 @@ final class ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<Arg
 
   override function simulateLazy() -> Real[_]? {
     return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        wait(peek(a)), wait(peek(N)), wait(peek(Λ)), wait(peek(Ψ)), wait(peek(k)));
+        wait(peek(a)), wait(peek(N)), wait(peek(Λ)), wait(peek(Ψ)),
+        wait(peek(k)));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
@@ -79,16 +80,16 @@ function wrap_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg>(μ:Dot<Arg,Random<Real[_,_]>>,
+function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
     Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
-  μ.r.prune();
-  if μ.r.hasMatrixNormalInverseWishart() && μ.r.isGrandChildOf(Σ) {
-    let (N, Λ, Ψ, k) <- μ.r.getMatrixNormalInverseWishart();
-    let p <- ScaledMatrixNormalInverseWishartMultivariateGaussian(μ.l, N, Λ,
+  μ.l.prune();
+  if μ.l.hasMatrixNormalInverseWishart() && μ.l.isGrandChildOf(Σ) {
+    let (N, Λ, Ψ, k) <- μ.l.getMatrixNormalInverseWishart();
+    let p <- ScaledMatrixNormalInverseWishartMultivariateGaussian(μ.r, N, Λ,
         Ψ, k);
-    μ.r.graft(p, 1);
+    μ.l.graft(p, 1);
     Σ.graftReplace(p, 2);
-    μ.r.join(Σ);
+    μ.l.join(Σ);
     return p;
   } else {
     Σ.prune();
