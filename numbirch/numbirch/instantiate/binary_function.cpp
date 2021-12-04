@@ -5,11 +5,14 @@
 
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.hpp"
+#include "numbirch/cuda/random.hpp"
 #endif
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
+#include "numbirch/eigen/random.hpp"
 #endif
 #include "numbirch/common/binary.hpp"
+#include "numbirch/common/random.hpp"
 
 /**
  * @internal
@@ -66,4 +69,14 @@ BINARY_FLOATING_POINT(lbeta)
 BINARY_FLOATING_POINT(lchoose)
 BINARY_FLOATING_POINT(lgamma)
 BINARY_FLOATING_POINT(pow)
+
+BINARY_FLOATING_POINT(simulate_beta)
+BINARY_ARITHMETIC(simulate_binomial)
+BINARY_FLOATING_POINT(simulate_gamma)
+BINARY_FLOATING_POINT(simulate_gaussian)
+BINARY_ARITHMETIC(simulate_negative_binomial)
+BINARY_FLOATING_POINT(simulate_weibull)
+BINARY_FLOATING_POINT(simulate_uniform)
+BINARY_ARITHMETIC(simulate_uniform_int)
+
 }

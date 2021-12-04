@@ -5,11 +5,14 @@
 
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.hpp"
+#include "numbirch/cuda/random.hpp"
 #endif
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
+#include "numbirch/eigen/random.hpp"
 #endif
 #include "numbirch/common/unary.hpp"
+#include "numbirch/common/random.hpp"
 
 /**
  * @internal
@@ -76,5 +79,11 @@ UNARY_FLOATING_POINT(sinh)
 UNARY_FLOATING_POINT(sqrt)
 UNARY_FLOATING_POINT(tan)
 UNARY_FLOATING_POINT(tanh)
+
+UNARY_ARITHMETIC(simulate_bernoulli)
+UNARY_FLOATING_POINT(simulate_chi_squared)
+UNARY_FLOATING_POINT(simulate_exponential)
+UNARY_ARITHMETIC(simulate_poisson)
+UNARY_FLOATING_POINT(simulate_student_t)
 
 }

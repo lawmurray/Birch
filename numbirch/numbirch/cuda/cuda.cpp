@@ -11,9 +11,9 @@ thread_local cudaStream_t stream = 0;
 void cuda_init() {
   #pragma omp parallel
   {
-    int value = 0;
     CUDA_CHECK(cudaGetDevice(&device));
 
+    int value = 0;
     /* check device support */
     CUDA_CHECK(cudaDeviceGetAttribute(&value,
         cudaDevAttrConcurrentKernels, device));
@@ -21,6 +21,11 @@ void cuda_init() {
     CUDA_CHECK(cudaDeviceGetAttribute(&value,
         cudaDevAttrConcurrentManagedAccess, device));
     assert(value && "device with concurrent managed memory support required");
+
+    /* determine maximum number of blocks */
+    CUDA_CHECK(cudaDeviceGetAttribute(&value,
+        cudaDevAttrMultiProcessorCount, device));
+    max_blocks = std::min(4*value, 200);
 
     CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));

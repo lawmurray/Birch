@@ -5,6 +5,7 @@
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"
+#include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
 namespace numbirch {
@@ -84,6 +85,7 @@ void init() {
   cuda_init();
   cublas_init();
   cusolver_init();
+  curand_init();
   jemalloc_init();
 }
 
@@ -93,6 +95,7 @@ void wait() {
 
 void term() {
   jemalloc_term();
+  curand_term();
   cusolver_term();
   cublas_term();
   cuda_term();

@@ -14,27 +14,27 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 COMMON_SOURCES = \
-    numbirch/common/binary_function.cpp \
-    numbirch/common/binary_grad.cpp \
-    numbirch/common/binary_operator.cpp \
-    numbirch/common/binary_scalar_divide.cpp \
-    numbirch/common/binary_scalar_multiply.cpp \
-    numbirch/common/numeric_count.cpp \
-    numbirch/common/numeric_diagonal.cpp \
-    numbirch/common/numeric_dot.cpp \
-    numbirch/common/numeric_frobenius.cpp \
-    numbirch/common/numeric_matrix.cpp \
-    numbirch/common/numeric_matrix_matrix.cpp \
-    numbirch/common/numeric_matrix_vector.cpp \
-    numbirch/common/numeric_outer.cpp \
-    numbirch/common/numeric_reduce_matrix.cpp \
-    numbirch/common/numeric_single_matrix.cpp \
-    numbirch/common/numeric_single_vector.cpp \
-    numbirch/common/numeric_sum.cpp \
-    numbirch/common/ternary_function.cpp \
-    numbirch/common/unary_function.cpp \
-    numbirch/common/unary_grad.cpp \
-    numbirch/common/unary_operator.cpp
+    numbirch/instantiate/binary_function.cpp \
+    numbirch/instantiate/binary_grad.cpp \
+    numbirch/instantiate/binary_operator.cpp \
+    numbirch/instantiate/binary_scalar_divide.cpp \
+    numbirch/instantiate/binary_scalar_multiply.cpp \
+    numbirch/instantiate/numeric_count.cpp \
+    numbirch/instantiate/numeric_diagonal.cpp \
+    numbirch/instantiate/numeric_dot.cpp \
+    numbirch/instantiate/numeric_frobenius.cpp \
+    numbirch/instantiate/numeric_matrix.cpp \
+    numbirch/instantiate/numeric_matrix_matrix.cpp \
+    numbirch/instantiate/numeric_matrix_vector.cpp \
+    numbirch/instantiate/numeric_outer.cpp \
+    numbirch/instantiate/numeric_reduce_matrix.cpp \
+    numbirch/instantiate/numeric_single_matrix.cpp \
+    numbirch/instantiate/numeric_single_vector.cpp \
+    numbirch/instantiate/numeric_sum.cpp \
+    numbirch/instantiate/ternary_function.cpp \
+    numbirch/instantiate/unary_function.cpp \
+    numbirch/instantiate/unary_grad.cpp \
+    numbirch/instantiate/unary_operator.cpp
 
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI \
@@ -61,15 +61,19 @@ if CUDA
   COMMON_SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \
+      numbirch/cuda/curand.cpp \
       numbirch/cuda/cusolver.cpp \
       numbirch/cuda/memory.cpp \
+      numbirch/cuda/random.cpp \
       numbirch/jemalloc/jemalloc.cpp
 else
   AM_CPPFLAGS += -DBACKEND_EIGEN \
       -DEIGEN_NO_AUTOMATIC_RESIZING=1 \
       -DEIGEN_DONT_PARALLELIZE=1
   COMMON_SOURCES += \
-      numbirch/eigen/memory.cpp
+      numbirch/eigen/memory.cpp \
+      numbirch/eigen/random.cpp \
+      numbirch/eigen/stl.cpp
 endif
 endif
 
@@ -117,16 +121,21 @@ nobase_include_HEADERS = \
 noinst_HEADERS = \
   numbirch/common/binary.hpp \
   numbirch/common/functor.hpp \
+  numbirch/common/random.hpp \
   numbirch/common/ternary.hpp \
   numbirch/common/unary.hpp \
   numbirch/cuda/cub.hpp \
   numbirch/cuda/cublas.hpp \
   numbirch/cuda/cuda.hpp \
+  numbirch/cuda/curand.hpp \
   numbirch/cuda/cusolver.hpp \
   numbirch/cuda/numeric.hpp \
+  numbirch/cuda/random.hpp \
   numbirch/cuda/transform.hpp \
   numbirch/eigen/eigen.hpp \
   numbirch/eigen/numeric.hpp \
+  numbirch/eigen/random.hpp \
+  numbirch/eigen/stl.hpp \
   numbirch/eigen/transform.hpp \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \

@@ -31,21 +31,52 @@
     }
 
 namespace numbirch {
-
-extern thread_local int device;
-extern thread_local cudaStream_t stream;
-
-/*
- * Preferred thread block size for CUDA kernels.
+/**
+ * @internal
+ * 
+ * Device used by each host thread.
  */
-static const int CUDA_PREFERRED_BLOCK_SIZE = 256;
+extern thread_local int device = 0;
 
-/*
+/**
+ * @internal
+ * 
+ * Stream used by each host thread.
+ */
+extern thread_local cudaStream_t stream = 0;
+
+/**
+ * @internal
+ * 
+ * Maximum (and preferred) number of blocks for a kernel launch configuration.
+ * Threads are able to perform multiple units of work, so this does not limit
+ * the task size, but a maximum is required in order to initialize a
+ * sufficient number of pseudorandom number generator states.
+ * 
+ * Currently this is set to four times the multiprocessor count on
+ * the device used by each host thread, capped at 200, as cuRAND includes this
+ * many parameterizations for the MRG32k3a generator.
+ */
+extern thread_local int max_blocks = 200;
+
+/**
+ * @internal
+ * 
+ * Maximum (and preferred) thread block size for a kernel launch
+ * configuration. The setting of 256 is appropriate for recent generations of
+ * GPUs, as well as being the maximum number of threads that cuRAND supports
+ * with a single MRG32k3a generator in a single block.
+ */
+static const int MAX_BLOCK_SIZE = 256;
+
+/**
+ * @internal
+ * 
  * Configure thread block size for a vector transformation.
  */
 inline dim3 make_block(const int n) {
   dim3 block{0, 0, 0};
-  block.x = std::min(n, CUDA_PREFERRED_BLOCK_SIZE);
+  block.x = std::min(n, MAX_BLOCK_SIZE);
   if (block.x > 0) {
     block.y = 1;
     block.z = 1;
@@ -53,20 +84,24 @@ inline dim3 make_block(const int n) {
   return block;
 }
 
-/*
+/**
+ * @internal
+ * 
  * Configure thread block size for a matrix transformation.
  */
 inline dim3 make_block(const int m, const int n) {
   dim3 block{0, 0, 0};
-  block.x = std::min(m, CUDA_PREFERRED_BLOCK_SIZE);
+  block.x = std::min(m, MAX_BLOCK_SIZE);
   if (block.x > 0) {
-    block.y = std::min(n, CUDA_PREFERRED_BLOCK_SIZE/(int)block.x);
+    block.y = std::min(n, MAX_BLOCK_SIZE/(int)block.x);
     block.z = 1;
   }
   return block;
 }
 
-/*
+/**
+ * @internal
+ * 
  * Configure grid size for a vector transformation.
  */
 inline dim3 make_grid(const int n) {
@@ -80,7 +115,9 @@ inline dim3 make_grid(const int n) {
   return grid;
 }
 
-/*
+/**
+ * @internal
+ * 
  * Configure grid size for a matrix transformation.
  */
 inline dim3 make_grid(const int m, const int n) {
@@ -94,13 +131,17 @@ inline dim3 make_grid(const int m, const int n) {
   return grid;
 }
 
-/*
+/**
+ * @internal
+ * 
  * Initialize CUDA integrations. This should be called during init() by the
  * backend.
  */
 void cuda_init();
 
-/*
+/**
+ * @internal
+ * 
  * Terminate CUDA integrations. This should be called during term() by the
  * backend.
  */

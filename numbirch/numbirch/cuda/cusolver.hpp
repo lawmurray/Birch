@@ -11,7 +11,7 @@
 #include <cassert>
 
 /*
- * Call a cusolver* function and assert success.
+ * Call a cuSOLVER function and assert success.
  */
 #define CUSOLVER_CHECK(call) \
     { \
@@ -24,8 +24,8 @@
     }
 
 /*
- * Call a cusolver* function and assert success, on both return code and info
- * code.
+ * Call a cuSOLVER function and assert success, on both return code and info
+ * code (the latter only if CUDA_SYNC is enabled).
  */
 #define CUSOLVER_CHECK_INFO(call) \
     { \
@@ -60,13 +60,17 @@ struct cusolver<float> {
   static constexpr auto CUDA_R = CUDA_R_32F;
 };
 
-/*
+/**
+ * @internal
+ * 
  * Initialize cuSOLVER integrations. This should be called during init() by
  * the backend.
  */
 void cusolver_init();
 
-/*
+/**
+ * @internal
+ * 
  * Terminate cuSOLVER integrations. This should be called during term() by the
  * backend.
  */

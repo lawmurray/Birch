@@ -1,9 +1,6 @@
 /**
  * @file
  * 
- * @defgroup array Array
- * Multidimensional arrays with copy-on-write and unified memory management.
- *
  * @defgroup numeric Numeric
  * Asynchronous numerics.
  * 
@@ -31,6 +28,14 @@
  * Linear algebra operations, such as matrix multiplication, solve() and
  * cholsolve().
  * 
+ * @defgroup random Pseudorandom number generation
+ * @ingroup numeric
+ * Batched pseudorandom number generation, as well as multivariate and matrix
+ * distributions.
+ * 
+ * @defgroup array Array
+ * Multidimensional arrays with copy-on-write and unified memory management.
+ *
  * @defgroup memory Memory
  * Asynchronous unified memory management.
  * 

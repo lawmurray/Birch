@@ -11,7 +11,7 @@
 #include <cassert>
 
 /*
- * Call a `cublas*` function and assert success.
+ * Call a cuBLAS function and assert success.
  */
 #define CUBLAS_CHECK(call) \
     { \
@@ -24,7 +24,18 @@
     }
 
 namespace numbirch {
+/**
+ * @internal
+ * 
+ * cuBLAS handle for each host thread.
+ */
 extern thread_local cublasHandle_t cublasHandle;
+
+/**
+ * @internal
+ * 
+ * cuBLAS worksapce for each host thread.
+ */
 extern thread_local void* cublasWorkspace;
 
 /*
@@ -86,13 +97,17 @@ struct scalar<int> {
   static constexpr int*& zero = zeroI;
 };
 
-/*
+/**
+ * @internal
+ * 
  * Initialize cuBLAS integrations. This should be called during init() by the
  * backend.
  */
 void cublas_init();
 
-/*
+/**
+ * @internal
+ * 
  * Terminate cuBLAS integrations. This should be called during term() by the
  * backend.
  */
