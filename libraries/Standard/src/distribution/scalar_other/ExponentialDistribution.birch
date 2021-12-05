@@ -59,16 +59,9 @@ function wrap_exponential<Arg>(λ:Arg) -> {
   return construct<ExponentialDistribution<Arg>>(λ);
 }
 
-/*
- * Simulate an exponential distribution.
- *
- * - λ: Rate.
- */
-function simulate_exponential<Arg1>(λ:Arg1) -> {
-  cpp{{
-  return std::exponential_distribution<Real>(wait(λ))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_exponential;
+}}
 
 /*
  * Observe an exponential variate.

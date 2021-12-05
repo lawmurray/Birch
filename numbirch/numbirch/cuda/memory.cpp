@@ -2,6 +2,7 @@
  * @file
  */
 #include "numbirch/memory.hpp"
+#include "numbirch/random.hpp"
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"
@@ -87,6 +88,7 @@ void init() {
   cusolver_init();
   curand_init();
   jemalloc_init();
+  seed();
 }
 
 void wait() {

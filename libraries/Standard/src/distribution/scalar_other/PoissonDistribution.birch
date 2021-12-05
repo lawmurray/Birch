@@ -16,11 +16,11 @@ final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
   }
 
   override function simulate() -> Integer! {
-    return simulate_poisson(value(λ));
+    return simulate_poisson1(value(λ));
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_poisson(peek(λ));
+    return simulate_poisson1(peek(λ));
   }
 
   override function logpdf(x:Integer!) -> Real! {
@@ -59,14 +59,13 @@ function wrap_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
   return construct<PoissonDistribution<Arg>>(λ);
 }
 
-/*
- * Simulate a Poisson distribution.
- *
- * - λ: Rate.
- */
-function simulate_poisson<Arg1>(λ:Arg1) -> {
+hpp{{
+using numbirch::simulate_poisson;
+}}
+
+function simulate_poisson1<Arg1>(k:Arg1) -> {
   cpp{{
-  return std::poisson_distribution<Integer>(wait(λ))(rng);
+  return std::poisson_distribution<Integer>(wait(k))(numbirch::rng32);
   }}
 }
 

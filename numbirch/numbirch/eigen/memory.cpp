@@ -2,6 +2,7 @@
  * @file
  */
 #include "numbirch/memory.hpp"
+#include "numbirch/random.hpp"
 #include "numbirch/eigen/eigen.hpp"
 
 #include <cstdlib>
@@ -14,6 +15,7 @@ void init() {
    * variable initialization require Eigen to initialize such variables before
    * entering a parallel region */
   Eigen::initParallel();
+  seed();
 }
 
 void wait() {

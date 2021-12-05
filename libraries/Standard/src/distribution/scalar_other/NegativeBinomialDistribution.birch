@@ -66,21 +66,9 @@ function wrap_negative_binomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
   return construct<NegativeBinomialDistribution<Arg1,Arg2>>(k, ρ);
 }
 
-/*
- * Simulate a negative binomial distribution.
- *
- * - k: Number of successes before the experiment is stopped.
- * - ρ: Probability of success.
- *
- * Returns the number of failures.
- */
-function simulate_negative_binomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
-  assert 0 < k;
-  assert 0.0 <= ρ && ρ <= 1.0;
-  cpp{{
-  return std::negative_binomial_distribution<Integer>(wait(k), wait(ρ))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_negative_binomial;
+}}
 
 /*
  * Observe a negative binomial variate.

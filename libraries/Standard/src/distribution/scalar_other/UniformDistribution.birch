@@ -69,17 +69,9 @@ function wrap_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   return construct<UniformDistribution<Arg1,Arg2>>(l, u);
 }
 
-/*
- * Simulate a uniform distribution.
- *
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
- */
-function simulate_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
-  cpp{{
-  return std::uniform_real_distribution<Real>(wait(l), wait(u))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_uniform;
+}}
 
 /*
  * Observe a uniform variate.

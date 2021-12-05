@@ -62,17 +62,9 @@ function wrap_uniform_integer<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   return construct<UniformIntegerDistribution<Arg1,Arg2>>(l, u);
 }
 
-/*
- * Simulate a uniform distribution on an integer range.
- *
- * - l: Lower bound of range.
- * - u: Upper bound of range.
- */
-function simulate_uniform_int<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
-  cpp{{
-  return std::uniform_int_distribution<Integer>(wait(l), wait(u))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_uniform_int;
+}}
 
 /*
  * Observe an integer uniform variate.

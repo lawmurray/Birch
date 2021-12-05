@@ -38,4 +38,9 @@ void seed(const int s) {
   }
 }
 
+void seed() {
+  std::random_device rd;
+  seed(rd());
+}
+
 }

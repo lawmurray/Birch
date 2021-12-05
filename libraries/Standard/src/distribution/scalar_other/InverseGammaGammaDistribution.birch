@@ -86,7 +86,7 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
  */
 function simulate_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
-  return simulate_gamma(k, simulate_inverse_gamma(α, β));
+  return simulate_gamma1(k, simulate_inverse_gamma(α, β));
 }
 
 /*

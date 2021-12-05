@@ -61,14 +61,10 @@ function simulate_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   let A <- matrix_lambda(\(i:Integer, j:Integer) -> Real {
         if j == i {
           /* on diagonal */
-          cpp{{
-          return sqrt(std::chi_squared_distribution<Real>(k + p - i)(rng));
-          }}
+          return sqrt(simulate_chi_squared(k + p - i));
         } else if j < i {
           /* in lower triangle */
-          cpp{{
-          return std::normal_distribution<Real>()(rng);
-          }}
+          return simulate_gaussian(0.0, 1.0);
         } else {
           /* in upper triangle */
           return 0.0;

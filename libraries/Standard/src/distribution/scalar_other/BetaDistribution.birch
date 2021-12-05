@@ -77,17 +77,9 @@ function wrap_beta<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return construct<BetaDistribution<Arg1,Arg2>>(α, β);
 }
 
-/*
- * Simulate a beta distribution.
- *
- * - α: Shape.
- * - β: Shape.
- */
-function simulate_beta<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
-  let u <- simulate_gamma(α, 1.0);
-  let v <- simulate_gamma(β, 1.0);
-  return u/(u + v);
-}
+hpp{{
+using numbirch::simulate_beta;
+}}
 
 /*
  * Observe a beta variate.

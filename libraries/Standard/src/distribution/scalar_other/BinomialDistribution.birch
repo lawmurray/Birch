@@ -70,17 +70,9 @@ function wrap_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
   return construct<BinomialDistribution<Arg1,Arg2>>(n, ρ);
 }
 
-/*
- * Simulate a binomial distribution.
- *
- * - n: Number of trials.
- * - ρ: Probability of a true result.
- */
-function simulate_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
-  cpp{{
-  return std::binomial_distribution<Integer>(wait(n), wait(ρ))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_binomial;
+}}
 
 /*
  * Observe a binomial variate.

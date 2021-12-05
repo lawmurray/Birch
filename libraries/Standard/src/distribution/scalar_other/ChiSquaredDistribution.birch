@@ -2,17 +2,9 @@ hpp{{
 #include <boost/math/distributions/chi_squared.hpp>
 }}
 
-/*
- * Simulate $\chi^2$ distribution.
- *
- * - ν: Degrees of freedom.
- */
-function simulate_chi_squared<Arg1>(ν:Arg1) -> {
-  assert 0.0 < ν;
-  cpp{{
-  return std::chi_squared_distribution<Real>(wait(ν))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_chi_squared;
+}}
 
 /*
  * Observe a $\chi^2$ variate.

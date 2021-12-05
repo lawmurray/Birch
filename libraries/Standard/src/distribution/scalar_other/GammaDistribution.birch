@@ -21,11 +21,11 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
   }
 
   override function simulate() -> Real! {
-    return simulate_gamma(value(k), value(θ));
+    return simulate_gamma1(value(k), value(θ));
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_gamma(peek(k), peek(θ));
+    return simulate_gamma1(peek(k), peek(θ));
   }
   
   override function logpdf(x:Real!) -> Real! {
@@ -73,15 +73,13 @@ function wrap_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   return construct<GammaDistribution<Arg1,Arg2>>(k, θ);
 }
 
-/*
- * Simulate a gamma distribution.
- *
- * - k: Shape.
- * - θ: Scale.
- */
-function simulate_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+hpp{{
+using numbirch::simulate_gamma;
+}}
+
+function simulate_gamma1<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   cpp{{
-  return std::gamma_distribution<Real>(wait(k), wait(θ))(rng);
+  return std::gamma_distribution<Real>(wait(k), wait(θ))(numbirch::rng64);
   }}
 }
 

@@ -75,16 +75,9 @@ function Student<Arg>(k:Arg) -> {
   return Student(k, 0.0, 1.0);
 }
 
-/*
- * Simulate a Student's $t$-distribution.
- *
- * - k: Degrees of freedom.
- */
-function simulate_student_t<Arg1>(k:Arg1) -> {
-  cpp{{
-  return std::student_t_distribution<Real>(wait(k))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_student_t;
+}}
 
 /*
  * Simulate a Student's $t$-distribution with location and scale.

@@ -65,19 +65,9 @@ function wrap_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
   return construct<WeibullDistribution<Arg1,Arg2>>(k, λ);
 }
 
-/*
- * Simulate an Weibull distribution.
- *
- * - k: Shape.
- * - λ: Scale.
- */
-function simulate_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
-  assert 0.0 < k;
-  assert 0.0 < λ;
-  cpp{{
-  return std::weibull_distribution<Real>(wait(k), wait(λ))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_weibull;
+}}
 
 /*
  * Observe a Weibull variate.

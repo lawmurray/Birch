@@ -43,16 +43,9 @@ function wrap_bernoulli<Arg>(ρ:Arg) -> {
   return construct<BernoulliDistribution<Arg>>(ρ);
 }
 
-/*
- * Simulate a Bernoulli distribution.
- *
- * - ρ: Probability of a true result.
- */
-function simulate_bernoulli<Arg1>(ρ:Arg1) -> {
-  cpp{{
-  return std::bernoulli_distribution(wait(ρ))(rng);
-  }}
-}
+hpp{{
+using numbirch::simulate_bernoulli;
+}}
 
 /*
  * Observe a Bernoulli variate.
