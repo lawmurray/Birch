@@ -16,11 +16,11 @@ final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
   }
 
   override function simulate() -> Integer! {
-    return simulate_poisson1(value(λ));
+    return simulate_poisson(value(λ));
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_poisson1(peek(λ));
+    return simulate_poisson(peek(λ));
   }
 
   override function logpdf(x:Integer!) -> Real! {

@@ -22,11 +22,11 @@ final class GammaPoissonDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
   }
 
   override function simulate() -> Integer! {
-    return simulate_gamma1_poisson(value(k), value(θ));
+    return simulate_gamma_poisson(value(k), value(θ));
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_gamma1_poisson(peek(k), peek(θ));
+    return simulate_gamma_poisson(peek(k), peek(θ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
@@ -86,11 +86,11 @@ function Poisson(λ:Random<Real>) -> Distribution<Integer> {
  * - k: Shape.
  * - θ: Scale.
  */
-function simulate_gamma1_poisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+function simulate_gamma_poisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   /* C++ std::negative_binomial_distribution only accepts integer k, so
    * simulate the gamma then the Poisson instead of treating this as a
    * negative binomial distribution */
-  return simulate_poisson1(simulate_gamma1(k, θ));
+  return simulate_poisson(simulate_gamma(k, θ));
 }
 
 /*

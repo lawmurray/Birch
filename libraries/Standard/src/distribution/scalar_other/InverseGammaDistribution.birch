@@ -80,7 +80,7 @@ function wrap_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
  * - β: Scale.
  */
 function simulate_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
-  return 1.0/simulate_gamma1(α, 1.0/β);
+  return 1.0/simulate_gamma(α, 1.0/β);
 }
 
 /*

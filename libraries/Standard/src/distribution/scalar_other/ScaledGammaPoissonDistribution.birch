@@ -23,11 +23,11 @@ final class ScaledGammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 
   override function simulate() -> Integer! {
-    return simulate_gamma1_poisson(value(k), value(a)*value(θ));
+    return simulate_gamma_poisson(value(k), value(a)*value(θ));
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_gamma1_poisson(peek(k), peek(a)*peek(θ));
+    return simulate_gamma_poisson(peek(k), peek(a)*peek(θ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
