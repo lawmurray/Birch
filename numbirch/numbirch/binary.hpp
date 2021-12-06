@@ -132,7 +132,7 @@ implicit_t<T,U> operator*(const T& x, const U& y) {
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
- * @tparam U Numeric type.
+ * @tparam U Scalar type.
  * 
  * @param x Argument.
  * @param y Argument.
@@ -141,7 +141,7 @@ implicit_t<T,U> operator*(const T& x, const U& y) {
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
-    is_numeric_v<T> && is_numeric_v<U> && is_scalar_v<U>,int>>
+    is_numeric_v<T> && is_scalar_v<U>,int>>
 explicit_t<R,implicit_t<T,U>> operator/(const T& x, const U& y);
 
 /**
@@ -150,7 +150,7 @@ explicit_t<R,implicit_t<T,U>> operator/(const T& x, const U& y);
  * @ingroup binary
  * 
  * @tparam T Numeric type.
- * @tparam U Numeric type.
+ * @tparam U Scalar type.
  * 
  * @param x Argument.
  * @param y Argument.
@@ -158,7 +158,7 @@ explicit_t<R,implicit_t<T,U>> operator/(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_scalar_v<U>,int>>
+    is_numeric_v<T> && is_scalar_v<U>,int>>
 implicit_t<T,U> operator/(const T& x, const U& y) {
   return operator/<value_t<implicit_t<T,U>>,T,U,int>(x, y);
 }

@@ -196,9 +196,7 @@ function reduce<Type,Output,Lambda>(x:Type[_], init:Output, op:Lambda) ->
   #ifdef __cpp_lib_parallel_algorithm
   return std::reduce(x.begin(), x.end(), init, op);
   #else
-  return std::accumulate(x.begin(), x.end(), init, [&](auto x, auto y) {
-        return op(x, y);
-      });
+  return std::accumulate(x.begin(), x.end(), init, op);
   #endif
   }}
 }
@@ -216,9 +214,7 @@ function reduce<Type,Output,Lambda>(X:Type[_,_], init:Output, op:Lambda) ->
   #ifdef __cpp_lib_parallel_algorithm
   return std::reduce(X.begin(), X.end(), init, op);
   #else
-  return std::accumulate(X.begin(), X.end(), init, [&](auto x, auto y) {
-        return op(x, y);
-      });
+  return std::accumulate(X.begin(), X.end(), init, op);
   #endif
   }}
 }
@@ -424,8 +420,7 @@ function exclusive_scan<Type>(x:Type[_]) -> Type[_] {
 function adjacent_difference<Type,Lambda>(x:Type[_], op:Lambda) -> Type[_] {
   y:Type[length(x)];
   cpp{{
-  std::adjacent_difference(x.begin(), x.end(), y.begin(),
-      [&](auto x, auto y) { return op(x, y); });
+  std::adjacent_difference(x.begin(), x.end(), y.begin(), op);
   }}
   return y;
 }
@@ -521,7 +516,7 @@ function max<Type>(x:Type[_]) -> Type {
   if length(x) == 1 {
     return x[1];
   } else {
-    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> {
+    return reduce(x[2..length(x)], x[1], \(x:Type, y:Type) -> Type {
           return max(x, y);
         });
   }

@@ -389,7 +389,7 @@ public:
   ArrayIterator<T,D> begin() {
     own();
     dicer();
-    return ArrayIterator<T,D>(buf, shp);
+    return ArrayIterator<T,D>(buf, shp, 0);
   }
 
   /**
@@ -397,21 +397,24 @@ public:
    */
   ArrayIterator<T,D> begin() const {
     dicer();
-    return ArrayIterator<T,D>(buf, shp);
+    return ArrayIterator<T,D>(buf, shp, 0);
   }
 
   /**
    * Iterator to one past the last element.
    */
   ArrayIterator<T,D> end() {
-    return begin().operator+(size());
+    own();
+    dicer();
+    return ArrayIterator<T,D>(buf, shp, size());
   }
 
   /**
    * @copydoc end()
    */
   ArrayIterator<T,D> end() const {
-    return begin().operator+(size());
+    dicer();
+    return ArrayIterator<T,D>(buf, shp, size());
   }
 
   /**
@@ -762,28 +765,28 @@ private:
    * Iterator for use internally.
    */
   ArrayIterator<T,D> beginInternal() {
-    return ArrayIterator<T,D>(buf, shp);
+    return ArrayIterator<T,D>(buf, shp, 0);
   }
 
   /**
    * @copydoc beginInternal()
    */
   ArrayIterator<T,D> beginInternal() const {
-    return ArrayIterator<T,D>(buf, shp);
+    return ArrayIterator<T,D>(buf, shp, 0);
   }
 
   /**
    * Iterator for use internally.
    */
   ArrayIterator<T,D> endInternal() {
-    return beginInternal().operator+(size());
+    return ArrayIterator<T,D>(buf, shp, size());
   }
 
   /**
    * @copydoc endInternal()
    */
   ArrayIterator<T,D> endInternal() const {
-    return beginInternal().operator+(size());
+    return ArrayIterator<T,D>(buf, shp, size());
   }
 
   /**

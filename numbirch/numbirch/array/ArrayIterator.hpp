@@ -23,15 +23,20 @@ public:
   using reference = T&;
   using iterator_category = std::random_access_iterator_tag;
 
-  ArrayIterator(T* buffer, const ArrayShape<D> shape) :
-      buffer(buffer),
-      shape(shape),
-      pos(0) {
+  explicit ArrayIterator(T* buf, const ArrayShape<D> shp,
+      const difference_type pos) :
+      buf(buf),
+      shp(shp),
+      pos(pos) {
     //
   }
 
-  reference operator[](const difference_type n) {
-    return *(buffer + shape.offset(n));
+  reference operator[](const difference_type i) {
+    return buf[shp.offset(pos + i)];
+  }
+
+  difference_type operator-(const ArrayIterator& o) const {
+    return pos - o.pos;
   }
 
   reference operator*() {
@@ -51,31 +56,27 @@ public:
   }
 
   bool operator==(const ArrayIterator& o) const {
-    return pos == o.pos;
+    return get() == o.get();
   }
 
   bool operator!=(const ArrayIterator& o) const {
-    return pos != o.pos;
+    return get() != o.get();
   }
 
   bool operator<=(const ArrayIterator& o) const {
-    return pos <= o.pos;
+    return get() <= o.get();
   }
 
   bool operator<(const ArrayIterator& o) const {
-    return pos < o.pos;
+    return get() < o.get();
   }
 
   bool operator>=(const ArrayIterator& o) const {
-    return pos >= o.pos;
+    return get() >= o.get();
   }
 
   bool operator>(const ArrayIterator& o) const {
-    return pos > o.pos;
-  }
-
-  difference_type operator-(const ArrayIterator& o) const {
-    return pos - o.pos;
+    return get() > o.get();
   }
 
   ArrayIterator& operator+=(const difference_type i) {
@@ -89,15 +90,15 @@ public:
     return result;
   }
 
+  ArrayIterator& operator-=(const difference_type i) {
+    pos -= i;
+    return *this;
+  }
+
   ArrayIterator operator-(const difference_type i) const {
     ArrayIterator result(*this);
     result -= i;
     return result;
-  }
-
-  ArrayIterator& operator-=(const difference_type i) {
-    pos -= i;
-    return *this;
   }
 
   ArrayIterator& operator++() {
@@ -107,7 +108,7 @@ public:
 
   ArrayIterator operator++(int) {
     ArrayIterator result(*this);
-    ++*this;
+    ++pos;
     return result;
   }
 
@@ -118,7 +119,7 @@ public:
 
   ArrayIterator operator--(int) {
     ArrayIterator result(*this);
-    --*this;
+    --pos;
     return result;
   }
 
@@ -126,26 +127,19 @@ protected:
   /**
    * Raw pointer for the current position.
    */
-  auto get() {
-    return buffer + shape.offset(pos);
-  }
-
-  /**
-   * Raw pointer for the current position.
-   */
-  auto get() const {
-    return buffer + shape.offset(pos);
+  pointer get() const {
+    return buf + shp.offset(pos);
   }
 
   /**
    * Buffer.
    */
-  T* buffer;
+  T* buf;
 
   /**
    * Shape.
    */
-  ArrayShape<D> shape;
+  ArrayShape<D> shp;
 
   /**
    * Position.
