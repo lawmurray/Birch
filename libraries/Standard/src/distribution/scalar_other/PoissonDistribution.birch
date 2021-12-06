@@ -63,12 +63,6 @@ hpp{{
 using numbirch::simulate_poisson;
 }}
 
-function simulate_poisson1<Arg1>(k:Arg1) -> {
-  cpp{{
-  return std::poisson_distribution<Integer>(wait(k))(numbirch::rng32);
-  }}
-}
-
 /*
  * Observe a Poisson variate.
  *
