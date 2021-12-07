@@ -4,7 +4,7 @@
 #pragma once
 
 #include "numbirch/random.hpp"
-#include "numbirch/eigen/stl.hpp"
+#include "numbirch/common/stl.hpp"
 
 namespace numbirch {
 

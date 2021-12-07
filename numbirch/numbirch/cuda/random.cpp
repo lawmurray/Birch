@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "numbirch/memory.hpp"
+#include "numbirch/cuda/random.hpp"
 
 #if HAVE_OMP_H
 #include <omp.h>
@@ -9,9 +9,9 @@
 
 namespace numbirch {
 
-__global__ void kernel_seed(const int s) {
+__global__ void kernel_seed(const int s, curandState_t* rngs) {
   auto k = threadIdx.x + blockIdx.x*blockDim.x;
-  curand_init(s, i, 0, &rngs[k]);
+  curand_init(s, k, 0, &rngs[k]);
 }
 
 void seed(const int s) {
@@ -28,7 +28,7 @@ void seed(const int s) {
     dim3 grid{1, 1, 1}, block{1, 1, 1};
     block.x = MAX_BLOCK_SIZE;
     grid.x = max_blocks;
-    CUDA_CHECK(kernel_seed<<<grid,block,0,stream>>>(s*N + n));
+    kernel_seed<<<grid,block,0,stream>>>(s*N + n, rngs);
 
     /* seed host generator; fine to use the same seed here, and seed as the
      * device generators above, as these are all different algorithms and/or

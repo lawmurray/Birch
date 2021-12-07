@@ -5,10 +5,6 @@
 
 #include "numbirch/type.hpp"
 
-/* for recent versions of CUDA, disables warnings about diag_suppress being
- * deprecated in favor of nv_diag_suppress */
-#pragma nv_diag_suppress 20236
-
 #if defined(HAVE_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
 #include <unsupported/Eigen/SpecialFunctions>
 #elif defined(HAVE_EIGEN3_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)

@@ -1,11 +1,9 @@
 /**
  * @file
  */
-#include "numbirch/cuda/cuda.hpp"
+#include "numbirch/cuda/curand.hpp"
 
 namespace numbirch {
-thread_local std::mt19937 rng32;
-thread_local std::mt19937_64 rng64;
 thread_local curandState_t* rngs = nullptr;
 
 void curand_init() {

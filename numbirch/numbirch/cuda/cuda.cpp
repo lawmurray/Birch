@@ -7,6 +7,7 @@ namespace numbirch {
 
 thread_local int device = 0;
 thread_local cudaStream_t stream = 0;
+thread_local int max_blocks = 200;
 
 void cuda_init() {
   #pragma omp parallel

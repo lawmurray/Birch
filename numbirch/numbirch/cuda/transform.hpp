@@ -7,6 +7,7 @@
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"
 #include "numbirch/cuda/cub.hpp"
+#include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 #include "numbirch/array.hpp"
 #include "numbirch/macro.hpp"
@@ -43,7 +44,10 @@ void prefetch(const T& x) {
  */
 template<class T, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
-    const int ldA, R B, const int ldB, Functor f) {
+    const int ldA, R B, const int ldB, Functor f, curandState_t* rngs) {
+  extern __shared__ curandState_t* shared[];
+  shared[0] = rngs;
+
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
@@ -62,8 +66,8 @@ auto transform(const T& x, Functor f) {
     auto n = height(x);
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x),
-        data(y), stride(y), f);
+    kernel_transform<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
+        data(x), stride(x), data(y), stride(y), f, rngs);
     return y;
   } else {
     return Array<R,D>();
@@ -84,7 +88,10 @@ auto transform_grad(const G& g, const T& x, Functor f) {
 template<class T, class U, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
     const int ldA, const U B, const int ldB, R C, const int ldC,
-    Functor f) {
+    Functor f, curandState_t* rngs) {
+  extern __shared__ curandState_t* shared[];
+  shared[0] = rngs;
+
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
@@ -103,8 +110,8 @@ auto transform(const T& x, const U& y, Functor f) {
     auto z = Array<R,D>(make_shape<D>(m, n));
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
-        stride(y), data(z), stride(z), f);
+    kernel_transform<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
+        data(x), stride(x), data(y), stride(y), data(z), stride(z), f, rngs);
     return z;
   } else {
     return Array<R,D>();
@@ -117,7 +124,11 @@ auto transform(const T& x, const U& y, Functor f) {
 template<class G, class T, class U, class V, class W, class Functor>
 __global__ void kernel_transform_grad(const int m, const int n, const G g,
     const int ldg, const T A, const int ldA, const U B, const int ldB,
-    V GA, const int ldGA, W GB, const int ldGB, Functor f) {
+    V GA, const int ldGA, W GB, const int ldGB, Functor f,
+    curandState_t* rngs) {
+  extern __shared__ curandState_t* shared[];
+  shared[0] = rngs;
+
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
@@ -134,7 +145,8 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
   using W = typename P::second_type;
   constexpr int D = std::max(std::max(dimension_v<G>, dimension_v<T>),
       dimension_v<U>);
-  if constexpr (is_arithmetic_v<G> && is_arithmetic_v<T> && is_arithmetic_v<U>) {
+  if constexpr (is_arithmetic_v<G> && is_arithmetic_v<T> &&
+      is_arithmetic_v<U>) {
     return f(g, x, y);
   } else if (size(g) > 0 && size(x) > 0 && size(y) > 0) {
     auto m = std::max(std::max(width(g), width(x)), width(y));
@@ -143,9 +155,9 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
     auto b = Array<W,D>(make_shape<D>(m, n));
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform_grad<<<grid,block,0,stream>>>(m, n, data(g), stride(g),
-        data(x), stride(x), data(y), stride(y), data(a), stride(a), data(b),
-        stride(b), f);
+    kernel_transform_grad<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
+        data(g), stride(g), data(x), stride(x), data(y), stride(y), data(a),
+        stride(a), data(b), stride(b), f, rngs);
     return std::make_pair(a, b);
   } else {
     auto a = Array<V,D>();
@@ -160,7 +172,10 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
 template<class T, class U, class V, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
     const int ldA, const U B, const int ldB, const V C, const int ldC,
-    R D, const int ldD, Functor f) {
+    R D, const int ldD, Functor f, curandState_t* rngs) {
+  extern __shared__ curandState_t* shared[];
+  shared[0] = rngs;
+
   auto i = blockIdx.x*blockDim.x + threadIdx.x;
   auto j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
@@ -173,7 +188,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
   using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
   constexpr int D = std::max(std::max(dimension_v<T>, dimension_v<U>),
       dimension_v<V>);
-  if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> && is_arithmetic_v<V>) {
+  if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> &&
+      is_arithmetic_v<V>) {
     return f(x, y, z);
   } else if (size(x) > 0 && size(y) > 0 && size(z) > 0) {
     auto m = std::max(std::max(width(x), width(y)), width(z));
@@ -181,8 +197,9 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     auto a = Array<R,D>(make_shape<D>(m, n));
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform<<<grid,block,0,stream>>>(m, n, data(x), stride(x), data(y),
-        stride(y), data(z), stride(z), data(a), stride(a), f);
+    kernel_transform<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
+        data(x), stride(x), data(y), stride(y), data(z), stride(z), data(a),
+        stride(a), f, rngs);
     return a;
   } else {
     return Array<R,D>();

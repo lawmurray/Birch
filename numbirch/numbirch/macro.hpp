@@ -21,6 +21,12 @@
 #define NUMBIRCH_HOST_DEVICE
 #endif
 
+#ifdef __CUDACC__
+#define NUMBIRCH_CONSTANT __constant__
+#else
+#define NUMBIRCH_CONSTANT
+#endif
+
 /**
  * @internal
  * 

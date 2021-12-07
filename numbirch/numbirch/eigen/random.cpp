@@ -1,9 +1,7 @@
 /**
  * @file
  */
-#include "numbirch/random.hpp"
-
-#include "numbirch/eigen/stl.hpp"
+#include "numbirch/eigen/random.hpp"
 
 #if HAVE_OMP_H
 #include <omp.h>

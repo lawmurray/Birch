@@ -8,6 +8,14 @@
 #include <cassert>
 #include <iostream>
 
+/* for recent versions of CUDA, disables warnings about diag_suppress being
+ * deprecated in favor of nv_diag_suppress */
+#pragma nv_diag_suppress 20236
+
+/* for recent versions of CUDA, disables warnings about diag_suppress being
+ * deprecated in favor of nv_diag_suppress */
+#pragma nv_diag_suppress 20012
+
 /*
  * If true, all CUDA calls are synchronous, which can be helpful to determine
  * precisely which call causes an error.
@@ -36,14 +44,14 @@ namespace numbirch {
  * 
  * Device used by each host thread.
  */
-extern thread_local int device = 0;
+extern thread_local int device;
 
 /**
  * @internal
  * 
  * Stream used by each host thread.
  */
-extern thread_local cudaStream_t stream = 0;
+extern thread_local cudaStream_t stream;
 
 /**
  * @internal
@@ -57,7 +65,7 @@ extern thread_local cudaStream_t stream = 0;
  * the device used by each host thread, capped at 200, as cuRAND includes this
  * many parameterizations for the MRG32k3a generator.
  */
-extern thread_local int max_blocks = 200;
+extern thread_local int max_blocks;
 
 /**
  * @internal

@@ -13,7 +13,8 @@ AM_CPPFLAGS =
 AM_CXXFLAGS = 
 AM_LDFLAGS = 
 
-COMMON_SOURCES = \
+SOURCES =  \
+    numbirch/common/stl.cpp \
     numbirch/instantiate/binary_function.cpp \
     numbirch/instantiate/binary_grad.cpp \
     numbirch/instantiate/binary_operator.cpp \
@@ -42,7 +43,7 @@ if ONEAPI
       -Wno-unused-command-line-argument
   AM_CXXFLAGS += -fsycl -qmkl
   AM_LDFLAGS += $(AM_CXXFLAGS)
-  COMMON_SOURCES += \
+  SOURCES += \
       numbirch/jemalloc/jemalloc.cpp \
       numbirch/oneapi/memory.cpp \
       numbirch/oneapi/sycl.cpp
@@ -58,7 +59,7 @@ if CUDA
       -Xcompiler="-Wno-unused-result" \
       -Xcompiler="-Wno-unknown-pragmas" \
       -Xcompiler="-Wno-deprecated-declarations"
-  COMMON_SOURCES += \
+  SOURCES += \
       numbirch/cuda/cublas.cpp \
       numbirch/cuda/cuda.cpp \
       numbirch/cuda/curand.cpp \
@@ -70,10 +71,9 @@ else
   AM_CPPFLAGS += -DBACKEND_EIGEN \
       -DEIGEN_NO_AUTOMATIC_RESIZING=1 \
       -DEIGEN_DONT_PARALLELIZE=1
-  COMMON_SOURCES += \
+  SOURCES += \
       numbirch/eigen/memory.cpp \
-      numbirch/eigen/random.cpp \
-      numbirch/eigen/stl.cpp
+      numbirch/eigen/random.cpp
 endif
 endif
 
@@ -83,14 +83,14 @@ endif
 #
 
 libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
-libnumbirch_debug_la_SOURCES = $(COMMON_SOURCES)
+libnumbirch_debug_la_SOURCES = $(SOURCES)
 
 libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
-libnumbirch_test_la_SOURCES = $(COMMON_SOURCES)
+libnumbirch_test_la_SOURCES = $(SOURCES)
 
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
 libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
-libnumbirch_la_SOURCES = $(COMMON_SOURCES)
+libnumbirch_la_SOURCES = $(SOURCES)
 
 include_HEADERS = numbirch/numbirch.hpp
 
@@ -122,6 +122,7 @@ noinst_HEADERS = \
   numbirch/common/binary.hpp \
   numbirch/common/functor.hpp \
   numbirch/common/random.hpp \
+  numbirch/common/stl.hpp \
   numbirch/common/ternary.hpp \
   numbirch/common/unary.hpp \
   numbirch/cuda/cub.hpp \
@@ -135,7 +136,6 @@ noinst_HEADERS = \
   numbirch/eigen/eigen.hpp \
   numbirch/eigen/numeric.hpp \
   numbirch/eigen/random.hpp \
-  numbirch/eigen/stl.hpp \
   numbirch/eigen/transform.hpp \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
