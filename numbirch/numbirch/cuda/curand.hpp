@@ -72,67 +72,53 @@ NUMBIRCH_DEVICE inline curandState_t* curand_rng() {
 
 template<class T>
 NUMBIRCH_DEVICE T curand_gamma_generic(curandState_t* state, const T k) {
-  /* based on the implementation of std::gamma_distribution in libc++, part of
-   * the LLVM project */
-  T x;
-  if (k == 1) {
+  /* see Devroye, L. (1986). Non-Uniform Random Variate Generation.
+   * Springer-Verlag, New York, online at
+   * http://luc.devroye.org/rnbookindex.html. Specific references below. The
+   * same algorithm is used for the k > 1 case in libc++ */
+  T a = k;
+
+  /* Best's rejection algorithm works only for a >= 1, but we can use the
+   * property that, for G ~ Gamma(a + 1) and U ~ Uniform(0, 1), G*pow(U, 1/a)
+   * ~ Gamma(a); see Devroye 1986, p. 420 */
+  T scale = T(1.0);
+  if (a < T(1.0)) {
+    T u;
     if constexpr (std::is_same_v<T,double>) {
-      x = -std::log(curand_uniform_double(state));
+      u = curand_uniform_double(state);
     } else {
-      x = -std::log(curand_uniform(state));
+      u = curand_uniform(state);
     }
-  } else if (k > 1) {
-    T b = k - 1;
-    T c = 3*k - T(0.75);
-    while (true) {
-      T u, v;
-      if constexpr (std::is_same_v<T,double>) {
-        u = curand_uniform_double(state);
-        v = curand_uniform_double(state);
-      } else {
-        u = curand_uniform(state);
-        v = curand_uniform(state);
-      }
-      T w = u*(1 - u);
-      if (w != 0) {
-        T y = std::sqrt(c/w)*(u - T(0.5));
-        x = b + y;
-        if (x >= 0) {
-          T z = 64*w*w*w*v*v;
-          if (z <= 1 - 2*y*y/x) {
-            break;
-          }
-          if (std::log(z) <= 2*(b*std::log(x/b) - y)) {
-            break;
-          }
-        }
-      }
-    }
-  } else {
-    while (true) {
-      T u, v;
-      if constexpr (std::is_same_v<T,double>) {
-        u = curand_uniform_double(state);
-        v = curand_uniform_double(state);
-      } else {
-        u = curand_uniform(state);
-        v = curand_uniform(state);
-      }
-      if (u <= 1 - k) {
-        x = std::pow(u, 1/k);
-        if (x <= v) {
-          break;
-        }
-      } else {
-        T e = -std::log((1 - u)/k);
-        x = std::pow(1 - k + k*e, 1/k);
-        if (x <= e + v) {
-          break;
-        }
-      }
-    }
+    scale = std::pow(u, T(1.0)/a);
+    a = k + T(1.0);
   }
-  return x;
+
+  /* Best's rejection algorithm; see Devroye 1986, p. 410 */
+  T x;
+  T b = a - T(1.0);
+  T c = T(3.0)*a - T(0.75);
+  bool accept = false;
+  do {
+    T u, v;
+    if constexpr (std::is_same_v<T,double>) {
+      u = curand_uniform_double(state);
+      v = curand_uniform_double(state);
+    } else {
+      u = curand_uniform(state);
+      v = curand_uniform(state);
+    }
+    T w = u*(T(1.0) - u);
+    if (w != T(0.0)) {
+      T y = std::sqrt(c/w)*(u - T(0.5));
+      x = b + y;
+      if (x >= T(0.0)) {
+        T z = T(64.0)*w*w*w*v*v;
+        accept = (z <= T(1.0) - T(2.0)*y*y/x) ||
+            (std::log(z) <= T(2.0)*(b*std::log(x/b) - y));
+      }
+    }
+  } while (!accept);
+  return scale*x;
 }
 
 NUMBIRCH_DEVICE inline float curand_gamma(curandState_t* state,
