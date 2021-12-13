@@ -25,6 +25,31 @@ void prefetch(const T& x) {
 }
 
 /*
+ * For-each.
+ */
+template<class T, class Functor>
+void kernel_for_each(const int m, const int n, T* A, const int ldA,
+    Functor f) {
+  for (int j = 0; j < n; ++j) {
+    for (int i = 0; i < m; ++i) {
+      element(A, i, j, ldA) = f(i, j);
+    }
+  }
+}
+template<class Functor>
+auto for_each(const int n, Functor f) {
+  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
+  kernel_for_each(1, n, data(x), stride(x), f);
+  return x;
+}
+template<class Functor>
+auto for_each(const int m, const int n, Functor f) {
+  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
+  kernel_for_each(m, n, data(A), stride(A), f);
+  return A;
+}
+
+/*
  * Unary transform.
  */
 template<class T, class R, class Functor>

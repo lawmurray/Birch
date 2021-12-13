@@ -15,6 +15,8 @@
 #include "numbirch/type.hpp"
 #include "numbirch/common/functor.hpp"
 
+#include <iostream>
+
 namespace numbirch {
 /*
  * Prefetch an array onto device.
@@ -40,18 +42,50 @@ void prefetch(const T& x) {
 }
 
 /*
+ * For-each.
+ */
+template<class T, class Functor>
+__global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
+    Functor f) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      element(A, i, j, ldA) = f(i, j);
+    }
+  }
+}
+template<class Functor>
+auto for_each(const int n, Functor f) {
+  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
+  auto grid = make_grid(1, n);
+  auto block = make_block(1, n);
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, data(x),
+      stride(x), f));
+  return x;
+}
+template<class Functor>
+auto for_each(const int m, const int n, Functor f) {
+  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, data(A),
+      stride(A), f));
+  return A;
+}
+
+/*
  * Unary transform.
  */
 template<class T, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
-    const int ldA, R B, const int ldB, Functor f, curandState_t* rngs) {
-  extern __shared__ curandState_t* shared[];
-  shared[0] = rngs;
-
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    element(B, i, j, ldB) = f(element(A, i, j, ldA));
+    const int ldA, R B, const int ldB, Functor f) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      element(B, i, j, ldB) = f(element(A, i, j, ldA));
+    }
   }
 }
 template<class T, class Functor>
@@ -66,8 +100,8 @@ auto transform(const T& x, Functor f) {
     auto n = height(x);
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
-        data(x), stride(x), data(y), stride(y), f, rngs);
+    CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(x),
+        stride(x), data(y), stride(y), f));
     return y;
   } else {
     return Array<R,D>();
@@ -88,14 +122,13 @@ auto transform_grad(const G& g, const T& x, Functor f) {
 template<class T, class U, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
     const int ldA, const U B, const int ldB, R C, const int ldC,
-    Functor f, curandState_t* rngs) {
-  extern __shared__ curandState_t* shared[];
-  shared[0] = rngs;
-
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    element(C, i, j, ldC) = f(element(A, i, j, ldA), element(B, i, j, ldB));
+    Functor f) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      element(C, i, j, ldC) = f(element(A, i, j, ldA), element(B, i, j, ldB));
+    }
   }
 }
 template<class T, class U, class Functor>
@@ -110,8 +143,8 @@ auto transform(const T& x, const U& y, Functor f) {
     auto z = Array<R,D>(make_shape<D>(m, n));
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
-        data(x), stride(x), data(y), stride(y), data(z), stride(z), f, rngs);
+    CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(x),
+        stride(x), data(y), stride(y), data(z), stride(z), f));
     return z;
   } else {
     return Array<R,D>();
@@ -124,18 +157,16 @@ auto transform(const T& x, const U& y, Functor f) {
 template<class G, class T, class U, class V, class W, class Functor>
 __global__ void kernel_transform_grad(const int m, const int n, const G g,
     const int ldg, const T A, const int ldA, const U B, const int ldB,
-    V GA, const int ldGA, W GB, const int ldGB, Functor f,
-    curandState_t* rngs) {
-  extern __shared__ curandState_t* shared[];
-  shared[0] = rngs;
-
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    auto pair = f(element(g, i, j, ldg), element(A, i, j, ldA),
-        element(B, i, j, ldB));
-    element(GA, i, j, ldGA) = pair.first;
-    element(GB, i, j, ldGB) = pair.second;
+    V GA, const int ldGA, W GB, const int ldGB, Functor f) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      auto pair = f(element(g, i, j, ldg), element(A, i, j, ldA),
+          element(B, i, j, ldB));
+      element(GA, i, j, ldGA) = pair.first;
+      element(GB, i, j, ldGB) = pair.second;
+    }
   }
 }
 template<class G, class T, class U, class Functor>
@@ -155,9 +186,9 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
     auto b = Array<W,D>(make_shape<D>(m, n));
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform_grad<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
-        data(g), stride(g), data(x), stride(x), data(y), stride(y), data(a),
-        stride(a), data(b), stride(b), f, rngs);
+    CUDA_LAUNCH(kernel_transform_grad<<<grid,block,0,stream>>>(m, n, data(g),
+        stride(g), data(x), stride(x), data(y), stride(y), data(a), stride(a),
+        data(b), stride(b), f));
     return std::make_pair(a, b);
   } else {
     auto a = Array<V,D>();
@@ -172,15 +203,14 @@ auto transform_grad(const G& g, const T& x, const U& y, Functor f) {
 template<class T, class U, class V, class R, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
     const int ldA, const U B, const int ldB, const V C, const int ldC,
-    R D, const int ldD, Functor f, curandState_t* rngs) {
-  extern __shared__ curandState_t* shared[];
-  shared[0] = rngs;
-
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    element(D, i, j, ldD) = f(element(A, i, j, ldA), element(B, i, j, ldB),
-        element(C, i, j, ldC));
+    R D, const int ldD, Functor f) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      element(D, i, j, ldD) = f(element(A, i, j, ldA), element(B, i, j, ldB),
+          element(C, i, j, ldC));
+    }
   }
 }
 template<class T, class U, class V, class Functor>
@@ -197,9 +227,9 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     auto a = Array<R,D>(make_shape<D>(m, n));
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    kernel_transform<<<grid,block,sizeof(curandState_t*),stream>>>(m, n,
-        data(x), stride(x), data(y), stride(y), data(z), stride(z), data(a),
-        stride(a), f, rngs);
+    CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(x),
+        stride(x), data(y), stride(y), data(z), stride(z), data(a), stride(a),
+        f));
     return a;
   } else {
     return Array<R,D>();

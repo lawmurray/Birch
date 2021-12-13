@@ -20,35 +20,6 @@ namespace numbirch {
 static const int CUDA_TRANSPOSE_SIZE = 16;
 
 /*
- * Matrix for-each.
- */
-template<class T, class Functor>
-__global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
-    Functor f) {
-  auto i = blockIdx.x*blockDim.x + threadIdx.x;
-  auto j = blockIdx.y*blockDim.y + threadIdx.y;
-  if (i < m && j < n) {
-    element(A, i, j, ldA) = f(i, j);
-  }
-}
-template<class Functor>
-auto for_each(const int m, const int n, Functor f) {
-  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
-  auto grid = make_grid(m, n);
-  auto block = make_block(m, n);
-  kernel_for_each<<<grid,block,0,stream>>>(m, n, data(A), stride(A), f);
-  return A;
-}
-template<class Functor>
-auto for_each(const int n, Functor f) {
-  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
-  auto grid = make_grid(n, 1);
-  auto block = make_block(n, 1);
-  kernel_for_each<<<grid,block,0,stream>>>(n, 1, data(x), stride(x), f);
-  return x;
-}
-
-/*
  * Matrix transpose kernel.
  */
 template<class T>
@@ -287,8 +258,8 @@ Array<T,2> transpose(const Array<T,2>& A) {
 
   size_t shared = CUDA_TRANSPOSE_SIZE*CUDA_TRANSPOSE_SIZE*sizeof(T);
 
-  kernel_transpose<<<grid,block,shared,stream>>>(rows(B), columns(B), data(A),
-      stride(A), data(B), stride(B));
+  CUDA_LAUNCH(kernel_transpose<<<grid,block,shared,stream>>>(rows(B),
+      columns(B), data(A), stride(A), data(B), stride(B)));
   return B;
 }
 
@@ -310,8 +281,7 @@ Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
   CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
       stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost,
-      bufferOnHostBytes, info));
+      bufferOnHost, bufferOnHostBytes, info));
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(y), data(L), stride(L),
       data(y), stride(y)));

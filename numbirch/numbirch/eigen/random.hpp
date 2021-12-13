@@ -118,4 +118,11 @@ struct simulate_weibull_functor {
   }
 };
 
+template<class R>
+struct standard_gaussian_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) const {
+    return std::normal_distribution<R>()(stl<R>::rng());
+  }
+};
+
 }

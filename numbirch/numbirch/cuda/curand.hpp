@@ -62,9 +62,7 @@ void curand_term();
  * 
  * Get the pseudorandom number generator for the current device thread.
  */
-NUMBIRCH_DEVICE inline curandState_t* curand_rng() {
-  extern __shared__ curandState_t* shared[];
-  curandState_t* rngs = shared[0];
+NUMBIRCH_DEVICE inline curandState_t* curand_rng(curandState_t* rngs) {
   auto x = threadIdx.x + blockIdx.x*blockDim.x;
   auto y = threadIdx.y + blockIdx.y*blockDim.y;
   return &rngs[x + y*gridDim.x*blockDim.x];
@@ -78,11 +76,11 @@ NUMBIRCH_DEVICE T curand_gamma_generic(curandState_t* state, const T k) {
    * same algorithm is used for the k > 1 case in libc++ */
   T a = k;
 
-  /* Best's rejection algorithm works only for a >= 1, but we can use the
+  /* Best's rejection algorithm works only for a > 1, but we can use the
    * property that, for G ~ Gamma(a + 1) and U ~ Uniform(0, 1), G*pow(U, 1/a)
    * ~ Gamma(a); see Devroye 1986, p. 420 */
   T scale = T(1.0);
-  if (a < T(1.0)) {
+  if (a <= T(1.0)) {
     T u;
     if constexpr (std::is_same_v<T,double>) {
       u = curand_uniform_double(state);

@@ -503,4 +503,33 @@ default_t<implicit_t<T,U>> simulate_weibull(const T& k, const U& λ) {
   return simulate_weibull<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k, λ);
 }
 
+/**
+ * Create vector of standard Gaussian variates (mean zero, variance one).
+ *
+ * @ingroup random
+ * 
+ * @tparam R Floating point type.
+ * 
+ * @param n Number of elements.
+ * 
+ * @return Variates.
+ */
+template<class R, class = std::enable_if_t<is_floating_point_v<R>,int>>
+Array<R,1> standard_gaussian(const int n);
+
+/**
+ * Create matrix of standard Gaussian variates (mean zero, variance one).
+ *
+ * @ingroup random
+ * 
+ * @tparam R Floating point type.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Variates.
+ */
+template<class R, class = std::enable_if_t<is_floating_point_v<R>,int>>
+Array<R,2> standard_gaussian(const int m, const int n);
+
 }

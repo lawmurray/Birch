@@ -13,15 +13,19 @@ namespace numbirch {
 
 template<class R>
 struct simulate_bernoulli_functor {
+  curandState_t* rngs;
+  simulate_bernoulli_functor() : rngs(numbirch::rngs) {
+    //
+  }
   template<class T>
-  NUMBIRCH_HOST_DEVICE R operator()(const T ρ) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const T ρ) {
     #ifndef __CUDA_ARCH__
     return std::bernoulli_distribution(ρ)(stl<bool>::rng());
     #else
     if constexpr (std::is_same_v<T,double>) {
-      return curand_uniform_double(curand_rng()) <= ρ;
+      return curand_uniform_double(curand_rng(rngs)) <= ρ;
     } else {
-      return curand_uniform(curand_rng()) <= ρ;
+      return curand_uniform(curand_rng(rngs)) <= ρ;
     }
     #endif
   }
@@ -29,18 +33,22 @@ struct simulate_bernoulli_functor {
 
 template<class R>
 struct simulate_beta_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R α, const R β) const {
+  curandState_t* rngs;
+  simulate_beta_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R α, const R β) {
     R u, v;
     #ifndef __CUDA_ARCH__
     u = std::gamma_distribution<R>(α, 1.0)(stl<R>::rng());
     v = std::gamma_distribution<R>(β, 1.0)(stl<R>::rng());
     #else
     if constexpr (std::is_same_v<R,double>) {
-      u = curand_gamma_double(curand_rng(), α);
-      v = curand_gamma_double(curand_rng(), β);
+      u = curand_gamma_double(curand_rng(rngs), α);
+      v = curand_gamma_double(curand_rng(rngs), β);
     } else {
-      u = curand_gamma(curand_rng(), α);
-      v = curand_gamma(curand_rng(), β);
+      u = curand_gamma(curand_rng(rngs), α);
+      v = curand_gamma(curand_rng(rngs), β);
     }
     #endif
     return u/(u + v);
@@ -49,16 +57,20 @@ struct simulate_beta_functor {
 
 template<class R>
 struct simulate_binomial_functor {
+  curandState_t* rngs;
+  simulate_binomial_functor() : rngs(numbirch::rngs) {
+    //
+  }
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE R operator()(const T n, const U ρ) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const T n, const U ρ) {
     #ifndef __CUDA_ARCH__
     return std::binomial_distribution<int>(n, ρ)(stl<R>::rng());
     // ^ binomial_distribution requires integral type
     #else
     if constexpr (std::is_same_v<U,double>) {
-      return curand_binomial_double(curand_rng(), n, ρ);
+      return curand_binomial_double(curand_rng(rngs), n, ρ);
     } else {
-      return curand_binomial(curand_rng(), n, ρ);
+      return curand_binomial(curand_rng(rngs), n, ρ);
     }
     #endif
   }
@@ -66,14 +78,18 @@ struct simulate_binomial_functor {
 
 template<class R>
 struct simulate_chi_squared_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R ν) const {
+  curandState_t* rngs;
+  simulate_chi_squared_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R ν) {
     #ifndef __CUDA_ARCH__
     return std::chi_squared_distribution<R>(ν)(stl<R>::rng());
     #else
     if constexpr (std::is_same_v<R,double>) {
-      return R(2.0)*curand_gamma_double(curand_rng(), R(0.5)*ν);
+      return R(2.0)*curand_gamma_double(curand_rng(rngs), R(0.5)*ν);
     } else {
-      return R(2.0)*curand_gamma(curand_rng(), R(0.5)*ν);
+      return R(2.0)*curand_gamma(curand_rng(rngs), R(0.5)*ν);
     }
     #endif
   }
@@ -81,14 +97,18 @@ struct simulate_chi_squared_functor {
 
 template<class R>
 struct simulate_exponential_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R λ) const {
+  curandState_t* rngs;
+  simulate_exponential_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R λ) {
     #ifndef __CUDA_ARCH__
     return std::exponential_distribution<R>(λ)(stl<R>::rng());
     #else
     if constexpr (std::is_same_v<R,double>) {
-      return -std::log(curand_uniform_double(curand_rng()))/λ;
+      return -std::log(curand_uniform_double(curand_rng(rngs)))/λ;
     } else {
-      return -std::log(curand_uniform(curand_rng()))/λ;
+      return -std::log(curand_uniform(curand_rng(rngs)))/λ;
     }
     #endif
   }
@@ -96,14 +116,18 @@ struct simulate_exponential_functor {
 
 template<class R>
 struct simulate_gamma_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R k, const R θ) const {
+  curandState_t* rngs;
+  simulate_gamma_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R k, const R θ) {
     #ifndef __CUDA_ARCH__
     return std::gamma_distribution<R>(k, θ)(stl<R>::rng());
     #else
     if constexpr (std::is_same_v<R,double>) {
-      return curand_gamma(curand_rng(), k)*θ;
+      return curand_gamma(curand_rng(rngs), k)*θ;
     } else {
-      return curand_gamma_double(curand_rng(), k)*θ;
+      return curand_gamma_double(curand_rng(rngs), k)*θ;
     }
     #endif
   }
@@ -111,14 +135,18 @@ struct simulate_gamma_functor {
 
 template<class R>
 struct simulate_gaussian_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R μ, const R σ2) const {
+  curandState_t* rngs;
+  simulate_gaussian_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R μ, const R σ2) {
     #ifndef __CUDA_ARCH__
     return std::normal_distribution<R>(μ, std::sqrt(σ2))(stl<R>::rng());
     #else
     if constexpr (std::is_same_v<R,double>) {
-      return μ + std::sqrt(σ2)*curand_normal_double(curand_rng());
+      return μ + std::sqrt(σ2)*curand_normal_double(curand_rng(rngs));
     } else {
-      return μ + std::sqrt(σ2)*curand_normal(curand_rng());
+      return μ + std::sqrt(σ2)*curand_normal(curand_rng(rngs));
     }
     #endif
   }
@@ -126,8 +154,12 @@ struct simulate_gaussian_functor {
 
 template<class R>
 struct simulate_negative_binomial_functor {
+  curandState_t* rngs;
+  simulate_negative_binomial_functor() : rngs(numbirch::rngs) {
+    //
+  }
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE R operator()(const T k, const U ρ) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const T k, const U ρ) {
     #ifndef __CUDA_ARCH__
     return std::negative_binomial_distribution<int>(k, ρ)(stl<R>::rng());
     // ^ negative_binomial_distribution requires integral type
@@ -135,39 +167,47 @@ struct simulate_negative_binomial_functor {
     U θ, λ;
     θ = (1 - ρ)/ρ;
     if constexpr (std::is_same_v<U,double>) {
-      λ = curand_gamma_double(curand_rng(), k);
+      λ = curand_gamma_double(curand_rng(rngs), k);
     } else {
-      λ = curand_gamma(curand_rng(), k);
+      λ = curand_gamma(curand_rng(rngs), k);
     }
-    return curand_poisson(curand_rng(), λ*θ);
+    return curand_poisson(curand_rng(rngs), λ*θ);
     #endif
   }
 };
 
 template<class R>
 struct simulate_poisson_functor {
+  curandState_t* rngs;
+  simulate_poisson_functor() : rngs(numbirch::rngs) {
+    //
+  }
   template<class T>
-  NUMBIRCH_HOST_DEVICE R operator()(const T λ) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const T λ) {
     #ifndef __CUDA_ARCH__
     return std::poisson_distribution<int>(λ)(stl<R>::rng());
     // ^ poisson_distribution requires integral type
     #else
-    return curand_poisson(curand_rng(), λ);
+    return curand_poisson(curand_rng(rngs), λ);
     #endif
   }
 };
 
 template<class R>
 struct simulate_student_t_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R ν) const {
+  curandState_t* rngs;
+  simulate_student_t_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R ν) {
     #ifndef __CUDA_ARCH__
     return std::student_t_distribution<R>(ν)(stl<R>::rng());
     #else
-    R λ = R(0.5)*ν*curand_gamma(curand_rng(), R(0.5)*ν);
+    R λ = R(0.5)*ν*curand_gamma(curand_rng(rngs), R(0.5)*ν);
     if constexpr (std::is_same_v<R,double>) {
-      return curand_normal_double(curand_rng())/λ;
+      return curand_normal_double(curand_rng(rngs))/λ;
     } else {
-      return curand_normal(curand_rng())/λ;
+      return curand_normal(curand_rng(rngs))/λ;
     }
     #endif
   }
@@ -175,14 +215,18 @@ struct simulate_student_t_functor {
 
 template<class R>
 struct simulate_uniform_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R l, const R u) const {
+  curandState_t* rngs;
+  simulate_uniform_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R l, const R u) {
     #ifndef __CUDA_ARCH__
     return std::uniform_real_distribution<R>(l, u)(stl<R>::rng());
     #else
     if constexpr (std::is_same_v<R,double>) {
-      return l + (u - l)*curand_uniform_double(curand_rng());
+      return l + (u - l)*curand_uniform_double(curand_rng(rngs));
     } else {
-      return l + (u - l)*curand_uniform(curand_rng());
+      return l + (u - l)*curand_uniform(curand_rng(rngs));
     }
     #endif
   }
@@ -190,29 +234,56 @@ struct simulate_uniform_functor {
 
 template<class R>
 struct simulate_uniform_int_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R l, const R u) const {
+  curandState_t* rngs;
+  simulate_uniform_int_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R l, const R u) {
     #ifndef __CUDA_ARCH__
     return std::uniform_int_distribution<int>(l, u)(stl<R>::rng());
     // ^ uniform_int_distribution requires integral type
     #else
-    return int(l + (u - l + 1)*curand_uniform(curand_rng()));
+    return int(l + (u - l + 1)*curand_uniform(curand_rng(rngs)));
     #endif
   }
 };
 
 template<class R>
 struct simulate_weibull_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R k, const R λ) const {
+  curandState_t* rngs;
+  simulate_weibull_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R k, const R λ) {
     #ifndef __CUDA_ARCH__
     return std::weibull_distribution<R>(k, λ)(stl<R>::rng());
     #else
     R u;
     if constexpr (std::is_same_v<R,double>) {
-      u = curand_uniform_double(curand_rng());
+      u = curand_uniform_double(curand_rng(rngs));
     } else {
-      u = curand_uniform(curand_rng());
+      u = curand_uniform(curand_rng(rngs));
     }
     return λ*std::pow(-std::log(R(1.0) - u), R(1.0)/k);
+    #endif
+  }
+};
+
+template<class R>
+struct standard_gaussian_functor {
+  curandState_t* rngs;
+  standard_gaussian_functor() : rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
+    #ifndef __CUDA_ARCH__
+    return std::normal_distribution<R>()(stl<R>::rng());
+    #else
+    if constexpr (std::is_same_v<R,double>) {
+      return curand_normal_double(curand_rng(rngs));
+    } else {
+      return curand_normal(curand_rng(rngs));
+    }
     #endif
   }
 };

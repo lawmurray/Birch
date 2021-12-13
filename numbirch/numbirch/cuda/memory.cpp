@@ -126,7 +126,8 @@ void memset(void* dst, const size_t dpitch, const T value, const size_t width,
     const size_t height) {
   auto grid = make_grid(width/sizeof(T), height);
   auto block = make_block(width/sizeof(T), height);
-  kernel_memset<<<grid,block,0,stream>>>(dst, dpitch, value, width, height);
+  CUDA_LAUNCH(kernel_memset<<<grid,block,0,stream>>>(dst, dpitch, value,
+      width, height));
 }
 
 template void memset(void*, const size_t, const double, const size_t,

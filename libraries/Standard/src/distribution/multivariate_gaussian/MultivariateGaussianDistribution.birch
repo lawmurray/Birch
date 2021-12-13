@@ -69,9 +69,9 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   assert length(μ) == rows(Σ);
   assert length(μ) == columns(Σ);
   let n <- length(μ);
-  let z <- vector_lambda(\(i:Integer) -> Real {
-        return simulate_gaussian(0.0, 1.0);
-      }, n);
+  cpp{{
+  auto z = numbirch::standard_gaussian<Real>(n);
+  }}
   return μ + cholmul(Σ, z);
 }
 

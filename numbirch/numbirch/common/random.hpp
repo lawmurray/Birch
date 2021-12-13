@@ -95,4 +95,14 @@ explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& λ) {
   return transform(k, λ, simulate_weibull_functor<R>());
 }
 
+template<class R, class>
+Array<R,1> standard_gaussian(const int n) {
+  return for_each(n, standard_gaussian_functor<R>());
+}
+
+template<class R, class>
+Array<R,2> standard_gaussian(const int m, const int n) {
+  return for_each(m, n, standard_gaussian_functor<R>());
+}
+
 }

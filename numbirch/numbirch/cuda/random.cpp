@@ -28,7 +28,7 @@ void seed(const int s) {
     dim3 grid{1, 1, 1}, block{1, 1, 1};
     block.x = MAX_BLOCK_SIZE;
     grid.x = max_blocks;
-    kernel_seed<<<grid,block,0,stream>>>(s*N + n, rngs);
+    CUDA_LAUNCH(kernel_seed<<<grid,block,0,stream>>>(s*N + n, rngs));
 
     /* seed host generator; fine to use the same seed here, and seed as the
      * device generators above, as these are all different algorithms and/or

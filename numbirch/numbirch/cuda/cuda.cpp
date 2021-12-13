@@ -7,7 +7,7 @@ namespace numbirch {
 
 thread_local int device = 0;
 thread_local cudaStream_t stream = 0;
-thread_local int max_blocks = 200;
+thread_local unsigned max_blocks = 64;
 
 void cuda_init() {
   #pragma omp parallel
@@ -26,7 +26,7 @@ void cuda_init() {
     /* determine maximum number of blocks */
     CUDA_CHECK(cudaDeviceGetAttribute(&value,
         cudaDevAttrMultiProcessorCount, device));
-    max_blocks = std::min(4*value, 200);
+    max_blocks = 4*value;
 
     CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));

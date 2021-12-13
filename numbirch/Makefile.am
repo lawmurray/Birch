@@ -32,6 +32,8 @@ SOURCES =  \
     numbirch/instantiate/numeric_single_matrix.cpp \
     numbirch/instantiate/numeric_single_vector.cpp \
     numbirch/instantiate/numeric_sum.cpp \
+    numbirch/instantiate/random_standard_matrix.cpp \
+    numbirch/instantiate/random_standard_vector.cpp \
     numbirch/instantiate/ternary_function.cpp \
     numbirch/instantiate/unary_function.cpp \
     numbirch/instantiate/unary_grad.cpp \

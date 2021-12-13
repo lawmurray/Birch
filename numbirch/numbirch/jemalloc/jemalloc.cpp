@@ -155,7 +155,6 @@ void numbirch::free(void* ptr) {
   /// where this allocation was made, and only if its a different thread to
   /// this one, lest it is reused by the associated thread before this thread
   /// has finished any asynchronous work
-  //wait();
   if (ptr) {
     dallocx(ptr, shared_flags);
   }
