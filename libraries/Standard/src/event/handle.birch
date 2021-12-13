@@ -2,8 +2,32 @@ cpp{{
 /*
  * Event handler for each thread.
  */
-static thread_local birch::Handler handler(std::in_place, true, false);
+static thread_local birch::Handler handler(nullptr);
 }}
+
+/**
+ * Initialize.
+ */
+function init() {
+  cpp{{
+  #pragma omp parallel
+  {
+    handler = birch::Handler(std::in_place, true, false);
+  }
+  }}
+}
+
+/**
+ * Terminate.
+ */
+function term() {
+  cpp{{
+  #pragma omp parallel
+  {
+    handler.release();
+  }
+  }}
+}
 
 /*
  * Get the event handler.
