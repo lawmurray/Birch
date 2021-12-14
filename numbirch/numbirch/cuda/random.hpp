@@ -203,12 +203,15 @@ struct simulate_student_t_functor {
     #ifndef __CUDA_ARCH__
     return std::student_t_distribution<R>(ν)(stl<R>::rng());
     #else
-    R λ = R(0.5)*ν*curand_gamma(curand_rng(rngs), R(0.5)*ν);
+    R u, x, k = R(0.5)*ν;
     if constexpr (std::is_same_v<R,double>) {
-      return curand_normal_double(curand_rng(rngs))/λ;
+      u = curand_gamma_double(curand_rng(rngs), k);
+      x = curand_normal_double(curand_rng(rngs));
     } else {
-      return curand_normal(curand_rng(rngs))/λ;
+      u = curand_gamma(curand_rng(rngs), k);
+      x = curand_normal(curand_rng(rngs));
     }
+    return x*std::sqrt(k/u);
     #endif
   }
 };
