@@ -4,10 +4,11 @@
 #pragma once
 
 #include "numbirch/random.hpp"
+#include "numbirch/macro.hpp"
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/common/stl.hpp"
-#include "numbirch/macro.hpp"
+#include "numbirch/common/element.hpp"
 
 namespace numbirch {
 
@@ -288,6 +289,50 @@ struct standard_gaussian_functor {
       return curand_normal(curand_rng(rngs));
     }
     #endif
+  }
+};
+
+template<class R, class T>
+struct standard_wishart_functor {
+  T k;
+  int n;
+  curandState_t* rngs;
+  standard_wishart_functor(const T& k, const int n) :
+      k(k),
+      n(n),
+      rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
+    if (i == j) {
+      /* on diagonal */
+      R ν = element(k) + n - i;
+      R x;
+      #ifndef __CUDA_ARCH__
+      x = std::chi_squared_distribution<R>(ν)(stl<R>::rng());
+      #else
+      if constexpr (std::is_same_v<R,double>) {
+        x = R(2.0)*curand_gamma_double(curand_rng(rngs), R(0.5)*ν);
+      } else {
+        x = R(2.0)*curand_gamma(curand_rng(rngs), R(0.5)*ν);
+      }
+      #endif
+      return std::sqrt(x);
+    } else if (i > j) {
+      /* in lower triangle */
+      #ifndef __CUDA_ARCH__
+      return std::normal_distribution<R>()(stl<R>::rng());
+      #else
+      if constexpr (std::is_same_v<R,double>) {
+        return curand_normal_double(curand_rng(rngs));
+      } else {
+        return curand_normal(curand_rng(rngs));
+      }
+      #endif
+    } else {
+      /* in upper triangle */
+      return R(0.0);
+    }
   }
 };
 

@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "numbirch/type.hpp"
+#include "numbirch/common/element.hpp"
 
 #if defined(HAVE_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
 #include <unsupported/Eigen/SpecialFunctions>
@@ -13,54 +13,6 @@
 
 namespace numbirch {
 static const long double PI = 3.1415926535897932384626433832795;
-
-/**
- * @internal
- *
- * 0-based element of a matrix, vector, or scalar. A scalar is identified by
- * having `ld == 0`.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
-  return x[k];
-}
-
-/**
- * @internal
- *
- * 0-based element of a matrix, vector, or scalar. A scalar is identified by
- * having `ld == 0`.
- */
-template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0,
-    const int j = 0, const int ld = 0) {
-  int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
-  return x[k];
-}
-
-/**
- * @internal
- * 
- * 0-based element of a scalar---just returns the scalar.
- */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
-    const int ld = 0) {
-  return x;
-}
-
-/**
- * @internal
- * 
- * 0-based element of a scalar---just returns the scalar.
- */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0,
-    const int j = 0, const int ld = 0) {
-  return x;
-}
 
 template<class R>
 struct identity_functor {
@@ -473,15 +425,15 @@ struct pow_functor {
 
 template<class R, class U, class V = int>
 struct single_functor {
-  single_functor(const U k, const V l = 1) :
+  const U k;
+  const V l;
+  single_functor(const U& k, const V& l = 1) :
       k(k), l(l) {
     //
   }
   NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) const {
     return (i == element(k) - 1 && j == element(l) - 1) ? R(1) : R(0);
   }
-  const U k;
-  const V l;
 };
 
 template<class R>

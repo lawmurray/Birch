@@ -532,4 +532,20 @@ Array<R,1> standard_gaussian(const int n);
 template<class R, class = std::enable_if_t<is_floating_point_v<R>,int>>
 Array<R,2> standard_gaussian(const int m, const int n);
 
+/**
+ * Create matrix of standard Wishart (scale one).
+ *
+ * @ingroup random
+ * 
+ * @tparam R Floating point type.
+ * 
+ * @param ν Degrees of freedom.
+ * @param n Number of rows and columns.
+ * 
+ * @return Variates.
+ */
+template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
+    is_scalar_v<T>,int>>
+Array<R,2> standard_wishart(const T& ν, const int n);
+
 }

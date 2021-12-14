@@ -105,4 +105,10 @@ Array<R,2> standard_gaussian(const int m, const int n) {
   return for_each(m, n, standard_gaussian_functor<R>());
 }
 
+template<class R, class T, class>
+Array<R,2> standard_wishart(const T& ν, const int n) {
+  return for_each(n, n, standard_wishart_functor<R,decltype(data(ν))>(data(ν),
+      n));
+}
+
 }

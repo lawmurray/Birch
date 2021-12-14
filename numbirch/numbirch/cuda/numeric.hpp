@@ -9,6 +9,7 @@
 #include "numbirch/cuda/cub.hpp"
 #include "numbirch/cuda/transform.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
+#include "numbirch/common/element.hpp"
 #include "numbirch/common/functor.hpp"
 #include "numbirch/binary.hpp"
 #include "numbirch/memory.hpp"

@@ -5,6 +5,7 @@
 
 #include "numbirch/random.hpp"
 #include "numbirch/common/stl.hpp"
+#include "numbirch/common/element.hpp"
 
 namespace numbirch {
 
@@ -125,4 +126,30 @@ struct standard_gaussian_functor {
   }
 };
 
+template<class R, class T>
+struct standard_wishart_functor {
+  T k;
+  int n;
+  curandState_t* rngs;
+  standard_wishart_functor(const T& k, const int n) :
+      k(k),
+      n(n),
+      rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
+    if (i == j) {
+      /* on diagonal */
+      R ν = element(k) + n - i;
+      R x = std::chi_squared_distribution<R>(ν)(stl<R>::rng());
+      return std::sqrt(x);
+    } else if (i > j) {
+      /* in lower triangle */
+      return std::normal_distribution<R>()(stl<R>::rng());
+    } else {
+      /* in upper triangle */
+      return R(0.0);
+    }
+  }
+};
 }

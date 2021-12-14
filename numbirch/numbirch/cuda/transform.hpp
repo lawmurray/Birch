@@ -14,8 +14,8 @@
 #include "numbirch/memory.hpp"
 #include "numbirch/type.hpp"
 #include "numbirch/common/functor.hpp"
+#include "numbirch/common/element.hpp"
 
-#include <iostream>
 
 namespace numbirch {
 /*

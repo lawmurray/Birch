@@ -34,6 +34,7 @@ SOURCES =  \
     numbirch/instantiate/numeric_sum.cpp \
     numbirch/instantiate/random_standard_matrix.cpp \
     numbirch/instantiate/random_standard_vector.cpp \
+    numbirch/instantiate/random_standard_wishart.cpp \
     numbirch/instantiate/ternary_function.cpp \
     numbirch/instantiate/unary_function.cpp \
     numbirch/instantiate/unary_grad.cpp \
@@ -55,7 +56,7 @@ if CUDA
   AM_CXXFLAGS += -x cu -G \
       -default-stream=per-thread \
       -expt-relaxed-constexpr \
-      -arch=all-major \
+      -arch=sm_70 \
       -Wno-deprecated-gpu-targets \
       -Xcompiler="-Wall" \
       -Xcompiler="-Wno-unused-result" \
@@ -122,6 +123,7 @@ nobase_include_HEADERS = \
 
 noinst_HEADERS = \
   numbirch/common/binary.hpp \
+  numbirch/common/element.hpp \
   numbirch/common/functor.hpp \
   numbirch/common/random.hpp \
   numbirch/common/stl.hpp \
