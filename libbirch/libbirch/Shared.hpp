@@ -72,7 +72,7 @@ public:
    */
   Shared(T* ptr, const bool b = false) :
       ptr(pack(ptr)),
-      a(ptr->isAcyclic_()),
+      a(ptr && ptr->isAcyclic_()),
       b(b) {
     if (ptr) {
       ptr->incShared_();
