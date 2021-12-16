@@ -44,13 +44,13 @@ void seed();
  * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
- * @param ρ Probability of success.
+ * @param rho Probability of success.
  * 
  * @return Variate.
  */
 template<class R, class T, class = std::enable_if_t<
     is_numeric_v<R> && is_numeric_v<T>,int>>
-explicit_t<R,T> simulate_bernoulli(const T& ρ);
+explicit_t<R,T> simulate_bernoulli(const T& rho);
 
 /**
  * Simulate a Bernoulli distribution.
@@ -59,13 +59,13 @@ explicit_t<R,T> simulate_bernoulli(const T& ρ);
  * 
  * @tparam T Numeric type.
  * 
- * @param ρ Probability of success.
+ * @param rho Probability of success.
  * 
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-explicit_t<bool,T> simulate_bernoulli(const T& ρ) {
-  return simulate_bernoulli<bool,T,int>(ρ);
+explicit_t<bool,T> simulate_bernoulli(const T& rho) {
+  return simulate_bernoulli<bool,T,int>(rho);
 }
 
 /**
@@ -77,15 +77,15 @@ explicit_t<bool,T> simulate_bernoulli(const T& ρ) {
  * @tparam T Numeric type.
  * @tparam U Numeric type.
  * 
- * @param α First shape.
- * @param β Second shape.
+ * @param alpha First shape.
+ * @param beta Second shape.
  * 
  * @return Variate.
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_beta(const T& α, const U& β);
+explicit_t<R,implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta);
 
 /**
  * Simulate a beta distribution.
@@ -95,15 +95,16 @@ explicit_t<R,implicit_t<T,U>> simulate_beta(const T& α, const U& β);
  * @tparam T Numeric type.
  * @tparam U Numeric type.
  * 
- * @param α First shape.
- * @param β Second shape.
+ * @param alpha First shape.
+ * @param beta Second shape.
  * 
  * @return Variate.
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_beta(const T& α, const U& β) {
-  return simulate_beta<value_t<default_t<implicit_t<T,U>>>,T,U,int>(α, β);
+default_t<implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta) {
+  return simulate_beta<value_t<default_t<implicit_t<T,U>>>,T,U,int>(alpha,
+      beta);
 }
 
 /**
@@ -116,14 +117,14 @@ default_t<implicit_t<T,U>> simulate_beta(const T& α, const U& β) {
  * @tparam U Numeric type.
  * 
  * @param n Number of trials.
- * @param ρ Probability of success.
+ * @param rho Probability of success.
  * 
  * @return Variate.
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_numeric_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_binomial(const T& n, const U& ρ);
+explicit_t<R,implicit_t<T,U>> simulate_binomial(const T& n, const U& rho);
 
 /**
  * Simulate a binomial distribution.
@@ -134,14 +135,14 @@ explicit_t<R,implicit_t<T,U>> simulate_binomial(const T& n, const U& ρ);
  * @tparam U Numeric type.
  * 
  * @param n Number of trials.
- * @param ρ Probability of success.
+ * @param rho Probability of success.
  * 
  * @return Variate.
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<int,implicit_t<T,U>> simulate_binomial(const T& n, const U& ρ) {
-  return simulate_binomial<int,T,U,int>(n, ρ);
+explicit_t<int,implicit_t<T,U>> simulate_binomial(const T& n, const U& rho) {
+  return simulate_binomial<int,T,U,int>(n, rho);
 }
 
 /**
@@ -152,13 +153,13 @@ explicit_t<int,implicit_t<T,U>> simulate_binomial(const T& n, const U& ρ) {
  * @tparam R Floating point type.
  * @tparam T Numeric type.
  * 
- * @param ν Degrees of freedom.
+ * @param nu Degrees of freedom.
  * 
  * @return Variate.
  */
 template<class R, class T, class = std::enable_if_t<
     is_floating_point_v<R> && is_numeric_v<T>,int>>
-explicit_t<R,T> simulate_chi_squared(const T& ν);
+explicit_t<R,T> simulate_chi_squared(const T& nu);
 
 /**
  * Simulate a $\chi^2$ distribution.
@@ -167,13 +168,13 @@ explicit_t<R,T> simulate_chi_squared(const T& ν);
  * 
  * @tparam T Numeric type.
  * 
- * @param ν Degrees of freedom.
+ * @param nu Degrees of freedom.
  * 
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> simulate_chi_squared(const T& ν) {
-  return simulate_chi_squared<value_t<default_t<T>>,T,int>(ν);
+default_t<T> simulate_chi_squared(const T& nu) {
+  return simulate_chi_squared<value_t<default_t<T>>,T,int>(nu);
 }
 
 /**
@@ -184,13 +185,13 @@ default_t<T> simulate_chi_squared(const T& ν) {
  * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
- * @param λ Rate.
+ * @param lambda Rate.
  * 
  * @return Variate.
  */
 template<class R, class T, class = std::enable_if_t<
     is_floating_point_v<R> && is_numeric_v<T>,int>>
-explicit_t<R,T> simulate_exponential(const T& λ);
+explicit_t<R,T> simulate_exponential(const T& lambda);
 
 /**
  * Simulate an exponential distribution.
@@ -199,13 +200,13 @@ explicit_t<R,T> simulate_exponential(const T& λ);
  * 
  * @tparam T Numeric type.
  * 
- * @param λ Rate.
+ * @param lambda Rate.
  * 
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> simulate_exponential(const T& λ) {
-  return simulate_exponential<value_t<default_t<T>>,T,int>(λ);
+default_t<T> simulate_exponential(const T& lambda) {
+  return simulate_exponential<value_t<default_t<T>>,T,int>(lambda);
 }
 
 /**
@@ -218,14 +219,14 @@ default_t<T> simulate_exponential(const T& λ) {
  * @tparam U Numeric type.
  * 
  * @param k Shape.
- * @param θ Scale.
+ * @param theta Scale.
  * 
  * @return Variate.
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_gamma(const T& k, const U& θ);
+explicit_t<R,implicit_t<T,U>> simulate_gamma(const T& k, const U& theta);
 
 /**
  * Simulate a gamma distribution.
@@ -236,14 +237,15 @@ explicit_t<R,implicit_t<T,U>> simulate_gamma(const T& k, const U& θ);
  * @tparam U Numeric type.
  * 
  * @param k Shape.
- * @param θ Scale.
+ * @param theta Scale.
  * 
  * @return Variate.
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_gamma(const T& k, const U& θ) {
-  return simulate_gamma<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k, θ);
+default_t<implicit_t<T,U>> simulate_gamma(const T& k, const U& theta) {
+  return simulate_gamma<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k,
+      theta);
 }
 
 /**
@@ -255,15 +257,15 @@ default_t<implicit_t<T,U>> simulate_gamma(const T& k, const U& θ) {
  * @tparam T Numeric type.
  * @tparam U Numeric type.
  * 
- * @param μ Mean.
- * @param σ2 Variance.
+ * @param mu Mean.
+ * @param sigma2 Variance.
  * 
  * @return Variate.
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_gaussian(const T& μ, const U& σ2);
+explicit_t<R,implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2);
 
 /**
  * Simulate a Gaussian distribution.
@@ -273,16 +275,16 @@ explicit_t<R,implicit_t<T,U>> simulate_gaussian(const T& μ, const U& σ2);
  * @tparam T Numeric type.
  * @tparam U Numeric type.
  * 
- * @param μ Mean.
- * @param σ2 Variance.
+ * @param mu Mean.
+ * @param sigma2 Variance.
  * 
  * @return Variate.
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_gaussian(const T& μ, const U& σ2) {
-  return simulate_gaussian<value_t<default_t<implicit_t<T,U>>>,T,U,int>(μ,
-      σ2);
+default_t<implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2) {
+  return simulate_gaussian<value_t<default_t<implicit_t<T,U>>>,T,U,int>(mu,
+      sigma2);
 }
 
 /**
@@ -295,7 +297,7 @@ default_t<implicit_t<T,U>> simulate_gaussian(const T& μ, const U& σ2) {
  * @tparam U Numeric type.
  * 
  * @param k Number of successes.
- * @param ρ Probability of success.
+ * @param rho Probability of success.
  * 
  * @return Number of failures before `k` number of successes are achieved.
  */
@@ -303,7 +305,7 @@ template<class R, class T, class U, class = std::enable_if_t<
     is_numeric_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
 explicit_t<R,implicit_t<T,U>> simulate_negative_binomial(const T& k,
-    const U& ρ);
+    const U& rho);
 
 /**
  * Simulate a negative binomial distribution.
@@ -314,15 +316,15 @@ explicit_t<R,implicit_t<T,U>> simulate_negative_binomial(const T& k,
  * @tparam U Numeric type.
  * 
  * @param k Number of successes.
- * @param ρ Probability of success.
+ * @param rho Probability of success.
  * 
  * @return Number of failures before `k` number of successes are achieved.
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
 explicit_t<int,implicit_t<T,U>> simulate_negative_binomial(const T& k,
-    const U& ρ) {
-  return simulate_negative_binomial<int,T,U,int>(k, ρ);
+    const U& rho) {
+  return simulate_negative_binomial<int,T,U,int>(k, rho);
 }
 
 /**
@@ -333,13 +335,13 @@ explicit_t<int,implicit_t<T,U>> simulate_negative_binomial(const T& k,
  * @tparam R Floating point type.
  * @tparam T Numeric type.
  * 
- * @param λ Rate.
+ * @param lambda Rate.
  * 
  * @return Variate.
  */
 template<class R, class T, class = std::enable_if_t<
     is_numeric_v<R> && is_numeric_v<T>,int>>
-explicit_t<R,T> simulate_poisson(const T& λ);
+explicit_t<R,T> simulate_poisson(const T& lambda);
 
 /**
  * Simulate a Poisson distribution.
@@ -348,13 +350,13 @@ explicit_t<R,T> simulate_poisson(const T& λ);
  * 
  * @tparam T Numeric type.
  * 
- * @param λ Rate.
+ * @param lambda Rate.
  * 
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-explicit_t<int,T> simulate_poisson(const T& λ) {
-  return simulate_poisson<int,T,int>(λ);
+explicit_t<int,T> simulate_poisson(const T& lambda) {
+  return simulate_poisson<int,T,int>(lambda);
 }
 
 /**
@@ -365,13 +367,13 @@ explicit_t<int,T> simulate_poisson(const T& λ) {
  * @tparam R Floating point type.
  * @tparam T Numeric type.
  * 
- * @param ν Degrees of freedom.
+ * @param nu Degrees of freedom.
  * 
  * @return Variate.
  */
 template<class R, class T, class = std::enable_if_t<
     is_floating_point_v<R> && is_numeric_v<T>,int>>
-explicit_t<R,T> simulate_student_t(const T& ν);
+explicit_t<R,T> simulate_student_t(const T& nu);
 
 /**
  * Simulate a Student's $t$-distribution.
@@ -380,13 +382,13 @@ explicit_t<R,T> simulate_student_t(const T& ν);
  * 
  * @tparam T Numeric type.
  * 
- * @param ν Degrees of freedom.
+ * @param nu Degrees of freedom.
  * 
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> simulate_student_t(const T& ν) {
-  return simulate_student_t<value_t<default_t<T>>,T,int>(ν);
+default_t<T> simulate_student_t(const T& nu) {
+  return simulate_student_t<value_t<default_t<T>>,T,int>(nu);
 }
 
 /**
@@ -475,14 +477,14 @@ explicit_t<int,implicit_t<T,U>> simulate_uniform_int(const T& l, const U& u) {
  * @tparam U Numeric type.
  * 
  * @param k Shape.
- * @param λ Scale.
+ * @param lambda Scale.
  * 
  * @return Variate.
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& λ);
+explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& lambda);
 
 /**
  * Simulate a Weibull distribution.
@@ -493,14 +495,15 @@ explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& λ);
  * @tparam U Numeric type.
  * 
  * @param k Shape.
- * @param λ Scale.
+ * @param lambda Scale.
  * 
  * @return Variate.
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_weibull(const T& k, const U& λ) {
-  return simulate_weibull<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k, λ);
+default_t<implicit_t<T,U>> simulate_weibull(const T& k, const U& lambda) {
+  return simulate_weibull<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k,
+      lambda);
 }
 
 /**
@@ -539,13 +542,13 @@ Array<R,2> standard_gaussian(const int m, const int n);
  * 
  * @tparam R Floating point type.
  * 
- * @param ν Degrees of freedom.
+ * @param nu Degrees of freedom.
  * @param n Number of rows and columns.
  * 
  * @return Variates.
  */
 template<class R, class T, class = std::enable_if_t<is_floating_point_v<R> &&
     is_scalar_v<T>,int>>
-Array<R,2> standard_wishart(const T& ν, const int n);
+Array<R,2> standard_wishart(const T& nu, const int n);
 
 }

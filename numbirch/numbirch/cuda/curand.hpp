@@ -131,20 +131,20 @@ NUMBIRCH_DEVICE inline double curand_gamma_double(curandState_t* state,
 
 template<class T>
 NUMBIRCH_DEVICE int curand_binomial_generic(curandState_t* state, const int n,
-    const T ρ) {
+    const T rho) {
   /* based on the implementation of std::binomial_distribution in libc++, part
    * of the LLVM project, which cites Kemp, C.D. (1986). A modal method for
    * generating binomial variables. Communication in Statistics- Theory and
    * Methods. 15(3), 805-813 */
-  if (n == 0 || ρ == 0) {
+  if (n == 0 || rho == 0) {
     return 0;
-  } else if (ρ == 1) {
+  } else if (rho == 1) {
     return n;
   } else {
-    int ru = int((n + 1)*ρ);
+    int ru = int((n + 1)*rho);
     T pu = std::exp(std::lgamma(n + T(1)) - std::lgamma(ru + T(1)) -
-        std::lgamma(n - ru + T(1)) + ru*std::log(ρ) +
-        (n - ru)*std::log(T(1) - ρ));
+        std::lgamma(n - ru + T(1)) + ru*std::log(rho) +
+        (n - ru)*std::log(T(1) - rho));
     T u;
     if (std::is_same_v<T,double>) {
       u = curand_uniform_double(state) - pu;
@@ -156,7 +156,7 @@ NUMBIRCH_DEVICE int curand_binomial_generic(curandState_t* state, const int n,
     } else {
       int rd = ru;
       T pd = pu;
-      T r = ρ/(1 - ρ);
+      T r = rho/(1 - rho);
       while (true) {
         bool b = true;
         if (rd >= 1) {

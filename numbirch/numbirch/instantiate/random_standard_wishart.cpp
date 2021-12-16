@@ -31,7 +31,7 @@
     STANDARD_WISHART_SIG(f, R, ARRAY(int, 0)) \
     STANDARD_WISHART_SIG(f, R, ARRAY(bool, 0))
 #define STANDARD_WISHART_SIG(f, R, T) \
-    template Array<R,2> f<R,T>(const T& ν, const int n);
+    template Array<R,2> f<R,T>(const T& nu, const int n);
 
 namespace numbirch {
 STANDARD_WISHART(standard_wishart)
