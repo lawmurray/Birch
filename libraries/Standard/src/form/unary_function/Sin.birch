@@ -1,4 +1,9 @@
 struct Sin<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(sin)
   }}

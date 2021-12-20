@@ -723,6 +723,7 @@ optional_class_statements
 
 struct_statement
     : member_variable_declaration
+    | member_phantom_declaration
     | hpp
     ;
     

@@ -1,5 +1,10 @@
 struct GreaterOrEqual<Left,Right>(l:Left, r:Right) <
     Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(operator>=)
   }}
