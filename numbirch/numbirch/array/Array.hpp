@@ -70,10 +70,6 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    if (!is_arithmetic_v<T>) {
-      dicer();
-      initialize();
-    }
   }
 
   /**
@@ -117,10 +113,6 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    if (!is_arithmetic_v<T>) {
-      dicer();
-      initialize();
-    }
   }
 
   /**
@@ -238,12 +230,11 @@ public:
   Array(const Array& o) :
       buf(nullptr),
       ctl(nullptr),
-      shp(),
+      shp(o.shp),
       isView(false),
       isDiced(false) {
-    shp = o.shp;
-    if (!o.isView && is_arithmetic_v<T>) {
-      ArrayControl* ctl;
+    if (!o.isView) {
+      ArrayControl* ctl = nullptr;
       std::tie(ctl, buf, isDiced) = o.share();
       this->ctl.store(ctl);
     } else {
@@ -260,10 +251,9 @@ public:
   Array(const Array<U,D>& o) :
       buf(nullptr),
       ctl(nullptr),
-      shp(),
+      shp(o.shp),
       isView(false),
       isDiced(false) {
-    shp = o.shp;
     compact();
     allocate();
     uninitialized_copy(o);
@@ -275,13 +265,12 @@ public:
   Array(Array&& o) :
       buf(nullptr),
       ctl(nullptr),
-      shp(),
+      shp(o.shp),
       isView(false),
       isDiced(false) {
     if (!o.isView) {
       swap(o);
     } else {
-      shp = o.shp;
       compact();
       allocate();
       uninitialized_copy(o);
@@ -346,24 +335,6 @@ public:
   template<class U, int E = D, std::enable_if_t<E == 0 &&
       is_scalar_v<U> && promotes_to_v<T,U>,int> = 0>
   operator U() const {
-    return value();
-  }
-
-  /**
-   * Member access (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0 &&
-      !is_arithmetic_v<T>,int> = 0>
-  T& operator->() {
-    return value();
-  }
-
-  /**
-   * Member access (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0 &&
-      !is_arithmetic_v<T>,int> = 0>
-  const T& operator->() const {
     return value();
   }
 
@@ -457,7 +428,7 @@ public:
    * it returns true.
    */
   bool has_value() const {
-    return !is_arithmetic_v<T> || isDiced;
+    return isDiced;
   }
 
   /**
@@ -705,15 +676,10 @@ public:
       swap(tmp);
     } else {
       own();
-      if (is_arithmetic_v<T>) {
-        slicer();
-        buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
-        dicer();
-      } else {
-        buf = (T*)std::realloc((void*)buf, s.volume()*sizeof(T));
-      }
-      std::memmove((void*)(buf + i + 1), (void*)(buf + i),
-          (n - i)*sizeof(T));
+      slicer();
+      buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
+      dicer();
+      std::memmove((void*)(buf + i + 1), (void*)(buf + i), (n - i)*sizeof(T));
       new (buf + i) T(x);
       shp = s;
     }
@@ -742,12 +708,8 @@ public:
       std::destroy(buf + i, buf + i + len);
       std::memmove((void*)(buf + i), (void*)(buf + i + len),
           (n - len - i)*sizeof(T));
-      if (is_arithmetic_v<T>) {
-        slicer();
-        buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
-      } else {
-        buf = (T*)std::realloc((void*)buf, s.volume()*sizeof(T));
-      }
+      slicer();
+      buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
     }
     shp = s;
   }
@@ -796,23 +758,9 @@ private:
   void assign(const Array& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      if (is_arithmetic_v<T>) {
-        slicer();
-        memcpy(data(), shp.stride()*sizeof(T), o.data(),
-            o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
-            shp.height());
-      } else {
-        auto n = std::min(size(), o.size());
-        auto begin1 = o.beginInternal();
-        auto end1 = begin1.operator+(n);
-        auto begin2 = beginInternal();
-        auto end2 = begin2.operator+(n);
-        if (begin1 <= begin2 && begin2 < end1) {
-          std::copy_backward(begin1, end1, end2);
-        } else {
-          std::copy(begin1, end1, begin2);
-        }
-      }
+      slicer();
+      memcpy(data(), shp.stride()*sizeof(T), o.data(),
+          o.shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
     } else {
       Array tmp(o);
       swap(tmp);
@@ -823,11 +771,11 @@ private:
    * Swap with another array.
    */
   void swap(Array& o) {
-    assert(!isView);
-    assert(!o.isView);
-    std::swap(shp, o.shp);
     std::swap(buf, o.buf);
     std::swap(ctl, o.ctl);
+    std::swap(shp, o.shp);
+    assert(!isView);
+    assert(!o.isView);
     std::swap(isDiced, o.isDiced);
   }
 
@@ -847,13 +795,8 @@ private:
     assert(!buf);
     assert(!ctl.load());
     assert(!isDiced);
-
-    if (is_arithmetic_v<T>) {
-      slicer();
-      buf = (T*)malloc(volume()*sizeof(T));
-    } else {
-      buf = (T*)std::malloc(volume()*sizeof(T));
-    }
+    slicer();
+    buf = (T*)malloc(volume()*sizeof(T));
   }
 
   /**
@@ -863,12 +806,7 @@ private:
     if (!isView) {
       auto ctl = this->ctl.exchange(nullptr);
       if (!ctl || ctl->decShared() == 0) {
-        if (is_arithmetic_v<T>) {
-          free((void*)buf);
-        } else {
-          std::destroy(beginInternal(), endInternal());
-          std::free((void*)buf);
-        }
+        free((void*)buf);
         delete ctl;
       }
     }
@@ -920,27 +858,20 @@ private:
       ctl = this->ctl.load();  // another thread may have updated in meantime
       if (!ctl) {
         // last reference optimization already applied by another thread
-      } else if (ctl->numShared() == 1) {
+      } else if (ctl->decShared() == 0) {
         /* apply last reference optimization */
         delete ctl;
         this->ctl.store(nullptr);
       } else {
-        T* buf = nullptr;
-        if (is_arithmetic_v<T>) {
-          slicer();
-          buf = (T*)malloc(volume()*sizeof(T));
-          memcpy(buf, shp.stride()*sizeof(T), this->buf,
-              shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
-        } else {
-          buf = (T*)std::malloc(volume()*sizeof(T));
-          std::uninitialized_copy(beginInternal(), endInternal(), buf);
-        }
+        slicer();
+        T* buf = (T*)malloc(volume()*sizeof(T));
+        memcpy(buf, shp.stride()*sizeof(T), this->buf,
+            shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
 
         /* memory order is important here: the new control block should not
          * become visible to other threads until after the buffer is set, if
          * the use of the control block as a lock is to be successful */
         this->buf = buf;
-        this->isDiced = false;
         this->ctl.store(nullptr);
       }
       lock.unset();
@@ -969,9 +900,7 @@ private:
    */
   void dicer() {
     if (!isDiced) {
-      if (is_arithmetic_v<T>) {
-        wait();
-      }
+      wait();
       isDiced = true;
     }
   }
@@ -1014,7 +943,7 @@ private:
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible_v<U,T>,int> = 0>
   void uninitialized_copy(const Array<U,E>& o) {
-    if (is_arithmetic_v<T> && std::is_same_v<T,U>) {
+    if (std::is_same_v<T,U>) {
       slicer();
       memcpy(data(), shp.stride()*sizeof(T), o.data(),
           o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
