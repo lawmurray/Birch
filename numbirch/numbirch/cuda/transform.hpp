@@ -27,10 +27,10 @@ void prefetch(const Array<T,D>& x) {
    * prefetching the whole array may not make sense, nor prefetching small
    * sections with multiple calls; to keep it simple, only the full array is
    * prefetched, and only if the view contains at least half the elements */
-  if (x.size() >= x.volume()/2) {
-    // CUDA_CHECK(cudaMemPrefetchAsync(x.data(), x.volume()*sizeof(T), device,
-    //     stream));
-  }
+  // if (x.data() && x.size() >= x.volume()/2) {
+  //   CUDA_CHECK(cudaMemPrefetchAsync(x.data(), x.volume()*sizeof(T), device,
+  //       stream));
+  // }
 }
 
 /*
