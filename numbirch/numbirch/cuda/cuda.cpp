@@ -30,6 +30,15 @@ void cuda_init() {
 
     CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+
+    /* use blocking sync when synchronizing streams, i.e. when wait() called;
+     * calls to wait() ought to be infrequent for good performance anyway, and
+     * a thread spinning rather than blocking can prevent another thread from
+     * resuming to schedule kernels that can execute concurrently; on some
+     * examples shows ~10% performance improvement */
+    cudaStreamAttrValue val; val.syncPolicy =
+    cudaSyncPolicyBlockingSync; CUDA_CHECK(cudaStreamSetAttribute(stream,
+    cudaStreamAttributeSynchronizationPolicy, &val));
   }
 }
 
