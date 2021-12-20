@@ -31,14 +31,15 @@ class LangevinKernel < Kernel {
       let σ2 <- 2.0*δ;
 
       /* moves */
+      let m <- length(x);
       let naccepts <- 0;
       let accept <- false;
       for n in 1..nmoves {
         /* proposed state */
-        let x' <- transform(μ,
-            \(μ:Real) -> {
-              return simulate_gaussian(μ, σ2);
-            });
+        cpp{{
+        auto z = numbirch::standard_gaussian<Real>(m);
+        }}
+        let x' <- μ + sqrt(σ2)*z;
         let p' <- π.move(x');
         let d' <- π.grad();
         let μ' <- x' + d'*δ;
