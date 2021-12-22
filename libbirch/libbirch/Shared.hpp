@@ -414,7 +414,18 @@ private:
   }
 
   /**
-   * Pack raw pointer and flags.
+   * Unpack raw pointer and flags, while also setting the lock flag.
+   */
+  std::tuple<T*,bool> lock() {
+    auto p = packed.exchangeOr(LOCK);
+    while (p & LOCK) {
+      p = packed.exchangeOr(LOCK);
+    }
+    return unpack(p);
+  }
+
+  /**
+   * Pack raw pointer and bridge flag. Also releases the lock flag, if set.
    */
   void pack(T* ptr, const bool bridge) {
     packed.store((int64_t(ptr) & POINTER) | (bridge ? BRIDGE : 0));
@@ -449,17 +460,21 @@ T* libbirch::Shared<T>::get() {
   auto [ptr, bridge] = unpack();
   auto o = ptr;
   if (bridge) {
-    if (!o->isUniqueHead_()) {  // last reference optimization
-      /* copy biconnected component */
-      set_copy();
-      o = BiconnectedCopier(o).visitObject(o);
-      unset_copy();
+    std::tie(ptr, bridge) = lock();  // acquire lock and unpack again
+    o = ptr;
+    if (bridge) {  // if still a bridge, i.e. another thread hasn't copied yet
+      if (!o->isUniqueHead_()) {  // last reference optimization
+        /* copy biconnected component */
+        set_copy();
+        o = BiconnectedCopier(o).visitObject(o);
+        unset_copy();
 
-      /* replace pointer */
-      o->incShared_();
-      ptr->decSharedBridge_();
+        /* replace pointer */
+        o->incShared_();
+        ptr->decSharedBridge_();
+      }
     }
-    pack(o, false);  // no longer a bridge
+    pack(o, false);  // no longer a bridge, also releases lock
   }
   return o;
 }
