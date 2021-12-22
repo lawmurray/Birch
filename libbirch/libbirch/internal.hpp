@@ -44,8 +44,6 @@ class Destroyer;
  * otherwise exist during the scan operation, when coloring an object white
  * (eligible for collection) then later recoloring it black (reachable); the
  * sequencing of this coloring can become problematic with multiple threads.
- * 
- * Acyclic objects are handled via separate mechanism, but map to *green*.
  */
 enum Flag : int8_t {
   BUFFERED = (1 << 0),

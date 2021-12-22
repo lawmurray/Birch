@@ -76,7 +76,7 @@ public:
 
 template<class T>
 void libbirch::BiconnectedCollector::visit(Shared<T>& o) {
-  if (!o.a && !o.b) {
+  if (!o.b) {
     T* o1 = o.load();
     if (o1) {
       visitObject(o1);

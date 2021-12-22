@@ -101,17 +101,3 @@ void libbirch::Any::decSharedBridge_() {
     }
   }
 }
-
-void libbirch::Any::decSharedAcyclic_() {
-  assert(numShared_() > 0);
-  assert(isAcyclic_());
-
-  auto r = --r_;
-  if (r == 0) {
-    destroy_();
-
-    /* acyclic objects are so for life, and are never registered as possible
-     * roots; can deallocate immediately */
-    deallocate_();
-  }
-}

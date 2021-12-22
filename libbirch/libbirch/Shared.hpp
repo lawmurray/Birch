@@ -72,7 +72,6 @@ public:
    */
   Shared(T* ptr, const bool b = false) :
       ptr(pack(ptr)),
-      a(ptr && ptr->isAcyclic_()),
       b(b) {
     if (ptr) {
       ptr->incShared_();
@@ -82,7 +81,7 @@ public:
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) : ptr(o.ptr), a(o.a), b(o.b) {
+  Shared(const Shared& o) : ptr(o.ptr), b(o.b) {
     if (ptr) {
       if (biconnected_copy()) {
         if (b) {
@@ -106,7 +105,6 @@ public:
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
   Shared(const Shared<U>& o) :
       ptr(pack(o.get())),
-      a(o.a),
       b(false) {
     if (ptr) {
       unpack(ptr)->incShared_();
@@ -116,9 +114,8 @@ public:
   /**
    * Move constructor.
    */
-  Shared(Shared&& o) : ptr(o.ptr), a(o.a), b(o.b) {
+  Shared(Shared&& o) : ptr(o.ptr), b(o.b) {
     o.store(nullptr);
-    o.a = false;
     o.b = false;
   }
 
@@ -126,9 +123,8 @@ public:
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) : ptr(o.ptr), a(o.a), b(o.b) {
+  Shared(Shared<U>&& o) : ptr(o.ptr), b(o.b) {
     o.store(nullptr);
-    o.a = false;
     o.b = false;
   }
 
@@ -254,7 +250,6 @@ public:
   template<class U>
   void replace(const Shared<U>& o) {
     auto ptr = unpack(this->ptr);
-    auto a = this->a;
     auto b = this->b;
 
     /* when duplicating a pointer, may need to trigger a biconnected copy */
@@ -264,14 +259,11 @@ public:
     }
 
     this->ptr = pack(ptr1);
-    this->a = o.a;
     this->b = false;  // if it was a bridge, now copied
 
     if (ptr) {
       if (ptr == ptr1) {
         ptr->decSharedReachable_();
-      } else if (a) {
-        ptr->decSharedAcyclic_();
       } else if (b) {
         ptr->decSharedBridge_();
       } else {
@@ -286,18 +278,14 @@ public:
   template<class U>
   void replace(Shared<U>&& o) {
     auto ptr = unpack(this->ptr);
-    auto a = this->a;
     auto b = this->b;
 
     this->ptr = o.ptr;
-    this->a = o.a;
     this->b = o.b;
 
     if (ptr) {
       if (ptr == unpack(this->ptr)) {
         ptr->decSharedReachable_();
-      } else if (a) {
-        ptr->decSharedAcyclic_();
       } else if (b) {
         ptr->decSharedBridge_();
       } else {
@@ -306,7 +294,6 @@ public:
     }
 
     o.ptr = 0;
-    o.a = false;
     o.b = false;
   }
 
@@ -315,17 +302,13 @@ public:
    */
   void release() {
     auto ptr = unpack(this->ptr);
-    auto a = this->a;
     auto b = this->b;
 
     this->ptr = 0;
-    this->a = false;
     this->b = false;
 
     if (ptr) {
-      if (a) {
-        ptr->decSharedAcyclic_();
-      } else if (b) {
+      if (b) {
         ptr->decSharedBridge_();
       } else {
         ptr->decShared_();
@@ -340,17 +323,13 @@ public:
    */
   void releaseBiconnected() {
     auto ptr = unpack(this->ptr);
-    auto a = this->a;
     auto b = this->b;
 
     this->ptr = 0;
-    this->a = false;
     this->b = false;
 
     if (ptr) {
-      if (a) {
-        ptr->decSharedAcyclic_();
-      } else if (b) {
+      if (b) {
         ptr->decSharedBridge_();
       } else {
         ptr->decSharedBiconnected_();
@@ -443,12 +422,7 @@ private:
   /**
    * Raw pointer.
    */
-  int64_t ptr:(8*sizeof(int64_t) - 2);
-
-  /**
-   * Is this an acyclic edge?
-   */
-  bool a:1;
+  int64_t ptr:63;
 
   /**
    * Is this a bridge edge?

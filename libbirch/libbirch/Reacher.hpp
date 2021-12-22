@@ -78,7 +78,7 @@ public:
 
 template<class T>
 void libbirch::Reacher::visit(Shared<T>& o) {
-  if (!o.a && !o.b) {
+  if (!o.b) {
     auto o1 = o.load();
     if (o1) {
       o1->incShared_();

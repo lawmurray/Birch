@@ -78,7 +78,7 @@ public:
 
 template<class T>
 void libbirch::Collector::visit(Shared<T>& o) {
-  if (!o.a && !o.b) {
+  if (!o.b) {
     T* o1 = o.load();
     if (o1) {
       o.store(nullptr);

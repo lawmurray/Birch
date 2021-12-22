@@ -127,13 +127,6 @@ public:
   /**
    * @internal
    * 
-   * Decrement the shared count for an acyclic edge.
-   */
-  void decSharedAcyclic_();
-
-  /**
-   * @internal
-   * 
    * Is there only one reference to this object?
    */
   bool isUnique_() const;
@@ -145,13 +138,6 @@ public:
    * the head node of a biconnected component?
    */
   bool isUniqueHead_() const;
-
-  /**
-   * @internal
-   * 
-   * Is this object of an acyclic class?
-   */
-  virtual bool isAcyclic_() const;
 
   /**
    * @internal
@@ -313,10 +299,6 @@ inline bool libbirch::Any::isUnique_() const {
 
 inline bool libbirch::Any::isUniqueHead_() const {
   return numShared_() == a_;
-}
-
-inline bool libbirch::Any::isAcyclic_() const {
-  return false;
 }
 
 inline bool libbirch::Any::isPossibleRoot_() const {
