@@ -14,7 +14,7 @@ auto make_object(Args&&... args) {
 }
 
 using no_base = void;
-static int no_members = 0;
+[[maybe_unused]] static int no_members = 0;
 }
 
 /**
