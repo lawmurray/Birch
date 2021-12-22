@@ -88,8 +88,9 @@ public:
 template<class T>
 std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
     Shared<T>& o) {
-  if (!o.b) {
-    return visitObject(i, j, o.load());
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge && ptr) {
+    return visitObject(i, j, ptr);
   } else {
     return std::make_tuple(i, i, 0);
   }

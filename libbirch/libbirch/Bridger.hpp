@@ -95,13 +95,13 @@ public:
 template<class T>
 std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
     Shared<T>& o) {
-  if (!o.b) {
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge) {
     int l, h, m, n;
-    T* o1 = o.load();
-    std::tie(l, h, m, n) = visitObject(j, k, o1);
+    std::tie(l, h, m, n) = visitObject(j, k, ptr);
     if (l == j && h < j + m) {
       /* is a bridge */
-      o.b = true;
+      o.setBridge();
       n = 0;  // base case for post-order rank in biconnected component
     }
     return std::make_tuple(l, h, m, n);

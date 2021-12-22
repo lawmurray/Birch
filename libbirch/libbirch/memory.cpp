@@ -23,9 +23,9 @@ static thread_local std::vector<libbirch::Any*> possible_roots;
 static thread_local std::vector<libbirch::Any*> unreachables;
 
 /**
- * Biconnected flag for each thread.
+ * Copy flag for each thread.
  */
-static thread_local bool biconnected_flag = false;
+static thread_local bool copy_flag = false;
 
 void libbirch::register_possible_root(Any* o) {
   possible_roots.push_back(o);
@@ -167,11 +167,16 @@ void libbirch::collect() {
   assert(unreachables.empty());
 }
 
-bool libbirch::biconnected_copy(const bool toggle) {
-  if (toggle) {
-    biconnected_flag = !biconnected_flag;
-  }
-  return biconnected_flag;
+bool libbirch::in_copy() {
+  return copy_flag;
+}
+
+void libbirch::set_copy() {
+  copy_flag = true;
+}
+
+void libbirch::unset_copy() {
+  copy_flag = false;
 }
 
 void libbirch::biconnected_collect(Any* o) {

@@ -78,12 +78,10 @@ public:
 
 template<class T>
 void libbirch::Marker::visit(Shared<T>& o) {
-  if (!o.b) {
-    T* o1 = o.load();
-    if (o1) {
-      visitObject(o1);
-      o1->decSharedReachable_();
-    }
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge && ptr) {
+    visitObject(ptr);
+    ptr->decSharedReachable_();
   }
 }
 

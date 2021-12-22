@@ -68,64 +68,70 @@ public:
    * Constructor.
    * 
    * @param ptr Raw pointer.
-   * @param b Is this a bridge?
+   * @param bridge Is this a bridge?
    */
-  Shared(T* ptr, const bool b = false) :
-      ptr(pack(ptr)),
-      b(b) {
+  Shared(T* ptr, const bool bridge = false) {
     if (ptr) {
       ptr->incShared_();
     }
+    pack(ptr, bridge);
   }
 
   /**
    * Copy constructor.
    */
-  Shared(const Shared& o) : ptr(o.ptr), b(o.b) {
+  Shared(const Shared& o) {
+    auto [ptr, bridge] = o.unpack();
     if (ptr) {
-      if (biconnected_copy()) {
-        if (b) {
-          unpack(ptr)->incShared_();
+      if (in_copy()) {
+        if (bridge) {
+          /* don't copy next biconnected component */
+          ptr->incShared_();
         } else {
           // deferred until Copier or BiconnectedCopier visits and updates
         }
       } else {
-        if (b) {
-          store(o.get());  // copy next biconnected component
-          b = false;
+        if (bridge) {
+          /* copy next biconnected component */
+          ptr = o.get();
+          bridge = false;
         }
-        unpack(ptr)->incShared_();
+        ptr->incShared_();
       }
     }
+    pack(ptr, bridge);
   }
 
   /**
    * Generic copy constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(const Shared<U>& o) :
-      ptr(pack(o.get())),
-      b(false) {
+  Shared(const Shared<U>& o) {
+    auto [ptr, bridge] = o.unpack();
     if (ptr) {
-      unpack(ptr)->incShared_();
+      if (bridge) {
+        /* copy next biconnected component */
+        ptr = o.get();
+        bridge = false;
+      }
+      ptr->incShared_();
     }
+    pack(ptr, bridge);
   }
 
   /**
    * Move constructor.
    */
-  Shared(Shared&& o) : ptr(o.ptr), b(o.b) {
-    o.store(nullptr);
-    o.b = false;
+  Shared(Shared&& o) {
+    packed.store(o.packed.exchange(0));
   }
 
   /**
    * Generic move constructor.
    */
   template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) : ptr(o.ptr), b(o.b) {
-    o.store(nullptr);
-    o.b = false;
+  Shared(Shared<U>&& o) {
+    packed.store(o.packed.exchange(0));
   }
 
   /**
@@ -194,7 +200,7 @@ public:
    * conversion operators in the referent type.
    */
   bool query() const {
-    return ptr != 0;
+    return load() != nullptr;
   }
 
   /**
@@ -213,7 +219,7 @@ public:
    * Get the raw pointer without copy-on-use.
    */
   T* load() const {
-    return unpack(ptr);
+    return packed.load() & POINTER;
   }
 
   /**
@@ -249,25 +255,22 @@ public:
    */
   template<class U>
   void replace(const Shared<U>& o) {
-    auto ptr = unpack(this->ptr);
-    auto b = this->b;
+    auto [old, bridge] = unpack();
 
     /* when duplicating a pointer, may need to trigger a biconnected copy */
-    auto ptr1 = o.get();
-    if (ptr1) {
-      ptr1->incShared_();
-    }
-
-    this->ptr = pack(ptr1);
-    this->b = false;  // if it was a bridge, now copied
-
+    auto ptr = o.get();
     if (ptr) {
-      if (ptr == ptr1) {
-        ptr->decSharedReachable_();
-      } else if (b) {
-        ptr->decSharedBridge_();
+      ptr->incShared_();
+    }
+    pack(ptr, false);  // if it was a bridge, now copied
+
+    if (old) {
+      if (old == ptr) {
+        old->decSharedReachable_();
+      } else if (bridge) {
+        old->decSharedBridge_();
       } else {
-        ptr->decShared_();
+        old->decShared_();
       }
     }
   }
@@ -277,41 +280,30 @@ public:
    */
   template<class U>
   void replace(Shared<U>&& o) {
-    auto ptr = unpack(this->ptr);
-    auto b = this->b;
-
-    this->ptr = o.ptr;
-    this->b = o.b;
-
-    if (ptr) {
-      if (ptr == unpack(this->ptr)) {
-        ptr->decSharedReachable_();
-      } else if (b) {
-        ptr->decSharedBridge_();
+    auto packed1 = o.packed.exchange(0);
+    auto ptr = (U*)(packed1 & POINTER);
+    auto [old, bridge] = unpack(packed.exchange(packed1));
+    if (old) {
+      if (old == ptr) {
+        old->decSharedReachable_();
+      } else if (bridge) {
+        old->decSharedBridge_();
       } else {
-        ptr->decShared_();
+        old->decShared_();
       }
     }
-
-    o.ptr = 0;
-    o.b = false;
   }
 
   /**
    * Release the referent.
    */
   void release() {
-    auto ptr = unpack(this->ptr);
-    auto b = this->b;
-
-    this->ptr = 0;
-    this->b = false;
-
-    if (ptr) {
-      if (b) {
-        ptr->decSharedBridge_();
+    auto [old, bridge] = unpack(packed.exchange(0));
+    if (old) {
+      if (bridge) {
+        old->decSharedBridge_();
       } else {
-        ptr->decShared_();
+        old->decShared_();
       }
     }
   }
@@ -322,17 +314,12 @@ public:
    * Release the referent, during collection of a biconnected component.
    */
   void releaseBiconnected() {
-    auto ptr = unpack(this->ptr);
-    auto b = this->b;
-
-    this->ptr = 0;
-    this->b = false;
-
-    if (ptr) {
-      if (b) {
-        ptr->decSharedBridge_();
+    auto [old, bridge] = unpack(packed.exchange(0));
+    if (old) {
+      if (bridge) {
+        old->decSharedBridge_();
       } else {
-        ptr->decSharedBiconnected_();
+        old->decSharedBiconnected_();
       }
     }
   }
@@ -402,32 +389,43 @@ private:
    * Store the raw pointer without reference count updates.
    */
   void store(T* ptr) {
-    this->ptr = pack(ptr);
+    pack(ptr, false);
   }
 
   /**
-   * Unpack a raw pointer after loading.
+   * Set the bridge flag.
    */
-  static T* unpack(int64_t ptr) {
-    return reinterpret_cast<T*>(ptr);
+  void setBridge() {
+    packed.maskOr(BRIDGE);
   }
 
   /**
-   * Pack a raw pointer before storing.
+   * Unpack raw pointer and flags.
    */
-  static int64_t pack(T* ptr) {
-    return reinterpret_cast<int64_t>(ptr);
+  std::tuple<T*,bool> unpack(const int64_t p) const {
+    return std::make_tuple((T*)(p & POINTER), bool(p & BRIDGE));
   }
 
   /**
-   * Raw pointer.
+   * Unpack raw pointer and flags.
    */
-  int64_t ptr:63;
+  std::tuple<T*,bool> unpack() const {
+    return unpack(packed.load());
+  }
 
   /**
-   * Is this a bridge edge?
+   * Pack raw pointer and flags.
    */
-  bool b:1;
+  void pack(T* ptr, const bool bridge) {
+    packed.store((int64_t(ptr) & POINTER) | (bridge ? BRIDGE : 0));
+  }
+
+  /**
+   * Packed raw pointer and flags.
+   * 
+   * @see SharedFlag
+   */
+  Atomic<int64_t> packed;
 };
 
 template<class T>
@@ -448,24 +446,20 @@ struct unwrap_pointer<Shared<T>> {
 
 template<class T>
 T* libbirch::Shared<T>::get() {
-  T* o = unpack(ptr);
-  if (b) {
+  auto [ptr, bridge] = unpack();
+  auto o = ptr;
+  if (bridge) {
     if (!o->isUniqueHead_()) {  // last reference optimization
       /* copy biconnected component */
-      assert(!biconnected_copy());
-      biconnected_copy(true);
-      assert(biconnected_copy());
+      set_copy();
       o = BiconnectedCopier(o).visitObject(o);
-      biconnected_copy(true);
-      assert(!biconnected_copy());
+      unset_copy();
 
       /* replace pointer */
       o->incShared_();
-      auto old = unpack(ptr);
-      ptr = pack(o);
-      old->decSharedBridge_();
+      ptr->decSharedBridge_();
     }
-    b = false;  // no longer a bridge
+    pack(o, false);  // no longer a bridge
   }
   return o;
 }
@@ -478,16 +472,13 @@ void libbirch::Shared<T>::bridge() {
 
 template<class T>
 libbirch::Shared<T> libbirch::Shared<T>::copy() {
-  T* o = unpack(ptr);
-  if (!b) {
-    /* the copy is *not* of a biconnected component here, use the
-     * general-purpose Copier for this */
-    assert(!biconnected_copy());
-    biconnected_copy(true);
-    assert(biconnected_copy());
-    o = Copier().visitObject(o);
-    biconnected_copy(true);
-    assert(!biconnected_copy());
+  auto [ptr, bridge] = unpack();
+  if (!bridge) {
+    /* the copy is not necessarily of a biconnected component here, use the
+     * general-purpose Copier rather than special-purpose BiconnectedCopier */
+    set_copy();
+    ptr = Copier().visitObject(ptr);
+    unset_copy();
   }
-  return Shared<T>(o, b);
+  return Shared<T>(ptr, bridge);
 }

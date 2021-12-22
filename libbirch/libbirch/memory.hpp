@@ -49,12 +49,7 @@ void collect();
 /**
  * @internal
  * 
- * Query or toggle the biconnected-copy flag.
- * 
- * @param toggle If true, the flag is toggled (false to true, or true to
- * false).
- * 
- * @return New state of the flag.
+ * Is the copy flag set?
  * 
  * This is used to distinguish the two contexts in which the copy constructor
  * of Shared<T> is called: one where a copy of the next biconnected component
@@ -63,7 +58,21 @@ void collect();
  * 
  * The initial state of the flag is false.
  */
-bool biconnected_copy(const bool toggle = false);
+bool in_copy();
+
+/**
+ * @internal
+ * 
+ * Set the copy flag.
+ */
+void set_copy();
+
+/**
+ * @internal
+ * 
+ * Unset the copy flag.
+ */
+void unset_copy();
 
 /**
  * @internal

@@ -79,11 +79,9 @@ public:
 
 template<class T>
 void libbirch::Scanner::visit(Shared<T>& o) {
-  if (!o.b) {
-    T* o1 = o.load();
-    if (o1) {
-      visitObject(o1);
-    }
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge && ptr) {
+    visitObject(ptr);
   }
 }
 

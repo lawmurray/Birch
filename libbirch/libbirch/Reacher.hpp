@@ -78,12 +78,10 @@ public:
 
 template<class T>
 void libbirch::Reacher::visit(Shared<T>& o) {
-  if (!o.b) {
-    auto o1 = o.load();
-    if (o1) {
-      o1->incShared_();
-      visitObject(o1);
-    }
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge && ptr) {
+    ptr->incShared_();
+    visitObject(ptr);
   }
 }
 

@@ -55,4 +55,18 @@ enum Flag : int8_t {
   CLAIMED = (1 << 6)
 };
 
+/**
+ * Packed raw pointer and flag layout. Contents are:
+ * 
+ * - raw pointer in the first 62 bits (given alignment, the remaining two
+ *   bits of the raw pointer, if represented completely, would be zero anyway),
+ * - lock bit,
+ * - bridge bit.
+ */
+enum SharedFlag : int64_t {
+  BRIDGE = (1 << 0),
+  LOCK = (1 << 1),
+  POINTER = ~(BRIDGE|LOCK)
+};
+
 }

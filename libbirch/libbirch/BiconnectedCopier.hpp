@@ -91,10 +91,11 @@ private:
 
 template<class T>
 void libbirch::BiconnectedCopier::visit(Shared<T>& o) {
-  if (!o.b) {
-    T* o1 = visitObject(o.load());
-    o1->incShared_();
-    o.store(o1);
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge) {
+    ptr = visitObject(ptr);
+    ptr->incShared_();
+    o.store(ptr);
   }
 }
 
