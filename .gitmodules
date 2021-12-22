@@ -7,3 +7,6 @@
 [submodule "numbirch/docs/MathJax"]
 	path = numbirch/docs/MathJax
 	url = https://github.com/mathjax/MathJax
+[submodule "numbirch/jemalloc"]
+	path = numbirch/jemalloc
+	url = https://github.com/jemalloc/jemalloc.git
