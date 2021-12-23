@@ -251,6 +251,21 @@ final class Buffer {
   }
 
   /**
+   * Get the value.
+   *
+   * - Type: The desired type.
+   *
+   * - t: Step number.
+   *
+   * Returns: An optional with a value if the contents of the entry can be
+   * coerced to the desired type, otherwise with no value.
+   */
+  function get<Type>(t:Integer) -> Type? {
+    x:Type?;
+    return Type?(doGet(t, x));
+  }
+
+  /**
    * Get the value of an entry.
    *
    * - Type: The desired type.
@@ -264,6 +279,26 @@ final class Buffer {
     let buffer <- get(key);
     if buffer? {
       return buffer!.get<Type>();
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Get the value of an entry.
+   *
+   * - Type: The desired type.
+   *
+   * - key: Key of the entry.
+   * - t: Step number.
+   *
+   * Returns: An optional with a value if the contents of the entry can be
+   * coerced to the desired type, otherwise with no value.
+   */
+  function get<Type>(key:String, t:Integer) -> Type? {
+    let buffer <- get(key);
+    if buffer? {
+      return buffer!.get<Type>(t);
     } else {
       return nil;
     }
@@ -285,6 +320,22 @@ final class Buffer {
   }
 
   /**
+   * Get the value.
+   *
+   * - Type: The desired type.
+   *
+   * - t: Step number.
+   * - o: Existing object.
+   *
+   * This version is used when reading objects of class type, where instead of
+   * constructing a new object then calling its `read()` function, an existing
+   * object is provided, calling its `read()` function directly.
+   */
+  function get<Type>(t:Integer, o:Type) {
+    o.read(t, this);
+  }
+
+  /**
    * Get the value of an entry.
    *
    * - Type: The desired type.
@@ -300,6 +351,26 @@ final class Buffer {
     let buffer <- get(key);
     if buffer? {
       buffer!.get<Type>(o);
+    }
+  }
+
+  /**
+   * Get the value of an entry.
+   *
+   * - Type: The desired type.
+   *
+   * - key: Key of the entry.
+   * - t: Step number.
+   * - o: Existing object.
+   *
+   * This version is used when reading objects of class type, where instead of
+   * constructing a new object then calling its `read()` function, an existing
+   * object is provided, calling its `read()` function directly.
+   */
+  function get<Type>(key:String, t:Integer, o:Type) {
+    let buffer <- get(key);
+    if buffer? {
+      buffer!.get<Type>(t, o);
     }
   }
 
@@ -801,6 +872,66 @@ final class Buffer {
     }
   }
 
+  function doGet(t:Integer, x:Boolean?) -> Boolean? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:Integer?) -> Integer? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:Real?) -> Real? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:String?) -> String? {
+    return doGet(x);
+  }
+
+  function doGet<Type>(t:Integer, x:Type?) -> Type? {
+    return make<Type>(t, this);
+  }
+
+  function doGet(t:Integer, x:Boolean[_]?) -> Boolean[_]? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:Integer[_]?) -> Integer[_]? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:Real[_]?) -> Real[_]? {
+    return doGet(x);
+  }
+
+  function doGet<Type>(t:Integer, x:Type[_]?) -> Type[_]? {
+    return doGet(x);
+  }
+
+  function doGetVector<Type>(t:Integer) -> Type[_]? {
+    return doGetVector<Type>();
+  }
+
+  function doGet(t:Integer, x:Boolean[_,_]?) -> Boolean[_,_]? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:Integer[_,_]?) -> Integer[_,_]? {
+    return doGet(x);
+  }
+
+  function doGet(t:Integer, x:Real[_,_]?) -> Real[_,_]? {
+    return doGet(x);
+  }
+
+  function doGet<Type>(t:Integer, x:Type[_,_]?) -> Type[_,_]? {
+    return doGet(x);
+  }
+
+  function doGetMatrix<Type>(t:Integer) -> Type[_,_]? {
+    return doGetMatrix<Type>();
+  }
+
   function doSet(x:Boolean) {
     setNil();
     scalarBoolean <- x;
@@ -868,9 +999,61 @@ final class Buffer {
     matrixReal <- x;
   }
 
+  function doSet(t:Integer, x:Boolean) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Boolean!) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Integer) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Integer!) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Real) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Real!) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:String) {
+    doSet(x);
+  }
+
   function doSet(t:Integer, x:Object) {
     setNil();
     x.write(t, this);
+  }
+
+  function doSet(t:Integer, x:Boolean[_]) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Integer[_]) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Real[_]) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Boolean[_,_]) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Integer[_,_]) {
+    doSet(x);
+  }
+
+  function doSet(t:Integer, x:Real[_,_]) {
+    doSet(x);
   }
 
   function doPush(x:Boolean) {
@@ -1013,8 +1196,48 @@ final class Buffer {
     }
   }
 
+  function doPush(t:Integer, x:Boolean) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Boolean!) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Integer) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Integer!) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Real) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Real!) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:String) {
+    doPush(x);
+  }
+
   function doPush(t:Integer, x:Object) {
     push(make_buffer(t, x));
+  }
+
+  function doPush(t:Integer, x:Boolean[_]) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Integer[_]) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Real[_]) {
+    doPush(x);
   }
 }
 

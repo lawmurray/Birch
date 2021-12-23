@@ -226,4 +226,22 @@ final class Array<Type> {
       buffer.push(f.next());
     }
   }
+
+  override function read(t:Integer, buffer:Buffer) {
+    clear();
+    let iter <- buffer.walk();
+    while iter.hasNext() {
+      let x <- iter.next().get<Type>(t);
+      assert x?;
+      pushBack(x!);
+    }
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.setEmptyArray();
+    let f <- walk();
+    while f.hasNext() {
+      buffer.push(t, f.next());
+    }
+  }
 }

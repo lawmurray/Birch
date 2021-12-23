@@ -175,7 +175,15 @@ final class RaggedArray<Type> {
     values.read(buffer);
   }
 
+  override function read(t:Integer, buffer:Buffer) {
+    values.read(t, buffer);
+  }
+
   override function write(buffer:Buffer) {
     values.write(buffer);
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    values.write(t, buffer);
   }
 }
