@@ -15,15 +15,6 @@
 #endif
 
 /*
- * Disable retention of extents by jemalloc. See internal docs of NumBirch as
- * to why this is necessary here. In short the `birch` program must be linked
- * to libjemalloc.so to avoid TLS issues in it being loaded through dlopen(),
- * and the equivalent global variable in libnumbirch.so arrives too late to
- * have an effect on jemalloc behavior.
- */
-const char* malloc_conf = "retain:false";
-
-/*
  * Signal handler.
  */
 static void abort(int sig) {
