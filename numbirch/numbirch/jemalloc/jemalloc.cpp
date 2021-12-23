@@ -34,28 +34,12 @@ static thread_local unsigned host_arena = 0;
 static thread_local unsigned host_tcache = 0;
 static thread_local int host_flags = 0;
 
-/*
- * Disable retention of extents by jemalloc. This is critical as the custom
- * extent hooks for any particular backend will typically allocate physical
- * rather than virtual memory, which should not be retained.
- * 
- * This particular global variable likely has no effect, but is included here
- * for documentation. The `birch` driver program is linked to libjemalloc.so
- * in order to load it prior to any shared libraries for Birch packages, and
- * because of thread-local storage (TLS) issues when loading libjemalloc.so
- * via dlopen()---directly or indirectly (e.g. package shared library linked
- * to libnumbirch.so, linked to libjemalloc.so). Consequently, this global
- * variable is repeated in the `birch` driver program itself; that version
- * is the one that actually as an effect.
- */
-const char* malloc_conf = "retain:false";
-
 /**
  * Custom extent hooks structure.
  */
 static extent_hooks_t hooks = {
   numbirch::extent_alloc,
-  numbirch::extent_dalloc,
+  nullptr,
   numbirch::extent_destroy,
   nullptr,
   nullptr,
@@ -70,7 +54,7 @@ static extent_hooks_t hooks = {
  */
 static extent_hooks_t device_hooks = {
   numbirch::device_extent_alloc,
-  numbirch::device_extent_dalloc,
+  nullptr,
   numbirch::device_extent_destroy,
   nullptr,
   nullptr,
@@ -85,7 +69,7 @@ static extent_hooks_t device_hooks = {
  */
 static extent_hooks_t host_hooks = {
   numbirch::host_extent_alloc,
-  numbirch::host_extent_dalloc,
+  nullptr,
   numbirch::host_extent_destroy,
   nullptr,
   nullptr,
@@ -99,7 +83,8 @@ unsigned make_arena(extent_hooks_t* hooks) {
   [[maybe_unused]] int ret;
   unsigned arena = 0;
   size_t size = sizeof(arena);
-  ret = mallctl("arenas.create", &arena, &size, &hooks, sizeof(hooks));
+  ret = numbirch_mallctl("arenas.create", &arena, &size, &hooks,
+      sizeof(hooks));
   assert(ret == 0);
   return arena;
 }
@@ -108,7 +93,7 @@ unsigned make_tcache() {
   [[maybe_unused]] int ret;
   unsigned tcache = 0;
   size_t size = sizeof(tcache);
-  ret = mallctl("tcache.create", &tcache, &size, nullptr, 0);
+  ret = numbirch_mallctl("tcache.create", &tcache, &size, nullptr, 0);
   assert(ret == 0);
   return tcache;
 }
@@ -138,12 +123,12 @@ void numbirch::jemalloc_term() {
 }
 
 void* numbirch::malloc(const size_t size) {
-  return size == 0 ? nullptr : mallocx(size, shared_flags);
+  return size == 0 ? nullptr : numbirch_mallocx(size, shared_flags);
 }
 
 void* numbirch::realloc(void* ptr, const size_t size) {
   if (size > 0) {
-    return rallocx(ptr, size, shared_flags);
+    return numbirch_rallocx(ptr, size, shared_flags);
   } else {
     free(ptr);
     return nullptr;
@@ -156,30 +141,30 @@ void numbirch::free(void* ptr) {
   /// this one, lest it is reused by the associated thread before this thread
   /// has finished any asynchronous work
   if (ptr) {
-    dallocx(ptr, shared_flags);
+    numbirch_dallocx(ptr, shared_flags);
   }
 }
 
 void* numbirch::device_malloc(const size_t size) {
   assert(device_arena > 0);
-  return size == 0 ? nullptr : mallocx(size, device_flags);
+  return size == 0 ? nullptr : numbirch_mallocx(size, device_flags);
 }
 
 void numbirch::device_free(void* ptr) {
   assert(device_arena > 0);
   if (ptr) {
-    dallocx(ptr, device_flags);
+    numbirch_dallocx(ptr, device_flags);
   }
 }
 
 void* numbirch::host_malloc(const size_t size) {
   assert(host_arena > 0);
-  return size == 0 ? nullptr : mallocx(size, host_flags);
+  return size == 0 ? nullptr : numbirch_mallocx(size, host_flags);
 }
 
 void numbirch::host_free(void* ptr) {
   assert(host_arena > 0);
   if (ptr) {
-    dallocx(ptr, host_flags);
+    numbirch_dallocx(ptr, host_flags);
   }
 }

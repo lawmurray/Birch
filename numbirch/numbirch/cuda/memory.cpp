@@ -9,6 +9,13 @@
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
+/*
+ * Disable retention of extents by jemalloc. This is critical as the custom
+ * extent hooks for the CUDA backend allocate physical memory---which should
+ * not be retained---rather than virtual memory.
+ */
+const char* numbirch_malloc_conf = "retain:false";
+
 namespace numbirch {
 
 void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,

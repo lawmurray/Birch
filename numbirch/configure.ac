@@ -90,7 +90,7 @@ AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-p
 
 # Check for build specifics
 if $oneapi; then
-  AC_CHECK_LIB([jemalloc], [malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+  AC_CHECK_LIB([numbirch_jemalloc], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
 else
   AC_OPENMP
   AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
@@ -104,7 +104,7 @@ else
     AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([cublasLt], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([jemalloc], [malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([jemalloc_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   else
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_CHECK_HEADERS([Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
   fi

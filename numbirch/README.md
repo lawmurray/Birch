@@ -44,7 +44,6 @@ NumBirch is open source software. It is licensed under the Apache License, Versi
 Requirements are:
 
   * GNU autoconf, automake, and libtool
-  * [jemalloc](http://jemalloc.net/)
   * [Eigen](https://eigen.tuxfamily.org)
 
 Proceed as follows:
@@ -58,15 +57,33 @@ sudo make install
 
 ### From source: CUDA backend
 
-In addition to the requirements for the default backend, the CUDA backend requires---of course---[CUDA](https://developer.nvidia.com/cuda-downloads).
+To use the CUDA backend you will need an Nvidia GPU. You are unlikely to see speedups over the Eigen backend unless your profile is dominated by large matrix operations (of at least hundreds of rows and columns).
 
-To build with the CUDA backend, simply add `--enable-cuda` to the `./configure` line in the instructions for the default backend, above.
+In addition to the requirements for the default backend, the CUDA backend requires [CUDA](https://developer.nvidia.com/cuda-downloads) and a custom build of [jemalloc](http://jemalloc.net/). It may also require a more recent version of Eigen compatible with your version of CUDA.
 
-To run using the CUDA backend you will need an Nvidia GPU. You are unlikely to see speedups over a CPU unless you are performing very large (thousands of rows and columns) matrix operations with a single thread, or moderately large (hundreds of rows and columns) from multiple threads.
+For the custom build of jemalloc, run, from within the `jemalloc` directory (or the source directory of a separate jemalloc source package):
+
+```
+./configure --disable-initial-exec-tls --with-jemalloc-prefix=numbirch_
+make
+```
+
+Replace `./configure` with `./autogen.sh` if the former does not exist.
+
+There is no need for `make install`, as the NumBirch build can be directed to search for jemalloc headers and the required `libjemalloc_pic.a` from local directories, using `CPPFLAGS` and `LDFLAGS` in the configure line below. The `--with-jemalloc-prefix=numbirch` is critical and no other prefix should be used; the NumBirch build is hard-coded to work with this prefix.
+
+Finally, back in the root directory of the NumBirch sources, build NumBirch with the CUDA backend:
+
+```
+./bootstrap
+./configure --enable-cuda CPPFLAGS="-Ijemalloc/include" LDFLAGS="-Ljemalloc/lib"
+make
+sudo make install
+```
 
 ### From source: oneAPI backend
 
-@attention The oneAPI backend is not yet working.
+@attention The oneAPI backend is neither complete nor working at the moment.
 
 The oneAPI requires the [Intel oneAPI Base Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#gs.g8tsv3). Once installed, run
 
@@ -76,7 +93,14 @@ The oneAPI requires the [Intel oneAPI Base Toolkit](https://www.intel.com/conten
 
 to set up your environment to use it.
 
-To build with the oneAPI backend, simply add `--enable-oneapi` to the `./configure` line in the instructions for the default backend, above.
+Then, to build with the oneAPI backend:
+
+```
+./bootstrap
+./configure --enable-oneapi
+make
+sudo make install
+```
 
 To run using the oneAPI backend you will need an Intel GPU, such as the integrated graphics on an Intel CPU.
 
