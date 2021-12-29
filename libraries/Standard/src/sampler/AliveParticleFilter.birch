@@ -12,18 +12,11 @@
  * ```
  */
 class AliveParticleFilter < ParticleFilter {
-  /**
-   * Number of propagations for each particle, along with the extra particle
-   * to be discarded.
-   */
-  p:Integer[_];
-
   override function simulate(t:Integer, input:Buffer) {
-    a <- resample_systematic(w);  // normal resample intializes first attempt
-    p <- vector(0, nparticles);
-
-    let x0 <- x;
+    let x0 <- copy(x);
     let w0 <- w;
+    let p <- vector(0, nparticles);  // number of propagations per particle
+    let a <- resample_systematic(w);  // initial resample
 
     /* apply bridge finding to all particles in case needed, but actual copy()
      * is performed as-needed below */
@@ -55,20 +48,9 @@ class AliveParticleFilter < ParticleFilter {
     /* discard a random particle to debias (random, rather than last, as
      * particles are not exchangeable for all resamplers) */
     w[simulate_uniform_int(1, nparticles)] <- -inf;
-  }
 
-  override function resample(t:Integer) {
-    /* proceed as though no resample, so just normalize weights, and let
-     * propagate handle the rest */
-    a <- iota(1, nparticles);
-    w <- w - vector(lsum - log(nparticles), nparticles);
-  }
-
-  override function reduce() {
-    super.reduce();
     npropagations <- sum(p);
-    if npropagations > 0 {
-      lnormalize <- lnormalize + log(nparticles) - log(npropagations - 1);
-    }
+    (ess, lsum) <- resample_reduce(w);
+    lnormalize <- lnormalize + lsum - log(npropagations - 1);
   }
 }

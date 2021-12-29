@@ -2,8 +2,8 @@
  * Particle for use with ParticleFilter.
  *
  * - m: Model.
- * - delaySampling: Enable delayed sampling.
- * - delayExpressions: Enable delayed expressions.
+ * - delaySampling: Enable delayed sampling?
+ * - delayExpressions: Enable delayed expressions?
  */
 class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
   /**
@@ -60,6 +60,16 @@ class Particle(m:Model, delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function constant(gen:Integer) {
     h.constant(gen);
+  }
+
+  /**
+   * Reconfigure particle.
+   *
+   * - delaySampling: Enable delayed sampling?
+   * - delayExpressions: Enable delayed expressions?
+   */
+  function reconfigure(delaySampling:Boolean, delayExpressions:Boolean) {
+    h <- construct<Handler>(delaySampling, delayExpressions);
   }
 
   override function read(buffer:Buffer) {

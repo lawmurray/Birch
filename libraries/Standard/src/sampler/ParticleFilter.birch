@@ -20,17 +20,6 @@ class ParticleFilter {
   w:Real[_];
 
   /**
-   * Ancestor indices.
-   */
-  a:Integer[_];
-
-  /**
-   * Chosen particle index. This is used for drawing a single particle from
-   * the filter in e.g. [ParticleSampler](../ParticleSampler).
-   */
-  b:Integer <- 0;
-
-  /**
    * Logarithm of sum of weights.
    */
   lsum:Real <- 0.0;
@@ -56,7 +45,7 @@ class ParticleFilter {
   /**
    * Accept rate of moves.
    */
-  raccepts:Real <- 0.0;
+  raccepts:Real <- 0.0/0.0;
 
   /**
    * Number of particles.
@@ -99,14 +88,12 @@ class ParticleFilter {
       x.pushBack(particle(global.copy(model)));
     }
     w <- vector(0.0, nparticles);
-    a <- iota(1, nparticles);
-    b <- 1;
     ess <- nparticles;
     lsum <- 0.0;
     lnormalize <- 0.0;
-    npropagations <- nparticles;
+    npropagations <- 0;
+    raccepts <- 0.0/0.0;
     simulate(input);
-    reduce();
   }
 
   /**
@@ -118,7 +105,6 @@ class ParticleFilter {
   function filter(t:Integer, input:Buffer) {
     resample(t);
     simulate(t, input);
-    reduce();
   }
 
   /**
@@ -132,11 +118,12 @@ class ParticleFilter {
     resample(t);
     move(t, κ);
     simulate(t, input);
-    reduce();
   }
 
   /**
    * Start particles.
+   *
+   * - input: Input buffer.
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
@@ -149,10 +136,16 @@ class ParticleFilter {
         w[n] <- w[n] + h.w;
       }
     }
+    (ess, lsum) <- resample_reduce(w);
+    lnormalize <- lnormalize + lsum - log(nparticles);
+    npropagations <- nparticles;
   }
 
   /**
    * Step particles.
+   *
+   * - t: Step number.
+   * - input: Input buffer.
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
@@ -165,75 +158,80 @@ class ParticleFilter {
         w[n] <- w[n] + h.w;
       }
     }
-  }
-
-  /**
-   * Compute reductions, such as effective sample size and normalizing
-   * constant estimate.
-   */
-  function reduce() {
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
-    b <- ancestor(w);
-    if b == 0 {
-      error("particle filter degenerated");
-    }
+    npropagations <- nparticles;
   }
 
   /**
    * Resample particles.
    *
-   * - t: The step number.
+   * - t: Step number.
    */
   function resample(t:Integer) {
-    if ess <= trigger*nparticles {
-      a <- resample_systematic(w);
+    if ess < trigger*nparticles {
+      let a <- resample_systematic(w);
       w <- vector(0.0, nparticles);
-      copy();
-      collect();
+
+      /* apply bridge finding to any particle with at least two offspring,
+       * using the fact that the ancestor vector is in ascending order */
+      dynamic parallel for n in 2..nparticles {
+        if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
+          bridge(x[a[n]]);
+        }
+      }
+
+      /* permute the ancestry vector so that it has the property a[n] == n
+       * where n has at least one offspring */
+      a <- permute_ancestors(a);
+
+      /* copy particles where we have a[n] != n */
+      dynamic parallel for n in 1..nparticles {
+        if a[n] != n {
+          x[n] <- global.copy(x[a[n]]);
+        }
+      }
+      ess <- nparticles;
+      lsum <- log(nparticles);
     } else {
       /* normalize weights to sum to nparticles */
-      a <- iota(1, nparticles);
       w <- w - vector(lsum - log(nparticles), nparticles);
     }
+    collect();
   }
 
   /**
-   * Copy particles during resampling.
-   */
-  function copy() {
-    /* apply bridge finding to any particle with at least two offspring, using
-     * the fact that the ancestor vector is in ascending order */
-    dynamic parallel for n in 2..nparticles {
-      if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
-        bridge(x[a[n]]);
-      }
-    }
-
-    /* permute the ancestry vector so that it has the property a[n] == n where
-     * n has at least one offspring */
-    a <- permute_ancestors(a);
-
-    /* copy particles where we have a[n] != n */
-    dynamic parallel for n in 1..nparticles {
-      if a[n] != n {
-        x[n] <- global.copy(x[a[n]]);
-      }
-    }
-  }
-
-  /**
-   * Move particles during resampling.
+   * Move particles.
    *
    * - t: Step number.
    * - κ: Markov kernel.
    */
   function move(t:Integer, κ:Kernel) {
-    let α <- vector(0.0, nparticles);  // acceptance rates for each particle
-    parallel for n in 1..nparticles {
-      α[n] <- κ.apply(t, x[n]);
+    if ess < trigger*nparticles {
+      let α <- vector(0.0, nparticles);  // acceptance rates for each particle
+      parallel for n in 1..nparticles {
+        α[n] <- κ.apply(t, x[n]);
+      }
+      raccepts <- sum(α)/nparticles;  // average acceptance rate
     }
-    raccepts <- sum(α)/nparticles;  // average acceptance rate
+    //collect();
+  }
+
+  /**
+   * Reconfigure particle filter.
+   *
+   * - delayed: Should delayed sampling be used?
+   * - autodiff: Should automatic differentiation be used?
+   */
+  function reconfigure(delayed:Boolean, autodiff:Boolean) {
+    this.delayed <- delayed;
+    this.autodiff <- autodiff;
+
+    /* replace event handlers */
+    let iter <- x.walk();
+    while iter.hasNext() {
+      iter.next().reconfigure(delayed, autodiff);
+    }
   }
 
   override function read(buffer:Buffer) {

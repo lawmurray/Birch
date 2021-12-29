@@ -71,8 +71,8 @@ program filter(
   if model? {
     modelBuffer.set("class", model!);
   }
-  let theModel <- make<Model>(modelBuffer);
-  if !theModel? {
+  let m <- make<Model>(modelBuffer);
+  if !m? {
     error("could not create model; the model class should be given as " +
         "model.class in the config file, or `--model` on the command " +
         "line, and should derive from Model.");
@@ -86,8 +86,8 @@ program filter(
   } else if !filterBuffer.get("class")? {
     filterBuffer.set("class", "ParticleFilter");
   }
-  let theFilter <- make<ParticleFilter>(filterBuffer);
-  if !theFilter? {
+  let f <- make<ParticleFilter>(filterBuffer);
+  if !f? {
     error("could not create filter; the filter class should be given as " +
         "filter.class in the config file, or --filter on the command " +
         "line, and should derive from ParticleFilter.");
@@ -99,7 +99,7 @@ program filter(
   if kernel? {
     kernelBuffer.set("class", kernel!);
   }
-  let theKernel <- make<Kernel>(kernelBuffer);
+  let κ <- make<Kernel>(kernelBuffer);
 
   /* number of steps */
   if !nsteps? {
@@ -153,59 +153,68 @@ program filter(
   let t <- 0;
   while (nsteps? && t <= nsteps!) || (!nsteps? && inputReader!.hasNext()) {
     /* input */
-    inputBuffer:Buffer;
-    filterBuffer:Buffer <- inputBuffer;
+    let inputBuffer <- make_buffer();
     if inputReader? && inputReader!.hasNext() {
       inputBuffer <- inputReader!.next();
-      filterBuffer <- inputBuffer;
-      filterBuffer <-? inputBuffer.get("filter");
     }
 
-    /* start or step filter */
+    /* output */
+    let outputBuffer <- make_buffer();
+
+    /* filter */
+    let filterInputBuffer <- inputBuffer;
+    filterInputBuffer <-? inputBuffer.get("filter");
     if t == 0 {
-      theFilter!.filter(theModel!, filterBuffer);
-    } else if theKernel? {
-      theFilter!.filter(t, filterBuffer, theKernel!);
+      f!.filter(m!, filterInputBuffer);
+    } else if κ? {
+      f!.filter(t, filterInputBuffer, κ!);
     } else {
-      theFilter!.filter(t, filterBuffer);
+      f!.filter(t, filterInputBuffer);
     }
+    let filterOutputBuffer <- make_buffer();
+    filterOutputBuffer.set("sample", t, f!.x);
+    filterOutputBuffer.set("lweight", f!.w);
+    outputBuffer.set("filter", filterOutputBuffer);
+    outputBuffer.set("ess", f!.ess);
+    outputBuffer.set("lnormalize", f!.lnormalize);
+    outputBuffer.set("npropagations", f!.npropagations);
+    outputBuffer.set("raccepts", f!.raccepts);
 
     /* forecast */
     let forecastSize <- inputBuffer.size("forecast");
-    let forecastIterator <- inputBuffer.walk("forecast");
-    let forecastBuffer <- make_buffer();
     if nforecasts? {
       forecastSize <- nforecasts!;
     }
     if forecastSize > 0 {
-      bridge(theFilter!);
-      let theFilter' <- copy(theFilter!);
-      theFilter'.trigger <- 1.0;  // force resample
-      theFilter'.resample(t);
+      /* resample and move before the forecast, which should produce
+       * better results; within the next call to ParticleFilter.filter()
+       * guards ensure that these are not repeated, so there is no additional
+       * effort */
+      f!.resample(t + 1);
+      if κ? {
+        f!.move(t + 1, κ!);
+      }
+
+      /* copy and reconfigure the filter for forecast */
+      let f' <- copy(f!);
+      f'.reconfigure(false, false);
+
+      /* forecast steps */
+      let forecastInputIterator <- inputBuffer.walk("forecast");
       for t' in (t + 1)..(t + forecastSize) {
-        if forecastIterator.hasNext() {
-          theFilter'.filter(t', forecastIterator.next());
-        } else {
-          theFilter'.filter(t', make_buffer());
+        let forecastInputBuffer <- inputBuffer;
+        if forecastInputIterator.hasNext() {
+          forecastInputBuffer <- forecastInputIterator.next();
         }
-        if outputWriter? {
-          forecastBuffer.push(t, theFilter'.x);
-        }
+        f'.filter(t', forecastInputBuffer);
+        let forecastOutputBuffer <- make_buffer();
+        forecastOutputBuffer.set("sample", t, f'.x);
+        forecastOutputBuffer.set("lweight", f'.w);
+        outputBuffer.push("forecast", forecastOutputBuffer);
       }
     }
 
-    /* output */
     if outputWriter? {
-      let outputBuffer <- make_buffer();
-      if t > 0 {
-        outputBuffer.set("filter", t, theFilter!.x);
-      }
-      outputBuffer.set("lweight", theFilter!.w);
-      outputBuffer.set("ess", theFilter!.ess);
-      outputBuffer.set("lnormalize", theFilter!.lnormalize);
-      outputBuffer.set("npropagations", theFilter!.npropagations);
-      outputBuffer.set("raccepts", theFilter!.raccepts);
-      outputBuffer.set("forecast", forecastBuffer);
       outputWriter!.push(outputBuffer);
     }
     if !quiet && nsteps? {
