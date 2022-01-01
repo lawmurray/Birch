@@ -64,19 +64,22 @@ In addition to the requirements for the default backend, the CUDA backend requir
 For the custom build of jemalloc, run, from within the `jemalloc` directory (or the source directory of a separate jemalloc source package):
 
 ```
-./configure --disable-initial-exec-tls --with-jemalloc-prefix=numbirch_
+./configure --disable-initial-exec-tls --disable-documentation \
+    --with-jemalloc-prefix=numbirch_ \
+    --with-install-suffix=_numbirch
 make
+sudo make install
 ```
 
 Replace `./configure` with `./autogen.sh` if the former does not exist.
 
-There is no need for `make install`, as the NumBirch build can be directed to search for jemalloc headers and the required `libjemalloc_pic.a` from local directories, using `CPPFLAGS` and `LDFLAGS` in the configure line below. The `--with-jemalloc-prefix=numbirch` is critical and no other prefix should be used; the NumBirch build is hard-coded to work with this prefix.
+The options `--with-jemalloc-prefix=numbirch` and `--with-install-suffix=_numbirch` are critical and no other values should be used; NumBirch and some dependencies are hard-coded to work with these values.
 
 Finally, back in the root directory of the NumBirch sources, build NumBirch with the CUDA backend:
 
 ```
 ./bootstrap
-./configure --enable-cuda CPPFLAGS="-Ijemalloc/include" LDFLAGS="-Ljemalloc/lib"
+./configure --enable-cuda
 make
 sudo make install
 ```

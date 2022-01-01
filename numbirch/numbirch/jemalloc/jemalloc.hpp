@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include <jemalloc/jemalloc.h>
+#include <jemalloc/jemalloc_numbirch.h>
 
 namespace numbirch {
 /*
