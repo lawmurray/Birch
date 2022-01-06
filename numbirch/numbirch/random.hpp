@@ -85,7 +85,7 @@ explicit_t<bool,T> simulate_bernoulli(const T& rho) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta);
+explicit_t<R,T,U> simulate_beta(const T& alpha, const U& beta);
 
 /**
  * Simulate a beta distribution.
@@ -102,8 +102,8 @@ explicit_t<R,implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta) {
-  return simulate_beta<value_t<default_t<implicit_t<T,U>>>,T,U,int>(alpha,
+default_t<T,U> simulate_beta(const T& alpha, const U& beta) {
+  return simulate_beta<value_t<default_t<T,U>>,T,U,int>(alpha,
       beta);
 }
 
@@ -124,7 +124,7 @@ default_t<implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_numeric_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_binomial(const T& n, const U& rho);
+explicit_t<R,T,U> simulate_binomial(const T& n, const U& rho);
 
 /**
  * Simulate a binomial distribution.
@@ -226,7 +226,7 @@ default_t<T> simulate_exponential(const T& lambda) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_gamma(const T& k, const U& theta);
+explicit_t<R,T,U> simulate_gamma(const T& k, const U& theta);
 
 /**
  * Simulate a gamma distribution.
@@ -243,8 +243,8 @@ explicit_t<R,implicit_t<T,U>> simulate_gamma(const T& k, const U& theta);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_gamma(const T& k, const U& theta) {
-  return simulate_gamma<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k,
+default_t<T,U> simulate_gamma(const T& k, const U& theta) {
+  return simulate_gamma<value_t<default_t<T,U>>,T,U,int>(k,
       theta);
 }
 
@@ -265,7 +265,7 @@ default_t<implicit_t<T,U>> simulate_gamma(const T& k, const U& theta) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2);
+explicit_t<R,T,U> simulate_gaussian(const T& mu, const U& sigma2);
 
 /**
  * Simulate a Gaussian distribution.
@@ -282,8 +282,8 @@ explicit_t<R,implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2) {
-  return simulate_gaussian<value_t<default_t<implicit_t<T,U>>>,T,U,int>(mu,
+default_t<T,U> simulate_gaussian(const T& mu, const U& sigma2) {
+  return simulate_gaussian<value_t<default_t<T,U>>,T,U,int>(mu,
       sigma2);
 }
 
@@ -304,7 +304,7 @@ default_t<implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_numeric_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_negative_binomial(const T& k,
+explicit_t<R,T,U> simulate_negative_binomial(const T& k,
     const U& rho);
 
 /**
@@ -408,7 +408,7 @@ default_t<T> simulate_student_t(const T& nu) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_uniform(const T& l, const U& u);
+explicit_t<R,T,U> simulate_uniform(const T& l, const U& u);
 
 /**
  * Simulate a uniform distribution.
@@ -425,8 +425,8 @@ explicit_t<R,implicit_t<T,U>> simulate_uniform(const T& l, const U& u);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_uniform(const T& l, const U& u) {
-  return simulate_uniform<value_t<default_t<implicit_t<T,U>>>,T,U,int>(l, u);
+default_t<T,U> simulate_uniform(const T& l, const U& u) {
+  return simulate_uniform<value_t<default_t<T,U>>,T,U,int>(l, u);
 }
 
 /**
@@ -446,7 +446,7 @@ default_t<implicit_t<T,U>> simulate_uniform(const T& l, const U& u) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_uniform_int(const T& l, const U& u);
+explicit_t<R,T,U> simulate_uniform_int(const T& l, const U& u);
 
 /**
  * Simulate a uniform distribution over integers.
@@ -484,7 +484,7 @@ explicit_t<int,implicit_t<T,U>> simulate_uniform_int(const T& l, const U& u) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& lambda);
+explicit_t<R,T,U> simulate_weibull(const T& k, const U& lambda);
 
 /**
  * Simulate a Weibull distribution.
@@ -501,8 +501,8 @@ explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& lambda);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> simulate_weibull(const T& k, const U& lambda) {
-  return simulate_weibull<value_t<default_t<implicit_t<T,U>>>,T,U,int>(k,
+default_t<T,U> simulate_weibull(const T& k, const U& lambda) {
+  return simulate_weibull<value_t<default_t<T,U>>,T,U,int>(k,
       lambda);
 }
 

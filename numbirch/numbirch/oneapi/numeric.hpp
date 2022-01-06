@@ -242,11 +242,6 @@ T sum(const int m, const int n, const T* A, const int ldA) {
 }
 
 template<class T>
-T trace(const int m, const int n, const T* A, const int ldA) {
-  return sum(1, std::min(m, n), A, ldA + 1);
-}
-
-template<class T>
 void transpose(const int m, const int n, const T* A, const int ldA, T* B,
     const int ldB) {
   auto A1 = make_dpl_matrix_transpose(A, m, n, ldA);

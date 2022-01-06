@@ -1,10 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-#include "numbirch/array.hpp"
-#include "numbirch/reduce.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.hpp"
 #endif
@@ -21,8 +17,9 @@
  * Use cases include transpose(), inv().
  */
 #define MATRIX(f) \
-    template Array<double,2> f(const Array<double,2>&); \
-    template Array<float,2> f(const Array<float,2>&);
+    MATRIX_SIG(f, real)
+#define MATRIX_SIG(f, T) \
+    template Array<T,2> f(const Array<T,2>&);
 
 namespace numbirch {
 MATRIX(cholinv)

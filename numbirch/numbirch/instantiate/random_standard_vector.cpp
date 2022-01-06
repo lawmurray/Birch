@@ -1,8 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/random.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/random.hpp"
 #include "numbirch/cuda/transform.hpp"
@@ -19,8 +17,7 @@
  * @def STANDARD_VECTOR
  */
 #define STANDARD_VECTOR(f) \
-    STANDARD_VECTOR_SIG(f, double) \
-    STANDARD_VECTOR_SIG(f, float)
+    STANDARD_VECTOR_SIG(f, real)
 #define STANDARD_VECTOR_SIG(f, R) \
     template Array<R,1> f<R>(const int n);
 

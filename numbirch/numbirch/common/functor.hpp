@@ -15,7 +15,7 @@ namespace numbirch {
 static const long double PI = 3.1415926535897932384626433832795;
 
 template<class R>
-struct identity_functor {
+struct cast_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return x;
   }
@@ -42,17 +42,27 @@ struct subtract_functor {
   }
 };
 
-template<class R>
-struct multiply_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
-    return x*y;
+template<class R, class T>
+struct scalar_divide_functor {
+  T y;
+  scalar_divide_functor(const T& y) : y(y) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    auto z = R(element(y));
+    return x/z;
   }
 };
 
-template<class R>
-struct divide_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
-    return x/y;
+template<class R, class T>
+struct scalar_multiply_functor {
+  T y;
+  scalar_multiply_functor(const T& y) : y(y) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    auto z = R(element(y));
+    return x*z;
   }
 };
 
@@ -65,10 +75,25 @@ struct not_functor {
 };
 
 template<class R>
+struct not_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return R(0);
+  }
+};
+
+template<class R>
 struct and_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x && y;
+  }
+};
+
+template<class R>
+struct and_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
   }
 };
 
@@ -81,12 +106,29 @@ struct or_functor {
 };
 
 template<class R>
+struct or_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
+  }
+};
+
+template<class R>
 struct equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x == y;
   }
 };
+
+template<class R>
+struct equal_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
+  }
+};
+
 
 template<class R>
 struct not_equal_functor {
@@ -97,6 +139,15 @@ struct not_equal_functor {
 };
 
 template<class R>
+struct not_equal_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
+  }
+};
+
+
+template<class R>
 struct less_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
@@ -105,10 +156,27 @@ struct less_functor {
 };
 
 template<class R>
+struct less_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
+  }
+};
+
+
+template<class R>
 struct less_or_equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
     return x <= y;
+  }
+};
+
+template<class R>
+struct less_or_equal_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
   }
 };
 
@@ -121,6 +189,15 @@ struct greater_functor {
 };
 
 template<class R>
+struct greater_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
+  }
+};
+
+
+template<class R>
 struct greater_or_equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE R operator()(const T x, const U y) const {
@@ -129,9 +206,31 @@ struct greater_or_equal_functor {
 };
 
 template<class R>
+struct greater_or_equal_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{R(0), R(0)};
+  }
+};
+
+
+template<class R>
 struct abs_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::abs(x);
+  }
+};
+
+template<class R>
+struct abs_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    if constexpr (is_integral_v<R>) {
+      // don't use std::copysign, as it promotes to floating point, which
+      // we don't wish to do here
+      return (x >= R(0)) ? std::abs(g) : -std::abs(g);
+    } else {
+      return std::copysign(g, x);
+    }
   }
 };
 
@@ -143,6 +242,13 @@ struct acos_functor {
 };
 
 template<class R>
+struct acos_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return -g/std::sqrt(R(1.0) - x*x);
+  }
+};
+
+template<class R>
 struct asin_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::asin(x);
@@ -150,9 +256,23 @@ struct asin_functor {
 };
 
 template<class R>
+struct asin_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g/std::sqrt(R(1.0) - x*x);
+  }
+};
+
+template<class R>
 struct atan_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::atan(x);
+  }
+};
+
+template<class R>
+struct atan_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g/(R(1.0) + x*x);
   }
 };
 
@@ -168,9 +288,23 @@ struct ceil_functor {
 };
 
 template<class R>
+struct ceil_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return R(0.0);
+  }
+};
+
+template<class R>
 struct cos_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::cos(x);
+  }
+};
+
+template<class R>
+struct cos_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return -g*std::sin(x);
   }
 };
 
@@ -182,22 +316,36 @@ struct cosh_functor {
 };
 
 template<class R>
+struct cosh_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return -g*std::sinh(x);
+  }
+};
+
+template<class R>
 struct count_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return (x == 0) ? 0 : 1;
   }
 };
 
-template<class R, class U>
+template<class R>
+struct count_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    return R(0);
+  }
+};
+
+template<class T>
 struct diagonal_functor {
-  diagonal_functor(const U a) :
+  const T a;
+  diagonal_functor(const T a) :
       a(a) {
     //
   }
   NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
-    return (i == j) ? R(element(a)) : 0;
+    return (i == j) ? element(a) : 0;
   }
-  const U a;
 };
 
 template<class R>
@@ -222,9 +370,23 @@ struct exp_functor {
 };
 
 template<class R>
+struct exp_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*std::exp(x);
+  }
+};
+
+template<class R>
 struct expm1_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::expm1(x);
+  }
+};
+
+template<class R>
+struct expm1_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*std::expm1(x);
   }
 };
 
@@ -236,6 +398,28 @@ struct floor_functor {
     } else {
       return std::floor(x);
     }
+  }
+};
+
+template<class R>
+struct floor_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return R(0.0);
+  }
+};
+
+template<class R>
+struct hadamard_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
+    return x*y;
+  }
+};
+
+template<class R>
+struct hadamard_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{g*y, g*x};
   }
 };
 
@@ -268,6 +452,21 @@ struct lgamma_functor {
 };
 
 template<class R>
+struct lgamma_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*Eigen::numext::digamma(x);
+  }
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    R z = 0;
+    for (R i = 1; i <= y; ++i) {
+      z += Eigen::numext::digamma(x + R(0.5)*(1 - i));
+    }
+    return pair<R,R>{g*z, R(0)};
+  }
+};
+
+template<class R>
 struct log_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::log(x);
@@ -275,9 +474,23 @@ struct log_functor {
 };
 
 template<class R>
+struct log_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g/x;
+  }
+};
+
+template<class R>
 struct log1p_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::log1p(x);
+  }
+};
+
+template<class R>
+struct log1p_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g/(x + R(1.0));
   }
 };
 
@@ -292,13 +505,6 @@ template<class R>
 struct log_square_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return R(2)*std::log(x);
-  }
-};
-
-template<class R>
-struct rcp_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
-    return R(1)/x;
   }
 };
 
@@ -328,9 +534,23 @@ struct round_functor {
 };
 
 template<class R>
+struct round_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return R(0.0);
+  }
+};
+
+template<class R>
 struct sin_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::sin(x);
+  }
+};
+
+template<class R>
+struct sin_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*std::cos(x);
   }
 };
 
@@ -342,9 +562,23 @@ struct sinh_functor {
 };
 
 template<class R>
+struct sinh_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*std::cosh(x);
+  }
+};
+
+template<class R>
 struct sqrt_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::sqrt(x);
+  }
+};
+
+template<class R>
+struct sqrt_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*R(0.5)/std::sqrt(x);
   }
 };
 
@@ -356,9 +590,23 @@ struct tan_functor {
 };
 
 template<class R>
+struct tan_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*(R(1.0) + std::pow(std::tan(x), R(2.0)));
+  }
+};
+
+template<class R>
 struct tanh_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
     return std::tanh(x);
+  }
+};
+
+template<class R>
+struct tanh_grad_functor {
+  NUMBIRCH_HOST_DEVICE R operator()(const R g, const R x) const {
+    return g*(R(1.0) + std::pow(std::tanh(x), R(2.0)));
   }
 };
 
@@ -372,6 +620,14 @@ struct copysign_functor {
     } else {
       return std::copysign(x, y);
     }
+  }
+};
+
+template<class R>
+struct copysign_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    return pair<R,R>{copysign(x, y) == x ? g: -g, R(0)};
   }
 };
 
@@ -397,6 +653,17 @@ struct lbeta_functor {
 };
 
 template<class R>
+struct lbeta_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    R d = Eigen::numext::digamma(x + y);
+    R gx = Eigen::numext::digamma(x) - d;
+    R gy = Eigen::numext::digamma(y) - d;
+    return pair<R,R>{g*gx, g*gy};
+  }
+};
+
+template<class R>
 struct lchoose_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const R x, const R y) const {
     return std::lgamma(x + R(1)) - std::lgamma(y + R(1)) -
@@ -408,10 +675,9 @@ template<class R>
 struct lchoose_grad_functor {
   NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
       const {
-    R gx = Eigen::numext::digamma(x + R(1)) -
-        Eigen::numext::digamma(x - y + R(1));
-    R gy = -Eigen::numext::digamma(y + R(1)) +
-        Eigen::numext::digamma(x - y + R(1));
+    R d = Eigen::numext::digamma(x - y + R(1));
+    R gx = Eigen::numext::digamma(x + R(1)) - d;
+    R gy = -Eigen::numext::digamma(y + R(1)) + d;
     return pair<R,R>{g*gx, g*gy};
   }
 };
@@ -423,16 +689,38 @@ struct pow_functor {
   }
 };
 
-template<class R, class U, class V = int>
+template<class R>
+struct pow_grad_functor {
+  NUMBIRCH_HOST_DEVICE pair<R,R> operator()(const R g, const R x, const R y)
+      const {
+    R gx = y*std::pow(x, y - R(1));
+    R gy = std::pow(x, y)*std::log(x);
+    return pair<R,R>{g*gx, g*gy};
+  }
+};
+
+template<class T, class U, class V = int>
 struct single_functor {
+  const T x;
   const U k;
   const V l;
-  single_functor(const U& k, const V& l = 1) :
-      k(k), l(l) {
+  single_functor(const T& x, const U& k, const V& l = 1) :
+      x(x), k(k), l(l) {
     //
   }
-  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) const {
-    return (i == element(k) - 1 && j == element(l) - 1) ? R(1) : R(0);
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    return (i == element(k) - 1 && j == element(l) - 1) ? element(x) : 0;
+  }
+};
+
+template<class R, class T>
+struct sum_grad_functor {
+  T g;
+  sum_grad_functor(const T& g) : g(g) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE R operator()(const R x) const {
+    return R(element(g));
   }
 };
 

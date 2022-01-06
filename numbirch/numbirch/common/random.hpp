@@ -15,14 +15,14 @@ explicit_t<R,T> simulate_bernoulli(const T& rho) {
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_beta(const T& alpha, const U& beta) {
+explicit_t<R,T,U> simulate_beta(const T& alpha, const U& beta) {
   prefetch(alpha);
   prefetch(beta);
   return transform(alpha, beta, simulate_beta_functor<R>());
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_binomial(const T& n, const U& rho) {
+explicit_t<R,T,U> simulate_binomial(const T& n, const U& rho) {
   prefetch(n);
   prefetch(rho);
   return transform(n, rho, simulate_binomial_functor<R>());
@@ -41,21 +41,21 @@ explicit_t<R,T> simulate_exponential(const T& lambda) {
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_gamma(const T& k, const U& theta) {
+explicit_t<R,T,U> simulate_gamma(const T& k, const U& theta) {
   prefetch(k);
   prefetch(theta);
   return transform(k, theta, simulate_gamma_functor<R>());
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_gaussian(const T& mu, const U& sigma2) {
+explicit_t<R,T,U> simulate_gaussian(const T& mu, const U& sigma2) {
   prefetch(mu);
   prefetch(sigma2);
   return transform(mu, sigma2, simulate_gaussian_functor<R>());
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_negative_binomial(const T& k,
+explicit_t<R,T,U> simulate_negative_binomial(const T& k,
     const U& rho) {
   prefetch(k);
   prefetch(rho);
@@ -75,21 +75,21 @@ explicit_t<R,T> simulate_student_t(const T& nu) {
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_uniform(const T& l, const U& u) {
+explicit_t<R,T,U> simulate_uniform(const T& l, const U& u) {
   prefetch(l);
   prefetch(u);
   return transform(l, u, simulate_uniform_functor<R>());
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_uniform_int(const T& l, const U& u) {
+explicit_t<R,T,U> simulate_uniform_int(const T& l, const U& u) {
   prefetch(l);
   prefetch(u);
   return transform(l, u, simulate_uniform_int_functor<R>());
 }
 
 template<class R, class T, class U, class>
-explicit_t<R,implicit_t<T,U>> simulate_weibull(const T& k, const U& lambda) {
+explicit_t<R,T,U> simulate_weibull(const T& k, const U& lambda) {
   prefetch(k);
   prefetch(lambda);
   return transform(k, lambda, simulate_weibull_functor<R>());

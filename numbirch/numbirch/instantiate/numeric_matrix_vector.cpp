@@ -1,10 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-#include "numbirch/array.hpp"
-#include "numbirch/reduce.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.hpp"
 #endif
@@ -21,8 +17,7 @@
  * and vector. Use cases include solve(), matrix-vector multiplication.
  */
 #define MATRIX_VECTOR(f) \
-    MATRIX_VECTOR_SIG(f, double) \
-    MATRIX_VECTOR_SIG(f, float)
+    MATRIX_VECTOR_SIG(f, real)
 #define MATRIX_VECTOR_SIG(f, T) \
     template Array<T,1> f(const Array<T,2>&, const Array<T,1>&);
 

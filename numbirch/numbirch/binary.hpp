@@ -26,7 +26,7 @@ namespace numbirch {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> && is_numeric_v<T> && is_numeric_v<U> &&
     is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator+(const T& x, const U& y);
+explicit_t<R,T,U> operator+(const T& x, const U& y);
 
 /**
  * Element-wise addition.
@@ -48,6 +48,29 @@ implicit_t<T,U> operator+(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator+().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<G,G> add_grad(const G& g, const T& x, const U& y) {
+  return std::make_pair(g, g);
+}
+
+/**
  * Element-wise subtraction.
  * 
  * @ingroup binary
@@ -64,7 +87,7 @@ implicit_t<T,U> operator+(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator-(const T& x, const U& y);
+explicit_t<R,T,U> operator-(const T& x, const U& y);
 
 /**
  * Element-wise subtraction.
@@ -86,81 +109,26 @@ implicit_t<T,U> operator-(const T& x, const U& y) {
 }
 
 /**
- * Multiplication by scalar.
+ * Gradient of operator-().
  * 
  * @ingroup binary
  * 
- * @tparam R Arithmetic type.
+ * @tparam G Numeric type.
  * @tparam T Numeric type.
  * @tparam U Numeric type.
  * 
+ * @param g Gradient with respect to result.
  * @param x Argument.
  * @param y Argument.
  * 
- * @return Result.
+ * @return Gradients with respect to @p x and @p y.
  */
-template<class R, class T, class U, class = std::enable_if_t<
-    is_arithmetic_v<R> &&
-    is_numeric_v<T> && is_numeric_v<U> &&
-    (is_scalar_v<T> || is_scalar_v<U>),int>>
-explicit_t<R,implicit_t<T,U>> operator*(const T& x, const U& y);
-
-/**
- * Multiplication by scalar.
- * 
- * @ingroup binary
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> &&
-    (is_scalar_v<T> || is_scalar_v<U>),int>>
-implicit_t<T,U> operator*(const T& x, const U& y) {
-  return operator*<value_t<implicit_t<T,U>>,T,U,int>(x, y);
-}
-
-/**
- * Division by scalar.
- * 
- * @ingroup binary
- * 
- * @tparam R Arithmetic type.
- * @tparam T Numeric type.
- * @tparam U Scalar type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class R, class T, class U, class = std::enable_if_t<
-    is_arithmetic_v<R> &&
-    is_numeric_v<T> && is_scalar_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> operator/(const T& x, const U& y);
-
-/**
- * Division by scalar.
- * 
- * @ingroup binary
- * 
- * @tparam T Numeric type.
- * @tparam U Scalar type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<
-    is_numeric_v<T> && is_scalar_v<U>,int>>
-implicit_t<T,U> operator/(const T& x, const U& y) {
-  return operator/<value_t<implicit_t<T,U>>,T,U,int>(x, y);
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<G,G> subtract_grad(const G& g, const T& x, const U& y) {
+  return std::make_pair(g, -g);
 }
 
 /**
@@ -180,7 +148,7 @@ implicit_t<T,U> operator/(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator&&(const T& x, const U& y);
+explicit_t<R,T,U> operator&&(const T& x, const U& y);
 
 /**
  * Logical `and`.
@@ -202,6 +170,28 @@ explicit_t<bool,implicit_t<T,U>> operator&&(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator&&().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> and_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Logical `or`.
  * 
  * @ingroup binary
@@ -218,7 +208,7 @@ explicit_t<bool,implicit_t<T,U>> operator&&(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator||(const T& x, const U& y);
+explicit_t<R,T,U> operator||(const T& x, const U& y);
 
 /**
  * Logical `or`.
@@ -240,6 +230,28 @@ explicit_t<bool,implicit_t<T,U>> operator||(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator||().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> or_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Element-wise equal to comparison.
  * 
  * @ingroup binary
@@ -256,7 +268,7 @@ explicit_t<bool,implicit_t<T,U>> operator||(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator==(const T& x, const U& y);
+explicit_t<R,T,U> operator==(const T& x, const U& y);
 
 /**
  * Element-wise equal to comparison.
@@ -278,6 +290,28 @@ explicit_t<bool,implicit_t<T,U>> operator==(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator==().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> equal_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Element-wise not equal to comparison.
  * 
  * @ingroup binary
@@ -294,7 +328,7 @@ explicit_t<bool,implicit_t<T,U>> operator==(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator!=(const T& x, const U& y);
+explicit_t<R,T,U> operator!=(const T& x, const U& y);
 
 /**
  * Element-wise not equal to comparison.
@@ -316,6 +350,28 @@ explicit_t<bool,implicit_t<T,U>> operator!=(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator!=().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> not_equal_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Element-wise less than comparison.
  * 
  * @ingroup binary
@@ -332,7 +388,7 @@ explicit_t<bool,implicit_t<T,U>> operator!=(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator<(const T& x, const U& y);
+explicit_t<R,T,U> operator<(const T& x, const U& y);
 
 /**
  * Element-wise less than comparison.
@@ -355,6 +411,28 @@ explicit_t<bool,implicit_t<T,U>> operator<(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator<().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> less_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Element-wise less than or equal to comparison.
  * 
  * @ingroup binary
@@ -371,7 +449,7 @@ explicit_t<bool,implicit_t<T,U>> operator<(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator<=(const T& x, const U& y);
+explicit_t<R,T,U> operator<=(const T& x, const U& y);
 
 /**
  * Element-wise less than or equal to comparison.
@@ -393,6 +471,28 @@ explicit_t<bool,implicit_t<T,U>> operator<=(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator<=().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> less_or_equal_grad(const G& g,
+    const T& x, const U& y);
+
+/**
  * Element-wise greater than comparison.
  * 
  * @ingroup binary
@@ -409,7 +509,7 @@ explicit_t<bool,implicit_t<T,U>> operator<=(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator>(const T& x, const U& y);
+explicit_t<R,T,U> operator>(const T& x, const U& y);
 
 /**
  * Element-wise greater than comparison.
@@ -431,6 +531,28 @@ explicit_t<bool,implicit_t<T,U>> operator>(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator>().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> greater_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Element-wise greater than or equal to comparison.
  * 
  * @ingroup binary
@@ -447,7 +569,7 @@ explicit_t<bool,implicit_t<T,U>> operator>(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> operator>=(const T& x, const U& y);
+explicit_t<R,T,U> operator>=(const T& x, const U& y);
 
 /**
  * Element-wise greater than or equal to comparison.
@@ -469,6 +591,28 @@ explicit_t<bool,implicit_t<T,U>> operator>=(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of operator>=().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> greater_or_equal_grad(const G& g,
+    const T& x, const U& y);
+
+/**
  * Copy sign of a number.
  * 
  * @ingroup binary
@@ -485,7 +629,7 @@ explicit_t<bool,implicit_t<T,U>> operator>=(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> copysign(const T& x, const U& y);
+explicit_t<R,T,U> copysign(const T& x, const U& y);
 
 /**
  * Copy sign of a number.
@@ -507,6 +651,28 @@ implicit_t<T,U> copysign(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of copysign().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> copysign_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Multivariate digamma.
  * 
  * @ingroup binary
@@ -522,7 +688,7 @@ implicit_t<T,U> copysign(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> digamma(const T& x , const U& y);
+explicit_t<R,T,U> digamma(const T& x , const U& y);
 
 /**
  * Multivariate digamma.
@@ -538,8 +704,8 @@ explicit_t<R,implicit_t<T,U>> digamma(const T& x , const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> digamma(const T& x, const U& y) {
-  return digamma<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> digamma(const T& x, const U& y) {
+  return digamma<value_t<default_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -559,7 +725,7 @@ default_t<implicit_t<T,U>> digamma(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> gamma_p(const T& x, const U& y);
+explicit_t<R,T,U> gamma_p(const T& x, const U& y);
 
 /**
  * Normalized lower incomplete gamma.
@@ -576,8 +742,8 @@ explicit_t<R,implicit_t<T,U>> gamma_p(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> gamma_p(const T& x, const U& y) {
-  return gamma_p<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> gamma_p(const T& x, const U& y) {
+  return gamma_p<value_t<default_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -597,7 +763,7 @@ default_t<implicit_t<T,U>> gamma_p(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> gamma_q(const T& x, const U& y);
+explicit_t<R,T,U> gamma_q(const T& x, const U& y);
 
 /**
  * Normalized upper incomplete gamma.
@@ -614,8 +780,8 @@ explicit_t<R,implicit_t<T,U>> gamma_q(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> gamma_q(const T& x, const U& y) {
-  return gamma_q<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> gamma_q(const T& x, const U& y) {
+  return gamma_q<value_t<default_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -635,7 +801,7 @@ default_t<implicit_t<T,U>> gamma_q(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_arithmetic_v<R> &&
     is_numeric_v<T> && is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<R,implicit_t<T,U>> hadamard(const T& x, const U& y);
+explicit_t<R,T,U> hadamard(const T& x, const U& y);
 
 /**
  * Hadamard (element-wise) multiplication.
@@ -657,6 +823,28 @@ implicit_t<T,U> hadamard(const T& x, const U& y) {
 }
 
 /**
+ * Gradient of hadamard().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> hadamard_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Logarithm of beta.
  * 
  * @ingroup binary
@@ -673,7 +861,7 @@ implicit_t<T,U> hadamard(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> lbeta(const T& x, const U& y);
+explicit_t<R,T,U> lbeta(const T& x, const U& y);
 
 /**
  * Logarithm of beta.
@@ -690,11 +878,33 @@ explicit_t<R,implicit_t<T,U>> lbeta(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> lbeta(const T& x, const U& y) {
-  return lbeta<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> lbeta(const T& x, const U& y) {
+  return lbeta<value_t<default_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
+ * Gradient of lbeta().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> lbeta_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Logarithm of the binomial coefficient.
  * 
  * @ingroup binary
@@ -711,7 +921,7 @@ default_t<implicit_t<T,U>> lbeta(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> lchoose(const T& x, const U& y);
+explicit_t<R,T,U> lchoose(const T& x, const U& y);
 
 /**
  * Logarithm of the binomial coefficient.
@@ -728,8 +938,8 @@ explicit_t<R,implicit_t<T,U>> lchoose(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> lchoose(const T& x, const U& y) {
-  return lchoose<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> lchoose(const T& x, const U& y) {
+  return lchoose<value_t<default_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
@@ -751,8 +961,8 @@ template<class G, class T, class U, class = std::enable_if_t<
     is_numeric_v<G> &&
     is_numeric_v<T> && is_compatible_v<G,T> &&
     is_numeric_v<U> && is_compatible_v<G,U>,int>>
-std::pair<implicit_t<G,T,U>,implicit_t<G,T,U>> lchoose_grad(const G& g,
-    const T& x, const U& y);
+std::pair<default_t<G,T,U>,default_t<G,T,U>> lchoose_grad(const G& g, const T& x,
+    const U& y);
 
 /**
  * Logarithm of multivariate gamma.
@@ -771,7 +981,7 @@ std::pair<implicit_t<G,T,U>,implicit_t<G,T,U>> lchoose_grad(const G& g,
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> lgamma(const T& x, const U& y);
+explicit_t<R,T,U> lgamma(const T& x, const U& y);
 
 /**
  * Logarithm of multivariate gamma.
@@ -788,11 +998,33 @@ explicit_t<R,implicit_t<T,U>> lgamma(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> lgamma(const T& x, const U& y) {
-  return lgamma<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> lgamma(const T& x, const U& y) {
+  return lgamma<value_t<default_t<T,U>>,T,U,int>(x, y);
 }
 
 /**
+ * Gradient of lgamma().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> lgamma_grad(const G& g, const T& x,
+    const U& y);
+
+/**
  * Power.
  * 
  * @ingroup binary
@@ -809,7 +1041,7 @@ default_t<implicit_t<T,U>> lgamma(const T& x, const U& y) {
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,implicit_t<T,U>> pow(const T& x, const U& y);
+explicit_t<R,T,U> pow(const T& x, const U& y);
 
 /**
  * Power.
@@ -826,8 +1058,173 @@ explicit_t<R,implicit_t<T,U>> pow(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U>,int>>
-default_t<implicit_t<T,U>> pow(const T& x, const U& y) {
-  return pow<value_t<default_t<implicit_t<T,U>>>,T,U,int>(x, y);
+default_t<T,U> pow(const T& x, const U& y) {
+  return pow<value_t<default_t<T,U>>,T,U,int>(x, y);
+}
+
+/**
+ * Gradient of pow().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_compatible_v<G,T> &&
+    is_numeric_v<U> && is_compatible_v<G,U>,int>>
+std::pair<default_t<G,T,U>,default_t<G,T,U>> pow_grad(const G& g, const T& x,
+    const U& y);
+
+/**
+ * Multiplication by scalar.
+ * 
+ * @ingroup binary
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class R, class T, class U, class = std::enable_if_t<
+    is_arithmetic_v<R> &&
+    is_numeric_v<T> && is_numeric_v<U> &&
+    (is_scalar_v<T> || is_scalar_v<U>),int>>
+explicit_t<R,T,U> operator*(const T& x, const U& y);
+
+/**
+ * Multiplication by scalar.
+ * 
+ * @ingroup binary
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_numeric_v<T> && is_numeric_v<U> &&
+    (is_scalar_v<T> || is_scalar_v<U>),int>>
+implicit_t<T,U> operator*(const T& x, const U& y) {
+  return operator*<value_t<implicit_t<T,U>>,T,U,int>(x, y);
+}
+
+/**
+ * Gradient of operator*().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_numeric_v<U> &&
+    (is_scalar_v<T> || is_scalar_v<U>),int>>
+auto multiply_grad(const G& g, const T& x, const U& y) {
+  if constexpr (is_scalar_v<T> && is_scalar_v<U>) {
+    return std::make_pair(g*y, g*x);
+  } else if constexpr (is_scalar_v<T> && is_vector_v<U>) {
+    return std::make_pair(dot(g, y), g*x);
+  } else if constexpr (is_vector_v<T> && is_scalar_v<U>) {
+    return std::make_pair(g*y, dot(g, x));
+  } else if constexpr (is_scalar_v<T> && is_matrix_v<U>) {
+    return std::make_pair(frobenius(g, y), g*x);
+  } else if constexpr (is_matrix_v<T> && is_scalar_v<U>) {
+    return std::make_pair(g*y, frobenius(g, x));
+  } else {
+    assert(false);
+  }
+}
+
+/**
+ * Division by scalar.
+ * 
+ * @ingroup binary
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam T Numeric type.
+ * @tparam U Scalar type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class R, class T, class U, class = std::enable_if_t<
+    is_arithmetic_v<R> &&
+    is_numeric_v<T> && is_scalar_v<U>,int>>
+explicit_t<R,T,U> operator/(const T& x, const U& y);
+
+/**
+ * Division by scalar.
+ * 
+ * @ingroup binary
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Scalar type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_numeric_v<T> && is_scalar_v<U>,int>>
+implicit_t<T,U> operator/(const T& x, const U& y) {
+  return operator/<value_t<implicit_t<T,U>>,T,U,int>(x, y);
+}
+
+/**
+ * Gradient of operator/().
+ * 
+ * @ingroup binary
+ * 
+ * @tparam G Numeric type.
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class G, class T, class U, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<T> && is_scalar_v<U>,int>>
+auto divide_grad(const G& g, const T& x, const U& y) {
+  if constexpr (is_scalar_v<T>) {
+    return std::make_pair(g/y, -g*x/(y*y));
+  } else if constexpr (is_vector_v<T>) {
+    return std::make_pair(g/y, -dot(g, x)/(y*y));
+  } else if constexpr (is_matrix_v<T>) {
+    return std::make_pair(g/y, -frobenius(g, x)/(y*y));
+  } else {
+    assert(false);
+  }
 }
 
 }

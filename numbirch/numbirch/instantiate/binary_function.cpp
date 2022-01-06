@@ -1,8 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.hpp"
 #include "numbirch/cuda/random.hpp"
@@ -23,21 +21,18 @@
  * any arithmetic type.
  */
 #define BINARY_ARITHMETIC(f) \
-    BINARY_FIRST(f, double) \
-    BINARY_FIRST(f, float) \
+    BINARY_FIRST(f, real) \
     BINARY_FIRST(f, int) \
     BINARY_FIRST(f, bool)
 #define BINARY_FIRST(f, R) \
-    BINARY_SECOND(f, R, double) \
-    BINARY_SECOND(f, R, float) \
+    BINARY_SECOND(f, R, real) \
     BINARY_SECOND(f, R, int) \
     BINARY_SECOND(f, R, bool)
 #define BINARY_SECOND(f, R, T) \
-    BINARY_DIM(f, R, T, double) \
-    BINARY_DIM(f, R, T, float) \
-    BINARY_DIM(f, R, T, int) \
-    BINARY_DIM(f, R, T, bool)
-#define BINARY_DIM(f, R, T, U) \
+    BINARY_THIRD(f, R, T, real) \
+    BINARY_THIRD(f, R, T, int) \
+    BINARY_THIRD(f, R, T, bool)
+#define BINARY_THIRD(f, R, T, U) \
     BINARY_SIG(f, R, ARRAY(T, 2), ARRAY(U, 2)) \
     BINARY_SIG(f, R, ARRAY(T, 1), ARRAY(U, 1)) \
     BINARY_SIG(f, R, ARRAY(T, 0), ARRAY(U, 0)) \
@@ -45,7 +40,7 @@
     BINARY_SIG(f, R, T, ARRAY(U, 0)) \
     BINARY_SIG(f, R, T, U)
 #define BINARY_SIG(f, R, T, U) \
-    template explicit_t<R,implicit_t<T,U>> f<R,T,U,int>(const T&, const U&);
+    template explicit_t<R,T,U> f<R,T,U,int>(const T&, const U&);
 
 /**
  * @internal
@@ -56,8 +51,7 @@
  * any floating point type.
  */
 #define BINARY_FLOATING_POINT(f) \
-    BINARY_FIRST(f, double) \
-    BINARY_FIRST(f, float)
+    BINARY_FIRST(f, real)
 
 namespace numbirch {
 BINARY_ARITHMETIC(copysign)

@@ -1,10 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-#include "numbirch/array.hpp"
-#include "numbirch/reduce.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.hpp"
 #endif
@@ -18,14 +14,14 @@
  * @def REDUCE_MATRIX
  * 
  * Explicitly instantiate a unary reduction function `f` for matrices of
- * floating point types only. Use cases include ldet(), trace().
+ * floating point types only.
  */
 #define REDUCE_MATRIX(f) \
-    template Array<double,0> f(const Array<double,2>&); \
-    template Array<float,0> f(const Array<float,2>&);
+    REDUCE_MATRIX_SIG(f, real)
+#define REDUCE_MATRIX_SIG(f, T) \
+    template Array<T,0> f(const Array<T,2>&);
 
 namespace numbirch {
 REDUCE_MATRIX(lcholdet)
 REDUCE_MATRIX(ldet)
-REDUCE_MATRIX(trace)
 }

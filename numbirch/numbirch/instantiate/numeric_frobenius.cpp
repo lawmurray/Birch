@@ -1,10 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-#include "numbirch/array.hpp"
-#include "numbirch/reduce.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.hpp"
 #endif
@@ -20,8 +16,7 @@
  * Explicitly instantiate frobenius().
  */
 #define FROBENIUS(f) \
-    FROBENIUS_SIG(f, double) \
-    FROBENIUS_SIG(f, float)
+    FROBENIUS_SIG(f, real)
 #define FROBENIUS_SIG(f, T) \
     template Array<T,0> f(const Array<T,2>&, const Array<T,2>&);
 

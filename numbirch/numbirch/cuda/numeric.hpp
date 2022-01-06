@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "numbirch/numeric.hpp"
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/cublas.hpp"
 #include "numbirch/cuda/cusolver.hpp"
@@ -12,6 +13,7 @@
 #include "numbirch/common/element.hpp"
 #include "numbirch/common/functor.hpp"
 #include "numbirch/binary.hpp"
+#include "numbirch/reduce.hpp"
 #include "numbirch/memory.hpp"
 
 namespace numbirch {
@@ -98,17 +100,6 @@ Array<T,2> cholinv(const Array<T,2>& S) {
   host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return B;
-}
-
-template<class R, class T, class>
-Array<R,0> count(const T& x) {
-  ///@todo Avoid temporary
-  return sum(transform(x, count_functor<R>()));
-}
-
-template<class R, class T, class>
-Array<R,2> diagonal(const T& x, const int n) {
-  return for_each(n, n, diagonal_functor<R,decltype(data(x))>(data(x)));
 }
 
 template<class T, class>
@@ -206,40 +197,6 @@ Array<T,0> ldet(const Array<T,2>& A) {
   host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return ldet;
-}
-
-template<class R, class T, class>
-Array<R,1> single(const T& i, const int n) {
-  return for_each(n, single_functor<R,decltype(data(i))>(data(i)));
-}
-
-template<class R, class T, class U, class>
-Array<R,2> single(const T& i, const U& j, const int m, const int n) {
-  return for_each(m, n, single_functor<R,decltype(data(i)),decltype(data(j))>(
-      data(i), data(j)));
-}
-
-template<class R, class T, class>
-Array<R,0> sum(const T& x) {
-  prefetch(x);
-  Array<R,0> z;
-  auto y = make_cub(x);
-  void* tmp = nullptr;
-  size_t bytes = 0;
-
-  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y, data(z), size(x),
-      stream));
-  tmp = device_malloc(bytes);
-  CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y, data(z), size(x),
-      stream));
-  device_free(tmp);
-  return z;
-}
-
-template<class T, class>
-Array<T,0> trace(const Array<T,2>& A) {
-  assert(rows(A) == columns(A));
-  return sum(A.diagonal());
 }
 
 template<class T, class>

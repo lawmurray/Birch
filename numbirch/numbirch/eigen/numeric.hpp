@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "numbirch/numeric.hpp"
 #include "numbirch/eigen/eigen.hpp"
 #include "numbirch/common/functor.hpp"
 #include "numbirch/common/element.hpp"
@@ -48,19 +49,6 @@ Array<T,2> cholinv(const Array<T,2>& S) {
   return B;
 }
 
-template<class R, class T, class>
-Array<R,0> count(const T& x) {
-  return make_eigen(x).unaryExpr(count_functor<R>()).sum();
-}
-
-template<class R, class T, class>
-Array<R,2> diagonal(const T& x, const int n) {
-  Array<R,2> B(make_shape(n, n));
-  auto B1 = make_eigen(B);
-  B1.noalias() = R(element(data(x)))*B1.Identity(n, n);
-  return B;
-}
-
 template<class T, class>
 Array<T,2> inv(const Array<T,2>& A) {
   assert(rows(A) == columns(A));
@@ -91,34 +79,6 @@ template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
   auto A1 = make_eigen(A);
   return A1.householderQr().logAbsDeterminant();
-}
-
-template<class R, class T, class>
-Array<R,1> single(const T& i, const int n) {
-  Array<R,1> x(make_shape(n));
-  auto x1 = make_eigen(x);
-  x1.noalias() = x1.Zero(n, 1);
-  x1(element(data(i)) - 1) = R(1);
-  return x;
-}
-
-template<class R, class T, class U, class>
-Array<R,2> single(const T& i, const U& j, const int m, const int n) {
-  Array<R,2> x(make_shape(m, n));
-  auto x1 = make_eigen(x);
-  x1.noalias() = x1.Zero(m, n);
-  x1(element(data(i)) - 1, element(data(j)) - 1) = R(1);
-  return x;
-}
-
-template<class R, class T, class>
-Array<R,0> sum(const T& x) {
-  return make_eigen(x).sum();
-}
-
-template<class T, class>
-Array<T,0> trace(const Array<T,2>& A) {
-  return make_eigen(A).trace();
 }
 
 template<class T, class>

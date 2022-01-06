@@ -25,6 +25,25 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
+ * Gradient of operator*().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param x Vector $x$.
+ * 
+ * @return Gradients with respect to @p A and @p x.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,1>> multiply_grad(const Array<T,1>& g,
+    const Array<T,2>& A, const Array<T,1>& x) {
+  return std::make_pair(outer(g, x), inner(A, g));
+}
+
+/**
  * Matrix-matrix multiplication. Computes $C = AB$.
  * 
  * @ingroup la
@@ -38,6 +57,25 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
+
+/**
+ * Gradient of operator*().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Gradients with respect to @p A and @p B.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,2>> multiply_grad(const Array<T,2>& G,
+    const Array<T,2>& A, const Array<T,2>& B) {
+  return std::make_pair(outer(G, B), inner(A, G));
+}
 
 /**
  * Inverse of a symmetric positive definite square matrix, via the Cholesky
@@ -59,6 +97,24 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholinv(const Array<T,2>& S);
 
 /**
+ * Gradient of cholinv().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param S Symmetric positive definite matrix.
+ * 
+ * @return Gradient with respect to @p S.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholinv_grad(const Array<T,2>& G, const Array<T,2>& S) {
+  auto B = cholinv(S);
+  return -B*G*B;
+}
+
+/**
  * Inverse of a square matrix.
  * 
  * @ingroup la
@@ -71,6 +127,24 @@ Array<T,2> cholinv(const Array<T,2>& S);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inv(const Array<T,2>& A);
+
+/**
+ * Gradient of inv().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Square matrix.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> inv_grad(const Array<T,2>& G, const Array<T,2>& A) {
+  auto B = inv(A);
+  return -outer(inner(B, G), B);
+}
 
 /**
  * Logarithm of the determinant of a symmetric positive definite matrix, via
@@ -92,6 +166,22 @@ Array<T,2> inv(const Array<T,2>& A);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> lcholdet(const Array<T,2>& S);
 
+/**
+ * Gradient of `lcholdet()`.
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param S Symmetric positive definite matrix.
+ * 
+ * @return Gradient with respect to @p S.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,2>& S) {
+  return g*cholinv(S);
+}
 
 /**
  * Logarithm of the absolute value of the determinant of a square matrix.
@@ -108,18 +198,21 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> ldet(const Array<T,2>& A);
 
 /**
- * Matrix trace.
+ * Gradient of `ldet()`.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
+ * @param g Gradient with respect to result.
  * @param A Matrix.
  * 
- * @return Trace.
+ * @return Gradient with respect to @p A.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,0> trace(const Array<T,2>& A);
+Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,2>& A) {
+  return g*transpose(inv(A));
+}
 
 /**
  * Matrix transpose.
@@ -134,6 +227,23 @@ Array<T,0> trace(const Array<T,2>& A);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> transpose(const Array<T,2>& A);
+
+/**
+ * Gradient of transpose().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Matrix.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> transpose_grad(const Array<T,2>& G, const Array<T,2>& A) {
+  return transpose(G);
+}
 
 /**
  * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
@@ -216,6 +326,26 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
 
 /**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param S Symmetric positive definite matrix $S$.
+ * @param y Vector $y$.
+ * 
+ * @return Gradients with respect to @p S and @p y.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
+    const Array<T,2>& S, const Array<T,1>& y) {
+  auto L = cholinv(S);
+  return std::make_pair(-L*outer(g, y)*L, inner(L, g));
+}
+
+/**
  * Matrix-matrix solve, via the Cholesky factorization. Solves for $B$ in
  * $SB = C$.
  * 
@@ -236,6 +366,26 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
 
 /**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param S Symmetric positive definite matrix $S$.
+ * @param C Matrix $C$.
+ * 
+ * @return Gradients with respect to @p S and @p C.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& G,
+    const Array<T,2>& S, const Array<T,2>& C) {
+  auto L = cholinv(S);
+  return std::make_pair(-L*outer(G, C)*L, inner(L, G));
+}
+
+/**
  * Vector-vector dot product. Computes $x^\top y$, resulting in a scalar.
  * 
  * @ingroup la
@@ -249,6 +399,25 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
+
+/**
+ * Gradient of dot().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param x Vector $x$.
+ * @param y Vector $y$.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,1>,Array<T,1>> dot_grad(const Array<T,0>& g,
+    const Array<T,1>& x, const Array<T,1>& y) {
+  return std::make_pair(g*y, g*x);
+}
 
 /**
  * Matrix-matrix Frobenius product. Computes $\langle A, B 
@@ -268,6 +437,25 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
+ * Gradient of frobenius().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Gradients with respect to @p A and @p B.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,2>> frobenius_grad(const Array<T,0>& g,
+    const Array<T,2>& A, const Array<T,2>& B) {
+  return std::make_pair(g*B, g*A);
+}
+
+/**
  * Matrix-vector inner product. Computes $y = A^\top x$.
  * 
  * @ingroup la
@@ -281,6 +469,25 @@ Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
+
+/**
+ * Gradient of inner().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param x Vector $x$.
+ * 
+ * @return Gradients with respect to @p A and @p x.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,1>> inner_grad(const Array<T,1>& g,
+    const Array<T,2>& A, const Array<T,1>& x) {
+  return std::make_pair(outer(x, g), A*g);
+}
 
 /**
  * Matrix-matrix inner product. Computes $y = A^\top B$.
@@ -298,6 +505,25 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
+ * Gradient of inner().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Gradients with respect to @p A and @p B.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& G,
+    const Array<T,2>& A, const Array<T,2>& B) {
+  return std::make_pair(outer(B, G), A*G);
+}
+
+/**
  * Vector-vector outer product. Computes $A = xy^\top$.
  * 
  * @ingroup la
@@ -311,6 +537,25 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
+
+/**
+ * Gradient of outer().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param x Vector $x$.
+ * @param y Vector $y$.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& G,
+    const Array<T,1>& x, const Array<T,1>& y) {
+  return std::make_pair(G*y, inner(G, x));
+}
 
 /**
  * Matrix-matrix outer product. Computes $C = AB^\top$.
@@ -328,6 +573,25 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
+ * Gradient of outer().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Gradients with respect to @p A and @p B.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& G,
+    const Array<T,2>& A, const Array<T,2>& B) {
+  return std::make_pair(G*B, inner(G, A));
+}
+
+/**
  * Matrix-vector solve. Solves for $x$ in $Ax = y$.
  * 
  * @ingroup la
@@ -343,6 +607,26 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y);
 
 /**
+ * Gradient of solve().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param y Vector $y$.
+ * 
+ * @return Gradients with respect to @p A and @p y.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,1>> solve_grad(const Array<T,1>& g,
+    const Array<T,2>& A, const Array<T,1>& y) {
+  auto L = inv(A);
+  return std::make_pair(-L*outer(g, y)*L, inner(L, g));
+}
+
+/**
  * Matrix-matrix solve. Solves for $B$ in $AB = C$.
  * 
  * @ingroup la
@@ -356,5 +640,25 @@ Array<T,1> solve(const Array<T,2>& A, const Array<T,1>& y);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C);
+
+/**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Matrix $A$.
+ * @param C Matrix $C$.
+ * 
+ * @return Gradients with respect to @p A and @p C.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+std::pair<Array<T,2>,Array<T,2>> solve_grad(const Array<T,2>& G,
+    const Array<T,2>& A, const Array<T,2>& C) {
+  auto L = inv(A);
+  return std::make_pair(-L*outer(G, C)*L, inner(L, G));
+}
 
 }

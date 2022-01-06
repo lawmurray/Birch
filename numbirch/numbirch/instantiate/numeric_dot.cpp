@@ -1,10 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-#include "numbirch/array.hpp"
-#include "numbirch/reduce.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.hpp"
 #endif
@@ -20,8 +16,7 @@
  * Explicitly instantiate dot().
  */
 #define DOT(f) \
-    DOT_SIG(f, double) \
-    DOT_SIG(f, float)
+    DOT_SIG(f, real)
 #define DOT_SIG(f, T) \
     template Array<T,0> f(const Array<T,1>&, const Array<T,1>&);
 

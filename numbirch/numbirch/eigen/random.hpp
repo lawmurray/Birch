@@ -56,7 +56,7 @@ template<class R>
 struct simulate_gamma_functor {
   template<class T, class U>
   R operator()(const T k, const U theta) const {
-    return std::gamma_distribution<long double>(k, theta)(stl<R>::rng());
+    return std::gamma_distribution<R>(k, theta)(stl<R>::rng());
   }
 };
 

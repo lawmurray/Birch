@@ -1,8 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/random.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/random.hpp"
 #include "numbirch/cuda/transform.hpp"
@@ -19,8 +17,7 @@
  * @def STANDARD_MATRIX
  */
 #define STANDARD_MATRIX(f) \
-    STANDARD_MATRIX_SIG(f, double) \
-    STANDARD_MATRIX_SIG(f, float)
+    STANDARD_MATRIX_SIG(f, real)
 #define STANDARD_MATRIX_SIG(f, R) \
     template Array<R,2> f<R>(const int m, const int n);
 

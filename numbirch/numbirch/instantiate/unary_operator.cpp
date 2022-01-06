@@ -1,8 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.hpp"
 #endif
@@ -22,19 +20,14 @@
  * `operator-(double)`).
  */
 #define UNARY_OPERATOR(f) \
-    UNARY_OPERATOR_FIRST(f, double) \
-    UNARY_OPERATOR_FIRST(f, float) \
+    UNARY_OPERATOR_FIRST(f, real) \
     UNARY_OPERATOR_FIRST(f, int) \
     UNARY_OPERATOR_FIRST(f, bool)
-#define UNARY_OPERATOR_RETURN(f) \
-    UNARY_OPERATOR_FIRST(f, double) \
-    UNARY_OPERATOR_FIRST(f, float)
 #define UNARY_OPERATOR_FIRST(f, R) \
-    UNARY_OPERATOR_DIM(f, R, double) \
-    UNARY_OPERATOR_DIM(f, R, float) \
-    UNARY_OPERATOR_DIM(f, R, int) \
-    UNARY_OPERATOR_DIM(f, R, bool)
-#define UNARY_OPERATOR_DIM(f, R, T) \
+    UNARY_OPERATOR_SECOND(f, R, real) \
+    UNARY_OPERATOR_SECOND(f, R, int) \
+    UNARY_OPERATOR_SECOND(f, R, bool)
+#define UNARY_OPERATOR_SECOND(f, R, T) \
     UNARY_OPERATOR_SIG(f, R, ARRAY(T, 2)) \
     UNARY_OPERATOR_SIG(f, R, ARRAY(T, 1)) \
     UNARY_OPERATOR_SIG(f, R, ARRAY(T, 0))

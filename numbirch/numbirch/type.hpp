@@ -112,7 +112,8 @@ inline constexpr bool is_integral_v = is_integral<T>::value;
  * 
  * @ingroup trait
  * 
- * A floating point type is one of `double` or `float`.
+ * The only floating point type is `real`, which is an alias of either
+ * `double` or `float` according to the NumBirch build.
  * 
  * @see c.f. [std::is_floating_point]
  * (https://en.cppreference.com/w/cpp/types/is_floating_point)
@@ -122,11 +123,7 @@ struct is_floating_point {
   static constexpr bool value = false;
 };
 template<>
-struct is_floating_point<double> {
-  static constexpr bool value = true;
-};
-template<>
-struct is_floating_point<float> {
+struct is_floating_point<real> {
   static constexpr bool value = true;
 };
 template<class T>
@@ -217,7 +214,7 @@ inline constexpr bool is_array_v = is_array<T>::value;
  * 
  * @ingroup trait
  * 
- * A scalar type is any arithmetic type with zero dimensions.
+ * A scalar type is any numeric type with zero dimensions.
  */
 template<class T>
 struct is_scalar {
@@ -226,6 +223,40 @@ struct is_scalar {
 };
 template<class T>
 inline constexpr bool is_scalar_v = is_scalar<T>::value;
+
+/**
+ * @var is_vector_v
+ * 
+ * Is `T` a vector type?
+ * 
+ * @ingroup trait
+ * 
+ * A vector type is any numeric type with one dimension.
+ */
+template<class T>
+struct is_vector {
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
+      dimension<T>::value == 1;
+};
+template<class T>
+inline constexpr bool is_vector_v = is_vector<T>::value;
+
+/**
+ * @var is_matrix_v
+ * 
+ * Is `T` a matrix type?
+ * 
+ * @ingroup trait
+ * 
+ * A matrix type is any numeric type with two dimensions.
+ */
+template<class T>
+struct is_matrix {
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
+      dimension<T>::value == 2;
+};
+template<class T>
+inline constexpr bool is_matrix_v = is_matrix<T>::value;
 
 /**
  * @var is_numeric_v
@@ -371,12 +402,12 @@ using promote_t = typename promote<Args...>::type;
 /**
  * @typedef implicit_t
  * 
- * Implicit return type for a collection of argument types.
+ * Implicit return type.
  * 
  * @tparam Args Numeric types.
  * 
  * For arithmetic types this works as promote_t. If one or more of the
- * argument types is an array type, then gives an array type `Array<T,D>`
+ * numeric types is an array type, then gives an array type `Array<T,D>`
  * where `T` is the promotion of all the element types among all arguments,
  * and `D` the largest number of dimensions among all arguments.
  * 
@@ -416,23 +447,30 @@ using implicit_t = typename implicit<Args...>::type;
 /**
  * @typedef explicit_t
  * 
- * Explicit override of return type. This is typically used around
- * `implicit_t`, e.g. `explicit_t<R,implicit_t<Args...>>`.
+ * Explicit override of return type.
  * 
  * @tparam R Arithmetic type.
- * @tparam T Numeric type.
+ * @tparam Args Numeric types.
  * 
- * This replaces the element type of `T` with `R`.
+ * This works as for implicit_t, but overrides the element type with `R`.
  * 
  * @ingroup trait
  */
-template<class R, class T>
+template<class... Args>
 struct explicit_s {
-  using type = R;
+  using type = void;
+};
+template<class R, class... Args>
+struct explicit_s<R,Args...> {
+  using type = typename explicit_s<R,typename implicit<Args...>::type>::type;
 };
 template<class R, class T, int D>
 struct explicit_s<R,Array<T,D>> {
   using type = Array<R,D>;
+};
+template<class R, class T>
+struct explicit_s<R,T> {
+  using type = R;
 };
 template<class R, class... Args>
 using explicit_t = typename explicit_s<R,Args...>::type;
@@ -442,28 +480,18 @@ using explicit_t = typename explicit_s<R,Args...>::type;
  * 
  * @ingroup trait
  * 
- * Default floating point override of return type. This is typically used
- * around `implicit_t`, e.g. `default_t<implicit_t<Args...>>`. If the element
- * type of `T` is an integral type, then replaces it with the default floating
- * point type (see numbirch::real).
+ * Default floating point override of return type.
  * 
- * @tparam T Numeric type.
+ * @tparam Args Numeric types.
+ * 
+ * This works as for implicit_t, but overrides the element type with `real`;
+ * equivalently `explicit_t<real,Args...>`.
+ * 
+ * @ingroup trait
  */
-template<class T>
+template<class... Args>
 struct default_s {
-  using type = T;
-};
-template<>
-struct default_s<bool> {
-  using type = real;
-};
-template<>
-struct default_s<int> {
-  using type = real;
-};
-template<class T, int D>
-struct default_s<Array<T,D>> {
-  using type = Array<typename default_s<T>::type,D>;
+  using type = typename explicit_s<real,Args...>::type;
 };
 template<class... Args>
 using default_t = typename default_s<Args...>::type;

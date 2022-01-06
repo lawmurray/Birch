@@ -1,8 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/numeric.hpp"
-
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.hpp"
 #include "numbirch/cuda/random.hpp"
@@ -23,19 +21,14 @@
  * any arithmetic type.
  */
 #define UNARY_ARITHMETIC(f) \
-    UNARY_FIRST(f, double) \
-    UNARY_FIRST(f, float) \
+    UNARY_FIRST(f, real) \
     UNARY_FIRST(f, int) \
     UNARY_FIRST(f, bool)
-#define UNARY_RETURN(f) \
-    UNARY_FIRST(f, double) \
-    UNARY_FIRST(f, float)
 #define UNARY_FIRST(f, R) \
-    UNARY_DIM(f, R, double) \
-    UNARY_DIM(f, R, float) \
-    UNARY_DIM(f, R, int) \
-    UNARY_DIM(f, R, bool)
-#define UNARY_DIM(f, R, T) \
+    UNARY_SECOND(f, R, real) \
+    UNARY_SECOND(f, R, int) \
+    UNARY_SECOND(f, R, bool)
+#define UNARY_SECOND(f, R, T) \
     UNARY_SIG(f, R, ARRAY(T, 2)) \
     UNARY_SIG(f, R, ARRAY(T, 1)) \
     UNARY_SIG(f, R, ARRAY(T, 0)) \
@@ -52,14 +45,14 @@
  * any floating point type.
  */
 #define UNARY_FLOATING_POINT(f) \
-    UNARY_FIRST(f, double) \
-    UNARY_FIRST(f, float)
+    UNARY_FIRST(f, real)
 
 namespace numbirch {
 UNARY_ARITHMETIC(abs)
 UNARY_FLOATING_POINT(acos)
 UNARY_FLOATING_POINT(asin)
 UNARY_FLOATING_POINT(atan)
+UNARY_ARITHMETIC(cast)
 UNARY_ARITHMETIC(ceil)
 UNARY_FLOATING_POINT(cos)
 UNARY_FLOATING_POINT(cosh)
@@ -71,7 +64,6 @@ UNARY_FLOATING_POINT(lfact)
 UNARY_FLOATING_POINT(lgamma)
 UNARY_FLOATING_POINT(log)
 UNARY_FLOATING_POINT(log1p)
-UNARY_FLOATING_POINT(rcp)
 UNARY_ARITHMETIC(rectify)
 UNARY_ARITHMETIC(round)
 UNARY_FLOATING_POINT(sin)
