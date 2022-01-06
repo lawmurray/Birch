@@ -72,16 +72,28 @@ AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
 if $debug; then
-  AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="-lbirch-debug"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
   AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lnumbirch-debug"], [AC_MSG_ERROR([required library not found])])
 fi
 if $test; then
-  AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="-lbirch-test"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="$TEST_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
   AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="$TEST_LIBS -lnumbirch-test"], [AC_MSG_ERROR([required library not found])])
 fi
 if $release; then
-  AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="-lbirch"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
   AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])])
+fi
+if $debug && $single; then
+  AC_CHECK_LIB([birch-debug], [main], [DEBUG_SINGLE_LIBS="$DEBUG_SINGLE_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch-debug-single], [main], [DEBUG_SINGLE_LIBS="$DEBUG_SINGLE_LIBS -lnumbirch-debug-single"], [AC_MSG_ERROR([required library not found])])
+fi
+if $test && $single; then
+  AC_CHECK_LIB([birch-test], [main], [TEST_SINGLE_LIBS="$TEST_SINGLE_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch-test-single], [main], [TEST_SINGLE_LIBS="$TEST_SINGLE_LIBS -lnumbirch-test-single"], [AC_MSG_ERROR([required library not found])])
+fi
+if $release && $single; then
+  AC_CHECK_LIB([birch], [main], [RELEASE_SINGLE_LIBS="$RELEASE_SINGLE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch-single], [main], [RELEASE_SINGLE_LIBS="$RELEASE_SINGLE_LIBS -lnumbirch-single"], [AC_MSG_ERROR([required library not found])])
 fi
 
 # Checks for libraries
