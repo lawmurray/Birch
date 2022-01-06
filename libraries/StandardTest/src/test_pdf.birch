@@ -27,12 +27,12 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
     p <- π.pdf(true);
     q <- π.pdf(false);
   }
-  let δ <- abs(p - scalar<Real>(k)/N);
+  let δ <- abs(p - cast<Real>(k)/N);
   if 100 < N && !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on true, " + δ + " > " + ε + "\n");
   }
-  δ <- abs(q - scalar<Real>(N - k)/N);
+  δ <- abs(q - cast<Real>(N - k)/N);
   if 100 < N && !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on false, " + δ + " > " + ε + "\n");
@@ -101,7 +101,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     } else {
       p <- π.pdf(x);
     }
-    let δ <- abs(p - scalar<Real>(count[x - from!! + 1])/N);
+    let δ <- abs(p - cast<Real>(count[x - from!! + 1])/N);
     let ε <- 5.0/sqrt(N);
     if 100 < N && !(δ <= ε) {  // careful of nans
       failed <- true;
