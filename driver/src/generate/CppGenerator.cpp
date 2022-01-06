@@ -84,7 +84,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
 }
 
 void birch::CppGenerator::visit(const Cast* o) {
-  middle("birch::cast<" << o->returnType << ">(" << o->single << ')');
+  middle("birch::optional_cast<" << o->returnType << ">(" << o->single << ')');
 }
 
 void birch::CppGenerator::visit(const Call* o) {

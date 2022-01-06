@@ -6,19 +6,8 @@ struct LogZConwayMaxwellPoisson<Left,Middle,Right>(l:Left, m:Middle,
   phantom x;
 
   hpp{{
-  BIRCH_TERNARY_FUNCTION_FORM(logz_conway_maxwell_poisson)
+  BIRCH_TERNARY_FUNCTION_FORM(logz_conway_maxwell_poisson, logz_conway_maxwell_poisson_grad)
   }}
-}
-
-function grad<Left,Middle,Right,Gradient>(
-      x:LogZConwayMaxwellPoisson<Left,Middle,Right>, d:Gradient) {
-  let λ <- peek(x.l);
-  let ν <- peek(x.m);
-  let n <- peek(x.r);
-  let (dλ, dν, dn) <- logz_conway_maxwell_poisson_grad(d, λ, ν, n);
-  grad(x.l, dλ);
-  grad(x.m, dν);
-  grad(x.r, dn);
 }
 
 hpp{{
@@ -48,24 +37,24 @@ function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   /* to avoid taking exp() of large negative values, normalize each term in
    * this sum using the maximum term, which is the unnormalized log
    * probability at the mode; this is similar to log_sum_exp() */
-  let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
+  let μ <- min(pow(λ, 1.0/ν), cast<Real>(n));  // mode
   let mx <- μ*log_λ - ν*lgamma(μ + 1.0);  // max unnormalized log probability
 
   /* sum renormalized terms */
   let log_xf <- 0.0;  // accumulator of log(x!)
   let Z <- exp(-mx);  // for x == 0
   for x in 1..n {
-    log_xf <- log_xf + log(scalar<Real>(x));
+    log_xf <- log_xf + log(cast<Real>(x));
     Z <- Z + exp(x*log_λ - ν*log_xf - mx);
   }
 
   return mx + log(Z);
 }
 
-function logz_conway_maxwell_poisson_grad(d:Real, λ:Real, ν:Real,
-    n:Integer) -> (Real, Real, Real) {
+function logz_conway_maxwell_poisson_grad<Gradient>(
+      d:Gradient, λ:Real, ν:Real, n:Integer) -> (Real, Real, Real) {
   let log_λ <- log(λ);
-  let μ <- min(pow(λ, 1.0/ν), scalar<Real>(n));  // mode
+  let μ <- min(pow(λ, 1.0/ν), cast<Real>(n));  // mode
   let mx <- μ*log_λ - ν*lgamma(μ + 1.0);  // renormalizer
   let log_xf <- 0.0;  // accumulator of lfact(x)
   let z <- 0.0;

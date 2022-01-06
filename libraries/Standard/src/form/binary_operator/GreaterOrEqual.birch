@@ -6,18 +6,14 @@ struct GreaterOrEqual<Left,Right>(l:Left, r:Right) <
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator>=)
+  BIRCH_BINARY_FUNCTION_FORM(operator>=, greater_or_equal_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:GreaterOrEqual<Left,Right>, d:Gradient) {
-  grad(x.l, 0.0);
-  grad(x.r, 0.0);
 }
 
 hpp{{
 namespace birch {
 using numbirch::operator>=;
+using numbirch::greater_or_equal_grad;
 
 /**
  * Greater than or equal to comparison.

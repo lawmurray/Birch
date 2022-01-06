@@ -27,51 +27,33 @@ struct Unary<Middle>(m:Middle) < Form {
 }
 
 hpp{{
-#define BIRCH_UNARY_FUNCTION_FORM(f) \
-  using Value = decltype(f( \
-        std::declval<decltype(birch::peek(std::declval<Middle>()))>())); \
+#define BIRCH_UNARY_FUNCTION_FORM(f, f_grad, args...) \
+  using Value = decltype(f(birch::peek(std::declval<Middle>()), ##args)); \
   std::optional<Value> x; \
   \
-  const Value& value() const { \
+  auto value() const { \
     if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::value(this->m)); \
+      const_cast<std::optional<Value>&>(x) = f(birch::value(this->m), \
+          ##args); \
     } \
     return *x; \
   } \
   \
-  const Value& peek() const { \
+  auto peek() const { \
     if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->m)); \
+      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->m), \
+          ##args); \
     } \
     return *x; \
   } \
   \
-  const Value& eval() const { \
-    const_cast<std::optional<Value>&>(x) = f(birch::eval(this->m)); \
-    return *x; \
-  }
-
-#define BIRCH_UNARY_OPERATOR_FORM(op) \
-  using Value = decltype(op( \
-        std::declval<decltype(birch::peek(std::declval<Middle>()))>())); \
-  std::optional<Value> x; \
-  \
-  const Value& value() const { \
-    if (!x) { \
-      const_cast<std::optional<Value>&>(x) = op(birch::value(this->m)); \
-    } \
-    return *x; \
+  auto eval() const { \
+    return f(birch::eval(this->m), ##args); \
   } \
   \
-  const Value& peek() const { \
-    if (!x) { \
-      const_cast<std::optional<Value>&>(x) = op(birch::peek(this->m)); \
-    } \
-    return *x; \
-  } \
-  \
-  const Value& eval() const { \
-    const_cast<std::optional<Value>&>(x) = op(birch::eval(this->m)); \
-    return *x; \
+  template<class G> \
+  void grad(const G& g) const { \
+    auto gm = f_grad(g, birch::peek(this->m), ##args); \
+    birch::grad(this->m, gm); \
   }
 }}

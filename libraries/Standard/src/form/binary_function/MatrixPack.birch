@@ -5,14 +5,8 @@ struct MatrixPack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(pack)
+  BIRCH_BINARY_FUNCTION_FORM(pack, pack_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:MatrixPack<Left,Right>, d:Gradient) {
-  let (dl, dr) <- grad_pack(d, peek(x.l), peek(x.r));
-  grad(x.l, dl);
-  grad(x.r, dr);
 }
 
 hpp{{
@@ -70,17 +64,17 @@ function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
   return Z;
 }
 
-function grad_pack<Gradient,Type>(d:Gradient, x:Type, y:Type) -> {
+function pack_grad<Gradient,Type>(d:Gradient, x:Type, y:Type) -> {
   assert rows(d) == 1 && columns(d) == 2;
   return (d[1,1], d[1,2]);
 }
 
-function grad_pack<Gradient,Type>(d:Gradient, x:Type[_], y:Type[_]) -> {
+function pack_grad<Gradient,Type>(d:Gradient, x:Type[_], y:Type[_]) -> {
   assert columns(d) == 2;
   return (column(d, 1), column(d, 2));
 }
 
-function grad_pack<Gradient,Type>(d:Gradient, l:Type[_,_], r:Type[_,_]) -> {
+function pack_grad<Gradient,Type>(d:Gradient, l:Type[_,_], r:Type[_,_]) -> {
   let r1 <- rows(l);
   let c1 <- columns(l);
   let c2 <- columns(r);

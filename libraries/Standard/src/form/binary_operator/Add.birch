@@ -5,18 +5,14 @@ struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator+)
+  BIRCH_BINARY_FUNCTION_FORM(operator+, add_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Add<Left,Right>, d:Gradient) {
-  grad(x.l, d);
-  grad(x.r, d);
 }
 
 hpp{{
 namespace birch {
 using numbirch::operator+;
+using numbirch::add_grad;
 
 /**
  * Addition.

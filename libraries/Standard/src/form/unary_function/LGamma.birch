@@ -5,17 +5,14 @@ struct LGamma<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(lgamma)
+  BIRCH_UNARY_FUNCTION_FORM(lgamma, lgamma_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:LGamma<Middle>, d:Gradient) -> {
-  return grad(x.m, hadamard(d, digamma(peek(x.m))));
 }
 
 hpp{{
 namespace birch {
 using numbirch::lgamma;
+using numbirch::lgamma_grad;
 
 /**
  * Logarithm of the gamma function.

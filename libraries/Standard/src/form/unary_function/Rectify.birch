@@ -5,12 +5,8 @@ struct Rectify<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(rectify)
+  BIRCH_UNARY_FUNCTION_FORM(rectify, rectify_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Rectify<Middle>, d:Gradient) {
-  grad(x.m, rectify_grad(d, peek(x.m)));
 }
 
 hpp{{

@@ -5,18 +5,14 @@ struct Frobenius<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(frobenius)
+  BIRCH_BINARY_FUNCTION_FORM(frobenius, frobenius_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Frobenius<Left,Right>, d:Gradient) {
-  grad(x.l, d*peek(x.r));
-  grad(x.r, d*peek(x.l));
 }
 
 hpp{{
 namespace birch {
 using numbirch::frobenius;
+using numbirch::frobenius_grad;
 
 /**
  * Frobenius product.

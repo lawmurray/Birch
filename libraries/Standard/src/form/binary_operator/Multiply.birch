@@ -5,19 +5,14 @@ struct Multiply<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator*)
+  BIRCH_BINARY_FUNCTION_FORM(operator*, multiply_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Multiply<Left,Right>, d:Gradient) {
-  let (dl, dr) <- grad_multiply(d, peek(x.l), peek(x.r));
-  grad(x.l, dl);
-  grad(x.r, dr);
 }
 
 hpp{{
 namespace birch {
 using numbirch::operator*;
+using numbirch::multiply_grad;
 
 /**
  * Multiplication.
@@ -29,37 +24,3 @@ Multiply<Left,Right> operator*(const Left& l, const Right& r) {
 }
 }
 }}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient, l:Left, r:Right) -> {
-  return (d*r, l*d);
-}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient[_], l:Left,
-    r:Right[_]) -> {
-  return (dot(d, r), l*d);
-}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient[_], l:Left[_],
-    r:Right) -> {
-  return (d*r, dot(l, d));
-}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient[_,_], l:Left,
-    r:Right[_,_]) -> {
-  return (frobenius(d, r), l*d);
-}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient[_,_], l:Left[_,_],
-    r:Right) -> {
-  return (d*r, frobenius(l, d));
-}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient[_], l:Left[_,_],
-    r:Right[_]) -> {
-  return (outer(d, r), inner(l, d));
-}
-
-function grad_multiply<Gradient,Left,Right>(d:Gradient[_,_], l:Left[_,_],
-    r:Right[_,_]) -> {
-  return (outer(d, r), inner(l, d));
-}

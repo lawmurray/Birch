@@ -5,17 +5,14 @@ struct Asin<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(asin)
+  BIRCH_UNARY_FUNCTION_FORM(asin, asin_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Asin<Middle>, d:Gradient) {
-  return grad(x.m, d/sqrt(1.0 - pow(peek(x.m), 2.0)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::asin;
+using numbirch::asin_grad;
 
 /**
  * Arc sine.

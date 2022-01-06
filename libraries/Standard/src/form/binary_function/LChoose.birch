@@ -5,14 +5,8 @@ struct LChoose<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(lchoose)
+  BIRCH_BINARY_FUNCTION_FORM(lchoose, lchoose_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:LChoose<Left,Right>, d:Gradient) {
-  let (dx, dy) <- lchoose_grad(d, peek(x.l), peek(x.r));
-  grad(x.l, hadamard(d, dx));
-  grad(x.r, hadamard(d, dy));
 }
 
 hpp{{

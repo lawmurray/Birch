@@ -5,12 +5,8 @@ struct LFact<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(lfact<Real>)
+  BIRCH_UNARY_FUNCTION_FORM(lfact<Real>, lfact_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:LFact<Middle>, d:Gradient) -> {
-  return grad(x.m, hadamard(d, lfact_grad(d, peek(x.m))));
 }
 
 hpp{{

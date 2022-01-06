@@ -5,20 +5,14 @@ struct LBeta<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(lbeta)
+  BIRCH_BINARY_FUNCTION_FORM(lbeta, lbeta_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:LBeta<Left,Right>, d:Gradient) {
-  let l <- peek(x.l);
-  let r <- peek(x.r);
-  grad(x.l, hadamard(d, digamma(l) - digamma(l + r)));
-  grad(x.r, hadamard(d, digamma(r) - digamma(l + r)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::lbeta;
+using numbirch::lbeta_grad;
 
 /**
  * Logarithm of the beta function.

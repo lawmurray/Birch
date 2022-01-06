@@ -5,17 +5,14 @@ struct Count<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(count)
+  BIRCH_UNARY_FUNCTION_FORM(count, count_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Count<Middle>, d:Gradient) {
-  grad(x.m, grad_count(d, peek(x.m)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::count;
+using numbirch::count_grad;
 
 /**
  * Count of nonzero elements.
@@ -26,15 +23,3 @@ Count<Middle> count(const Middle& m) {
 }
 }
 }}
-
-function grad_count<Gradient,Type>(d:Gradient, m:Type) -> {
-  return 0.0;
-}
-
-function grad_count<Gradient,Type>(d:Gradient, m:Type[_]) -> {
-  return vector(0.0, length(m));
-}
-
-function grad_count<Gradient,Type>(d:Gradient, m:Type[_,_]) -> {
-  return matrix(0.0, rows(m), columns(m));
-}

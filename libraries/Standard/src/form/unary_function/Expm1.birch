@@ -5,17 +5,14 @@ struct Expm1<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(expm1)
+  BIRCH_UNARY_FUNCTION_FORM(expm1, expm1_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Expm1<Middle>, d:Gradient) {
-  grad(x.m, d*exp(peek(x.m)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::expm1;
+using numbirch::expm1_grad;
 
 /**
  * Exponential minus one.

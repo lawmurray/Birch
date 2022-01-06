@@ -5,17 +5,14 @@ struct Log<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(log)
+  BIRCH_UNARY_FUNCTION_FORM(log, log_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Log<Middle>, d:Gradient) {
-  grad(x.m, hadamard(d, rcp(peek(x.m))));
 }
 
 hpp{{
 namespace birch {
 using numbirch::log;
+using numbirch::log_grad;
 
 /**
  * Logarithm.

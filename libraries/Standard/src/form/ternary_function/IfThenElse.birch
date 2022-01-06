@@ -6,16 +6,8 @@ struct IfThenElse<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
   phantom x;
 
   hpp{{
-  BIRCH_TERNARY_FUNCTION_FORM(if_then_else)
+  BIRCH_TERNARY_FUNCTION_FORM(if_then_else, if_then_else_grad)
   }}
-}
-
-function grad<Left,Middle,Right,Gradient>(x:IfThenElse<Left,Middle,Right>,
-    d:Gradient) {
-  let l <- peek(x.l);
-  grad(x.l, 0.0);
-  grad(x.m, if_then_else(l, d, 0.0));
-  grad(x.r, if_then_else(l, 0.0, d));
 }
 
 hpp{{
@@ -74,4 +66,9 @@ function if_then_else<Type>(cond:Boolean, x:Type!, y:Type!) -> Type! {
   } else {
     return y;
   }
+}
+
+function if_then_else_grad<Gradient,Left,Middle,Right>(d:Gradient,
+    l:Left, m:Middle, r:Right) -> (Real, Real, Real) {
+  return (0.0, if_then_else(l, d, 0.0), if_then_else(l, 0.0, d));
 }

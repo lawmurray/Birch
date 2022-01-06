@@ -5,17 +5,14 @@ struct Transpose<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(transpose)
+  BIRCH_UNARY_FUNCTION_FORM(transpose, transpose_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Transpose<Middle>, d:Gradient) {
-  grad(x.m, transpose(d));
 }
 
 hpp{{
 namespace birch {
 using numbirch::transpose;
+using numbirch::transpose_grad;
 
 /**
  * Matrix transpose.

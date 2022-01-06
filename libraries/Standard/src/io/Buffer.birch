@@ -687,9 +687,9 @@ final class Buffer {
     if scalarBoolean? {
       return scalarBoolean!;
     } else if scalarInteger? {
-      return scalar<Boolean>(scalarInteger!);
+      return cast<Boolean>(scalarInteger!);
     } else if scalarReal? {
-      return scalar<Boolean>(scalarReal!);
+      return cast<Boolean>(scalarReal!);
     } else if scalarString? {
       return from_string<Boolean>(scalarString!);
     } else {
@@ -699,11 +699,11 @@ final class Buffer {
 
   function doGet(x:Integer?) -> Integer? {
     if scalarBoolean? {
-      return scalar<Integer>(scalarBoolean!);
+      return cast<Integer>(scalarBoolean!);
     } else if scalarInteger? {
       return scalarInteger!;
     } else if scalarReal? {
-      return scalar<Integer>(scalarReal!);
+      return cast<Integer>(scalarReal!);
     } else if scalarString? {
       return from_string<Integer>(scalarString!);
     } else {
@@ -713,9 +713,9 @@ final class Buffer {
 
   function doGet(x:Real?) -> Real? {
     if scalarBoolean? {
-      return scalar<Real>(scalarBoolean!);
+      return cast<Real>(scalarBoolean!);
     } else if scalarInteger? {
-      return scalar<Real>(scalarInteger!);
+      return cast<Real>(scalarInteger!);
     } else if scalarReal? {
       return scalarReal!;
     } else if scalarString? {
@@ -747,9 +747,9 @@ final class Buffer {
     if vectorBoolean? {
       return vectorBoolean!;
     } else if vectorInteger? {
-      return vector<Boolean>(vectorInteger!);
+      return cast<Boolean>(vectorInteger!);
     } else if vectorReal? {
-      return vector<Boolean>(vectorReal!);
+      return cast<Boolean>(vectorReal!);
     } else {
       return doGetVector<Boolean>();
     }
@@ -757,11 +757,11 @@ final class Buffer {
 
   function doGet(x:Integer[_]?) -> Integer[_]? {
     if vectorBoolean? {
-      return vector<Integer>(vectorBoolean!);
+      return cast<Integer>(vectorBoolean!);
     } else if vectorInteger? {
       return vectorInteger!;
     } else if vectorReal? {
-      return vector<Integer>(vectorReal!);
+      return cast<Integer>(vectorReal!);
     } else {
       return doGetVector<Integer>();
     }
@@ -769,9 +769,9 @@ final class Buffer {
 
   function doGet(x:Real[_]?) -> Real[_]? {
     if vectorBoolean? {
-      return vector<Real>(vectorBoolean!);
+      return cast<Real>(vectorBoolean!);
     } else if vectorInteger? {
-      return vector<Real>(vectorInteger!);
+      return cast<Real>(vectorInteger!);
     } else if vectorReal? {
       return vectorReal!;
     } else {
@@ -807,9 +807,9 @@ final class Buffer {
     if matrixBoolean? {
       return matrixBoolean!;
     } else if matrixInteger? {
-      return matrix<Boolean>(matrixInteger!);
+      return cast<Boolean>(matrixInteger!);
     } else if matrixReal? {
-      return matrix<Boolean>(matrixReal!);
+      return cast<Boolean>(matrixReal!);
     } else {
       return doGetMatrix<Boolean>();
     }
@@ -817,11 +817,11 @@ final class Buffer {
 
   function doGet(x:Integer[_,_]?) -> Integer[_,_]? {
     if matrixBoolean? {
-      return matrix<Integer>(matrixBoolean!);
+      return cast<Integer>(matrixBoolean!);
     } else if matrixInteger? {
       return matrixInteger!;
     } else if matrixReal? {
-      return matrix<Integer>(matrixReal!);
+      return cast<Integer>(matrixReal!);
     } else {
       return doGetMatrix<Integer>();
     }
@@ -829,9 +829,9 @@ final class Buffer {
 
   function doGet(x:Real[_,_]?) -> Real[_,_]? {
     if matrixBoolean? {
-      return matrix<Real>(matrixBoolean!);
+      return cast<Real>(matrixBoolean!);
     } else if matrixInteger? {
-      return matrix<Real>(matrixInteger!);
+      return cast<Real>(matrixInteger!);
     } else if matrixReal? {
       return matrixReal!;
     } else {
@@ -1062,17 +1062,17 @@ final class Buffer {
     } else if scalarBoolean? {
       set(stack(scalarBoolean!, x));
     } else if scalarInteger? {
-      set(stack(scalarInteger!, scalar<Integer>(x)));
+      set(stack(scalarInteger!, cast<Integer>(x)));
     } else if scalarReal? {
-      set(stack(scalarReal!, scalar<Real>(x)));
+      set(stack(scalarReal!, cast<Real>(x)));
     } else if vectorBoolean? {
       cpp{{
       vectorBoolean.value().push(x);
       }}
     } else if vectorInteger? {
-      push(scalar<Integer>(x));
+      push(cast<Integer>(x));
     } else if vectorReal? {
-      push(scalar<Real>(x));
+      push(cast<Real>(x));
     } else {
       push(make_buffer(x));
     }
@@ -1086,19 +1086,19 @@ final class Buffer {
     if isEmpty() {
       set(x);
     } else if scalarBoolean? {
-      set(stack(scalar<Integer>(scalarBoolean!), x));
+      set(stack(cast<Integer>(scalarBoolean!), x));
     } else if scalarInteger? {
       set(stack(scalarInteger!, x));
     } else if scalarReal? {
-      set(stack(scalarReal!, scalar<Real>(x)));
+      set(stack(scalarReal!, cast<Real>(x)));
     } else if vectorBoolean? {
-      set(stack(vector<Integer>(vectorBoolean!), x));
+      set(stack(cast<Integer>(vectorBoolean!), x));
     } else if vectorInteger? {
       cpp{{
       vectorInteger.value().push(x);
       }}
     } else if vectorReal? {
-      push(scalar<Real>(x));
+      push(cast<Real>(x));
     } else {
       push(make_buffer(x));
     }
@@ -1112,15 +1112,15 @@ final class Buffer {
     if isEmpty() {
       set(x);
     } else if scalarBoolean? {
-      set(stack(scalar<Real>(scalarBoolean!), x));
+      set(stack(cast<Real>(scalarBoolean!), x));
     } else if scalarInteger? {
-      set(stack(scalar<Real>(scalarInteger!), x));
+      set(stack(cast<Real>(scalarInteger!), x));
     } else if scalarReal? {
       set(stack(scalarReal!, x));
     } else if vectorBoolean? {
-      set(stack(vector<Real>(vectorBoolean!), x));
+      set(stack(cast<Real>(vectorBoolean!), x));
     } else if vectorInteger? {
-      set(stack(vector<Real>(vectorInteger!), x));
+      set(stack(cast<Real>(vectorInteger!), x));
     } else if vectorReal? {
       cpp{{
       vectorReal.value().push(x);
@@ -1150,9 +1150,9 @@ final class Buffer {
     } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
       set(stack(matrixBoolean!, row(x)));
     } else if vectorInteger? || matrixInteger? {
-      push(vector<Integer>(x));
+      push(cast<Integer>(x));
     } else if vectorReal? || matrixReal? {
-      push(vector<Real>(x));
+      push(cast<Real>(x));
     } else {
       push(make_buffer(x));
     }
@@ -1162,15 +1162,15 @@ final class Buffer {
     if isEmpty() {
       set(row(x));
     } else if vectorBoolean? {
-      set(stack(matrix<Integer>(row(vectorBoolean!)), row(x)));
+      set(stack(cast<Integer>(row(vectorBoolean!)), row(x)));
     } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
-      set(stack(matrix<Integer>(matrixBoolean!), row(x)));
+      set(stack(cast<Integer>(matrixBoolean!), row(x)));
     } else if vectorInteger? {
       set(stack(row(vectorInteger!), row(x)));
     } else if matrixInteger? && columns(matrixInteger!) == length(x) {
       set(stack(matrixInteger!, row(x)));
     } else if vectorReal? || matrixReal? {
-      push(vector<Real>(x));
+      push(cast<Real>(x));
     } else {
       push(make_buffer(x));
     }
@@ -1180,13 +1180,13 @@ final class Buffer {
     if isEmpty() {
       set(row(x));
     } else if vectorBoolean? {
-      set(stack(matrix<Real>(row(vectorBoolean!)), row(x)));
+      set(stack(cast<Real>(row(vectorBoolean!)), row(x)));
     } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
-      set(stack(matrix<Real>(matrixBoolean!), row(x)));
+      set(stack(cast<Real>(matrixBoolean!), row(x)));
     } else if vectorInteger? {
-      set(stack(matrix<Real>(row(vectorInteger!)), row(x)));
+      set(stack(cast<Real>(row(vectorInteger!)), row(x)));
     } else if matrixInteger? && columns(matrixInteger!) == length(x) {
-      set(stack(matrix<Real>(matrixInteger!), row(x)));
+      set(stack(cast<Real>(matrixInteger!), row(x)));
     } else if vectorReal? {
       set(stack(row(vectorReal!), row(x)));
     } else if matrixReal? && columns(matrixReal!) == length(x) {

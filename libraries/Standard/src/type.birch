@@ -216,7 +216,7 @@ std::optional<T> make_optional(Args&&... args) {
  */
 template<class To, class From,
     std::enable_if_t<std::is_same<To,From>::value,int> = 0>
-std::optional<To> cast(const From& from) {
+std::optional<To> optional_cast(const From& from) {
   return from;
 }
 }
@@ -387,7 +387,7 @@ namespace birch {
 template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
     libbirch::is_pointer<To>::value && libbirch::is_pointer<From>::value,int> = 0>
-std::optional<To> cast(const From& from) {
+std::optional<To> optional_cast(const From& from) {
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
     return To(ptr);
@@ -403,7 +403,7 @@ template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
     std::is_constructible<To,From>::value &&
     (!libbirch::is_pointer<To>::value || !libbirch::is_pointer<From>::value),int> = 0>
-std::optional<To> cast(const From& from) {
+std::optional<To> optional_cast(const From& from) {
   return To(from);
 }
 
@@ -414,7 +414,7 @@ template<class To, class From,
     std::enable_if_t<!std::is_same<To,From>::value &&
     !std::is_constructible<To,From>::value &&
     (!libbirch::is_pointer<To>::value || !libbirch::is_pointer<From>::value),int> = 0>
-std::optional<To> cast(const From& from) {
+std::optional<To> optional_cast(const From& from) {
   return std::nullopt;
 }
 
@@ -422,9 +422,9 @@ std::optional<To> cast(const From& from) {
  * Cast of an optional of anything.
  */
 template<class To, class From>
-std::optional<To> cast(const std::optional<From>& from) {
+std::optional<To> optional_cast(const std::optional<From>& from) {
   if (from.has_value()) {
-    return cast<To>(from.value());
+    return optional_cast<To>(from.value());
   } else {
     return std::nullopt;
   }
@@ -900,10 +900,10 @@ void grad(const T& x, const G& g) {
   //
 }
 
-// template<class T, class G, std::enable_if_t<is_form<T>::value,int> = 0>
-// void grad(T& x, const G& g) {
-//   x.grad(g);
-// }
+template<class T, class G, std::enable_if_t<is_form<T>::value,int> = 0>
+void grad(T& x, const G& g) {
+  x.grad(g);
+}
 
 template<class T, class G, std::enable_if_t<is_expression<T>::value,int> = 0>
 void grad(const T& x, const G& g) {

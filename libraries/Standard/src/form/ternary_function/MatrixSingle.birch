@@ -1,0 +1,35 @@
+struct MatrixSingle<Left,Middle,Right>(x:Left, i:Middle, j:Right, m:Integer,
+    n:Integer) < Ternary<Left,Middle,Right>(x, i, j) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  /**
+   * Number of rows.
+   */
+  m:Integer <- m;
+
+  /**
+   * Number of columns.
+   */
+  n:Integer <- n;
+
+  hpp{{
+  BIRCH_TERNARY_FUNCTION_FORM(single, single_grad, m, n)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::single;
+using numbirch::single_grad;
+
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay<Left,Middle,Right>::value,int> = 0>
+MatrixSingle<Left,Middle,Right> single(const Left& x, const Middle& i,
+    const Right& j, const int m, const int n) {
+  return construct<MatrixSingle<Left,Middle,Right>>(x, i, j, m, n);
+}
+}
+}}

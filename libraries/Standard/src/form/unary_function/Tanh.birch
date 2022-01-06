@@ -5,17 +5,14 @@ struct Tanh<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(tanh)
+  BIRCH_UNARY_FUNCTION_FORM(tanh, tanh_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Tanh<Middle>, d:Gradient) {
-  grad(x.m, d*(1.0 + pow(tanh(peek(x.m)), 2.0)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::tanh;
+using numbirch::tanh_grad;
 
 /**
  * Hyperbolic tangent.

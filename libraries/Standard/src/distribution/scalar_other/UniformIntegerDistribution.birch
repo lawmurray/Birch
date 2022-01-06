@@ -106,5 +106,5 @@ function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
   let P1 <- wait(P);
   let l1 <- wait(l);
   let u1 <- wait(u);
-  return l1 + scalar<Integer>(P1*(u1 - l1));
+  return l1 + cast<Integer>(P1*(u1 - l1));
 }

@@ -5,17 +5,14 @@ struct LCholDet<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(lcholdet)
+  BIRCH_UNARY_FUNCTION_FORM(lcholdet, lcholdet_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:LCholDet<Middle>, d:Gradient) {
-  grad(x.m, d*cholinv(peek(x.m)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::lcholdet;
+using numbirch::lcholdet_grad;
 
 /**
  * Log-determinant of a symmetric positive-definite matrix via the Cholesky

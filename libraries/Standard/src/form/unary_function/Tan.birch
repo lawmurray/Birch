@@ -5,17 +5,14 @@ struct Tan<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(tan)
+  BIRCH_UNARY_FUNCTION_FORM(tan, tan_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Tan<Middle>, d:Gradient) {
-  grad(x.m, d*(1.0 + pow(tan(peek(x.m)), 2.0)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::tan;
+using numbirch::tan_grad;
 
 /**
  * Tangent.

@@ -8,18 +8,15 @@ struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(element)
+  BIRCH_BINARY_FUNCTION_FORM(element, element_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:VectorElement<Left,Right>, d:Gradient) {
-  let l <- peek(x.l);
-  grad(x.l, d*single<Real>(peek(x.r), length(l)));
-  grad(x.r, 0.0);
 }
 
 hpp{{
 namespace birch {
+using numbirch::element;
+using numbirch::element_grad;
+
 /**
  * Element of a vector.
  */
@@ -30,19 +27,3 @@ VectorElement<Left,Right> element(const Left& l, const Right& r) {
 }
 }
 }}
-
-/**
- * Element of a vector.
- */
-function element<Type>(x:Type[_], i:Integer) -> Type! {
-  cpp{{
-  return x.slice(i);
-  }}
-}
-
-/**
- * Element of a vector.
- */
-function element<Type>(x:Type[_], i:Integer!) -> Type! {
-  return element(x, i!);
-}

@@ -5,18 +5,14 @@ struct Inner<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(inner)
+  BIRCH_BINARY_FUNCTION_FORM(inner, inner_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Inner<Left,Right>, d:Gradient) {
-  grad(x.l, outer(peek(x.r), d));
-  grad(x.r, peek(x.l)*d);
 }
 
 hpp{{
 namespace birch {
 using numbirch::inner;
+using numbirch::inner_grad;
 
 /**
  * Inner product.

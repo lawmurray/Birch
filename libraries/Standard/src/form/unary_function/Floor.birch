@@ -5,17 +5,14 @@ struct Floor<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(floor)
+  BIRCH_UNARY_FUNCTION_FORM(floor, floor_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Floor<Middle>, d:Gradient) {
-  grad(x.m, 0.0);
 }
 
 hpp{{
 namespace birch {
 using numbirch::floor;
+using numbirch::floor_grad;
 
 /**
  * Round to largest integer value not greater than argument.

@@ -5,18 +5,14 @@ struct CholInv<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(cholinv)
+  BIRCH_UNARY_FUNCTION_FORM(cholinv, cholinv_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:CholInv<Middle>, d:Gradient) {
-  let y <- cholinv(peek(x.m));
-  grad(x.m, -y*d*y);
 }
 
 hpp{{
 namespace birch {
 using numbirch::cholinv;
+using numbirch::cholinv_grad;
 
 /**
  * Inverse of a symmetric positive-definite matrix via the Cholesky

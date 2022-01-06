@@ -5,17 +5,14 @@ struct LDet<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(ldet)
+  BIRCH_UNARY_FUNCTION_FORM(ldet, ldet_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:LDet<Middle>, d:Gradient) {
-  grad(x.m, d*transpose(inv(peek(x.m))));
 }
 
 hpp{{
 namespace birch {
 using numbirch::ldet;
+using numbirch::ldet_grad;
 
 /**
  * Log-determinant of a matrix.

@@ -5,18 +5,14 @@ struct LGammaP<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(lgamma)
+  BIRCH_BINARY_FUNCTION_FORM(lgamma, lgamma_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:LGammaP<Left,Right>, d:Gradient) {
-  grad(x.l, hadamard(d, digamma(peek(x.l), peek(x.r))));
-  grad(x.r, 0.0);
 }
 
 hpp{{
 namespace birch {
 using numbirch::lgamma;
+using numbirch::lgamma_grad;
 
 /**
  * Logarithm of the multivariate gamma function.

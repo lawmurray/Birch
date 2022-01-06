@@ -194,7 +194,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Get result and render constant.
+   * Evaluate, using memos if available. and render constant.
    *
    * Returns: The result.
    */
@@ -208,7 +208,8 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Get result.
+   * Evaluate, using memos if available. Memoizes at fine-grain (i.e. both
+   * Expression objects and forms) up to nearest Expression objects.
    *
    * Returns: The result.
    */
@@ -224,7 +225,10 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Evaluate.
+   * (Re-)evaluate, ignoring memos. Memoizes at coarse-grain (i.e. Expression
+   * objects, not forms).
+   *
+   * Returns: The result.
    */
   final function eval() -> Value! {
     if !flagConstant {
@@ -245,7 +249,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Evaluate gradient of the expression with respect to its arguments.
+   * Evaluate gradient with respect to arguments. Clears memos at fine-grain.
    *
    * - d: Upstream gradient.
    *

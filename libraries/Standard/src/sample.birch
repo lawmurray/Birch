@@ -266,7 +266,7 @@ program sample(
 
     /* progress bar */
     if !quiet {
-      bar.update(scalar<Real>(n)/nsamples!);
+      bar.update(cast<Real>(n)/nsamples!);
     }
   }
 

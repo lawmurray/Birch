@@ -5,17 +5,14 @@ struct Round<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(round)
+  BIRCH_UNARY_FUNCTION_FORM(round, round_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Round<Middle>, d:Gradient) {
-  grad(x.m, 0.0);
 }
 
 hpp{{
 namespace birch {
 using numbirch::round;
+using numbirch::round_grad;
 
 /**
  * Round to nearest integer value.

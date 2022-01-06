@@ -5,18 +5,14 @@ struct Inv<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(inv)
+  BIRCH_UNARY_FUNCTION_FORM(inv, inv_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Inv<Middle>, d:Gradient) {
-  let A <- inv(peek(x.m));
-  grad(x.m, -outer(inner(A, d), A));
 }
 
 hpp{{
 namespace birch {
 using numbirch::inv;
+using numbirch::inv_grad;
 
 /**
  * Inverse of a matrix.

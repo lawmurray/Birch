@@ -5,17 +5,14 @@ struct Negate<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_OPERATOR_FORM(-)
+  BIRCH_UNARY_FUNCTION_FORM(operator-, negate_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Negate<Middle>, d:Gradient) {
-  grad(x.m, -d);
 }
 
 hpp{{
 namespace birch {
 using numbirch::operator-;
+using numbirch::negate_grad;
 
 /**
  * Negation.

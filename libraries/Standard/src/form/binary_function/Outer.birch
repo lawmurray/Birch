@@ -5,18 +5,14 @@ struct Outer<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(outer)
+  BIRCH_BINARY_FUNCTION_FORM(outer, outer_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Outer<Left,Right>, d:Gradient) {
-  grad(x.l, d*peek(x.r));
-  grad(x.r, inner(d, peek(x.l)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::outer;
+using numbirch::outer_grad;
 
 /**
  * Outer product.

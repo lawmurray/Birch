@@ -5,22 +5,14 @@ struct Pow<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(pow)
+  BIRCH_BINARY_FUNCTION_FORM(pow, pow_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Pow<Left,Right>, d:Gradient) {
-  let l <- peek(x.l);
-  let r <- peek(x.r);
-  let dl <- hadamard(hadamard(d, r), pow(l, r - 1.0));
-  let dr <- hadamard(hadamard(d, pow(l, r)), log(l));
-  grad(x.l, dl);
-  grad(x.r, dr);
 }
 
 hpp{{
 namespace birch {
 using numbirch::pow;
+using numbirch::pow_grad;
 
 /**
  * Power.

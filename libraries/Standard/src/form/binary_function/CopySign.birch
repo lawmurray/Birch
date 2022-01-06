@@ -5,20 +5,14 @@ struct CopySign<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(copysign)
+  BIRCH_BINARY_FUNCTION_FORM(copysign, copysign_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:CopySign<Left,Right>, d:Gradient) {
-  let l <- peek(x.l);
-  let r <- peek(x.r);
-  grad(x.l, if_then_else(copysign(l, r) == l, d, -d));
-  grad(x.r, 0.0);
 }
 
 hpp{{
 namespace birch {
 using numbirch::copysign;
+using numbirch::copysign_grad;
 
 /**
  * Copy sign of a number.

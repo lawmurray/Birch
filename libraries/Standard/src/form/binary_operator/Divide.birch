@@ -5,19 +5,14 @@ struct Divide<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator/)
+  BIRCH_BINARY_FUNCTION_FORM(operator/, divide_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Divide<Left,Right>, d:Gradient) {
-  let (dl, dr) <- grad_divide(d, peek(x.l), peek(x.r));
-  grad(x.l, dl);
-  grad(x.r, dr);
 }
 
 hpp{{
 namespace birch {
 using numbirch::operator/;
+using numbirch::divide_grad;
 
 /**
  * Division.
@@ -29,16 +24,3 @@ Divide<Left,Right> operator/(const Left& l, const Right& r) {
 }
 }
 }}
-
-function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left, r:Right) -> {
-  return (d/r, -d*l*pow(r, -2.0));
-}
-
-function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right) -> {
-  return (d/r, -dot(d, l)*pow(r, -2.0));
-}
-
-function grad_divide<Gradient,Left,Right>(d:Gradient, l:Left[_,_],
-    r:Right) -> {
-  return (d/r, -frobenius(d, l)*pow(r, -2.0));
-}

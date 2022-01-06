@@ -5,17 +5,14 @@ struct Sqrt<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(sqrt)
+  BIRCH_UNARY_FUNCTION_FORM(sqrt, sqrt_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Sqrt<Middle>, d:Gradient) {
-  grad(x.m, d*0.5/sqrt(peek(x.m)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::sqrt;
+using numbirch::sqrt_grad;
 
 /**
  * Square root.

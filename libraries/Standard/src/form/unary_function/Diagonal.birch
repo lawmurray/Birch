@@ -1,29 +1,23 @@
 struct Diagonal<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   /**
+   * Memoized result.
+   */
+  phantom x;
+
+  /**
    * Number of rows and columns.
    */
   n:Integer <- n;
-}
 
-function value<Middle>(x:Diagonal<Middle>) -> {
-  return diagonal(value(x.m), x.n);
-}
-
-function peek<Middle>(x:Diagonal<Middle>) -> {
-  return diagonal(peek(x.m), x.n);
-}
-
-function eval<Middle>(x:Diagonal<Middle>) -> {
-  return diagonal(eval(x.m), x.n);
-}
-
-function grad<Middle,Gradient>(x:Diagonal<Middle>, d:Gradient) {
-  grad(x.m, trace(d));
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(diagonal, diagonal_grad, n)
+  }}
 }
 
 hpp{{
 namespace birch {
 using numbirch::diagonal;
+using numbirch::diagonal_grad;
 
 /**
  * Create diagonal matrix, filling the diagonal with a given scalar value.

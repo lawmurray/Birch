@@ -5,17 +5,14 @@ struct Sum<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(sum)
+  BIRCH_UNARY_FUNCTION_FORM(sum, sum_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Sum<Middle>, d:Gradient) {
-  grad(x.m, grad_sum(d, peek(x.m)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::sum;
+using numbirch::sum_grad;
 
 /**
  * Sum of elements.
@@ -26,15 +23,3 @@ Sum<Middle> sum(const Middle& m) {
 }
 }
 }}
-
-function grad_sum<Gradient,Type>(d:Gradient, m:Type) -> {
-  return d;
-}
-
-function grad_sum<Gradient,Type>(d:Gradient, m:Type[_]) -> {
-  return vector(d, length(m));
-}
-
-function grad_sum<Gradient,Type>(d:Gradient, m:Type[_,_]) -> {
-  return matrix(d, rows(m), columns(m));
-}

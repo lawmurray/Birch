@@ -5,17 +5,14 @@ struct Trace<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(trace)
+  BIRCH_UNARY_FUNCTION_FORM(trace, trace_grad)
   }}
-}
-
-function grad<Middle,Gradient>(x:Trace<Middle>, d:Gradient) {
-  grad(x.m, grad_trace(d, peek(x.m)));
 }
 
 hpp{{
 namespace birch {
 using numbirch::trace;
+using numbirch::trace_grad;
 
 /**
  * Trace.
@@ -26,15 +23,3 @@ Trace<Middle> trace(const Middle& m) {
 }
 }
 }}
-
-function grad_trace<Gradient,Type>(d:Gradient, m:Type) -> {
-  return d;
-}
-
-function grad_trace<Gradient,Type>(d:Gradient, m:Type[_]) -> {
-  return vector(d, length(m));
-}
-
-function grad_trace<Gradient,Type>(d:Gradient, m:Type[_,_]) -> {
-  return diagonal(d, rows(m));
-}

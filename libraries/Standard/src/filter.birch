@@ -174,11 +174,12 @@ program filter(
     let filterOutputBuffer <- make_buffer();
     filterOutputBuffer.set("sample", t, f!.x);
     filterOutputBuffer.set("lweight", f!.w);
-    outputBuffer.set("filter", filterOutputBuffer);
+    outputBuffer.set("step", t);
     outputBuffer.set("ess", f!.ess);
     outputBuffer.set("lnormalize", f!.lnormalize);
     outputBuffer.set("npropagations", f!.npropagations);
     outputBuffer.set("raccepts", f!.raccepts);
+    outputBuffer.set("filter", filterOutputBuffer);
 
     /* forecast */
     let forecastSize <- inputBuffer.size("forecast");
@@ -187,15 +188,15 @@ program filter(
     }
     if forecastSize > 0 {
       /* resample and move before the forecast, which should produce
-       * better results; within the next call to ParticleFilter.filter()
+       * better results; within the next call to ParticleFilter.filter(),
        * guards ensure that these are not repeated, so there is no additional
        * effort */
-      f!.resample(t + 1);
-      if κ? {
-        f!.move(t + 1, κ!);
-      }
+      f!.resample(t + 1, κ);
 
       /* copy and reconfigure the filter for forecast */
+      dynamic parallel for n in 1..f!.x.size() {
+        bridge(f!.x[n]);
+      }
       let f' <- copy(f!);
       f'.reconfigure(false, false);
 

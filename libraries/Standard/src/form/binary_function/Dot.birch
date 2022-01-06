@@ -5,19 +5,14 @@ struct Dot<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(dot)
+  BIRCH_BINARY_FUNCTION_FORM(dot, dot_grad)
   }}
-}
-
-function grad<Left,Right,Gradient>(x:Dot<Left,Right>, d:Gradient) {
-  let (dl, dr) <- grad_dot(d, peek(x.l), peek(x.r));
-  grad(x.l, dl);
-  grad(x.r, dr);
 }
 
 hpp{{
 namespace birch {
 using numbirch::dot;
+using numbirch::dot_grad;
 
 /**
  * Dot product.
@@ -29,7 +24,3 @@ Dot<Left,Right> dot(const Left& l, const Right& r) {
 }
 }
 }}
-
-function grad_dot<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right[_]) -> {
-  return (r*d, l*d);
-}
