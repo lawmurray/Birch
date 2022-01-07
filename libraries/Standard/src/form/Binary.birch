@@ -13,22 +13,22 @@ struct Binary<Left,Right>(l:Left, r:Right) < Form {
   r:Right <- r;
 
   hpp{{
-  void link() {
+  void link() const {
     birch::link(l);
     birch::link(r);
   }
 
-  void label(const Integer gen) {
+  void label(const Integer gen) const {
     birch::label(l, gen);
     birch::label(r, gen);
   }
 
-  void constant(const Integer gen) {
+  void constant(const Integer gen) const {
     birch::constant(l, gen);
     birch::constant(r, gen);
   }
 
-  void constant() {
+  void constant() const {
     birch::constant(l);
     birch::constant(r);
   }
@@ -41,12 +41,20 @@ hpp{{
         birch::peek(std::declval<Right>()), ##args)); \
   std::optional<Value> x; \
   \
+  auto eval() const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
+    return f(birch::eval(this->l), birch::eval(this->r), ##args);; \
+  } \
+  \
+  auto move() const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
+    return f(birch::move(this->l), birch::move(this->r), ##args); \
+  } \
+  \
   auto value() const { \
-    if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::value(this->l), \
-          birch::value(this->r), ##args); \
-    } \
-    return *x; \
+    auto x = this->eval(); \
+    this->constant(); \
+    return x; \
   } \
   \
   auto peek() const { \
@@ -57,14 +65,11 @@ hpp{{
     return *x; \
   } \
   \
-  auto eval() const { \
-    return f(birch::eval(this->l), birch::eval(this->r), ##args); \
-  } \
-  \
   template<class G> \
   void grad(const G& g) const { \
-    auto [gl, gr] = f_grad(g, birch::peek(this->l), \
-        birch::peek(this->r), ##args); \
+    const_cast<std::optional<Value>&>(x).reset(); \
+    auto [gl, gr] = f_grad(g, birch::peek(this->l), birch::peek(this->r), \
+        ##args); \
     birch::grad(this->l, gl); \
     birch::grad(this->r, gr); \
   }

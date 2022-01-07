@@ -27,7 +27,7 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_restaurant_categorical(peek(α), peek(θ), peek(n));
+    return simulate_restaurant_categorical(eval(α), eval(θ), eval(n));
   }
 
   override function logpdf(x:Integer!) -> Real! {

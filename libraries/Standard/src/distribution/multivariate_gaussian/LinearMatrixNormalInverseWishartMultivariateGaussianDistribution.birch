@@ -46,7 +46,7 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
 
   override function simulateLazy() -> Real[_]? {
     return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        peek(a), peek(N), peek(Λ), peek(Ψ), peek(k)) + peek(c);
+        eval(a), eval(N), eval(Λ), eval(Ψ), eval(k)) + eval(c);
   }
   
   override function logpdf(x:Real[_]) -> Real! {

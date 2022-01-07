@@ -26,7 +26,7 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_negative_binomial(peek(k), peek(ρ));
+    return simulate_negative_binomial(eval(k), eval(ρ));
   }
   
   override function logpdf(x:Integer!) -> Real! {

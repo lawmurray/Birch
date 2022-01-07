@@ -21,7 +21,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distributio
   }
   
   override function simulateLazy() -> Boolean!? {
-    return simulate_beta_bernoulli(peek(α), peek(β));
+    return simulate_beta_bernoulli(eval(α), eval(β));
   }
   
   override function logpdf(x:Boolean!) -> Real! {

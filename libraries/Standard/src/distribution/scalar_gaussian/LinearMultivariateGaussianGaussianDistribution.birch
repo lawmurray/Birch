@@ -38,8 +38,8 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_linear_multivariate_gaussian_gaussian(peek(a), peek(μ),
-        peek(Σ), peek(c), peek(s2));
+    return simulate_linear_multivariate_gaussian_gaussian(eval(a), eval(μ),
+        eval(Σ), eval(c), eval(s2));
   }
   
   override function logpdf(x:Real!) -> Real! {

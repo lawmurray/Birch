@@ -8,19 +8,19 @@ struct Unary<Middle>(m:Middle) < Form {
   m:Middle <- m;
 
   hpp{{
-  void link() {
+  void link() const {
     birch::link(m);
   }
 
-  void label(const Integer gen) {
+  void label(const Integer gen) const {
     birch::label(m, gen);
   }
 
-  void constant(const Integer gen) {
+  void constant(const Integer gen) const {
     birch::constant(m, gen);
   }
 
-  void constant() {
+  void constant() const {
     birch::constant(m);
   }
   }}
@@ -31,28 +31,32 @@ hpp{{
   using Value = decltype(f(birch::peek(std::declval<Middle>()), ##args)); \
   std::optional<Value> x; \
   \
+  auto eval() const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
+    return f(birch::eval(this->m), ##args); \
+  } \
+  \
+  auto move() const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
+    return f(birch::move(this->m), ##args); \
+  } \
+  \
   auto value() const { \
-    if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::value(this->m), \
-          ##args); \
-    } \
-    return *x; \
+    auto x = this->eval(); \
+    this->constant(); \
+    return x; \
   } \
   \
   auto peek() const { \
     if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->m), \
-          ##args); \
+      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->m), ##args);\
     } \
     return *x; \
   } \
   \
-  auto eval() const { \
-    return f(birch::eval(this->m), ##args); \
-  } \
-  \
   template<class G> \
   void grad(const G& g) const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
     auto gm = f_grad(g, birch::peek(this->m), ##args); \
     birch::grad(this->m, gm); \
   }

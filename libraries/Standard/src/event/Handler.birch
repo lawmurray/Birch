@@ -159,7 +159,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleFactor<Arg>(w:Arg) {
     if delayExpressions {
-      this.w <- this.w + global.peek(w);
+      this.w <- this.w + global.eval(w);
       if π? {
         π <- box(π! + w);
       } else {
@@ -178,10 +178,10 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   function handleDelaySimulate<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
     if delayExpressions && p.supportsLazy() {
-      x.move(p.simulateLazy()!);
+      x.set(p.simulateLazy()!);
       arg(x);
     } else {
-      x.move(p.simulate());
+      x.set(p.simulate());
     }
     x.p <- nil;
   }
@@ -237,9 +237,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Evaluate the log-posterior.
    */
-  function peek() -> Real! {
+  function eval() -> Real! {
     if π? {
-      return π!.peek();
+      return π!.eval();
     } else {
       return 0.0;
     }
@@ -268,7 +268,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       let iter1 <- r1!.walk();
       while iter1.hasNext() {
         let v <- iter1.next();
-        x[i] <- v.peek();
+        x[i] <- v.eval();
         i <- i + 1;
       }
     }
@@ -277,7 +277,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       while iter2.hasNext() {
         let v <- iter2.next();
         let m <- i + v.size() - 1;
-        x[i..m] <- v.peek();
+        x[i..m] <- v.eval();
         i <- m + 1;
       }
     }
@@ -286,7 +286,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
       while iter3.hasNext() {
         let v <- iter3.next();
         let m <- i + v.size() - 1;
-        x[i..m] <- vec(v.peek());
+        x[i..m] <- vec(v.eval());
         i <- m + 1;
       }
     }
@@ -359,7 +359,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         let iter1 <- r1!.walk();
         while iter1.hasNext() {
           let v <- iter1.next();
-          v.move(x[i]);
+          v.set(x[i]);
           i <- i + 1;
         }
       }
@@ -368,7 +368,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         while iter2.hasNext() {
           let v <- iter2.next();
           let j <- i + v.size() - 1;
-          v.move(x[i..j]);
+          v.set(x[i..j]);
           i <- j + 1;
         }
       }
@@ -377,14 +377,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
         while iter3.hasNext() {
           let v <- iter3.next();
           let j <- i + v.size() - 1;
-          v.move(mat(x[i..j], v.columns()));
+          v.set(mat(x[i..j], v.columns()));
           i <- j + 1;
         }
       }
       assert i == n + 1;
 
       /* re-evaluate */
-      return π!.eval();
+      return π!.move();
     } else {
       return 0.0;
     }

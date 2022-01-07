@@ -25,7 +25,7 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_inverse_gamma(peek(α), peek(β));
+    return simulate_inverse_gamma(eval(α), eval(β));
   }
   
   override function logpdf(x:Real!) -> Real! {

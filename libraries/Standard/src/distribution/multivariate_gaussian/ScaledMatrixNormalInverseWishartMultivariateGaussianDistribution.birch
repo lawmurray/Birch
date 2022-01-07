@@ -41,8 +41,8 @@ final class ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<
 
   override function simulateLazy() -> Real[_]? {
     return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        wait(peek(a)), wait(peek(N)), wait(peek(Λ)), wait(peek(Ψ)),
-        wait(peek(k)));
+        wait(eval(a)), wait(eval(N)), wait(eval(Λ)), wait(eval(Ψ)),
+        wait(eval(k)));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
@@ -135,9 +135,8 @@ function simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
 function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, a:Arg2, N:Arg3, Λ:Arg4, Ψ:Arg5,
     k:Arg6) -> {
-  let S <- wrap(cholinv(Λ));
-  let M <- wrap(inner(S*N, a));
-  let U <- wrap((1.0 + dot(a, S*a))*Ψ);
+  let M <- inner(cholsolve(Λ, N), a);
+  let U <- (1.0 + dot(a, cholsolve(Λ, a)))*Ψ;
   return logpdf_multivariate_t(x, k, M, U);
 }
 

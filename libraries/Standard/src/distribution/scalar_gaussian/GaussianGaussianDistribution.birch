@@ -27,7 +27,7 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:A
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_gaussian_gaussian(peek(μ), peek(σ2), peek(s2));
+    return simulate_gaussian_gaussian(eval(μ), eval(σ2), eval(s2));
   }
   
   override function logpdf(x:Real!) -> Real! {

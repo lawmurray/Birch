@@ -25,7 +25,7 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) < Distribution<Real>
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_weibull(peek(k), peek(λ));
+    return simulate_weibull(eval(k), eval(λ));
   }
   
   override function logpdf(x:Real!) -> Real! {

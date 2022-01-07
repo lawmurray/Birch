@@ -27,7 +27,7 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
   }
   
   override function simulateLazy() -> Integer!? {
-    return simulate_beta_binomial(peek(n), peek(α), peek(β));
+    return simulate_beta_binomial(eval(n), eval(α), eval(β));
   }
   
   override function logpdf(x:Integer!) -> Real! {

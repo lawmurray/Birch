@@ -16,7 +16,7 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
   }
   
   override function simulateLazy() -> Boolean!? {
-    return simulate_bernoulli(peek(ρ));
+    return simulate_bernoulli(eval(ρ));
   }
   
   override function logpdf(x:Boolean!) -> Real! {

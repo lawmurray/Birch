@@ -16,7 +16,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_dirichlet_categorical(peek(α));
+    return simulate_dirichlet_categorical(eval(α));
   }
 
   override function logpdf(x:Integer!) -> Real! {
@@ -40,7 +40,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function upper() -> Integer!? {
-    return rows(peek(α));
+    return rows(eval(α));
   }
 }
 

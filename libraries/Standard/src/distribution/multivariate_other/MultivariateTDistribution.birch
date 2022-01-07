@@ -22,9 +22,9 @@ function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, U:Arg3) -> {
 function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     U:Arg4) -> {
   let p <- length(x);
-  let a <- wrap(0.5*(k + p));
-  let b <- wrap(0.5*k);
-  let z <- wrap(x - μ);
+  let a <- 0.5*(k + p);
+  let b <- 0.5*k;
+  let z <- x - μ;
   return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*lcholdet(U) -
       a*log1p(dot(z, cholsolve(U, z)));
 }

@@ -37,7 +37,7 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_conway_maxwell_poisson(peek(λ), peek(ν), peek(n));
+    return simulate_conway_maxwell_poisson(eval(λ), eval(ν), eval(n));
   }
 
   override function logpdf(x:Integer!) -> Real! {

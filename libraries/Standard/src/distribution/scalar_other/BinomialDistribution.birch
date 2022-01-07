@@ -26,7 +26,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   }
   
   override function simulateLazy() -> Integer!? {
-    return simulate_binomial(peek(n), peek(ρ));
+    return simulate_binomial(eval(n), eval(ρ));
   }
 
   override function logpdf(x:Integer!) -> Real! {

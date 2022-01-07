@@ -495,7 +495,7 @@ T wait(const T& x) {
  * | ------------------- | ------------------------- | ---------------------------------------------------- |
  * | `Value`             | `Expression<Value>`       | where `Value` is a basic or array type.              |
  * | `Value!`            | `Expression<Value>`       | where `Value` is a basic type.                       |
- * | `Form`              | `Expression<Value>`       | where `eval(Form)` returns type `Value` or `Value!`. |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
  * | `Expression<Value>` | `Expression<Value>`       |                                                                                |
  *
  * See also: [wrap](../../functions/wrap)
@@ -523,7 +523,7 @@ Expression<typename T::value_type> box(const T& x) {
 
 template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
 auto box(const T& x) {
-  auto y = peek(x);
+  auto y = eval(x);
   using U = typename std::decay<decltype(wait(y))>::type;
   auto r = construct<BoxedForm<U,T>>(y, x);
   r->doLink();  ///@todo Implement as RAII
@@ -652,7 +652,7 @@ function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1,
  * | ------------------- | ------------------------- | ---------------------------------------------------- |
  * | `Value`             | `Value`                   | where `Value` is a basic or array type.              |
  * | `Value!`            | `Value!`                  | where `Value` is a basic type.                       |
- * | `Form`              | `Expression<Value>`       | where `eval(Form)` returns type `Value` or `Value!`. |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
  * | `Expression<Value>` | `Expression<Value>`       |                                                      |
  *
  * See also: [box](../../functions/box)
@@ -851,6 +851,11 @@ auto value(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+auto move(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 auto eval(const T& x) {
   return x;
 }
@@ -863,6 +868,16 @@ auto eval(const T& x) {
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
 auto eval(const T& x) {
   return x->eval();
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+auto move(const T& x) {
+  return x.move();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto move(const T& x) {
+  return x->move();
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>

@@ -11,8 +11,8 @@ class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value>(x, false) {
    */
   f:Form? <- f;
 
-  final override function doEval() {
-    this.x <- global.eval(f!);
+  final override function doMove() {
+    this.x <- global.move(f!);
   }
 
   final override function doGrad() {

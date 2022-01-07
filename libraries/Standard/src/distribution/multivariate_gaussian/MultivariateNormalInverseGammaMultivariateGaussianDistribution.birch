@@ -40,7 +40,7 @@ final class MultivariateNormalInverseGammaMultivariateGaussianDistribution<Arg1,
 
   override function simulateLazy() -> Real[_]? {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        peek(ν), peek(Λ), peek(α), peek(β), peek(Σ));
+        eval(ν), eval(Λ), eval(α), eval(β), eval(Σ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {

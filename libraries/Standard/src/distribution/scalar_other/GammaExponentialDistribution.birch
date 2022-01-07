@@ -26,7 +26,7 @@ final class GammaExponentialDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_lomax(1.0/peek(θ), peek(k));
+    return simulate_lomax(1.0/eval(θ), eval(k));
   }
 
   override function logpdf(x:Real!) -> Real! {

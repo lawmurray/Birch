@@ -25,7 +25,7 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_beta(peek(α), peek(β));
+    return simulate_beta(eval(α), eval(β));
   }
   
   override function logpdf(x:Real!) -> Real! {

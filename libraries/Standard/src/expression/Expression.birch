@@ -48,34 +48,37 @@
  *     Call `value()` on an `Expression` to evaluate it.
  *
  * The simplest use case of a delayed expression is to assemble it and then
- * evaluate it by calling `value()`. Evaluations are memoized, so further
- * calls `value()` do not require re-evaluation, they simply return the
- * memoized value.
+ * evaluate it by calling `value()`.
  *
  * Once `value()` is called on an `Expression`, it and all subexpressions that
- * constitute it are considered *constant*. This particularly affects any
+ * constitute it are rendered *constant*. This particularly affects any
  * `Random` objects in the expression, the value of which can no longer be
- * alterated.
+ * altered.
+ *
+ * Evaluations are memoized at *checkpoints*. Each `Expression` object that
+ * occurs in the delayed expression forms such a checkpoint. Further calls to
+ * `value()` are optimized to retrieve these memoized evaluations rather than
+ * re-evaluated the whole expression.
  *
  * ### Advanced use
  * 
  * More elaborate use cases include computing gradients and applying Markov
  * kernels. Call `eval()` to evaluate the expression in the same way as for
  * `value()`, but without rendering it constant. Any `Random` objects in the
- * expression that have not previously been rendered constant by a call to
- * `value()` are then considered *arguments* eligible for moving.
+ * expression that have not been rendered constant by a previous call to
+ * `value()` are considered *arguments* of the expression.
  *
- * After updating the value of arguments, use `eval()` again to re-evaluate
- * the expression with those new values.
+ * Use `grad()` to compute the gradient of an expression with respect to its
+ * arguments. The gradients are accumulated in the `Random` arguments and can
+ * be retrieved from them.
  *
- * At any time, use `grad()` to compute the gradient of an expression with
- * respect to its arguments. The gradient is accumulated into those arguments
- * (the `Random` objects).
+ * Use `set()` to update the value of `Random` arguments, then `move()` on
+ * the whole expression to re-evaluate it.
  *
  * Use `value()`, not `eval()`, unless you are taking responsibility for
- * correctness (e.g. moving arguments in a manner invariant to some
- * target distribution, using a Markov kernel). Otherwise, program
- * behavior may lack self-consistency. Consider, for example:
+ * correctness (e.g. moving arguments in a manner invariant to some target
+ * distribution, using a Markov kernel). Otherwise, program behavior may lack
+ * self-consistency. Consider, for example:
  *
  *     if x.value() >= 0.0 {
  *       doThis();
@@ -83,15 +86,18 @@
  *       doThat();
  *     }
  *
- * This is correct usage. Using `eval()` instead of `value()` here allows
- * some other part of the code to later change the value of the random
- * variable `x` to a negative value, and the program lacks
- * self-consistency: it executed `doThis()` instead of `doThat()` based
- * on a previous value of `x`.
+ * This is correct usage. Using `x.eval()` instead of `x.value()` here would
+ * allow the value of `x` to be later changed to a negative value, and the
+ * program would lack self-consistency, as it executed `doThis()` instead of
+ * `doThat()` based on the previous value.
  *
- * !!! attention
- *     Correctness is the programmer's responsibility when using the advanced
- *     interface.
+ * ### Checkpoints and memoization
+ *
+ * `eval()` memoizes only at checkpoints defined by `Expression` objects. This
+ * reduces memory use. Internally, `grad()` benefits from re-evaluating
+ * expressions between checkpoints to memoize intermediate results. It does so
+ * by calling `peek()`. These memoized intermediate results are cleared again
+ * as `grad()` progresses.
  */
 abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
@@ -167,7 +173,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Number of rows in result.
    */
   final function rows() -> Integer {
-    peek();
+    eval();
     return global.rows(x!);
   }
   
@@ -175,7 +181,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Number of columns in result.
    */
   final function columns() -> Integer {
-    peek();
+    eval();
     return global.columns(x!);
   }
 
@@ -194,34 +200,45 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Evaluate, using memos if available. and render constant.
+   * Evaluate and render constant.
    *
    * Returns: The result.
    */
   final function value() -> Value! {
-    /* need to call peek() before constant() for Random in particular; a
+    /* need to call eval() before constant() for Random in particular; a
      * Random may have an associated distribution from which it is yet to
      * simulate, constant() will remove this */
-    peek();
+    eval();
     constant();
     return x!;
   }
 
   /**
-   * Evaluate, using memos if available. Memoizes at fine-grain (i.e. both
-   * Expression objects and forms) up to nearest Expression objects.
+   * Evaluate.
    *
    * Returns: The result.
    */
-  function peek() -> Value! {
+  function eval() -> Value! {
     if !x? {
-      doPeek();
+      doEval();
     }
     assert x?;
     return x!;
   }
-  function doPeek() {
+  function doEval() {
     assert x?;
+  }
+
+  /**
+   * Evaluate.
+   *
+   * Returns: The result.
+   */
+  function peek() -> Value! {
+    /* forms use peek() for fine-grain memoization, but this terminates at
+     * the nearest Expression objects; so here should behave as for eval(),
+     * reverting to coarse-grain memoization */
+    return eval();
   }
 
   /**
@@ -230,10 +247,10 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    *
    * Returns: The result.
    */
-  final function eval() -> Value! {
+  final function move() -> Value! {
     if !flagConstant {
       if visitCount == 0 {
-        doEval();
+        doMove();
       }
       visitCount <- visitCount + 1;
       if visitCount >= linkCount {
@@ -243,7 +260,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
     }
     return x!;
   }
-  function doEval() {
+  function doMove() {
     assert x?;
     assert !d?;
   }

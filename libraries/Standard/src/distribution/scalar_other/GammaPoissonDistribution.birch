@@ -26,7 +26,7 @@ final class GammaPoissonDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_gamma_poisson(peek(k), peek(θ));
+    return simulate_gamma_poisson(eval(k), eval(θ));
   }
   
   override function logpdf(x:Integer!) -> Real! {

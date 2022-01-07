@@ -25,7 +25,7 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_uniform(peek(l), peek(u));
+    return simulate_uniform(eval(l), eval(u));
   }
 
   override function logpdf(x:Real!) -> Real! {

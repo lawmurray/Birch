@@ -22,7 +22,7 @@ class LangevinKernel < Kernel {
     if nmoves > 0 {
       /* initial state */
       let x <- π.args();
-      let p <- π.peek();
+      let p <- π.eval();
       let d <- π.grad();
       let δ <- scale/pow(length(x), 3.5);
       let μ <- x + d*δ;

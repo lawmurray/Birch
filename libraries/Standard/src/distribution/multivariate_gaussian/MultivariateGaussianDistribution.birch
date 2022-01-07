@@ -22,7 +22,7 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
   }
 
   override function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian(peek(μ), peek(Σ));
+    return simulate_multivariate_gaussian(eval(μ), eval(Σ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {

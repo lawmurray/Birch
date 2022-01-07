@@ -31,7 +31,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_student_t(peek(k), peek(μ), peek(σ2));
+    return simulate_student_t(eval(k), eval(μ), eval(σ2));
   }
   
   override function logpdf(x:Real!) -> Real! {
