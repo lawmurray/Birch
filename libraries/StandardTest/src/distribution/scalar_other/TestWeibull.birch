@@ -13,11 +13,11 @@ class TestWeibull < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return vector(x.peek(), 1);
+    return vector(x.eval(), 1);
   }
 
   override function backward() -> Real[_] {
-    return vector(x.peek(), 1);
+    return vector(x.eval(), 1);
   }
 
   function marginal() -> Distribution<Real> {

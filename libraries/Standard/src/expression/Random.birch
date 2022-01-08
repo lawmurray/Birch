@@ -73,7 +73,7 @@ final class Random<Value> < Expression<Value>(nil, false) {
     assert this.x?;
   }
 
-  override function doGrad() {
+  override function doShallowGrad() {
     // specifically, don't clear the gradient here, unlike in Expression, as
     // Randoms form the arguments with respect to which gradients are computed
   }

@@ -309,26 +309,37 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
   final function grad<Gradient>(d:Gradient) {
+    this.d <- d;
+    doShallowGrad();
+    doDeepGrad();
+  }
+  final function shallowGrad<Gradient>(d:Gradient) {
     if !flagConstant {
       if visitCount == 0 {
-        /* start accumulation, or restart for Random, which does not clear in
-         * doGrad() */
+        /* (re-)start accumulation */
         assert isRandom() || !this.d?;
         this.d <- d;
       } else {
+        /* continue accumulation */
         assert this.d?;
         this.d <- this.d! + d;
       }
       visitCount <- visitCount + 1;
-      if visitCount >= linkCount {
-        assert visitCount == linkCount || linkCount == 0;
-        doGrad();
-        visitCount <- 0;  // reset for next time
-      }
     }
   }
-  function doGrad() {
-    this.d <- nil;  // clear intermediate gradients to save memory
+  function doShallowGrad() {
+    //
+  }
+  final function deepGrad() {
+    if !flagConstant && visitCount >= linkCount {
+      assert visitCount == linkCount || linkCount == 0;
+      visitCount <- 0;  // reset for next time
+      doShallowGrad();
+      doDeepGrad();
+    }
+  }
+  function doDeepGrad() {
+    //
   }
 
   /**

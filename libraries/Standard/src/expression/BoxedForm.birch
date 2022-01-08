@@ -5,34 +5,39 @@
  * - Value: Result type.
  * - Form: Form form.
  */
-class BoxedForm<Value,Form>(x:Value!, f:Form) < Expression<Value>(x, false) {
+final class BoxedForm<Value,Form>(x:Value!, f:Form) <
+    Expression<Value>(x, false) {
   /**
    * Expression form.
    */
   f:Form? <- f;
 
-  final override function doMove() {
+  override function doMove() {
     this.x <- global.move(f!);
   }
 
-  final override function doGrad() {
-    global.grad(f!, this.d!);
-    this.d <- nil;  // clear intermediate gradients to save memory
+  override function doShallowGrad() {
+    global.shallow_grad(f!, this.d!);
+    this.d <- nil;  // clear intermediate gradient to save memory
   }
 
-  final override function doLink() {
+  override function doDeepGrad() {
+    global.deep_grad(f!);
+  }
+
+  override function doLink() {
     global.link(f!);
   }
 
-  final override function doLabel(gen:Integer) {
+  override function doLabel(gen:Integer) {
     global.label(f!, this.gen);
   }
 
-  final override function doConstant(gen:Integer) {
+  override function doConstant(gen:Integer) {
     global.constant(f!, this.gen);
   }
 
-  final override function doConstant() {
+  override function doConstant() {
     global.constant(f!);
     f <- nil;
   }

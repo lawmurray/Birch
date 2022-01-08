@@ -19,8 +19,8 @@ class TestDirichletMultinomial < TestModel {
   override function forward() -> Real[_] {
     D:Integer <- length(α);
     y:Real[2*D];
-    y[1..D] <- ρ.peek();
-    y[D+1..2*D] <- x.peek();
+    y[1..D] <- ρ.eval();
+    y[D+1..2*D] <- x.eval();
     return y;
   }
 
@@ -28,9 +28,9 @@ class TestDirichletMultinomial < TestModel {
     D:Integer <- length(α);
     y:Real[2*D];
     assert !x.hasValue();
-    y[D+1..2*D] <- x.peek();
+    y[D+1..2*D] <- x.eval();
     assert !ρ.hasValue();
-    y[1..D] <- ρ.peek();
+    y[1..D] <- ρ.eval();
     return y;
   }
 

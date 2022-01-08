@@ -66,11 +66,16 @@ hpp{{
   } \
   \
   template<class G> \
-  void grad(const G& g) const { \
+  void shallowGrad(const G& g) const { \
     const_cast<std::optional<Value>&>(x).reset(); \
     auto [gl, gr] = f_grad(g, birch::peek(this->l), birch::peek(this->r), \
         ##args); \
-    birch::grad(this->l, gl); \
-    birch::grad(this->r, gr); \
+    birch::shallow_grad(this->l, gl); \
+    birch::shallow_grad(this->r, gr); \
+  } \
+  \
+  void deepGrad() const { \
+    birch::deep_grad(this->l); \
+    birch::deep_grad(this->r); \
   }
 }}

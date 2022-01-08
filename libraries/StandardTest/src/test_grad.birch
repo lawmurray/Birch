@@ -35,7 +35,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     }
 
     /* compute gradient */
-    let p <- handler.peek();
+    let p <- handler.eval();
     let x <- handler.args();
     assert length(x) > 0;
     let d <- handler.grad();

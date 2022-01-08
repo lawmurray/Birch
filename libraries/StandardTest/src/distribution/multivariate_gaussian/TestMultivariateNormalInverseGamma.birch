@@ -23,17 +23,17 @@ class TestMultivariateNormalInverseGamma < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[size()];
-    y[1] <- σ2.peek();
-    y[2..(n + 1)] <- μ.peek();
+    y[1] <- σ2.eval();
+    y[2..(n + 1)] <- μ.eval();
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[size()];
     assert !μ.hasValue();
-    y[2..(n + 1)] <- μ.peek();
+    y[2..(n + 1)] <- μ.eval();
     assert !σ2.hasValue();
-    y[1] <- σ2.peek();
+    y[1] <- σ2.eval();
     return y;
   }
 

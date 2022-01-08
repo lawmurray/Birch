@@ -16,17 +16,17 @@ class TestGammaPoisson < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[2];
-    y[1] <- λ.peek();
-    y[2] <- x.peek();
+    y[1] <- λ.eval();
+    y[2] <- x.eval();
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
-    y[2] <- x.peek();
+    y[2] <- x.eval();
     assert !λ.hasValue();
-    y[1] <- λ.peek();
+    y[1] <- λ.eval();
     return y;
   }
 

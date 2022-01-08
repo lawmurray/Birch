@@ -925,6 +925,36 @@ void grad(const T& x, const G& g) {
   x->grad(g);
 }
 
+template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void shallow_grad(const T& x, const G& g) {
+  //
+}
+
+template<class T, class G, std::enable_if_t<is_form<T>::value,int> = 0>
+void shallow_grad(T& x, const G& g) {
+  x.shallowGrad(g);
+}
+
+template<class T, class G, std::enable_if_t<is_expression<T>::value,int> = 0>
+void shallow_grad(const T& x, const G& g) {
+  x->shallowGrad(g);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void deep_grad(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void deep_grad(T& x) {
+  x.deepGrad();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void deep_grad(const T& x) {
+  x->deepGrad();
+}
+
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 void label(const T& x, const int gen) {
   //
