@@ -27,15 +27,47 @@ static thread_local std::vector<libbirch::Any*> unreachables;
  */
 static thread_local bool copy_flag = false;
 
+/**
+ * Deregistration count for reach thread.
+ */
+static thread_local int ndereg = 0;
+
+/**
+ * Number of deregistrations in a thread before trimming the possible-roots
+ * list, deallocating any objects with zero reference count.
+ */
+static const int DEREG_PERIOD = 32;
+
 void libbirch::register_possible_root(Any* o) {
   possible_roots.push_back(o);
 }
 
 void libbirch::deregister_possible_root(Any* o) {
   assert(o->numShared_() == 0);
-  if (!possible_roots.empty() && possible_roots.back() == o) {
-    possible_roots.pop_back();
-    o->deallocate_();
+  if (!possible_roots.empty()) {
+    if (possible_roots.back() == o) {
+      /* easy to deallocate an object if it was the most-recently added */
+      possible_roots.pop_back();
+      o->deallocate_();
+    } else if (++ndereg == DEREG_PERIOD) {
+      /* periodically trim the possible-roots list, deallocating any objects
+       * with zero reference count */
+      int j = 0;
+      for (int i = 0; i < (int)possible_roots.size(); ++i) {
+        auto o1 = possible_roots[i];
+        if (o1->numShared_() == 0) {
+          o1->deallocate_();  // deallocation was deferred
+        } else if (o1->isPossibleRoot_()) {
+          possible_roots[j++] = o1;
+        } else {
+          o1->unbuffer_();  // not a root, mark as no longer in the buffer
+        }
+      }
+      possible_roots.resize(j);
+
+      /* reset count */
+      ndereg = 0;
+    }
   }
 }
 
