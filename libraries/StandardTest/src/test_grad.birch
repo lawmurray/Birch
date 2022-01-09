@@ -9,7 +9,7 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test
 
-  let h <- 1.0e-4;    // maximum width for finite difference estimate
+  let Δ <- 1.0e-4;    // maximum width for finite difference estimate
   let ntrials <- 20;  // number of trials
   // ^ the interval width adapts by starting at h, halving until either
   //   success or ntrials trials, after which the test is considered failed
@@ -22,9 +22,9 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   //   within 0.1% of the finite difference approximation"
 
   parallel for n in 1..N {
-    let handler <- construct<Handler>(backward, true);
+    let h <- construct<Handler>(backward, true);
     let m' <- copy(m);
-    with handler {
+    with h {
       m'.initialize();
       m'.simulate();
       if backward {
@@ -35,26 +35,25 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     }
 
     /* compute gradient */
-    let p <- handler.eval();
-    let x <- handler.args();
-    assert length(x) > 0;
-    let d <- handler.grad();
-    assert length(d) == length(x);
+    let π <- h.π!;
+    let p <- π.eval();
+    π.grad(1.0);
+    let (x, g) <- π.args();
 
     /* compare with finite difference estimates */
     for i in 1..rows(x) {
-      let h' <- h;  // initial interval size for finite difference
+      let Δ' <- Δ;  // initial interval size for finite difference
       let t <- 1;
       let pass <- false;
       while t <= ntrials {
         let y <- x;
         let z <- x;
-        y[i] <- y[i] - 0.5*h';
-        z[i] <- z[i] + 0.5*h';
-        let q <- handler.move(y)!;
-        let r <- handler.move(z)!;
-        let fd <- (r - q)/h';
-        let δ <- abs(d[i] - fd);
+        y[i] <- y[i] - 0.5*Δ';
+        z[i] <- z[i] + 0.5*Δ';
+        let q <- π.move(y)!;
+        let r <- π.move(z)!;
+        let fd <- (r - q)/Δ';
+        let δ <- abs(g[i] - fd);
         pass <- δ <= ε*abs(fd);
         if pass {
           /* success */
@@ -62,11 +61,11 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         } else if t < ntrials {
           /* shrink interval for finite difference and try again */
           t <- t + 1;
-          h' <- 0.5*h';
+          Δ' <- 0.5*Δ';
         } else {
           /* fail */
           t <- ntrials + 1;
-          warn("on component " + i + ", d=" + d[i] + ", fd=" + fd + ", "  +
+          warn("on component " + i + ", g=" + g[i] + ", fd=" + fd + ", "  +
               δ + " > " + ε*abs(fd));
           failed[n] <- failed[n] + 1.0/rows(x);
         }
