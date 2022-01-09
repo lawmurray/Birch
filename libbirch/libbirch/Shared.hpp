@@ -471,10 +471,12 @@ T* libbirch::Shared<T>::get() {
 
         /* replace pointer */
         o->incShared_();
-        ptr->decSharedBridge_();
       }
     }
     pack(o, false);  // no longer a bridge, also releases lock
+    if (ptr != o) {  // do outside the critical region, as could be expensive
+      ptr->decSharedBridge_();
+    }
   }
   return o;
 }
