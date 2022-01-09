@@ -27,14 +27,24 @@ abstract class Kernel {
   nlags:Integer <- 0;
 
   /**
-   * Apply the kernel.
+   * Perform pre-computations prior to copying a particle. This is typically
+   * called during resampling to perform computations that will be the same
+   * for all offspring (e.g. gradient at current arguments).
    *
    * - t: Step number.
-   * - π: Particle.
-   *
-   * Returns: Acceptance rate.
+   * - π: Log-posterior.
    */
-  abstract function apply(t:Integer, π:Particle) -> Real;
+  abstract function precompute(t:Integer, π:Expression<Real>);
+
+  /**
+   * Move a particle.
+   *
+   * - t: Step number.
+   * - π: Log-posterior.
+   *
+   * Returns: Acceptance rate of moves.
+   */
+  abstract function move(t:Integer, π:Expression<Real>) -> Real;
 
   override function read(buffer:Buffer) {
     super.read(buffer);

@@ -78,7 +78,7 @@ class ParticleFilter {
    * Create a particle of the type required for this filter.
    */
   function particle(model:Model) -> Particle {
-    return construct<Particle>(model, delayed, autodiff);
+    return construct<Particle>(model);
   }
 
   /**
@@ -130,14 +130,19 @@ class ParticleFilter {
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
-      let m <- x[n].m;
-      let h <- x[n].h;
+      let h <- construct<Handler>(delayed, autodiff);
       with h {
-        h.w <- 0.0;
-        m.read(input);
-        m.simulate();
-        w[n] <- w[n] + h.w;
+        x[n].m.read(input);
+        x[n].m.simulate();
       }
+      if h.π? {
+        if x[n].π? {
+          x[n].π <- box(x[n].π! + h.π!);
+        } else {
+          x[n].π <- h.π!;
+        }
+      }
+      w[n] <- w[n] + h.w;
     }
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
@@ -152,14 +157,19 @@ class ParticleFilter {
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
-      let m <- x[n].m;
-      let h <- x[n].h;
+      let h <- construct<Handler>(delayed, autodiff);
       with h {
-        h.w <- 0.0;
-        m.read(t, input);
-        m.simulate(t);
-        w[n] <- w[n] + h.w;
+        x[n].m.read(t, input);
+        x[n].m.simulate(t);
       }
+      if h.π? {
+        if x[n].π? {
+          x[n].π <- box(x[n].π! + h.π!);
+        } else {
+          x[n].π <- h.π!;
+        }
+      }
+      w[n] <- w[n] + h.w;
     }
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
@@ -175,41 +185,42 @@ class ParticleFilter {
   function resample(t:Integer, κ:Kernel?) {
     if r < t {
       r <- t;
+      raccepts <- 0.0/0.0;
       if ess <= trigger*nparticles {
-        let a <- resample_systematic(w);
-
-        /* apply bridge finding to any particle with at least two offspring,
-        * using the fact that the ancestor vector is in ascending order */
-        dynamic parallel for n in 2..nparticles {
-          if a[n] == a[n - 1] && (n <= 2 || a[n] != a[n - 2]) {
-            bridge(x[a[n]]);
+        let (a, o) <- resample_systematic(w);
+        /* pre-compute and bridge-find */
+        dynamic parallel for n in 1..nparticles {
+          if κ? && x[n].π? && o[n] >= 1 {
+            /* will survive, perform pre-computations */
+            κ!.precompute(t, x[n].π!);
+          }
+          if o[n] >= 2 {
+            /* will be copied at least once, perform bridge-finding */
+            bridge(x[n]);
           }
         }
 
-        /* permute the ancestry vector so that it has the property a[n] == n
-        * where n has at least one offspring */
-        a <- permute_ancestors(a);
-
-        /* copy particles where we have a[n] != n */
+        /* copy */
         dynamic parallel for n in 1..nparticles {
           if a[n] != n {
-            x[n] <- global.copy(x[a[n]]);
+            /* a[n] != n implies o[n] >= 2; see permute_ancestors() */
+            x[n] <- copy(x[a[n]]);
           }
         }
-
-        /* reset weights */
-        w <- vector(0.0, nparticles);
 
         /* move */
         if κ? {
           let α <- vector(0.0, nparticles);  // acceptance rate per particle
           parallel for n in 1..nparticles {
-            α[n] <- κ!.apply(t, x[n]);
+            if x[n].π? {
+              α[n] <- κ!.move(t, x[n].π!);
+            }
           }
           raccepts <- sum(α)/nparticles;
-        } else {
-          raccepts <- 0.0/0.0;
         }
+
+        /* reset weights */
+        w <- vector(0.0, nparticles);
       } else {
         /* normalize weights to sum to nparticles */
         w <- w - vector(lsum - log(nparticles), nparticles);
@@ -227,12 +238,6 @@ class ParticleFilter {
   function reconfigure(delayed:Boolean, autodiff:Boolean) {
     this.delayed <- delayed;
     this.autodiff <- autodiff;
-
-    /* replace event handlers */
-    let iter <- x.walk();
-    while iter.hasNext() {
-      iter.next().reconfigure(delayed, autodiff);
-    }
   }
 
   override function read(buffer:Buffer) {

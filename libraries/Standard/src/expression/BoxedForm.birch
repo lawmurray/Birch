@@ -12,13 +12,17 @@ final class BoxedForm<Value,Form>(x:Value!, f:Form) <
    */
   f:Form? <- f;
 
-  override function doMove() {
-    this.x <- global.move(f!);
+  override function doMove(visitor:MoveVisitor) {
+    this.x <- global.move(f!, visitor);
+  }
+
+  override function doArgs(visitor:ArgsVisitor) {
+    global.args(f!, visitor);
   }
 
   override function doShallowGrad() {
-    global.shallow_grad(f!, this.d!);
-    this.d <- nil;  // clear intermediate gradient to save memory
+    global.shallow_grad(f!, this.g!);
+    this.g <- nil;  // clear intermediate gradient to save memory
   }
 
   override function doDeepGrad() {

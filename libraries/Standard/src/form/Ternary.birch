@@ -45,22 +45,30 @@ struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
 }
 
 hpp{{
-#define BIRCH_TERNARY_FUNCTION_FORM(f, f_grad, args...) \
+#define BIRCH_TERNARY_FUNCTION_FORM(f, f_grad, ...) \
   using Value = decltype(f(birch::peek(std::declval<Left>()), \
       birch::peek(std::declval<Middle>()), \
-      birch::peek(std::declval<Right>()), ##args)); \
+      birch::peek(std::declval<Right>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
   auto eval() const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
-    return f(birch::eval(this->l), birch::eval(this->m), \
-        birch::eval(this->r), ##args); \
+    auto l = birch::eval(this->l); \
+    auto m = birch::eval(this->m); \
+    auto r = birch::eval(this->r); \
+    return f(l, m, r, ##__VA_ARGS__); \
   } \
   \
-  auto move() const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
-    return f(birch::move(this->l), birch::move(this->m), \
-        birch::move(this->r), ##args); \
+  auto move(const MoveVisitor& visitor) const { \
+    auto l = birch::move(this->l, visitor); \
+    auto m = birch::move(this->m, visitor); \
+    auto r = birch::move(this->r, visitor); \
+    return f(l, m, r, ##__VA_ARGS__); \
+  } \
+  \
+  void args(const ArgsVisitor& visitor) const { \
+    birch::args(this->l, visitor); \
+    birch::args(this->m, visitor); \
+    birch::args(this->r, visitor); \
   } \
   \
   auto value() const { \
@@ -71,8 +79,10 @@ hpp{{
   \
   auto peek() const { \
     if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->l), \
-          birch::peek(this->m), birch::peek(this->r), ##args); \
+      auto l = birch::peek(this->l); \
+      auto m = birch::peek(this->m); \
+      auto r = birch::peek(this->r); \
+      const_cast<std::optional<Value>&>(x) = f(l, m, r, ##__VA_ARGS__); \
     } \
     return *x; \
   } \
@@ -80,8 +90,10 @@ hpp{{
   template<class G> \
   void shallowGrad(const G& g) const { \
     const_cast<std::optional<Value>&>(x).reset(); \
-    auto [gl, gm, gr] = f_grad(g, birch::peek(this->l), \
-        birch::peek(this->m), birch::peek(this->r), ##args); \
+    auto l = birch::peek(this->l); \
+    auto m = birch::peek(this->m); \
+    auto r = birch::peek(this->r); \
+    auto [gl, gm, gr] = f_grad(g, l, m, r, ##__VA_ARGS__); \
     birch::shallow_grad(this->l, gl); \
     birch::shallow_grad(this->m, gm); \
     birch::shallow_grad(this->r, gr); \

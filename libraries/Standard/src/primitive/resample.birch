@@ -80,14 +80,19 @@ function norm_exp(w:Real[_]) -> Real[_] {
  *
  * - w: Log weights.
  *
- * Return: the vector of ancestor indices, in non-descending order.
+ * Return: the vector of ancestor indices (permuted) and vector of offspring
+ * counts.
+ *
+ * See also: permute_ancestors()
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
  */
-function resample_systematic(w:Real[_]) -> Integer[_] {
-  return cumulative_offspring_to_ancestors(
-      systematic_cumulative_offspring(cumulative_weights(w)));
+function resample_systematic(w:Real[_]) -> (Integer[_], Integer[_]) {
+  let O <- systematic_cumulative_offspring(cumulative_weights(w));
+  let a <- permute_ancestors(cumulative_offspring_to_ancestors(O));
+  let o <- cumulative_offspring_to_offspring(O);
+  return (a, o);
 }
 
 /*

@@ -3,6 +3,6 @@
  */
 final acyclic class BoxedValue<Value>(x:Value!) < Expression<Value>(x, true) {  
   override function doShallowGrad() {
-    this.d <- nil;  // clear intermediate gradient to save memory
+    this.g <- nil;  // clear intermediate gradient to save memory
   }
 }

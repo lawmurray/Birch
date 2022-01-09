@@ -14,69 +14,68 @@ class LangevinKernel < Kernel {
    */
   scale:Real <- 1.0;
 
-  override function apply(t:Integer, π:Particle) -> Real {
-    /* apply lag */
+  override function precompute(t:Integer, π:Expression<Real>) {
+    ///@todo Can label() and constant() be combined into one pass?
     π.label(t);
-    π.constant(t - nlags);
-
-    if nmoves > 0 {
-      /* initial state */
-      let x <- π.args();
-      let p <- π.eval();
-      let d <- π.grad();
-      let δ <- scale/pow(length(x), 3.5);
-      let μ <- x + d*δ;
-      let σ2 <- 2.0*δ;
-
-      /* moves */
-      let m <- length(x);
-      let naccepts <- 0;
-      let accept <- false;
-      for n in 1..nmoves {
-        /* proposed state */
-        cpp{{
-        auto z = numbirch::standard_gaussian<Real>(m);
-        }}
-        let x' <- μ + sqrt(σ2)*z;
-        let p' <- π.move(x');
-        let d' <- π.grad();
-        let μ' <- x' + d'*δ;
-
-        /* proposal correction */
-        let q <- transform_reduce(x, μ', 0.0,
-            \(a:Real, b:Real) -> {
-              return a + b;
-            },
-            \(x:Real, μ':Real) -> {
-              return logpdf_gaussian(x, μ', σ2);
-            });
-        let q' <- transform_reduce(x', μ, 0.0,
-            \(a:Real, b:Real) -> {
-              return a + b;
-            },
-            \(x':Real, μ:Real) -> {
-              return logpdf_gaussian(x', μ, σ2);
-            });
-
-        /* accept/reject */
-        accept <- log(simulate_uniform(0.0, 1.0)) <= (p' - p + q - q')!;
-        if accept {
-          naccepts <- naccepts + 1;
-          x <- x';
-          p <- p';
-          d <- d';
-          μ <- μ';
-        }
-      }
-      if !accept {
-        /* if last proposal was not accepted, restore correct arguments,
-        * otherwise already correct */
-        π.move(x);
-      }
-      return cast<Real>(naccepts)/nmoves;
-    } else {
-      return 0.0;
+    if t > nlags {
+      π.constant(t - nlags);
     }
+    π.grad(1.0);
+  }
+
+  override function move(t:Integer, π:Expression<Real>) -> Real {
+    /* initial state */
+    let p <- π.eval();
+    let (x, g) <- π.args();
+    let m <- length(x);
+    let δ <- scale/pow(m, 3.0);
+    let μ <- x + g*δ;
+    let σ2 <- 2.0*δ;
+
+    /* moves */
+    let naccepts <- 0;
+    let accept <- true;  // was most recent particle accepted?
+    for n in 1..nmoves {
+      /* proposed state */
+      cpp{{
+      auto z = numbirch::standard_gaussian<Real>(m);
+      }}
+      let p' <- π.move(μ + sqrt(σ2)*z);
+      π.grad(1.0);
+      let (x', g') <- π.args();
+      let μ' <- x' + g'*δ;
+
+      /* proposal correction */
+      let q <- transform_reduce(x, μ', 0.0,
+          \(a:Real, b:Real) -> {
+            return a + b;
+          },
+          \(x:Real, μ':Real) -> {
+            return logpdf_gaussian(x, μ', σ2);
+          });
+      let q' <- transform_reduce(x', μ, 0.0,
+          \(a:Real, b:Real) -> {
+            return a + b;
+          },
+          \(x':Real, μ:Real) -> {
+            return logpdf_gaussian(x', μ, σ2);
+          });
+
+      /* accept/reject */
+      accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + q - q';
+      if accept {
+        naccepts <- naccepts + 1;
+        p <- p';
+        x <- x';
+        g <- g';
+        μ <- μ';
+      }
+    }
+    if !accept {
+      /* last proposal was rejected, restore correct arguments */
+      π.move(x);
+    }
+    return cast<Real>(naccepts)/nmoves;
   }
 
   override function read(buffer:Buffer) {

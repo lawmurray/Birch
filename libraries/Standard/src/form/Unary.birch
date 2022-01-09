@@ -27,18 +27,22 @@ struct Unary<Middle>(m:Middle) < Form {
 }
 
 hpp{{
-#define BIRCH_UNARY_FUNCTION_FORM(f, f_grad, args...) \
-  using Value = decltype(f(birch::peek(std::declval<Middle>()), ##args)); \
+#define BIRCH_UNARY_FUNCTION_FORM(f, f_grad, ...) \
+  using Value = decltype(f(birch::peek(std::declval<Middle>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
   auto eval() const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
-    return f(birch::eval(this->m), ##args); \
+    auto m = birch::eval(this->m); \
+    return f(m, ##__VA_ARGS__); \
   } \
   \
-  auto move() const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
-    return f(birch::move(this->m), ##args); \
+  auto move(const MoveVisitor& visitor) const { \
+    auto m = birch::move(this->m, visitor); \
+    return f(m, ##__VA_ARGS__); \
+  } \
+  \
+  void args(const ArgsVisitor& visitor) const { \
+    birch::args(this->m, visitor); \
   } \
   \
   auto value() const { \
@@ -49,7 +53,8 @@ hpp{{
   \
   auto peek() const { \
     if (!x) { \
-      const_cast<std::optional<Value>&>(x) = f(birch::peek(this->m), ##args);\
+      auto m = birch::peek(this->m); \
+      const_cast<std::optional<Value>&>(x) = f(m, ##__VA_ARGS__);\
     } \
     return *x; \
   } \
@@ -57,7 +62,8 @@ hpp{{
   template<class G> \
   void shallowGrad(const G& g) const { \
     const_cast<std::optional<Value>&>(x).reset(); \
-    auto gm = f_grad(g, birch::peek(this->m), ##args); \
+    auto m = birch::peek(this->m); \
+    auto gm = f_grad(g, m, ##__VA_ARGS__); \
     birch::shallow_grad(this->m, gm); \
   } \
   \

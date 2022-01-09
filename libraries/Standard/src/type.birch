@@ -851,11 +851,6 @@ auto value(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto move(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 auto eval(const T& x) {
   return x;
 }
@@ -870,14 +865,34 @@ auto eval(const T& x) {
   return x->eval();
 }
 
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+auto move(const T& x, const MoveVisitor& visitor) {
+  return x;
+}
+
 template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
-auto move(const T& x) {
-  return x.move();
+auto move(const T& x, const MoveVisitor& visitor) {
+  return x.move(visitor);
 }
 
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-auto move(const T& x) {
-  return x->move();
+auto move(const T& x, const MoveVisitor& visitor) {
+  return x->move(visitor);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void args(const T& x, const ArgsVisitor& visitor) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void args(const T& x, const ArgsVisitor& visitor) {
+  x.args(visitor);
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void args(const T& x, const ArgsVisitor& visitor) {
+  x->args(visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>

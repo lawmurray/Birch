@@ -51,25 +51,25 @@ function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
   return mx + log(Z);
 }
 
-function logz_conway_maxwell_poisson_grad<Gradient>(
-      d:Gradient, λ:Real, ν:Real, n:Integer) -> (Real, Real, Real) {
+function logz_conway_maxwell_poisson_grad<Gradient>(g:Gradient, λ:Real,
+    ν:Real, n:Integer) -> (Real, Real, Real) {
   let log_λ <- log(λ);
   let μ <- min(pow(λ, 1.0/ν), cast<Real>(n));  // mode
   let mx <- μ*log_λ - ν*lgamma(μ + 1.0);  // renormalizer
   let log_xf <- 0.0;  // accumulator of lfact(x)
   let z <- 0.0;
   let Z <- exp(-mx);  // for x == 0
-  let dλ <- 0.0;
-  let dν <- 0.0;
+  let gλ <- 0.0;
+  let gν <- 0.0;
   for x in 1..n {
     log_xf <- log_xf + log(x);
     z <- exp(x*log_λ - ν*log_xf - mx);
     Z <- Z + z;
-    dλ <- dλ + x*z;
-    dν <- dν + log_xf*z;
+    gλ <- gλ + x*z;
+    gν <- gν + log_xf*z;
   }
-  dλ <- d*dλ/(λ*Z);
-  dν <- -d*dν/Z;
+  gλ <- g*gλ/(λ*Z);
+  gν <- -g*gν/Z;
 
-  return (dλ, dν, 0.0);
+  return (gλ, gν, 0.0);
 }

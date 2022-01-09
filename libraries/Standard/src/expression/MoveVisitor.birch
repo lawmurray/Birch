@@ -1,0 +1,79 @@
+/**
+ * Move arguments in a delayed expression.
+ *
+ * - x: Vectorized arguments.
+ */
+class MoveVisitor(x:Real[_]) {
+  /**
+   * Vectorized arguments.
+   */
+  x:Real[_] <- x;
+
+  /**
+   * Current position in `x`.
+   */
+  n:Integer <- 0;
+
+  /**
+   * Set argument.
+   *
+   * v: Argument.
+   */
+  function visit(v:Random<Real>) {
+    v.x <- x[n + 1];
+    v.g <- nil;
+    n <- n + 1;
+  }
+
+  /**
+   * Set argument.
+   *
+   * v: Argument.
+   */
+  function visit(v:Random<Integer>) {
+    //
+  }
+
+  /**
+   * Set argument.
+   *
+   * v: Argument.
+   */
+  function visit(v:Random<Boolean>) {
+    //
+  }
+
+  /**
+   * Set argument.
+   *
+   * v: Argument
+   */
+  function visit(v:Random<Real[_]>) {
+    let m <- length(v);
+    v.x <- x[(n + 1)..(n + m)];
+    v.g <- nil;
+    n <- n + m;
+  }
+
+  /**
+   * Set argument.
+   *
+   * v: Argument.
+   */
+  function visit(v:Random<Integer[_]>) {
+    //
+  }
+
+  /**
+   * Set argument.
+   *
+   * v: Argument.
+   */
+  function visit(v:Random<Real[_,_]>) {
+    let r <- rows(v);
+    let c <- columns(v);
+    v.x <- mat(x[(n + 1)..(n + r*c)], c);
+    v.g <- nil;
+    n <- n + r*c;
+  }
+}

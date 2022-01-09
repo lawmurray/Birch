@@ -30,11 +30,12 @@ final class Random<Value> < Expression<Value>(nil, false) {
   }
 
   /**
-   * Set the value.
+   * Value assignment.
    */
   function set(x:Value!) {
+    assert !this.hasValue();
     this.x <- x;
-    this.d <- nil;
+    this.g <- nil;
   }
 
   /**
@@ -61,21 +62,14 @@ final class Random<Value> < Expression<Value>(nil, false) {
     assert this.x?;
   }
 
-  override function doMove() {
-    /* don't re-evaluate here; the purpose of calling move() on an Expression
-     * is to re-evaluate it after modifying the value of one or more Random
-     * arguments using move(), so if this has a value, it is the intended
-     * value already */
-    if !this.x? {
-      prune();
-      handle_delay_simulate(this);
-    }
+  override function doMove(visitor:MoveVisitor) {
     assert this.x?;
+    assert !this.p?;
+    visitor.visit(this);
   }
 
-  override function doShallowGrad() {
-    // specifically, don't clear the gradient here, unlike in Expression, as
-    // Randoms form the arguments with respect to which gradients are computed
+  override function doArgs(visitor:ArgsVisitor) {
+    visitor.visit(this);
   }
 
   override function doConstant() {

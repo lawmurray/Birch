@@ -92,34 +92,34 @@ function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
   return Z;
 }
 
-function stack_grad<Gradient,Left,Right>(d:Gradient, l:Left, r:Right) -> {
+function stack_grad<Gradient,Left,Right>(g:Gradient, l:Left, r:Right) -> {
   cpp{{
-  return std::make_tuple(d.slice(1), d.slice(2));
+  return std::make_tuple(g.slice(1), g.slice(2));
   }}
 }
 
-function stack_grad<Gradient,Left,Right>(d:Gradient, l:Left[_], r:Right) -> {
+function stack_grad<Gradient,Left,Right>(g:Gradient, l:Left[_], r:Right) -> {
   cpp{{
-  return std::make_tuple(d.slice(std::make_pair(1, length(d) - 1)),
-      d.slice(length(d)));
+  return std::make_tuple(g.slice(std::make_pair(1, length(g) - 1)),
+      g.slice(length(g)));
   }}
 }
 
-function stack_grad<Gradient,Left,Right>(d:Gradient, l:Left, r:Right[_]) -> {
+function stack_grad<Gradient,Left,Right>(g:Gradient, l:Left, r:Right[_]) -> {
   cpp{{
-  return std::make_tuple(d.slice(1), d.slice(std::make_pair(2, length(d))));
+  return std::make_tuple(g.slice(1), g.slice(std::make_pair(2, length(g))));
   }}
 }
 
-function stack_grad<Gradient,Left,Right>(d:Gradient, l:Left[_],
+function stack_grad<Gradient,Left,Right>(g:Gradient, l:Left[_],
     r:Right[_]) -> {
-  return (d[1..length(l)], d[(length(l) + 1)..length(d)]);
+  return (g[1..length(l)], g[(length(l) + 1)..length(g)]);
 }
 
-function stack_grad<Gradient,Left,Right>(d:Gradient, l:Left[_,_],
+function stack_grad<Gradient,Left,Right>(g:Gradient, l:Left[_,_],
     r:Right[_,_]) -> {
   let r1 <- rows(l);
   let r2 <- rows(r);
   let c1 <- columns(l);
-  return (d[1..r1,1..c1], d[(r1 + 1)..(r1 + r2),1..c1]);
+  return (g[1..r1,1..c1], g[(r1 + 1)..(r1 + r2),1..c1]);
 }

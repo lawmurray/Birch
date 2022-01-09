@@ -108,10 +108,10 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Accumulated upstream gradient.
    */
-  phantom d;
+  phantom g;
   hpp{{
   std::optional<numbirch::Future<numbirch::Array<Real,
-      numbirch::Future<Value>::ndims>>> d;
+      numbirch::Future<Value>::ndims>>> g;
   }}
 
   /**
@@ -166,7 +166,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Does this have a gradient?
    */
   final function hasGradient() -> Boolean {
-    return this.d?;
+    return this.g?;
   }
 
   /**
@@ -221,36 +221,31 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   function eval() -> Value! {
     if !x? {
       doEval();
+      assert x?;
     }
-    assert x?;
     return x!;
   }
   function doEval() {
-    assert x?;
+    //
   }
 
   /**
-   * Evaluate.
-   *
-   * Returns: The result.
-   */
-  function peek() -> Value! {
-    /* forms use peek() for fine-grain memoization, but this terminates at
-     * the nearest Expression objects; so here should behave as for eval(),
-     * reverting to coarse-grain memoization */
-    return eval();
-  }
-
-  /**
-   * (Re-)evaluate, ignoring memos. Memoizes at coarse-grain (i.e. Expression
+   * Re-evaluate, ignoring memos. Memoizes at coarse-grain (i.e. Expression
    * objects, not forms).
    *
+   * - x: Vectorized arguments.
+   *
    * Returns: The result.
    */
-  final function move() -> Value! {
+  final function move(x:Real[_]) -> Value! {
+    visitor:MoveVisitor(x);
+    return move(visitor);
+  }
+  final function move(visitor:MoveVisitor) -> Value! {
     if !flagConstant {
       if visitCount == 0 {
-        doMove();
+        doMove(visitor);
+        assert x?;
       }
       visitCount <- visitCount + 1;
       if visitCount >= linkCount {
@@ -260,15 +255,40 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
     }
     return x!;
   }
-  function doMove() {
-    assert x?;
-    assert !d?;
+  function doMove(visitor:MoveVisitor) {
+    //
+  }
+
+  /**
+   * Vectorize arguments and gradients.
+   *
+   * Returns: The vectorized arguments and gradients.
+   */
+  final function args() -> (Real[_], Real[_]) {
+    visitor:ArgsVisitor;
+    args(visitor);
+    return visitor.args();
+  }
+  final function args(visitor:ArgsVisitor) {
+    if !flagConstant {
+      if visitCount == 0 {
+        doArgs(visitor);
+      }
+      visitCount <- visitCount + 1;
+      if visitCount >= linkCount {
+        assert visitCount == linkCount || linkCount == 0;
+        visitCount <- 0;  // reset for next time
+      }
+    }
+  }
+  function doArgs(visitor:ArgsVisitor) {
+    //
   }
 
   /**
    * Evaluate gradient with respect to arguments. Clears memos at fine-grain.
    *
-   * - d: Upstream gradient.
+   * - g: Upstream gradient.
    *
    * The expression is treated as a function, and the arguments defined
    * as those `Random` objects in the expression that are not constant.
@@ -308,21 +328,19 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  final function grad<Gradient>(d:Gradient) {
-    this.d <- d;
+  final function grad<Gradient>(g:Gradient) {
+    this.g <- g;
     doShallowGrad();
     doDeepGrad();
   }
-  final function shallowGrad<Gradient>(d:Gradient) {
+  final function shallowGrad<Gradient>(g:Gradient) {
     if !flagConstant {
       if visitCount == 0 {
         /* (re-)start accumulation */
-        assert isRandom() || !this.d?;
-        this.d <- d;
+        this.g <- g;
       } else {
         /* continue accumulation */
-        assert this.d?;
-        this.d <- this.d! + d;
+        this.g <- this.g! + g;
       }
       visitCount <- visitCount + 1;
     }
@@ -340,6 +358,18 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
   function doDeepGrad() {
     //
+  }
+
+  /**
+   * Evaluate.
+   *
+   * Returns: The result.
+   */
+  function peek() -> Value! {
+    /* forms use peek() for fine-grain memoization, but this terminates at
+     * the nearest Expression objects; so here should behave as for eval(),
+     * reverting to coarse-grain memoization */
+    return eval();
   }
 
   /**
@@ -399,7 +429,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    */
   final function constant() {
     if !flagConstant {
-      d <- nil;
+      g <- nil;
       gen <- 0;
       genMax <- 0;
       linkCount <- 0;
