@@ -11,18 +11,18 @@
 /**
  * @internal
  * 
- * @def OUTER
+ * @def INNER
  * 
- * Explicitly instantiate outer product.
+ * Explicitly instantiate inner product.
  */
-#define OUTER(f) \
-    OUTER_SIG(f, real)
-#define OUTER_SIG(f, T) \
-    template Array<T,2> f(const Array<T,1>&, const Array<T,1>&); \
+#define INNER(f) \
+    INNER_SIG(f, real)
+#define INNER_SIG(f, T) \
+    template Array<T,1> f(const Array<T,2>&, const Array<T,1>&); \
     template Array<T,2> f(const Array<T,2>&, const Array<T,2>&); \
-    template Array<T,2> f(const Array<T,2>&, const Array<T,1>&, const Array<T,1>&); \
+    template Array<T,1> f(const Array<T,1>&, const Array<T,2>&, const Array<T,1>&); \
     template Array<T,2> f(const Array<T,2>&, const Array<T,2>&, const Array<T,2>&);
 
 namespace numbirch {
-OUTER(outer)
+INNER(inner)
 }

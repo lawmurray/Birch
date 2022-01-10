@@ -14,7 +14,6 @@
  * @def MATRIX_MATRIX
  * 
  * Explicitly instantiate a binary function `f` over floating point matrices.
- * Use cases include inner(), outer(), matrix-matrix multiplication.
  */
 #define MATRIX_MATRIX(f) \
     MATRIX_MATRIX_SIG(f, real)
@@ -26,7 +25,5 @@ MATRIX_MATRIX(operator*)
 MATRIX_MATRIX(cholmul)
 MATRIX_MATRIX(cholouter)
 MATRIX_MATRIX(cholsolve)
-MATRIX_MATRIX(inner)
-MATRIX_MATRIX(outer)
 MATRIX_MATRIX(solve)
 }

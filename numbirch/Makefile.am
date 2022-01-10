@@ -30,6 +30,7 @@ SOURCES =  \
     numbirch/instantiate/binary_scalar_multiply.cpp \
     numbirch/instantiate/numeric_dot.cpp \
     numbirch/instantiate/numeric_frobenius.cpp \
+    numbirch/instantiate/numeric_inner.cpp \
     numbirch/instantiate/numeric_matrix.cpp \
     numbirch/instantiate/numeric_matrix_matrix.cpp \
     numbirch/instantiate/numeric_matrix_vector.cpp \

@@ -25,6 +25,5 @@ namespace numbirch {
 MATRIX_VECTOR(operator*)
 MATRIX_VECTOR(cholmul)
 MATRIX_VECTOR(cholsolve)
-MATRIX_VECTOR(inner)
 MATRIX_VECTOR(solve)
 }

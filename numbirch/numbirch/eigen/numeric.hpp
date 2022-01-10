@@ -225,6 +225,20 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
 }
 
 template<class T, class>
+Array<T,1> inner(const Array<T,1>& x, const Array<T,2>& A,
+    const Array<T,1>& y) {
+  assert(rows(A) == length(x));
+  assert(columns(A) == length(y));
+  Array<T,1> z(make_shape(length(x)));
+  auto x1 = make_eigen(x);
+  auto A1 = make_eigen(A);
+  auto y1 = make_eigen(y);
+  auto z1 = make_eigen(z);
+  z1.noalias() = x1 + A1.transpose()*y1;
+  return z;
+}
+
+template<class T, class>
 Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
   assert(rows(A) == rows(B));
   Array<T,2> C(make_shape(columns(A), columns(B)));
@@ -233,6 +247,21 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
   auto C1 = make_eigen(C);
   C1.noalias() = A1.transpose()*B1;
   return C;
+}
+
+template<class T, class>
+Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B,
+    const Array<T,2>& C) {
+  assert(rows(A) == columns(B));
+  assert(columns(A) == columns(C));
+  assert(rows(B) == rows(C));
+  Array<T,2> D(make_shape(rows(A), columns(A)));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
+  auto D1 = make_eigen(D);
+  D1.noalias() = A1 + B1.transpose()*C1;
+  return D;
 }
 
 template<class T, class>
@@ -246,6 +275,20 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
 }
 
 template<class T, class>
+Array<T,2> outer(const Array<T,2>& A, const Array<T,1>& x,
+    const Array<T,1>& y) {
+  assert(rows(A) == length(x));
+  assert(columns(A) == length(y));
+  Array<T,2> B(make_shape(rows(A), columns(A)));
+  auto A1 = make_eigen(A);
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
+  auto B1 = make_eigen(B);
+  B1.noalias() = A1 + x1*y1.transpose();
+  return B;
+}
+
+template<class T, class>
 Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
   assert(columns(A) == columns(B));
   Array<T,2> C(make_shape(rows(A), rows(B)));
@@ -254,6 +297,21 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
   auto C1 = make_eigen(C);
   C1.noalias() = A1*B1.transpose();
   return C;
+}
+
+template<class T, class>
+Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B,
+    const Array<T,2>& C) {
+  assert(rows(A) == rows(B));
+  assert(columns(A) == rows(C));
+  assert(columns(B) == columns(C));
+  Array<T,2> D(make_shape(rows(A), columns(A)));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
+  auto D1 = make_eigen(D);
+  D1.noalias() = A1 + B1*C1.transpose();
+  return D;
 }
 
 template<class T, class>
