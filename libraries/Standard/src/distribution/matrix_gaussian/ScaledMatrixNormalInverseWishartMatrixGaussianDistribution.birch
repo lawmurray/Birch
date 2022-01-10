@@ -172,11 +172,11 @@ function update_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
   let n <- rows(X);
   let L <- cholinv(U);
   let Z <- L*X;
-  let Λ' <- Λ + inner(A, L*A);
-  let N' <- N + inner(A, Z);
+  let Λ' <- inner(Λ, A, L*A);
+  let N' <- inner(N, A, Z);
   let M <- cholsolve(Λ, N);
   let M' <- cholsolve(Λ', N');
-  let Ψ' <- Ψ + inner(X, Z) + inner(M, N) - inner(M', N');
+  let Ψ' <- inner(inner(Ψ, X, Z), M, N) - inner(M', N');
   let k' <- k + n;
   return MatrixNormalInverseWishart(N', Λ', Ψ', k');
 }
