@@ -1,0 +1,28 @@
+struct OuterAdd<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
+    Ternary<Left,Middle,Right>(l, m, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_TERNARY_FUNCTION_FORM(outer, outer_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::outer;
+using numbirch::outer_grad;
+
+/**
+ * Outer product and addition.
+ */
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
+OuterAdd<Left,Middle,Right> outer(const Left& l, const Middle& m,
+    const Right& r) {
+  return construct<OuterAdd<Left,Middle,Right>>(l, m, r);
+}
+}
+}}
