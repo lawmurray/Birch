@@ -17,9 +17,7 @@ class LangevinKernel < Kernel {
   override function precompute(t:Integer, π:Expression<Real>) {
     ///@todo Can label() and constant() be combined into one pass?
     π.label(t);
-    if t > nlags {
-      π.constant(t - nlags);
-    }
+    π.constant(t - nlags);
     π.grad(1.0);
   }
 

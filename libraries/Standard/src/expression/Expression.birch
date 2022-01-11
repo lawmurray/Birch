@@ -131,8 +131,8 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   linkCount:Integer <- 0;
 
   /**
-   * Number of times `eval()` or `grad()` has been called. Used to obtain
-   * pre- and post-order traversals of the expression graph.
+   * Counter used to obtain pre- and post-order traversals of the expression
+   * graph.
    */
   visitCount:Integer <- 0;
 
@@ -166,7 +166,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Does this have a gradient?
    */
   final function hasGradient() -> Boolean {
-    return this.g?;
+    return g?;
   }
 
   /**
