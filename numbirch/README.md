@@ -301,3 +301,11 @@ All arrays are copy-on-write. This allows multiple arrays to share the same unde
 ### Memory pooling
 
 NumBirch uses [jemalloc](http://jemalloc.net/) with custom extent hooks to allocate unified memory, i.e. memory that can be accessed on both host and device. Separate arenas are used for memory that is used only on the device (e.g. for temporaries within a single numeric function) versus that which may be used on both (e.g. for the buffers used by numbirch::Array). In all cases, however, unified memory is used, as jemalloc itself may need to access the memory on host. Each arena has its own thread-local memory pool. Memory allocations (e.g. via `cudaMallocManaged()`) occur either to extend the size of the extents used by pools, or for very large allocations. These tend to occur early on in program execution and their frequency diminish in time, although this will depend on the memory profile of the particular program.
+
+# Q&A
+
+### Does NumBirch support mixed-precision floating point operations?
+
+No.
+
+Firstly, backends often do not support mixed precision for certain operations (consider e.g. BLAS and LAPACK interfaces). Secondly, the need to support forward (evaluation) and backward (gradient) computations for reverse-mode automatic differentiation means that floating point promotion occurs in both directions, causing incompatibilities with those backends one way or the other. The choice was made to avoid this complication, at least for now.
