@@ -10,7 +10,7 @@
 
 namespace numbirch {
 /**
- * Matrix-vector multiplication. Computes $y = Ax$.
+ * Matrix-vector multiplication.
  * 
  * @ingroup la
  * 
@@ -19,7 +19,7 @@ namespace numbirch {
  * @param A Matrix $A$.
  * @param x Vector $x$.
  * 
- * @return Result $y$.
+ * @return Result $y = Ax$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
@@ -44,7 +44,7 @@ std::pair<Array<T,2>,Array<T,1>> multiply_grad(const Array<T,1>& g,
 }
 
 /**
- * Matrix-matrix multiplication. Computes $C = AB$.
+ * Matrix-matrix multiplication.
  * 
  * @ingroup la
  * 
@@ -53,7 +53,7 @@ std::pair<Array<T,2>,Array<T,1>> multiply_grad(const Array<T,1>& g,
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
- * @return Result $C$.
+ * @return Result $C = AB$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
@@ -65,21 +65,20 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
  * 
  * @tparam T Floating point type.
  * 
- * @param G Gradient with respect to result.
+ * @param g Gradient with respect to result.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradients with respect to @p A and @p B.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> multiply_grad(const Array<T,2>& G,
+std::pair<Array<T,2>,Array<T,2>> multiply_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,2>& B) {
-  return std::make_pair(outer(G, B), inner(A, G));
+  return std::make_pair(outer(g, B), inner(A, g));
 }
 
 /**
- * Inverse of a symmetric positive definite square matrix, via the Cholesky
- * factorization.
+ * Cholesky factorization of a symmetric positive definite square matrix.
  * 
  * @ingroup la
  * 
@@ -87,17 +86,13 @@ std::pair<Array<T,2>,Array<T,2>> multiply_grad(const Array<T,2>& G,
  * 
  * @param S Symmetric positive definite matrix.
  * 
- * @return Matrix.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Lower-triangular Cholesky factor $L$ such that $S = LL^\top$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> cholinv(const Array<T,2>& S);
+Array<T,2> chol(const Array<T,2>& S);
 
 /**
- * Gradient of cholinv().
+ * Gradient of chol().
  * 
  * @ingroup la
  * 
@@ -109,10 +104,38 @@ Array<T,2> cholinv(const Array<T,2>& S);
  * @return Gradient with respect to @p S.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> cholinv_grad(const Array<T,2>& G, const Array<T,2>& S) {
-  auto B = cholinv(S);
-  return -B*G*B;
-}
+Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& S);
+
+/**
+ * Inverse of a symmetric positive definite square matrix via the Cholesky
+ * factorization.
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * 
+ * @return Result $S^{-1} = (LL^\top)^{-1}$.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholinv(const Array<T,2>& L);
+
+/**
+ * Gradient of cholinv().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param L Lower-triangular Cholesky factor.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& L);
 
 /**
  * Inverse of a square matrix.
@@ -121,9 +144,9 @@ Array<T,2> cholinv_grad(const Array<T,2>& G, const Array<T,2>& S) {
  * 
  * @tparam T Floating point type.
  * 
- * @param A Square matrix.
+ * @param A Square matrix $A$.
  * 
- * @return Inverse.
+ * @return Result $A^{-1}$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inv(const Array<T,2>& A);
@@ -141,30 +164,27 @@ Array<T,2> inv(const Array<T,2>& A);
  * @return Gradient with respect to @p A.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> inv_grad(const Array<T,2>& G, const Array<T,2>& A) {
+Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& A) {
   auto B = inv(A);
-  return -outer(inner(B, G), B);
+  return -outer(inner(B, g), B);
 }
 
 /**
- * Logarithm of the determinant of a symmetric positive definite matrix, via
+ * Logarithm of the determinant of a symmetric positive definite matrix via
  * the Cholesky factorization. The determinant of a positive definite matrix
- * is always positive.
+ * is always positive, so that the logarithm is defined.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
  * 
- * @return Logarithm of the determinant.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,0> lcholdet(const Array<T,2>& S);
+Array<T,0> lcholdet(const Array<T,2>& L);
 
 /**
  * Gradient of `lcholdet()`.
@@ -174,14 +194,12 @@ Array<T,0> lcholdet(const Array<T,2>& S);
  * @tparam T Floating point type.
  * 
  * @param g Gradient with respect to result.
- * @param S Symmetric positive definite matrix.
+ * @param L Lower-triangular Cholesky factor.
  * 
- * @return Gradient with respect to @p S.
+ * @return Gradient with respect to @p L.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,2>& S) {
-  return g*cholinv(S);
-}
+Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,2>& L);
 
 /**
  * Logarithm of the absolute value of the determinant of a square matrix.
@@ -190,9 +208,9 @@ Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,2>& S) {
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix.
+ * @param A Matrix $A$.
  * 
- * @return Logarithm of the absolute value of the determinant.
+ * @return Result $\log |\det A|$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> ldet(const Array<T,2>& A);
@@ -215,115 +233,65 @@ Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,2>& A) {
 }
 
 /**
- * Matrix transpose.
+ * Lower-triangular matrix multiplied by a vector.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param A Matrix.
- * 
- * @return Transpose.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> transpose(const Array<T,2>& A);
-
-/**
- * Gradient of transpose().
- * 
- * @ingroup la
- * 
- * @tparam T Floating point type.
- * 
- * @param G Gradient with respect to result.
- * @param A Matrix.
- * 
- * @return Gradient with respect to @p A.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> transpose_grad(const Array<T,2>& G, const Array<T,2>& A) {
-  return transpose(G);
-}
-
-/**
- * Lower-triangular Cholesky factor of a matrix multiplied by a vector.
- * Computes $y = Lx$, where $S = LL^\top$.
- * 
- * @ingroup la
- * 
- * @tparam T Floating point type.
- * 
- * @param S Symmetric positive definite matrix $S$.
+ * @param L Lower-triangular matrix $L$.
  * @param x Vector $x$.
  * 
- * @return Result $y$.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Result $y = Lx$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x);
+Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x);
 
 /**
- * Lower-triangular Cholesky factor of a matrix multiplied by a matrix.
- * Computes $C = LB$, where $S = LL^\top$.
+ * Lower-triangular matrix multiplied by a matrix.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix $S$.
+ * @param L Lower-triangular matrix $L$.
  * @param B Matrix $B$.
  * 
- * @return Result $C$.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Result $C = LB$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B);
+Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B);
 
 /**
- * Outer product of matrix and lower-triangular Cholesky factor of another
- * matrix. Computes $C = AL^\top$, where $S = LL^\top$.
+ * Outer product of matrix and lower-triangular matrix.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
  * @param A Matrix $A$.
- * @param S Symmetric positive definite matrix $S$.
+ * @param L Lower-triangular matrix $L$.
  * 
- * @return Result $C$.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Result $C = AL^\top$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S);
+Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L);
 
 /**
- * Matrix-vector solve, via the Cholesky factorization. Solves for $x$ in
- * $Sx = y$.
+ * Matrix-vector solve via the Cholesky factorization.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix $S$.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
  * @param y Vector $y$.
  * 
- * @return Result $x$.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Solution of $x$ in $Sx = LL^\top x = y$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
+Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y);
 
 /**
  * Gradient of cholsolve().
@@ -333,37 +301,30 @@ Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y);
  * @tparam T Floating point type.
  * 
  * @param g Gradient with respect to result.
- * @param S Symmetric positive definite matrix $S$.
- * @param y Vector $y$.
+ * @param L Lower-triangular Cholesky factor.
+ * @param y Vector.
  * 
- * @return Gradients with respect to @p S and @p y.
+ * @return Gradients with respect to @p L and @p y.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
-    const Array<T,2>& S, const Array<T,1>& y) {
-  auto L = cholinv(S);
-  return std::make_pair(-L*outer(g, y)*L, inner(L, g));
-}
+    const Array<T,2>& L, const Array<T,1>& y);
 
 /**
- * Matrix-matrix solve, via the Cholesky factorization. Solves for $B$ in
- * $SB = C$.
+ * Matrix-matrix solve via the Cholesky factorization.
  * 
  * @ingroup la
  * 
  * @tparam T Floating point type.
  * 
- * @param S Symmetric positive definite matrix $S$.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
  * @param C Matrix $C$.
  * 
- * @return Result $B$.
- * 
- * @note Backends may implement this in various ways to improve robustness,
- * e.g. using an $LDL^\top$ (Bunch-Kaufman) factorization, or retrying a
- * failed single precision factorization in double precision.
+ * @return Solution of $B$ in $SB = LL^\top B = C$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
+Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C);
 
 /**
  * Gradient of cholsolve().
@@ -373,17 +334,14 @@ Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C);
  * @tparam T Floating point type.
  * 
  * @param G Gradient with respect to result.
- * @param S Symmetric positive definite matrix $S$.
- * @param C Matrix $C$.
+ * @param L Lower-triangular Cholesky factor.
+ * @param C Matrix.
  * 
- * @return Gradients with respect to @p S and @p C.
+ * @return Gradients with respect to @p L and @p C.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& G,
-    const Array<T,2>& S, const Array<T,2>& C) {
-  auto L = cholinv(S);
-  return std::make_pair(-L*outer(G, C)*L, inner(L, G));
-}
+std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
+    const Array<T,2>& L, const Array<T,2>& C);
 
 /**
  * Vector-vector dot product. Computes $x^\top y$, resulting in a scalar.
@@ -555,9 +513,9 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
  * @return Gradients with respect to @p A and @p B.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& G,
+std::pair<Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,2>& B) {
-  return std::make_pair(outer(B, G), A*G);
+  return std::make_pair(outer(B, g), A*g);
 }
 
 /**
@@ -592,9 +550,9 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B,
  * @return Gradients with respect to @p A, @p B and @p C.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& G,
+std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,2>& B, const Array<T,2>& C) {
-  return std::make_tuple(G, outer(C, G), B*G);
+  return std::make_tuple(g, outer(C, g), B*g);
 }
 
 /**
@@ -626,9 +584,9 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& G,
+std::pair<Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& g,
     const Array<T,1>& x, const Array<T,1>& y) {
-  return std::make_pair(G*y, inner(G, x));
+  return std::make_pair(g*y, inner(g, x));
 }
 
 /**
@@ -663,9 +621,9 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,1>& x,
  * @return Gradients with respect to @p A, @p x and @p y.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,2>,Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& G,
+std::tuple<Array<T,2>,Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,1>& x, const Array<T,1>& y) {
-  return std::make_tuple(G, G*y, inner(G, x));
+  return std::make_tuple(g, g*y, inner(g, x));
 }
 
 /**
@@ -697,9 +655,9 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
  * @return Gradients with respect to @p A and @p B.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& G,
+std::pair<Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,2>& B) {
-  return std::make_pair(G*B, inner(G, A));
+  return std::make_pair(g*B, inner(g, A));
 }
 
 /**
@@ -734,9 +692,9 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B,
  * @return Gradients with respect to @p A, @p B and @p C.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& G,
+std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,2>& B, const Array<T,2>& C) {
-  return std::make_tuple(G, G*C, inner(G, B));
+  return std::make_tuple(g, g*C, inner(g, B));
 }
 
 /**
@@ -790,7 +748,7 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C);
 
 /**
- * Gradient of cholsolve().
+ * Gradient of solve().
  * 
  * @ingroup la
  * 
@@ -803,10 +761,41 @@ Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C);
  * @return Gradients with respect to @p A and @p C.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> solve_grad(const Array<T,2>& G,
+std::pair<Array<T,2>,Array<T,2>> solve_grad(const Array<T,2>& g,
     const Array<T,2>& A, const Array<T,2>& C) {
   auto L = inv(A);
-  return std::make_pair(-L*outer(G, C)*L, inner(L, G));
+  return std::make_pair(-L*outer(g, C)*L, inner(L, g));
+}
+
+/**
+ * Matrix transpose.
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix.
+ * 
+ * @return Transpose.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> transpose(const Array<T,2>& A);
+
+/**
+ * Gradient of transpose().
+ * 
+ * @ingroup la
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param A Matrix.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> transpose_grad(const Array<T,2>& g, const Array<T,2>& A) {
+  return transpose(g);
 }
 
 }

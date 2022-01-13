@@ -128,7 +128,7 @@ function logpdf_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
  */
 function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
     Arg4>(x:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
-  let K' <- cholsolve(Σ + S, Σ);
+  let K' <- cholsolve(chol(Σ + S), Σ);
   let μ' <- μ + inner(K', x - μ);
   let Σ' <- Σ - inner(K', Σ);
   return MultivariateGaussian(μ', Σ');

@@ -72,7 +72,7 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   cpp{{
   auto z = numbirch::standard_gaussian<Real>(n);
   }}
-  return μ + cholmul(Σ, z);
+  return μ + trimul(chol(Σ), z);
 }
 
 /*
@@ -87,5 +87,6 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
 function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
     Σ:Arg3) -> {
   let n <- length(x);
-  return -0.5*(dot(x - μ, cholsolve(Σ, x - μ)) + n*log(2.0*π) + lcholdet(Σ));
+  return -0.5*(dot(x - μ, cholsolve(chol(Σ), x - μ)) + n*log(2.0*π) +
+      lcholdet(chol(Σ)));
 }

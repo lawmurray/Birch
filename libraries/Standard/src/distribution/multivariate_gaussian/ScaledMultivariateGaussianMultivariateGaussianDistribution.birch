@@ -138,7 +138,7 @@ function logpdf_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
  */
 function update_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, S:Arg5) -> {
-  let K' <- outer(Σ, cholsolve(outer(A*Σ, A) + S, A));
+  let K' <- outer(Σ, cholsolve(chol(outer(A*Σ, A) + S), A));
   let μ' <- μ + K'*(x - A*μ);
   let Σ' <- Σ - K'*A*Σ;
   return MultivariateGaussian(μ', Σ');

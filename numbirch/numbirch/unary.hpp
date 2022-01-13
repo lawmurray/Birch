@@ -930,7 +930,7 @@ template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
 default_t<G,T> log1p_grad(const G& g, const T& x);
 
 /**
- * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
+ * Rectification.
  * 
  * @ingroup unary
  * 
@@ -946,7 +946,7 @@ template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
 explicit_t<R,T> rectify(const T& x);
 
 /**
- * Rectification. For element @f$(i,j)@f$, computes @f$B_{ij} = \max(A_{ij},
+ * Rectification.
  * 
  * @ingroup unary
  * 

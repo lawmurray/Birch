@@ -1,7 +1,7 @@
 /*
- * Test the gradient of a pdf.
+ * Test the gradients of a model.
  *
- * - π: The target distribution. 
+ * - m: Model. 
  * - N: Number of samples.
  * - backward: Test joint distributions in backward mode? (Otherwise forward
  *   mode.)
@@ -54,7 +54,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let r <- π.move(z)!;
         let fd <- (r - q)/Δ';
         let δ <- abs(g[i] - fd);
-        pass <- δ <= ε*abs(fd);
+        pass <- δ <= ε*min(abs(g[i]), abs(fd));
         if pass {
           /* success */
           t <- ntrials + 1;

@@ -110,7 +110,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Multiply<Arg1,
     V.prune();
     if V.hasInverseWishart() {
       let (Ψ, k) <- V.getInverseWishart();
-      let Λ <- cholinv(U);
+      let Λ <- cholinv(chol(U));
       let p <- MatrixNormalInverseWishart(Λ*M, Λ, Ψ, k);
       V.graft(p);
       return p;

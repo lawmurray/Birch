@@ -33,20 +33,71 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
 }
 
 template<class T, class>
-Array<T,2> cholinv(const Array<T,2>& S) {
+Array<T,2> chol(const Array<T,2>& S) {
   assert(rows(S) == columns(S));
-  Array<T,2> B(shape(S));
+  Array<T,2> L(shape(S));
   auto S1 = make_eigen(S);
-  auto B1 = make_eigen(B);
+  auto L1 = make_eigen(L);
   auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    B1.noalias() = llt.solve(B1.Identity(rows(B), columns(B)));
-  } else {
-    /* try again with a more stable factorization */
-    auto qr = S1.fullPivHouseholderQr();
-    B1.noalias() = qr.solve(B1.Identity(rows(B), columns(B)));
-  }
+  assert(llt.info() == Eigen::Success);
+  L1 = llt.matrixL();
+  return L;
+}
+
+template<class T, class>
+Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& S) {
+  assert(rows(S) == columns(S));
+  assert(rows(g) == columns(g));
+  assert(rows(g) == rows(S));
+
+  Array<T,2> gS(shape(S));
+  auto g1 = make_eigen(g);
+  auto S1 = make_eigen(S);
+  auto gS1 = make_eigen(gS);
+
+  auto llt = S1.llt();
+  assert(llt.info() == Eigen::Success);
+  auto U1 = llt.matrixU();
+
+  gS1 = (U1*g1).template triangularView<Eigen::Lower>();
+  gS1.diagonal() *= 0.5;
+  auto a = U1.solve(U1.solve(gS1).transpose()).eval();
+  gS1 = (a.transpose() + a).template triangularView<Eigen::Lower>();
+  gS1.diagonal() *= 0.5;
+
+  assert(gS1.isLowerTriangular());
+  return gS;
+}
+
+template<class T, class>
+Array<T,2> cholinv(const Array<T,2>& L) {
+  assert(rows(L) == columns(L));
+
+  Array<T,2> B(shape(L));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto B1 = make_eigen(B);
+
+  B1.noalias() = L1.transpose().solve(L1.solve(
+      B1.Identity(rows(B), columns(B))));
   return B;
+}
+
+template<class T, class>
+Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& L) {
+  assert(rows(L) == columns(L));
+
+  Array<T,2> gL(shape(L));
+  auto g1 = make_eigen(g);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto gL1 = make_eigen(gL);
+
+  auto a = L1.solve(g1 + g1.transpose()).eval();
+  auto b = L1.transpose().solve(a).eval();
+  auto c = L1.solve(b.transpose()).transpose().eval();
+  gL1 = (-c).template triangularView<Eigen::Lower>();
+
+  assert(gL1.isLowerTriangular());
+  return gL;
 }
 
 template<class T, class>
@@ -60,19 +111,25 @@ Array<T,2> inv(const Array<T,2>& A) {
 }
 
 template<class T, class>
-Array<T,0> lcholdet(const Array<T,2>& S) {
-  auto S1 = make_eigen(S);
-  auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    /* we have $S = LL^\top$; the determinant of $S$ is the square of the
-     * determinant of $L$, the determinant of $L$ is the product of the
-     * elements along the diagonal, as it is a triangular matrix; adjust for
-     * log-determinant */
-    return 2.0*llt.matrixLLT().diagonal().array().log().sum();
-  } else {
-    /* try again with a more stable factorization */
-    return S1.fullPivHouseholderQr().logAbsDeterminant();
-  }
+Array<T,0> lcholdet(const Array<T,2>& L) {
+  auto L1 = make_eigen(L);
+
+  /* we have $S = LL^\top$; the determinant of $S$ is the square of the
+    * determinant of $L$, the determinant of $L$ is the product of the
+    * elements along the diagonal, as it is a triangular matrix; adjust for
+    * log-determinant */
+  return 2.0*L1.diagonal().array().log().sum();
+}
+
+template<class T, class>
+Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,2>& L) {
+  Array<T,2> gL(shape(L));
+  auto g1 = make_eigen(g);
+  auto L1 = make_eigen(L);
+  auto gL1 = make_eigen(gL);
+  gL1 = (2.0*g.value()/L1.diagonal().array()).matrix().asDiagonal();
+  assert(gL1.isDiagonal());
+  return gL;
 }
 
 template<class T, class>
@@ -82,116 +139,126 @@ Array<T,0> ldet(const Array<T,2>& A) {
 }
 
 template<class T, class>
-Array<T,2> transpose(const Array<T,2>& A) {
-  Array<T,2> B(make_shape(columns(A), rows(A)));
-  auto A1 = make_eigen(A);
-  auto B1 = make_eigen(B);
-  B1.noalias() = A1.transpose();
-  return B;
-}
+Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(x));
 
-template<class T, class>
-Array<T,1> cholmul(const Array<T,2>& S, const Array<T,1>& x) {
-  assert(rows(S) == columns(S));
-  assert(columns(S) == length(x));
-  Array<T,1> y(make_shape(rows(S)));
-  auto S1 = make_eigen(S);
+  Array<T,1> y(make_shape(rows(L)));
+  auto L1 = make_eigen(L);
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
-  auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    y1.noalias() = llt.matrixL()*x1;
-  } else if constexpr (std::is_same_v<T,float>) {
-    /* try again in double precision */
-    auto S2 = S1.template cast<double>();
-    auto x2 = x1.template cast<double>();
-    auto llt = S2.llt();
-    y1.noalias() = (llt.matrixL()*x2).template cast<T>();
-  } else {
-    assert(llt.info() == Eigen::Success);
-  }
+
+  y1.noalias() = L1.template triangularView<Eigen::Lower>()*x1;
   return y;
 }
 
 template<class T, class>
-Array<T,2> cholmul(const Array<T,2>& S, const Array<T,2>& B) {
-  assert(rows(S) == columns(S));
-  assert(columns(S) == rows(B));
+Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(B));
+
   Array<T,2> C(shape(B));
-  auto S1 = make_eigen(S);
+  auto L1 = make_eigen(L);
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
-  auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    C1.noalias() = llt.matrixL()*B1;
-  } else if constexpr (std::is_same_v<T,float>) {
-    /* try again in double precision */
-    auto S2 = S1.template cast<double>();
-    auto B2 = B1.template cast<double>();
-    auto llt = S2.llt();
-    C1.noalias() = (llt.matrixL()*B2).template cast<T>();
-  } else {
-    assert(llt.info() == Eigen::Success);
-  }
+
+  C1.noalias() = L1.template triangularView<Eigen::Lower>()*B1;
   return C;
 }
 
 template<class T, class>
-Array<T,2> cholouter(const Array<T,2>& A, const Array<T,2>& S) {
-  assert(columns(A) == columns(S));
-  assert(rows(S) == columns(S));
-  Array<T,2> C(make_shape(rows(A), rows(S)));
+Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
+  assert(columns(A) == columns(L));
+  assert(rows(L) == columns(L));
+
+  Array<T,2> C(make_shape(rows(A), rows(L)));
   auto A1 = make_eigen(A);
-  auto S1 = make_eigen(S);
+  auto L1 = make_eigen(L);
   auto C1 = make_eigen(C);
-  auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    C1.noalias() = A1*llt.matrixU();
-  } else if constexpr (std::is_same_v<T,float>) {
-    /* try again in double precision */
-    auto A2 = A1.template cast<double>();
-    auto S2 = S1.template cast<double>();
-    auto llt = S2.llt();
-    C1.noalias() = (A2*llt.matrixU()).template cast<T>();
-  } else {
-    assert(llt.info() == Eigen::Success);
-  }
+
+  C1.noalias() = A1*L1.template triangularView<Eigen::Lower>().transpose();
   return C;
 }
 
 template<class T, class>
-Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
-  assert(rows(S) == columns(S));
-  assert(columns(S) == length(y));
+Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+
   Array<T,1> x(shape(y));
-  auto S1 = make_eigen(S);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
-  auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    x1.noalias() = llt.solve(y1);
-  } else {
-    x1.noalias() = S1.fullPivHouseholderQr().solve(y1);
-  }
+
+  x1.noalias() = L1.transpose().solve(L1.solve(y1));
   return x;
 }
 
 template<class T, class>
-Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
-  assert(rows(S) == columns(S));
-  assert(columns(S) == rows(C));
+std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
+    const Array<T,2>& L, const Array<T,1>& y) {
+  assert(length(g) == length(y));
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+
+  Array<T,2> gL(shape(L));
+  Array<T,1> gy(shape(y));
+  auto g1 = make_eigen(g);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto y1 = make_eigen(y);
+  auto gL1 = make_eigen(gL);
+  auto gy1 = make_eigen(gy);
+
+  auto g2 = g1*y1.transpose().eval();
+  auto a = L1.solve(g2 + g2.transpose()).eval();
+  auto b = L1.transpose().solve(a).eval();
+  auto c = L1.solve(b.transpose()).transpose().eval();
+  gL1 = (-c).template triangularView<Eigen::Lower>();
+  gy1.noalias() = L1.transpose().solve(L1.solve(g1));
+
+  assert(gL1.isLowerTriangular());
+  return std::make_pair(gL, gy);
+}
+
+template<class T, class>
+Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(C));
+
   Array<T,2> B(shape(C));
-  auto S1 = make_eigen(S);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
-  auto llt = S1.llt();
-  if (llt.info() == Eigen::Success) {
-    B1.noalias() = llt.solve(C1);
-  } else {
-    /* try again with a more stable factorization */
-    B1.noalias() = S1.fullPivHouseholderQr().solve(C1);
-  }
+
+  B1.noalias() = L1.transpose().solve(L1.solve(C1));
   return B;
+}
+
+template<class T, class>
+std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
+    const Array<T,2>& L, const Array<T,2>& C) {
+  assert(rows(g) == rows(L));
+  assert(columns(g) == columns(C));
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(C));
+
+  Array<T,2> gL(shape(L));
+  Array<T,2> gC(shape(C));
+  auto g1 = make_eigen(g);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto C1 = make_eigen(C);
+  auto gL1 = make_eigen(gL);
+  auto gC1 = make_eigen(gC);
+
+  auto g2 = g1*C1.transpose().eval();
+  auto a = L1.solve(g2 + g2.transpose()).eval();
+  auto b = L1.transpose().solve(a).eval();
+  auto c = L1.solve(b.transpose()).transpose().eval();
+  gL1 = (-c).template triangularView<Eigen::Lower>();
+  gC1.noalias() = L1.transpose().solve(L1.solve(g1));
+
+  assert(gL1.isLowerTriangular());
+  return std::make_pair(gL, gC);
 }
 
 template<class T, class>
@@ -335,6 +402,15 @@ Array<T,2> solve(const Array<T,2>& A, const Array<T,2>& C) {
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
   B1.noalias() = A1.householderQr().solve(C1);
+  return B;
+}
+
+template<class T, class>
+Array<T,2> transpose(const Array<T,2>& A) {
+  Array<T,2> B(make_shape(columns(A), rows(A)));
+  auto A1 = make_eigen(A);
+  auto B1 = make_eigen(B);
+  B1.noalias() = A1.transpose();
   return B;
 }
 

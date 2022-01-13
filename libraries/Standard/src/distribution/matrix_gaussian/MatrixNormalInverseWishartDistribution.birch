@@ -93,7 +93,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
   V.prune();
   if V.hasInverseWishart() {
     let (Ψ, k) <- V.getInverseWishart();
-    let Λ <- cholinv(U);
+    let Λ <- cholinv(chol(U));
     let p <- MatrixNormalInverseWishart(Λ*M, Λ, Ψ, k);
     V.graft(p);
     return p;
@@ -112,7 +112,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
  */
 function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
     Λ:Arg2, Ψ:Arg3, k:Arg4) -> {
-  let Σ <- cholinv(Λ);
+  let Σ <- cholinv(chol(Λ));
   let M <- Σ*N;
   return simulate_matrix_t(k, M, Σ, Ψ);
 }
@@ -130,7 +130,7 @@ function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
  */
 function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     X:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
-  let Σ <- cholinv(Λ);
+  let Σ <- cholinv(chol(Λ));
   let M <- Σ*N;
   return logpdf_matrix_t(X, k, M, Σ, Ψ);
 }
@@ -149,7 +149,7 @@ function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
 function update_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     X:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
   let n <- rows(X);
-  let M <- cholsolve(Λ, N);
+  let M <- cholsolve(chol(Λ), N);
   let Ψ' <- Ψ + inner(X - M, Λ*(X - M));
   let k' <- k + n;
   return InverseWishart(Ψ', k');

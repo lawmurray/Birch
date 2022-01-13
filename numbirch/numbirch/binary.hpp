@@ -682,13 +682,14 @@ std::pair<default_t<G,T,U>,default_t<G,T,U>> copysign_grad(const G& g, const T& 
  * @tparam U Numeric type.
  * 
  * @param x Argument.
+ * @param y Argument.
  * 
  * @return Result.
  */
 template<class R, class T, class U, class = std::enable_if_t<
     is_floating_point_v<R> &&
     is_numeric_v<T> && is_numeric_v<U>,int>>
-explicit_t<R,T,U> digamma(const T& x , const U& y);
+explicit_t<R,T,U> digamma(const T& x, const U& y);
 
 /**
  * Multivariate digamma.
@@ -699,6 +700,7 @@ explicit_t<R,T,U> digamma(const T& x , const U& y);
  * @tparam U Numeric type.
  * 
  * @param x Argument.
+ * @param y Argument.
  * 
  * @return Result.
  */

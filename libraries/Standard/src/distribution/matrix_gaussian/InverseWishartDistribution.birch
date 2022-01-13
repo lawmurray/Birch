@@ -92,7 +92,7 @@ function wrap_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
  * - k: Degrees of freedom.
  */
 function simulate_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
-  return cholinv(simulate_wishart(cholinv(Ψ), k));
+  return cholinv(chol(simulate_wishart(cholinv(chol(Ψ)), k)));
 }
 
 /*
@@ -107,6 +107,7 @@ function simulate_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
 function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
   let l <- k + p + 1.0;
-  return -0.5*(l + p + 1.0)*lcholdet(X) - 0.5*trace(cholsolve(X, Ψ)) -
-      0.5*l*(p*log(2.0) - lcholdet(Ψ)) - lgamma(0.5*l, p);
+  return -0.5*(l + p + 1.0)*lcholdet(chol(X)) -
+      0.5*trace(cholsolve(chol(X), Ψ)) -
+      0.5*l*(p*log(2.0) - lcholdet(chol(Ψ))) - lgamma(0.5*l, p);
 }

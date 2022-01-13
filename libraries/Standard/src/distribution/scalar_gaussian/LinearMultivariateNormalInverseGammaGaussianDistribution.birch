@@ -244,7 +244,7 @@ function Gaussian<Arg>(μ:Dot<Arg,Random<Real[_]>>,
 function simulate_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, c:Arg4, α:Arg5, β:Arg6,
     s2:Arg7) -> {
-  let S <- cholinv(Λ);
+  let S <- cholinv(chol(Λ));
   return simulate_student_t(2.0*α, dot(a, S*ν)! + c,
       (β/α)*(s2 + dot(a, S*a)!));
 }
@@ -267,7 +267,7 @@ function simulate_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
 function logpdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,
     α:Arg6, β:Arg7, s2:Arg8) -> {
-  let S <- cholinv(Λ);
+  let S <- cholinv(chol(Λ));
   let μ <- S*ν;
   return logpdf_student_t(x, 2.0*α, dot(a, μ) + c, (β/α)*(s2 + dot(a, S*a)));
 }
@@ -295,8 +295,8 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,
   let z <- l*y;
   let Λ' <- Λ + outer(a, l*a);
   let ν' <- ν + a*z;
-  let μ <- cholsolve(Λ, ν);
-  let μ' <- cholsolve(Λ', ν');
+  let μ <- cholsolve(chol(Λ), ν);
+  let μ' <- cholsolve(chol(Λ'), ν');
   let α' <- α + 0.5;
   let β' <- β + 0.5*(y*z + dot(μ, ν) - dot(μ', ν'));
   return MultivariateNormalInverseGamma(ν', Λ', α', β');
@@ -320,7 +320,7 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,
 function cdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5, α:Arg6,
     β:Arg7, s2:Arg8) -> {
-  let S <- cholinv(Λ);
+  let S <- cholinv(chol(Λ));
   let μ <- S*ν;
   return cdf_student_t(x, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 + dot(a, S*a)!));
 }
@@ -343,7 +343,7 @@ function cdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
 function quantile_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,
     α:Arg6, β:Arg7, s2:Arg8) -> {
-  let S <- cholinv(Λ);
+  let S <- cholinv(chol(Λ));
   let μ <- S*ν;
   return quantile_student_t(P, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 +
       dot(a, S*a)!));
