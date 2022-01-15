@@ -47,16 +47,20 @@ T operator+(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-G identity_grad(const G& g, const T& x) {
+G identity_grad(const G& g, const T& y, const T& x) {
   return g;
 }
 
@@ -98,16 +102,20 @@ T operator-(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-G negate_grad(const G& g, const T& x) {
+G negate_grad(const G& g, const R& y, const T& x) {
   return -g;
 }
 
@@ -149,16 +157,20 @@ explicit_t<bool,T> operator!(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> not_grad(const G& g, const T& x);
+default_t<G,T> not_grad(const G& g, const R& y, const T& x);
 
 /**
  * Absolute value.
@@ -198,16 +210,20 @@ T abs(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> abs_grad(const G& g, const T& x);
+default_t<G,T> abs_grad(const G& g, const R& y, const T& x);
 
 /**
  * Arc cosine.
@@ -247,16 +263,20 @@ default_t<T> acos(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> acos_grad(const G& g, const T& x);
+default_t<G,T> acos_grad(const G& g, const R& y, const T& x);
 
 /**
  * Arc sine.
@@ -296,16 +316,20 @@ default_t<T> asin(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> asin_grad(const G& g, const T& x);
+default_t<G,T> asin_grad(const G& g, const R& y, const T& x);
 
 /**
  * Arc tangent.
@@ -345,16 +369,20 @@ default_t<T> atan(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> atan_grad(const G& g, const T& x);
+default_t<G,T> atan_grad(const G& g, const R& y, const T& x);
 
 /**
  * Cast.
@@ -394,16 +422,20 @@ T cast(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-G cast_grad(const G& g, const T& x) {
+G cast_grad(const G& g, const R& y, const T& x) {
   return g;
 }
 
@@ -445,16 +477,20 @@ T ceil(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> ceil_grad(const G& g, const T& x);
+default_t<G,T> ceil_grad(const G& g, const R& y, const T& x);
 
 /**
  * Cosine.
@@ -494,16 +530,20 @@ default_t<T> cos(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> cos_grad(const G& g, const T& x);
+default_t<G,T> cos_grad(const G& g, const R& y, const T& x);
 
 /**
  * Hyperbolic cosine.
@@ -543,16 +583,20 @@ default_t<T> cosh(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> cosh_grad(const G& g, const T& x);
+default_t<G,T> cosh_grad(const G& g, const R& y, const T& x);
 
 /**
  * Digamma.
@@ -624,16 +668,20 @@ default_t<T> exp(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> exp_grad(const G& g, const T& x);
+default_t<G,T> exp_grad(const G& g, const R& y, const T& x);
 
 /**
  * Exponential minus one.
@@ -673,16 +721,20 @@ default_t<T> expm1(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> expm1_grad(const G& g, const T& x);
+default_t<G,T> expm1_grad(const G& g, const R& y, const T& x);
 
 /**
  * Round to largest integer value not greater than argument.
@@ -722,16 +774,20 @@ T floor(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> floor_grad(const G& g, const T& x);
+default_t<G,T> floor_grad(const G& g, const R& y, const T& x);
 
 /**
  * Logarithm of the factorial function.
@@ -771,16 +827,20 @@ default_t<T> lfact(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> lfact_grad(const G& g, const T& x);
+default_t<G,T> lfact_grad(const G& g, const R& y, const T& x);
 
 /**
  * Logarithm of gamma.
@@ -820,16 +880,20 @@ default_t<T> lgamma(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> lgamma_grad(const G& g, const T& x);
+default_t<G,T> lgamma_grad(const G& g, const R& y, const T& x);
 
 /**
  * Logarithm.
@@ -869,16 +933,20 @@ default_t<T> log(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> log_grad(const G& g, const T& x);
+default_t<G,T> log_grad(const G& g, const R& y, const T& x);
 
 /**
  * Logarithm of one plus argument.
@@ -918,16 +986,20 @@ default_t<T> log1p(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> log1p_grad(const G& g, const T& x);
+default_t<G,T> log1p_grad(const G& g, const R& y, const T& x);
 
 /**
  * Rectification.
@@ -967,16 +1039,20 @@ T rectify(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> rectify_grad(const G& g, const T& x);
+default_t<G,T> rectify_grad(const G& g, const R& y, const T& x);
 
 /**
  * Round to nearest integer value.
@@ -1016,16 +1092,20 @@ T round(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> round_grad(const G& g, const T& x);
+default_t<G,T> round_grad(const G& g, const R& y, const T& x);
 
 /**
  * Sine.
@@ -1065,16 +1145,20 @@ default_t<T> sin(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> sin_grad(const G& g, const T& x);
+default_t<G,T> sin_grad(const G& g, const R& y, const T& x);
 
 /**
  * Hyperbolic sine.
@@ -1114,16 +1198,20 @@ default_t<T> sinh(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> sinh_grad(const G& g, const T& x);
+default_t<G,T> sinh_grad(const G& g, const R& y, const T& x);
 
 /**
  * Square root.
@@ -1163,16 +1251,20 @@ default_t<T> sqrt(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> sqrt_grad(const G& g, const T& x);
+default_t<G,T> sqrt_grad(const G& g, const R& y, const T& x);
 
 /**
  * Tangent.
@@ -1212,16 +1304,20 @@ default_t<T> tan(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> tan_grad(const G& g, const T& x);
+default_t<G,T> tan_grad(const G& g, const R& y, const T& x);
 
 /**
  * Hyperbolic tangent.
@@ -1261,15 +1357,19 @@ default_t<T> tanh(const T& x) {
  * @ingroup unary
  * 
  * @tparam G Numeric type.
+ * @tparam R Numeric type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
+template<class G, class R, class T, class = std::enable_if_t<
+    is_numeric_v<G> &&
+    is_numeric_v<R> && is_compatible_v<G,R> &&
     is_numeric_v<T> && is_compatible_v<G,T>,int>>
-default_t<G,T> tanh_grad(const G& g, const T& x);
+default_t<G,T> tanh_grad(const G& g, const R& y, const T& x);
 
 }

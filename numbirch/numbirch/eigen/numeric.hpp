@@ -45,24 +45,25 @@ Array<T,2> chol(const Array<T,2>& S) {
 }
 
 template<class T, class>
-Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& S) {
-  assert(rows(S) == columns(S));
+Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
+    const Array<T,2>& S) {
   assert(rows(g) == columns(g));
+  assert(rows(L) == columns(L));
+  assert(rows(S) == columns(S));
+  assert(rows(g) == rows(L));
   assert(rows(g) == rows(S));
 
   Array<T,2> gS(shape(S));
   auto g1 = make_eigen(g);
+  auto L1 = make_eigen(L);
   auto S1 = make_eigen(S);
   auto gS1 = make_eigen(gS);
 
-  auto llt = S1.llt();
-  assert(llt.info() == Eigen::Success);
-  auto U1 = llt.matrixU();
-
-  gS1 = (U1*g1).template triangularView<Eigen::Lower>();
+  gS1 = (L1.transpose()*g1).template triangularView<Eigen::Lower>();
   gS1.diagonal() *= 0.5;
-  auto a = U1.solve(U1.solve(gS1).transpose()).eval();
-  gS1 = (a.transpose() + a).template triangularView<Eigen::Lower>();
+  auto a = L1.transpose().solve(gS1).eval();
+  auto b = L1.transpose().solve(a.transpose()).eval();
+  gS1 = (b.transpose() + b).template triangularView<Eigen::Lower>();
   gS1.diagonal() *= 0.5;
 
   assert(gS1.isLowerTriangular());
@@ -77,13 +78,14 @@ Array<T,2> cholinv(const Array<T,2>& L) {
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto B1 = make_eigen(B);
 
-  B1.noalias() = L1.transpose().solve(L1.solve(
-      B1.Identity(rows(B), columns(B))));
+  auto a = L1.solve(B1.Identity(rows(B), columns(B))).eval();
+  B1.noalias() = L1.transpose().solve(a);
   return B;
 }
 
 template<class T, class>
-Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& L) {
+Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L) {
   assert(rows(L) == columns(L));
 
   Array<T,2> gL(shape(L));
@@ -93,8 +95,8 @@ Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& L) {
 
   auto a = L1.solve(g1 + g1.transpose()).eval();
   auto b = L1.transpose().solve(a).eval();
-  auto c = L1.solve(b.transpose()).transpose().eval();
-  gL1 = (-c).template triangularView<Eigen::Lower>();
+  gL1 = L1.solve(-b.transpose()).transpose().template triangularView<
+      Eigen::Lower>();
 
   assert(gL1.isLowerTriangular());
   return gL;
@@ -122,7 +124,8 @@ Array<T,0> lcholdet(const Array<T,2>& L) {
 }
 
 template<class T, class>
-Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,2>& L) {
+Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
+    const Array<T,2>& L) {
   Array<T,2> gL(shape(L));
   auto g1 = make_eigen(g);
   auto L1 = make_eigen(L);
@@ -196,7 +199,7 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
 
 template<class T, class>
 std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
-    const Array<T,2>& L, const Array<T,1>& y) {
+    const Array<T,1>& x, const Array<T,2>& L, const Array<T,1>& y) {
   assert(length(g) == length(y));
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
@@ -209,6 +212,7 @@ std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
   auto gL1 = make_eigen(gL);
   auto gy1 = make_eigen(gy);
 
+  ///@todo Review, outer of g and y may be unnecessary, x may be usable
   auto g2 = g1*y1.transpose().eval();
   auto a = L1.solve(g2 + g2.transpose()).eval();
   auto b = L1.transpose().solve(a).eval();
@@ -236,7 +240,7 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
 
 template<class T, class>
 std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
-    const Array<T,2>& L, const Array<T,2>& C) {
+    const Array<T,2>& B, const Array<T,2>& L, const Array<T,2>& C) {
   assert(rows(g) == rows(L));
   assert(columns(g) == columns(C));
   assert(rows(L) == columns(L));
@@ -253,8 +257,8 @@ std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
   auto g2 = g1*C1.transpose().eval();
   auto a = L1.solve(g2 + g2.transpose()).eval();
   auto b = L1.transpose().solve(a).eval();
-  auto c = L1.solve(b.transpose()).transpose().eval();
-  gL1 = (-c).template triangularView<Eigen::Lower>();
+  gL1 = L1.solve(-b.transpose()).transpose().template triangularView<
+      Eigen::Lower>();
   gC1.noalias() = L1.transpose().solve(L1.solve(g1));
 
   assert(gL1.isLowerTriangular());

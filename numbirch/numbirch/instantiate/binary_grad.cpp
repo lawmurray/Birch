@@ -9,13 +9,6 @@
 #endif
 #include "numbirch/common/binary.hpp"
 
-/**
- * @internal
- * 
- * @def BINARY_GRAD
- * 
- * Explicitly instantiate the gradient of a binary transformation `f`.
- */
 #define BINARY_GRAD(f) \
     BINARY_GRAD_FIRST(f, real)
 #define BINARY_GRAD_FIRST(f, G) \
