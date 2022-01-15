@@ -12,14 +12,6 @@
 #include "numbirch/common/binary.hpp"
 #include "numbirch/common/random.hpp"
 
-/**
- * @internal
- * 
- * @def BINARY_ARITHMETIC
- * 
- * Explicitly instantiate a binary transformation `f` where the return type is
- * any arithmetic type.
- */
 #define BINARY_ARITHMETIC(f) \
     BINARY_FIRST(f, real) \
     BINARY_FIRST(f, int) \
@@ -42,14 +34,6 @@
 #define BINARY_SIG(f, R, T, U) \
     template explicit_t<R,T,U> f<R,T,U,int>(const T&, const U&);
 
-/**
- * @internal
- * 
- * @def BINARY_FLOATING_POINT
- * 
- * Explicitly instantiate a binary transformation `f` where the return type is
- * any floating point type.
- */
 #define BINARY_FLOATING_POINT(f) \
     BINARY_FIRST(f, real)
 
@@ -63,7 +47,6 @@ BINARY_FLOATING_POINT(lbeta)
 BINARY_FLOATING_POINT(lchoose)
 BINARY_FLOATING_POINT(lgamma)
 BINARY_FLOATING_POINT(pow)
-
 BINARY_FLOATING_POINT(simulate_beta)
 BINARY_ARITHMETIC(simulate_binomial)
 BINARY_FLOATING_POINT(simulate_gamma)

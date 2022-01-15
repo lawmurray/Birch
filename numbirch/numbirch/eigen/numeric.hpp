@@ -55,7 +55,7 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
 
   Array<T,2> gS(shape(S));
   auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto S1 = make_eigen(S);
   auto gS1 = make_eigen(gS);
 
@@ -147,11 +147,11 @@ Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x) {
   assert(columns(L) == length(x));
 
   Array<T,1> y(make_shape(rows(L)));
-  auto L1 = make_eigen(L);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
 
-  y1.noalias() = L1.template triangularView<Eigen::Lower>()*x1;
+  y1.noalias() = L1*x1;
   return y;
 }
 
@@ -161,11 +161,11 @@ Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B) {
   assert(columns(L) == rows(B));
 
   Array<T,2> C(shape(B));
-  auto L1 = make_eigen(L);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
 
-  C1.noalias() = L1.template triangularView<Eigen::Lower>()*B1;
+  C1.noalias() = L1*B1;
   return C;
 }
 
@@ -176,10 +176,10 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
 
   Array<T,2> C(make_shape(rows(A), rows(L)));
   auto A1 = make_eigen(A);
-  auto L1 = make_eigen(L);
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto C1 = make_eigen(C);
 
-  C1.noalias() = A1*L1.template triangularView<Eigen::Lower>().transpose();
+  C1.noalias() = A1*L1.transpose();
   return C;
 }
 

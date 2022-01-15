@@ -46,17 +46,19 @@ Array<int,0> count(const T& x) {
  * 
  * @ingroup unary
  * 
- * @tparam G Numeric type.
+ * @tparam R Arithmetic type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_scalar_v<G> &&
+template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-default_t<G,T> count_grad(const G& g, const T& x);
+default_t<T> count_grad(const Array<real,0>& g, const Array<R,0>& y,
+    const T& x);
 
 /**
  * Sum of elements.
@@ -95,17 +97,19 @@ Array<value_t<T>,0> sum(const T& x) {
  * 
  * @ingroup unary
  * 
- * @tparam G Numeric type.
+ * @tparam R Arithmetic type.
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_scalar_v<G> &&
+template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-default_t<G,T> sum_grad(const G& g, const T& x);
+default_t<T> sum_grad(const Array<real,0>& g, const Array<R,0>& y,
+    const T& x);
 
 /**
  * Matrix trace.
@@ -113,15 +117,15 @@ default_t<G,T> sum_grad(const G& g, const T& x);
  * @ingroup la
  * 
  * @tparam R Arithmetic type.
- * @tparam T Arithmetic type.
+ * @tparam T Numeric type.
  * 
- * @param A Matrix.
+ * @param A Matrix $A$.
  * 
- * @return Trace.
+ * @return Result $\mathrm{Tr}(A)$.
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
-    is_arithmetic_v<T>,int>>
-Array<R,0> trace(const Array<T,2>& A) {
+    is_numeric_v<T>,int>>
+Array<R,0> trace(const T& A) {
   assert(rows(A) == columns(A));
   return sum<R>(A.diagonal());
 }
@@ -131,15 +135,15 @@ Array<R,0> trace(const Array<T,2>& A) {
  * 
  * @ingroup la
  * 
- * @tparam T Arithmetic type.
+ * @tparam T Numeric type.
  * 
- * @param A Matrix.
+ * @param A Matrix $A$.
  * 
- * @return Trace.
+ * @return Result $\mathrm{Tr}(A)$.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-Array<T,0> trace(const Array<T,2>& A) {
-  return trace<T,T,int>(A);
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+Array<value_t<T>,0> trace(const T& A) {
+  return trace<value_t<T>,T,int>(A);
 }
 
 /**
@@ -147,15 +151,19 @@ Array<T,0> trace(const Array<T,2>& A) {
  * 
  * @ingroup la
  * 
- * @tparam T Arithmetic type.
+ * @tparam R Arithmetic type.
+ * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param A Matrix.
+ * @param y Result $y = \mathrm{Tr}(A)$..
+ * @param A Matrix $A$.
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-Array<T,2> trace_grad(const Array<T,0>& g, const Array<T,2>& A) {
+template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
+    is_numeric_v<T>,int>>
+default_t<T> trace_grad(const Array<real,0>& g, const Array<R,0>& y,
+    const T& A) {
   return diagonal(g, rows(A));
 }
 

@@ -12,14 +12,6 @@
 #include "numbirch/common/unary.hpp"
 #include "numbirch/common/random.hpp"
 
-/**
- * @internal
- * 
- * @def UNARY_ARITHMETIC
- * 
- * Explicitly instantiate a unary transformation `f` where the return type is
- * any arithmetic type.
- */
 #define UNARY_ARITHMETIC(f) \
     UNARY_FIRST(f, real) \
     UNARY_FIRST(f, int) \
@@ -36,14 +28,6 @@
 #define UNARY_SIG(f, R, T) \
     template explicit_t<R,T> f<R,T,int>(const T&);
 
-/**
- * @internal
- * 
- * @def UNARY_FLOATING_POINT
- * 
- * Explicitly instantiate a unary transformation `f` where the return type is
- * any floating point type.
- */
 #define UNARY_FLOATING_POINT(f) \
     UNARY_FIRST(f, real)
 

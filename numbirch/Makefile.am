@@ -32,8 +32,11 @@ SOURCES =  \
     numbirch/instantiate/numeric_frobenius.cpp \
     numbirch/instantiate/numeric_inner.cpp \
     numbirch/instantiate/numeric_matrix.cpp \
+    numbirch/instantiate/numeric_matrix_grad.cpp \
     numbirch/instantiate/numeric_matrix_matrix.cpp \
+    numbirch/instantiate/numeric_matrix_matrix_grad.cpp \
     numbirch/instantiate/numeric_matrix_vector.cpp \
+    numbirch/instantiate/numeric_matrix_vector_grad.cpp \
     numbirch/instantiate/numeric_outer.cpp \
     numbirch/instantiate/numeric_reduce_matrix.cpp \
     numbirch/instantiate/random_standard_matrix.cpp \

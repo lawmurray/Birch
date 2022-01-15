@@ -47,9 +47,9 @@ explicit_t<R,T,U> operator&&(const T& x, const U& y) {
   return transform(x, y, and_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> and_grad(const G& g, const T& x,
-    const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> and_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -63,8 +63,8 @@ explicit_t<R,T,U> operator||(const T& x, const U& y) {
   return transform(x, y, or_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> or_grad(const G& g, const T& x,
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> or_grad(const default_t<T,U>& g, const explicit_t<R,T,U>& z, const T& x,
     const U& y) {
   prefetch(g);
   prefetch(x);
@@ -79,8 +79,8 @@ explicit_t<R,T,U> operator==(const T& x, const U& y) {
   return transform(x, y, equal_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> equal_grad(const G& g, const T& x,
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> equal_grad(const default_t<T,U>& g, const explicit_t<R,T,U>& z, const T& x,
     const U& y) {
   prefetch(g);
   prefetch(x);
@@ -95,9 +95,9 @@ explicit_t<R,T,U> operator!=(const T& x, const U& y) {
   return transform(x, y, not_equal_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> not_equal_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> not_equal_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -111,9 +111,9 @@ explicit_t<R,T,U> operator<(const T& x, const U& y) {
   return transform(x, y, less_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> less_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> less_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -127,9 +127,9 @@ explicit_t<R,T,U> operator<=(const T& x, const U& y) {
   return transform(x, y, less_or_equal_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> less_or_equal_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> less_or_equal_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -143,9 +143,9 @@ explicit_t<R,T,U> operator>(const T& x, const U& y) {
   return transform(x, y, greater_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> greater_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> greater_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -159,9 +159,9 @@ explicit_t<R,T,U> operator>=(const T& x, const U& y) {
   return transform(x, y, greater_or_equal_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> greater_or_equal_grad(
-    const G& g, const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> greater_or_equal_grad(
+    const default_t<T,U>& g, const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -175,9 +175,9 @@ explicit_t<R,T,U> copysign(const T& x, const U& y) {
   return transform(x, y, copysign_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> copysign_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> copysign_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -212,9 +212,9 @@ explicit_t<R,T,U> hadamard(const T& x, const U& y) {
   return transform(x, y, hadamard_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> hadamard_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> hadamard_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -228,9 +228,9 @@ explicit_t<R,T,U> lbeta(const T& x, const U& y) {
   return transform(x, y, lbeta_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> lbeta_grad(const G& g,
-    const T& x, const U& y) {
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> lbeta_grad(const default_t<T,U>& g,
+    const explicit_t<R,T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -244,8 +244,8 @@ explicit_t<R,T,U> lchoose(const T& x, const U& y) {
   return transform(x, y, lchoose_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> lchoose_grad(const G& g, const T& x,
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> lchoose_grad(const default_t<T,U>& g, const explicit_t<R,T,U>& z, const T& x,
     const U& y) {
   prefetch(g);
   prefetch(x);
@@ -260,8 +260,8 @@ explicit_t<R,T,U> lgamma(const T& x, const U& y) {
   return transform(x, y, lgamma_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> lgamma_grad(const G& g, const T& x,
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> lgamma_grad(const default_t<T,U>& g, const explicit_t<R,T,U>& z, const T& x,
     const U& y) {
   prefetch(g);
   prefetch(x);
@@ -276,8 +276,8 @@ explicit_t<R,T,U> pow(const T& x, const U& y) {
   return transform(x, y, pow_functor<R>());
 }
 
-template<class G, class T, class U, class>
-std::pair<default_t<G,T,U>,default_t<G,T,U>> pow_grad(const G& g, const T& x,
+template<class R, class T, class U, class>
+std::pair<default_t<T>,default_t<U>> pow_grad(const default_t<T,U>& g, const explicit_t<R,T,U>& z, const T& x,
     const U& y) {
   prefetch(g);
   prefetch(x);

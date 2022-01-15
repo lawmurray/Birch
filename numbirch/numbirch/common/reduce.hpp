@@ -8,14 +8,16 @@
 
 namespace numbirch {
 
-template<class G, class T, class>
-default_t<G,T> count_grad(const G& g, const T& x) {
+template<class R, class T, class>
+default_t<T> count_grad(const Array<real,0>& g, const Array<R,0>& y,
+    const T& x) {
   prefetch(x);
   return transform(x, count_grad_functor<real>());
 }
 
-template<class G, class T, class>
-default_t<G,T> sum_grad(const G& g, const T& x) {
+template<class R, class T, class>
+default_t<T> sum_grad(const Array<real,0>& g, const Array<R,0>& y,
+    const T& x) {
   prefetch(x);
   return transform(x, sum_grad_functor<real,decltype(data(g))>(data(g)));
 }
