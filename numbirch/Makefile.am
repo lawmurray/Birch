@@ -23,11 +23,16 @@ SOURCES =  \
     numbirch/instantiate/array_element_vector.cpp \
     numbirch/instantiate/array_single_matrix.cpp \
     numbirch/instantiate/array_single_vector.cpp \
-    numbirch/instantiate/binary_function.cpp \
-    numbirch/instantiate/binary_grad.cpp \
-    numbirch/instantiate/binary_operator.cpp \
+    numbirch/instantiate/binary_function_arithmetic.cpp \
+    numbirch/instantiate/binary_function_arithmetic_grad.cpp \
+    numbirch/instantiate/binary_function_real.cpp \
+    numbirch/instantiate/binary_function_real_grad.cpp \
+    numbirch/instantiate/binary_operator_arithmetic.cpp \
+    numbirch/instantiate/binary_operator_boolean.cpp \
+    numbirch/instantiate/binary_operator_boolean_grad.cpp \
     numbirch/instantiate/binary_scalar_divide.cpp \
     numbirch/instantiate/binary_scalar_multiply.cpp \
+    numbirch/instantiate/cast.cpp \
     numbirch/instantiate/numeric_dot.cpp \
     numbirch/instantiate/numeric_frobenius.cpp \
     numbirch/instantiate/numeric_inner.cpp \
@@ -39,14 +44,19 @@ SOURCES =  \
     numbirch/instantiate/numeric_matrix_vector_grad.cpp \
     numbirch/instantiate/numeric_outer.cpp \
     numbirch/instantiate/numeric_reduce_matrix.cpp \
-    numbirch/instantiate/random_standard_matrix.cpp \
-    numbirch/instantiate/random_standard_vector.cpp \
+    numbirch/instantiate/random.cpp \
+    numbirch/instantiate/random_binary.cpp \
     numbirch/instantiate/random_standard_wishart.cpp \
+    numbirch/instantiate/random_unary.cpp \
     numbirch/instantiate/reduce.cpp \
     numbirch/instantiate/reduce_grad.cpp \
     numbirch/instantiate/ternary_function.cpp \
     numbirch/instantiate/unary_function.cpp \
-    numbirch/instantiate/unary_grad.cpp \
+    numbirch/instantiate/unary_function_grad.cpp \
+    numbirch/instantiate/unary_function_real.cpp \
+    numbirch/instantiate/unary_function_real_grad.cpp \
+    numbirch/instantiate/unary_operator_boolean.cpp \
+    numbirch/instantiate/unary_operator_boolean_grad.cpp \
     numbirch/instantiate/unary_operator.cpp
 
 if ONEAPI

@@ -8,107 +8,96 @@
 
 namespace numbirch {
 
-template<class R, class T, class>
-explicit_t<R,T> simulate_bernoulli(const T& rho) {
+template<class T, class>
+explicit_t<bool,T> simulate_bernoulli(const T& rho) {
   prefetch(rho);
-  return transform(rho, simulate_bernoulli_functor<R>());
+  return transform(rho, simulate_bernoulli_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_beta(const T& alpha, const U& beta) {
+template<class T, class U, class>
+default_t<T,U> simulate_beta(const T& alpha, const U& beta) {
   prefetch(alpha);
   prefetch(beta);
-  return transform(alpha, beta, simulate_beta_functor<R>());
+  return transform(alpha, beta, simulate_beta_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_binomial(const T& n, const U& rho) {
+template<class T, class U, class>
+explicit_t<int,T,U> simulate_binomial(const T& n, const U& rho) {
   prefetch(n);
   prefetch(rho);
-  return transform(n, rho, simulate_binomial_functor<R>());
+  return transform(n, rho, simulate_binomial_functor());
 }
 
-template<class R, class T, class>
-explicit_t<R,T> simulate_chi_squared(const T& nu) {
+template<class T, class>
+default_t<T> simulate_chi_squared(const T& nu) {
   prefetch(nu);
-  return transform(nu, simulate_chi_squared_functor<R>());
+  return transform(nu, simulate_chi_squared_functor());
 }
 
-template<class R, class T, class>
-explicit_t<R,T> simulate_exponential(const T& lambda) {
+template<class T, class>
+default_t<T> simulate_exponential(const T& lambda) {
   prefetch(lambda);
-  return transform(lambda, simulate_exponential_functor<R>());
+  return transform(lambda, simulate_exponential_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_gamma(const T& k, const U& theta) {
+template<class T, class U, class>
+default_t<T,U> simulate_gamma(const T& k, const U& theta) {
   prefetch(k);
   prefetch(theta);
-  return transform(k, theta, simulate_gamma_functor<R>());
+  return transform(k, theta, simulate_gamma_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_gaussian(const T& mu, const U& sigma2) {
+template<class T, class U, class>
+default_t<T,U> simulate_gaussian(const T& mu, const U& sigma2) {
   prefetch(mu);
   prefetch(sigma2);
-  return transform(mu, sigma2, simulate_gaussian_functor<R>());
+  return transform(mu, sigma2, simulate_gaussian_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_negative_binomial(const T& k,
-    const U& rho) {
+template<class T, class U, class>
+explicit_t<int,T,U> simulate_negative_binomial(const T& k, const U& rho) {
   prefetch(k);
   prefetch(rho);
-  return transform(k, rho, simulate_negative_binomial_functor<R>());
+  return transform(k, rho, simulate_negative_binomial_functor());
 }
 
-template<class R, class T, class>
-explicit_t<R,T> simulate_poisson(const T& lambda) {
+template<class T, class>
+explicit_t<int,T> simulate_poisson(const T& lambda) {
   prefetch(lambda);
-  return transform(lambda, simulate_poisson_functor<R>());
+  return transform(lambda, simulate_poisson_functor());
 }
 
-template<class R, class T, class>
-explicit_t<R,T> simulate_student_t(const T& nu) {
+template<class T, class>
+default_t<T> simulate_student_t(const T& nu) {
   prefetch(nu);
-  return transform(nu, simulate_student_t_functor<R>());
+  return transform(nu, simulate_student_t_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_uniform(const T& l, const U& u) {
+template<class T, class U, class>
+default_t<T,U> simulate_uniform(const T& l, const U& u) {
   prefetch(l);
   prefetch(u);
-  return transform(l, u, simulate_uniform_functor<R>());
+  return transform(l, u, simulate_uniform_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_uniform_int(const T& l, const U& u) {
+template<class T, class U, class>
+explicit_t<int,T,U> simulate_uniform_int(const T& l, const U& u) {
   prefetch(l);
   prefetch(u);
-  return transform(l, u, simulate_uniform_int_functor<R>());
+  return transform(l, u, simulate_uniform_int_functor());
 }
 
-template<class R, class T, class U, class>
-explicit_t<R,T,U> simulate_weibull(const T& k, const U& lambda) {
+template<class T, class U, class>
+default_t<T,U> simulate_weibull(const T& k, const U& lambda) {
   prefetch(k);
   prefetch(lambda);
-  return transform(k, lambda, simulate_weibull_functor<R>());
+  return transform(k, lambda, simulate_weibull_functor());
 }
 
-template<class R, class>
-Array<R,1> standard_gaussian(const int n) {
-  return for_each(n, standard_gaussian_functor<R>());
-}
-
-template<class R, class>
-Array<R,2> standard_gaussian(const int m, const int n) {
-  return for_each(m, n, standard_gaussian_functor<R>());
-}
-
-template<class R, class T, class>
-Array<R,2> standard_wishart(const T& nu, const int n) {
-  return for_each(n, n, standard_wishart_functor<R,decltype(data(nu))>(data(nu),
-      n));
+template<class T, class>
+Array<real,2> standard_wishart(const T& nu, const int n) {
+  return for_each(n, n, standard_wishart_functor<decltype(data(nu))>(
+      data(nu), n));
 }
 
 }

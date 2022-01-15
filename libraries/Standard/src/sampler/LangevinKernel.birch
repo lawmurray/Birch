@@ -36,7 +36,7 @@ class LangevinKernel < Kernel {
     for n in 1..nmoves {
       /* proposed state */
       cpp{{
-      auto z = numbirch::standard_gaussian<Real>(m);
+      auto z = numbirch::standard_gaussian(m);
       }}
       let p' <- π.move(μ + sqrt(σ2)*z);
       π.grad(1.0);

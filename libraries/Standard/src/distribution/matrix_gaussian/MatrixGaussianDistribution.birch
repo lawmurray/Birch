@@ -80,7 +80,7 @@ function simulate_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
   let m <- rows(M);
   let n <- columns(M);
   cpp{{
-  auto Z = numbirch::standard_gaussian<Real>(m, n);
+  auto Z = numbirch::standard_gaussian(m, n);
   }}
   return M + triouter(trimul(chol(U), Z), chol(V));
 }

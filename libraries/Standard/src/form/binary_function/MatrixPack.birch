@@ -64,17 +64,20 @@ function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
   return Z;
 }
 
-function pack_grad<Gradient,Type>(g:Gradient, x:Type, y:Type) -> {
+function pack_grad<Gradient,Value,Type>(g:Gradient, x:Value, l:Type,
+    r:Type) -> {
   assert rows(g) == 1 && columns(g) == 2;
   return (g[1,1], g[1,2]);
 }
 
-function pack_grad<Gradient,Type>(g:Gradient, x:Type[_], y:Type[_]) -> {
+function pack_grad<Gradient,Value,Type>(g:Gradient, x:Value, l:Type[_],
+    r:Type[_]) -> {
   assert columns(g) == 2;
   return (column(g, 1), column(g, 2));
 }
 
-function pack_grad<Gradient,Type>(g:Gradient, l:Type[_,_], r:Type[_,_]) -> {
+function pack_grad<Gradient,Value,Type>(g:Gradient, x:Value, l:Type[_,_],
+    r:Type[_,_]) -> {
   let r1 <- rows(l);
   let c1 <- columns(l);
   let c2 <- columns(r);

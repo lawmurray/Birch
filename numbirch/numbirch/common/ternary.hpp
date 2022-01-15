@@ -13,7 +13,7 @@ explicit_t<R,T,U,V> ibeta(const T& x, const U& y, const V& z) {
   prefetch(x);
   prefetch(y);
   prefetch(z);
-  return transform(x, y, z, ibeta_functor<R>());
+  return transform(x, y, z, ibeta_functor());
 }
 
 }

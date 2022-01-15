@@ -70,7 +70,7 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   assert length(μ) == columns(Σ);
   let n <- length(μ);
   cpp{{
-  auto z = numbirch::standard_gaussian<Real>(n);
+  auto z = numbirch::standard_gaussian(n);
   }}
   return μ + trimul(chol(Σ), z);
 }

@@ -9,6 +9,7 @@
 #include "numbirch/array/Matrix.hpp"
 #include "numbirch/array/Future.hpp"
 #include "numbirch/macro.hpp"
+#include "numbirch/reduce.hpp"
 
 namespace numbirch {
 /**
@@ -294,18 +295,18 @@ Array<value_t<T>,2> diagonal(const T& x, const int n);
  * 
  * @ingroup array
  * 
- * @tparam G Numeric type.
  * @tparam T Scalar type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Scalar to assign to diagonal.
  * @param n Number of rows and columns.
  * 
  * @return Gradient with respect to @p x.
  */
-template<class G, class T, class = std::enable_if_t<is_numeric_v<G> &&
-    is_scalar_v<T>,int>>
-Array<real,0> diagonal_grad(const G& g, const T& x, const int n) {
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<real,0> diagonal_grad(const Array<real,2>& g,
+    const Array<value_t<T>,2>& y, const T& x, const int n) {
   return trace(g);
 }
 
@@ -331,21 +332,20 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
  * 
  * @ingroup array
  * 
- * @tparam G Numeric type.
  * @tparam T Arithmetic type.
  * @tparam U Scalar type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Vector.
  * @param i Index.
  * 
  * @return Gradients with respect to @p x and @p i.
  */
-template<class G, class T, class U, class = std::enable_if_t<
-    is_numeric_v<G> &&
-    is_arithmetic_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
-std::pair<Array<real,1>,real> element_grad(const G& g, const Array<T,1>& x,
-    const U& i) {
+template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
+    is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+std::pair<Array<real,1>,real> element_grad(const Array<real,0>& g,
+    const Array<T,0>& y, const Array<T,1>& x, const U& i) {
   return std::make_pair(single(g, i, length(x)), real(0));
 }
 
@@ -374,24 +374,23 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
  * 
  * @ingroup array
  * 
- * @tparam G Numeric type.
  * @tparam T Arithmetic type.
  * @tparam U Scalar type.
  * @tparam V Scalar type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param A Matrix.
  * @param i Row index.
  * @param j Column index.
  * 
  * @return Gradients with respect to @p A, @p i and @p j.
  */
-template<class G, class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<G> &&
+template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
-std::tuple<Array<real,2>,real,real> element_grad(const G& g,
-    const Array<T,2>& A, const U& i, const V& j) {
+std::tuple<Array<real,2>,real,real> element_grad(const Array<real,0>& g,
+    const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j) {
   return std::make_tuple(single(g, i, j, rows(A), columns(A)), real(0),
       real(0));
 }
@@ -420,22 +419,21 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
  * 
  * @ingroup array
  * 
- * @tparam G Numeric type.
  * @tparam T Scalar type.
  * @tparam U Scalar type.
  * 
  * @param g Gradient with respect to result.
+ * @param y Result.
  * @param x Value of single entry.
  * @param i Index of single entry (1-based).
  * @param n Length of vector.
  * 
  * @return Gradients with respect to @p x and @p i.
  */
-template<class G, class T, class U, class = std::enable_if_t<
-    is_numeric_v<G> &&
+template<class T, class U, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
-std::pair<Array<real,0>,real> single_grad(const G& g, const T& x,
-    const U& i, const int n) {
+std::pair<Array<real,0>,real> single_grad(const Array<real,1>& g,
+    const Array<value_t<T>,1>& y, const T& x, const U& i, const int n) {
   return std::make_pair(element(g, i), real(0));
 }
 
@@ -468,12 +466,12 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  * 
  * @ingroup array
  * 
- * @tparam G Numeric type.
  * @tparam T Scalar type.
  * @tparam U Scalar type.
  * @tparam V Scalar type.
  * 
  * @param g Gradient with respect to result.
+ * @param A Result.
  * @param x Value of single entry.
  * @param i Row of single entry (1-based).
  * @param j Column of single entry (1-based).
@@ -482,12 +480,12 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  * 
  * @return Gradients with respect to @p x, @p i and @p j.
  */
-template<class G, class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<G> &&
+template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
-std::tuple<Array<real,0>,real,real> single_grad(const G& g,
-    const T& x, const U& i, const V& j, const int m, const int n) {
+std::tuple<Array<real,0>,real,real> single_grad(const Array<real,2>& g,
+    const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j,
+    const int m, const int n) {
   return std::make_tuple(element(g, i, j), real(0), real(0));
 }
 

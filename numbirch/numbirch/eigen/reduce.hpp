@@ -13,7 +13,7 @@ namespace numbirch {
 
 template<class R, class T, class>
 Array<R,0> count(const T& x) {
-  return make_eigen(x).unaryExpr(count_functor<R>()).sum();
+  return make_eigen(x).unaryExpr(count_functor()).sum();
 }
 
 template<class R, class T, class>

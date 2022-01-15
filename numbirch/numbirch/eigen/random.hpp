@@ -9,124 +9,96 @@
 
 namespace numbirch {
 
-template<class R>
 struct simulate_bernoulli_functor {
-  template<class T>
-  R operator()(const T rho) const {
+  bool operator()(const real rho) const {
     return std::bernoulli_distribution(rho)(stl<bool>::rng());
   }
 };
 
-template<class R>
 struct simulate_beta_functor {
-  template<class T, class U>
-  R operator()(const T alpha, const U beta) const {
-    auto u = std::gamma_distribution<R>(alpha, 1.0)(stl<R>::rng());
-    auto v = std::gamma_distribution<R>(beta, 1.0)(stl<R>::rng());
+  real operator()(const real alpha, const real beta) const {
+    real u, v;
+    auto& rng = stl<real>::rng();
+    u = std::gamma_distribution<real>(alpha)(rng);
+    v = std::gamma_distribution<real>(beta)(rng);
     return u/(u + v);
   }
 };
 
-template<class R>
 struct simulate_binomial_functor {
-  template<class T, class U>
-  R operator()(const T n, const U rho) const {
-    return std::binomial_distribution<int>(n, rho)(stl<R>::rng());
-    // ^ binomial_distribution requires integral type
+  int operator()(const int n, const real rho) const {
+    return std::binomial_distribution<int>(n, rho)(stl<int>::rng());
   }
 };
 
-template<class R>
 struct simulate_chi_squared_functor {
-  template<class T>
-  R operator()(const T nu) const {
-    return std::chi_squared_distribution<R>(nu)(stl<R>::rng());
+  real operator()(const real nu) const {
+    return std::chi_squared_distribution<real>(nu)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct simulate_exponential_functor {
-  template<class T>
-  R operator()(const T lambda) const {
-    return std::exponential_distribution<R>(lambda)(stl<R>::rng());
+  real operator()(const real lambda) const {
+    return std::exponential_distribution<real>(lambda)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct simulate_gamma_functor {
-  template<class T, class U>
-  R operator()(const T k, const U theta) const {
-    return std::gamma_distribution<R>(k, theta)(stl<R>::rng());
+  real operator()(const real k, const real theta) const {
+    return std::gamma_distribution<real>(k, theta)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct simulate_gaussian_functor {
-  template<class T, class U>
-  R operator()(const T mu, const U sigma2) const {
-    return std::normal_distribution<R>(mu, std::sqrt(sigma2))(stl<R>::rng());
+  real operator()(const real mu, const real sigma2) const {
+    real sigma = std::sqrt(sigma2);
+    return std::normal_distribution<real>(mu, sigma)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct simulate_negative_binomial_functor {
-  template<class T, class U>
-  R operator()(const T k, const U rho) const {
-    return std::negative_binomial_distribution<int>(k, rho)(stl<R>::rng());
-    // ^ negative_binomial_distribution requires integral type
+  int operator()(const int k, const real rho) const {
+    return std::negative_binomial_distribution<int>(k, rho)(stl<int>::rng());
   }
 };
 
-template<class R>
 struct simulate_poisson_functor {
-  template<class T>
-  R operator()(const T lambda) const {
-    return std::poisson_distribution<int>(lambda)(stl<R>::rng());
-    // ^ poisson_distribution requires integral type
+  int operator()(const real lambda) const {
+    return std::poisson_distribution<int>(lambda)(stl<int>::rng());
   }
 };
 
-template<class R>
 struct simulate_student_t_functor {
-  template<class T>
-  R operator()(const T nu) const {
-    return std::student_t_distribution<R>(nu)(stl<R>::rng());
+  real operator()(const real nu) const {
+    return std::student_t_distribution<real>(nu)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct simulate_uniform_functor {
-  template<class T, class U>
-  R operator()(const T l, const U u) const {
-    return std::uniform_real_distribution<R>(l, u)(stl<R>::rng());
+  real operator()(const real l, const real u) const {
+    return std::uniform_real_distribution<real>(l, u)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct simulate_uniform_int_functor {
-  template<class T, class U>
-  R operator()(const T l, const U u) const {
-    return std::uniform_int_distribution<int>(l, u)(stl<R>::rng());
-    // ^ uniform_int_distribution requires integral type
+  int operator()(const int l, const int u) const {
+    return std::uniform_int_distribution<int>(l, u)(stl<int>::rng());
   }
 };
 
-template<class R>
 struct simulate_weibull_functor {
-  template<class T, class U>
-  R operator()(const T k, const U lambda) const {
-    return std::weibull_distribution<R>(k, lambda)(stl<R>::rng());
+  real operator()(const real k, const real lambda) const {
+    return std::weibull_distribution<real>(k, lambda)(stl<real>::rng());
   }
 };
 
-template<class R>
 struct standard_gaussian_functor {
-  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) const {
-    return std::normal_distribution<R>()(stl<R>::rng());
+  NUMBIRCH_HOST_DEVICE real operator()(const int i, const int j) const {
+    return std::normal_distribution<real>()(stl<real>::rng());
   }
 };
 
-template<class R, class T>
+template<class T>
 struct standard_wishart_functor {
   T k;
   int n;
@@ -135,18 +107,19 @@ struct standard_wishart_functor {
       n(n) {
     //
   }
-  NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
+  NUMBIRCH_HOST_DEVICE real operator()(const int i, const int j) {
+    auto& rng = stl<real>::rng();
     if (i == j) {
       /* on diagonal */
-      R nu = element(k) + n - i;
-      R x = std::chi_squared_distribution<R>(nu)(stl<R>::rng());
+      real nu = element(k) + n - i;
+      real x = std::chi_squared_distribution<real>(nu)(rng);
       return std::sqrt(x);
     } else if (i > j) {
       /* in lower triangle */
-      return std::normal_distribution<R>()(stl<R>::rng());
+      return std::normal_distribution<real>()(rng);
     } else {
       /* in upper triangle */
-      return R(0.0);
+      return real(0);
     }
   }
 };

@@ -68,7 +68,7 @@ function if_then_else<Type>(cond:Boolean, x:Type!, y:Type!) -> Type! {
   }
 }
 
-function if_then_else_grad<Gradient,Left,Middle,Right>(g:Gradient,
-    l:Left, m:Middle, r:Right) -> (Real, Real, Real) {
+function if_then_else_grad<Gradient,Value,Left,Middle,Right>(g:Gradient,
+    x:Value, l:Left, m:Middle, r:Right) -> (Real, Real, Real) {
   return (0.0, if_then_else(l, g, 0.0), if_then_else(l, 0.0, g));
 }
