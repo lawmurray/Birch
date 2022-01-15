@@ -89,11 +89,11 @@ hpp{{
   \
   template<class G> \
   void shallowGrad(const G& g) const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
     auto l = birch::peek(this->l); \
     auto m = birch::peek(this->m); \
     auto r = birch::peek(this->r); \
-    auto [gl, gm, gr] = f_grad(g, l, m, r, ##__VA_ARGS__); \
+    auto [gl, gm, gr] = f_grad(g, *this->x, l, m, r, ##__VA_ARGS__); \
+    const_cast<std::optional<Value>&>(x).reset(); \
     birch::shallow_grad(this->l, gl); \
     birch::shallow_grad(this->m, gm); \
     birch::shallow_grad(this->r, gr); \
