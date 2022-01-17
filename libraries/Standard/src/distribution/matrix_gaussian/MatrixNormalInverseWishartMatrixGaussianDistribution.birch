@@ -86,7 +86,8 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, U:Arg,
   M.prune();
   if M.hasMatrixNormalInverseWishart() && M.isGrandChildOf(V) {
     let (N, Λ, Ψ, k) <- M.getMatrixNormalInverseWishart();
-    let p <- MatrixNormalInverseWishartMatrixGaussian(N, Λ, Ψ, k, U);
+    let p <- wrap_matrix_normal_inverse_wishart_matrix_gaussian(N, Λ, Ψ, k,
+        U);
     M.graft(p, 1);
     V.graftReplace(p, 2);
     M.join(V);
@@ -96,11 +97,11 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, U:Arg,
     if V.hasInverseWishart() {
       let (Ψ, k) <- V.getInverseWishart();
       let Λ <- cholinv(chol(U));
-      let p <- MatrixNormalInverseWishart(Λ*M, Λ, Ψ, k);
+      let p <- wrap_matrix_normal_inverse_wishart(Λ*M, Λ, Ψ, k);
       V.graft(p);
       return p;
     } else {
-      return MatrixGaussian(wrap(M), wrap(U), wrap(V));
+      return wrap_matrix_gaussian(M, U, V);
     }
   }
 }

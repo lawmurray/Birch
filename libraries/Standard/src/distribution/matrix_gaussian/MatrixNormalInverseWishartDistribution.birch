@@ -98,11 +98,11 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
   if V.hasInverseWishart() {
     let (Ψ, k) <- V.getInverseWishart();
     let Λ <- cholinv(chol(U));
-    let p <- MatrixNormalInverseWishart(Λ*M, Λ, Ψ, k);
+    let p <- wrap_matrix_normal_inverse_wishart(Λ*M, Λ, Ψ, k);
     V.graft(p);
     return p;
   } else {
-    return MatrixGaussian(wrap(M), wrap(U), wrap(V));
+    return wrap_matrix_gaussian(M, U, V);
   }
 }
 

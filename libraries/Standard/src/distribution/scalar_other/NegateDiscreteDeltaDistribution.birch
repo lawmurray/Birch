@@ -69,7 +69,7 @@ function Delta(μ:Negate<Random<Integer>>) -> Distribution<Integer> {
     μ.m.graft(p);
     return p;
 	} else {
-		return Delta(wrap(μ));
+		return wrap_delta(μ);
 	}
 }
 

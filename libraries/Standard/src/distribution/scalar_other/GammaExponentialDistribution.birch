@@ -75,11 +75,11 @@ function Exponential(λ:Random<Real>) -> Distribution<Real> {
   λ.prune();
   if λ.hasGamma() {
     let (k, θ) <- λ.getGamma();
-    let p <- GammaExponential(k, θ);
+    let p <- wrap_gamma_exponential(k, θ);
     λ.graft(p);
     return p;
   } else {
-    return Exponential(wrap(λ));
+    return wrap_exponential(λ);
   }
 }
 

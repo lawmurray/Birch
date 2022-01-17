@@ -88,8 +88,8 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
   μ.prune();
   if μ.hasMultivariateNormalInverseGamma() && μ.isGrandChildOf(Σ.r) {
     let (ν, Λ, α, β) <- μ.getMultivariateNormalInverseGamma();
-    let p <- MultivariateNormalInverseGammaMultivariateGaussian(ν, Λ, α, β,
-        Σ.l);
+    let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(ν,
+        Λ, α, β, Σ.l);
     μ.graft(p, 1);
     Σ.r.graftReplace(p, 2);
     μ.join(Σ.r);
@@ -99,11 +99,11 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
     if Σ.r.hasInverseGamma() {
       let (α, β) <- Σ.r.getInverseGamma();
       let Λ <- cholinv(chol(Σ.l));
-      let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
+      let p <- wrap_multivariate_normal_inverse_gamma(Λ*μ, Λ, α, β);
       Σ.r.graft(p);
       return p;
     } else {
-      return MultivariateGaussian(wrap(μ), wrap(Σ));
+      return wrap_multivariate_gaussian(μ, Σ);
     }
   }
 }
@@ -116,8 +116,8 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
   μ.prune();
   if μ.hasMultivariateNormalInverseGamma() && μ.isGrandChildOf(Σ.l) {
     let (ν, Λ, α, β) <- μ.getMultivariateNormalInverseGamma();
-    let p <- MultivariateNormalInverseGammaMultivariateGaussian(ν, Λ, α, β,
-        Σ.r);
+    let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(ν,
+        Λ, α, β, Σ.r);
     μ.graft(p, 1);
     Σ.l.graftReplace(p, 2);
     μ.join(Σ.l);
@@ -127,11 +127,11 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
     if Σ.l.hasInverseGamma() {
       let (α, β) <- Σ.l.getInverseGamma();
       let Λ <- cholinv(chol(Σ.r));
-      let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
+      let p <- wrap_multivariate_normal_inverse_gamma(Λ*μ, Λ, α, β);
       Σ.l.graft(p);
       return p;
     } else {
-      return MultivariateGaussian(wrap(μ), wrap(Σ));
+      return wrap_multivariate_gaussian(μ, Σ);
     }
   }
 }

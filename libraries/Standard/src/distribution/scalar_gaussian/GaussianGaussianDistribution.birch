@@ -80,11 +80,11 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
   μ.prune();
   if μ.hasGaussian() {
     let (m, s2) <- μ.getGaussian();
-    let p <- GaussianGaussian(m, s2, σ2);
+    let p <- wrap_gaussian_gaussian(m, s2, σ2);
     μ.graft(p);
     return p;
   } else {
-    return Gaussian(wrap(μ), wrap(σ2));
+    return wrap_gaussian(μ, σ2);
   }
 }
 

@@ -96,8 +96,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
   μ.r.prune();
   if μ.r.hasMultivariateNormalInverseGamma() && μ.r.isGrandChildOf(Σ.r) {
     let (ν, Λ, α, β) <- μ.r.getMultivariateNormalInverseGamma();
-    let p <- ScaledMultivariateNormalInverseGammaMultivariateGaussian(μ.l,
-        ν, Λ, α, β, Σ.l);
+    let p <- wrap_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian(
+        μ.l, ν, Λ, α, β, Σ.l);
     μ.r.graft(p, 1);
     Σ.r.graftReplace(p, 2);
     μ.r.join(Σ.r);
@@ -106,11 +106,11 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
     Σ.r.prune();
     if Σ.r.hasInverseGamma() {
       let (α, β) <- Σ.r.getInverseGamma();
-      let p <- MultivariateNormalInverseGamma(μ, Σ.l, α, β);
+      let p <- wrap_multivariate_normal_inverse_gamma(μ, Σ.l, α, β);
       Σ.r.graft(p);
       return p;
     } else {
-      return MultivariateGaussian(wrap(μ), wrap(Σ));
+      return wrap_multivariate_gaussian(μ, Σ);
     }
   }
 }
@@ -123,8 +123,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
   μ.r.prune();
   if μ.r.hasMultivariateNormalInverseGamma() && μ.r.isGrandChildOf(Σ.l) {
     let (ν, Λ, α, β) <- μ.r.getMultivariateNormalInverseGamma();
-    let p <- ScaledMultivariateNormalInverseGammaMultivariateGaussian(μ.l,
-        ν, Λ, α, β, Σ.r);
+    let p <- wrap_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian(
+        μ.l, ν, Λ, α, β, Σ.r);
     μ.r.graft(p, 1);
     Σ.l.graftReplace(p, 2);
     μ.r.join(Σ.l);
@@ -133,11 +133,11 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
     Σ.l.prune();
     if Σ.l.hasInverseGamma() {
       let (α, β) <- Σ.l.getInverseGamma();
-      let p <- MultivariateNormalInverseGamma(μ, Σ.r, α, β);
+      let p <- wrap_multivariate_normal_inverse_gamma(μ, Σ.r, α, β);
       Σ.l.graft(p);
       return p;
     } else {
-      return MultivariateGaussian(wrap(μ), wrap(Σ));
+      return wrap_multivariate_gaussian(μ, Σ);
     }
   }
 }

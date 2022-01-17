@@ -58,11 +58,11 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
   ρ.prune();
   if ρ.hasBeta() {
     let (α, β) <- ρ.getBeta();
-    let p <- BetaBernoulli(α, β);
+    let p <- wrap_beta_bernoulli(α, β);
     ρ.graft(p);
     return p;
   } else {
-    return Bernoulli(wrap(ρ));
+    return wrap_bernoulli(ρ);
   }
 }
 

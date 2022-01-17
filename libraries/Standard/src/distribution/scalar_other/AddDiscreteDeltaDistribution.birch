@@ -101,9 +101,9 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     return Delta(μ.l + r);
   } else if μ.r.hasBoundedDiscrete() {
     let l ~ Delta(μ.l);
-    return Delta(l + μ.r);
+    return wrap_delta(l + μ.r);
   } else {
-		return Delta(wrap(μ));
+		return wrap_delta(μ);
 	}
 }
 

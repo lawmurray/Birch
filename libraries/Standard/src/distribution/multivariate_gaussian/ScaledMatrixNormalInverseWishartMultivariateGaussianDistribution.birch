@@ -90,8 +90,8 @@ function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
   μ.l.prune();
   if μ.l.hasMatrixNormalInverseWishart() && μ.l.isGrandChildOf(Σ) {
     let (N, Λ, Ψ, k) <- μ.l.getMatrixNormalInverseWishart();
-    let p <- ScaledMatrixNormalInverseWishartMultivariateGaussian(μ.r, N, Λ,
-        Ψ, k);
+    let p <- wrap_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
+        μ.r, N, Λ, Ψ, k);
     μ.l.graft(p, 1);
     Σ.graftReplace(p, 2);
     μ.l.join(Σ);
@@ -101,7 +101,7 @@ function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
     // if Σ.hasInverseWishart() {
     // 
     // } else {
-      return MultivariateGaussian(wrap(μ), wrap(Σ));
+      return wrap_multivariate_gaussian(μ, Σ);
     // }
   }
 }

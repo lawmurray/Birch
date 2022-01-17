@@ -73,15 +73,15 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(
 
 function NormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
     α:Arg3, β:Arg4, s2:Arg5) -> {
-  return wrap_normal_inverse_gamma(ν, λ, α, β, s2);
+  return wrap_normal_inverse_gamma_gaussian(ν, λ, α, β, s2);
 }
-function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
-    α:Arg3, β:Arg4, s2:Arg5) -> {
-  return make_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β),
-      wrap(s2));
+function wrap_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1,
+    λ:Arg2, α:Arg3, β:Arg4, s2:Arg5) -> {
+  return make_normal_inverse_gamma_gaussian(wrap(ν), wrap(λ), wrap(α),
+      wrap(β), wrap(s2));
 }
-function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
-    α:Arg3, β:Arg4, s2:Arg5) -> {
+function make_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1,
+    λ:Arg2, α:Arg3, β:Arg4, s2:Arg5) -> {
   return construct<NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
       Arg5>>(ν, λ, α, β, s2);
 }
@@ -109,7 +109,7 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Multiply<Arg,Random<Real>>) ->
   μ.prune();
   if μ.hasNormalInverseGamma() && μ.isGrandChildOf(σ2.r) {
     let (ν, λ, α, β) <- μ.getNormalInverseGamma();
-    let p <- NormalInverseGammaGaussian(ν, λ, α, β, σ2.l);
+    let p <- wrap_normal_inverse_gamma_gaussian(ν, λ, α, β, σ2.l);
     μ.graft(p, 1);
     σ2.r.graftReplace(p, 2);
     μ.join(σ2.r);
@@ -118,16 +118,16 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Multiply<Arg,Random<Real>>) ->
     σ2.r.prune();
     if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
-      let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
+      let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
       σ2.r.graft(p);
       return p;
     } else if μ.hasGaussian() {
       let (m, s2) <- μ.getGaussian();
-      let p <- GaussianGaussian(m, s2, σ2);
+      let p <- wrap_gaussian_gaussian(m, s2, σ2);
       μ.graft(p);
       return p;
     } else {
-      return Gaussian(wrap(μ), wrap(σ2));
+      return wrap_gaussian(μ, σ2);
     }
   }
 }
@@ -140,14 +140,14 @@ function Gaussian(μ:Random<Real>, σ2:Multiply<Random<Real>,Random<Real>>) ->
   μ.prune();
   if μ.hasNormalInverseGamma() && μ.isGrandChildOf(σ2.l) {
     let (ν, λ, α, β) <- μ.getNormalInverseGamma();
-    let p <- NormalInverseGammaGaussian(ν, λ, α, β, σ2.r);
+    let p <- wrap_normal_inverse_gamma_gaussian(ν, λ, α, β, σ2.r);
     μ.graft(p, 1);
     σ2.l.graftReplace(p, 2);
     μ.join(σ2.l);
     return p;
   } else if μ.hasNormalInverseGamma() && μ.isGrandChildOf(σ2.r) {
     let (ν, λ, α, β) <- μ.getNormalInverseGamma();
-    let p <- NormalInverseGammaGaussian(ν, λ, α, β, σ2.l);
+    let p <- wrap_normal_inverse_gamma_gaussian(ν, λ, α, β, σ2.l);
     μ.graft(p, 1);
     σ2.r.graftReplace(p, 2);
     μ.join(σ2.r);
@@ -157,21 +157,21 @@ function Gaussian(μ:Random<Real>, σ2:Multiply<Random<Real>,Random<Real>>) ->
     σ2.r.prune();
     if σ2.l.hasInverseGamma() {
       let (α, β) <- σ2.l.getInverseGamma();
-      let p <- NormalInverseGamma(μ/σ2.r, 1.0/σ2.r, α, β);
+      let p <- wrap_normal_inverse_gamma(μ/σ2.r, 1.0/σ2.r, α, β);
       σ2.l.graft(p);
       return p;
     } else if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
-      let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
+      let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
       σ2.r.graft(p);
       return p;
     } else if μ.hasGaussian() {
       let (m, s2) <- μ.getGaussian();
-      let p <- GaussianGaussian(m, s2, σ2);
+      let p <- wrap_gaussian_gaussian(m, s2, σ2);
       μ.graft(p);
       return p;
     } else {
-      return Gaussian(wrap(μ), wrap(σ2));
+      return wrap_gaussian(μ, σ2);
     }
   }
 }

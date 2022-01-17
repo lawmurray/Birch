@@ -71,11 +71,11 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
   ρ.prune();
   if ρ.hasBeta() {
     let (α, β) <- ρ.getBeta();
-    let p <- BetaNegativeBinomial(k, α, β);
+    let p <- wrap_beta_negative_binomial(k, α, β);
     ρ.graft(p);
     return p;
   } else {
-    return NegativeBinomial(wrap(k), wrap(ρ));
+    return wrap_negative_binomial(k, ρ);
   }
 }
 

@@ -79,11 +79,11 @@ function Poisson<Arg>(λ:Multiply<Arg,Random<Real>>) ->
   λ.r.prune();
   if λ.r.hasGamma() {
     let (k, θ) <- λ.r.getGamma();
-    let p <- ScaledGammaPoisson(λ.l, k, θ);
+    let p <- wrap_scaled_gamma_poisson(λ.l, k, θ);
     λ.r.graft(p);
     return p;
   } else {
-    return Poisson(wrap(λ));
+    return wrap_poisson(λ);
   }
 }
 
@@ -95,11 +95,11 @@ function Poisson<Arg>(λ:Multiply<Random<Real>,Arg>) ->
   λ.l.prune();
   if λ.l.hasGamma() {
     let (k, θ) <- λ.l.getGamma();
-    let p <- ScaledGammaPoisson(λ.r, k, θ);
+    let p <- wrap_scaled_gamma_poisson(λ.r, k, θ);
     λ.l.graft(p);
     return p;
   } else {
-    return Poisson(wrap(λ));
+    return wrap_poisson(λ);
   }
 }
 
@@ -111,18 +111,18 @@ function Poisson(λ:Multiply<Random<Real>,Random<Real>>) ->
   λ.l.prune();
   if λ.l.hasGamma() {
     let (k, θ) <- λ.l.getGamma();
-    let p <- ScaledGammaPoisson(λ.r, k, θ);
+    let p <- wrap_scaled_gamma_poisson(λ.r, k, θ);
     λ.l.graft(p);
     return p;
   } else {
     λ.r.prune();
     if λ.r.hasGamma() {
       let (k, θ) <- λ.r.getGamma();
-      let p <- ScaledGammaPoisson(λ.l, k, θ);
+      let p <- wrap_scaled_gamma_poisson(λ.l, k, θ);
       λ.r.graft(p);
       return p;
     } else {
-      return Poisson(wrap(λ));
+      return wrap_poisson(λ);
     }
   }
 }

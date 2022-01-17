@@ -75,11 +75,11 @@ function Poisson(λ:Random<Real>) -> Distribution<Integer> {
   λ.prune();
   if λ.hasGamma() {
     let (k, θ) <- λ.getGamma();
-    let p <- GammaPoisson(k, θ);
+    let p <- wrap_gamma_poisson(k, θ);
     λ.graft(p);
     return p;
   } else {
-    return Poisson(wrap(λ));
+    return wrap_poisson(λ);
   }
 }
 

@@ -90,11 +90,12 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
   μ.r.prune();
   if μ.r.hasMultivariateGaussian() {
     let (m, S) <- μ.r.getMultivariateGaussian();
-    let p <- ScaledMultivariateGaussianMultivariateGaussian(μ.l, m, S, Σ);
+    let p <- wrap_scaled_multivariate_gaussian_multivariate_gaussian(μ.l, m,
+        S, Σ);
     μ.r.graft(p);
     return p;
   } else {
-    return MultivariateGaussian(wrap(μ), wrap(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 

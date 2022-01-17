@@ -128,11 +128,11 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   if Σ.r.hasInverseGamma() {
     let (α, β) <- Σ.r.getInverseGamma();
     let Λ <- cholinv(chol(Σ.l));
-    let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
+    let p <- wrap_multivariate_normal_inverse_gamma(Λ*μ, Λ, α, β);
     Σ.r.graft(p);
     return p;
   } else {
-    return MultivariateGaussian(wrap(μ), wrap(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -145,11 +145,11 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   if Σ.l.hasInverseGamma() {
     let (α, β) <- Σ.l.getInverseGamma();
     let Λ <- cholinv(chol(Σ.r));
-    let p <- MultivariateNormalInverseGamma(Λ*μ, Λ, α, β);
+    let p <- wrap_multivariate_normal_inverse_gamma(Λ*μ, Λ, α, β);
     Σ.l.graft(p);
     return p;
   } else {
-    return MultivariateGaussian(wrap(μ), wrap(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 

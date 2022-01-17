@@ -132,8 +132,8 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
     let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l.l, ν, Λ, α, β,
-        μ.r, σ2.l);
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, ν,
+        Λ, α, β, μ.r, σ2.l);
     μ.l.r.graft(p, 1);
     σ2.r.graftReplace(p, 2);
     μ.l.r.join(σ2.r);
@@ -142,16 +142,17 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2.r.prune();
     if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
-      let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
+      let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
       σ2.r.graft(p);
       return p;
     } else if μ.l.r.hasMultivariateGaussian() {
       let (m, S) <- μ.l.r.getMultivariateGaussian();
-      let p <- LinearMultivariateGaussianGaussian(μ.l.l, m, S, μ.r, σ2);
+      let p <- wrap_linear_multivariate_gaussian_gaussian(μ.l.l, m, S, μ.r,
+          σ2);
       μ.l.r.graft(p);
       return p;
     } else {
-      return Gaussian(wrap(μ), wrap(σ2));
+      return wrap_gaussian(μ, σ2);
     }
   }
 }
@@ -164,8 +165,8 @@ function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
     let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l.l, ν, Λ, α, β,
-        μ.r, σ2.l);
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, ν,
+        Λ, α, β, μ.r, σ2.l);
     μ.l.r.graft(p, 1);
     σ2.r.graftReplace(p, 2);
     μ.l.r.join(σ2.r);
@@ -173,8 +174,8 @@ function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   } else if μ.l.r.hasMultivariateNormalInverseGamma() &&
       μ.l.r.isGrandChildOf(σ2.l) {
     let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaGaussian(μ.l.l, ν, Λ, α, β,
-        μ.r, σ2.r);
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, ν,
+        Λ, α, β, μ.r, σ2.r);
     μ.l.r.graft(p, 1);
     σ2.l.graftReplace(p, 2);
     μ.l.r.join(σ2.l);
@@ -184,21 +185,22 @@ function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2.r.prune();
     if σ2.l.hasInverseGamma() {
       let (α, β) <- σ2.l.getInverseGamma();
-      let p <- NormalInverseGamma(μ/σ2.r, 1.0/σ2.r, α, β);
+      let p <- wrap_normal_inverse_gamma(μ/σ2.r, 1.0/σ2.r, α, β);
       σ2.l.graft(p);
       return p;
     } else if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
-      let p <- NormalInverseGamma(μ/σ2.l, 1.0/σ2.l, α, β);
+      let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
       σ2.r.graft(p);
       return p;
     } else if μ.l.r.hasMultivariateGaussian() {
       let (m, S) <- μ.l.r.getMultivariateGaussian();
-      let p <- LinearMultivariateGaussianGaussian(μ.l.l, m, S, μ.r, σ2);
+      let p <- wrap_linear_multivariate_gaussian_gaussian(μ.l.l, m, S, μ.r,
+          σ2);
       μ.l.r.graft(p);
       return p;
     } else {
-      return Gaussian(wrap(μ), wrap(σ2));
+      return wrap_gaussian(μ, σ2);
     }
   }
 }

@@ -84,11 +84,11 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
   μ.prune();
   if μ.hasMultivariateGaussian() {
     let (m, S) <- μ.getMultivariateGaussian();
-    let p <- MultivariateGaussianMultivariateGaussian(m, S, Σ);
+    let p <- wrap_multivariate_gaussian_multivariate_gaussian(m, S, Σ);
     μ.graft(p);
     return p;
   } else {
-    return MultivariateGaussian(wrap(μ), wrap(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 

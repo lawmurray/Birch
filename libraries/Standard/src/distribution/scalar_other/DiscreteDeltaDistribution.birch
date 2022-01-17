@@ -57,6 +57,6 @@ function Delta(μ:Random<Integer>) -> Distribution<Integer> {
     μ.graft(p);
     return p;
   } else {
-  	return Delta(wrap(μ));
+  	return wrap_delta(μ);
   }
 }

@@ -61,11 +61,11 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
   ρ.prune();
   if ρ.hasDirichlet() {
     let α <- ρ.getDirichlet();
-    let p <- DirichletMultinomial(n, α);
+    let p <- wrap_dirichlet_multinomial(n, α);
     ρ.graft(p);
     return p;
   } else {
-    return Multinomial(wrap(n), wrap(ρ));
+    return wrap_multinomial(n, ρ);
   }
 }
 

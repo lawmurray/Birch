@@ -101,7 +101,7 @@ function Delta(μ:Subtract<Random<Integer>,Random<Integer>>) ->
     let l ~ Delta(μ.l);
     return Delta(l - μ.r);
   } else {
-		return Delta(wrap(μ));
+		return wrap_delta(μ);
 	}
 }
 

@@ -106,8 +106,8 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(Σ.r) {
     let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l.l,
-        ν, Λ, α, β, μ.r, Σ.l);
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+        μ.l.l, ν, Λ, α, β, μ.r, Σ.l);
     μ.l.r.graft(p, 1);
     Σ.r.graftReplace(p, 2);
     μ.l.r.join(Σ.r);
@@ -116,11 +116,11 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,
     Σ.r.prune();
     if Σ.r.hasInverseGamma() {
       let (α, β) <- Σ.r.getInverseGamma();
-      let p <- MultivariateNormalInverseGamma(μ, Σ.l, α, β);
+      let p <- wrap_multivariate_normal_inverse_gamma(μ, Σ.l, α, β);
       Σ.r.graft(p);
       return p;
     } else {
-      return MultivariateGaussian(wrap(μ), wrap(Σ));
+      return wrap_multivariate_gaussian(μ, Σ);
     }
   }
 }
@@ -134,8 +134,8 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(Σ.l) {
     let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- LinearMultivariateNormalInverseGammaMultivariateGaussian(μ.l.l, ν,
-        Λ, α, β, μ.r, Σ.r);
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+        μ.l.l, ν, Λ, α, β, μ.r, Σ.r);
     μ.l.r.graft(p, 1);
     Σ.r.graftReplace(p, 2);
     μ.l.r.join(Σ.r);
@@ -143,10 +143,10 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,
   } else if Σ.l.hasInverseGamma() {
     Σ.l.prune();
     let (α, β) <- Σ.l.getInverseGamma();
-    let p <- MultivariateNormalInverseGamma(μ, Σ.r, α, β);
+    let p <- wrap_multivariate_normal_inverse_gamma(μ, Σ.r, α, β);
     Σ.l.graft(p);
     return p;
   } else {
-    return MultivariateGaussian(wrap(μ), wrap(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
