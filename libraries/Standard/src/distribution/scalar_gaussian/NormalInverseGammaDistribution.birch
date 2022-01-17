@@ -108,9 +108,13 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
 
 function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
     β:Arg4) -> {
-  return wrap_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β));
+  return wrap_normal_inverse_gamma(ν, λ, α, β);
 }
 function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+    α:Arg3, β:Arg4) -> {
+  return make_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β));
+}
+function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
     α:Arg3, β:Arg4) -> {
   return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ,
       α, β);

@@ -72,10 +72,16 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
 
 function LinearMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6) -> {
-  return wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        wrap(a), wrap(N), wrap(Λ), wrap(Ψ), wrap(k), wrap(c));
+  return wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian(a, N,
+      Λ, Ψ, k, c);
 }
 function wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
+    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
+    c:Arg6) -> {
+  return make_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+        wrap(a), wrap(N), wrap(Λ), wrap(Ψ), wrap(k), wrap(c));
+}
+function make_linear_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
     c:Arg6) -> {
   return construct<LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<

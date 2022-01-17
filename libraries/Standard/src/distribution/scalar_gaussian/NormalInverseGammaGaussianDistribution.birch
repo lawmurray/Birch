@@ -73,10 +73,14 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(
 
 function NormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
     α:Arg3, β:Arg4, s2:Arg5) -> {
-  return wrap_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β),
-      wrap(s2));
+  return wrap_normal_inverse_gamma(ν, λ, α, β, s2);
 }
 function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
+    α:Arg3, β:Arg4, s2:Arg5) -> {
+  return make_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β),
+      wrap(s2));
+}
+function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(ν:Arg1, λ:Arg2,
     α:Arg3, β:Arg4, s2:Arg5) -> {
   return construct<NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
       Arg5>>(ν, λ, α, β, s2);

@@ -106,10 +106,14 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 
 function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, Λ:Arg2,
     α:Arg3, β:Arg4) -> {
-  return wrap_multivariate_normal_inverse_gamma(wrap(ν), wrap(Λ), wrap(α),
-      wrap(β));
+  return wrap_multivariate_normal_inverse_gamma(ν, Λ, α, β);
 }
 function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
+    Λ:Arg2, α:Arg3, β:Arg4) -> {
+  return make_multivariate_normal_inverse_gamma(wrap(ν), wrap(Λ), wrap(α),
+      wrap(β));
+}
+function make_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     Λ:Arg2, α:Arg3, β:Arg4) -> {
   return construct<MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,
       Arg4>>(ν, Λ, α, β);

@@ -75,10 +75,15 @@ final class LinearMultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2
 
 function LinearMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
-  return wrap_linear_multivariate_gaussian_multivariate_gaussian(wrap(A),
-      wrap(μ), wrap(Σ), wrap(c), wrap(S));
+  return wrap_linear_multivariate_gaussian_multivariate_gaussian(A, μ, Σ, c,
+      S);
 }
 function wrap_linear_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
+  return make_linear_multivariate_gaussian_multivariate_gaussian(wrap(A),
+      wrap(μ), wrap(Σ), wrap(c), wrap(S));
+}
+function make_linear_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
   return construct<LinearMultivariateGaussianMultivariateGaussianDistribution<
       Arg1,Arg2,Arg3,Arg4,Arg5>>(A, μ, Σ, c, S);

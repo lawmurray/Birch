@@ -72,10 +72,15 @@ final class ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2
 
 function ScaledMatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, U:Arg6) -> {
-  return wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian(wrap(A),
-      wrap(N), wrap(Λ), wrap(Ψ), wrap(k), wrap(U));
+  return wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian(A, N, Λ, Ψ,
+      k, U);
 }
 function wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, U:Arg6) -> {
+  return make_scaled_matrix_normal_inverse_wishart_matrix_gaussian(wrap(A),
+      wrap(N), wrap(Λ), wrap(Ψ), wrap(k), wrap(U));
+}
+function make_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6>(A:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, U:Arg6) -> {
   return construct<ScaledMatrixNormalInverseWishartMatrixGaussianDistribution<
       Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(A, N, Λ, Ψ, k, U);

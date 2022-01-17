@@ -59,9 +59,12 @@ final class GammaExponentialDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
 }
 
 function GammaExponential<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
-  return wrap_gamma_exponential(wrap(k), wrap(θ));
+  return wrap_gamma_exponential(k, θ);
 }
 function wrap_gamma_exponential<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+  return make_gamma_exponential(wrap(k), wrap(θ));
+}
+function make_gamma_exponential<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   return construct<GammaExponentialDistribution<Arg1,Arg2>>(k, θ);
 }
 

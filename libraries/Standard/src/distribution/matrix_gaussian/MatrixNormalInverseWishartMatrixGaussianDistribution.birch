@@ -63,12 +63,16 @@ final class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
   }
 }
 
-function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,Arg4,
-    Arg5>(N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) -> {
-  return wrap_matrix_normal_inverse_wishart_matrix_gaussian(wrap(N), wrap(Λ),
-      wrap(Ψ), wrap(k), wrap(U));
+function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(
+      N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) -> {
+  return wrap_matrix_normal_inverse_wishart_matrix_gaussian(N, Λ, Ψ, k, U);
 }
 function wrap_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
+    Arg4,Arg5>(N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) -> {
+  return make_matrix_normal_inverse_wishart_matrix_gaussian(wrap(N), wrap(Λ),
+      wrap(Ψ), wrap(k), wrap(U));
+}
+function make_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5>(N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4, U:Arg5) -> {
   return construct<MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,
       Arg2,Arg3,Arg4,Arg5>>(N, Λ, Ψ, k, U);

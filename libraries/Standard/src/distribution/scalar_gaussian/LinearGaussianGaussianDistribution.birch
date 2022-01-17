@@ -81,10 +81,14 @@ final class LinearGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
 
 function LinearGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
     σ2:Arg3, c:Arg4, s2:Arg5) -> {
-  return wrap_linear_gaussian_gaussian(wrap(a), wrap(μ), wrap(σ2), wrap(c),
-      wrap(s2));
+  return wrap_linear_gaussian_gaussian(a, μ, σ2, c, s2);
 }
 function wrap_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) -> {
+  return make_linear_gaussian_gaussian(wrap(a), wrap(μ), wrap(σ2), wrap(c),
+      wrap(s2));
+}
+function make_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) -> {
   return construct<LinearGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
       Arg5>>(a, μ, σ2, c, s2);

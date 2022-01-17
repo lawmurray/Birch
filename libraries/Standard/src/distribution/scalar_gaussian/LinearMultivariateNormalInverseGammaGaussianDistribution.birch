@@ -92,10 +92,16 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
 function LinearMultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
     s2:Arg7) -> {
-  return wrap_linear_multivariate_normal_inverse_gamma_gaussian(wrap(a),
-      wrap(ν), wrap(Λ), wrap(α), wrap(β), wrap(c), wrap(s2));
+  return wrap_linear_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, α, β,
+      c, s2);
 }
 function wrap_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
+    s2:Arg7) -> {
+  return make_linear_multivariate_normal_inverse_gamma_gaussian(wrap(a),
+      wrap(ν), wrap(Λ), wrap(α), wrap(β), wrap(c), wrap(s2));
+}
+function make_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
     s2:Arg7) -> {
   return construct<LinearMultivariateNormalInverseGammaGaussianDistribution<

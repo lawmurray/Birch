@@ -76,9 +76,13 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
  * Create Conway-Maxwell-Poisson distribution.
  */
 function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
-  return wrap_conway_maxwell_poisson(wrap(λ), wrap(ν), wrap(n));
+  return wrap_conway_maxwell_poisson(λ, ν, n);
 }
 function wrap_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
+    n:Arg3) -> {
+  return make_conway_maxwell_poisson(wrap(λ), wrap(ν), wrap(n));
+}
+function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
     n:Arg3) -> {
   return construct<ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>>(λ, ν, n);
 }

@@ -52,9 +52,13 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
 }
 
 function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
-  return wrap_beta_negative_binomial(wrap(k), wrap(α), wrap(β));
+  return wrap_beta_negative_binomial(k, α, β);
 }
 function wrap_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
+  return make_beta_negative_binomial(wrap(k), wrap(α), wrap(β));
+}
+function make_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
   return construct<BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>>(k, α, β);
 }

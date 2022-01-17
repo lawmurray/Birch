@@ -79,9 +79,12 @@ final class InverseWishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) <
  * Create inverse-Wishart distribution.
  */
 function InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
-  return wrap_inverse_wishart(wrap(Ψ), wrap(k));
+  return wrap_inverse_wishart(Ψ, k);
 }
 function wrap_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
+  return make_inverse_wishart(wrap(Ψ), wrap(k));
+}
+function make_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   return construct<InverseWishartDistribution<Arg1,Arg2>>(Ψ, k);
 }
 

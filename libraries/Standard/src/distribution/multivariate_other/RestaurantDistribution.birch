@@ -72,9 +72,12 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
  *      length, the maximum number of components.
  */
 function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
-  return wrap_restaurant(wrap(α), wrap(θ), wrap(n));
+  return wrap_restaurant(α, θ, n);
 }
 function wrap_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
+  return make_restaurant(wrap(α), wrap(θ), wrap(n));
+}
+function make_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
   return construct<RestaurantDistribution<Arg1,Arg2,Arg3>>(α, θ, n);
 }
 

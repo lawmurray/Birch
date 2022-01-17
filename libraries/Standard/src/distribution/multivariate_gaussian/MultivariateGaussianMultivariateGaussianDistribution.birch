@@ -67,6 +67,11 @@ function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
 }
 function wrap_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3>(
     μ:Arg1, Σ:Arg2, S:Arg3) -> {
+  return make_multivariate_gaussian_multivariate_gaussian(wrap(μ), wrap(Σ),
+      wrap(S));
+}
+function make_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3>(
+    μ:Arg1, Σ:Arg2, S:Arg3) -> {
   return construct<MultivariateGaussianMultivariateGaussianDistribution<Arg1,
       Arg2,Arg3>>(μ, Σ, S);
 }

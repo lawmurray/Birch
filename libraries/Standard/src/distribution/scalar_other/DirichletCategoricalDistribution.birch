@@ -45,9 +45,12 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
 }
 
 function DirichletCategorical<Arg>(α:Arg) -> {
-  return wrap_dirichlet_categorical(wrap(α));
+  return wrap_dirichlet_categorical(α);
 }
 function wrap_dirichlet_categorical<Arg>(α:Arg) -> {
+  return make_dirichlet_categorical(wrap(α));
+}
+function make_dirichlet_categorical<Arg>(α:Arg) -> {
   return construct<DirichletCategoricalDistribution<Arg>>(α);
 }
 

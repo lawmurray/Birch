@@ -5,7 +5,8 @@ hpp{{
 /**
  * Weibull distribution.
  */
-final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) < Distribution<Real> {
+final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
+    Distribution<Real> {
   /**
    * Shape.
    */
@@ -59,9 +60,12 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) < Distribution<Real>
  * Create Weibull distribution.
  */
 function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
-  return wrap_weibull(wrap(k), wrap(λ));
+  return wrap_weibull(k, λ);
 }
 function wrap_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
+  return make_weibull(wrap(k), wrap(λ));
+}
+function make_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
   return construct<WeibullDistribution<Arg1,Arg2>>(k, λ);
 }
 

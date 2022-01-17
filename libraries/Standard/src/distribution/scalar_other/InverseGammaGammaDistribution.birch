@@ -56,9 +56,12 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
 }
 
 function InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
-  return wrap_inverse_gamma_gamma(wrap(k), wrap(α), wrap(β));
+  return wrap_inverse_gamma_gamma(k, α, β);
 }
 function wrap_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
+  return make_inverse_gamma_gamma(wrap(k), wrap(α), wrap(β));
+}
+function make_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
   return construct<InverseGammaGammaDistribution<Arg1,Arg2,Arg3>>(k, α, β);
 }
 
