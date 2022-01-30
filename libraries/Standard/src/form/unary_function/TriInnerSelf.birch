@@ -1,0 +1,22 @@
+struct TriInnerSelf<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(triinner, triinner_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::triinner;
+using numbirch::triinner_grad;
+
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+TriInnerSelf<Middle> triinner(const Middle& m) {
+  return construct<TriInnerSelf<Middle>>(m);
+}
+}
+}}

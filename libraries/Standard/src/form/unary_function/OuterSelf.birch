@@ -1,0 +1,22 @@
+struct OuterSelf<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(outer, outer_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::outer;
+using numbirch::outer_grad;
+
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+OuterSelf<Middle> outer(const Middle& m) {
+  return construct<OuterSelf<Middle>>(m);
+}
+}
+}}

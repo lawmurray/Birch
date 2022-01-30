@@ -122,5 +122,5 @@ function logpdf_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
 function update_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
     θ:Arg3, n:Arg4) -> {
   let n' <- n + single(1, x, length(n));
-  return Restaurant(α, θ, n');
+  return wrap_restaurant(α, θ, n');
 }

@@ -118,7 +118,7 @@ function logpdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
  * Returns: the posterior hyperparameters `k'` and `θ'`.
  */
 function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return Gamma(k + 1.0, θ/(1.0 + x*θ));
+  return wrap_gamma(k + 1.0, θ/(1.0 + x*θ));
 }
 
 /*

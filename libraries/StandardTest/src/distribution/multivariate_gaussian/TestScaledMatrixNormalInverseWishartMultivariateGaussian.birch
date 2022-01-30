@@ -29,7 +29,7 @@ class TestScaledMatrixNormalInverseWishartMultivariateGaussian < TestModel {
       }
     }
     U <- outer(U, U) + diagonal(1.0e-2, n);
-    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-2, p);
+    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-1, p);
   }
 
   override function simulate() {

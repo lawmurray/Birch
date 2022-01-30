@@ -268,7 +268,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
     }
 
     for n in 1..B {
-      let x' <- simulate_multivariate_gaussian(x, Σ);
+      let x' <- simulate_multivariate_gaussian(x, chol(Σ));
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -308,7 +308,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
   }
   for n in 1..N {
     for s in 1..S {
-      let x' <- simulate_multivariate_gaussian(x, Σ);
+      let x' <- simulate_multivariate_gaussian(x, chol(Σ));
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -379,7 +379,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
       l <- π.logpdf(x);
     }
     for n in 1..B {
-      let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
+      let x' <- mat(simulate_multivariate_gaussian(vec(x), chol(Σ)), C);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();
@@ -416,7 +416,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
   }
   for n in 1..N {
     for s in 1..S {
-      let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
+      let x' <- mat(simulate_multivariate_gaussian(vec(x), chol(Σ)), C);
       l':Real;
       if lazy && π.supportsLazy() {
         l' <- π.logpdfLazy(box(x'))!.value();

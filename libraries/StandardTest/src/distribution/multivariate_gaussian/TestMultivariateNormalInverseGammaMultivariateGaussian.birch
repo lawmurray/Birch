@@ -12,7 +12,7 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   Ψ:Random<Real[_,_]>;
 
   override function initialize() {
-    α ~ Uniform(2.0, 10.0);
+    α ~ Uniform(2.5, 10.0);
     β ~ Uniform(0.1, 10.0);
     m ~ MultivariateGaussian(vector(0.0, n), diagonal(100.0, n));
     S ~ MatrixGaussian(matrix(0.0, n, n), diagonal(2.0, n), diagonal(2.0, n));

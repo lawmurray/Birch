@@ -3,7 +3,7 @@
  * matrix-normal-inverse-Wishart prior.
  */
 final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
     c:Arg6) < Distribution<Real[_]> {
   /**
    * Scale.
@@ -11,14 +11,14 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
   a:Arg1 <- a;
 
   /**
-   * Among-row precision times mean.
+   * Mean.
    */
-  N:Arg2 <- N;
+  M:Arg2 <- M;
 
   /**
-   * Among-row precision.
+   * Covariance.
    */
-  Λ:Arg3 <- Λ;
+  Σ:Arg3 <- Σ;
 
   /**
    * Among-column covariance scale.
@@ -41,51 +41,51 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
 
   override function simulate() -> Real[_] {
     return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        value(a), value(N), value(Λ), value(Ψ), value(k)) + value(c);
+        value(a), value(M), value(Σ), value(Ψ), value(k)) + value(c);
   }
 
   override function simulateLazy() -> Real[_]? {
     return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        eval(a), eval(N), eval(Λ), eval(Ψ), eval(k)) + eval(c);
+        eval(a), eval(M), eval(Σ), eval(Ψ), eval(k)) + eval(c);
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x - value(c), value(a), value(N), value(Λ), value(Ψ), value(k));
+        x - value(c), value(a), value(M), value(Σ), value(Ψ), value(k));
   }
 
   override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
     return box(logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        box(x - c), a, N, Λ, Ψ, k));
+        box(x - c), a, M, Σ, Ψ, k));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-         x - value(c), value(a), value(N), value(Λ), value(Ψ), value(k));
+         x - value(c), value(a), value(M), value(Σ), value(Ψ), value(k));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
     return update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        box(x - c), a, N, Λ, Ψ, k);
+        box(x - c), a, M, Σ, Ψ, k);
   }
 }
 
 function LinearMatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6) -> {
-  return wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian(a, N,
-      Λ, Ψ, k, c);
+    Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6) -> {
+  return wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian(a, M,
+      chol(Σ), chol(Ψ), k, c);
 }
 function wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
+    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
     c:Arg6) -> {
   return make_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        wrap(a), wrap(N), wrap(Λ), wrap(Ψ), wrap(k), wrap(c));
+        wrap(a), wrap(M), wrap(Σ), wrap(Ψ), wrap(k), wrap(c));
 }
 function make_linear_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5,
+    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
     c:Arg6) -> {
   return construct<LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(a, N, Λ, Ψ, k, c);
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(a, M, Σ, Ψ, k, c);
 }
 
 /**
@@ -96,9 +96,9 @@ function MultivariateGaussian<Arg1,Arg2>(
     Distribution<Real[_]> {
   μ.l.l.prune();
   if μ.l.l.hasMatrixNormalInverseWishart()&& μ.l.l.isGrandChildOf(Σ) {
-    let (N, Λ, Ψ, k) <- μ.l.l.getMatrixNormalInverseWishart();
+    let (M, Σ1, Ψ, k) <- μ.l.l.getMatrixNormalInverseWishart();
     let p <- wrap_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
-        μ.l.r, N, Λ, Ψ, k, μ.r);
+        μ.l.r, M, Σ1, Ψ, k, μ.r);
     μ.l.l.graft(p, 1);
     Σ.graftReplace(p, 2);
     μ.l.l.join(Σ);
@@ -108,7 +108,7 @@ function MultivariateGaussian<Arg1,Arg2>(
     // if Σ.hasInverseWishart() {
     //
     // } else {
-      return wrap_multivariate_gaussian(μ, Σ);
+      return wrap_multivariate_gaussian(μ, chol(Σ));
     // }
   }
 }

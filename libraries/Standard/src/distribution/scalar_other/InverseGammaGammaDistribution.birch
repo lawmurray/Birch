@@ -120,7 +120,7 @@ function logpdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
  */
 function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {
-  return InverseGamma(α + k, β + x);
+  return wrap_inverse_gamma(α + k, β + x);
 }
 
 /*

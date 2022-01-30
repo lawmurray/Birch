@@ -9,8 +9,8 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test
 
-  let Δ <- 1.0e-4;    // maximum width for finite difference estimate
-  let ntrials <- 20;  // number of trials
+  let Δ <- 1.0e-2;    // maximum width for finite difference estimate
+  let ntrials <- 40;  // number of trials
   // ^ the interval width adapts by starting at h, halving until either
   //   success or ntrials trials, after which the test is considered failed
 
@@ -43,6 +43,8 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     /* compare with finite difference estimates */
     for i in 1..rows(x) {
       let Δ' <- Δ;  // initial interval size for finite difference
+      let min_fd <- inf;  // closest finite difference estimate...
+      let min_δ <- inf;   // ...and associated distance
       let t <- 1;
       let pass <- false;
       while t <= ntrials {
@@ -55,6 +57,10 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let fd <- (r - q)/Δ';
         let δ <- abs(g[i] - fd);
         pass <- δ <= ε*min(abs(g[i]), abs(fd));
+        if δ < min_δ {
+          min_δ <- δ;
+          min_fd <- fd;
+        }
         if pass {
           /* success */
           t <- ntrials + 1;
@@ -65,8 +71,8 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         } else {
           /* fail */
           t <- ntrials + 1;
-          warn("on component " + i + ", g=" + g[i] + ", fd=" + fd + ", "  +
-              δ + " > " + ε*abs(fd));
+          warn("on component " + i + ", g=" + g[i] + ", fd=" + min_fd +
+              ", "  + min_δ + " > " + ε*abs(min_fd));
           failed[n] <- failed[n] + 1.0/rows(x);
         }
       }

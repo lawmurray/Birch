@@ -51,6 +51,10 @@ hpp{{
       birch::peek(std::declval<Right>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
+  void reset() const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
+  } \
+  \
   auto eval() const { \
     auto l = birch::eval(this->l); \
     auto m = birch::eval(this->m); \
@@ -89,11 +93,12 @@ hpp{{
   \
   template<class G> \
   void shallowGrad(const G& g) const { \
+    auto x = birch::peek(*this); \
     auto l = birch::peek(this->l); \
     auto m = birch::peek(this->m); \
     auto r = birch::peek(this->r); \
-    auto [gl, gm, gr] = f_grad(g, *this->x, l, m, r, ##__VA_ARGS__); \
-    const_cast<std::optional<Value>&>(x).reset(); \
+    auto [gl, gm, gr] = f_grad(g, x, l, m, r, ##__VA_ARGS__); \
+    reset(); \
     birch::shallow_grad(this->l, gl); \
     birch::shallow_grad(this->m, gm); \
     birch::shallow_grad(this->r, gr); \

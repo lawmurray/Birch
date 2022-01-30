@@ -8,7 +8,6 @@
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
 #include "numbirch/array/Future.hpp"
-#include "numbirch/macro.hpp"
 #include "numbirch/reduce.hpp"
 
 namespace numbirch {
@@ -307,7 +306,7 @@ Array<value_t<T>,2> diagonal(const T& x, const int n);
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,0> diagonal_grad(const Array<real,2>& g,
     const Array<value_t<T>,2>& y, const T& x, const int n) {
-  return trace(g);
+  return sum(g.diagonal());
 }
 
 /**

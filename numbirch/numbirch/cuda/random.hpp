@@ -306,7 +306,7 @@ struct standard_wishart_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
     if (i == j) {
       /* on diagonal */
-      R nu = element(k) + n - i;
+      R nu = element(k) + n - 1 - i;
       R x;
       #ifndef __CUDA_ARCH__
       x = std::chi_squared_distribution<R>(nu)(stl<R>::rng());

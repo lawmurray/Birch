@@ -6,7 +6,8 @@
  * - U: Spread matrix.
  */
 function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, U:Arg3) -> {
-  return simulate_multivariate_gaussian(μ, simulate_inverse_wishart(U, k));
+  let Σ <- chol(simulate_inverse_wishart(U, k));
+  return simulate_multivariate_gaussian(μ, Σ);
 }
 
 /*
@@ -21,10 +22,9 @@ function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, U:Arg3) -> {
  */
 function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     U:Arg4) -> {
-  let p <- length(x);
-  let a <- 0.5*(k + p);
+  let n <- length(x);
+  let a <- wrap(0.5*k + 0.5*n);
   let b <- 0.5*k;
-  let z <- x - μ;
-  return lgamma(a) - 0.5*p*log(π) - lgamma(b) - 0.5*lcholdet(chol(U)) -
-      a*log1p(dot(z, cholsolve(chol(U), z)));
+  return lgamma(a) - 0.5*n*log(π) - lgamma(b) - 0.5*lcholdet(U) -
+      a*log1p(dot(trisolve(U, x - μ)));
 }

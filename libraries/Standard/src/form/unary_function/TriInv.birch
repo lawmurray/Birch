@@ -1,0 +1,22 @@
+struct TriInv<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(triinv, triinv_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::triinv;
+using numbirch::triinv_grad;
+
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+TriInv<Middle> triinv(const Middle& m) {
+  return construct<TriInv<Middle>>(m);
+}
+}
+}}

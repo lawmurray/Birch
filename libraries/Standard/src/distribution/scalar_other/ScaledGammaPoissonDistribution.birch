@@ -140,5 +140,5 @@ function Poisson(λ:Multiply<Random<Real>,Random<Real>>) ->
  */
 function update_scaled_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2,
     k:Arg3, θ:Arg4) -> {
-  return Gamma(k + x, θ/(a*θ + 1.0));
+  return wrap_gamma(k + x, θ/(a*θ + 1.0));
 }

@@ -25,7 +25,7 @@
  * 
  * @defgroup la Linear algebra
  * @ingroup numeric
- * Linear algebra operations, such as matrix multiplication, solve() and
+ * Linear algebra operations, such as matrix multiplication, trisolve() and
  * cholsolve().
  * 
  * @defgroup random Pseudorandom number generation

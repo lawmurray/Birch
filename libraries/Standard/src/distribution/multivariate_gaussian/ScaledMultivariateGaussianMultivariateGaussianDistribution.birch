@@ -63,13 +63,14 @@ final class ScaledMultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2
 
   override function getMultivariateGaussian() -> (Expression<Real[_]>,
       Expression<Real[_,_]>)? {
-    return box(A*μ, outer(A*Σ, A) + S);
+    return box(A*μ, chol(outer(A*Σ) + triouter(S)));
   }
 }
 
 function ScaledMultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4>(
     A:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
-  return wrap_scaled_multivariate_gaussian_multivariate_gaussian(A, μ, Σ, S);
+  return wrap_scaled_multivariate_gaussian_multivariate_gaussian(A, μ,
+      chol(Σ), chol(S));
 }
 function wrap_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4>(A:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
@@ -91,11 +92,11 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
   if μ.r.hasMultivariateGaussian() {
     let (m, S) <- μ.r.getMultivariateGaussian();
     let p <- wrap_scaled_multivariate_gaussian_multivariate_gaussian(μ.l, m,
-        S, Σ);
+        S, chol(Σ));
     μ.r.graft(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return wrap_multivariate_gaussian(μ, chol(Σ));
   }
 }
 
@@ -110,7 +111,8 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real[_]>>,
  */
 function simulate_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,
     Arg2,Arg3,Arg4>(A:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
-  return simulate_multivariate_gaussian(A*μ, outer(A*Σ, A) + S);
+  ///@todo A*Σ involves lower-triangular matrix on right, optimize
+  return simulate_multivariate_gaussian(A*μ, chol(outer(A*Σ) + outer(S)));
 }
 
 /*
@@ -126,7 +128,8 @@ function simulate_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,
  */
 function logpdf_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, S:Arg5) -> {
-  return logpdf_multivariate_gaussian(x, A*μ, outer(A*Σ, A) + S);
+  ///@todo A*Σ involves lower-triangular matrix on right, optimize
+  return logpdf_multivariate_gaussian(x, A*μ, chol(outer(A*Σ) + outer(S)));
 }
 
 /*
@@ -137,14 +140,15 @@ function logpdf_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
  * - A: Scale.
  * - μ: Prior mean.
  * - Σ: Prior covariance.
- * - S: Likelihood covariance.
+ * - Ω: Likelihood covariance.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_scaled_multivariate_gaussian_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, S:Arg5) -> {
-  let K' <- outer(Σ, cholsolve(chol(outer(A*Σ, A) + S), A));
+    Arg2,Arg3,Arg4,Arg5>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, Ω:Arg5) -> {
+  let S <- wrap(triouter(Σ));
+  let K' <- wrap(S*inner(A, cholinv(chol(outer(A*Σ) + triouter(Ω)))));
   let μ' <- μ + K'*(x - A*μ);
-  let Σ' <- Σ - K'*A*Σ;
-  return MultivariateGaussian(μ', Σ');
+  let Σ' <- chol(S - K'*A*S);
+  return wrap_multivariate_gaussian(μ', Σ');
 }

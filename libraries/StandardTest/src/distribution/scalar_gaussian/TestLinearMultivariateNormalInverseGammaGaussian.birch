@@ -14,7 +14,7 @@ class TestLinearMultivariateNormalInverseGammaGaussian < TestModel {
   s2:Random<Real>;
 
   override function initialize() {
-    α ~ Uniform(2.0, 10.0);
+    α ~ Uniform(2.5, 10.0);
     β ~ Uniform(0.1, 10.0);
     a ~ MultivariateGaussian(vector(0.0, n), diagonal(4.0, n));
     m ~ MultivariateGaussian(vector(0.0, n), diagonal(100.0, n));

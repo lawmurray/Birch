@@ -18,4 +18,5 @@ MATRIX(chol)
 MATRIX(cholinv)
 MATRIX(inv)
 MATRIX(transpose)
+MATRIX(triinv)
 }

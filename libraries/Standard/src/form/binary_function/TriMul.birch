@@ -1,0 +1,23 @@
+struct TriMul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(trimul, trimul_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::trimul;
+using numbirch::trimul_grad;
+
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
+TriMul<Left,Right> trimul(const Left& l, const Right& r) {
+  return construct<TriMul<Left,Right>>(l, r);
+}
+}
+}}

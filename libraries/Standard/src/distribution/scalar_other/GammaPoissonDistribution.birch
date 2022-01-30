@@ -120,7 +120,7 @@ function logpdf_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  * Returns: the posterior hyperparameters `k'` and `θ'`.
  */
 function update_gamma_poisson<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return Gamma(k + x, θ/(θ + 1.0));
+  return wrap_gamma(k + x, θ/(θ + 1.0));
 }
 
 /*

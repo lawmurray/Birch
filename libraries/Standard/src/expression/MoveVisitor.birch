@@ -15,6 +15,13 @@ class MoveVisitor(x:Real[_]) {
   n:Integer <- 0;
 
   /**
+   * Is the visitor finished?
+   */
+  function isFinished() -> Boolean {
+    return n == length(x);
+  }
+
+  /**
    * Set argument.
    *
    * v: Argument.

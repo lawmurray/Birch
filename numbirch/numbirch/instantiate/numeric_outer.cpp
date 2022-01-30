@@ -8,13 +8,6 @@
 #include "numbirch/eigen/numeric.hpp"
 #endif
 
-/**
- * @internal
- * 
- * @def OUTER
- * 
- * Explicitly instantiate outer product.
- */
 #define OUTER(f) \
     OUTER_SIG(f, real)
 #define OUTER_SIG(f, T) \

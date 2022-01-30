@@ -10,7 +10,7 @@ function pass(x1:Real[_], x2:Real[_]) -> Boolean {
   assert length(x1) == length(x2);
 
   let N <- length(x1);
-  let ε <- 2.0/sqrt(N);
+  let ε <- 50.0/N;
 
   /* normalise onto the interval [0,1] */
   let mn <- min(min(x1), min(x2));

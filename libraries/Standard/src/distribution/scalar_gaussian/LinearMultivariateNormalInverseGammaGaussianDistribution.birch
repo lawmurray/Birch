@@ -2,22 +2,22 @@
  * Multivariate linear-normal-inverse-gamma-Gaussian distribution.
  */
 final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5,
-    c:Arg6, s2:Arg7) < Distribution<Real> {
+    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5,
+    c:Arg6, ω2:Arg7) < Distribution<Real> {
   /**
    * Scale.
    */
   a:Arg1 <- a;
 
   /**
-   * Prior precision times mean.
+   * Mean.
    */
-  ν:Arg2 <- ν;
+  μ:Arg2 <- μ;
 
   /**
-   * Prior precision.
+   * Covariance.
    */
-  Λ:Arg3 <- Λ;
+  Σ:Arg3 <- Σ;
 
   /**
    * Prior shape.
@@ -37,7 +37,7 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
   /**
    * Likelihood variance scale.
    */
-  s2:Arg7 <- s2;
+  ω2:Arg7 <- ω2;
 
   override function supportsLazy() -> Boolean {
     return true;
@@ -45,67 +45,67 @@ final class LinearMultivariateNormalInverseGammaGaussianDistribution<Arg1,
 
   override function simulate() -> Real! {
     return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
-        value(a), value(ν), value(Λ), value(c), value(α), value(β),
-        value(s2));
+        value(a), value(μ), value(Σ), value(c), value(α), value(β),
+        value(ω2));
   }
 
   override function simulateLazy() -> Real!? {
     return simulate_linear_multivariate_normal_inverse_gamma_gaussian(
-        eval(a), eval(ν), eval(Λ), eval(c), eval(α), eval(β), eval(s2));
+        eval(a), eval(μ), eval(Σ), eval(c), eval(α), eval(β), eval(ω2));
         
   }
   
   override function logpdf(x:Real!) -> Real! {
     return logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x,
-        value(a), value(ν), value(Λ), value(c), value(α), value(β),
-        value(s2));
+        value(a), value(μ), value(Σ), value(c), value(α), value(β),
+        value(ω2));
   }
 
   override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_linear_multivariate_normal_inverse_gamma_gaussian(x, a,
-        ν, Λ, c, α, β, s2));
+        μ, Σ, c, α, β, ω2));
   }
 
   override function update(x:Real!) -> Delay? {
     return update_linear_multivariate_normal_inverse_gamma_gaussian(x,
-        value(a), value(ν), value(Λ), value(c), value(α), value(β),
-        value(s2));
+        value(a), value(μ), value(Σ), value(c), value(α), value(β),
+        value(ω2));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
     return update_linear_multivariate_normal_inverse_gamma_gaussian(x, a,
-        ν, Λ, c, α, β, s2);
+        μ, Σ, c, α, β, ω2);
   }
 
   override function cdf(x:Real!) -> Real!? {
     return cdf_linear_multivariate_normal_inverse_gamma_gaussian(x, value(a),
-        value(ν), value(Λ), value(c), value(α), value(β), value(s2));
+        value(μ), value(Σ), value(c), value(α), value(β), value(ω2));
   }
 
   override function quantile(P:Real!) -> Real!? {
     return quantile_linear_multivariate_normal_inverse_gamma_gaussian(P,
-        value(a), value(ν), value(Λ), value(c), value(α), value(β),
-        value(s2));
+        value(a), value(μ), value(Σ), value(c), value(α), value(β),
+        value(ω2));
   }
 }
 
 function LinearMultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,
-    Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
-    s2:Arg7) -> {
-  return wrap_linear_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, α, β,
-      c, s2);
+    Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5, c:Arg6,
+    ω2:Arg7) -> {
+  return wrap_linear_multivariate_normal_inverse_gamma_gaussian(a, μ, chol(Σ),
+      α, β, c, sqrt(ω2));
 }
 function wrap_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
-    s2:Arg7) -> {
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5, c:Arg6,
+    ω2:Arg7) -> {
   return make_linear_multivariate_normal_inverse_gamma_gaussian(wrap(a),
-      wrap(ν), wrap(Λ), wrap(α), wrap(β), wrap(c), wrap(s2));
+      wrap(μ), wrap(Σ), wrap(α), wrap(β), wrap(c), wrap(ω2));
 }
 function make_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, α:Arg4, β:Arg5, c:Arg6,
-    s2:Arg7) -> {
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5, c:Arg6,
+    ω2:Arg7) -> {
   return construct<LinearMultivariateNormalInverseGammaGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, ν, Λ, α, β, c, s2);
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, μ, Σ, α, β, c, ω2);
 }
 
 /**
@@ -131,9 +131,9 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Multiply<Arg3,Random<Real>>) -> Distribution<Real> {
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
-    let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, ν,
-        Λ, α, β, μ.r, σ2.l);
+    let (m, Σ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, m,
+        Σ, α, β, μ.r, σ2.l);
     μ.l.r.graft(p, 1);
     σ2.r.graftReplace(p, 2);
     μ.l.r.join(σ2.r);
@@ -142,7 +142,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2.r.prune();
     if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
-      let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
+      let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
       σ2.r.graft(p);
       return p;
     } else if μ.l.r.hasMultivariateGaussian() {
@@ -164,18 +164,18 @@ function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:Multiply<Random<Real>,Random<Real>>) -> Distribution<Real> {
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
-    let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, ν,
-        Λ, α, β, μ.r, σ2.l);
+    let (m, Σ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, m,
+        Σ, α, β, μ.r, σ2.l);
     μ.l.r.graft(p, 1);
     σ2.r.graftReplace(p, 2);
     μ.l.r.join(σ2.r);
     return p;
   } else if μ.l.r.hasMultivariateNormalInverseGamma() &&
       μ.l.r.isGrandChildOf(σ2.l) {
-    let (ν, Λ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, ν,
-        Λ, α, β, μ.r, σ2.r);
+    let (m, Σ, α, β) <- μ.l.r.getMultivariateNormalInverseGamma();
+    let p <- wrap_linear_multivariate_normal_inverse_gamma_gaussian(μ.l.l, m,
+        Σ, α, β, μ.r, σ2.r);
     μ.l.r.graft(p, 1);
     σ2.l.graftReplace(p, 2);
     μ.l.r.join(σ2.l);
@@ -185,12 +185,12 @@ function Gaussian<Arg1,Arg2>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2.r.prune();
     if σ2.l.hasInverseGamma() {
       let (α, β) <- σ2.l.getInverseGamma();
-      let p <- wrap_normal_inverse_gamma(μ/σ2.r, 1.0/σ2.r, α, β);
+      let p <- wrap_normal_inverse_gamma(μ, σ2.r, α, β);
       σ2.l.graft(p);
       return p;
     } else if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
-      let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
+      let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
       σ2.r.graft(p);
       return p;
     } else if μ.l.r.hasMultivariateGaussian() {
@@ -242,19 +242,19 @@ function Gaussian<Arg>(μ:Dot<Arg,Random<Real[_]>>,
  * multivariate linear normal inverse-gamma prior.
  *
  * - a: Scale vector.
- * - ν: Precision times mean vector.
- * - Λ: Precision matrix.
+ * - μ: Mean.
+ * - Σ: Covariance.
  * - c: Offset.
  * - α: Variance shape.
  * - β: Variance scale.
- * - s2: Likelihood variance scale.
+ * - ω2: Likelihood variance scale.
  */
 function simulate_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, c:Arg4, α:Arg5, β:Arg6,
-    s2:Arg7) -> {
-  let S <- cholinv(chol(Λ));
-  return simulate_student_t(2.0*α, dot(a, S*ν)! + c,
-      (β/α)*(s2 + dot(a, S*a)!));
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, α:Arg5, β:Arg6,
+    ω2:Arg7) -> {
+  let m <- dot(a, μ) + c;
+  let s2 <- (β/α)*(ω2 + dot(triinner(Σ, a)));
+  return simulate_student_t(2.0*α, m, s2);
 }
 
 /*
@@ -263,21 +263,21 @@ function simulate_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
  *
  * - x: The variate.
  * - a: Scale vector.
- * - ν: Precision times mean vector.
- * - Λ: Precision matrix.
+ * - μ: Mean.
+ * - Σ: Covariance.
  * - c: Offset.
  * - α: Variance shape.
  * - β: Variance scale.
- * - s2: Likelihood variance scale.
+ * - ω2: Likelihood variance scale.
  *
  * Returns: the log probability density.
  */
 function logpdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,
-    α:Arg6, β:Arg7, s2:Arg8) -> {
-  let S <- cholinv(chol(Λ));
-  let μ <- S*ν;
-  return logpdf_student_t(x, 2.0*α, dot(a, μ) + c, (β/α)*(s2 + dot(a, S*a)));
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5,
+    α:Arg6, β:Arg7, ω2:Arg8) -> {
+  let m <- dot(a, μ) + c;
+  let s2 <- (β/α)*(ω2 + dot(triinner(Σ, a)));
+  return logpdf_student_t(x, 2.0*α, m, s2);
 }
 
 /*
@@ -286,28 +286,28 @@ function logpdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
  *
  * - x: The variate.
  * - A: Scale.
- * - ν: Prior precision times mean.
- * - Λ: Prior precision.
+ * - μ: Mean.
+ * - Σ: Covariance.
  * - c: Offset.
  * - α: Prior variance shape.
  * - β: Prior variance scale.
- * - s2: Likelihood variance scale.
+ * - ω2: Likelihood variance scale.
  *
- * Returns: the posterior hyperparameters `μ'`, `Λ'`, `β'`, `α'` and `β'`.
+ * Returns: the posterior hyperparameters `μ'`, `Σ'`, `α'` and `β'`.
  */
 function update_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4,
-    c:Arg5, α:Arg6, β:Arg7, s2:Arg8) -> {
-  let l <- 1.0/s2;
-  let y <- x - c;
-  let z <- l*y;
-  let Λ' <- Λ + outer(a, l*a);
-  let ν' <- ν + a*z;
-  let μ <- cholsolve(chol(Λ), ν);
-  let μ' <- cholsolve(chol(Λ'), ν');
+    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4,
+    c:Arg5, α:Arg6, β:Arg7, ω2:Arg8) -> {
+  let S <- wrap(triouter(Σ));
+  let K' <- wrap(outer(S*a/(dot(triinner(Σ, a)) + ω2), a));
+  let S' <- wrap(S - K'*S);
+  let μ' <- wrap(μ - K'*μ + S'*a*((x - c)/ω2));
+  let Σ' <- wrap(chol(S'));
   let α' <- α + 0.5;
-  let β' <- β + 0.5*(y*z + dot(μ, ν) - dot(μ', ν'));
-  return MultivariateNormalInverseGamma(ν', Λ', α', β');
+  let β' <- β + 0.5*(pow(x - c, 2.0)/ω2 + dot(trisolve(Σ, μ)) -
+      dot(trisolve(Σ', μ')));
+  return wrap_multivariate_normal_inverse_gamma(μ', Σ', α', β');
+  
 }
 
 /*
@@ -316,21 +316,21 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,
  *
  * - x: The variate.
  * - a: Scale.
- * - ν: Precision times mean.
- * - Λ: Precision.
+ * - μ: Mean.
+ * - Σ: Covariance.
  * - c: Offset.
  * - α: Variance shape.
  * - β: Variance scale.
- * - s2: Likelihood variance scale.
+ * - ω2: Likelihood variance scale.
  *
  * Return: the cumulative probability.
  */
 function cdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
-    Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5, α:Arg6,
-    β:Arg7, s2:Arg8) -> {
-  let S <- cholinv(chol(Λ));
-  let μ <- S*ν;
-  return cdf_student_t(x, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 + dot(a, S*a)!));
+    Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, α:Arg6,
+    β:Arg7, ω2:Arg8) -> {
+  let m <- dot(a, μ) + c;
+  let s2 <- (β/α)*(dot(triinner(Σ, a)) + ω2);
+  return cdf_student_t(x, 2.0*α, m, s2);
 }
 
 /*
@@ -339,20 +339,19 @@ function cdf_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
  *
  * - P: The cumulative probability.
  * - a: Scale.
- * - ν: Precision times mean.
- * - Λ: Precision.
+ * - μ: Mean.
+ * - Σ: Covariance.
  * - c: Offset.
  * - α: Variance shape.
  * - β: Variance scale.
- * - s2: Likelihood variance scale.
+ * - ω2: Likelihood variance scale.
  *
  * Return: the quantile.
  */
 function quantile_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,
-    α:Arg6, β:Arg7, s2:Arg8) -> {
-  let S <- cholinv(chol(Λ));
-  let μ <- S*ν;
-  return quantile_student_t(P, 2.0*α, dot(a, μ)! + c, (β/α)*(s2 +
-      dot(a, S*a)!));
+    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5,
+    α:Arg6, β:Arg7, ω2:Arg8) -> {
+  let m <- dot(a, μ) + c;
+  let s2 <- (β/α)*(dot(triinner(Σ, a)) + ω2);
+  return quantile_student_t(P, 2.0*α, m, s2);
 }

@@ -33,23 +33,24 @@ SOURCES =  \
     numbirch/instantiate/binary_scalar_divide.cpp \
     numbirch/instantiate/binary_scalar_multiply.cpp \
     numbirch/instantiate/cast.cpp \
+    numbirch/instantiate/numeric_binary_matrix.cpp \
     numbirch/instantiate/numeric_dot.cpp \
     numbirch/instantiate/numeric_frobenius.cpp \
     numbirch/instantiate/numeric_inner.cpp \
     numbirch/instantiate/numeric_matrix.cpp \
     numbirch/instantiate/numeric_matrix_grad.cpp \
-    numbirch/instantiate/numeric_matrix_matrix.cpp \
-    numbirch/instantiate/numeric_matrix_matrix_grad.cpp \
-    numbirch/instantiate/numeric_matrix_vector.cpp \
-    numbirch/instantiate/numeric_matrix_vector_grad.cpp \
     numbirch/instantiate/numeric_outer.cpp \
     numbirch/instantiate/numeric_reduce_matrix.cpp \
+    numbirch/instantiate/numeric_triinner.cpp \
+    numbirch/instantiate/numeric_triouter.cpp \
     numbirch/instantiate/random.cpp \
     numbirch/instantiate/random_binary.cpp \
     numbirch/instantiate/random_standard_wishart.cpp \
     numbirch/instantiate/random_unary.cpp \
-    numbirch/instantiate/reduce.cpp \
-    numbirch/instantiate/reduce_grad.cpp \
+    numbirch/instantiate/reduce_count.cpp \
+    numbirch/instantiate/reduce_count_grad.cpp \
+    numbirch/instantiate/reduce_sum.cpp \
+    numbirch/instantiate/reduce_sum_grad.cpp \
     numbirch/instantiate/ternary_function.cpp \
     numbirch/instantiate/unary_function.cpp \
     numbirch/instantiate/unary_function_grad.cpp \

@@ -220,15 +220,36 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Boolean>) {
-    //
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Integer>) {
-    //
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Integer[_]>) {
-    //
+    let p <- x.getDistribution().logpdfLazy(x);
+    if p? {
+      if π? {
+        π <- box(π! + p!);
+      } else {
+        π <- box(p!);
+      }
+    }
   }
 
   function arg(x:Random<Real>) {

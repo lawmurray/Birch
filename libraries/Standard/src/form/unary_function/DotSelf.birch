@@ -1,0 +1,22 @@
+struct DotSelf<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(dot, dot_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::dot;
+using numbirch::dot_grad;
+
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+DotSelf<Middle> dot(const Middle& m) {
+  return construct<DotSelf<Middle>>(m);
+}
+}
+}}

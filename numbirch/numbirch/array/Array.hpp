@@ -715,7 +715,17 @@ public:
   }
 
   /**
-   * Clear the array, erasing all elements.
+   * Fill with scalar value.
+   *
+   * @param value The value.
+   */
+  void fill(const T& value) {
+    memset(data(), shp.stride()*sizeof(T), value, shp.width()*sizeof(T),
+        shp.height());
+  }
+
+  /**
+   * Clear, erasing all elements.
    */
   void clear() {
     release();
@@ -925,16 +935,6 @@ private:
     for (; iter != last; ++iter) {
       new (&*iter) T(std::forward<Args>(args)...);
     }
-  }
-
-  /**
-   * Fill allocated memory with value.
-   *
-   * @param value The value.
-   */
-  void fill(const T& value) {
-    memset(data(), shp.stride()*sizeof(T), value, shp.width()*sizeof(T),
-        shp.height());
   }
 
   /**

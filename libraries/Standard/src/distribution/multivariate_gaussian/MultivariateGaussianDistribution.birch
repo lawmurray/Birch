@@ -53,7 +53,7 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
-  return wrap_multivariate_gaussian(μ, Σ);
+  return wrap_multivariate_gaussian(μ, chol(Σ));
 }
 function wrap_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   return make_multivariate_gaussian(wrap(μ), wrap(Σ));
@@ -75,7 +75,7 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   cpp{{
   auto z = numbirch::standard_gaussian(n);
   }}
-  return μ + trimul(chol(Σ), z);
+  return μ + trimul(Σ, z);
 }
 
 /*
@@ -90,6 +90,5 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
 function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
     Σ:Arg3) -> {
   let n <- length(x);
-  return -0.5*(dot(x - μ, cholsolve(chol(Σ), x - μ)) + n*log(2.0*π) +
-      lcholdet(chol(Σ)));
+  return -0.5*(dot(trisolve(Σ, x - μ)) + n*log(2.0*π) + lcholdet(Σ));
 }

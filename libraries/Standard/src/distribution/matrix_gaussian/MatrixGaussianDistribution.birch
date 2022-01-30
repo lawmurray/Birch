@@ -59,7 +59,7 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
  * Create matrix Gaussian distribution.
  */
 function MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
-  return wrap_matrix_gaussian(M, U, V);
+  return wrap_matrix_gaussian(M, chol(U), chol(V));
 }
 function wrap_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
   return make_matrix_gaussian(wrap(M), wrap(U), wrap(V));
@@ -85,7 +85,7 @@ function simulate_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
   cpp{{
   auto Z = numbirch::standard_gaussian(m, n);
   }}
-  return M + triouter(trimul(chol(U), Z), chol(V));
+  return M + triouter(trimul(U, Z), V);
 }
 
 /*
@@ -102,7 +102,7 @@ function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
     V:Arg4) -> {
   let n <- rows(X);
   let p <- columns(X);
-  let Z <- X - M;
-  return -0.5*(frobenius(Z*cholinv(chol(V)), cholsolve(chol(U), Z)) +
-      n*p*log(2.0*π) + n*lcholdet(chol(V)) + p*lcholdet(chol(U)));
+  let Z <- wrap(X - M);
+  return -0.5*(frobenius(Z*cholinv(V), cholsolve(U, Z)) + n*p*log(2.0*π) +
+      n*lcholdet(V) + p*lcholdet(U));
 }

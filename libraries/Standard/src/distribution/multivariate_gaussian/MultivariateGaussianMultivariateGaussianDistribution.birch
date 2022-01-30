@@ -57,13 +57,14 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,Arg3>
 
   override function getMultivariateGaussian() -> (Expression<Real[_]>,
       Expression<Real[_,_]>)? {
-    return box(μ, Σ + S);
+    return box(μ, chol(triouter(Σ) + triouter(S)));
   }
 }
 
 function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3>(μ:Arg1,
     Σ:Arg2, S:Arg3) -> {
-  return wrap_multivariate_gaussian_multivariate_gaussian(μ, Σ, S);
+  return wrap_multivariate_gaussian_multivariate_gaussian(μ, chol(Σ),
+      chol(S));
 }
 function wrap_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3>(
     μ:Arg1, Σ:Arg2, S:Arg3) -> {
@@ -84,11 +85,11 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
   μ.prune();
   if μ.hasMultivariateGaussian() {
     let (m, S) <- μ.getMultivariateGaussian();
-    let p <- wrap_multivariate_gaussian_multivariate_gaussian(m, S, Σ);
+    let p <- wrap_multivariate_gaussian_multivariate_gaussian(m, S, chol(Σ));
     μ.graft(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return wrap_multivariate_gaussian(μ, chol(Σ));
   }
 }
 
@@ -102,7 +103,7 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
  */
 function simulate_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3>(
       μ:Arg1, Σ:Arg2, S:Arg3) -> {
-  return simulate_multivariate_gaussian(μ, Σ + S);
+  return simulate_multivariate_gaussian(μ, chol(triouter(Σ) + triouter(S)));
 }
 
 /*
@@ -117,7 +118,7 @@ function simulate_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3>(
  */
 function logpdf_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
     Arg4>(x:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
-  return logpdf_multivariate_gaussian(x, μ, Σ + S);
+  return logpdf_multivariate_gaussian(x, μ, chol(triouter(Σ) + triouter(S)));
 }
 
 /*
@@ -127,14 +128,15 @@ function logpdf_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
  * - x: The variate.
  * - μ: Prior mean.
  * - Σ: Prior covariance.
- * - S: Likelihood covariance.
+ * - Ω: Likelihood covariance.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
-    Arg4>(x:Arg1, μ:Arg2, Σ:Arg3, S:Arg4) -> {
-  let K' <- cholsolve(chol(Σ + S), Σ);
-  let μ' <- μ + inner(K', x - μ);
-  let Σ' <- Σ - inner(K', Σ);
-  return MultivariateGaussian(μ', Σ');
+    Arg4>(x:Arg1, μ:Arg2, Σ:Arg3, Ω:Arg4) -> {
+  let S <- wrap(triouter(Σ));
+  let K' <- wrap(S*cholinv(chol(triouter(Σ) + triouter(Ω))));
+  let μ' <- μ + K'*(x - μ);
+  let Σ' <- chol(S - K'*S);
+  return wrap_multivariate_gaussian(μ', Σ');
 }

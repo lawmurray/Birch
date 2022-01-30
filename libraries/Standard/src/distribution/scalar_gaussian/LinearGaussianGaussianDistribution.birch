@@ -198,12 +198,12 @@ function quantile_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
  * - c: Offset.
  * - s2: Likelihood variance.
  *
- * Returns: the posterior hyperparameters `μ'` and `λ'`.
+ * Returns: the posterior hyperparameters `μ'` and `σ2'`.
  */
 function update_linear_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
     x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
   let k' <- σ2*a/(a*a*σ2 + s2);
   let μ' <- μ + k'*(x - a*μ - c);
   let σ2' <- σ2 - k'*a*σ2;
-  return Gaussian(μ', σ2');
+  return wrap_gaussian(μ', σ2');
 }

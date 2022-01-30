@@ -25,17 +25,17 @@
  * be multiplication on the left (as above) or the right, or division on the
  * right.
  */
-final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
-    λ:Arg2, α:Arg3, β:Arg4) < Distribution<Real> {
+final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
+    σ2:Arg2, α:Arg3, β:Arg4) < Distribution<Real> {
   /**
    * Mean.
    */
-  ν:Arg1 <- ν;
+  μ:Arg1 <- μ;
   
   /**
-   * Precision scale.
+   * Variance.
    */
-  λ:Arg2 <- λ;
+  σ2:Arg2 <- σ2;
   
   /**
    * Variance shape.
@@ -52,39 +52,39 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   }
 
   override function simulate() -> Real! {
-    return simulate_normal_inverse_gamma(value(ν), value(λ), value(α),
+    return simulate_normal_inverse_gamma(value(μ), value(σ2), value(α),
         value(β));
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_normal_inverse_gamma(eval(ν), eval(λ), eval(α), eval(β));
+    return simulate_normal_inverse_gamma(eval(μ), eval(σ2), eval(α), eval(β));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma(x, value(ν), value(λ), value(α),
+    return logpdf_normal_inverse_gamma(x, value(μ), value(σ2), value(α),
         value(β));
   }
 
   override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_normal_inverse_gamma(x, ν, λ, α, β));
+    return box(logpdf_normal_inverse_gamma(x, μ, σ2, α, β));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_normal_inverse_gamma(x, value(ν), value(λ), value(α),
+    return update_normal_inverse_gamma(x, value(μ), value(σ2), value(α),
         value(β));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
-   return update_normal_inverse_gamma(x, ν, λ, α, β);
+   return update_normal_inverse_gamma(x, μ, σ2, α, β);
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_normal_inverse_gamma(x, value(ν), value(λ), value(α),
+    return cdf_normal_inverse_gamma(x, value(μ), value(σ2), value(α),
         value(β));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma(P, value(ν), value(λ), value(α),
+    return quantile_normal_inverse_gamma(P, value(μ), value(σ2), value(α),
         value(β));
   }
 
@@ -94,29 +94,29 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
 
   override function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
       Expression<Real>, Expression<Real>)? {
-    return box(ν, λ, α, β);
+    return box(μ, σ2, α, β);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "NormalInverseGamma");
-    buffer.set("ν", value(ν));
-    buffer.set("λ", value(λ));
+    buffer.set("μ", value(μ));
+    buffer.set("σ2", value(σ2));
     buffer.set("α", value(α));
     buffer.set("β", value(β));
   }
 }
 
-function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2, α:Arg3,
+function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2, α:Arg3,
     β:Arg4) -> {
-  return wrap_normal_inverse_gamma(ν, λ, α, β);
+  return wrap_normal_inverse_gamma(μ, σ2, α, β);
 }
-function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,
     α:Arg3, β:Arg4) -> {
-  return make_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(α), wrap(β));
+  return make_normal_inverse_gamma(wrap(μ), wrap(σ2), wrap(α), wrap(β));
 }
-function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,
     α:Arg3, β:Arg4) -> {
-  return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ,
+  return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(μ, σ2,
       α, β);
 }
 
@@ -143,7 +143,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
   σ2.r.prune();
   if σ2.r.hasInverseGamma() {
     let (α, β) <- σ2.r.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
+    let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
     σ2.r.graft(p);
     return p;
   } else {
@@ -159,7 +159,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
   σ2.l.prune();
   if σ2.l.hasInverseGamma() {
     let (α, β) <- σ2.l.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ/σ2.r, 1.0/σ2.r, α, β);
+    let p <- wrap_normal_inverse_gamma(μ, σ2.r, α, β);
     σ2.l.graft(p);
     return p;
   } else {
@@ -176,12 +176,12 @@ function Gaussian<Arg>(μ:Arg, σ2:Multiply<Random<Real>,Random<Real>>) ->
   σ2.r.prune();
   if σ2.l.hasInverseGamma() {
     let (α, β) <- σ2.l.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ/σ2.r, 1.0/σ2.r, α, β);
+    let p <- wrap_normal_inverse_gamma(μ, σ2.r, α, β);
     σ2.l.graft(p);
     return p;
   } else if σ2.r.hasInverseGamma() {
     let (α, β) <- σ2.r.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ/σ2.l, 1.0/σ2.l, α, β);
+    let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
     σ2.r.graft(p);
     return p;
   } else {
@@ -192,30 +192,30 @@ function Gaussian<Arg>(μ:Arg, σ2:Multiply<Random<Real>,Random<Real>>) ->
 /*
  * Simulate a normal inverse-gamma distribution.
  *
- * - ν: Precision times mean.
- * - λ: Precision scale.
+ * - μ: Mean.
+ * - σ2: Variance.
  * - α: Shape of inverse-gamma on variance.
  * - β: Scale of inverse-gamma on variance.
  */
-function simulate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+function simulate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,
     α:Arg3, β:Arg4) -> {
-  return simulate_student_t(2.0*α, ν/λ, β/(α*λ));
+  return simulate_student_t(2.0*α, μ, (β/α)*σ2);
 }
 
 /*
  * Observe a normal inverse-gamma variate.
  *
  * - x: The variate.
- * - ν: Precision times mean.
- * - λ: Precision scale.
+ * - μ: Mean.
+ * - σ2: Variance.
  * - α: Shape of inverse-gamma on variance.
  * - β: Scale of inverse-gamma on variance.
  *
  * Returns: the log probability density.
  */
 function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
-    ν:Arg2, λ:Arg3, α:Arg4, β:Arg5) -> {
-  return logpdf_student_t(x, 2.0*α, ν/λ, β/(α*λ));
+    μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5) -> {
+  return logpdf_student_t(x, 2.0*α, μ, (β/α)*σ2);
 }
 
 /*
@@ -223,46 +223,46 @@ function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
  * of a normal inverse-gamma joint distribution.
  *
  * - x: The variate.
- * - ν: Precision times mean.
- * - λ: Precision.
+ * - μ: Mean.
+ * - σ2: Variance.
  * - α: Prior shape of the inverse-gamma.
  * - β: Prior scale of the inverse-gamma.
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
-    ν:Arg2, λ:Arg3, α:Arg4, β:Arg5) -> {
-  return InverseGamma(α + 0.5, β + 0.5*pow(x - ν/λ, 2.0)*λ);
+    μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5) -> {
+  return wrap_inverse_gamma(α + 0.5, β + 0.5*pow(x - μ, 2.0));
 }
 
 /*
  * CDF of a normal inverse-gamma variate.
  *
  * - x: The variate.
- * - ν: Precision times mean.
- * - λ: Precision.
+ * - μ: Precision times mean.
+ * - σ2: Precision.
  * - α: Shape of inverse-gamma on scale.
  * - β: Scale of inverse-gamma on scale.
  *
  * Return: the cumulative probability.
  */
-function cdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1, ν:Arg2,
-    λ:Arg3, α:Arg4, β:Arg5) -> {
-  return cdf_student_t(x, 2.0*α, ν/λ, β/(α*λ));
+function cdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1, μ:Arg2,
+    σ2:Arg3, α:Arg4, β:Arg5) -> {
+  return cdf_student_t(x, 2.0*α, μ, (β/α)*σ2);
 }
 
 /*
  * Quantile of a normal inverse-gamma distribution.
  *
  * - P: The cumulative probability.
- * - ν: Precision times mean.
- * - λ: Precision.
+ * - μ: Precision times mean.
+ * - σ2: Precision.
  * - α: Shape of inverse-gamma on variance.
  * - β: Scale of inverse-gamma on variance.
  *
  * Return: the quantile.
  */
 function quantile_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(P:Arg1,
-    ν:Arg2, λ:Arg3, α:Arg4, β:Arg5) -> {
-  return quantile_student_t(P, 2.0*α, ν/λ, β/(α*λ));
+    μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5) -> {
+  return quantile_student_t(P, 2.0*α, μ, (β/α)*σ2);
 }

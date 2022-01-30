@@ -82,7 +82,7 @@ final class LinearMultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,A
 
 function LinearMultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     μ:Arg2, Σ:Arg3, c:Arg4, s2:Arg5) -> {
-  return wrap_linear_multivariate_gaussian_gaussian(a, μ, Σ, c, s2);
+  return wrap_linear_multivariate_gaussian_gaussian(a, μ, chol(Σ), c, s2);
 }
 function wrap_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(
     a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, s2:Arg5) -> {
@@ -131,7 +131,9 @@ function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
  */
 function simulate_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5>(a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, s2:Arg5) -> {
-  return simulate_gaussian(dot(a, μ)! + c, dot(a, Σ*a)! + s2);
+  let m <- dot(a, μ) + c;
+  let σ2 <- dot(triinner(Σ, a)) + s2;
+  return simulate_gaussian(m, σ2);
 }
 
 /*
@@ -149,7 +151,9 @@ function simulate_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
  */
 function logpdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
-  return logpdf_gaussian(x, dot(a, μ) + c, dot(a, Σ*a) + s2);
+  let m <- dot(a, μ) + c;
+  let σ2 <- dot(triinner(Σ, a)) + s2;
+  return logpdf_gaussian(x, m, σ2);
 }
 
 /*
@@ -167,7 +171,9 @@ function logpdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
  */
 function cdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
-  return cdf_gaussian(x, dot(a, μ)! + c, dot(a, Σ*a)! + s2);
+  let m <- dot(a, μ) + c;
+  let σ2 <- dot(triinner(Σ, a)) + s2;
+  return cdf_gaussian(x, m, σ2);
 }
 
 /*
@@ -185,7 +191,9 @@ function cdf_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
  */
 function quantile_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6>(P:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
-  return quantile_gaussian(P, dot(a, μ)! + c, dot(a, Σ*a)! + s2);
+  let m <- dot(a, μ) + c;
+  let σ2 <- dot(triinner(Σ, a)) + s2;
+  return quantile_gaussian(P, m, σ2);
 }
 
 /*
@@ -204,8 +212,9 @@ function quantile_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
  */
 function update_linear_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, s2:Arg6) -> {
-  let k' <- Σ*a/(dot(a, Σ*a) + s2);
-  let μ' <- μ + k'*(x - dot(a, μ) - c);
-  let Σ' <- Σ - outer(k', a)*Σ;
-  return MultivariateGaussian(μ', Σ');
+  let S <- wrap(triouter(Σ));
+  let k' <- wrap(S*a/(dot(triinner(Σ, a)) + s2));
+  let μ' <- μ + k'*(x - c - dot(a, μ));
+  let Σ' <- chol(S - outer(k', a)*S);
+  return wrap_multivariate_gaussian(μ', Σ');
 }

@@ -121,5 +121,5 @@ function logpdf_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
  */
 function update_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {
-  return Beta(α + k, β + x);
+  return wrap_beta(α + k, β + x);
 }

@@ -10,7 +10,7 @@ class TestMultivariateNormalInverseGamma < TestModel {
   S:Random<Real[_,_]>;
 
   override function initialize() {
-    α ~ Uniform(2.0, 10.0);
+    α ~ Uniform(2.5, 10.0);
     β ~ Uniform(0.1, 10.0);
     m ~ MultivariateGaussian(vector(0.0, n), diagonal(100.0, n));
     S ~ MatrixGaussian(matrix(0.0, n, n), diagonal(2.0, n), diagonal(2.0, n));
@@ -60,7 +60,8 @@ program test_pdf_linear_multivariate_normal_inverse_gamma(N:Integer <- 10000,
   test_pdf(m.marginal(), N, B, S, lazy);
 }
 
-program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
+program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000,
+    backward:Boolean <- false) {
   m:TestMultivariateNormalInverseGamma;
   test_grad(m, N, backward);
 }

@@ -2,19 +2,19 @@
  * Matrix normal-inverse-Wishart distribution.
  */
 final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
-    N:Arg1, Λ:Arg2, Ψ:Arg3, k:Arg4) < Distribution<Real[_,_]> {
+    M:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4) < Distribution<Real[_,_]> {
   /**
-   * Among-row precision times mean.
+   * Mean.
    */
-  N:Arg1 <- N;
+  M:Arg1 <- M;
 
   /**
-   * Among-row precision.
+   * Among-row covariance.
    */
-  Λ:Arg2 <- Λ;
+  Σ:Arg2 <- Σ;
   
   /**
-   * Among-column covariance scale.
+   * Among-column covariance.
    */
   Ψ:Arg3 <- Ψ;
   
@@ -28,31 +28,31 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart(value(N), value(Λ),
+    return simulate_matrix_normal_inverse_wishart(value(M), value(Σ),
         value(Ψ), value(k));
   }
 
   override function simulateLazy() -> Real[_,_]? {
-    return simulate_matrix_normal_inverse_wishart(eval(N), eval(Λ), eval(Ψ),
+    return simulate_matrix_normal_inverse_wishart(eval(M), eval(Σ), eval(Ψ),
         eval(k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {   
-    return logpdf_matrix_normal_inverse_wishart(X, value(N), value(Λ),
+    return logpdf_matrix_normal_inverse_wishart(X, value(M), value(Σ),
         value(Ψ), value(k));
   }
 
   override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {   
-    return box(logpdf_matrix_normal_inverse_wishart(X, N, Λ, Ψ, k));
+    return box(logpdf_matrix_normal_inverse_wishart(X, M, Σ, Ψ, k));
   }
 
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart(X, value(N), value(Λ),
+    return update_matrix_normal_inverse_wishart(X, value(M), value(Σ),
         value(Ψ), value(k));
   }
 
   override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
-    return update_matrix_normal_inverse_wishart(X, N, Λ, Ψ, k);
+    return update_matrix_normal_inverse_wishart(X, M, Σ, Ψ, k);
   }
 
 
@@ -62,62 +62,59 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>)? {
-    return box(N, Λ, Ψ, k);
+    return box(M, Σ, Ψ, k);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MatrixNormalInverseWishart");
-    buffer.set("N", value(N));
-    buffer.set("Λ", value(Λ));
+    buffer.set("M", value(M));
+    buffer.set("Σ", value(Σ));
     buffer.set("Ψ", value(Ψ));
     buffer.set("k", value(k));
   }
 }
 
-function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1, Λ:Arg2,
+function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1, Σ:Arg2,
     Ψ:Arg3, k:Arg4) -> {
-  return wrap_matrix_normal_inverse_wishart(N, Λ, Ψ, k);
+  return wrap_matrix_normal_inverse_wishart(M, chol(Σ), chol(Ψ), k);
 }
-function wrap_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
-    Λ:Arg2, Ψ:Arg3, k:Arg4) -> {
-  return make_matrix_normal_inverse_wishart(wrap(N), wrap(Λ), wrap(Ψ),
+function wrap_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1,
+    Σ:Arg2, Ψ:Arg3, k:Arg4) -> {
+  return make_matrix_normal_inverse_wishart(wrap(M), wrap(Σ), wrap(Ψ),
       wrap(k));
 }
-function make_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
-    Λ:Arg2, Ψ:Arg3, k:Arg4) -> {
+function make_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1,
+    Σ:Arg2, Ψ:Arg3, k:Arg4) -> {
   return construct<MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,
-      Arg4>>(N, Λ, Ψ, k);
+      Arg4>>(M, Σ, Ψ, k);
 }
 
 /**
  * Create matrix Gaussian distribution.
  */
 function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
-    Distribution<Real[_,_]>{
+    Distribution<Real[_,_]> {
   V.prune();
   if V.hasInverseWishart() {
     let (Ψ, k) <- V.getInverseWishart();
-    let Λ <- cholinv(chol(U));
-    let p <- wrap_matrix_normal_inverse_wishart(Λ*M, Λ, Ψ, k);
+    let p <- wrap_matrix_normal_inverse_wishart(M, chol(U), Ψ, k);
     V.graft(p);
     return p;
   } else {
-    return wrap_matrix_gaussian(M, U, V);
+    return wrap_matrix_gaussian(M, chol(U), chol(V));
   }
 }
 
 /*
  * Simulate a matrix normal-inverse-Wishart distribution.
  *
- * - N: Precision times mean matrix.
- * - Λ: Precision.
+ * - M: Mean.
+ * - Σ: Covariance.
  * - Ψ: Variance shape.
  * - k: Degrees of freedom.
  */
-function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
-    Λ:Arg2, Ψ:Arg3, k:Arg4) -> {
-  let Σ <- cholinv(chol(Λ));
-  let M <- Σ*N;
+function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1,
+    Σ:Arg2, Ψ:Arg3, k:Arg4) -> {
   return simulate_matrix_t(k, M, Σ, Ψ);
 }
 
@@ -125,17 +122,15 @@ function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
  * Observe a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
- * - N: Precision times mean matrix.
- * - Λ: Precision.
- * - Ψ: Prior variance shape.
+ * - M: Mean.
+ * - Σ: Covariance.
+ * - Ψ: Prior variance spread.
  * - k: Prior degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
-    X:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
-  let Σ <- cholinv(chol(Λ));
-  let M <- Σ*N;
+    X:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5) -> {
   return logpdf_matrix_t(X, k, M, Σ, Ψ);
 }
 
@@ -143,18 +138,17 @@ function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
  * Update the parameters of a matrix normal-inverse-Wishart variate.
  *
  * - X: The variate.
- * - N: Precision times mean.
- * - Λ: Precision.
- * - V: Prior variance shape.
+ * - M: Mean.
+ * - Σ: Covariance.
+ * - Ψ: Prior variance spread.
  * - k: Prior degrees of freedom.
  *
- * Returns: the posterior hyperparameters `V'` and `k'`.
+ * Returns: the posterior hyperparameters `Ψ'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
-    X:Arg1, N:Arg2, Λ:Arg3, Ψ:Arg4, k:Arg5) -> {
+    X:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5) -> {
   let n <- rows(X);
-  let M <- cholsolve(chol(Λ), N);
-  let Ψ' <- Ψ + inner(X - M, Λ*(X - M));
+  let Ψ' <- chol(triouter(Ψ) + inner(trisolve(Σ, X - M)));
   let k' <- k + n;
-  return InverseWishart(Ψ', k');
+  return wrap_inverse_wishart(Ψ', k');
 }

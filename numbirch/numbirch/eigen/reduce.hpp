@@ -11,13 +11,13 @@
 
 namespace numbirch {
 
-template<class R, class T, class>
-Array<R,0> count(const T& x) {
+template<class T, class>
+Array<int,0> count(const T& x) {
   return make_eigen(x).unaryExpr(count_functor()).sum();
 }
 
-template<class R, class T, class>
-Array<R,0> sum(const T& x) {
+template<class T, class>
+Array<value_t<T>,0> sum(const T& x) {
   return make_eigen(x).sum();
 }
 

@@ -531,9 +531,8 @@ auto box(const T& x) {
 }
 
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-auto box(const T& x) {
-  using U = typename T::value_type::Value_;
-  return Expression<U>(x);
+const T& box(const T& x) {
+  return x;
 }
 }
 }}
@@ -662,12 +661,12 @@ function wrap<Type>(x:Type) -> ;
 hpp{{
 namespace birch {
 template<class T, std::enable_if_t<is_arithmetic<T>::value,int> = 0>
-T wrap(const T& x) {
+const T& wrap(const T& x) {
   return x;
 }
 
 template<class T, std::enable_if_t<is_array<T>::value,int> = 0>
-T wrap(const T& x) {
+const T& wrap(const T& x) {
   return x;
 }
 
@@ -677,8 +676,8 @@ auto wrap(const T& x) {
 }
 
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-auto wrap(const T& x) {
-  return box(x);
+const T& wrap(const T& x) {
+  return x;
 }
 }
 }}

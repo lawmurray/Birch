@@ -17,4 +17,6 @@
 namespace numbirch {
 MATRIX_GRAD(chol_grad)
 MATRIX_GRAD(cholinv_grad)
+MATRIX_GRAD(inv_grad)
+MATRIX_GRAD(triinv_grad)
 }

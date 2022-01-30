@@ -239,7 +239,9 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    */
   final function move(x:Real[_]) -> Value! {
     visitor:MoveVisitor(x);
-    return move(visitor);
+    let y <- move(visitor);
+    assert visitor.isFinished();
+    return y;
   }
   final function move(visitor:MoveVisitor) -> Value! {
     if !flagConstant {
@@ -380,7 +382,9 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
     linkCount <- linkCount + 1;
   }
   function doLink() {
-    // internally, called when this is construct to recursively call link()
+    assert visitCount == 0;
+    assert linkCount == 0;
+    // internally, called when this is constructed to recursively call link()
     // on dependencies
   }
 

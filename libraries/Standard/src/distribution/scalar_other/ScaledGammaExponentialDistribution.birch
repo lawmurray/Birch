@@ -141,5 +141,5 @@ function Exponential(λ:Multiply<Random<Real>,Random<Real>>) ->
  */
 function update_scaled_gamma_exponential<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
     a:Arg2, k:Arg3, θ:Arg4) -> {
-  return Gamma(k + 1.0, θ/(1.0 + x*a*θ));
+  return wrap_gamma(k + 1.0, θ/(1.0 + x*a*θ));
 }

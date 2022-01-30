@@ -15,7 +15,7 @@ class TestLinearNormalInverseGammaGaussian < TestModel {
     a ~ Uniform(-2.0, 2.0);
     μ_0 ~ Uniform(-10.0, 10.0);
     a2 ~ Uniform(0.1, 2.0);
-    α ~ Uniform(2.1, 10.0);
+    α ~ Uniform(2.5, 10.0);
     β ~ Uniform(0.1, 10.0);
     c ~ Uniform(-10.0, 10.0);
     s2 ~ Uniform(0.1, 10.0);
