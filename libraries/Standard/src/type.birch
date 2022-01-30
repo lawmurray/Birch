@@ -835,12 +835,12 @@ auto size(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto value(const T& x) {
+const T& value(const T& x) {
   return x;
 }
 
 template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
-auto value(const T& x) {
+const auto& value(const T& x) {
   return x.value();
 }
 
@@ -850,7 +850,7 @@ auto value(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto eval(const T& x) {
+const T& eval(const T& x) {
   return x;
 }
 
@@ -865,7 +865,22 @@ auto eval(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto move(const T& x, const MoveVisitor& visitor) {
+const T& peek(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+const auto& peek(const T& x) {
+  return x.peek();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+auto peek(const T& x) {
+  return x->peek();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+const T& move(const T& x, const MoveVisitor& visitor) {
   return x;
 }
 
@@ -892,21 +907,6 @@ void args(const T& x, const ArgsVisitor& visitor) {
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
 void args(const T& x, const ArgsVisitor& visitor) {
   x->args(visitor);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto peek(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
-auto peek(const T& x) {
-  return x.peek();
-}
-
-template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-auto peek(const T& x) {
-  return x->peek();
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>

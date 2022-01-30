@@ -9,7 +9,7 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test
 
-  let Δ <- 1.0e-2;    // maximum width for finite difference estimate
+  let Δ <- 1.0e-1;    // maximum width for finite difference estimate
   let ntrials <- 40;  // number of trials
   // ^ the interval width adapts by starting at h, halving until either
   //   success or ntrials trials, after which the test is considered failed

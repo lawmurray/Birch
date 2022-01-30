@@ -45,13 +45,28 @@ hpp{{
     const_cast<std::optional<Value>&>(x).reset(); \
   } \
   \
-  auto eval() const { \
+  const Value& value() const { \
+    auto x = this->eval(); \
+    this->constant(); \
+    return x; \
+  } \
+  \
+  Value eval() const { \
     auto l = birch::eval(this->l); \
     auto r = birch::eval(this->r); \
     return f(l, r, ##__VA_ARGS__); \
   } \
   \
-  auto move(const MoveVisitor& visitor) const { \
+  const Value& peek() const { \
+    if (!x) { \
+      auto l = birch::peek(this->l); \
+      auto r = birch::peek(this->r); \
+      const_cast<std::optional<Value>&>(x) = f(l, r, ##__VA_ARGS__); \
+    } \
+    return *x; \
+  } \
+  \
+  Value move(const MoveVisitor& visitor) const { \
     auto l = birch::move(this->l, visitor); \
     auto r = birch::move(this->r, visitor); \
     return f(l, r, ##__VA_ARGS__); \
@@ -60,21 +75,6 @@ hpp{{
   void args(const ArgsVisitor& visitor) const { \
     birch::args(this->l, visitor); \
     birch::args(this->r, visitor); \
-  } \
-  \
-  auto value() const { \
-    auto x = this->eval(); \
-    this->constant(); \
-    return x; \
-  } \
-  \
-  auto peek() const { \
-    if (!x) { \
-      auto l = birch::peek(this->l); \
-      auto r = birch::peek(this->r); \
-      const_cast<std::optional<Value>&>(x) = f(l, r, ##__VA_ARGS__); \
-    } \
-    return *x; \
   } \
   \
   template<class G> \
