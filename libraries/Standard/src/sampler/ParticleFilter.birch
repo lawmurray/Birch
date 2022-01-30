@@ -207,6 +207,7 @@ class ParticleFilter {
             x[n] <- copy(x[a[n]]);
           }
         }
+        collect();
 
         /* move */
         if κ? {
@@ -226,7 +227,6 @@ class ParticleFilter {
         w <- w - vector(lsum - log(nparticles), nparticles);
       }
     }
-    collect();
   }
 
   /**
