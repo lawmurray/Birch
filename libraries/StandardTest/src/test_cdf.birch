@@ -54,11 +54,11 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     let ε <- 2.0/sqrt(N);
     if 100 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
       failed <- true;
-      stderr.print("***failed*** on step " + n + ", " + δ + " > " + ε + "\n");
+      warn("on step " + n + ", " + C + " vs " + P);
     }
-    if failed {
-      exit(1);
-    }
+  }
+  if failed {
+    error("***failed***");
   }
 }
 
@@ -108,10 +108,10 @@ function test_cdf(q:Distribution<Integer>) {
     let ε <- 2.0e-3;
     if !(δ <= ε) {  // careful of nans
       failed <- true;
-      stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
+      warn("on value " + x + ", " + C + " vs " + P);
     }
-    if failed {
-      exit(1);
-    }
+  }
+  if failed {
+    error("***failed***");
   }
 }

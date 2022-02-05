@@ -169,10 +169,9 @@ function update_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
     k:Arg6, U:Arg7) -> {
   let n <- rows(X);
   let S <- wrap(triouter(Σ));
-  let K <- wrap(outer(S, A)*cholinv(chol(outer(A*Σ) + triouter(U))));
-  let S' <- wrap(S - K*A*S);
-  let M' <- wrap(M - K*A*M + S'*inner(A, cholsolve(U, X)));
-  let Σ' <- wrap(chol(S'));
+  let K' <- wrap(S*inner(A, cholinv(chol(A*outer(S, A) + triouter(U)))));
+  let M' <- wrap(M + K'*(X - A*M));
+  let Σ' <- wrap(chol(S - K'*A*S));
   let Ψ' <- chol(triouter(Ψ) + inner(trisolve(U, X)) + inner(trisolve(Σ, M)) -
       inner(trisolve(Σ', M')));
   let k' <- k + n;

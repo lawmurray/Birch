@@ -160,11 +160,11 @@ function logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
 function update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, a:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5,
     ν:Arg6) -> {
-  let S <- wrap(triouter(Σ));
-  let K' <- wrap(outer(S*a/(1.0 + dot(triinner(Σ, a))), a));
-  let S' <- wrap(S - K'*S);
-  let M' <- wrap(M - K'*M + S'*outer(a, x));
-  let Σ' <- wrap(chol(S'));
+  let b <- wrap(triinner(Σ, a));
+  let c <- wrap(trimul(Σ, b));
+  let k' <- wrap(c/(1.0 + dot(b)));
+  let M' <- wrap(outer(M, k', x - inner(M, a)));
+  let Σ' <- wrap(chol(triouter(Σ) - outer(k', c)));  ///@todo cholupdate()
   let Ψ' <- chol(triouter(Ψ) + outer(x) + inner(trisolve(Σ, M)) -
       inner(trisolve(Σ', M')));
   let ν' <- ν + 1.0;

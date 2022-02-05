@@ -202,11 +202,9 @@ function update_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian<
     α:Arg5, β:Arg6, Ω:Arg7) -> {
   let n <- length(x);
   let S <- wrap(triouter(Σ));
-  let K' <- wrap(inner(cholsolve(chol(inner(triinner(Σ, transpose(A))) +
-      triouter(Ω)), A*S), A));
-  let S' <- wrap(S - K'*S);
-  let μ' <- wrap(μ - K'*μ + S'*inner(A, cholsolve(Ω, x)));
-  let Σ' <- wrap(chol(S'));
+  let K' <- wrap(S*inner(A, cholinv(chol(A*outer(S, A) + triouter(Ω)))));
+  let μ' <- wrap(μ + K'*(x - A*μ));
+  let Σ' <- wrap(chol(S - K'*A*S));
   let α' <- α + 0.5*n;
   let β' <- β + 0.5*(dot(trisolve(Ω, x)) + dot(trisolve(Σ, μ)) -
       dot(trisolve(Σ', μ')));

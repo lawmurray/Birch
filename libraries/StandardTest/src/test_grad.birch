@@ -9,17 +9,17 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test
 
-  let Δ <- 1.0e-1;    // maximum width for finite difference estimate
+  let Δ <- 1.0;    // maximum width for finite difference estimate
   let ntrials <- 40;  // number of trials
   // ^ the interval width adapts by starting at h, halving until either
   //   success or ntrials trials, after which the test is considered failed
 
-  let γ <- 1.0e-3;  // acceptable failure rate
-  let ε <- 1.0e-3;  // relative error threshold for fail
+  let γ <- 2.0e-3;  // acceptable failure rate
+  let ε <- 2.0e-3;  // relative error threshold for fail
   // ^ the pass criterion is that 100*(1 - γ) percent of gradients computed
   //   are within 100.0*ε percent of the finite difference approximation; e.g.
-  //   with γ = 1.0e-3 and ε = 1.0e-3, that "99.9% of gradients computed are
-  //   within 0.1% of the finite difference approximation"
+  //   with γ = 2.0e-3 and ε = 2.0e-3, that "99.8% of gradients computed are
+  //   within 0.2% of the finite difference approximation"
 
   parallel for n in 1..N {
     let h <- construct<Handler>(backward, true);
@@ -71,8 +71,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         } else {
           /* fail */
           t <- ntrials + 1;
-          warn("on component " + i + ", g=" + g[i] + ", fd=" + min_fd +
-              ", "  + min_δ + " > " + ε*abs(min_fd));
+          warn("on component " + i + ", " + g[i] + " vs " + min_fd);
           failed[n] <- failed[n] + 1.0/rows(x);
         }
       }
@@ -82,6 +81,6 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   /* check that failure rate within bounds */
   let rfail <- sum(failed)/N;
   if N > 10 && !(rfail <= γ) {  // if N <= 10, smoke test only
-    error("***failed*** in aggregate, rate " + rfail + " > " + γ + "\n");
+    error("***failed*** in aggregate, rate " + rfail + " > " + γ);
   }
 }
