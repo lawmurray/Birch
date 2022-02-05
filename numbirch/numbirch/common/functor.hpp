@@ -459,14 +459,20 @@ struct log_square_functor {
 struct rectify_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    return std::max(T(0), x);
+    /* this is written to ensure that NaN propagates, i.e. if isnan(x)
+     * then the condition is false and NaN is returned */
+    if (x <= T(0)) {
+      return T(0);
+    } else {
+      return x;
+    }
   }
 };
 
 struct rectify_grad_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x) const {
-    return (x > T(0)) ? g : real(0);
+    return (x <= T(0)) ? real(0) : g;
   }
 };
 
