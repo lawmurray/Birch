@@ -1,18 +1,18 @@
 class TestConwayMaxwellPoisson < TestModel {
   x:Random<Integer>;
-  λ:Random<Real>;
+  μ:Random<Real>;
   ν:Random<Real>;
   n:Integer;
 
   override function initialize() {
-    λ ~ Uniform(0.5, 100.0);
-    ν ~ Uniform(0.5, 2.0);
+    μ ~ Uniform(0.5, 100.0);
+    ν ~ Uniform(0.5, 10.0);
     let P <- simulate_uniform(0.5, 0.95);
-    n <- quantile_conway_maxwell_poisson(P, eval(λ), eval(ν), 10000) + 1;
+    n <- quantile_conway_maxwell_poisson(P, eval(μ), eval(ν), 10000) + 1;
   }
 
   override function simulate() {
-    x ~ ConwayMaxwellPoisson(λ, ν, n);
+    x ~ ConwayMaxwellPoisson(μ, ν, n);
   }
 
   override function forward() -> Real[_] {

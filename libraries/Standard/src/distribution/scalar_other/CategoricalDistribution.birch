@@ -81,10 +81,11 @@ function simulate_categorical<Arg1>(ρ:Arg1) -> {
  * - Z: Sum of the unnormalized category probabilities.
  */
 function simulate_categorical<Arg1,Arg2>(ρ:Arg1, Z:Arg2) -> {
+  let P <- 0.0;
   let u <- simulate_uniform(0.0, Z);
   let x <- 0;
-  let P <- 0.0;
-  while u > P {
+  let N <- length(ρ);
+  while P <= u && x < N {
     x <- x + 1;
     P <- P + ρ[x];
   }

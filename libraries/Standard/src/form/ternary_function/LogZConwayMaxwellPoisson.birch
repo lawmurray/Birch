@@ -16,7 +16,7 @@ namespace birch {
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
  * distribution truncated on a finite interval $[0,n]$.
  *
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  *
@@ -31,45 +31,46 @@ LogZConwayMaxwellPoisson<Left,Middle,Right> logz_conway_maxwell_poisson(
 }
 }}
 
-function logz_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real {
-  let log_λ <- log(λ);
-
+function logz_conway_maxwell_poisson(μ:Real, ν:Real, n:Integer) -> Real {
   /* to avoid taking exp() of large negative values, normalize each term in
    * this sum using the maximum term, which is the unnormalized log
    * probability at the mode; this is similar to log_sum_exp() */
-  let μ <- min(pow(λ, 1.0/ν), cast<Real>(n));  // mode
-  let mx <- μ*log_λ - ν*lgamma(μ + 1.0);  // max unnormalized log probability
+  let log_λ <- ν*log(μ);
+  let mx <- min(μ, cast<Real>(n))*log_λ - ν*lfact(μ);
 
-  /* sum renormalized terms */
+  /* sum renormalized terms for x in 1..n; x = 0 case deferred */
   let log_xf <- 0.0;  // accumulator of log(x!)
-  let Z <- exp(-mx);  // for x == 0
+  let Z <- 0.0;
   for x in 1..n {
-    log_xf <- log_xf + log(cast<Real>(x));
+    log_xf <- log_xf + log(x);
     Z <- Z + exp(x*log_λ - ν*log_xf - mx);
   }
-
-  return mx + log(Z);
+  let log_Z <- mx + log(Z) + 1.0;  // +1.0 for the x == 0 case
+  if isfinite(log_Z) {
+    return log_Z;
+  } else {
+    return 0.0/0.0;
+  }
 }
 
 function logz_conway_maxwell_poisson_grad<Gradient,Value>(g:Gradient, x:Value,
-    λ:Real, ν:Real, n:Integer) -> (Real, Real, Real) {
-  let log_λ <- log(λ);
-  let μ <- min(pow(λ, 1.0/ν), cast<Real>(n));  // mode
-  let mx <- μ*log_λ - ν*lgamma(μ + 1.0);  // renormalizer
+    μ:Real, ν:Real, n:Integer) -> (Real, Real, Real) {
+  let log_λ <- ν*log(μ);
+  let mx <- μ*log_λ - ν*lfact(μ);  // renormalizer
   let log_xf <- 0.0;  // accumulator of lfact(x)
   let z <- 0.0;
   let Z <- exp(-mx);  // for x == 0
   let gλ <- 0.0;
+  let gμ <- 0.0;
   let gν <- 0.0;
   for x in 1..n {
     log_xf <- log_xf + log(x);
     z <- exp(x*log_λ - ν*log_xf - mx);
     Z <- Z + z;
     gλ <- gλ + x*z;
-    gν <- gν + log_xf*z;
+    gν <- gν - log_xf*z;
   }
-  gλ <- g*gλ/(λ*Z);
-  gν <- -g*gν/Z;
-
-  return (gλ, gν, 0.0);
+  gμ <- g*gλ*ν/(μ*Z);
+  gν <- g*(gν + gλ*log(μ))/Z;
+  return (gμ, gν, 0.0);
 }

@@ -1,7 +1,7 @@
 /**
  * Conway-Maxwell-Poisson distribution.
  *
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  *
@@ -11,12 +11,12 @@
  * $n$, the closer the approximation to the non-truncated distribution---if
  * that is desired---but the more expensive operations: most are $O(n)$.
  */
-class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
+class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) < BoundedDiscreteDistribution {
   /**
-   * Rate.
+   * Mode.
    */
-  λ:Arg1 <- λ;
+  μ:Arg1 <- μ;
 
   /**
    * Dispersion.
@@ -33,27 +33,27 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
   }
 
   override function simulate() -> Integer! {
-    return simulate_conway_maxwell_poisson(value(λ), value(ν), value(n));
+    return simulate_conway_maxwell_poisson(value(μ), value(ν), value(n));
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_conway_maxwell_poisson(eval(λ), eval(ν), eval(n));
+    return simulate_conway_maxwell_poisson(eval(μ), eval(ν), eval(n));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_conway_maxwell_poisson(x, value(λ), value(ν), value(n));
+    return logpdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
   }
 
   override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
-    return box(logpdf_conway_maxwell_poisson(x, λ, ν, n));
+    return box(logpdf_conway_maxwell_poisson(x, μ, ν, n));
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_conway_maxwell_poisson(x, value(λ), value(ν), value(n));
+    return cdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_conway_maxwell_poisson(P, value(λ), value(ν), value(n));
+    return quantile_conway_maxwell_poisson(P, value(μ), value(ν), value(n));
   }
 
   override function lower() -> Integer!? {
@@ -66,7 +66,7 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
 
   override function write(buffer:Buffer) {
     buffer.set("class", "ConwayMaxwellPoisson");
-    buffer.set("λ", value(λ));
+    buffer.set("μ", value(μ));
     buffer.set("ν", value(ν));
     buffer.set("n", value(n));
   }
@@ -75,91 +75,91 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
 /**
  * Create Conway-Maxwell-Poisson distribution.
  */
-function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2, n:Arg3) -> {
-  return wrap_conway_maxwell_poisson(λ, ν, n);
+function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2, n:Arg3) -> {
+  return wrap_conway_maxwell_poisson(μ, ν, n);
 }
-function wrap_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
+function wrap_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {
-  return make_conway_maxwell_poisson(wrap(λ), wrap(ν), wrap(n));
+  return make_conway_maxwell_poisson(wrap(μ), wrap(ν), wrap(n));
 }
-function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
+function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {
-  return construct<ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>>(λ, ν, n);
+  return construct<ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>>(μ, ν, n);
 }
 
 /*
  * Simulate a Conway-Maxwell-Poisson distribution.
  *
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  */
-function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(λ:Arg1, ν:Arg2,
+function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {
-  let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return simulate_categorical(p, sum(p)) - 1;
+  let p <- p_conway_maxwell_poisson(μ, ν, n);
+  return simulate_categorical(p, 1.0) - 1;
 }
 
 /*
  * Observe a Conway-Maxwell-Poisson variate.
  *
  * - x: The variate.
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  *
  * Returns: the log probability mass.
  */
-function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
+function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  return if_then_else(0 <= x && x <= n, x*log(λ) - ν*lfact(x) -
-      logz_conway_maxwell_poisson(λ, ν, n), -inf);
+  return if_then_else(0 <= x && x <= n, x*ν*log(μ) - ν*lfact(x) -
+      logz_conway_maxwell_poisson(μ, ν, n), -inf);
 }
 
 /*
  * CDF of a Conway-Maxwell-Poisson variate.
  *
  * - x: The variate.
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  *
  * Return: the cumulative probability.
  */
-function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, λ:Arg2,
+function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return cdf_categorical(x + 1, p, sum(p)!);
+  let p <- p_conway_maxwell_poisson(μ, ν, n);
+  return cdf_categorical(x + 1, p, 1.0);
 }
 
 /*
  * Quantile of a Conway-Maxwell-Poisson distribution.
  *
  * - P: The cumulative probability.
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  *
  * Return: the quantile.
  */
-function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, λ:Arg2,
+function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  let p <- p_conway_maxwell_poisson(λ, ν, n);
-  return quantile_categorical(P, p, sum(p)!) - 1;
+  let p <- p_conway_maxwell_poisson(μ, ν, n);
+  return quantile_categorical(P, p, 1.0) - 1;
 }
 
 /*
  * Enumerated probabilities of a Conway-Maxwell-Poisson distribution truncated
  * on a finite interval $[0,n]$.
  *
- * - λ: Rate.
+ * - μ: Mode.
  * - ν: Dispersion.
  * - n: Truncation point.
  *
  * Return: vector of probabilities on $[0,n]$.
  */
-function p_conway_maxwell_poisson(λ:Real, ν:Real, n:Integer) -> Real[_] {
-  let log_λ <- log(λ);
+function p_conway_maxwell_poisson(μ:Real, ν:Real, n:Integer) -> Real[_] {
+  let log_λ <- ν*log(μ);
   let log_xf <- 0.0;  // accumulator of log(x!)
   z:Real[n + 1];
   for x in 1..(n + 1) {
