@@ -32,25 +32,21 @@ LogZConwayMaxwellPoisson<Left,Middle,Right> logz_conway_maxwell_poisson(
 }}
 
 function logz_conway_maxwell_poisson(μ:Real, ν:Real, n:Integer) -> Real {
-  /* to avoid taking exp() of large negative values, normalize each term in
+  /* to avoid taking exp() of large negative values, renormalize each term in
    * this sum using the maximum term, which is the unnormalized log
    * probability at the mode; this is similar to log_sum_exp() */
   let log_λ <- ν*log(μ);
-  let mx <- min(μ, cast<Real>(n))*log_λ - ν*lfact(μ);
+  let mode <- min(μ, cast<Real>(n));
+  let mx <- mode*log_λ - ν*lfact(mode);
 
-  /* sum renormalized terms for x in 1..n; x = 0 case deferred */
+  /* sum renormalized terms for x in 0..n */
   let log_xf <- 0.0;  // accumulator of log(x!)
-  let Z <- 0.0;
+  let Z <- exp(-mx);  // x = 0 case
   for x in 1..n {
     log_xf <- log_xf + log(x);
     Z <- Z + exp(x*log_λ - ν*log_xf - mx);
   }
-  let log_Z <- mx + log(Z) + 1.0;  // +1.0 for the x == 0 case
-  if isfinite(log_Z) {
-    return log_Z;
-  } else {
-    return 0.0/0.0;
-  }
+  return mx + log(Z);
 }
 
 function logz_conway_maxwell_poisson_grad<Gradient,Value>(g:Gradient, x:Value,
