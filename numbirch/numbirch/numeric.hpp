@@ -465,7 +465,7 @@ Array<T,2> inner(const Array<T,2>& A) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inner_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
-  return outer(A, g) + A*g;
+  return A*(g + transpose(g));
 }
 
 /**
@@ -673,7 +673,7 @@ Array<T,2> outer(const Array<T,1>& x) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,1>& x) {
-  return g*x + inner(g, x);
+  return (g + transpose(g))*x;
 }
 
 /**
@@ -782,7 +782,7 @@ Array<T,2> outer(const Array<T,2>& A) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
-  return g*A + inner(g, A);
+  return (g + transpose(g))*A;
 }
 
 /**
