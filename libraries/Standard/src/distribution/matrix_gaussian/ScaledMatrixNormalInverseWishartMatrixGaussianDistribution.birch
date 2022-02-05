@@ -127,7 +127,8 @@ function MatrixGaussian<Arg1,Arg2>(M:Multiply<Arg1,Random<Real[_,_]>>, U:Arg2,
 function simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
     U:Arg6) -> {
-  return simulate_matrix_t(k, A*M, chol(outer(A*Σ) + triouter(U)), Ψ);
+  let S <- chol(A*outer(triouter(Σ), A) + triouter(U));
+  return simulate_matrix_t(k, A*M, S, Ψ);
 }
 
 /*
@@ -147,7 +148,8 @@ function simulate_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
 function logpdf_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5,
     k:Arg6, U:Arg7) -> {
-  return logpdf_matrix_t(X, k, A*M, chol(outer(A*Σ) + triouter(U)), Ψ);
+  let S <- chol(A*outer(triouter(Σ), A) + triouter(U));
+  return logpdf_matrix_t(X, k, A*M, S, Ψ);
 }
 
 /*

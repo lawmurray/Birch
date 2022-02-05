@@ -157,7 +157,7 @@ function simulate_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5,
     Ω:Arg6) -> {
   let m <- A*μ;
-  let S <- sqrt(2.0*β)*chol(inner(triinner(Σ, transpose(A))) + triouter(Ω));
+  let S <- sqrt(2.0*β)*chol(A*outer(triouter(Σ), A) + triouter(Ω));
   return simulate_multivariate_t(2.0*α, m, S);
 }
 
@@ -179,7 +179,7 @@ function logpdf_scaled_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4,
     α:Arg5, β:Arg6, Ω:Arg7) -> {
   let m <- A*μ;
-  let S <- sqrt(2.0*β)*chol(inner(triinner(Σ, transpose(A))) + triouter(Ω));
+  let S <- sqrt(2.0*β)*chol(A*outer(triouter(Σ), A) + triouter(Ω));
   return logpdf_multivariate_t(x, 2.0*α, m, S);
 }
 
