@@ -26,7 +26,7 @@ Array<int,0> count(const T& x);
 /**
  * Gradient of count().
  * 
- * @ingroup reduce
+ * @ingroup reduce_grad
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -59,7 +59,7 @@ Array<value_t<T>,0> sum(const T& x);
 /**
  * Gradient of sum().
  * 
- * @ingroup reduce
+ * @ingroup reduce_grad
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.

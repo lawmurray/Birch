@@ -1,40 +1,33 @@
 /**
  * @file
  * 
- * @defgroup numeric Numeric
- * Asynchronous numerics.
- * 
- * @defgroup unary Unary transformations
- * @ingroup numeric
- * Batched unary transformations of standard and special math functions and
- * gradients, such as sin() and digamma().
- * 
- * @defgroup binary Binary transformations
- * @ingroup numeric
- * Batched binary transformations of standard and special math functions and
- * gradients, such as pow() and lbeta().
- * 
- * @defgroup ternary Ternary transformations
- * @ingroup numeric
- * Batched ternary transformations of standard and special math functions and
- * gradients, such as ibeta().
- * 
- * @defgroup reduce Reductions
- * @ingroup numeric
- * Reductions such as sum() and count().
- * 
- * @defgroup la Linear algebra
- * @ingroup numeric
- * Linear algebra operations, such as matrix multiplication, trisolve() and
- * cholsolve().
- * 
- * @defgroup random Pseudorandom number generation
- * @ingroup numeric
- * Batched pseudorandom number generation, as well as multivariate and matrix
- * distributions.
- * 
  * @defgroup array Array
  * Multidimensional arrays with copy-on-write and unified memory management.
+ * 
+ * @defgroup transform Transformations
+ * Transformations of standard and special math functions such as sin() and
+ * lgamma().
+ * 
+ * @defgroup transform_grad Gradients
+ * @ingroup transform
+ * Gradients of transformations.
+ * 
+ * @defgroup reduce Reductions
+ * Reductions such as sum() and count().
+ * 
+ * @defgroup reduce_grad Gradients
+ * @ingroup reduce
+ * Gradients of reductions.
+ * 
+ * @defgroup linalg Linear algebra
+ * Linear algebra functions, such as matrix multiplication and solve().
+ * 
+ * @defgroup linalg_grad Gradients
+ * @ingroup linalg
+ * Gradients of linear algebra functions.
+ * 
+ * @defgroup random Random number generation
+ * Batched pseudorandom number generation.
  *
  * @defgroup memory Memory
  * Asynchronous unified memory management.

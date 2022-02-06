@@ -12,7 +12,7 @@ namespace numbirch {
 /**
  * Element-wise addition.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -29,7 +29,7 @@ implicit_t<T,U> operator+(const T& x, const U& y);
 /**
  * Gradient of operator+().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -51,7 +51,7 @@ std::pair<default_t<T>,default_t<U>> add_grad(const default_t<T,U>& g,
 /**
  * Element-wise subtraction.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -68,7 +68,7 @@ implicit_t<T,U> operator-(const T& x, const U& y);
 /**
  * Gradient of operator-().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -91,7 +91,7 @@ std::pair<default_t<T>,default_t<U>> subtract_grad(
 /**
  * Logical `and`.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -108,7 +108,7 @@ explicit_t<bool,T,U> operator&&(const T& x, const U& y);
 /**
  * Gradient of operator&&().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -128,7 +128,7 @@ std::pair<default_t<T>,default_t<U>> and_grad(const default_t<T,U>& g,
 /**
  * Logical `or`.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -145,7 +145,7 @@ explicit_t<bool,T,U> operator||(const T& x, const U& y);
 /**
  * Gradient of operator||().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
 * @tparam G Numeric type.
  * @tparam T Numeric type.
@@ -166,7 +166,7 @@ std::pair<default_t<T>,default_t<U>> or_grad(const default_t<T,U>& g,
 /**
  * Element-wise equal to comparison.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -183,7 +183,7 @@ explicit_t<bool,T,U> operator==(const T& x, const U& y);
 /**
  * Gradient of operator==().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -203,7 +203,7 @@ std::pair<default_t<T>,default_t<U>> equal_grad(const default_t<T,U>& g,
 /**
  * Element-wise not equal to comparison.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -220,7 +220,7 @@ explicit_t<bool,T,U> operator!=(const T& x, const U& y);
 /**
  * Gradient of operator!=().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -240,7 +240,7 @@ std::pair<default_t<T>,default_t<U>> not_equal_grad(const default_t<T,U>& g,
 /**
  * Element-wise less than comparison.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -257,7 +257,7 @@ explicit_t<bool,T,U> operator<(const T& x, const U& y);
 /**
  * Gradient of operator<().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -277,7 +277,7 @@ std::pair<default_t<T>,default_t<U>> less_grad(const default_t<T,U>& g,
 /**
  * Element-wise less than or equal to comparison.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -294,7 +294,7 @@ explicit_t<bool,T,U> operator<=(const T& x, const U& y);
 /**
  * Gradient of operator<=().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -315,7 +315,7 @@ std::pair<default_t<T>,default_t<U>> less_or_equal_grad(
 /**
  * Element-wise greater than comparison.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -332,7 +332,7 @@ explicit_t<bool,T,U> operator>(const T& x, const U& y);
 /**
  * Gradient of operator>().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -352,7 +352,7 @@ std::pair<default_t<T>,default_t<U>> greater_grad(const default_t<T,U>& g,
 /**
  * Element-wise greater than or equal to comparison.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -369,7 +369,7 @@ explicit_t<bool,T,U> operator>=(const T& x, const U& y);
 /**
  * Gradient of operator>=().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -390,7 +390,7 @@ std::pair<default_t<T>,default_t<U>> greater_or_equal_grad(
 /**
  * Copy sign of a number.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -407,7 +407,7 @@ implicit_t<T,U> copysign(const T& x, const U& y);
 /**
  * Gradient of copysign().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -427,7 +427,7 @@ std::pair<default_t<T>,default_t<U>> copysign_grad(const default_t<T,U>& g,
 /**
  * Multivariate digamma.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -444,7 +444,7 @@ default_t<T,U> digamma(const T& x, const U& y);
 /**
  * Normalized lower incomplete gamma.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -461,7 +461,7 @@ default_t<T,U> gamma_p(const T& x, const U& y);
 /**
  * Normalized upper incomplete gamma.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -478,7 +478,7 @@ default_t<T,U> gamma_q(const T& x, const U& y);
 /**
  * Hadamard (element-wise) multiplication.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -495,7 +495,7 @@ implicit_t<T,U> hadamard(const T& x, const U& y);
 /**
  * Gradient of hadamard().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -515,7 +515,7 @@ std::pair<default_t<T>,default_t<U>> hadamard_grad(const default_t<T,U>& g,
 /**
  * Logarithm of beta.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -532,7 +532,7 @@ default_t<T,U> lbeta(const T& x, const U& y);
 /**
  * Gradient of lbeta().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -552,7 +552,7 @@ std::pair<default_t<T>,default_t<U>> lbeta_grad(const default_t<T,U>& g,
 /**
  * Logarithm of the binomial coefficient.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -569,7 +569,7 @@ default_t<T,U> lchoose(const T& x, const U& y);
 /**
  * Gradient of lchoose().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -589,7 +589,7 @@ std::pair<default_t<T>,default_t<U>> lchoose_grad(const default_t<T,U>& g,
 /**
  * Logarithm of multivariate gamma.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -606,7 +606,7 @@ default_t<T,U> lgamma(const T& x, const U& y);
 /**
  * Gradient of lgamma().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -626,7 +626,7 @@ std::pair<default_t<T>,default_t<U>> lgamma_grad(const default_t<T,U>& g,
 /**
  * Power.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -643,7 +643,7 @@ default_t<T,U> pow(const T& x, const U& y);
 /**
  * Gradient of pow().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -663,7 +663,7 @@ std::pair<default_t<T>,default_t<U>> pow_grad(const default_t<T,U>& g,
 /**
  * Multiplication by scalar.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -680,7 +680,7 @@ implicit_t<T,U> operator*(const T& x, const U& y);
 /**
  * Gradient of operator*().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.
@@ -714,7 +714,7 @@ std::pair<default_t<T>,default_t<U>> multiply_grad(const default_t<T,U>& g,
 /**
  * Division by scalar.
  * 
- * @ingroup binary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * @tparam U Scalar type.
@@ -731,7 +731,7 @@ implicit_t<T,U> operator/(const T& x, const U& y);
 /**
  * Gradient of operator/().
  * 
- * @ingroup binary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * @tparam U Numeric type.

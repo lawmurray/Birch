@@ -12,7 +12,7 @@ namespace numbirch {
 /**
  * Matrix-vector multiplication.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -27,7 +27,7 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
 /**
  * Gradient of operator*().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -47,7 +47,7 @@ std::pair<Array<T,2>,Array<T,1>> multiply_grad(const Array<T,1>& g,
 /**
  * Matrix-matrix multiplication.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -62,7 +62,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
 /**
  * Gradient of operator*().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -82,7 +82,7 @@ std::pair<Array<T,2>,Array<T,2>> multiply_grad(const Array<T,2>& g,
 /**
  * Cholesky factorization of a symmetric positive definite square matrix.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -97,7 +97,7 @@ Array<T,2> chol(const Array<T,2>& S);
 /**
  * Gradient of chol().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -115,7 +115,7 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
  * Inverse of a symmetric positive definite square matrix via the Cholesky
  * factorization.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -130,7 +130,7 @@ Array<T,2> cholinv(const Array<T,2>& L);
 /**
  * Gradient of cholinv().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -148,7 +148,7 @@ Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
 /**
  * Matrix-vector solve via the Cholesky factorization.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -164,7 +164,7 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y);
 /**
  * Gradient of cholsolve().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -183,7 +183,7 @@ std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
 /**
  * Matrix-matrix solve via the Cholesky factorization.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -199,7 +199,7 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C);
 /**
  * Gradient of cholsolve().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -218,7 +218,7 @@ std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
 /**
  * Vector dot product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -234,7 +234,7 @@ Array<T,0> dot(const Array<T,1>& x) {
 /**
  * Gradient of dot().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -253,7 +253,7 @@ Array<T,1> dot_grad(const Array<T,0>& g, const Array<T,0>& z,
 /**
  * Vector-vector dot product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -268,7 +268,7 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
 /**
  * Gradient of dot().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -288,7 +288,7 @@ std::pair<Array<T,1>,Array<T,1>> dot_grad(const Array<T,0>& g,
 /**
  * Matrix Frobenius product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -305,7 +305,7 @@ Array<T,0> frobenius(const Array<T,2>& A) {
 /**
  * Gradient of frobenius().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -325,7 +325,7 @@ Array<T,2> frobenius_grad(const Array<T,0>& g, const Array<T,0>& z,
 /**
  * Matrix-matrix Frobenius product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -341,7 +341,7 @@ Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
 /**
  * Gradient of frobenius().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -362,7 +362,7 @@ std::pair<Array<T,2>,Array<T,2>> frobenius_grad(const Array<T,0>& g,
 /**
  * Matrix-vector inner product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -377,7 +377,7 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 /**
  * Gradient of inner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -397,7 +397,7 @@ std::pair<Array<T,2>,Array<T,1>> inner_grad(const Array<T,1>& g,
 /**
  * Matrix-vector inner product and addition.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -414,7 +414,7 @@ Array<T,1> inner(const Array<T,1>& x, const Array<T,2>& A,
 /**
  * Gradient of inner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -436,7 +436,7 @@ std::tuple<Array<T,1>,Array<T,2>,Array<T,1>> inner_grad(const Array<T,1>& g,
 /**
  * Matrix inner product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -452,7 +452,7 @@ Array<T,2> inner(const Array<T,2>& A) {
 /**
  * Gradient of inner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -471,7 +471,7 @@ Array<T,2> inner_grad(const Array<T,2>& g, const Array<T,2>& B,
 /**
  * Matrix-matrix inner product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -486,7 +486,7 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
 /**
  * Gradient of inner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -506,7 +506,7 @@ std::pair<Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& g,
 /**
  * Matrix-matrix inner product and addition.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -523,7 +523,7 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B,
 /**
  * Gradient of inner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -545,7 +545,7 @@ std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& g,
 /**
  * Inverse of a square matrix.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -559,7 +559,7 @@ Array<T,2> inv(const Array<T,2>& A);
 /**
  * Gradient of inv().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -578,7 +578,7 @@ Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
  * the Cholesky factorization. The determinant of a positive definite matrix
  * is always positive, so its logarithm is defined.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -593,7 +593,7 @@ Array<T,0> lcholdet(const Array<T,2>& L);
 /**
  * Gradient of `lcholdet()`.
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -611,7 +611,7 @@ Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
 /**
  * Logarithm of the absolute value of the determinant of a square matrix.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -625,7 +625,7 @@ Array<T,0> ldet(const Array<T,2>& A);
 /**
  * Gradient of `ldet()`.
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -644,7 +644,7 @@ Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,0>& d,
 /**
  * Vector outer product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -660,7 +660,7 @@ Array<T,2> outer(const Array<T,1>& x) {
 /**
  * Gradient of outer().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -679,7 +679,7 @@ Array<T,1> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
 /**
  * Vector-vector outer product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -694,7 +694,7 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
 /**
  * Gradient of outer().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -714,7 +714,7 @@ std::pair<Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& g,
 /**
  * Vector-vector outer product and addition.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -731,7 +731,7 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,1>& x,
 /**
  * Gradient of outer().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -753,7 +753,7 @@ std::tuple<Array<T,2>,Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& g,
 /**
  * Matrix outer product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -769,7 +769,7 @@ Array<T,2> outer(const Array<T,2>& A) {
 /**
  * Gradient of outer().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -788,7 +788,7 @@ Array<T,2> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
 /**
  * Matrix-matrix outer product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -803,7 +803,7 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
 /**
  * Gradient of outer().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -823,7 +823,7 @@ std::pair<Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
 /**
  * Matrix-matrix outer product and addition.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -840,7 +840,7 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B,
 /**
  * Gradient of outer().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -862,7 +862,7 @@ std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
 /**
  * Matrix transpose.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -876,7 +876,7 @@ Array<T,2> transpose(const Array<T,2>& A);
 /**
  * Gradient of transpose().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -895,7 +895,7 @@ Array<T,2> transpose_grad(const Array<T,2>& g, const Array<T,2>& B,
 /**
  * Lower-triangular-matrix-vector inner product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -910,7 +910,7 @@ Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x);
 /**
  * Gradient of triinner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -928,7 +928,7 @@ std::pair<Array<T,2>,Array<T,1>> triinner_grad(const Array<T,1>& g,
 /**
  * Lower-triangular-matrix inner product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -942,7 +942,7 @@ Array<T,2> triinner(const Array<T,2>& L);
 /**
  * Gradient of triinner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -959,7 +959,7 @@ Array<T,2> triinner_grad(const Array<T,2>& g, const Array<T,2>& C,
 /**
  * Lower-triangular-matrix-matrix inner product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -974,7 +974,7 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B);
 /**
  * Gradient of triinner().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -992,7 +992,7 @@ std::pair<Array<T,2>,Array<T,2>> triinner_grad(const Array<T,2>& g,
 /**
  * Inverse of a triangular matrix.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1006,7 +1006,7 @@ Array<T,2> triinv(const Array<T,2>& L);
 /**
  * Gradient of triinv().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -1023,7 +1023,7 @@ Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
 /**
  * Lower-triangular-matrix-vector product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1038,7 +1038,7 @@ Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x);
 /**
  * Gradient of trimul().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -1056,7 +1056,7 @@ std::pair<Array<T,2>,Array<T,1>> trimul_grad(const Array<T,1>& g,
 /**
  * Lower-triangular-matrix-matrix product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1071,7 +1071,7 @@ Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B);
 /**
  * Gradient of trimul().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -1089,7 +1089,7 @@ std::pair<Array<T,2>,Array<T,2>> trimul_grad(const Array<T,2>& g,
 /**
  * Lower-triangular-matrix outer product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1103,7 +1103,7 @@ Array<T,2> triouter(const Array<T,2>& L);
 /**
  * Gradient of triouter().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -1120,7 +1120,7 @@ Array<T,2> triouter_grad(const Array<T,2>& g, const Array<T,2>& C,
 /**
  * Matrix-lower-triangular-matrix outer product.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1135,7 +1135,7 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L);
 /**
  * Gradient of triouter().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -1153,7 +1153,7 @@ std::pair<Array<T,2>,Array<T,2>> triouter_grad(const Array<T,2>& g,
 /**
  * Lower-triangular-matrix-vector solve.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1168,7 +1168,7 @@ Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y);
 /**
  * Gradient of trisolve().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 
@@ -1186,7 +1186,7 @@ std::pair<Array<T,2>,Array<T,1>> trisolve_grad(const Array<T,1>& g,
 /**
  * Lower-triangular-matrix-matrix solve.
  * 
- * @ingroup la
+ * @ingroup linalg
  * 
  * @tparam T Floating point type.
  * 
@@ -1201,7 +1201,7 @@ Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C);
 /**
  * Gradient of trisolve().
  * 
- * @ingroup la
+ * @ingroup linalg_grad
  * 
  * @tparam T Floating point type.
  * 

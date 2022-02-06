@@ -12,7 +12,7 @@ namespace numbirch {
 /**
  * Identity.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -28,7 +28,7 @@ T operator+(const T& x) {
 /**
  * Gradient of unary operator+().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -46,7 +46,7 @@ default_t<T> identity_grad(const default_t<T>& g, const T& y, const T& x) {
 /**
  * Negation.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -60,7 +60,7 @@ T operator-(const T& x);
 /**
  * Gradient of operator!().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -79,7 +79,7 @@ default_t<T> negate_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Logical `not`.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -93,7 +93,7 @@ explicit_t<bool,T> operator!(const T& x);
 /**
  * Gradient of operator!().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -110,7 +110,7 @@ default_t<T> not_grad(const default_t<T>& g, const explicit_t<bool,T>& y,
 /**
  * Absolute value.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -124,7 +124,7 @@ T abs(const T& x);
 /**
  * Gradient of abs().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -140,21 +140,7 @@ default_t<T> abs_grad(const default_t<T>& g, const T& y, const T& x);
 /**
  * Arc cosine.
  * 
- * @ingroup unary
- * 
- * @tparam T Numeric type.
- * 
- * @param x Argument.
- * 
- * @return Result.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> acos(const T& x);
-
-/**
- * Arc cosine.
- * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -168,7 +154,7 @@ default_t<T> acos(const T& x);
 /**
  * Gradient of acos().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -185,7 +171,7 @@ default_t<T> acos_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Arc sine.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -199,7 +185,7 @@ default_t<T> asin(const T& x);
 /**
  * Gradient of asin().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -216,7 +202,7 @@ default_t<T> asin_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Arc tangent.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -230,7 +216,7 @@ default_t<T> atan(const T& x);
 /**
  * Gradient of atan().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -247,7 +233,7 @@ default_t<T> atan_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Cast.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam R Arithmetic type.
  * @tparam T Numeric type.
@@ -263,7 +249,7 @@ explicit_t<R,T> cast(const T& x);
 /**
  * Gradient of cast().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -281,7 +267,7 @@ default_t<T> cast_grad(const default_t<T>& g, const R& y, const T& x) {
 /**
  * Round to smallest integer value not less than argument.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -295,7 +281,7 @@ T ceil(const T& x);
 /**
  * Gradient of ceil().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -311,7 +297,7 @@ default_t<T> ceil_grad(const default_t<T>& g, const T& y, const T& x);
 /**
  * Cosine.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -325,7 +311,7 @@ default_t<T> cos(const T& x);
 /**
  * Gradient of cos().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -342,7 +328,7 @@ default_t<T> cos_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Hyperbolic cosine.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -356,7 +342,7 @@ default_t<T> cosh(const T& x);
 /**
  * Gradient of cosh().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -373,7 +359,7 @@ default_t<T> cosh_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Digamma.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -387,7 +373,7 @@ default_t<T> digamma(const T& x);
 /**
  * Exponential.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -401,7 +387,7 @@ default_t<T> exp(const T& x);
 /**
  * Gradient of exp().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -420,7 +406,7 @@ default_t<T> exp_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Exponential minus one.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -434,7 +420,7 @@ default_t<T> expm1(const T& x);
 /**
  * Gradient of expm1().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -453,7 +439,7 @@ default_t<T> expm1_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Round to largest integer value not greater than argument.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -467,7 +453,7 @@ T floor(const T& x);
 /**
  * Gradient of floor().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -483,7 +469,7 @@ default_t<T> floor_grad(const default_t<T>& g, const T& y, const T& x);
 /**
  * Logarithm of the factorial function.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -497,7 +483,7 @@ default_t<T> lfact(const T& x);
 /**
  * Gradient of lfact().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -514,7 +500,7 @@ default_t<T> lfact_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Logarithm of gamma.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -528,7 +514,7 @@ default_t<T> lgamma(const T& x);
 /**
  * Gradient of lgamma().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -545,7 +531,7 @@ default_t<T> lgamma_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Logarithm.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -559,7 +545,7 @@ default_t<T> log(const T& x);
 /**
  * Gradient of log().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -576,7 +562,7 @@ default_t<T> log_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Logarithm of one plus argument.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -590,7 +576,7 @@ default_t<T> log1p(const T& x);
 /**
  * Gradient of log1p().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -607,7 +593,7 @@ default_t<T> log1p_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Rectification.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -621,7 +607,7 @@ T rectify(const T& x);
 /**
  * Gradient of rectify().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -637,7 +623,7 @@ default_t<T> rectify_grad(const default_t<T>& g, const T& y, const T& x);
 /**
  * Round to nearest integer value.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -651,7 +637,7 @@ T round(const T& x);
 /**
  * Gradient of round().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -667,7 +653,7 @@ default_t<T> round_grad(const default_t<T>& g, const T& y, const T& x);
 /**
  * Sine.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -681,7 +667,7 @@ default_t<T> sin(const T& x);
 /**
  * Gradient of sin().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -698,7 +684,7 @@ default_t<T> sin_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Hyperbolic sine.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -712,7 +698,7 @@ default_t<T> sinh(const T& x);
 /**
  * Gradient of sinh().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -729,7 +715,7 @@ default_t<T> sinh_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Square root.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -743,7 +729,7 @@ default_t<T> sqrt(const T& x);
 /**
  * Gradient of sqrt().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -760,7 +746,7 @@ default_t<T> sqrt_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Tangent.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -774,7 +760,7 @@ default_t<T> tan(const T& x);
 /**
  * Gradient of tan().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
@@ -791,7 +777,7 @@ default_t<T> tan_grad(const default_t<T>& g, const default_t<T>& y,
 /**
  * Hyperbolic tangent.
  * 
- * @ingroup unary
+ * @ingroup transform
  * 
  * @tparam T Numeric type.
  * 
@@ -805,7 +791,7 @@ default_t<T> tanh(const T& x);
 /**
  * Gradient of tanh().
  * 
- * @ingroup unary
+ * @ingroup transform_grad
  * 
  * @tparam T Numeric type.
  * 
