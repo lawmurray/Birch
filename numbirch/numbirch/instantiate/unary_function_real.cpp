@@ -9,7 +9,7 @@
 #include "numbirch/eigen/transform.hpp"
 #include "numbirch/eigen/random.hpp"
 #endif
-#include "numbirch/common/unary.hpp"
+#include "numbirch/common/transform.hpp"
 
 #define UNARY_FUNCTION_REAL(f) \
     UNARY_FUNCTION_REAL_FIRST(f, real) \

@@ -7,7 +7,7 @@
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
 #endif
-#include "numbirch/common/ternary.hpp"
+#include "numbirch/common/transform.hpp"
 
 #define TERNARY_ARITHMETIC(f) \
     TERNARY_FIRST(f, real) \

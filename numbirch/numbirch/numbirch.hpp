@@ -4,6 +4,10 @@
  * @defgroup array Array
  * Multidimensional arrays with copy-on-write and unified memory management.
  * 
+ * @defgroup array_grad Gradients
+ * @ingroup array
+ * Gradients of array manipulation functions.
+ * 
  * @defgroup transform Transformations
  * Transformations of standard and special math functions such as sin() and
  * lgamma().
@@ -40,8 +44,6 @@
 #include "numbirch/memory.hpp"
 #include "numbirch/numeric.hpp"
 #include "numbirch/array.hpp"
-#include "numbirch/unary.hpp"
-#include "numbirch/binary.hpp"
-#include "numbirch/ternary.hpp"
+#include "numbirch/transform.hpp"
 #include "numbirch/reduce.hpp"
 #include "numbirch/random.hpp"

@@ -9,7 +9,7 @@
 #include "numbirch/eigen/transform.hpp"
 #include "numbirch/eigen/random.hpp"
 #endif
-#include "numbirch/common/binary.hpp"
+#include "numbirch/common/transform.hpp"
 #include "numbirch/common/random.hpp"
 
 #define BINARY_FUNCTION_ARITHMETIC_GRAD(f) \

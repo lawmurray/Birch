@@ -292,7 +292,7 @@ Array<value_t<T>,2> diagonal(const T& x, const int n);
 /**
  * Gradient of diagonal().
  * 
- * @ingroup array
+ * @ingroup array_grad
  * 
  * @tparam T Scalar type.
  * 
@@ -329,7 +329,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
 /**
  * Gradient of element().
  * 
- * @ingroup array
+ * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
  * @tparam U Scalar type.
@@ -371,7 +371,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
 /**
  * Gradient of element().
  * 
- * @ingroup array
+ * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
  * @tparam U Scalar type.
@@ -416,7 +416,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 /**
  * Gradient of single().
  * 
- * @ingroup array
+ * @ingroup array_grad
  * 
  * @tparam T Scalar type.
  * @tparam U Scalar type.
@@ -463,7 +463,7 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
 /**
  * Gradient of single().
  * 
- * @ingroup array
+ * @ingroup array_grad
  * 
  * @tparam T Scalar type.
  * @tparam U Scalar type.

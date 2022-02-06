@@ -12,7 +12,7 @@
 #include "numbirch/jemalloc/jemalloc.hpp"
 #include "numbirch/common/element.hpp"
 #include "numbirch/common/functor.hpp"
-#include "numbirch/binary.hpp"
+#include "numbirch/transform.hpp"
 #include "numbirch/reduce.hpp"
 #include "numbirch/memory.hpp"
 

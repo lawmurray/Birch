@@ -7,7 +7,7 @@
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
 #endif
-#include "numbirch/common/binary.hpp"
+#include "numbirch/common/transform.hpp"
 
 #define BINARY_OPERATOR_ARITHMETIC(f) \
     BINARY_OPERATOR_ARITHMETIC_FIRST(f, real) \

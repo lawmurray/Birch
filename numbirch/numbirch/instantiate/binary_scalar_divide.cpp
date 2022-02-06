@@ -7,7 +7,7 @@
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
 #endif
-#include "numbirch/common/binary.hpp"
+#include "numbirch/common/transform.hpp"
 
 /**
  * @internal

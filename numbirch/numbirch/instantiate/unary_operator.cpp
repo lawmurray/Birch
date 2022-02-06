@@ -7,7 +7,7 @@
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
 #endif
-#include "numbirch/common/unary.hpp"
+#include "numbirch/common/transform.hpp"
 
 #define UNARY_OPERATOR(f) \
     UNARY_OPERATOR_FIRST(f, real) \

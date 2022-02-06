@@ -7,7 +7,7 @@
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.hpp"
 #endif
-#include "numbirch/common/unary.hpp"
+#include "numbirch/common/transform.hpp"
 
 #define UNARY_OPERATOR_BOOLEAN_GRAD(f) \
     UNARY_OPERATOR_BOOLEAN_GRAD_FIRST(f, real) \
