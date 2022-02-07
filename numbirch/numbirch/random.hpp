@@ -48,7 +48,7 @@ void seed();
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-explicit_t<bool,T> simulate_bernoulli(const T& rho);
+bool_t<T> simulate_bernoulli(const T& rho);
 
 /**
  * Simulate a beta distribution.
@@ -65,7 +65,7 @@ explicit_t<bool,T> simulate_bernoulli(const T& rho);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-default_t<T,U> simulate_beta(const T& alpha, const U& beta);
+real_t<T,U> simulate_beta(const T& alpha, const U& beta);
 
 /**
  * Simulate a binomial distribution.
@@ -82,7 +82,7 @@ default_t<T,U> simulate_beta(const T& alpha, const U& beta);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-explicit_t<int,T,U> simulate_binomial(const T& n, const U& rho);
+int_t<T,U> simulate_binomial(const T& n, const U& rho);
 
 /**
  * Simulate a $\chi^2$ distribution.
@@ -96,7 +96,7 @@ explicit_t<int,T,U> simulate_binomial(const T& n, const U& rho);
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> simulate_chi_squared(const T& nu);
+real_t<T> simulate_chi_squared(const T& nu);
 
 /**
  * Simulate an exponential distribution.
@@ -110,7 +110,7 @@ default_t<T> simulate_chi_squared(const T& nu);
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> simulate_exponential(const T& lambda);
+real_t<T> simulate_exponential(const T& lambda);
 
 /**
  * Simulate a gamma distribution.
@@ -127,7 +127,7 @@ default_t<T> simulate_exponential(const T& lambda);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-default_t<T,U> simulate_gamma(const T& k, const U& theta);
+real_t<T,U> simulate_gamma(const T& k, const U& theta);
 
 /**
  * Simulate a Gaussian distribution.
@@ -144,7 +144,7 @@ default_t<T,U> simulate_gamma(const T& k, const U& theta);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-default_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
+real_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
 
 /**
  * Simulate a negative binomial distribution.
@@ -161,7 +161,7 @@ default_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-explicit_t<int,T,U> simulate_negative_binomial(const T& k, const U& rho);
+int_t<T,U> simulate_negative_binomial(const T& k, const U& rho);
 
 /**
  * Simulate a Poisson distribution.
@@ -175,7 +175,7 @@ explicit_t<int,T,U> simulate_negative_binomial(const T& k, const U& rho);
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-explicit_t<int,T> simulate_poisson(const T& lambda);
+int_t<T> simulate_poisson(const T& lambda);
 
 /**
  * Simulate a Student's $t$-distribution.
@@ -189,7 +189,7 @@ explicit_t<int,T> simulate_poisson(const T& lambda);
  * @return Variate.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> simulate_student_t(const T& nu);
+real_t<T> simulate_student_t(const T& nu);
 
 /**
  * Simulate a uniform distribution.
@@ -206,7 +206,7 @@ default_t<T> simulate_student_t(const T& nu);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-default_t<T,U> simulate_uniform(const T& l, const U& u);
+real_t<T,U> simulate_uniform(const T& l, const U& u);
 
 /**
  * Simulate a uniform distribution over integers.
@@ -223,7 +223,7 @@ default_t<T,U> simulate_uniform(const T& l, const U& u);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-explicit_t<int,T,U> simulate_uniform_int(const T& l, const U& u);
+int_t<T,U> simulate_uniform_int(const T& l, const U& u);
 
 /**
  * Simulate a Weibull distribution.
@@ -240,7 +240,7 @@ explicit_t<int,T,U> simulate_uniform_int(const T& l, const U& u);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-default_t<T,U> simulate_weibull(const T& k, const U& lambda);
+real_t<T,U> simulate_weibull(const T& k, const U& lambda);
 
 /**
  * Create vector of standard Gaussian variates (mean zero, variance one).

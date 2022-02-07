@@ -14,7 +14,7 @@
 #include "numbirch/memory.hpp"
 #include "numbirch/type.hpp"
 #include "numbirch/common/functor.hpp"
-#include "numbirch/common/element.hpp"
+#include "numbirch/common/get.hpp"
 
 
 namespace numbirch {
@@ -51,7 +51,7 @@ __global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      element(A, i, j, ldA) = f(i, j);
+      get(A, i, j, ldA) = f(i, j);
     }
   }
 }
@@ -84,7 +84,7 @@ __global__ void kernel_transform(const int m, const int n, const T A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      element(B, i, j, ldB) = f(element(A, i, j, ldA));
+      get(B, i, j, ldB) = f(get(A, i, j, ldA));
     }
   }
 }
@@ -119,24 +119,20 @@ __global__ void kernel_transform(const int m, const int n, const T A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      element(C, i, j, ldC) = f(element(A, i, j, ldA), element(B, i, j, ldB));
+      get(C, i, j, ldC) = f(get(A, i, j, ldA), get(B, i, j, ldB));
     }
   }
 }
 template<class T, class U, class Functor>
 auto transform(const T& x, const U& y, Functor f) {
-  static_assert(dimension_v<T> == dimension_v<U>);
-  assert(width(x) == width(y));
-  assert(height(x) == height(y));
-
   if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U>) {
     return f(x, y);
   } else {
     using R = decltype(f(value_t<T>(),value_t<U>()));
-    constexpr int D = dimension_v<T>;
-    auto z = Array<R,D>(shape(x));
-    auto m = width(x);
-    auto n = height(x);
+    constexpr int D = dimension_v<T,U>;
+    auto m = width(x, y);
+    auto n = height(x, y);
+    auto z = Array<R,D>(make_shape<D>(m, n));
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
@@ -158,29 +154,22 @@ __global__ void kernel_transform(const int m, const int n, const T A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      element(D, i, j, ldD) = f(element(A, i, j, ldA), element(B, i, j, ldB),
-          element(C, i, j, ldC));
+      get(D, i, j, ldD) = f(get(A, i, j, ldA), get(B, i, j, ldB),
+          get(C, i, j, ldC));
     }
   }
 }
 template<class T, class U, class V, class Functor>
 auto transform(const T& x, const U& y, const V& z, Functor f) {
-  static_assert(dimension_v<T> == dimension_v<U>);
-  static_assert(dimension_v<T> == dimension_v<V>);
-  assert(width(x) == width(y));
-  assert(width(x) == width(z));
-  assert(height(x) == height(y));
-  assert(height(x) == height(z));
-
   if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> &&
       is_arithmetic_v<V>) {
     return f(x, y, z);
   } else {
     using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
-    constexpr int D = dimension_v<T>;
-    auto a = Array<R,D>(shape(x));
-    auto m = width(x);
-    auto n = height(x);
+    constexpr int D = dimension_v<T,U,V>;
+    auto m = width(x, y, z);
+    auto n = height(x, y, z);
+    auto a = Array<R,D>(make_shape<D>(m, n));
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
@@ -196,39 +185,32 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
  * Ternary transform returning pair.
  */
 template<class G, class T, class U, class V, class W, class Functor>
-__global__ void kernel_transform_pair(const int m, const int n, const G g,
-    const int ldg, const T A, const int ldA, const U B, const int ldB,
-    V GA, const int ldGA, W GB, const int ldGB, Functor f) {
+__global__ void kernel_transform_pair(const int m, const int n, const T A,
+    const int ldA, const U B, const int ldB, const V C, const int ldC,
+    W D, const int ldD, X E, const int ldE, Functor f) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      auto pair = f(element(g, i, j, ldg), element(A, i, j, ldA),
-          element(B, i, j, ldB));
-      element(GA, i, j, ldGA) = pair.first;
-      element(GB, i, j, ldGB) = pair.second;
+      auto pair = f(get(A, i, j, ldA), get(B, i, j, ldB), get(C, i, j, ldC));
+      get(D, i, j, ldD) = pair.first;
+      get(E, i, j, ldE) = pair.second;
     }
   }
 }
-template<class G, class T, class U, class Functor>
-auto transform_pair(const G& g, const T& x, const U& y, Functor f) {
-  static_assert(dimension_v<G> == dimension_v<T>);
-  static_assert(dimension_v<G> == dimension_v<U>);
-  assert(width(g) == width(x));
-  assert(width(g) == width(y));
-  assert(height(g) == height(x));
-  assert(height(g) == height(y));
-
-  if constexpr (is_arithmetic_v<G> && is_arithmetic_v<T> &&
-      is_arithmetic_v<U>) {
-    auto [a, b] = f(g, x, y);
+template<class T, class U, class V, class Functor>
+auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
+  if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> &&
+      is_arithmetic_v<V>) {
+    auto [a, b] = f(x, y, z);
     return std::make_pair(a, b);
   } else {
-    constexpr int D = dimension_v<G>;
-    auto a = Array<real,D>(shape(x));
-    auto b = Array<real,D>(shape(y));
-    auto m = width(g);
-    auto n = height(g);
+    using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
+    constexpr int D = dimension_v<T,U,V>;
+    auto m = width(x, y, z);
+    auto n = height(x, y, z);
+    auto a = Array<real,D>(make_shape<D>(m, n));
+    auto b = Array<real,D>(make_shape<D>(m, n));
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
@@ -250,7 +232,7 @@ __global__ void kernel_gather(const int m, const int n, const T A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      element(C, i, j, ldC) = element(A, element(I, i, j, ldI) - 1, 1, ldA);
+      get(C, i, j, ldC) = get(A, get(I, i, j, ldI) - 1, 1, ldA);
     }
   }
 }
@@ -280,8 +262,8 @@ __global__ void kernel_gather(const int m, const int n, const T A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      element(D, i, j, ldD) = element(A, element(I, i, j, ldI) - 1,
-          element(J, i, j, ldJ) - 1, ldA);
+      get(D, i, j, ldD) = get(A, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1,
+          ldA);
     }
   }
 }

@@ -12,23 +12,21 @@
 #include "numbirch/common/transform.hpp"
 #include "numbirch/common/random.hpp"
 
-#define RANDOM_UNARY_REAL(f) \
-    RANDOM_UNARY_FIRST(f, real)
-#define RANDOM_UNARY_INT(f) \
-    RANDOM_UNARY_FIRST(f, int)
-#define RANDOM_UNARY_BOOL(f) \
-    RANDOM_UNARY_FIRST(f, bool)
-#define RANDOM_UNARY_FIRST(f, R) \
-    RANDOM_UNARY_SECOND(f, R, real) \
-    RANDOM_UNARY_SECOND(f, R, int) \
-    RANDOM_UNARY_SECOND(f, R, bool)
-#define RANDOM_UNARY_SECOND(f, R, T) \
+#define RANDOM_UNARY(f, R) \
+    RANDOM_UNARY_FIRST(f, R, real) \
+    RANDOM_UNARY_FIRST(f, R, int) \
+    RANDOM_UNARY_FIRST(f, R, bool)
+#define RANDOM_UNARY_FIRST(f, R, T) \
     RANDOM_UNARY_SIG(f, R, ARRAY(T, 2)) \
     RANDOM_UNARY_SIG(f, R, ARRAY(T, 1)) \
     RANDOM_UNARY_SIG(f, R, ARRAY(T, 0)) \
     RANDOM_UNARY_SIG(f, R, T)
 #define RANDOM_UNARY_SIG(f, R, T) \
-    template explicit_t<R,T> f<T,int>(const T&);
+    template R<T> f<T,int>(const T&);
+
+#define RANDOM_UNARY_REAL(f) RANDOM_UNARY(f, real_t)
+#define RANDOM_UNARY_INT(f) RANDOM_UNARY(f, int_t)
+#define RANDOM_UNARY_BOOL(f) RANDOM_UNARY(f, bool_t)
 
 namespace numbirch {
 RANDOM_UNARY_BOOL(simulate_bernoulli)

@@ -39,7 +39,7 @@ T operator+(const T& x) {
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> identity_grad(const default_t<T>& g, const T& y, const T& x) {
+real_t<T> identity_grad(const real_t<T>& g, const T& y, const T& x) {
   return g;
 }
 
@@ -71,7 +71,7 @@ T operator-(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> negate_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> negate_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x) {
   return -g;
 }
@@ -88,7 +88,7 @@ default_t<T> negate_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-explicit_t<bool,T> operator!(const T& x);
+bool_t<T> operator!(const T& x);
 
 /**
  * Gradient of operator!().
@@ -104,7 +104,7 @@ explicit_t<bool,T> operator!(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> not_grad(const default_t<T>& g, const explicit_t<bool,T>& y,
+real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y,
     const T& x);
 
 /**
@@ -121,7 +121,7 @@ default_t<T> not_grad(const default_t<T>& g, const explicit_t<bool,T>& y,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
+    is_numeric_v<U>,int>>
 implicit_t<T,U> operator+(const T& x, const U& y);
 
 /**
@@ -140,8 +140,8 @@ implicit_t<T,U> operator+(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> add_grad(const default_t<T,U>& g,
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> add_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   return std::make_pair(g, g);
 }
@@ -160,7 +160,7 @@ std::pair<default_t<T>,default_t<U>> add_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
+    is_numeric_v<U>,int>>
 implicit_t<T,U> operator-(const T& x, const U& y);
 
 /**
@@ -179,9 +179,9 @@ implicit_t<T,U> operator-(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> subtract_grad(
-    const default_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> subtract_grad(
+    const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
     const U& y) {
   return std::make_pair(g, -g);
 }
@@ -220,7 +220,7 @@ implicit_t<T,U> operator*(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<default_t<T>,default_t<U>> multiply_grad(const default_t<T,U>& g,
+std::pair<real_t<T>,real_t<U>> multiply_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   if constexpr (is_scalar_v<T> && is_scalar_v<U>) {
     return std::make_pair(g*y, g*x);
@@ -271,7 +271,7 @@ implicit_t<T,U> operator/(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<default_t<T>,default_t<U>> divide_grad(const default_t<T,U>& g,
+std::pair<real_t<T>,real_t<U>> divide_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   if constexpr (is_scalar_v<T>) {
     return std::make_pair(g/y, -g*x/(y*y));
@@ -298,8 +298,8 @@ std::pair<default_t<T>,default_t<U>> divide_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator&&(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator&&(const T& x, const U& y);
 
 /**
  * Gradient of operator&&().
@@ -317,9 +317,9 @@ explicit_t<bool,T,U> operator&&(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> and_grad(const default_t<T,U>& g,
-    const explicit_t<bool,T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> and_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Logical `or`.
@@ -335,8 +335,8 @@ std::pair<default_t<T>,default_t<U>> and_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator||(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator||(const T& x, const U& y);
 
 /**
  * Gradient of operator||().
@@ -355,9 +355,9 @@ explicit_t<bool,T,U> operator||(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> or_grad(const default_t<T,U>& g,
-    const explicit_t<bool,T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> or_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Element-wise equal to comparison.
@@ -373,8 +373,8 @@ std::pair<default_t<T>,default_t<U>> or_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator==(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator==(const T& x, const U& y);
 
 /**
  * Gradient of operator==().
@@ -392,9 +392,9 @@ explicit_t<bool,T,U> operator==(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> equal_grad(const default_t<T,U>& g,
-    const explicit_t<bool,T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> equal_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Element-wise not equal to comparison.
@@ -410,8 +410,8 @@ std::pair<default_t<T>,default_t<U>> equal_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator!=(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator!=(const T& x, const U& y);
 
 /**
  * Gradient of operator!=().
@@ -429,9 +429,9 @@ explicit_t<bool,T,U> operator!=(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> not_equal_grad(const default_t<T,U>& g,
-    const explicit_t<bool,T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> not_equal_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Element-wise less than comparison.
@@ -447,8 +447,8 @@ std::pair<default_t<T>,default_t<U>> not_equal_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator<(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator<(const T& x, const U& y);
 
 /**
  * Gradient of operator<().
@@ -466,9 +466,9 @@ explicit_t<bool,T,U> operator<(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> less_grad(const default_t<T,U>& g,
-    const explicit_t<bool,T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> less_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Element-wise less than or equal to comparison.
@@ -484,8 +484,8 @@ std::pair<default_t<T>,default_t<U>> less_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator<=(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator<=(const T& x, const U& y);
 
 /**
  * Gradient of operator<=().
@@ -503,9 +503,9 @@ explicit_t<bool,T,U> operator<=(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> less_or_equal_grad(
-    const default_t<T,U>& g, const explicit_t<bool,T,U>& z, const T& x,
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> less_or_equal_grad(
+    const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
 /**
@@ -522,8 +522,8 @@ std::pair<default_t<T>,default_t<U>> less_or_equal_grad(
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator>(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator>(const T& x, const U& y);
 
 /**
  * Gradient of operator>().
@@ -541,9 +541,9 @@ explicit_t<bool,T,U> operator>(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> greater_grad(const default_t<T,U>& g,
-    const explicit_t<bool,T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> greater_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Element-wise greater than or equal to comparison.
@@ -559,8 +559,8 @@ std::pair<default_t<T>,default_t<U>> greater_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-explicit_t<bool,T,U> operator>=(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+bool_t<T,U> operator>=(const T& x, const U& y);
 
 /**
  * Gradient of operator>=().
@@ -578,9 +578,9 @@ explicit_t<bool,T,U> operator>=(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> greater_or_equal_grad(
-    const default_t<T,U>& g, const explicit_t<bool,T,U>& z, const T& x,
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> greater_or_equal_grad(
+    const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
 /**
@@ -611,7 +611,7 @@ T abs(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> abs_grad(const default_t<T>& g, const T& y, const T& x);
+real_t<T> abs_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
  * Arc cosine.
@@ -625,7 +625,7 @@ default_t<T> abs_grad(const default_t<T>& g, const T& y, const T& x);
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> acos(const T& x);
+real_t<T> acos(const T& x);
 
 /**
  * Gradient of acos().
@@ -641,7 +641,7 @@ default_t<T> acos(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> acos_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -656,7 +656,7 @@ default_t<T> acos_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> asin(const T& x);
+real_t<T> asin(const T& x);
 
 /**
  * Gradient of asin().
@@ -672,7 +672,7 @@ default_t<T> asin(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> asin_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -687,7 +687,7 @@ default_t<T> asin_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> atan(const T& x);
+real_t<T> atan(const T& x);
 
 /**
  * Gradient of atan().
@@ -703,7 +703,7 @@ default_t<T> atan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> atan_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -736,7 +736,7 @@ explicit_t<R,T> cast(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class R, class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> cast_grad(const default_t<T>& g, const R& y, const T& x) {
+real_t<T> cast_grad(const real_t<T>& g, const R& y, const T& x) {
   return g;
 }
 
@@ -768,7 +768,7 @@ T ceil(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> ceil_grad(const default_t<T>& g, const T& y, const T& x);
+real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
  * Copy sign of a number.
@@ -784,7 +784,7 @@ default_t<T> ceil_grad(const default_t<T>& g, const T& y, const T& x);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
+    is_numeric_v<U>,int>>
 implicit_t<T,U> copysign(const T& x, const U& y);
 
 /**
@@ -803,8 +803,8 @@ implicit_t<T,U> copysign(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> copysign_grad(const default_t<T,U>& g,
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> copysign_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
@@ -819,7 +819,7 @@ std::pair<default_t<T>,default_t<U>> copysign_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> cos(const T& x);
+real_t<T> cos(const T& x);
 
 /**
  * Gradient of cos().
@@ -835,7 +835,7 @@ default_t<T> cos(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> cos_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -850,7 +850,7 @@ default_t<T> cos_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> cosh(const T& x);
+real_t<T> cosh(const T& x);
 
 /**
  * Gradient of cosh().
@@ -866,7 +866,7 @@ default_t<T> cosh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> cosh_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -881,7 +881,7 @@ default_t<T> cosh_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> digamma(const T& x);
+real_t<T> digamma(const T& x);
 
 /**
  * Multivariate digamma.
@@ -897,8 +897,8 @@ default_t<T> digamma(const T& x);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> digamma(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> digamma(const T& x, const U& y);
 
 /**
  * Exponential.
@@ -912,7 +912,7 @@ default_t<T,U> digamma(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> exp(const T& x);
+real_t<T> exp(const T& x);
 
 /**
  * Gradient of exp().
@@ -928,7 +928,7 @@ default_t<T> exp(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> exp_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x) {
   return hadamard(g, y);
 }
@@ -945,7 +945,7 @@ default_t<T> exp_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> expm1(const T& x);
+real_t<T> expm1(const T& x);
 
 /**
  * Gradient of expm1().
@@ -961,7 +961,7 @@ default_t<T> expm1(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> expm1_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x) {
   return hadamard(g, y);
 }
@@ -994,7 +994,7 @@ T floor(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> floor_grad(const default_t<T>& g, const T& y, const T& x);
+real_t<T> floor_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
  * Normalized lower incomplete gamma.
@@ -1010,8 +1010,8 @@ default_t<T> floor_grad(const default_t<T>& g, const T& y, const T& x);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> gamma_p(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> gamma_p(const T& x, const U& y);
 
 /**
  * Normalized upper incomplete gamma.
@@ -1027,8 +1027,8 @@ default_t<T,U> gamma_p(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> gamma_q(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> gamma_q(const T& x, const U& y);
 
 /**
  * Hadamard (element-wise) multiplication.
@@ -1044,7 +1044,7 @@ default_t<T,U> gamma_q(const T& x, const U& y);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
+    is_numeric_v<U>,int>>
 implicit_t<T,U> hadamard(const T& x, const U& y);
 
 /**
@@ -1063,8 +1063,8 @@ implicit_t<T,U> hadamard(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> hadamard_grad(const default_t<T,U>& g,
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> hadamard_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
@@ -1083,9 +1083,8 @@ std::pair<default_t<T>,default_t<U>> hadamard_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V> &&
-    is_compatible_v<T,U,V>,int>>
-default_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
+    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
 
 /**
  * Logarithm of beta.
@@ -1101,8 +1100,8 @@ default_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> lbeta(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> lbeta(const T& x, const U& y);
 
 /**
  * Gradient of lbeta().
@@ -1120,9 +1119,9 @@ default_t<T,U> lbeta(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> lbeta_grad(const default_t<T,U>& g,
-    const default_t<T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> lbeta_grad(const real_t<T,U>& g,
+    const real_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Logarithm of the binomial coefficient.
@@ -1138,8 +1137,8 @@ std::pair<default_t<T>,default_t<U>> lbeta_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> lchoose(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> lchoose(const T& x, const U& y);
 
 /**
  * Gradient of lchoose().
@@ -1157,9 +1156,9 @@ default_t<T,U> lchoose(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> lchoose_grad(const default_t<T,U>& g,
-    const default_t<T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> lchoose_grad(const real_t<T,U>& g,
+    const real_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Logarithm of the factorial function.
@@ -1173,7 +1172,7 @@ std::pair<default_t<T>,default_t<U>> lchoose_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> lfact(const T& x);
+real_t<T> lfact(const T& x);
 
 /**
  * Gradient of lfact().
@@ -1189,7 +1188,7 @@ default_t<T> lfact(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> lfact_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1204,7 +1203,7 @@ default_t<T> lfact_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> lgamma(const T& x);
+real_t<T> lgamma(const T& x);
 
 /**
  * Gradient of lgamma().
@@ -1220,7 +1219,7 @@ default_t<T> lgamma(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> lgamma_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1237,8 +1236,8 @@ default_t<T> lgamma_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> lgamma(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> lgamma(const T& x, const U& y);
 
 /**
  * Gradient of lgamma().
@@ -1256,9 +1255,9 @@ default_t<T,U> lgamma(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> lgamma_grad(const default_t<T,U>& g,
-    const default_t<T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> lgamma_grad(const real_t<T,U>& g,
+    const real_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Logarithm.
@@ -1272,7 +1271,7 @@ std::pair<default_t<T>,default_t<U>> lgamma_grad(const default_t<T,U>& g,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> log(const T& x);
+real_t<T> log(const T& x);
 
 /**
  * Gradient of log().
@@ -1288,7 +1287,7 @@ default_t<T> log(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> log_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1303,7 +1302,7 @@ default_t<T> log_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> log1p(const T& x);
+real_t<T> log1p(const T& x);
 
 /**
  * Gradient of log1p().
@@ -1319,7 +1318,7 @@ default_t<T> log1p(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> log1p_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1336,8 +1335,8 @@ default_t<T> log1p_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-default_t<T,U> pow(const T& x, const U& y);
+    is_numeric_v<U>,int>>
+real_t<T,U> pow(const T& x, const U& y);
 
 /**
  * Gradient of pow().
@@ -1355,9 +1354,9 @@ default_t<T,U> pow(const T& x, const U& y);
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && is_compatible_v<T,U>,int>>
-std::pair<default_t<T>,default_t<U>> pow_grad(const default_t<T,U>& g,
-    const default_t<T,U>& z, const T& x, const U& y);
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> pow_grad(const real_t<T,U>& g,
+    const real_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Rectification.
@@ -1387,7 +1386,7 @@ T rectify(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> rectify_grad(const default_t<T>& g, const T& y, const T& x);
+real_t<T> rectify_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
  * Round to nearest integer value.
@@ -1417,7 +1416,7 @@ T round(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> round_grad(const default_t<T>& g, const T& y, const T& x);
+real_t<T> round_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
  * Sine.
@@ -1431,7 +1430,7 @@ default_t<T> round_grad(const default_t<T>& g, const T& y, const T& x);
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> sin(const T& x);
+real_t<T> sin(const T& x);
 
 /**
  * Gradient of sin().
@@ -1447,7 +1446,7 @@ default_t<T> sin(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> sin_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> sin_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1462,7 +1461,7 @@ default_t<T> sin_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> sinh(const T& x);
+real_t<T> sinh(const T& x);
 
 /**
  * Gradient of sinh().
@@ -1478,7 +1477,7 @@ default_t<T> sinh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> sinh_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> sinh_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1493,7 +1492,7 @@ default_t<T> sinh_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> sqrt(const T& x);
+real_t<T> sqrt(const T& x);
 
 /**
  * Gradient of sqrt().
@@ -1509,7 +1508,7 @@ default_t<T> sqrt(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> sqrt_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1524,7 +1523,7 @@ default_t<T> sqrt_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> tan(const T& x);
+real_t<T> tan(const T& x);
 
 /**
  * Gradient of tan().
@@ -1540,7 +1539,7 @@ default_t<T> tan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> tan_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 /**
@@ -1555,7 +1554,7 @@ default_t<T> tan_grad(const default_t<T>& g, const default_t<T>& y,
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> tanh(const T& x);
+real_t<T> tanh(const T& x);
 
 /**
  * Gradient of tanh().
@@ -1571,7 +1570,7 @@ default_t<T> tanh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-default_t<T> tanh_grad(const default_t<T>& g, const default_t<T>& y,
+real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y,
     const T& x);
 
 }

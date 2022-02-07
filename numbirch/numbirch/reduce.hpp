@@ -39,7 +39,7 @@ Array<int,0> count(const T& x);
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-default_t<T> count_grad(const Array<real,0>& g, const Array<R,0>& y,
+real_t<T> count_grad(const Array<real,0>& g, const Array<R,0>& y,
     const T& x);
 
 /**
@@ -72,7 +72,7 @@ Array<value_t<T>,0> sum(const T& x);
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
     is_numeric_v<T>,int>>
-default_t<T> sum_grad(const Array<real,0>& g, const Array<R,0>& y,
+real_t<T> sum_grad(const Array<real,0>& g, const Array<R,0>& y,
     const T& x);
 
 }

@@ -41,23 +41,15 @@ SOURCES =  \
     numbirch/instantiate/reduce/count_grad.cpp \
     numbirch/instantiate/reduce/sum.cpp \
     numbirch/instantiate/reduce/sum_grad.cpp \
-    numbirch/instantiate/transform/binary_function_arithmetic.cpp \
-    numbirch/instantiate/transform/binary_function_arithmetic_grad.cpp \
-    numbirch/instantiate/transform/binary_function_real.cpp \
-    numbirch/instantiate/transform/binary_function_real_grad.cpp \
-    numbirch/instantiate/transform/binary_operator_arithmetic.cpp \
-    numbirch/instantiate/transform/binary_operator_boolean.cpp \
-    numbirch/instantiate/transform/binary_operator_boolean_grad.cpp \
+    numbirch/instantiate/transform/binary.cpp \
+    numbirch/instantiate/transform/binary_grad.cpp \
+    numbirch/instantiate/transform/binary_operator.cpp \
     numbirch/instantiate/transform/binary_scalar_divide.cpp \
     numbirch/instantiate/transform/binary_scalar_multiply.cpp \
     numbirch/instantiate/transform/cast.cpp \
-    numbirch/instantiate/transform/ternary_function.cpp \
-    numbirch/instantiate/transform/unary_function.cpp \
-    numbirch/instantiate/transform/unary_function_grad.cpp \
-    numbirch/instantiate/transform/unary_function_real.cpp \
-    numbirch/instantiate/transform/unary_function_real_grad.cpp \
-    numbirch/instantiate/transform/unary_operator_boolean.cpp \
-    numbirch/instantiate/transform/unary_operator_boolean_grad.cpp \
+    numbirch/instantiate/transform/ternary.cpp \
+    numbirch/instantiate/transform/unary.cpp \
+    numbirch/instantiate/transform/unary_grad.cpp \
     numbirch/instantiate/transform/unary_operator.cpp
 
 if ONEAPI
@@ -152,8 +144,8 @@ nobase_include_HEADERS = \
 
 noinst_HEADERS = \
   numbirch/common/array.hpp \
-  numbirch/common/element.hpp \
   numbirch/common/functor.hpp \
+  numbirch/common/get.hpp \
   numbirch/common/random.hpp \
   numbirch/common/reduce.hpp \
   numbirch/common/stl.hpp \

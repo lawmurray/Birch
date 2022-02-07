@@ -8,7 +8,7 @@
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/common/stl.hpp"
-#include "numbirch/common/element.hpp"
+#include "numbirch/common/get.hpp"
 
 namespace numbirch {
 
@@ -306,7 +306,7 @@ struct standard_wishart_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
     if (i == j) {
       /* on diagonal */
-      R nu = element(k) + n - 1 - i;
+      R nu = get(k) + n - 1 - i;
       R x;
       #ifndef __CUDA_ARCH__
       x = std::chi_squared_distribution<R>(nu)(stl<R>::rng());

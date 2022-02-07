@@ -277,34 +277,6 @@ template<class T>
 inline constexpr bool is_numeric_v = is_numeric<T>::value;
 
 /**
- * @var is_compatible_v
- * 
- * Are arithmetic types compatible for a transform?---Yes, if they have the
- * same number of dimensions.
- * 
- * @ingroup trait
- */
-template<class... Args>
-struct is_compatible {
-  static constexpr bool value = false;
-};
-template<class T, class U, class... Args>
-struct is_compatible<T,U,Args...> {
-  static constexpr bool value = is_compatible<T,U>::value &&
-      is_compatible<U,Args...>::value;
-};
-template<class T, class U>
-struct is_compatible<T,U> {
-  static constexpr bool value = dimension<T>::value == dimension<U>::value;
-};
-template<class T>
-struct is_compatible<T> {
-  static constexpr bool value = true;
-};
-template<class... Args>
-inline constexpr bool is_compatible_v = is_compatible<Args...>::value;
-
-/**
  * @typedef promote_t
  * 
  * Promoted arithmetic type for a collection of arithmetic types.
@@ -421,17 +393,29 @@ template<class T, class U, class... Args>
 struct implicit<T,U,Args...> {
   using type = typename implicit<typename implicit<T,U>::type,Args...>::type;
 };
-template<class T, int D, class U, int E>
-struct implicit<Array<T,D>,Array<U,E>> {
-  using type = Array<typename implicit<T,U>::type,(D > E) ? D : E>;
+template<class T, int D, class U>
+struct implicit<Array<T,D>,Array<U,D>> {
+  using type = Array<typename promote<T,U>::type,D>;
+};
+template<class T, int D, class U>
+struct implicit<Array<T,D>,Array<U,0>> {
+  using type = Array<typename promote<T,U>::type,D>;
+};
+template<class T, int D, class U>
+struct implicit<Array<T,0>,Array<U,D>> {
+  using type = Array<typename promote<T,U>::type,D>;
+};
+template<class T, class U>
+struct implicit<Array<T,0>,Array<U,0>> {
+  using type = Array<typename promote<T,U>::type,0>;
 };
 template<class T, int D, class U>
 struct implicit<Array<T,D>,U> {
-  using type = Array<typename implicit<T,U>::type,D>;
+  using type = Array<typename promote<T,U>::type,D>;
 };
-template<class T, class U, int E>
-struct implicit<T,Array<U,E>> {
-  using type = Array<typename implicit<T,U>::type,E>;
+template<class T, class U, int D>
+struct implicit<T,Array<U,D>> {
+  using type = Array<typename promote<T,U>::type,D>;
 };
 template<class T, class U>
 struct implicit<T,U> {
@@ -476,11 +460,11 @@ template<class R, class... Args>
 using explicit_t = typename explicit_s<R,Args...>::type;
 
 /**
- * @typedef default_t
+ * @typedef real_t
  * 
  * @ingroup trait
  * 
- * Default floating point override of return type.
+ * Floating point override of return type.
  * 
  * @tparam Args Numeric types.
  * 
@@ -490,11 +474,53 @@ using explicit_t = typename explicit_s<R,Args...>::type;
  * @ingroup trait
  */
 template<class... Args>
-struct default_s {
+struct real_s {
   using type = typename explicit_s<real,Args...>::type;
 };
 template<class... Args>
-using default_t = typename default_s<Args...>::type;
+using real_t = typename real_s<Args...>::type;
+
+/**
+ * @typedef int_t
+ * 
+ * @ingroup trait
+ * 
+ * Integer override of return type.
+ * 
+ * @tparam Args Numeric types.
+ * 
+ * This works as for implicit_t, but overrides the element type with `int`;
+ * equivalently `explicit_t<int,Args...>`.
+ * 
+ * @ingroup trait
+ */
+template<class... Args>
+struct int_s {
+  using type = typename explicit_s<real,Args...>::type;
+};
+template<class... Args>
+using int_t = typename int_s<Args...>::type;
+
+/**
+ * @typedef bool_t
+ * 
+ * @ingroup trait
+ * 
+ * Boolean override of return type.
+ * 
+ * @tparam Args Numeric types.
+ * 
+ * This works as for implicit_t, but overrides the element type with `bool`;
+ * equivalently `explicit_t<bool,Args...>`.
+ * 
+ * @ingroup trait
+ */
+template<class... Args>
+struct bool_s {
+  using type = typename explicit_s<real,Args...>::type;
+};
+template<class... Args>
+using bool_t = typename bool_s<Args...>::type;
 
 /**
  * @internal

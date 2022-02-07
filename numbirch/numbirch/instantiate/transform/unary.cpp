@@ -1,9 +1,5 @@
 /**
  * @file
- * 
- * As unary.cpp, but removes the overload with only arithmetic types, as this
- * is disallowed by C++ (built-in operators are always used in this situation,
- * gcc error: "must have an argument of class or enumerated type").
  */
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.hpp"
@@ -22,7 +18,8 @@
 #define UNARY_FIRST(f, R, T) \
     UNARY_SIG(f, R, ARRAY(T, 2)) \
     UNARY_SIG(f, R, ARRAY(T, 1)) \
-    UNARY_SIG(f, R, ARRAY(T, 0))
+    UNARY_SIG(f, R, ARRAY(T, 0)) \
+    UNARY_SIG(f, R, T)
 #define UNARY_SIG(f, R, T) \
     template R<T> f<T,int>(const T&);
 
@@ -31,6 +28,26 @@
 #define UNARY_BOOL(f) UNARY(f, bool_t)
 
 namespace numbirch {
-UNARY_ARITHMETIC(operator-)
-UNARY_BOOL(operator!)
+UNARY_ARITHMETIC(abs)
+UNARY_REAL(acos)
+UNARY_REAL(asin)
+UNARY_REAL(atan)
+UNARY_ARITHMETIC(ceil)
+UNARY_REAL(cos)
+UNARY_REAL(cosh)
+UNARY_REAL(digamma)
+UNARY_REAL(exp)
+UNARY_REAL(expm1)
+UNARY_ARITHMETIC(floor)
+UNARY_REAL(lfact)
+UNARY_REAL(lgamma)
+UNARY_REAL(log)
+UNARY_REAL(log1p)
+UNARY_ARITHMETIC(rectify)
+UNARY_ARITHMETIC(round)
+UNARY_REAL(sin)
+UNARY_REAL(sinh)
+UNARY_REAL(sqrt)
+UNARY_REAL(tan)
+UNARY_REAL(tanh)
 }

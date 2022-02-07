@@ -5,7 +5,7 @@
 
 #include "numbirch/random.hpp"
 #include "numbirch/common/stl.hpp"
-#include "numbirch/common/element.hpp"
+#include "numbirch/common/get.hpp"
 
 namespace numbirch {
 
@@ -111,7 +111,7 @@ struct standard_wishart_functor {
     auto& rng = stl<real>::rng();
     if (i == j) {
       /* on diagonal */
-      real nu = element(k) + n - 1 - i;
+      real nu = get(k) + n - 1 - i;
       real x = std::chi_squared_distribution<real>(nu)(rng);
       return std::sqrt(x);
     } else if (i > j) {

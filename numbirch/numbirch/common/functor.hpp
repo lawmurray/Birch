@@ -3,7 +3,7 @@
  */
 #pragma once
 
-#include "numbirch/common/element.hpp"
+#include "numbirch/common/get.hpp"
 
 #if defined(HAVE_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
 #include <unsupported/Eigen/SpecialFunctions>
@@ -53,8 +53,8 @@ struct scalar_divide_functor {
   }
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    using R = promote_t<T,std::decay_t<decltype(element(y))>>;
-    return R(x)/R(element(y));
+    using R = promote_t<T,std::decay_t<decltype(get(y))>>;
+    return R(x)/R(get(y));
   }
 };
 
@@ -66,8 +66,8 @@ struct scalar_multiply_functor {
   }
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    using R = promote_t<T,std::decay_t<decltype(element(y))>>;
-    return R(x)*R(element(y));
+    using R = promote_t<T,std::decay_t<decltype(get(y))>>;
+    return R(x)*R(get(y));
   }
 };
 
@@ -319,7 +319,7 @@ struct diagonal_functor {
     //
   }
   NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
-    return (i == j) ? element(a) : 0;
+    return (i == j) ? get(a) : 0;
   }
 };
 
@@ -653,7 +653,7 @@ struct single_functor {
     //
   }
   NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
-    return (i == element(k) - 1 && j == element(l) - 1) ? element(x) : 0;
+    return (i == get(k) - 1 && j == get(l) - 1) ? get(x) : 0;
   }
 };
 
@@ -665,7 +665,7 @@ struct sum_grad_functor {
   }
   template<class U>
   NUMBIRCH_HOST_DEVICE auto operator()(const U x) const {
-    return element(g);
+    return get(g);
   }
 };
 

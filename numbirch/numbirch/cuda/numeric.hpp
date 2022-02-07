@@ -10,7 +10,7 @@
 #include "numbirch/cuda/cub.hpp"
 #include "numbirch/cuda/transform.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
-#include "numbirch/common/element.hpp"
+#include "numbirch/common/get.hpp"
 #include "numbirch/common/functor.hpp"
 #include "numbirch/transform.hpp"
 #include "numbirch/reduce.hpp"
@@ -34,13 +34,13 @@ __global__ void kernel_transpose(const int m, const int n, const T* A,
   auto i = blockIdx.y*blockDim.y + threadIdx.x;
   auto j = blockIdx.x*blockDim.x + threadIdx.y;
   if (i < n && j < m) {
-    tile[threadIdx.x][threadIdx.y] = element(A, i, j, ldA);
+    tile[threadIdx.x][threadIdx.y] = get(A, i, j, ldA);
   }
   __syncthreads();
   i = blockIdx.x*blockDim.x + threadIdx.x;
   j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
-    element(B, i, j, ldB) = tile[threadIdx.y][threadIdx.x];
+    get(B, i, j, ldB) = tile[threadIdx.y][threadIdx.x];
   }
 }
 

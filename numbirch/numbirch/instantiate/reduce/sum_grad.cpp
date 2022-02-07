@@ -19,7 +19,7 @@
     REDUCE_SUM_GRAD_SIG(f, ARRAY(T, 0)) \
     REDUCE_SUM_GRAD_SIG(f, T)
 #define REDUCE_SUM_GRAD_SIG(f, T) \
-    template default_t<T> f(const Array<real,0>&, \
+    template real_t<T> f(const Array<real,0>&, \
         const Array<value_t<T>,0>&, const T&);
 
 namespace numbirch {

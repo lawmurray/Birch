@@ -13,7 +13,7 @@ namespace numbirch {
  * having `ld == 0`.
  */
 template<class T>
-NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
+NUMBIRCH_HOST_DEVICE T& get(T* x, const int i = 0, const int j = 0,
     const int ld = 0) {
   int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
   return x[k];
@@ -26,7 +26,7 @@ NUMBIRCH_HOST_DEVICE T& element(T* x, const int i = 0, const int j = 0,
  * having `ld == 0`.
  */
 template<class T>
-NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0,
+NUMBIRCH_HOST_DEVICE const T& get(const T* x, const int i = 0,
     const int j = 0, const int ld = 0) {
   int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
   return x[k];
@@ -38,7 +38,7 @@ NUMBIRCH_HOST_DEVICE const T& element(const T* x, const int i = 0,
  * 0-based element of a scalar---just returns the scalar.
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
+NUMBIRCH_HOST_DEVICE T& get(T& x, const int i = 0, const int j = 0,
     const int ld = 0) {
   return x;
 }
@@ -49,7 +49,7 @@ NUMBIRCH_HOST_DEVICE T& element(T& x, const int i = 0, const int j = 0,
  * 0-based element of a scalar---just returns the scalar.
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-NUMBIRCH_HOST_DEVICE const T& element(const T& x, const int i = 0,
+NUMBIRCH_HOST_DEVICE const T& get(const T& x, const int i = 0,
     const int j = 0, const int ld = 0) {
   return x;
 }
