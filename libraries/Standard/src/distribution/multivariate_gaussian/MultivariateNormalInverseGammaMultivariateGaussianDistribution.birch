@@ -84,7 +84,7 @@ function make_multivariate_normal_inverse_gamma_multivariate_gaussian<Arg1,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
-    Ω:Multiply<Arg,Random<Real>>) -> Distribution<Real[_]> {
+    Ω:OpMul<Arg,Random<Real>>) -> Distribution<Real[_]> {
   μ.prune();
   if μ.hasMultivariateNormalInverseGamma() && μ.isGrandChildOf(Ω.r) {
     let (m, Σ, α, β) <- μ.getMultivariateNormalInverseGamma();
@@ -111,7 +111,7 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
-    Ω:Multiply<Random<Real>,Arg>) -> Distribution<Real[_]> {
+    Ω:OpMul<Random<Real>,Arg>) -> Distribution<Real[_]> {
   μ.prune();
   if μ.hasMultivariateNormalInverseGamma() && μ.isGrandChildOf(Ω.l) {
     let (m, Σ, α, β) <- μ.getMultivariateNormalInverseGamma();

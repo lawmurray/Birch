@@ -10,73 +10,6 @@
 
 namespace numbirch {
 /**
- * Identity.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * 
- * @param x Argument.
- * 
- * @return Result.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-T operator+(const T& x) {
-  return x;
-}
-
-/**
- * Gradient of unary operator+().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param y Result.
- * @param x Argument.
- * 
- * @return Gradient with respect to @p x.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> identity_grad(const real_t<T>& g, const T& y, const T& x) {
-  return g;
-}
-
-/**
- * Negation.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * 
- * @param x Argument.
- * 
- * @return Result.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-T operator-(const T& x);
-
-/**
- * Gradient of operator!().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param y Result.
- * @param x Argument.
- * 
- * @return Gradient with respect to @p x.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> negate_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
-  return -g;
-}
-
-/**
  * Logical `not`.
  * 
  * @ingroup transform
@@ -104,185 +37,7 @@ bool_t<T> operator!(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y,
-    const T& x);
-
-/**
- * Element-wise addition.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> operator+(const T& x, const U& y);
-
-/**
- * Gradient of operator+().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> add_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  return std::make_pair(g, g);
-}
-
-/**
- * Element-wise subtraction.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> operator-(const T& x, const U& y);
-
-/**
- * Gradient of operator-().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> subtract_grad(
-    const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
-    const U& y) {
-  return std::make_pair(g, -g);
-}
-
-/**
- * Multiplication by scalar.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-implicit_t<T,U> operator*(const T& x, const U& y);
-
-/**
- * Gradient of operator*().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<real_t<T>,real_t<U>> multiply_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  if constexpr (is_scalar_v<T> && is_scalar_v<U>) {
-    return std::make_pair(g*y, g*x);
-  } else if constexpr (is_scalar_v<T> && is_vector_v<U>) {
-    return std::make_pair(dot(g, y), g*x);
-  } else if constexpr (is_vector_v<T> && is_scalar_v<U>) {
-    return std::make_pair(g*y, dot(g, x));
-  } else if constexpr (is_scalar_v<T> && is_matrix_v<U>) {
-    return std::make_pair(frobenius(g, y), g*x);
-  } else if constexpr (is_matrix_v<T> && is_scalar_v<U>) {
-    return std::make_pair(g*y, frobenius(g, x));
-  } else {
-    assert(false);
-  }
-}
-
-/**
- * Division by scalar.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * @tparam U Scalar type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-implicit_t<T,U> operator/(const T& x, const U& y);
-
-/**
- * Gradient of operator/().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<real_t<T>,real_t<U>> divide_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  if constexpr (is_scalar_v<T>) {
-    return std::make_pair(g/y, -g*x/(y*y));
-  } else if constexpr (is_vector_v<T>) {
-    return std::make_pair(g/y, -dot(g, x)/(y*y));
-  } else if constexpr (is_matrix_v<T>) {
-    return std::make_pair(g/y, -frobenius(g, x)/(y*y));
-  } else {
-    assert(false);
-  }
-}
+real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
  * Logical `and`.
@@ -504,9 +259,8 @@ bool_t<T,U> operator<=(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> less_or_equal_grad(
-    const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+std::pair<real_t<T>,real_t<U>> less_or_equal_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Element-wise greater than comparison.
@@ -579,9 +333,8 @@ bool_t<T,U> operator>=(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> greater_or_equal_grad(
-    const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+std::pair<real_t<T>,real_t<U>> greater_or_equal_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Absolute value.
@@ -641,8 +394,46 @@ real_t<T> acos(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
+
+/**
+ * Element-wise addition.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @see operator+()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+implicit_t<T,U> add(const T& x, const U& y);
+
+/**
+ * Gradient of add().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> add_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Arc sine.
@@ -672,8 +463,7 @@ real_t<T> asin(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Arc tangent.
@@ -703,8 +493,7 @@ real_t<T> atan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Cast.
@@ -835,8 +624,7 @@ real_t<T> cos(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Hyperbolic cosine.
@@ -866,8 +654,7 @@ real_t<T> cosh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Digamma.
@@ -901,6 +688,45 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 real_t<T,U> digamma(const T& x, const U& y);
 
 /**
+ * Element-wise division.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @see operator+()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+implicit_t<T,U> div(const T& x, const U& y);
+
+/**
+ * Gradient of div().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> div_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y);
+
+/**
  * Exponential.
  * 
  * @ingroup transform
@@ -928,9 +754,8 @@ real_t<T> exp(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
-  return hadamard(g, y);
+real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  return mul(g, y);
 }
 
 /**
@@ -961,9 +786,8 @@ real_t<T> expm1(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
-  return hadamard(g, y);
+real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  return mul(g, y);
 }
 
 /**
@@ -1029,43 +853,6 @@ real_t<T,U> gamma_p(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 real_t<T,U> gamma_q(const T& x, const U& y);
-
-/**
- * Hadamard (element-wise) multiplication.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> hadamard(const T& x, const U& y);
-
-/**
- * Gradient of hadamard().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> hadamard_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Normalized incomplete beta.
@@ -1188,8 +975,7 @@ real_t<T> lfact(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Logarithm of gamma.
@@ -1219,8 +1005,7 @@ real_t<T> lgamma(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Logarithm of multivariate gamma.
@@ -1287,8 +1072,7 @@ real_t<T> log(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Logarithm of one plus argument.
@@ -1318,8 +1102,113 @@ real_t<T> log1p(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
+
+/**
+ * Element-wise multiplication.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @see operator+()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+implicit_t<T,U> mul(const T& x, const U& y);
+
+/**
+ * Gradient of mul().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> mul_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y);
+
+/**
+ * Negation.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+T neg(const T& x);
+
+/**
+ * Gradient of neg().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> neg_grad(const real_t<T>& g, const real_t<T>& y,
+    const T& x) {
+  return neg(g);
+}
+
+/**
+ * Unary plus.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+T pos(const T& x) {
+  return x;
+}
+
+/**
+ * Gradient of pos().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> pos_grad(const real_t<T>& g, const T& y, const T& x) {
+  return g;
+}
 
 /**
  * Power.
@@ -1446,8 +1335,7 @@ real_t<T> sin(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> sin_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> sin_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Hyperbolic sine.
@@ -1477,8 +1365,7 @@ real_t<T> sinh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> sinh_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> sinh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Square root.
@@ -1508,8 +1395,46 @@ real_t<T> sqrt(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
+
+/**
+ * Element-wise subtraction.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @see operator-()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+implicit_t<T,U> sub(const T& x, const U& y);
+
+/**
+ * Gradient of operator-().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> sub_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Tangent.
@@ -1539,8 +1464,7 @@ real_t<T> tan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Hyperbolic tangent.
@@ -1570,7 +1494,6 @@ real_t<T> tanh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x);
+real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 }

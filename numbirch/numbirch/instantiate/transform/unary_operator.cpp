@@ -31,6 +31,5 @@
 #define UNARY_BOOL(f) UNARY(f, bool_t)
 
 namespace numbirch {
-UNARY_ARITHMETIC(operator-)
 UNARY_BOOL(operator!)
 }

@@ -92,7 +92,7 @@ function make_linear_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(
-    μ:Add<Inner<Random<Real[_,_]>,Arg1>,Arg2>, Σ:Random<Real[_,_]>) ->
+    μ:OpAdd<Inner<Random<Real[_,_]>,Arg1>,Arg2>, Σ:Random<Real[_,_]>) ->
     Distribution<Real[_]> {
   μ.l.l.prune();
   if μ.l.l.hasMatrixNormalInverseWishart()&& μ.l.l.isGrandChildOf(Σ) {

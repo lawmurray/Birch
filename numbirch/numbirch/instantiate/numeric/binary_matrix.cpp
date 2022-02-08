@@ -19,7 +19,7 @@
         const Array<T,1>&, const Array<T,2>&, const Array<T,1>&);
 
 namespace numbirch {
-BINARY_MATRIX(operator*, multiply_grad)
+BINARY_MATRIX(operator*, op_mul_grad)
 BINARY_MATRIX(trimul, trimul_grad)
 BINARY_MATRIX(cholsolve, cholsolve_grad)
 BINARY_MATRIX(trisolve, trisolve_grad)

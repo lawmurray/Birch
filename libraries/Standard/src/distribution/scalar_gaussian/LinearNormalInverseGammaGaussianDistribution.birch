@@ -102,7 +102,7 @@ function make_linear_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
+function Gaussian<Arg1,Arg2>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
     σ2:Random<Real>) -> Distribution<Real> {
   return Gaussian(μ, 1.0*σ2);
 }
@@ -110,16 +110,16 @@ function Gaussian<Arg1,Arg2>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
-    σ2:Multiply<Random<Real>,Arg3>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
+    σ2:OpMul<Random<Real>,Arg3>) -> Distribution<Real> {
   return Gaussian(μ, σ2.r*σ2.l);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
-    σ2:Multiply<Arg3,Random<Real>>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
+    σ2:OpMul<Arg3,Random<Real>>) -> Distribution<Real> {
   μ.l.r.prune();
   if μ.l.r.hasNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
     let (m, s2, α, β) <- μ.l.r.getNormalInverseGamma();
@@ -150,8 +150,8 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
-    σ2:Multiply<Random<Real>,Random<Real>>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
+    σ2:OpMul<Random<Real>,Random<Real>>) -> Distribution<Real> {
   μ.l.r.prune();
   if μ.l.r.hasNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
     let (m, s2, α, β) <- μ.l.r.getNormalInverseGamma();
@@ -196,7 +196,7 @@ function Gaussian<Arg1,Arg2>(μ:Add<Multiply<Arg1,Random<Real>>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>, σ2:Random<Real>) ->
+function Gaussian<Arg>(μ:OpMul<Arg,Random<Real>>, σ2:Random<Real>) ->
     Distribution<Real> {
   return Gaussian(μ + 0.0, σ2);
 }
@@ -204,24 +204,24 @@ function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>, σ2:Random<Real>) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real>>,
-    σ2:Multiply<Arg2,Random<Real>>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real>>,
+    σ2:OpMul<Arg2,Random<Real>>) -> Distribution<Real> {
   return Gaussian(μ + 0.0, σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Multiply<Arg1,Random<Real>>,
-    σ2:Multiply<Random<Real>,Arg2>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real>>,
+    σ2:OpMul<Random<Real>,Arg2>) -> Distribution<Real> {
   return Gaussian(μ + 0.0, σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Multiply<Arg,Random<Real>>,
-    σ2:Multiply<Random<Real>,Random<Real>>) -> Distribution<Real> {
+function Gaussian<Arg>(μ:OpMul<Arg,Random<Real>>,
+    σ2:OpMul<Random<Real>,Random<Real>>) -> Distribution<Real> {
   return Gaussian(μ + 0.0, σ2);
 }
 

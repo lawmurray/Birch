@@ -36,12 +36,6 @@ auto aggregate(const std::pair<T,U>& x) {
 }
 
 template<class T, class>
-T operator-(const T& x) {
-  prefetch(x);
-  return transform(x, negate_functor());
-}
-
-template<class T, class>
 bool_t<T> operator!(const T& x) {
   prefetch(x);
   return transform(x, not_functor());
@@ -52,38 +46,6 @@ real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y,
     const T& x) {
   prefetch(x);
   return transform(g, x, not_grad_functor());
-}
-
-template<class T, class U, class>
-implicit_t<T,U> operator+(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, add_functor());
-}
-
-template<class T, class U, class>
-implicit_t<T,U> operator-(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, subtract_functor());
-}
-
-template<class T, class U, class>
-implicit_t<T,U> operator*(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  if constexpr (is_scalar_v<U>) {
-    return transform(x, scalar_multiply_functor<decltype(data(y))>(data(y)));
-  } else {
-    return transform(y, scalar_multiply_functor<decltype(data(x))>(data(x)));
-  }
-}
-
-template<class T, class U, class>
-implicit_t<T,U> operator/(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, scalar_divide_functor<decltype(data(y))>(data(y)));
 }
 
 template<class T, class U, class>
@@ -179,9 +141,8 @@ bool_t<T,U> operator<=(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> less_or_equal_grad(
-    const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+std::pair<real_t<T>,real_t<U>> less_or_equal_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -214,9 +175,8 @@ bool_t<T,U> operator>=(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> greater_or_equal_grad(
-    const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+std::pair<real_t<T>,real_t<U>> greater_or_equal_grad(const real_t<T,U>& g,
+    const bool_t<T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -243,10 +203,26 @@ real_t<T> acos(const T& x) {
 }
 
 template<class T, class>
-real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, acos_grad_functor());
+}
+
+template<class T, class U, class>
+implicit_t<T,U> add(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, add_functor());
+}
+
+template<class T, class U, class>
+std::pair<real_t<T>,real_t<U>> add_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return std::make_pair(aggregate<dimension_v<T>>(g),
+      aggregate<dimension_v<U>>(g));
 }
 
 template<class T, class>
@@ -256,8 +232,7 @@ real_t<T> asin(const T& x) {
 }
 
 template<class T, class>
-real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, asin_grad_functor());
 }
@@ -269,8 +244,7 @@ real_t<T> atan(const T& x) {
 }
 
 template<class T, class>
-real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, atan_grad_functor());
 }
@@ -317,8 +291,7 @@ real_t<T> cos(const T& x) {
 }
 
 template<class T, class>
-real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, cos_grad_functor());
 }
@@ -330,8 +303,7 @@ real_t<T> cosh(const T& x) {
 }
 
 template<class T, class>
-real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, cosh_grad_functor());
 }
@@ -347,6 +319,23 @@ real_t<T,U> digamma(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, digamma_functor());
+}
+
+template<class T, class U, class>
+implicit_t<T,U> div(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, div_functor());
+}
+
+template<class T, class U, class>
+std::pair<real_t<T>,real_t<U>> div_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
+      div_grad_functor()));
 }
 
 template<class T, class>
@@ -385,23 +374,6 @@ real_t<T,U> gamma_q(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, gamma_q_functor());
-}
-
-template<class T, class U, class>
-implicit_t<T,U> hadamard(const T& x, const U& y) {
-  prefetch(x);
-  prefetch(y);
-  return transform(x, y, hadamard_functor());
-}
-
-template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> hadamard_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  prefetch(g);
-  prefetch(x);
-  prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      hadamard_grad_functor()));
 }
 
 template<class T, class U, class V, class>
@@ -453,8 +425,7 @@ real_t<T> lfact(const T& x) {
 }
 
 template<class T, class>
-real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, lfact_grad_functor());
 }
@@ -466,8 +437,7 @@ real_t<T> lgamma(const T& x) {
 }
 
 template<class T, class>
-real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x,
       lgamma_grad_functor());
@@ -497,8 +467,7 @@ real_t<T> log(const T& x) {
 }
 
 template<class T, class>
-real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, log_grad_functor());
 }
@@ -510,10 +479,32 @@ real_t<T> log1p(const T& x) {
 }
 
 template<class T, class>
-real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, log1p_grad_functor());
+}
+
+template<class T, class U, class>
+implicit_t<T,U> mul(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, mul_functor());
+}
+
+template<class T, class U, class>
+std::pair<real_t<T>,real_t<U>> mul_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
+      mul_grad_functor()));
+}
+
+template<class T, class>
+T neg(const T& x) {
+  prefetch(x);
+  return transform(x, neg_functor());
 }
 
 template<class T, class U, class>
@@ -590,10 +581,26 @@ real_t<T> sqrt(const T& x) {
 }
 
 template<class T, class>
-real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, sqrt_grad_functor());
+}
+
+template<class T, class U, class>
+implicit_t<T,U> sub(const T& x, const U& y) {
+  prefetch(x);
+  prefetch(y);
+  return transform(x, y, sub_functor());
+}
+
+template<class T, class U, class>
+std::pair<real_t<T>,real_t<U>> sub_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return std::make_pair(aggregate<dimension_v<T>>(g),
+      neg(aggregate<dimension_v<U>>(g)));
 }
 
 template<class T, class>
@@ -603,8 +610,7 @@ real_t<T> tan(const T& x) {
 }
 
 template<class T, class>
-real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, tan_grad_functor());
 }
@@ -616,8 +622,7 @@ real_t<T> tanh(const T& x) {
 }
 
 template<class T, class>
-real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, tanh_grad_functor());
 }

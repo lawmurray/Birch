@@ -22,7 +22,7 @@ struct cast_functor {
   }
 };
 
-struct negate_functor {
+struct neg_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
     return -x;
@@ -32,42 +32,14 @@ struct negate_functor {
 struct add_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
-    using R = promote_t<T,U>;
-    return R(x) + R(y);
+    return x + y;
   }
 };
 
-struct subtract_functor {
+struct sub_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
-    using R = promote_t<T,U>;
-    return R(x) - R(y);
-  }
-};
-
-template<class U>
-struct scalar_divide_functor {
-  U y;
-  scalar_divide_functor(const U& y) : y(y) {
-    //
-  }
-  template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    using R = promote_t<T,std::decay_t<decltype(get(y))>>;
-    return R(x)/R(get(y));
-  }
-};
-
-template<class U>
-struct scalar_multiply_functor {
-  U y;
-  scalar_multiply_functor(const U& y) : y(y) {
-    //
-  }
-  template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    using R = promote_t<T,std::decay_t<decltype(get(y))>>;
-    return R(x)*R(get(y));
+    return x - y;
   }
 };
 
@@ -336,6 +308,21 @@ struct digamma_functor {
   }
 };
 
+struct div_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
+    return x/y;
+  }
+};
+
+struct div_grad_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
+      const U y) const {
+    return pair<real,real>{g/y, -g*x/(y*y)};
+  }
+};
+
 struct exp_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return std::exp(x);
@@ -363,21 +350,6 @@ struct floor_grad_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const real g, const T x) const {
     return real(0);
-  }
-};
-
-struct hadamard_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
-    return x*y;
-  }
-};
-
-struct hadamard_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{g*y, g*x};
   }
 };
 
@@ -453,6 +425,21 @@ struct log_abs_functor {
 struct log_square_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return real(2)*std::log(x);
+  }
+};
+
+struct mul_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
+    return x*y;
+  }
+};
+
+struct mul_grad_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
+      const U y) const {
+    return pair<real,real>{g*y, g*x};
   }
 };
 

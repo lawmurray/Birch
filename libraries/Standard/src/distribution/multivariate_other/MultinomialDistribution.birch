@@ -123,5 +123,5 @@ function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
  */
 function logpdf_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   assert length(x) == length(ρ);
-  return lfact(n) + sum(hadamard(x, log(ρ)) - lfact(x));
+  return lfact(n) + sum(mul(x, log(ρ)) - lfact(x));
 }

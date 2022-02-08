@@ -44,8 +44,6 @@ SOURCES =  \
     numbirch/instantiate/transform/binary.cpp \
     numbirch/instantiate/transform/binary_grad.cpp \
     numbirch/instantiate/transform/binary_operator.cpp \
-    numbirch/instantiate/transform/binary_scalar_divide.cpp \
-    numbirch/instantiate/transform/binary_scalar_multiply.cpp \
     numbirch/instantiate/transform/cast.cpp \
     numbirch/instantiate/transform/ternary.cpp \
     numbirch/instantiate/transform/unary.cpp \

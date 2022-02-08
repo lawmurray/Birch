@@ -108,7 +108,7 @@ template<class Arg, class... Args>
 int width(const Arg& arg, const Args&... args) {
   int w1 = width(arg);
   int w2 = width(args...);
-  assert((w1 == 0 || w2 == 0 || w1 == w2) && "incompatible widths");
+  assert((w1 == 1 || w2 == 1 || w1 == w2) && "incompatible widths");
   return std::max(w1, w2);
 }
 
@@ -143,7 +143,7 @@ template<class Arg, class... Args>
 int height(const Arg& arg, const Args&... args) {
   int h1 = height(arg);
   int h2 = height(args...);
-  assert((h1 == 0 || h2 == 0 || h1 == h2) && "incompatible heights");
+  assert((h1 == 1 || h2 == 1 || h1 == h2) && "incompatible heights");
   return std::max(h1, h2);
 }
 

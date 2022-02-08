@@ -26,7 +26,7 @@ void neg(const int m, const int n, const T* A, const int ldA, T* B,
   auto A1 = make_dpl_matrix(A, m, n, ldA);
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   dpl::transform(dpl::execution::make_device_policy(queue), A1.begin(),
-      A1.end(), B1.begin(), dpl::negate<T>());
+      A1.end(), B1.begin(), dpl::neg<T>());
 }
 
 template<class T>
@@ -54,7 +54,7 @@ void mul(const int m, const int n, const T* a, const U* B, const int ldB,
   auto B1 = make_dpl_matrix(B, m, n, ldB);
   auto C1 = make_dpl_matrix(C, m, n, ldC);
   dpl::transform(dpl::execution::make_device_policy(queue), B1.begin(),
-      B1.end(), C1.begin(), multiply_scalar_functor<U,T>(a));
+      B1.end(), C1.begin(), mul_scalar_functor<U,T>(a));
 }
 
 template<class T>

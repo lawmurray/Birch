@@ -179,6 +179,9 @@ program filter(
     outputBuffer.set("lnormalize", f!.lnormalize);
     outputBuffer.set("npropagations", f!.npropagations);
     outputBuffer.set("raccepts", f!.raccepts);
+    if κ? {
+      outputBuffer.set("scale", κ!.scale);
+    }
     outputBuffer.set("filter", filterOutputBuffer);
 
     /* forecast */

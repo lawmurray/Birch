@@ -7,8 +7,266 @@
 #include "numbirch/array/Scalar.hpp"
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
+#include "numbirch/transform.hpp"
 
 namespace numbirch {
+/**
+ * Unary plus.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @see pos()
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+T operator+(const T& x) {
+  return pos(x);
+}
+
+/**
+ * Gradient of operator+().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> op_pos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  return pos_grad(g, y, x);
+}
+
+/**
+ * Negation.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * @see neg()
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+T operator-(const T& x) {
+  return neg(x);
+}
+
+/**
+ * Gradient of operator-().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> op_neg_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  return neg_grad(g, y, x);
+}
+
+/**
+ * Addition.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note operator+() only supports addition between arrays of matching size;
+ * see add() for element-wise addition with broadcasting of scalars.
+ * 
+ * @see add()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+implicit_t<T,U> operator+(const T& x, const U& y) {
+  return add(x, y);
+}
+
+/**
+ * Gradient of operator+().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+std::pair<real_t<T>,real_t<U>> op_add_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  return add_grad(g, z, x, y);
+}
+
+/**
+ * Subtraction.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note operator-() only supports subtraction between arrays of matching size;
+ * see sub() for element-wise subtraction with broadcasting of scalars.
+ * 
+ * @see sub()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+implicit_t<T,U> operator-(const T& x, const U& y) {
+  return sub(x, y);
+}
+
+/**
+ * Gradient of operator-().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+std::pair<real_t<T>,real_t<U>> op_sub_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  return sub_grad(g, z, x, y);
+}
+
+/**
+ * Multiplication by scalar.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note operator*() supports only multiplication by a scalar on the left or
+ * right; for element-wise multiplication, see mul().
+ * 
+ * @see mul()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+implicit_t<T,U> operator*(const T& x, const U& y) {
+  return mul(x, y);
+}
+
+/**
+ * Gradient of operator*().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+std::pair<real_t<T>,real_t<U>> op_mul_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  return mul_grad(g, z, x, y);
+}
+
+/**
+ * Division by scalar.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Scalar type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @note operator/() supports only division by a scalar on the right; for
+ * element-wise division or division through a scalar on the left with
+ * broadcasting, see div().
+ * 
+ * @see div()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+implicit_t<T,U> operator/(const T& x, const U& y) {
+  return div(x, y);
+}
+
+/**
+ * Gradient of operator/().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+std::pair<real_t<T>,real_t<U>> op_div_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  return div_grad(g, z, x, y);
+}
+
 /**
  * Matrix-vector multiplication.
  * 
@@ -39,7 +297,7 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
  * @return Gradients with respect to @p A and @p x.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,1>> multiply_grad(const Array<T,1>& g,
+std::pair<Array<T,2>,Array<T,1>> op_mul_grad(const Array<T,1>& g,
     const Array<T,1>& y, const Array<T,2>& A, const Array<T,1>& x) {
   return std::make_pair(outer(g, x), inner(A, g));
 }
@@ -74,7 +332,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
  * @return Gradients with respect to @p A and @p B.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> multiply_grad(const Array<T,2>& g,
+std::pair<Array<T,2>,Array<T,2>> op_mul_grad(const Array<T,2>& g,
     const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& B) {
   return std::make_pair(outer(g, B), inner(A, g));
 }

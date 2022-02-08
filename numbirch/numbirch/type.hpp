@@ -517,7 +517,7 @@ using int_t = typename int_s<Args...>::type;
  */
 template<class... Args>
 struct bool_s {
-  using type = typename explicit_s<real,Args...>::type;
+  using type = typename explicit_s<bool,Args...>::type;
 };
 template<class... Args>
 using bool_t = typename bool_s<Args...>::type;

@@ -96,7 +96,7 @@ function Gaussian(μ:Random<Real>, σ2:Random<Real>) -> Distribution<Real> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Random<Real>, σ2:Multiply<Random<Real>,Arg>) ->
+function Gaussian<Arg>(μ:Random<Real>, σ2:OpMul<Random<Real>,Arg>) ->
      Distribution<Real> {
   return Gaussian(μ, σ2.r*σ2.l);
 }
@@ -104,7 +104,7 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Multiply<Random<Real>,Arg>) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Random<Real>, σ2:Multiply<Arg,Random<Real>>) ->
+function Gaussian<Arg>(μ:Random<Real>, σ2:OpMul<Arg,Random<Real>>) ->
      Distribution<Real> {
   μ.prune();
   if μ.hasNormalInverseGamma() && μ.isGrandChildOf(σ2.r) {
@@ -135,7 +135,7 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Multiply<Arg,Random<Real>>) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian(μ:Random<Real>, σ2:Multiply<Random<Real>,Random<Real>>) ->
+function Gaussian(μ:Random<Real>, σ2:OpMul<Random<Real>,Random<Real>>) ->
      Distribution<Real> {
   μ.prune();
   if μ.hasNormalInverseGamma() && μ.isGrandChildOf(σ2.l) {

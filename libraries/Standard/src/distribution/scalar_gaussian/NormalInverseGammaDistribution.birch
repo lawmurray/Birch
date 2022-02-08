@@ -138,7 +138,7 @@ function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
+function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Arg2,Random<Real>>) ->
     Distribution<Real> {
   σ2.r.prune();
   if σ2.r.hasInverseGamma() {
@@ -154,7 +154,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Arg2,Random<Real>>) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
+function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Random<Real>,Arg2>) ->
     Distribution<Real> {
   σ2.l.prune();
   if σ2.l.hasInverseGamma() {
@@ -170,7 +170,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Multiply<Random<Real>,Arg2>) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Arg, σ2:Multiply<Random<Real>,Random<Real>>) ->
+function Gaussian<Arg>(μ:Arg, σ2:OpMul<Random<Real>,Random<Real>>) ->
     Distribution<Real> {
   σ2.l.prune();
   σ2.r.prune();

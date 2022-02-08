@@ -5,13 +5,13 @@ struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator+, add_grad)
+  BIRCH_BINARY_FUNCTION_FORM(add, add_grad)
   }}
 }
 
 hpp{{
 namespace birch {
-using numbirch::operator+;
+using numbirch::add;
 using numbirch::add_grad;
 
 /**
@@ -19,8 +19,9 @@ using numbirch::add_grad;
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Add<Left,Right> operator+(const Left& l, const Right& r) {
+Add<Left,Right> add(const Left& l, const Right& r) {
   return construct<Add<Left,Right>>(l, r);
 }
+
 }
 }}

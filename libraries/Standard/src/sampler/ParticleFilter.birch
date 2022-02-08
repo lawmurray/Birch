@@ -187,11 +187,19 @@ class ParticleFilter {
       r <- t;
       raccepts <- 0.0/0.0;
       if ess <= trigger*nparticles {
+        /* adapt move kernel */
+        if κ? {
+          κ!.adapt(t, x, w);
+        }
+
+        /* resample */
         let (a, o) <- resample_systematic(w);
+
         /* pre-compute and bridge-find */
         dynamic parallel for n in 1..nparticles {
           if κ? && x[n].π? && o[n] >= 1 {
             /* will survive, perform pre-computations */
+            κ!.lag(t, x[n].π!);
             κ!.precompute(t, x[n].π!);
           }
           if o[n] >= 2 {
@@ -207,24 +215,55 @@ class ParticleFilter {
             x[n] <- copy(x[a[n]]);
           }
         }
+
+        /* good time for cycle collection given many particles will not
+         * survive */
         collect();
 
         /* move */
         if κ? {
-          let α <- vector(0.0, nparticles);  // acceptance rate per particle
-          parallel for n in 1..nparticles {
-            if x[n].π? {
-              α[n] <- κ!.move(t, x[n].π!);
+          let happy <- false;
+          let first <- true;
+          let nattempts <- 0;
+          do {
+            let α <- vector(0.0, nparticles);  // acceptance rate per particle
+            parallel for n in 1..nparticles {
+              if x[n].π? {
+                if !first {
+                  x[n].π!.grad(1.0);
+                }
+                α[n] <- κ!.move(t, x[n].π!);
+              }
             }
-          }
-          raccepts <- sum(α)/nparticles;
+            raccepts <- sum(α)/nparticles;
+            stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts + "\n");
+            if raccepts < 0.35 {
+              κ!.scale <- 0.1*κ!.scale;
+            } else if raccepts > 0.75 {
+              κ!.scale <- 5.0*κ!.scale;
+            } else {
+              happy <- true;
+            }
+            first <- false;
+            nattempts <- nattempts + 1;
+          } while !happy && nattempts < 10;
         }
 
         /* reset weights */
         w <- vector(0.0, nparticles);
       } else {
+        if κ? {
+          /* handle lags */
+          parallel for n in 1..nparticles {
+            if x[n].π? {
+              κ!.lag(t, x[n].π!);
+            }
+          }
+        }
+
         /* normalize weights to sum to nparticles */
         w <- w - vector(lsum - log(nparticles), nparticles);
+        collect();
       }
     }
   }

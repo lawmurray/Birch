@@ -17,14 +17,29 @@
  */
 abstract class Kernel {
   /**
+   * Number of lags.
+   */
+  nlags:Integer <- 0;
+
+  /**
    * Number of moves.
    */
   nmoves:Integer <- 1;
 
   /**
-   * Number of lag steps.
+   * Scale of each move.
    */
-  nlags:Integer <- 0;
+  scale:Real <- 1.0;
+
+  /**
+   * Apply lag.
+   *
+   * - t: Step number.
+   * - π: Log-posterior.
+   */
+  function lag(t:Integer, π:Expression<Real>) {
+    //
+  }
 
   /**
    * Perform pre-computations prior to copying a particle. This is typically
@@ -34,7 +49,16 @@ abstract class Kernel {
    * - t: Step number.
    * - π: Log-posterior.
    */
-  abstract function precompute(t:Integer, π:Expression<Real>);
+  function precompute(t:Integer, π:Expression<Real>) {
+    //
+  }
+
+  /**
+   * Adapt the kernel for the current ensemble of particles.
+   */
+  function adapt(t:Integer, x:Array<Particle>, w:Real[_]) {
+    //
+  }
 
   /**
    * Move a particle.
@@ -48,13 +72,15 @@ abstract class Kernel {
 
   override function read(buffer:Buffer) {
     super.read(buffer);
-    nmoves <-? buffer.get<Integer>("nmoves");
     nlags <-? buffer.get<Integer>("nlags");
+    nmoves <-? buffer.get<Integer>("nmoves");
+    scale <-? buffer.get<Real>("scale");
   }
   
   override function write(buffer:Buffer) {
     super.write(buffer);
-    buffer.set("nmoves", nmoves);
     buffer.set("nlags", nlags);
+    buffer.set("nmoves", nmoves);
+    buffer.set("scale", scale);
   }
 }

@@ -1,0 +1,26 @@
+struct Mul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(mul, mul_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::mul;
+using numbirch::mul_grad;
+
+/**
+ * Element-wise multiplication.
+ */
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
+Mul<Left,Right> mul(const Left& l, const Right& r) {
+  return construct<Mul<Left,Right>>(l, r);
+}
+}
+}}

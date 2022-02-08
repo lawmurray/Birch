@@ -45,8 +45,6 @@
 #define BINARY_BOOL(f) BINARY(f, bool_t)
 
 namespace numbirch {
-BINARY_ARITHMETIC(operator+)
-BINARY_ARITHMETIC(operator-)
 BINARY_BOOL(operator&&)
 BINARY_BOOL(operator||)
 BINARY_BOOL(operator==)

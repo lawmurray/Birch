@@ -42,13 +42,16 @@
 #define BINARY_BOOL(f) BINARY(f, bool_t)
 
 namespace numbirch {
+BINARY_ARITHMETIC(add)
 BINARY_ARITHMETIC(copysign)
+BINARY_ARITHMETIC(div)
 BINARY_REAL(digamma)
 BINARY_REAL(gamma_p)
 BINARY_REAL(gamma_q)
-BINARY_ARITHMETIC(hadamard)
+BINARY_ARITHMETIC(mul)
 BINARY_REAL(lbeta)
 BINARY_REAL(lchoose)
 BINARY_REAL(lgamma)
 BINARY_REAL(pow)
+BINARY_ARITHMETIC(sub)
 }

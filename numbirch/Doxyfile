@@ -863,15 +863,13 @@ WARN_LOGFILE           =
 
 INPUT                  = README.md \
                          numbirch/array.hpp \
-                         numbirch/binary.hpp \
                          numbirch/memory.hpp \
                          numbirch/numbirch.hpp \
                          numbirch/numeric.hpp \
                          numbirch/random.hpp \
                          numbirch/reduce.hpp \
-                         numbirch/ternary.hpp \
+                         numbirch/transform.hpp \
                          numbirch/type.hpp \
-                         numbirch/unary.hpp \
                          numbirch/array/Array.hpp \
                          numbirch/array/ArrayIterator.hpp \
                          numbirch/array/ArrayShape.hpp \
