@@ -59,12 +59,12 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
   assert(rows(g) == rows(S));
   Array<T,2> gS(shape(S));
   auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto S1 = make_eigen(S);
   auto gS1 = make_eigen(gS);
-  gS1 = (L1.transpose()*g1).template triangularView<Eigen::Lower>();
+  gS1 = (U1*g1).template triangularView<Eigen::Lower>();
   gS1.diagonal() *= 0.5;
-  gS1 = L1.transpose().solve(L1.transpose().solve(gS1).transpose());
+  gS1 = U1.solve(U1.solve(gS1).transpose());
   gS1 = (gS1.transpose() + gS1).template triangularView<Eigen::Lower>();
   gS1.diagonal() *= 0.5;
   return gS;
@@ -75,9 +75,10 @@ Array<T,2> cholinv(const Array<T,2>& L) {
   assert(rows(L) == columns(L));
   Array<T,2> B(shape(L));
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
   auto I1 = B1.Identity(rows(B), columns(B));
-  B1.noalias() = L1.transpose().solve(L1.solve(I1));
+  B1.noalias() = U1.solve(L1.solve(I1));
   return B;
 }
 
@@ -102,9 +103,10 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(columns(L) == length(y));
   Array<T,1> x(shape(y));
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
-  x1.noalias() = L1.transpose().solve(L1.solve(y1));
+  x1.noalias() = U1.solve(L1.solve(y1));
   return x;
 }
 
@@ -119,12 +121,13 @@ std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
   Array<T,1> gy(shape(y));
   auto g1 = make_eigen(g);
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
   auto gS1 = make_eigen(gS);
   auto gL1 = make_eigen(gL);
   auto gy1 = make_eigen(gy);
-  gy1.noalias() = L1.transpose().solve(L1.solve(g1));
+  gy1.noalias() = U1.solve(L1.solve(g1));
   gS1.noalias() = -gy1*x1.transpose();
   gL1 = ((gS1 + gS1.transpose())*L1).template triangularView<Eigen::Lower>();
   return std::make_pair(gL, gy);
@@ -136,9 +139,10 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
   assert(columns(L) == rows(C));
   Array<T,2> B(shape(C));
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
-  B1.noalias() = L1.transpose().solve(L1.solve(C1));
+  B1.noalias() = U1.solve(L1.solve(C1));
   return B;
 }
 
@@ -152,12 +156,13 @@ std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
   Array<T,2> gC(shape(C));
   auto g1 = make_eigen(g);
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
   auto gS1 = make_eigen(gS);
   auto gL1 = make_eigen(gL);
   auto gC1 = make_eigen(gC);
-  gC1.noalias() = L1.transpose().solve(L1.solve(g1));
+  gC1.noalias() = U1.solve(L1.solve(g1));
   gS1.noalias() = -gC1*B1.transpose();
   gL1 = ((gS1 + gS1.transpose())*L1).template triangularView<Eigen::Lower>();
   return std::make_pair(gL, gC);
@@ -243,7 +248,7 @@ Array<T,2> inv(const Array<T,2>& A) {
   return B;
 }
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class>
 Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   assert(rows(B) == columns(B));
@@ -348,10 +353,10 @@ template<class T, class>
 Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x) {
   assert(rows(L) == length(x));
   Array<T,1> y(make_shape(columns(L)));
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
-  y1.noalias() = L1.transpose()*x1;
+  y1.noalias() = U1*x1;
   return y;
 }
 
@@ -391,10 +396,10 @@ template<class T, class>
 Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
   assert(rows(L) == rows(B));
   Array<T,2> C(make_shape(columns(L), columns(B)));
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
-  C1.noalias() = L1.transpose()*B1;
+  C1.noalias() = U1*B1;
   return C;
 }
 
@@ -423,16 +428,16 @@ Array<T,2> triinv(const Array<T,2>& L) {
   return B;
 }
 
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class>
 Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
   assert(rows(B) == columns(B));
   assert(rows(L) == columns(L));
   Array<T,2> gL(shape(L));
   auto g1 = make_eigen(g);
-  auto B1 = make_eigen(B).template triangularView<Eigen::Lower>();
+  auto B1 = make_eigen(B).transpose().template triangularView<Eigen::Upper>();
   auto gL1 = make_eigen(gL);
-  gL1 = (-(B1.transpose()*g1*B1.transpose())).template triangularView<
+  gL1 = (-(B1*g1*B1)).template triangularView<
       Eigen::Lower>();
   return gL;
 }
@@ -455,12 +460,12 @@ std::pair<Array<T,2>,Array<T,1>> trimul_grad(const Array<T,1>& g,
   Array<T,2> gL(shape(L));
   Array<T,1> gx(shape(x));
   auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto x1 = make_eigen(x);
   auto gL1 = make_eigen(gL);
   auto gx1 = make_eigen(gx);
   gL1 = (g1*x1.transpose()).template triangularView<Eigen::Lower>();
-  gx1.noalias() = L1.transpose()*g1;
+  gx1.noalias() = U1*g1;
   return std::make_pair(gL, gx);
 }
 
@@ -482,12 +487,12 @@ std::pair<Array<T,2>,Array<T,2>> trimul_grad(const Array<T,2>& g,
   Array<T,2> gL(shape(L));
   Array<T,2> gB(shape(B));
   auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
   auto gL1 = make_eigen(gL);
   auto gB1 = make_eigen(gB);
   gL1 = (g1*B1.transpose()).template triangularView<Eigen::Lower>();
-  gB1.noalias() = L1.transpose()*g1;
+  gB1.noalias() = U1*g1;
   return std::make_pair(gL, gB);
 }
 
@@ -512,9 +517,9 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
   assert(columns(A) == columns(L));
   Array<T,2> C(make_shape(rows(A), rows(L)));
   auto A1 = make_eigen(A);
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto C1 = make_eigen(C);
-  C1.noalias() = A1*L1.transpose();
+  C1.noalias() = A1*U1;
   return C;
 }
 
@@ -554,12 +559,12 @@ std::pair<Array<T,2>,Array<T,1>> trisolve_grad(const Array<T,1>& g,
   Array<T,2> gL(shape(L));
   Array<T,1> gy(shape(y));
   auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto x1 = make_eigen(x);
   auto y1 = make_eigen(y);
   auto gL1 = make_eigen(gL);
   auto gy1 = make_eigen(gy);
-  gy1.noalias() = L1.transpose().solve(g1);
+  gy1.noalias() = U1.solve(g1);
   gL1 = (-gy1*x1.transpose()).template triangularView<Eigen::Lower>();
   return std::make_pair(gL, gy);
 }
@@ -586,12 +591,12 @@ std::pair<Array<T,2>,Array<T,2>> trisolve_grad(const Array<T,2>& g,
   Array<T,2> gL(shape(L));
   Array<T,2> gC(shape(C));
   auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
   auto gL1 = make_eigen(gL);
   auto gC1 = make_eigen(gC);
-  gC1.noalias() = L1.transpose().solve(g1);
+  gC1.noalias() = U1.solve(g1);
   gL1 = (-gC1*B1.transpose()).template triangularView<Eigen::Lower>();
   return std::make_pair(gL, gC);
 }
