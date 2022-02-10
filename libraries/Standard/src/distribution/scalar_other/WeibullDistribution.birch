@@ -97,8 +97,6 @@ function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
-  assert 0.0 < k;
-  assert 0.0 < λ;
   return if_then_else(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
 }
 
@@ -112,8 +110,6 @@ function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
  * Return: the quantile.
  */
 function quantile_weibull<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, λ:Arg3) -> {
-  assert 0.0 < k;
-  assert 0.0 < λ;
   cpp{{
   return boost::math::quantile(boost::math::weibull_distribution<Real>(
       wait(k), wait(λ)), wait(P));

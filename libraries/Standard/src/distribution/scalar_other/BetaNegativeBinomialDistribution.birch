@@ -88,9 +88,6 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
  */
 function simulate_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
-  assert 0.0 < α;
-  assert 0.0 < β;
-  assert 0 < k;
   return simulate_negative_binomial(k, simulate_beta(α, β));
 }
 

@@ -28,7 +28,6 @@ function logpdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
  * Return: the cumulative probability.
  */
 function cdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
-  assert 0.0 < ν;
   return gamma_p(0.5*ν, 0.5*x);
 }
 
@@ -41,7 +40,6 @@ function cdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
  * Return: the quantile.
  */
 function quantile_chi_squared<Arg1,Arg2>(P:Arg1, ν:Arg2) -> {
-  assert 0.0 < ν;
   cpp{{
   return boost::math::quantile(boost::math::chi_squared_distribution<Real>(
       wait(ν)), wait(P));
