@@ -1,0 +1,169 @@
+/**
+ * Multivariate normal-inverse-Wishart-Gaussian distribution.
+ */
+final class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
+    Arg1,Arg2,Arg3,Arg4,Arg5>(μ:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4, Ω:Arg5) <
+    Distribution<Real[_]> {
+  /**
+   * Mean.
+   */
+  μ:Arg1 <- μ;
+
+  /**
+   * Among-row covariance.
+   */
+  Σ:Arg2 <- Σ;
+  
+  /**
+   * Among-column spread.
+   */
+  Ψ:Arg3 <- Ψ;
+  
+  /**
+   * Among-column degrees of freedom.
+   */
+  k:Arg4 <- k;
+
+  /**
+   * Likelihood covariance.
+   */
+  Ω:Arg5 <- Ω;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        value(μ), value(Σ), value(Ψ), value(k), value(Ω));
+  }
+
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        eval(μ), eval(Σ), eval(Ψ), eval(k), eval(Ω));
+  }
+  
+  override function logpdf(x:Real[_]) -> Real! {
+    return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(x,
+        value(μ), value(Σ), value(Ψ), value(k), value(Ω));
+  }
+
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return box(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        x, μ, Σ, Ψ, k, Ω));
+  }
+
+  override function update(x:Real[_]) -> Delay? {
+    return update_multivariate_normal_inverse_wishart_multivariate_gaussian(x,
+        value(μ), value(Σ), value(Ψ), value(k), value(Ω));
+  }
+
+  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+    return update_multivariate_normal_inverse_wishart_multivariate_gaussian(x,
+        μ, Σ, Ψ, k, Ω);
+  }
+}
+
+function MultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,Arg3,
+    Arg4,Arg5>(μ:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4, Ω:Arg5) -> {
+  return wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(μ,
+      chol(Σ), chol(Ψ), k, chol(Ω));
+}
+function wrap_multivariate_normal_inverse_wishart_multivariate_gaussian<Arg1,
+    Arg2,Arg3,Arg4,Arg5>(μ:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4, Ω:Arg5) -> {
+  return make_multivariate_normal_inverse_wishart_multivariate_gaussian(
+      wrap(μ), wrap(Σ), wrap(Ψ), wrap(k), wrap(Ω));
+}
+function make_multivariate_normal_inverse_wishart_multivariate_gaussian<Arg1,
+    Arg2,Arg3,Arg4,Arg5>(μ:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4, Ω:Arg5) -> {
+  return construct<MultivariateNormalInverseWishartMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5>>(μ, Σ, Ψ, k, Ω);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian(μ:Random<Real[_]>, Σ:Random<Real[_,_]>) ->
+    Distribution<Real[_]> {
+  μ.prune();
+  if μ.hasMultivariateNormalInverseWishart() && μ.isGrandChildOf(Σ) {
+    let (μ1, Σ1, Ψ, k) <- μ.getMultivariateNormalInverseWishart();
+    let I <- diagonal(1.0, rows(Ψ));
+    let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        μ1, Σ1, Ψ, k, I);
+    μ.graft(p, 1);
+    Σ.graftReplace(p, 2);
+    μ.join(Σ);
+    return p;
+  } else {
+    Σ.prune();
+    if Σ.hasInverseWishart() {
+      let (Ψ, k) <- Σ.getInverseWishart();
+      let I <- diagonal(1.0, rows(Ψ));
+      let p <- wrap_multivariate_normal_inverse_wishart(μ, I, Ψ, k);
+      Σ.graft(p);
+      return p;
+    } else {
+      return wrap_multivariate_gaussian(μ, chol(Σ));
+    }
+  }
+}
+
+/*
+ * Simulate a Gaussian distribution with multivariate-normal-inverse-Wishart prior.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - Ψ: Among-column covariance shape.
+ * - k: Among-column covariance degrees of freedom.
+ * - Ω: Among-row covariance.
+ */
+function simulate_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5>(μ:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4, Ω:Arg5) -> {
+  let S <- chol(triouter(Σ) + triouter(Ω));
+  return simulate_multivariate_t(k, μ, S*Ψ);
+}
+
+/*
+ * Observe a Gaussian variate with multivariate-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - Ψ: Among-column covariance shape.
+ * - k: Among-column covariance degrees of freedom.
+ * - Ω: Among-row covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, μ:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
+    Ω:Arg6) -> {
+  let S <- chol(triouter(Σ) + triouter(Ω));
+  return logpdf_multivariate_t(x, k, μ, S*Ψ);
+}
+
+/*
+ * Update the parameters of a Gaussian variate with
+ * multivariate-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ * - Ψ: Prior among-column covariance shape.
+ * - k: Prior among-column covariance degrees of freedom.
+ * - Ω: Among-row covariance.
+ *
+ * Returns: the posterior hyperparameters `M'`, `Σ'`, `Ψ'` and `k'`.
+ */
+function update_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1, μ:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
+    Ω:Arg6) -> {
+  let S <- wrap(triouter(Σ));
+  let K <- wrap(S*cholinv(chol(S + triouter(Ω))));
+  let μ' <- wrap(μ + K*(x - μ));
+  let Σ' <- wrap(chol(S - K*S));
+  let Ψ' <- chol(triouter(Ψ) + outer(cholsolve(Σ, x - μ), triouter(Σ')*(x - μ)));
+  let k' <- k + 1;
+  return wrap_multivariate_normal_inverse_wishart(μ', Σ', Ψ', k');
+}

@@ -241,6 +241,15 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
+  function isMultivariateNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>)? {
+    return nil;
+  }
+
   function isMatrixGaussian() -> Boolean {
     return false;
   }

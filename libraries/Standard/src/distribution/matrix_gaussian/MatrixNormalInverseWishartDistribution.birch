@@ -14,12 +14,12 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   Σ:Arg2 <- Σ;
   
   /**
-   * Among-column covariance.
+   * Among-column spread.
    */
   Ψ:Arg3 <- Ψ;
   
   /**
-   * Among-column covariance degrees of freedom.
+   * Among-column degrees of freedom.
    */
   k:Arg4 <- k;
 
@@ -110,7 +110,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
  *
  * - M: Mean.
  * - Σ: Covariance.
- * - Ψ: Variance shape.
+ * - Ψ: Covariance shape.
  * - k: Degrees of freedom.
  */
 function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1,

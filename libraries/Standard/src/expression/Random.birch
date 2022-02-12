@@ -225,6 +225,16 @@ final class Random<Value> < Expression<Value>(nil, false) {
     return this.getDistribution().getMultivariateNormalInverseGamma()!;
   }
 
+  function hasMultivariateNormalInverseWishart() -> Boolean {
+    return !this.hasValue() && this.hasDistribution() &&
+        this.getDistribution().isMultivariateNormalInverseWishart();
+  }
+
+  function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
+    return this.getDistribution().getMultivariateNormalInverseWishart()!;
+  }
+
   function hasMatrixGaussian() -> Boolean {
     return !this.hasValue() && this.hasDistribution() &&
         this.getDistribution().isMatrixGaussian();
