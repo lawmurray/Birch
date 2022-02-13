@@ -246,7 +246,7 @@ abstract class Distribution<Value> < Delay {
   }
 
   function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>)? {
+      Expression<Real>, Expression<Real[_,_]>, Expression<Real>)? {
     return nil;
   }
 

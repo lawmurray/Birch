@@ -104,9 +104,9 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:OpAdd<OpMul<Arg1,Random<Real[_,_]>>,
     Arg2>, U:Arg3, V:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
   M.l.r.prune();
   if M.l.r.hasMatrixNormalInverseWishart() && M.l.r.isGrandChildOf(V) {
-    let (M1, Σ, α, β) <- M.l.r.getMatrixNormalInverseWishart();
+    let (M1, Σ, Ψ, k) <- M.l.r.getMatrixNormalInverseWishart();
     let p <- wrap_linear_matrix_normal_inverse_wishart_matrix_gaussian(M.l.l,
-        M1, Σ, α, β, M.r, chol(U));
+        M1, Σ, Ψ, k, M.r, chol(U));
     M.l.r.graft(p, 1);
     V.graftReplace(p, 2);
     M.l.r.join(V);
