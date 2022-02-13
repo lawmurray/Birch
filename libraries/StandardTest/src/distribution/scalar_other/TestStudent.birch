@@ -31,8 +31,8 @@ class TestStudent < TestModel {
   }
 }
 
-program test_pdf_student_t(N:Integer <- 10000, B:Integer <- 100,
-    S:Integer <- 5, lazy:Boolean <- false) {
+program test_pdf_student_t(N:Integer <- 10000, B:Integer <- 1000,
+    S:Integer <- 20, lazy:Boolean <- false) {
   m:TestStudent;
   m.initialize();
   m.simulate();

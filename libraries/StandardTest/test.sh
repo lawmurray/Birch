@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eov pipefail
 
-N1=100000  # for cdf tests
+N1=10000  # for cdf tests
 N2=100    # for gradient tests
 N3=10000  # for pdf tests
 N4=10000  # for conjugacy tests

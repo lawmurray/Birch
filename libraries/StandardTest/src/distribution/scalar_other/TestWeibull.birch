@@ -29,7 +29,7 @@ class TestWeibull < TestModel {
   }
 }
 
-program test_pdf_weibull(N:Integer <- 10000, B:Integer <- 100, S:Integer <- 5,
+program test_pdf_weibull(N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestWeibull;
   m.initialize();

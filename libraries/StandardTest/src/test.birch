@@ -43,7 +43,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let C <- columns(X1);
   let failed <- 0;
   let tests <- 0;
-  let ε <- 2.0/sqrt(R);
+  let ε <- 100.0/R;
 
   /* compare marginals using 1-Wasserstein distance */
   for c in 1..C {

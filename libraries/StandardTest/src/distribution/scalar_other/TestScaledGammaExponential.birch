@@ -49,7 +49,7 @@ program test_conjugacy_scaled_gamma_exponential(N:Integer <- 10000,
 }
 
 program test_pdf_scaled_gamma_exponential(N:Integer <- 10000,
-    B:Integer <- 100, S:Integer <- 5, lazy:Boolean <- false) {
+    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestScaledGammaExponential;
   m.initialize();
   m.simulate();
