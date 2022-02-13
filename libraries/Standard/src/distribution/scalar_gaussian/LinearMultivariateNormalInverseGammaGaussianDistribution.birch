@@ -299,15 +299,13 @@ function update_linear_multivariate_normal_inverse_gamma_gaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4,
     c:Arg5, α:Arg6, β:Arg7, ω2:Arg8) -> {
   let S <- wrap(triouter(Σ));
-  let K' <- wrap(outer(S*a/(dot(triinner(Σ, a)) + ω2), a));
-  let S' <- wrap(S - K'*S);
-  let μ' <- wrap(μ - K'*μ + S'*a*((x - c)/ω2));
-  let Σ' <- wrap(chol(S'));
+  let k' <- wrap(S*a/(dot(triinner(Σ, a)) + ω2));
+  let μ' <- wrap(μ + k'*(x - c - dot(a, μ)));
+  let Σ' <- wrap(chol(S - outer(k', a)*S));
   let α' <- α + 0.5;
   let β' <- β + 0.5*(pow(x - c, 2.0)/ω2 + dot(trisolve(Σ, μ)) -
       dot(trisolve(Σ', μ')));
   return wrap_multivariate_normal_inverse_gamma(μ', Σ', α', β');
-  
 }
 
 /*
