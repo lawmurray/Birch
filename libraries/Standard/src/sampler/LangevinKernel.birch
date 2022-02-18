@@ -52,12 +52,6 @@ class LangevinKernel < Kernel {
     }
   }
 
-  override function lag(t:Integer, π:Expression<Real>) {
-    ///@todo Can label() and constant() be combined into one pass?
-    π.label(t);
-    π.constant(t - nlags);
-  }
-
   override function precompute(t:Integer, π:Expression<Real>) {
     π.grad(1.0);
   }
@@ -99,10 +93,10 @@ class LangevinKernel < Kernel {
           },
           \(z':Real, z:Real, δ:Real) -> {
             let r <- -0.25*(z*z - z'*z')/δ;
-            if isnan(r) {
-              return 0.0;
-            } else {
+            if isfinite(r) {
               return r;
+            } else {
+              return 0.0;
             }
           });
 

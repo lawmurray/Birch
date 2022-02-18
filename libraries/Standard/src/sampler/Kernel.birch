@@ -37,8 +37,10 @@ abstract class Kernel {
    * - t: Step number.
    * - π: Log-posterior.
    */
-  function lag(t:Integer, π:Expression<Real>) {
-    //
+  final function lag(t:Integer, π:Expression<Real>) {
+    ///@todo Can label() and constant() be combined into one pass?
+    π.label(t);
+    π.constant(t - nlags);
   }
 
   /**
