@@ -72,10 +72,6 @@ final class Random<Value> < Expression<Value>(nil, false) {
     visitor.visit(this);
   }
 
-  override function doConstant() {
-    p <- nil;
-  }
-
   override function graft(node:Delay) {
     super.graft(node);
     p <- nil;
