@@ -221,7 +221,7 @@ class ParticleFilter {
         collect();
 
         /* move */
-        if κ? {
+        if κ? && κ!.nmoves > 0 {
           let happy <- false;
           let first <- true;
           let nattempts <- 0;
