@@ -120,7 +120,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   /**
    * Handle an observe event.
    *
-   * - x: Random.
+   * - x: Variate.
    * - p: Distribution.
    *
    * Returns: `x`.
