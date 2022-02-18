@@ -34,11 +34,11 @@ final class BoxedForm<Value,Form>(x:Value!, f:Form) <
   }
 
   override function doLabel(gen:Integer) {
-    global.label(f!, this.gen);
+    global.label(f!, gen);
   }
 
   override function doConstant(gen:Integer) {
-    global.constant(f!, this.gen);
+    global.constant(f!, gen);
   }
 
   override function doConstant() {
