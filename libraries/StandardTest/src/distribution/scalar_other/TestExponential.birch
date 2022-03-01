@@ -27,12 +27,6 @@ class TestExponential < TestModel {
   }
 }
 
-program test_conjugacy_exponential(N:Integer <- 10000,
-    lazy:Boolean <- false) {
-  m:TestExponential;
-  test_conjugacy(m, N, lazy);
-}
-
 program test_pdf_exponential(N:Integer <- 10000, B:Integer <- 1000,
     S:Integer <- 20, lazy:Boolean <- false) {
   m:TestExponential;
