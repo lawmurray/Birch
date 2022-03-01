@@ -195,5 +195,5 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
 function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
     Arg5>(x:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5) -> {
   let n <- length(x);
-  return wrap_inverse_gamma(α + 0.5*n, β + 0.5*dot(triinner(Σ, x - μ)));
+  return wrap_inverse_gamma(α + 0.5*n, β + 0.5*dot(trisolve(Σ, x - μ)));
 }
