@@ -232,7 +232,7 @@ function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
  */
 function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
     μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5) -> {
-  return wrap_inverse_gamma(α + 0.5, β + 0.5*pow(x - μ, 2.0));
+  return wrap_inverse_gamma(α + 0.5, β + 0.5*pow(x - μ, 2.0)/σ2);
 }
 
 /*
