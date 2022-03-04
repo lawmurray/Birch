@@ -2,9 +2,11 @@
  * Multivariate Gaussian with linear transformation of a
  * multivariate-normal-inverse-Wishart prior.
  */
-final class ScaledMultivariateNormalInverseWishartMultivariateGaussianDistribution<
+class ScaledMultivariateNormalInverseWishartMultivariateGaussianDistribution<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5,
-    ω2:Arg6) < Distribution<Real[_]> {
+    ω2:Arg6) < MultivariateTDistribution<Arg5,Expression<Real[_]>,
+    Expression<Real[_,_]>>(k, box(A*μ), box(chol(σ2*A*outer(triouter(Ψ), A) +
+    ω2*triouter(Ψ)))) {
   /**
    * Scale.
    */
@@ -24,11 +26,6 @@ final class ScaledMultivariateNormalInverseWishartMultivariateGaussianDistributi
    * Spread.
    */
   Ψ:Arg4 <- Ψ;
-  
-  /**
-   * Degrees of freedom.
-   */
-  k:Arg5 <- k;
 
   /**
    * Likelihood scale.
@@ -39,39 +36,21 @@ final class ScaledMultivariateNormalInverseWishartMultivariateGaussianDistributi
     return true;
   }
 
-  override function simulate() -> Real[_] {
-    return simulate_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        value(A), value(μ), value(σ2), value(Ψ), value(k), value(ω2));
-  }
-
-  override function simulateLazy() -> Real[_]? {
-    return simulate_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        eval(A), eval(μ), eval(σ2), eval(Ψ), eval(k), eval(ω2));
-  }
-  
-  override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, value(A), value(μ), value(σ2), value(Ψ), value(k), value(ω2));
-  }
-
-  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return box(logpdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, A, μ, σ2, Ψ, k, ω2));
-  }
-
   override function update(x:Real[_]) -> Delay? {
     return update_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, value(A), value(μ), value(σ2), value(Ψ), value(k), value(ω2));
+        x, value(A), value(μ), value(σ2), value(Ψ), value(this.k), value(ω2),
+        value(super.μ));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
     return update_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, A, μ, σ2, Ψ, k, ω2);
+        x, A, μ, σ2, Ψ, this.k, ω2, super.μ);
   }
 }
 
 function ScaledMultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6>(A:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5, ω2:Arg6) -> {
+    Arg3,Arg4,Arg5,Arg6>(A:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5,
+    ω2:Arg6) -> {
   return wrap_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
       A, μ, chol(σ2), chol(Ψ), k, chol(ω2));
 }
@@ -116,45 +95,6 @@ function MultivariateGaussian<Arg1>(μ:OpMul<Arg1,Random<Real[_]>>,
 }
 
 /*
- * Simulate a Gaussian distribution with linear transformation of a
- * multivariate-normal-inverse-Wishart prior.
- *
- * - A: Scale.
- * - μ: Mean.
- * - σ2: Scale.
- * - Ψ: Spread.
- * - k: Degrees of freedom.
- * - ω2: Likelihood scale.
- */
-function simulate_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(A:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5,
-    ω2:Arg6) -> {
-  let S <- chol(σ2*A*outer(triouter(Ψ), A) + ω2*triouter(Ψ));
-  return simulate_multivariate_t(k, A*μ, S);
-}
-
-/*
- * Observe a Gaussian variate with linear transformation of a
- * multivariate-normal-inverse-Wishart prior.
- *
- * - x: The variate.
- * - A: Scale.
- * - μ: Mean.
- * - σ2: Scale.
- * - Ψ: Spread.
- * - k: Degrees of freedom.
- * - ω2: Likelihood scale.
- *
- * Returns: the log probability density.
- */
-function logpdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(x:Arg1, A:Arg2, μ:Arg3, σ2:Arg4,
-    Ψ:Arg5, k:Arg6, ω2:Arg7) -> {
-  let S <- chol(σ2*A*outer(triouter(Ψ), A) + ω2*triouter(Ψ));
-  return logpdf_multivariate_t(x, k, A*μ, S);
-}
-
-/*
  * Update the parameters of a Gaussian variate with linear transformation
  * of multivariate-normal-inverse-Wishart prior.
  *
@@ -165,16 +105,17 @@ function logpdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian
  * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
  * - ω2: Among-row covariance.
+ * - N: Precomputed marginal mean.
  *
  * Returns: the posterior hyperparameters `μ'`, `σ2'`, `Ψ'` and `k'`.
  */
 function update_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(x:Arg1, A:Arg2, μ:Arg3, σ2:Arg4,
-    Ψ:Arg5, k:Arg6, ω2:Arg7) -> {
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, μ:Arg3, σ2:Arg4,
+    Ψ:Arg5, k:Arg6, ω2:Arg7, N:Arg8) -> {
   let l <- wrap(σ2/(σ2 + ω2));
-  let μ' <- wrap(μ + l*(x - A*μ));
+  let μ' <- wrap(μ + l*(x - N));
   let σ2' <- wrap(σ2 - l*σ2);
-  let Ψ' <- chol(triouter(Ψ) + outer(x - A*μ)*σ2'/σ2);
+  let Ψ' <- chol(triouter(Ψ) + outer(x - N)*σ2'/σ2);
   let k' <- k + 1;
   return wrap_multivariate_normal_inverse_wishart(μ', σ2', Ψ', k');
 }

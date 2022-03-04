@@ -1,5 +1,9 @@
 /**
  * Matrix normal-inverse-Wishart distribution.
+ *
+ * !!! note
+ *     This class does not inherit from MatrixTDistribution, as it is
+ *     typically used for a random variable that is marginalized out.
  */
 final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     M:Arg1, Σ:Arg2, Ψ:Arg3, k:Arg4) < Distribution<Real[_,_]> {

@@ -31,9 +31,13 @@
  * last argument of the distribution of `x`. The operation of `Σ` on `σ2` may
  * be multiplication on the left (as above) or the right, or division on the
  * right.
+ *
+ * !!! note
+ *     This class does not inherit from MultivariateTDistribution, as it is
+ *     typically used for a random variable that is marginalized out.
  */
 final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
-    μ:Arg1, Σ:Arg2, α:Arg3, β:Arg4) < Distribution<Real[_]> {
+    μ:Arg1, Σ:Arg2, k:Arg3, β:Arg4) < Distribution<Real[_]> {
   /**
    * Mean.
    */
@@ -45,9 +49,9 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
   Σ:Arg2 <- Σ;
 
   /**
-   * Variance shape.
+   * Degrees of freedom.
    */
-  α:Arg3 <- α;
+  k:Arg3 <- k;
 
   /**
    * Variance scale.
@@ -60,30 +64,30 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma(value(μ), value(Σ),
-        value(α), value(β));
+        value(k), value(β));
   }
 
   override function simulateLazy() -> Real[_]? {
     return simulate_multivariate_normal_inverse_gamma(eval(μ), eval(Σ),
-        eval(α), eval(β));
+        eval(k), eval(β));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma(x, value(μ), value(Σ),
-        value(α), value(β));
+        value(k), value(β));
   }
 
   override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return box(logpdf_multivariate_normal_inverse_gamma(x, μ, Σ, α, β));
+    return box(logpdf_multivariate_normal_inverse_gamma(x, μ, Σ, k, β));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_gamma(x, value(μ), value(Σ),
-        value(α), value(β));
+        value(k), value(β));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    return update_multivariate_normal_inverse_gamma(x, μ, Σ, α, β);
+    return update_multivariate_normal_inverse_gamma(x, μ, Σ, k, β);
   }
 
   override function isMultivariateNormalInverseGamma() -> Boolean {
@@ -92,31 +96,31 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
       Expression<Real[_,_]>, Expression<Real>, Expression<Real>)? {
-    return box(μ, Σ, α, β);
+    return box(μ, Σ, k, β);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateNormalInverseGamma");
     buffer.set("μ", value(μ));
     buffer.set("Σ", value(Σ));
-    buffer.set("α", value(α));
+    buffer.set("α", 0.5*value(k));
     buffer.set("β", value(β));
   }
 }
 
 function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, Σ:Arg2,
     α:Arg3, β:Arg4) -> {
-  return wrap_multivariate_normal_inverse_gamma(μ, chol(Σ), α, β);
+  return wrap_multivariate_normal_inverse_gamma(μ, chol(Σ), 2.0*α, β);
 }
 function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
-    Σ:Arg2, α:Arg3, β:Arg4) -> {
-  return make_multivariate_normal_inverse_gamma(wrap(μ), wrap(Σ), wrap(α),
+    Σ:Arg2, k:Arg3, β:Arg4) -> {
+  return make_multivariate_normal_inverse_gamma(wrap(μ), wrap(Σ), wrap(k),
       wrap(β));
 }
 function make_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
-    Σ:Arg2, α:Arg3, β:Arg4) -> {
+    Σ:Arg2, k:Arg3, β:Arg4) -> {
   return construct<MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,
-      Arg4>>(μ, Σ, α, β);
+      Arg4>>(μ, Σ, k, β);
 }
 
 /**
@@ -127,7 +131,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   Σ.r.prune();
   if Σ.r.hasInverseGamma() {
     let (α, β) <- Σ.r.getInverseGamma();
-    let p <- wrap_multivariate_normal_inverse_gamma(μ, chol(Σ.l), α, β);
+    let p <- wrap_multivariate_normal_inverse_gamma(μ, chol(Σ.l), 2.0*α, β);
     Σ.r.graft(p);
     return p;
   } else {
@@ -143,7 +147,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   Σ.l.prune();
   if Σ.l.hasInverseGamma() {
     let (α, β) <- Σ.l.getInverseGamma();
-    let p <- wrap_multivariate_normal_inverse_gamma(μ, chol(Σ.r), α, β);
+    let p <- wrap_multivariate_normal_inverse_gamma(μ, chol(Σ.r), 2.0*α, β);
     Σ.l.graft(p);
     return p;
   } else {
@@ -156,12 +160,12 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
  *
  * - μ: Mean.
  * - Σ: Covariance.
- * - α: Shape of inverse-gamma on covariance scale.
+ * - k: Degrees of freedom of inverse-gamma on covariance scale.
  * - β: Scale of inverse-gamma on covariance scale.
  */
 function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
-      μ:Arg1, Σ:Arg2, α:Arg3, β:Arg4) -> {
-  return simulate_multivariate_t(2.0*α, μ, sqrt(2.0*β)*Σ);
+    μ:Arg1, Σ:Arg2, k:Arg3, β:Arg4) -> {
+  return simulate_multivariate_t(k, μ, sqrt(2.0*β)*Σ);
 }
 
 /*
@@ -170,14 +174,14 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
  * - x: The variate.
  * - μ: Precision times mean vector.
  * - Σ: Precision matrix.
- * - α: Shape of inverse-gamma on covariance scale.
+ * - k: Degrees of freedom of inverse-gamma on covariance scale.
  * - β: Scale of inverse-gamma on covariance scale.
  *
  * Returns: the log probability density.
  */
 function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
-    Arg5>(x:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5) -> {
-  return logpdf_multivariate_t(x, 2.0*α, μ, sqrt(2.0*β)*Σ);
+    Arg5>(x:Arg1, μ:Arg2, Σ:Arg3, k:Arg4, β:Arg5) -> {
+  return logpdf_multivariate_t(x, k, μ, sqrt(2.0*β)*Σ);
 }
 
 /*
@@ -187,13 +191,13 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
  * - x: The variate.
  * - μ: Precision times mean.
  * - Σ: Precision.
- * - α: Prior shape of the inverse-gamma.
+ * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
  * - β: Prior scale of the inverse-gamma.
  *
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,
-    Arg5>(x:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5) -> {
+    Arg5>(x:Arg1, μ:Arg2, Σ:Arg3, k:Arg4, β:Arg5) -> {
   let n <- length(x);
-  return wrap_inverse_gamma(α + 0.5*n, β + 0.5*dot(trisolve(Σ, x - μ)));
+  return wrap_inverse_gamma(0.5*(k + n), β + 0.5*dot(trisolve(Σ, x - μ)));
 }

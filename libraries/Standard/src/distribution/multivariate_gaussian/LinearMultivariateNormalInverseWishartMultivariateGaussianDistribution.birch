@@ -4,77 +4,40 @@
  */
 final class LinearMultivariateNormalInverseWishartMultivariateGaussianDistribution<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4,
-    k:Arg5, c:Arg6, ω2:Arg7) < Distribution<Real[_]> {
-  /**
-   * Scale.
-   */
-  A:Arg1 <- A;
-
-  /**
-   * Mean.
-   */
-  μ:Arg2 <- μ;
-
-  /**
-   * Covariance.
-   */
-  σ2:Arg3 <- σ2;
-  
-  /**
-   * Spread.
-   */
-  Ψ:Arg4 <- Ψ;
-  
-  /**
-   * Degrees of freedom.
-   */
-  k:Arg5 <- k;
-
+    k:Arg5, c:Arg6, ω2:Arg7) <
+    ScaledMultivariateNormalInverseWishartMultivariateGaussianDistribution<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg7>(A, μ, σ2, Ψ, k, ω2) {
   /**
    * Offset.
    */
   c:Arg6 <- c;
-
-  /**
-   * Likelihood covariance.
-   */
-  ω2:Arg7 <- ω2;
 
   override function supportsLazy() -> Boolean {
     return true;
   }
 
   override function simulate() -> Real[_] {
-    return simulate_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        value(A), value(μ), value(σ2), value(Ψ), value(k), value(ω2)) +
-        value(c);
+    return super.simulate() + value(c);
   }
 
   override function simulateLazy() -> Real[_]? {
-    return simulate_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        eval(A), eval(μ), eval(σ2), eval(Ψ), eval(k), eval(ω2)) + eval(c);
+    return super.simulateLazy()! + eval(c);
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - value(c), value(A), value(μ), value(σ2), value(Ψ), value(k),
-        value(ω2));
+    return super.logpdf(x - value(c));
   }
 
   override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return box(logpdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        box(x - c), A, μ, σ2, Ψ, k, ω2));
+    return super.logpdfLazy(box(x - c));
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - value(c), value(A), value(μ), value(σ2), value(Ψ), value(k),
-        value(ω2));
+    return super.update(x - value(c));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    return update_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        box(x - c), A, μ, σ2, Ψ, k, ω2);
+    return super.updateLazy(box(x - c));
   }
 }
 

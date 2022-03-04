@@ -1,13 +1,65 @@
+/**
+ * Multivariate $t$-distribution.
+ */
+class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
+    Distribution<Real[_]> {
+  /**
+   * Degrees of freedom.
+   */
+  k:Arg1 <- k;
+  
+  /**
+   * Mean.
+   */
+  μ:Arg2 <- μ;
+  
+  /**
+   * Covariance.
+   */
+  Σ:Arg3 <- Σ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_t(value(k), value(μ), value(Σ));
+  }
+
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_t(eval(k), eval(μ), eval(Σ));
+  }
+  
+  override function logpdf(x:Real[_]) -> Real! {
+    return logpdf_multivariate_t(x, value(k), value(μ), value(Σ));
+  }
+
+  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+    return box(logpdf_multivariate_t(x, k, μ, Σ));
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "MultivariateT");
+    buffer.set("k", value(k));
+    buffer.set("μ", value(μ));
+    buffer.set("Σ", value(Σ));
+  }
+}
+
 /*
  * Simulate a multivariate $t$-distribution variate with location and scale.
  *
  * - k: Degrees of freedom.
  * - μ: Mean vector.
- * - U: Spread matrix.
+ * - Σ: Spread matrix.
  */
-function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, U:Arg3) -> {
-  let Σ <- chol(simulate_inverse_wishart(U, k));
-  return simulate_multivariate_gaussian(μ, Σ);
+function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
+  let n <- length(μ);
+  cpp{{
+  auto Y = numbirch::standard_wishart(k, n);
+  auto z = numbirch::standard_gaussian(n);
+  }}
+  return μ + inner(trisolve(Y, transpose(Σ)), z);
 }
 
 /*
@@ -16,15 +68,15 @@ function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, U:Arg3) -> {
  * - x: The variate.
  * - k: Degrees of freedom.
  * - μ: Mean vector.
- * - U: Spread matrix.
+ * - Σ: Spread matrix.
  *
  * Returns: the log probability density.
  */
 function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
-    U:Arg4) -> {
+    Σ:Arg4) -> {
   let n <- length(x);
   let a <- wrap(0.5*k + 0.5*n);
   let b <- 0.5*k;
-  return lgamma(a) - 0.5*n*log(π) - lgamma(b) - 0.5*lcholdet(U) -
-      a*log1p(dot(trisolve(U, x - μ)));
+  return lgamma(a) - 0.5*n*log(π) - lgamma(b) - 0.5*lcholdet(Σ) -
+      a*log1p(dot(trisolve(Σ, x - μ)));
 }

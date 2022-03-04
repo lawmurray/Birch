@@ -1,5 +1,9 @@
 /**
  * Multivariate normal-inverse-Wishart distribution.
+ *
+ * !!! note
+ *     This class does not inherit from MultivariateTDistribution, as it is
+ *     typically used for a random variable that is marginalized out.
  */
 final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     μ:Arg1, σ2:Arg2, Ψ:Arg3, k:Arg4) < Distribution<Real[_]> {
@@ -75,9 +79,9 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 }
 
-function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,
-    Ψ:Arg3, k:Arg4) -> {
-  return wrap_multivariate_normal_inverse_wishart(μ, chol(σ2), chol(Ψ), k);
+function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
+    σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
+  return wrap_multivariate_normal_inverse_wishart(μ, σ2, chol(Ψ), k);
 }
 function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
     σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
@@ -86,8 +90,8 @@ function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
 }
 function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
     σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
-  return construct<MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,
-      Arg4>>(μ, σ2, Ψ, k);
+  return construct<MultivariateNormalInverseWishartDistribution<Arg1,Arg2,
+      Arg3,Arg4>>(μ, σ2, Ψ, k);
 }
 
 /**
@@ -116,7 +120,7 @@ function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
  */
 function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
     μ:Arg1, σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
-  return simulate_multivariate_t(k, μ, σ2*Ψ);
+  return simulate_multivariate_t(k, μ, sqrt(σ2)*Ψ);
 }
 
 /*
@@ -132,7 +136,7 @@ function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
  */
 function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5) -> {
-  return logpdf_multivariate_t(x, k, μ, σ2*Ψ);
+  return logpdf_multivariate_t(x, k, μ, sqrt(σ2)*Ψ);
 }
 
 /*
@@ -140,7 +144,7 @@ function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
  *
  * - x: The variate.
  * - μ: Mean.
- * - σ2: Covariance.
+ * - σ2: Variance scale.
  * - Ψ: Prior variance spread.
  * - k: Prior degrees of freedom.
  *

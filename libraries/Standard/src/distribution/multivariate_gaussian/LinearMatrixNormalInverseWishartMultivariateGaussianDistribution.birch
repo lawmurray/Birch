@@ -4,32 +4,8 @@
  */
 final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
-    c:Arg6) < Distribution<Real[_]> {
-  /**
-   * Scale.
-   */
-  a:Arg1 <- a;
-
-  /**
-   * Mean.
-   */
-  M:Arg2 <- M;
-
-  /**
-   * Covariance.
-   */
-  Σ:Arg3 <- Σ;
-
-  /**
-   * Among-column covariance scale.
-   */
-  Ψ:Arg4 <- Ψ;
-
-  /**
-   * Among-column covariance degrees of freedom.
-   */
-  k:Arg5 <- k;
-
+    c:Arg6) < ScaledMatrixNormalInverseWishartMultivariateGaussianDistribution<
+    Arg1,Arg2,Arg3,Arg4,Arg5>(a, M, Σ, Ψ, k) {
   /**
    * Offset.
    */
@@ -40,33 +16,27 @@ final class LinearMatrixNormalInverseWishartMultivariateGaussianDistribution<
   }
 
   override function simulate() -> Real[_] {
-    return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        value(a), value(M), value(Σ), value(Ψ), value(k)) + value(c);
+    return super.simulate() + value(c);
   }
 
   override function simulateLazy() -> Real[_]? {
-    return simulate_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        eval(a), eval(M), eval(Σ), eval(Ψ), eval(k)) + eval(c);
+    return super.simulateLazy()! + eval(c);
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x - value(c), value(a), value(M), value(Σ), value(Ψ), value(k));
+    return super.logpdf(x - value(c));
   }
 
   override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return box(logpdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        box(x - c), a, M, Σ, Ψ, k));
+    return super.logpdfLazy(box(x - c));
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-         x - value(c), value(a), value(M), value(Σ), value(Ψ), value(k));
+    return super.update(x - value(c));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    return update_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-        box(x - c), a, M, Σ, Ψ, k);
+    return super.updateLazy(box(x - c));
   }
 }
 

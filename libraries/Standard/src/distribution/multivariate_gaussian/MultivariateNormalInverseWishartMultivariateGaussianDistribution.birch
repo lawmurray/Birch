@@ -3,12 +3,8 @@
  */
 final class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
     Arg1,Arg2,Arg3,Arg4,Arg5>(μ:Arg1, σ2:Arg2, Ψ:Arg3, k:Arg4, ω2:Arg5) <
-    Distribution<Real[_]> {
-  /**
-   * Mean.
-   */
-  μ:Arg1 <- μ;
-
+    MultivariateTDistribution<Arg4,Arg1,Expression<Real[_,_]>>(k, μ,
+    box(sqrt(σ2 + ω2)*Ψ)) {
   /**
    * Scale.
    */
@@ -18,11 +14,6 @@ final class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
    * Spread.
    */
   Ψ:Arg3 <- Ψ;
-  
-  /**
-   * Degrees of freedom.
-   */
-  k:Arg4 <- k;
 
   /**
    * Likelihood scale.
@@ -33,34 +24,14 @@ final class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
     return true;
   }
 
-  override function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        value(μ), value(σ2), value(Ψ), value(k), value(ω2));
-  }
-
-  override function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        eval(μ), eval(σ2), eval(Ψ), eval(k), eval(ω2));
-  }
-  
-  override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(x,
-        value(μ), value(σ2), value(Ψ), value(k), value(ω2));
-  }
-
-  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return box(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, μ, σ2, Ψ, k, ω2));
-  }
-
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(x,
-        value(μ), value(σ2), value(Ψ), value(k), value(ω2));
+        value(super.μ), value(σ2), value(Ψ), value(super.k), value(ω2));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(x,
-        μ, σ2, Ψ, k, ω2);
+        super.μ, σ2, Ψ, super.k, ω2);
   }
 }
 

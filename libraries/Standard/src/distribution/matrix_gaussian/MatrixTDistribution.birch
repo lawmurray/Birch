@@ -1,15 +1,78 @@
+/**
+ * Matrix $t$-distribution.
+ */
+class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
+    Ψ:Arg4) < Distribution<Real[_,_]> {
+  /**
+   * Degrees of freedom.
+   */
+  k:Arg1 <- k;
+
+  /**
+   * Mean.
+   */
+  M:Arg2 <- M;
+
+  /**
+   * Among-row covariance.
+   */
+  Σ:Arg3 <- Σ;
+  
+  /**
+   * Among-column covariance.
+   */
+  Ψ:Arg4 <- Ψ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_t(value(k), value(M), value(Σ), value(Ψ));
+  }
+
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_t(eval(k), eval(M), eval(Σ), eval(Ψ));
+  }
+  
+  override function logpdf(X:Real[_,_]) -> Real! {
+    return logpdf_matrix_t(X, value(k), value(M), value(Σ), value(Ψ));
+  }
+
+  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+    return box(logpdf_matrix_t(X, k, M, Σ, Ψ));
+  }
+}
+
+function MatrixT<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) -> {
+  return wrap_matrix_t(k, M, chol(Σ), chol(Ψ));
+}
+function wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) -> {
+  return make_matrix_t(wrap(k), wrap(M), wrap(Σ), wrap(Ψ));
+}
+function make_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
+    Ψ:Arg4) -> {
+  return construct<MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>>(k, M, Σ, Ψ);
+}
+
 /*
  * Simulate a matrix $t$-distribution variate.
  *
  * - k: Degrees of freedom.
  * - M: Mean.
- * - U: Among-row covariance.
+ * - Σ: Among-row covariance.
  * - Ψ: Among-column spread.
  */
-function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, U:Arg3,
+function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     Ψ:Arg4) -> {
-  let V <- chol(simulate_inverse_wishart(Ψ, k));
-  return simulate_matrix_gaussian(M, U, V);
+  let m <- rows(M);
+  let n <- columns(M);
+  cpp{{
+  auto Y = numbirch::standard_wishart(k, n);
+  auto Z = numbirch::standard_gaussian(m, n);
+  }}
+  return M + trimul(Σ, Z)*trisolve(Y, transpose(Ψ));
 }
 
 /*
@@ -18,19 +81,19 @@ function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, U:Arg3,
  * - X: The variate.
  * - k: Degrees of freedom.
  * - M: Mean.
- * - U: Among-row covariance.
+ * - Σ: Among-row covariance.
  * - Ψ: Among-column spread.
  *
  * Returns: the log probability density.
  */
 function logpdf_matrix_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2, M:Arg3,
-    U:Arg4, Ψ:Arg5) -> {
+    Σ:Arg4, Ψ:Arg5) -> {
   let n <- rows(X);
   let p <- columns(X);
   let a <- wrap(0.5*k + 0.5*(p + n - 1));
   let b <- 0.5*k + 0.5*(p - 1);  // only used once, no need to wrap
   let Z <- wrap(X - M);
-  return lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - 0.5*p*lcholdet(U) -
+  return lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - 0.5*p*lcholdet(Σ) -
       0.5*n*lcholdet(Ψ) - a*ldet(diagonal(1.0, n) +
-      cholsolve(U, Z)*cholsolve(Ψ, transpose(Z)));
+      cholsolve(Σ, Z)*cholsolve(Ψ, transpose(Z)));
 }

@@ -295,6 +295,17 @@ function make_random<Value>() -> Random<Value> {
  *
  * - x: Value to assign.
  */
+function make_random<Value>(x:Value) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * - x: Value to assign.
+ */
 function make_random<Value>(x:Value?) -> Random<Value> {
   o:Random<Value>;
   o <-? x;
