@@ -8,8 +8,6 @@
 #include "numbirch/common/functor.hpp"
 #include "numbirch/common/get.hpp"
 
-#include <iostream>
-
 namespace numbirch {
 
 template<class T, class>
