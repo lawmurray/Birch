@@ -103,8 +103,5 @@ program test_pdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
 program test_grad_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
   m:TestScaledMatrixNormalInverseWishartMultivariateGaussian;
-  if !backward {
-    warn("forward order not supported, switching to backward order");
-  }
-  test_grad(m, N, true);
+  test_grad(m, N, backward);
 }

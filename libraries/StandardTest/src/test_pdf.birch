@@ -16,7 +16,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
 
   /* compare pdf to count */
   let failed <- false;
-  let ε <- 100.0/N;
+  let ε <- 2.0/sqrt(N);
   
   p:Real;
   q:Real;
@@ -102,7 +102,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
       p <- π.pdf(x);
     }
     let δ <- abs(p - cast<Real>(count[x - from!! + 1])/N);
-    let ε <- 200.0/N;
+    let ε <- 2.0/sqrt(N);
     if 100 < N && !(δ <= ε) {  // careful of nans
       failed <- true;
       stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");

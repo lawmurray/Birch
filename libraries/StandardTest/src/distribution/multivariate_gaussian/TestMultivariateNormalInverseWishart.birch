@@ -72,8 +72,5 @@ program test_pdf_multivariate_normal_inverse_wishart(N:Integer <- 10000,
 program test_grad_multivariate_normal_inverse_wishart(N:Integer <- 1000,
     backward:Boolean <- false) {
   m:TestMultivariateNormalInverseWishart;
-  if !backward {
-    warn("forward order not supported, switching to backward order");
-  }
-  test_grad(m, N, true);
+  test_grad(m, N, backward);
 }

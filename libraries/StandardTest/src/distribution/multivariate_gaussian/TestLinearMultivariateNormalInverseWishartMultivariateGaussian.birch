@@ -84,8 +84,5 @@ program test_pdf_linear_multivariate_normal_inverse_wishart_multivariate_gaussia
 program test_grad_linear_multivariate_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseWishartMultivariateGaussian;
-  if !backward {
-    warn("forward order not supported, switching to backward order");
-  }
-  test_grad(m, N, true);
+  test_grad(m, N, backward);
 }
