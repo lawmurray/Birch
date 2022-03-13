@@ -2,7 +2,7 @@
  * Multivariate Gaussian distribution with linear transformation of
  * multivariate-normal-inverse-gamma prior.
  */
-class LinearMultivariateNormalInverseGammaMultivariateGaussianDistribution<
+class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, Σ:Arg3, k:Arg4,
     β:Arg5, c:Arg6, Ω:Arg7) < MultivariateTDistribution<Arg4,
     Expression<Real[_]>,Expression<Real[_,_]>>(k, box(A*μ + c),
@@ -42,33 +42,33 @@ class LinearMultivariateNormalInverseGammaMultivariateGaussianDistribution<
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    return update_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, value(A), value(μ), value(Σ), value(super.k), value(β), value(c),
         value(Ω), value(super.μ), value(super.Σ));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    return update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    return update_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, A, μ, Σ, super.k, β, c, Ω, super.μ, super.Σ);
   }
 }
 
-function LinearMultivariateNormalInverseGammaMultivariateGaussian<Arg1,
+function MultivariateNormalInverseGammaMultivariateGaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5,
     c:Arg6, Ω:Arg7) -> {
-  return wrap_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+  return wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(
       A, μ, chol(Σ), 2.0*α, β, c, chol(Ω));
 }
-function wrap_linear_multivariate_normal_inverse_gamma_multivariate_gaussian<
+function wrap_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, Σ:Arg3, k:Arg4,
     β:Arg5, c:Arg6, Ω:Arg7) -> {
-  return make_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+  return make_multivariate_normal_inverse_gamma_multivariate_gaussian(
       wrap(A), wrap(μ), wrap(Σ), wrap(k), wrap(β), wrap(c), wrap(Ω));
 }
-function make_linear_multivariate_normal_inverse_gamma_multivariate_gaussian<
+function make_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, Σ:Arg3, k:Arg4,
     β:Arg5, c:Arg6, Ω:Arg7) -> {
-  return construct<LinearMultivariateNormalInverseGammaMultivariateGaussianDistribution<
+  return construct<MultivariateNormalInverseGammaMultivariateGaussianDistribution<
       Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(A, μ, Σ, k, β, c, Ω);
 }
 
@@ -81,7 +81,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
   μ.l.r.prune();
   if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(Ω.r) {
     let (m, Σ, k, β) <- μ.l.r.getMultivariateNormalInverseGamma();
-    let p <- wrap_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(
         μ.l.l, m, Σ, k, β, μ.r, chol(Ω.l));
     μ.l.r.graft(p, 1);
     Ω.r.graftReplace(p, 2);
@@ -133,7 +133,7 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
  *
  * Returns: the posterior hyperparameters `μ'`, `Σ'`, `k'` and `β'`.
  */
-function update_linear_multivariate_normal_inverse_gamma_multivariate_gaussian<
+function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8,Arg9,Arg10>(x:Arg1, A:Arg2,
     μ:Arg3, Σ:Arg4, k:Arg5, β:Arg6, c:Arg7, Ω:Arg8, m:Arg9, T:Arg10) -> {
   let n <- length(x);
