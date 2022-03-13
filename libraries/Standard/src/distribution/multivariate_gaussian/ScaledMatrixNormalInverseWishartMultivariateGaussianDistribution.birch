@@ -74,11 +74,14 @@ function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
     return p;
   } else {
     Σ.prune();
-    // if Σ.hasInverseWishart() {
-    // 
-    // } else {
+    if Σ.hasInverseWishart() {
+      let (Ψ, k) <- Σ.getInverseWishart();
+      let p <- wrap_multivariate_normal_inverse_wishart(μ, 1.0, Ψ, k);
+      Σ.graft(p);
+      return p;
+    } else {
       return wrap_multivariate_gaussian(μ, chol(Σ));
-    // }
+    }
   }
 }
 
