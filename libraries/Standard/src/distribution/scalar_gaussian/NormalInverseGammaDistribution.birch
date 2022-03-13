@@ -123,21 +123,6 @@ function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
-  σ2.prune();
-  if σ2.hasInverseGamma() {
-    let (α, β) <- σ2.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ, 1.0, α, β);
-    σ2.graft(p);
-    return p;
-  } else {
-    return wrap_gaussian(μ, σ2);
-  }
-}
-
-/**
- * Create Gaussian distribution.
- */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Arg2,Random<Real>>) ->
     Distribution<Real> {
   σ2.r.prune();
@@ -154,39 +139,8 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Arg2,Random<Real>>) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Random<Real>,Arg2>) ->
-    Distribution<Real> {
-  σ2.l.prune();
-  if σ2.l.hasInverseGamma() {
-    let (α, β) <- σ2.l.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ, σ2.r, α, β);
-    σ2.l.graft(p);
-    return p;
-  } else {
-    return wrap_gaussian(μ, σ2);
-  }
-}
-
-/**
- * Create Gaussian distribution.
- */
-function Gaussian<Arg>(μ:Arg, σ2:OpMul<Random<Real>,Random<Real>>) ->
-    Distribution<Real> {
-  σ2.l.prune();
-  σ2.r.prune();
-  if σ2.l.hasInverseGamma() {
-    let (α, β) <- σ2.l.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ, σ2.r, α, β);
-    σ2.l.graft(p);
-    return p;
-  } else if σ2.r.hasInverseGamma() {
-    let (α, β) <- σ2.r.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
-    σ2.r.graft(p);
-    return p;
-  } else {
-    return wrap_gaussian(μ, σ2);
-  }
+function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
+  return Gaussian(μ, 1.0*σ2);
 }
 
 /*

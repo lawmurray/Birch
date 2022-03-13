@@ -1,57 +1,73 @@
 /**
- * Gaussian-Gaussian distribution.
+ * Gaussian distribution with linear transformation of Gaussian prior.
  */
-final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) <
-    Distribution<Real> {
+final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) < Distribution<Real> {
   /**
-   * Mean.
+   * Scale.
    */
-  μ:Arg1 <- μ;
+  a:Arg1 <- a;
+    
+  /**
+   * Prior mean.
+   */
+  μ:Arg2 <- μ;
 
   /**
    * Prior variance.
    */
-  σ2:Arg2 <- σ2;
+  σ2:Arg3 <- σ2;
 
   /**
-   * Variance.
+   * Offset.
    */
-  s2:Arg3 <- s2;
+  c:Arg4 <- c;
+
+  /**
+   * Likelihood variance.
+   */
+  s2:Arg5 <- s2;
 
   override function supportsLazy() -> Boolean {
     return true;
   }
 
   override function simulate() -> Real! {
-    return simulate_gaussian_gaussian(value(μ), value(σ2), value(s2));
+    return simulate_gaussian_gaussian(value(a), value(μ), value(σ2),
+        value(c), value(s2));
   }
 
   override function simulateLazy() -> Real!? {
-    return simulate_gaussian_gaussian(eval(μ), eval(σ2), eval(s2));
+    return simulate_gaussian_gaussian(eval(a), eval(μ), eval(σ2),
+        eval(c), eval(s2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
+    return logpdf_gaussian_gaussian(x, value(a), value(μ), value(σ2),
+        value(c), value(s2));
   }
 
   override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_gaussian_gaussian(x, μ, σ2, s2));
+    return box(logpdf_gaussian_gaussian(x, a, μ, σ2, c, s2));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
+    return update_gaussian_gaussian(x, value(a), value(μ), value(σ2),
+        value(c), value(s2));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
-    return update_gaussian_gaussian(x, μ, σ2, s2);
+    return update_gaussian_gaussian(x, a, μ, σ2, c, s2);
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_gaussian_gaussian(x, value(μ), value(σ2), value(s2));
+    return cdf_gaussian_gaussian(x, value(a), value(μ), value(σ2),
+        value(c), value(s2));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_gaussian_gaussian(P, value(μ), value(σ2), value(s2));
+    return quantile_gaussian_gaussian(P, value(a), value(μ), value(σ2),
+        value(c), value(s2));
   }
 
   override function isGaussian() -> Boolean {
@@ -59,107 +75,150 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:A
   }
 
   override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
-    return box(μ, σ2 + s2);
+    return box(a*μ + c, a*a*σ2 + s2);
   }
 }
 
-function GaussianGaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) -> {
-  return wrap_gaussian_gaussian(μ, σ2, s2);
+function GaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
+    σ2:Arg3, c:Arg4, s2:Arg5) -> {
+  return wrap_gaussian_gaussian(a, μ, σ2, c, s2);
 }
-function wrap_gaussian_gaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) -> {
-  return make_gaussian_gaussian(wrap(μ), wrap(σ2), wrap(s2));
+function wrap_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) -> {
+  return make_gaussian_gaussian(wrap(a), wrap(μ), wrap(σ2), wrap(c),
+      wrap(s2));
 }
-function make_gaussian_gaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2, s2:Arg3) -> {
-  return construct<GaussianGaussianDistribution<Arg1,Arg2,Arg3>>(μ, σ2, s2);
+function make_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) -> {
+  return construct<GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
+      Arg5>>(a, μ, σ2, c, s2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
-  μ.prune();
-  if μ.hasGaussian() {
-    let (m, s2) <- μ.getGaussian();
-    let p <- wrap_gaussian_gaussian(m, s2, σ2);
-    μ.graft(p);
+function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
+    σ2:Arg3) -> Distribution<Real> {
+  μ.l.r.prune();
+  if μ.l.r.hasGaussian() {
+    let (m, s2) <- μ.l.r.getGaussian();
+    let p <- wrap_gaussian_gaussian(μ.l.l, m, s2, μ.r, σ2);
+    μ.l.r.graft(p);
     return p;
   } else {
     return wrap_gaussian(μ, σ2);
   }
 }
 
-/*
- * Simulate a Gaussian variate with Gaussian prior on the mean.
- *
- * - μ: Prior mean.
- * - σ2: Prior variance.
- * - s2: Variance.
+/**
+ * Create Gaussian distribution.
  */
-function simulate_gaussian_gaussian<Arg1,Arg2,Arg3>(μ:Arg1, σ2:Arg2,
-    s2:Arg3) -> {
-  return simulate_gaussian(μ, σ2 + s2);
+function Gaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real>>, σ2:Arg2) ->
+    Distribution<Real> {
+  return Gaussian(μ + 0.0, σ2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:OpAdd<Random<Real>,Arg1>, σ2:Arg2) ->
+    Distribution<Real> {
+  return Gaussian(1.0*μ.l + μ.r, σ2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
+  return Gaussian(1.0*μ + 0.0, σ2);
 }
 
 /*
- * Observe a Gaussian variate with Gaussian prior on the mean.
+ * Simulate a Gaussian variate with linear transformation of Gaussian prior on
+ * the mean.
  *
- * - x: The variate.
+ * - a: Scale.
  * - μ: Prior mean.
  * - σ2: Prior variance.
+ * - c: Offset.
+ * - s2: Variance.
+ */
+function simulate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, s2:Arg5) -> {
+  return simulate_gaussian(a*μ + c, a*a*σ2 + s2);
+}
+
+/*
+ * Observe a Gaussian variate with linear transformation of Gaussian prior on
+ * the mean.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - c: Offset.
  * - s2: Variance.
  *
  * Returns: the log probability density.
  */
-function logpdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
-    σ2:Arg3, s2:Arg4) -> {
-  return logpdf_gaussian(x, μ, σ2 + s2);
+function logpdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+    x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
+  return logpdf_gaussian(x, a*μ + c, a*a*σ2 + s2);
 }
 
 /*
- * CDF of a Gaussian variate with Gaussian prior on the mean.
+ * CDF of a Gaussian variate with linear transformation of Gaussian prior on
+ * the mean.
  *
  * - x: The variate.
+ * - a: Scale.
  * - μ: Prior mean.
  * - σ2: Prior variance.
+ * - c: Offset.
  * - s2: Variance.
  *
  * Return: the cumulative probability.
  */
-function cdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2, σ2:Arg3,
-    s2:Arg4) -> {
-  return cdf_gaussian(x, μ, σ2 + s2);
+function cdf_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(x:Arg1,
+    a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
+  return cdf_gaussian(x, a*μ + c, a*a*σ2 + s2);
 }
 
 /*
- * Quantile of a Gaussian distribution with Gaussian prior on the mean.
+ * Quantile of a Gaussian distribution with linear transformation of Gaussian
+ * prior on the mean.
  *
  * - P: The cumulative probability.
+ * - a: Scale.
  * - μ: Prior mean.
  * - σ2: Prior variance.
+ * - c: Offset.
  * - s2: Variance.
  *
  * Return: the quantile.
  */
-function quantile_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
-    σ2:Arg3, s2:Arg4) -> {
-  return quantile_gaussian(P, μ, σ2 + s2);
+function quantile_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+      P:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
+  return quantile_gaussian(P, a*μ + c, a*a*σ2 + s2);
 }
 
 /*
- * Update the parameters of a Gaussian distribution with a Gaussian
- * likelihood.
+ * Update the parameters of a Gaussian distribution with linear transformation
+ * of Gaussian prior on the mean.
  *
  * - x: The variate.
+ * - a: Scale.
  * - μ: Prior mean.
  * - σ2: Prior variance.
+ * - c: Offset.
  * - s2: Likelihood variance.
  *
  * Returns: the posterior hyperparameters `μ'` and `σ2'`.
  */
-function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
-    σ2:Arg3, s2:Arg4) -> {
-  let k' <- σ2/(σ2 + s2);
-  let μ' <- μ + k'*(x - μ);
-  let σ2' <- σ2 - k'*σ2;
+function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+    x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, s2:Arg6) -> {
+  let k' <- σ2*a/(a*a*σ2 + s2);
+  let μ' <- μ + k'*(x - a*μ - c);
+  let σ2' <- σ2 - k'*a*σ2;
   return wrap_gaussian(μ', σ2');
 }
