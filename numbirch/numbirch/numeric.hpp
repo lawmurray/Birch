@@ -95,13 +95,10 @@ real_t<T> op_neg_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
  * 
  * @return Result.
  * 
- * @note operator+() only supports addition between arrays of matching size;
- * see add() for element-wise addition with broadcasting of scalars.
- * 
  * @see add()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+    is_numeric_v<U>,int>>
 implicit_t<T,U> operator+(const T& x, const U& y) {
   return add(x, y);
 }
@@ -122,7 +119,7 @@ implicit_t<T,U> operator+(const T& x, const U& y) {
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+    is_numeric_v<U>,int>>
 std::pair<real_t<T>,real_t<U>> op_add_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   return add_grad(g, z, x, y);
@@ -141,13 +138,10 @@ std::pair<real_t<T>,real_t<U>> op_add_grad(const real_t<T,U>& g,
  * 
  * @return Result.
  * 
- * @note operator-() only supports subtraction between arrays of matching size;
- * see sub() for element-wise subtraction with broadcasting of scalars.
- * 
  * @see sub()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+    is_numeric_v<U>,int>>
 implicit_t<T,U> operator-(const T& x, const U& y) {
   return sub(x, y);
 }
@@ -168,14 +162,14 @@ implicit_t<T,U> operator-(const T& x, const U& y) {
  * @return Gradients with respect to @p x and @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (dimension_v<T> == dimension_v<U>),int>>
+    is_numeric_v<U>,int>>
 std::pair<real_t<T>,real_t<U>> op_sub_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   return sub_grad(g, z, x, y);
 }
 
 /**
- * Multiplication by scalar.
+ * Scalar multiplication.
  * 
  * @ingroup linalg
  * 
@@ -218,53 +212,6 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 std::pair<real_t<T>,real_t<U>> op_mul_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   return mul_grad(g, z, x, y);
-}
-
-/**
- * Division by scalar.
- * 
- * @ingroup linalg
- * 
- * @tparam T Numeric type.
- * @tparam U Scalar type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- * 
- * @note operator/() supports only division by a scalar on the right; for
- * element-wise division or division through a scalar on the left with
- * broadcasting, see div().
- * 
- * @see div()
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-implicit_t<T,U> operator/(const T& x, const U& y) {
-  return div(x, y);
-}
-
-/**
- * Gradient of operator/().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<real_t<T>,real_t<U>> op_div_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  return div_grad(g, z, x, y);
 }
 
 /**
@@ -335,6 +282,49 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> op_mul_grad(const Array<T,2>& g,
     const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& B) {
   return std::make_pair(outer(g, B), inner(A, g));
+}
+
+/**
+ * Division.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Scalar type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @see div()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+implicit_t<T,U> operator/(const T& x, const U& y) {
+  return div(x, y);
+}
+
+/**
+ * Gradient of operator/().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+std::pair<real_t<T>,real_t<U>> op_div_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y) {
+  return div_grad(g, z, x, y);
 }
 
 /**
@@ -1140,7 +1130,7 @@ Array<T,2> transpose(const Array<T,2>& A);
  * 
  * @param g Gradient with respect to result.
  * @param B Result $B = A^\top$.
- * @param A Matrix.
+ * @param A Matrix $A$.
  * 
  * @return Gradient with respect to @p A.
  */
@@ -1148,6 +1138,40 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> transpose_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   return transpose(g);
+}
+
+/**
+ * Scalar transpose.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param x Scalar $x$.
+ * 
+ * @return Result $y = x$.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+T transpose(const T& x) {
+  return x;
+}
+
+/**
+ * Gradient of transpose().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result $y = x$.
+ * @param x Scalar $x$.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+real_t<T> transpose_grad(const real_t<T>& g, const T& y, const T& x) {
+  return g;
 }
 
 /**
