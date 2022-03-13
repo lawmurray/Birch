@@ -27,11 +27,6 @@ static thread_local std::vector<libbirch::Any*> unreachables;
  */
 static thread_local bool copy_flag = false;
 
-/**
- * Deregistration count for reach thread.
- */
-static thread_local int ndereg = 0;
-
 void libbirch::register_possible_root(Any* o) {
   possible_roots.push_back(o);
 }
