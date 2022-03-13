@@ -7,10 +7,11 @@ executors:
   opensuse:
     docker:
       - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j2"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--disable-debug --enable-test --enable-release"
       SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
       TEST: release  # BIRCH_MODE for running test.sh scripts
@@ -23,9 +24,9 @@ executors:
     docker:
       - image: lawmurray/birch-circleci:ubuntu
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j2"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/ubuntu
@@ -34,9 +35,9 @@ executors:
     docker:
       - image: lawmurray/birch-circleci:debian
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j2"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/debian
@@ -45,9 +46,9 @@ executors:
     docker:
       - image: lawmurray/birch-circleci:fedora
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j2"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/fedora
@@ -56,9 +57,9 @@ executors:
     docker:
       - image: lawmurray/birch-circleci:alpine
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j2"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
     working_directory: /root/project/alpine
@@ -69,7 +70,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --enable-release"
       LIB_FLAGS: "--disable-openmp"
       SMOKE: debug
