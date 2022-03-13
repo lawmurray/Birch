@@ -51,6 +51,7 @@ class Array {
   template<class U, int E> friend class Array;
 public:
   static_assert(is_arithmetic_v<T>, "Array is only for arithmetic types");
+  static_assert(!std::is_const_v<T>, "Array cannot have const value type");
   using value_type = T;
   using shape_type = ArrayShape<D>;
 
@@ -215,13 +216,13 @@ public:
   /**
    * View constructor.
    */
-  Array(T* buf, const shape_type& shape) :
-      buf(buf),
+  Array(const T* buf, const shape_type& shape) :
+      buf(const_cast<T*>(buf)),
       ctl(nullptr),
       shp(shape),
       isView(true),
       isDiced(false) {
-    //
+    assert((buf == nullptr) == (shape.volume() == 0));
   }
 
   /**
@@ -236,7 +237,9 @@ public:
     if (!o.isView) {
       ArrayControl* ctl = nullptr;
       std::tie(ctl, buf, isDiced) = o.share();
-      this->ctl.store(ctl);
+      if (ctl) {
+        this->ctl.store(ctl);
+      }
     } else {
       compact();
       allocate();
@@ -1012,5 +1015,11 @@ Array(const ArrayShape<1>& shape, const Array<T,0>& value) -> Array<T,1>;
 
 template<class T>
 Array(const ArrayShape<2>& shape, const Array<T,0>& value) -> Array<T,2>;
+
+template<class T, int D>
+Array(T* buf, const ArrayShape<D>& shape) -> Array<T,D>;
+
+template<class T, int D>
+Array(const T* buf, const ArrayShape<D>& shape) -> Array<T,D>;
 
 }

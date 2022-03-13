@@ -237,9 +237,9 @@ class ParticleFilter {
             }
             raccepts <- sum(α)/nparticles;
             stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts + "\n");
-            if raccepts < 0.35 {
+            if raccepts < 0.2 {
               κ!.scale <- 0.1*κ!.scale;
-            } else if raccepts > 0.75 {
+            } else if raccepts > 0.8 {
               κ!.scale <- 5.0*κ!.scale;
             } else {
               happy <- true;
