@@ -23,6 +23,7 @@ executors:
   ubuntu:
     docker:
       - image: lawmurray/birch-circleci:ubuntu
+    resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
@@ -34,6 +35,7 @@ executors:
   debian:
     docker:
       - image: lawmurray/birch-circleci:debian
+    resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
@@ -45,6 +47,7 @@ executors:
   fedora:
     docker:
       - image: lawmurray/birch-circleci:fedora
+    resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
@@ -56,6 +59,7 @@ executors:
   alpine:
     docker:
       - image: lawmurray/birch-circleci:alpine
+    resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
