@@ -10,7 +10,7 @@ function pass(x1:Real[_], x2:Real[_]) -> Boolean {
   assert length(x1) == length(x2);
 
   let N <- length(x1);
-  let ε <- 100.0/N;
+  let ε <- 200.0/N;
 
   /* normalise onto the interval [0,1] */
   let mn <- min(min(x1), min(x2));
@@ -43,7 +43,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let C <- columns(X1);
   let failed <- 0;
   let tests <- 0;
-  let ε <- 100.0/R;
+  let ε <- 200.0/R;
 
   /* compare marginals using 1-Wasserstein distance */
   for c in 1..C {
