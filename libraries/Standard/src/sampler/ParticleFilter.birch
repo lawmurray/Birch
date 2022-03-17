@@ -50,7 +50,7 @@ class ParticleFilter {
   /**
    * Accept rate of moves.
    */
-  raccepts:Real <- 0.0/0.0;
+  raccepts:Real?;
 
   /**
    * Number of particles.
@@ -185,7 +185,7 @@ class ParticleFilter {
   function resample(t:Integer, κ:Kernel?) {
     if r < t {
       r <- t;
-      raccepts <- 0.0/0.0;
+      raccepts <- nil;
       if ess <= trigger*nparticles {
         /* adapt move kernel */
         if κ? {
@@ -236,10 +236,10 @@ class ParticleFilter {
               }
             }
             raccepts <- sum(α)/nparticles;
-            stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts + "\n");
-            if raccepts < 0.2 {
+            stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts! + "\n");
+            if raccepts! < 0.2 {
               κ!.scale <- 0.1*κ!.scale;
-            } else if raccepts > 0.8 {
+            } else if raccepts! > 0.8 {
               κ!.scale <- 5.0*κ!.scale;
             } else {
               happy <- true;

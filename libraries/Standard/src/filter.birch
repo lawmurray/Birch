@@ -178,7 +178,11 @@ program filter(
     outputBuffer.set("ess", f!.ess);
     outputBuffer.set("lnormalize", f!.lnormalize);
     outputBuffer.set("npropagations", f!.npropagations);
-    outputBuffer.set("raccepts", f!.raccepts);
+    if f!.raccepts? {
+      outputBuffer.set("raccepts", f!.raccepts!);
+    } else {
+      outputBuffer.setNil("raccepts");
+    }
     if κ? {
       outputBuffer.set("scale", κ!.scale);
     }
