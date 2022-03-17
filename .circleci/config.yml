@@ -75,10 +75,9 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --enable-release"
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       LIB_FLAGS: "--disable-openmp"
       SMOKE: debug
-      TEST: release
     working_directory: /Users/distiller/project/mac
     # ^ hard-coding different home directory for Mac, discovered with SSH
 
@@ -447,9 +446,7 @@ jobs:
           package: SQLite
       - when:
           condition:
-            or:
-              - equal: [ opensuse, << parameters.os >> ]
-              - equal: [ mac, << parameters.os >> ]
+            equal: [ opensuse, << parameters.os >> ]
           steps:
             - persist_to_workspace:
                 root: ..
@@ -559,14 +556,14 @@ workflows:
       - test:
           matrix:
             parameters:
-              os: [opensuse,mac]
+              os: [opensuse]
           requires:
             - build-<< matrix.os >>
 
       - example:
           matrix:
             parameters:
-              os: [opensuse,mac]
+              os: [opensuse]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - test-<< matrix.os >>
@@ -579,6 +576,7 @@ workflows:
                 - master
           requires:
             - example
+            - build-mac
             - build-debian
             - build-fedora
             - build-alpine
