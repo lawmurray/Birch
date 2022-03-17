@@ -638,7 +638,7 @@ public:
    */
   template<class U, int E>
   bool conforms(const Array<U,E>& o) const {
-    return shp.rows() == o.shp.rows() && shp.columns() == o.shp.columns();
+    return shp.conforms(o.shp);
   }
 
   /**
