@@ -31,3 +31,12 @@ Diagonal<Middle> diagonal(const Middle& m, const int n) {
 }
 }
 }}
+
+/**
+ * Create identity matrix.
+ *
+ * - n: Number of rows and columns.
+ */
+function identity(n:Integer) -> Real[_,_] {
+  return diagonal(1.0, n);
+}
