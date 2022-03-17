@@ -109,7 +109,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 }
 
 function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, Σ:Arg2,
-    α:Arg3, β:Arg4) -> {
+    α:Arg3, β:Arg4) -> Distribution<Real> {
   return wrap_multivariate_normal_inverse_gamma(μ, chol(Σ), 2.0*α, β);
 }
 function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,

@@ -80,7 +80,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 }
 
 function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
-    σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
+    σ2:Arg2, Ψ:Arg3, k:Arg4) -> Distribution<Real[_]> {
   return wrap_multivariate_normal_inverse_wishart(μ, σ2, chol(Ψ), k);
 }
 function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,

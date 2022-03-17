@@ -55,7 +55,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
 function MultivariateNormalInverseGammaMultivariateGaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5,
-    c:Arg6, Ω:Arg7) -> {
+    c:Arg6, Ω:Arg7) -> Distribution<Real[_]> {
   return wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(
       A, μ, chol(Σ), 2.0*α, β, c, chol(Ω));
 }

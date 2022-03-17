@@ -55,7 +55,7 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 
 function MultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
-    ω2:Arg7) -> {
+    ω2:Arg7) -> Distribution<Real[_]> {
   return wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(
       A, μ, σ2, chol(Ψ), k, c, ω2);
 }

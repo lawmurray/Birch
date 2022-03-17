@@ -59,7 +59,8 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
 /**
  * Create negative binomial distribution.
  */
-function NegativeBinomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
+function NegativeBinomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) ->
+    Distribution<Integer> {
   return wrap_negative_binomial(k, ρ);
 }
 function wrap_negative_binomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {

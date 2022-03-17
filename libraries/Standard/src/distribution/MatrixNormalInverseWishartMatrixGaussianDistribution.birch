@@ -50,7 +50,7 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
 
 function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(A:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, C:Arg6,
-    Φ:Arg7) -> {
+    Φ:Arg7) -> Distribution<Real[_,_]> {
   return wrap_matrix_normal_inverse_wishart_matrix_gaussian(A, M,
       chol(Σ), chol(Ψ), k, C, chol(Φ));
 }

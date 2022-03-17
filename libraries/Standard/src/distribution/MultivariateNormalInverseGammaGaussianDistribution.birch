@@ -92,7 +92,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
 
 function MultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5, c:Arg6,
-    ω2:Arg7) -> {
+    ω2:Arg7) -> Distribution<Real> {
   return wrap_multivariate_normal_inverse_gamma_gaussian(a, μ, chol(Σ),
       2.0*α, β, c, sqrt(ω2));
 }

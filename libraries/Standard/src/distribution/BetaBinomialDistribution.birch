@@ -59,7 +59,8 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
   }
 }
 
-function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
+function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) ->
+    Distribution<Integer> {
   return wrap_beta_binomial(n, α, β);
 }
 function wrap_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {

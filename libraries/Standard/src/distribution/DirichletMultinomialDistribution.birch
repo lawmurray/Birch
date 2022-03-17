@@ -43,7 +43,8 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   }
 }
 
-function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) ->
+    Distribution<Integer[_]> {
   return wrap_dirichlet_multinomial(n, α);
 }
 function wrap_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {

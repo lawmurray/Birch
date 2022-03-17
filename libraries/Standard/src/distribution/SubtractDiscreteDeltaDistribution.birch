@@ -108,8 +108,7 @@ function Delta(μ:OpSub<Random<Integer>,Random<Integer>>) ->
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpSub<Random<Integer>,Arg>) ->
-    Distribution<Integer> {
+function Delta<Arg>(μ:OpSub<Random<Integer>,Arg>) -> Distribution<Integer> {
   let r ~ Delta(μ.r);
   return Delta(μ.l - r);
 }
@@ -117,8 +116,7 @@ function Delta<Arg>(μ:OpSub<Random<Integer>,Arg>) ->
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpSub<Arg,Random<Integer>>) ->
-    Distribution<Integer> {
+function Delta<Arg>(μ:OpSub<Arg,Random<Integer>>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   return Delta(l - μ.r);
 }

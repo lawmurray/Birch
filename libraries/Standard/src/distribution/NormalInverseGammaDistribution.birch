@@ -107,7 +107,7 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
 }
 
 function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2, α:Arg3,
-    β:Arg4) -> {
+    β:Arg4) -> Distribution<Real> {
   return wrap_normal_inverse_gamma(μ, σ2, α, β);
 }
 function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,

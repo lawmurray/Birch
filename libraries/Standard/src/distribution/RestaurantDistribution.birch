@@ -71,7 +71,8 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
  * - n: Vector of number of draws of each element, also defining, by its
  *      length, the maximum number of components.
  */
-function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
+function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->
+    Distribution<Real[_]> {
   return wrap_restaurant(α, θ, n);
 }
 function wrap_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
@@ -89,6 +90,6 @@ function make_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
  *
  * Constructs a Chinese restaurant process with a maximum of 256 components.
  */
-function Restaurant<Arg1,Arg2>(α:Arg1, θ:Arg2) -> {
+function Restaurant<Arg1,Arg2>(α:Arg1, θ:Arg2) -> Distribution<Real[_]> {
   return Restaurant(α, θ, vector(0, 256));
 }

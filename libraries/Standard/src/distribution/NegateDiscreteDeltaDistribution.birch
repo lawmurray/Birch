@@ -76,7 +76,7 @@ function Delta(μ:OpNeg<Random<Integer>>) -> Distribution<Integer> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpNeg<Arg>) -> {
+function Delta<Arg>(μ:OpNeg<Arg>) -> Distribution<Integer> {
   let m ~ Delta(μ.m);
   return Delta(-m);
 }

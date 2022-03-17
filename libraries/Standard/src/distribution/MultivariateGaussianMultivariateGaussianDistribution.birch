@@ -74,7 +74,7 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,
 }
 
 function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
-    Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
+    Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> Distribution<Real[_]> {
   return wrap_multivariate_gaussian_multivariate_gaussian(A, μ,
       chol(Σ), c, chol(S));
 }

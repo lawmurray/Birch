@@ -79,7 +79,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 }
 
 function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1, Σ:Arg2,
-    Ψ:Arg3, k:Arg4) -> {
+    Ψ:Arg3, k:Arg4) -> Distribution<Real[_,_]> {
   return wrap_matrix_normal_inverse_wishart(M, chol(Σ), chol(Ψ), k);
 }
 function wrap_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1,

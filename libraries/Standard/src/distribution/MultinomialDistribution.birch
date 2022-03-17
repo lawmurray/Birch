@@ -44,7 +44,7 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
 /**
  * Create multinomial distribution.
  */
-function Multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+function Multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> Distribution<Integer[_]> {
   return wrap_multinomial(n, ρ);
 }
 function wrap_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {

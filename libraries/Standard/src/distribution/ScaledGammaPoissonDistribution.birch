@@ -59,7 +59,8 @@ final class ScaledGammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 }
 
-function ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+function ScaledGammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
+    Distribution<Integer> {
   return wrap_scaled_gamma_poisson(a, k, θ);
 }
 function wrap_scaled_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
@@ -74,8 +75,7 @@ function make_scaled_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
 /**
  * Create Poisson distribution.
  */
-function Poisson<Arg>(λ:OpMul<Arg,Random<Real>>) ->
-    Distribution<Integer> {
+function Poisson<Arg>(λ:OpMul<Arg,Random<Real>>) -> Distribution<Integer> {
   λ.r.prune();
   if λ.r.hasGamma() {
     let (k, θ) <- λ.r.getGamma();
@@ -90,8 +90,7 @@ function Poisson<Arg>(λ:OpMul<Arg,Random<Real>>) ->
 /**
  * Create Poisson distribution.
  */
-function Poisson<Arg>(λ:OpMul<Random<Real>,Arg>) ->
-    Distribution<Integer> {
+function Poisson<Arg>(λ:OpMul<Random<Real>,Arg>) -> Distribution<Integer> {
   λ.l.prune();
   if λ.l.hasGamma() {
     let (k, θ) <- λ.l.getGamma();

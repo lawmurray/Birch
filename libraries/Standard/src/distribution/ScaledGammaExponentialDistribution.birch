@@ -59,7 +59,8 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
   }
 }
 
-function ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+function ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
+    Distribution<Real> {
   return wrap_scaled_gamma_exponential(a, k, θ);
 }
 function wrap_scaled_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
@@ -75,8 +76,7 @@ function make_scaled_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
 /**
  * Create Exponential distribution.
  */
-function Exponential<Arg>(λ:OpMul<Arg,Random<Real>>) ->
-    Distribution<Real> {
+function Exponential<Arg>(λ:OpMul<Arg,Random<Real>>) -> Distribution<Real> {
   λ.r.prune();
   if λ.r.hasGamma() {
     let (k, θ) <- λ.r.getGamma();
@@ -91,8 +91,7 @@ function Exponential<Arg>(λ:OpMul<Arg,Random<Real>>) ->
 /**
  * Create Exponential distribution.
  */
-function Exponential<Arg>(λ:OpMul<Random<Real>,Arg>) ->
-    Distribution<Real> {
+function Exponential<Arg>(λ:OpMul<Random<Real>,Arg>) -> Distribution<Real> {
   λ.l.prune();
   if λ.l.hasGamma() {
     let (k, θ) <- λ.l.getGamma();

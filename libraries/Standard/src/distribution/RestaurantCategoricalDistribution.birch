@@ -47,7 +47,8 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   }
 }
 
-function RestaurantCategorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
+function RestaurantCategorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->
+    Distribution<Integer> {
   return wrap_restaurant_categorical(α, θ, n);
 }
 function wrap_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,

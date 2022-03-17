@@ -59,7 +59,7 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
 /**
  * Create Weibull distribution.
  */
-function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
+function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> Distribution<Real> {
   return wrap_weibull(k, λ);
 }
 function wrap_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {

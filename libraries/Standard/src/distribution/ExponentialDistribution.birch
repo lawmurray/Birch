@@ -52,7 +52,7 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
 /**
  * Create Exponential distribution.
  */
-function Exponential<Arg>(λ:Arg) -> {
+function Exponential<Arg>(λ:Arg) -> Distribution<Real> {
   return wrap_exponential(λ);
 }
 function wrap_exponential<Arg>(λ:Arg) -> {
