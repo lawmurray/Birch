@@ -11,6 +11,9 @@ struct MatrixStack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
 hpp{{
 namespace birch {
+using numbirch::stack;
+using numbirch::stack_grad;
+
 /**
  * Stack two matrices atop one another (i.e. append columns) to create a
  * new matrix.
@@ -22,107 +25,3 @@ MatrixStack<Left,Right> stack(const Left& l, const Right& r) {
 }
 }
 }}
-
-/**
- * Stack two scalars atop one another (i.e. append them) to create a
- * new vector of length two.
- */
-function stack<Type>(x:Type, y:Type) -> Type[_] {
-  z:Type[2];
-  cpp{{
-  z.slice(1) = x;
-  z.slice(2) = y;
-  }}
-  return z;
-}
-
-/**
- * Stack two vectors atop one another (i.e. append them) to create a
- * new vector.
- */
-function stack<Type>(x:Type[_], y:Type[_]) -> Type[_] {
-  let l1 <- length(x);
-  let l2 <- length(y);
-  z:Type[l1 + l2];
-  z[1..l1] <- x;
-  z[(l1 + 1)..(l1 + l2)] <- y;
-  return z;
-}
-
-/**
- * Stack a vector and scalar atop one another (i.e. append them) to create a
- * new vector.
- */
-function stack<Type>(x:Type[_], y:Type) -> Type[_] {
-  let l1 <- length(x);
-  z:Type[l1 + 1];
-  z[1..l1] <- x;
-  cpp{{
-  z.slice(l1 + 1) = y;
-  }}
-  return z;
-}
-
-/**
- * Stack a scalar and vector atop one another (i.e. append them) to create a
- * new vector.
- */
-function stack<Type>(x:Type, y:Type[_]) -> Type[_] {
-  let l2 <- length(y);
-  z:Type[1 + l2];
-  cpp{{
-  z.slice(1) = x;
-  }}
-  z[2..(1 + l2)] <- y;
-  return z;
-}
-
-/**
- * Stack two matrices atop one another (i.e. append columns) to create a
- * new matrix.
- */
-function stack<Type>(X:Type[_,_], Y:Type[_,_]) -> Type[_,_] {
-  assert columns(X) == columns(Y);
-  let R1 <- rows(X);
-  let R2 <- rows(Y);
-  let C <- columns(X);
-  Z:Type[R1 + R2, C];
-  Z[1..R1,1..C] <- X;
-  Z[(R1 + 1)..(R1 + R2),1..C] <- Y;
-  return Z;
-}
-
-function stack_grad<Gradient,Value,Left,Right>(g:Gradient, x:Value, l:Left,
-    r:Right) -> {
-  cpp{{
-  return std::make_tuple(g.slice(1), g.slice(2));
-  }}
-}
-
-function stack_grad<Gradient,Value,Left,Right>(g:Gradient, x:Value, l:Left[_],
-    r:Right) -> {
-  cpp{{
-  return std::make_tuple(g.slice(std::make_pair(1, length(g) - 1)),
-      g.slice(length(g)));
-  }}
-}
-
-function stack_grad<Gradient,Value,Left,Right>(g:Gradient, x:Value, l:Left,
-    r:Right[_]) -> {
-  cpp{{
-  return std::make_tuple(g.slice(1), g.slice(std::make_pair(2, length(g))));
-  }}
-}
-
-function stack_grad<Gradient,Value,Left,Right>(g:Gradient, x:Value, l:Left[_],
-    r:Right[_]) -> {
-  return (g[1..length(l)], g[(length(l) + 1)..length(g)]);
-}
-
-function stack_grad<Gradient,Value,Left,Right>(g:Gradient, x:Value,
-    l:Left[_,_], r:Right[_,_]) -> {
-  let r1 <- rows(l);
-  let r2 <- rows(r);
-  let c1 <- columns(l);
-  return (g[1..r1,1..c1], g[(r1 + 1)..(r1 + r2),1..c1]);
-}

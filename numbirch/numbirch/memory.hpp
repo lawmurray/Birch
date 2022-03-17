@@ -88,6 +88,8 @@ void free(void* ptr);
  * @param spitch Stride between batches of `src`, in bytes.
  * @param width Width of each batch, in bytes.
  * @param height Number of batches.
+ * 
+ * @todo Support copies between different value types.
  */
 void memcpy(void* dst, const size_t dpitch, const void* src,
     const size_t spitch, const size_t width, const size_t height);

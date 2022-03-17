@@ -308,9 +308,8 @@ public:
   }
 
   /**
-   * Value assignment (scalar only).
+   * Value assignment. Fills the entire array with the given value.
    */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array& operator=(const T& value) {
     fill(value);
     return *this;
@@ -639,7 +638,7 @@ public:
    */
   template<class U, int E>
   bool conforms(const Array<U,E>& o) const {
-    return shp.conforms(o.shp);
+    return shp.rows() == o.shp.rows() && shp.columns() == o.shp.columns();
   }
 
   /**
@@ -765,18 +764,49 @@ private:
   }
 
   /**
-   * Copy assignment. For a view the shapes of the two arrays must conform,
-   * otherwise a resize is permitted.
+   * Copy from another array. For a view the shapes of the two arrays must
+   * conform, otherwise a resize is permitted.
    */
-  void assign(const Array& o) {
+
+  template<class U, int E, std::enable_if_t<D == E &&
+      std::is_convertible_v<U,T>,int> = 0>
+  void assign(const Array<U,E>& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      slicer();
-      memcpy(data(), shp.stride()*sizeof(T), o.data(),
-          o.shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
+      if (std::is_same_v<T,U>) {
+        slicer();
+        memcpy(data(), shp.stride()*sizeof(T), o.data(),
+            o.shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
+      } else {
+        auto n = std::min(size(), o.size());
+        auto begin1 = o.beginInternal();
+        auto end1 = begin1.operator+(n);
+        auto begin2 = beginInternal();
+        std::copy(begin1, end1, begin2);
+      }
     } else {
       Array tmp(o);
       swap(tmp);
+    }
+  }
+
+  /**
+   * Copy from another array when this is uninitialized.
+   */
+  template<class U, int E, std::enable_if_t<D == E &&
+      std::is_convertible_v<U,T>,int> = 0>
+  void uninitialized_copy(const Array<U,E>& o) {
+    if (std::is_same_v<T,U>) {
+      slicer();
+      memcpy(data(), shp.stride()*sizeof(T), o.data(),
+          o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
+          shp.height());
+    } else {
+      auto n = std::min(size(), o.size());
+      auto begin1 = o.beginInternal();
+      auto end1 = begin1.operator+(n);
+      auto begin2 = beginInternal();
+      std::uninitialized_copy(begin1, end1, begin2);
     }
   }
 
@@ -937,26 +967,6 @@ private:
     auto last = endInternal();
     for (; iter != last; ++iter) {
       new (&*iter) T(std::forward<Args>(args)...);
-    }
-  }
-
-  /**
-   * Copy from another array.
-   */
-  template<class U, int E, std::enable_if_t<D == E &&
-      std::is_convertible_v<U,T>,int> = 0>
-  void uninitialized_copy(const Array<U,E>& o) {
-    if (std::is_same_v<T,U>) {
-      slicer();
-      memcpy(data(), shp.stride()*sizeof(T), o.data(),
-          o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
-          shp.height());
-    } else {
-      auto n = std::min(size(), o.size());
-      auto begin1 = o.beginInternal();
-      auto end1 = begin1.operator+(n);
-      auto begin2 = beginInternal();
-      std::uninitialized_copy(begin1, end1, begin2);
     }
   }
 

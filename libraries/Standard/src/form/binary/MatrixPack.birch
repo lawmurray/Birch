@@ -11,6 +11,9 @@ struct MatrixPack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
 hpp{{
 namespace birch {
+using numbirch::pack;
+using numbirch::pack_grad;
+
 /**
  * Pack two matrices next to one another (i.e. append rows) to create a
  * new matrix.
@@ -22,64 +25,3 @@ MatrixPack<Left,Right> pack(const Left& l, const Right& r) {
 }
 }
 }}
-
-/**
- * Pack two scalars next to one another as a row to create a new matrix.
- */
-function pack(x:Real, y:Real) -> Real[_,_] {
-  return [[x, y]];
-}
-
-/**
- * Pack two scalars next to one another as a row to create a new matrix.
- */
-function pack(x:Integer, y:Integer) -> Integer[_,_] {
-  return [[x, y]];
-}
-
-/**
- * Pack two vectors next to one another as columns of a new matrix.
- */
-function pack<Type>(x:Type[_], y:Type[_]) -> Type[_,_] {
-  assert length(x) == length(y);
-  let R <- length(x);
-  Z:Type[R,2];
-  Z[1..R,1] <- x;
-  Z[1..R,2] <- y;
-  return Z;
-}
-
-/**
- * Pack two matrices next to one another (i.e. append rows) to create a
- * new matrix.
- */
-function pack<Type>(l:Type[_,_], r:Type[_,_]) -> Type[_,_] {
-  assert rows(l) == rows(r);
-  let R <- rows(l);
-  let C1 <- columns(l);
-  let C2 <- columns(r);
-  Z:Type[R,C1 + C2];
-  Z[1..R,1..C1] <- l;
-  Z[1..R,(C1 + 1)..(C1 + C2)] <- r;
-  return Z;
-}
-
-function pack_grad<Gradient,Value,Type>(g:Gradient, x:Value, l:Type,
-    r:Type) -> {
-  assert rows(g) == 1 && columns(g) == 2;
-  return (g[1,1], g[1,2]);
-}
-
-function pack_grad<Gradient,Value,Type>(g:Gradient, x:Value, l:Type[_],
-    r:Type[_]) -> {
-  assert columns(g) == 2;
-  return (column(g, 1), column(g, 2));
-}
-
-function pack_grad<Gradient,Value,Type>(g:Gradient, x:Value, l:Type[_,_],
-    r:Type[_,_]) -> {
-  let r1 <- rows(l);
-  let c1 <- columns(l);
-  let c2 <- columns(r);
-  return (g[1..r1, 1..c1], g[1..r1, (c1 + 1)..(c1 + c2)]);
-}

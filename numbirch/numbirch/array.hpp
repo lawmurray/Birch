@@ -514,4 +514,265 @@ std::tuple<Array<real,0>,real,real> single_grad(const Array<real,2>& g,
   return std::make_tuple(element(g, i, j), real(0), real(0));
 }
 
+/**
+ * Pack two arrays next to each other, concatenating their rows.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @p x and @p y must have the same number of rows. The result has this
+ * number of rows, and a number of columns equal to the number of columns
+ * of @p x plus the number of columns of @p y. The result always has two
+ * dimensions.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+pack_t<T,U> pack(const T& x, const U& y) {
+  assert(rows(x) == rows(y));
+  auto r = rows(x);
+  auto cx = columns(x);
+  auto cy = columns(y);
+  pack_t<T,U> z(make_shape(r, cx + cy));
+
+  if constexpr (is_scalar_v<T>) {
+    z.slice(1, 1) = x;
+    if constexpr (is_scalar_v<U>) {
+      z.slice(1, 2) = y;
+    } else if constexpr (is_vector_v<U>) {
+      z.slice(1, std::make_pair(2, 2)) = y;
+    } else {
+      static_assert(is_matrix_v<U>);
+      z.slice(std::make_pair(1, 1), std::make_pair(2, 1 + cy)) = y;
+    }
+  } else if constexpr (is_vector_v<T>) {
+    z.slice(std::make_pair(1, r), 1) = x;
+    if constexpr (is_scalar_v<U>) {
+      z.slice(1, 2) = y;
+    } else if constexpr (is_vector_v<U>) {
+      z.slice(std::make_pair(1, r), 2) = y;
+    } else {
+      static_assert(is_matrix_v<U>);
+      z.slice(std::make_pair(1, r), std::make_pair(2, 1 + cy)) = y;
+    }
+  } else {
+    static_assert(is_matrix_v<U>);
+    z.slice(std::make_pair(1, r), std::make_pair(1, cx)) = x;
+    if constexpr (is_scalar_v<U>) {
+      z.slice(1, cx + 1) = y;
+    } else if constexpr (is_vector_v<U>) {
+      z.slice(std::make_pair(1, r), cx + 1) = y;
+    } else {
+      static_assert(is_matrix_v<U>);
+      z.slice(std::make_pair(1, r), std::make_pair(cx + 1, cx + cy)) = y;
+    }
+  }
+  return z;
+}
+
+/**
+ * Gradient of pack().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+auto pack_grad(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
+    const U& y) {
+  assert(rows(x) == rows(y));
+  auto r = rows(x);
+  auto cx = columns(x);
+  auto cy = columns(y);
+
+  if constexpr (is_scalar_v<T>) {
+    auto gx = g.slice(1, 1);
+    if constexpr (is_scalar_v<U>) {
+      return std::make_pair(gx, g.slice(1, 2));
+    } else if constexpr (is_vector_v<U>) {
+      return std::make_pair(gx, g.slice(1, std::make_pair(2, 2)));
+    } else {
+      static_assert(is_matrix_v<U>);
+      return std::make_pair(gx, g.slice(std::make_pair(1, 1),
+          std::make_pair(2, 1 + cy)));
+    }
+  } else if constexpr (is_vector_v<T>) {
+    auto gx = g.slice(std::make_pair(1, r), 1);
+    if constexpr (is_scalar_v<U>) {
+      return std::make_pair(gx, g.slice(1, 2));
+    } else if constexpr (is_vector_v<U>) {
+      return std::make_pair(gx, g.slice(std::make_pair(1, r), 2));
+    } else {
+      static_assert(is_matrix_v<U>);
+      return std::make_pair(gx, g.slice(std::make_pair(1, r),
+          std::make_pair(2, 1 + cy)));
+    }
+  } else {
+    static_assert(is_matrix_v<U>);
+    auto gx = g.slice(std::make_pair(1, r), std::make_pair(1, cx));
+    if constexpr (is_scalar_v<U>) {
+      return std::make_pair(gx, g.slice(1, cx + 1));
+    } else if constexpr (is_vector_v<U>) {
+      return std::make_pair(gx, g.slice(std::make_pair(1, r), cx + 1));
+    } else {
+      static_assert(is_matrix_v<U>);
+      return std::make_pair(gx, g.slice(std::make_pair(1, r),
+          std::make_pair(cx + 1, cx + cy)));
+    }
+  }
+}
+
+/**
+ * Stack two arrays atop one another, concatenating their columns.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @p x and @p y must have the same number of columns. The result has this
+ * number of columns, and a number of rows equal to the number of rows of @p x
+ * plus the number of rows of @p y. The result has two dimensions if at least
+ * one of the arguments has two dimensions, and one dimension otherwise.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+stack_t<T,U> stack(const T& x, const U& y) {
+  assert(columns(x) == columns(y));
+  auto rx = rows(x);
+  auto ry = rows(y);
+  auto c = columns(x);
+
+  if constexpr (is_scalar_v<T>) {
+    if constexpr (is_scalar_v<U>) {
+      stack_t<T,U> z(make_shape(2));
+      z.slice(1) = x;
+      z.slice(2) = y;
+      return z;
+    } else if constexpr (is_vector_v<U>) {
+      stack_t<T,U> z(make_shape(1 + ry));
+      z.slice(1) = x;
+      z.slice(std::make_pair(2, 1 + ry)) = y;
+      return z;
+    } else {
+      static_assert(is_matrix_v<U>);
+      stack_t<T,U> z(make_shape(1 + ry));
+      z.slice(1, 1) = x;
+      z.slice(std::make_pair(2, 1 + ry), std::make_pair(1, 1)) = y;
+      return z;
+    }
+  } else if constexpr (is_vector_v<T>) {
+    if constexpr (is_scalar_v<U>) {
+      stack_t<T,U> z(make_shape(rx + 1));
+      z.slice(std::make_pair(1, rx)) = x;
+      z.slice(rx + 1) = y;
+      return z;
+    } else if constexpr (is_vector_v<U>) {
+      stack_t<T,U> z(make_shape(rx + ry));
+      z.slice(std::make_pair(1, rx)) = x;
+      z.slice(std::make_pair(rx + 1, rx + ry)) = y;
+      return z;
+    } else {
+      static_assert(is_matrix_v<U>);
+      stack_t<T,U> z(make_shape(rx + ry, 1));
+      z.slice(std::make_pair(1, rx), 1) = y;
+      z.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, 1)) = y;
+      return z;
+    }
+  } else {
+    static_assert(is_matrix_v<U>);
+    stack_t<T,U> z(make_shape(rx + ry, c));
+    z.slice(std::make_pair(1, rx), std::make_pair(1, c)) = x;
+    if constexpr (is_scalar_v<U>) {
+      z.slice(rx + 1, 1) = y;
+    } else if constexpr (is_vector_v<U>) {
+      z.slice(std::make_pair(rx + 1, rx + ry), 1) = y;
+    } else {
+      static_assert(is_matrix_v<U>);
+      z.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, c)) = y;
+    }
+    return z;
+  }
+}
+
+/**
+ * Gradient of stack().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+auto stack_grad(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
+    const T& x, const U& y) {
+  assert(columns(x) == columns(y));
+  auto rx = rows(x);
+  auto ry = rows(y);
+  auto c = columns(x);
+
+  if constexpr (is_scalar_v<T>) {
+    if constexpr (is_scalar_v<U>) {
+      return std::make_pair(g.slice(1), g.slice(2));
+    } else if constexpr (is_vector_v<U>) {
+      return std::make_pair(g.slice(1), g.slice(std::make_pair(2, 1 + ry)));
+    } else {
+      static_assert(is_matrix_v<U>);
+      return std::make_pair(g.slice(1, 1), g.slice(std::make_pair(2, 1 + ry),
+          std::make_pair(1, 1)));
+    }
+  } else if constexpr (is_vector_v<T>) {
+    if constexpr (is_scalar_v<U>) {
+      return std::make_pair(g.slice(std::make_pair(1, rx)), g.slice(rx + 1));
+    } else if constexpr (is_vector_v<U>) {
+      return std::make_pair(g.slice(std::make_pair(1, rx)),
+          g.slice(std::make_pair(rx + 1, rx + ry)));
+    } else {
+      static_assert(is_matrix_v<U>);
+      return std::make_pair(g.slice(std::make_pair(1, rx), 1),
+          g.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, 1)));
+    }
+  } else {
+    static_assert(is_matrix_v<U>);
+    auto gx = g.slice(std::make_pair(1, rx), std::make_pair(1, c));
+    if constexpr (is_scalar_v<U>) {
+      return std::make_pair(gx, g.slice(rx + 1, 1));
+    } else if constexpr (is_vector_v<U>) {
+      return std::make_pair(gx, g.slice(std::make_pair(rx + 1, rx + ry), 1));
+    } else {
+      static_assert(is_matrix_v<U>);
+      return std::make_pair(gx,
+          g.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, c)));
+    }
+  }
+}
+
 }

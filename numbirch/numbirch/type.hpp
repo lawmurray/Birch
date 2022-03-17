@@ -150,7 +150,7 @@ template<class T>
 inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
 
 /**
- * @internal
+ * @typedef value_t
  *
  * Value type of an arithmetic type. For a basic type this is an identity
  * function, for an array type it is the element type.
@@ -169,7 +169,7 @@ template<class T>
 using value_t = typename value<T>::type;
 
 /**
- * @internal
+ * @var dimension_v
  *
  * Dimension of an arithmetic type.
  * 
@@ -563,5 +563,26 @@ struct all_integral<Arg,Args...> {
 };
 template<class... Args>
 inline constexpr bool all_integral_v = all_integral<Args...>::value;
+
+/**
+ * @typedef pack_t
+ * 
+ * @ingroup trait
+ * 
+ * Return type of pack().
+ */
+template<class T, class U>
+using pack_t = Array<value_t<implicit_t<T,U>>,2>;
+
+/**
+ * @typedef pack_t
+ * 
+ * @ingroup trait
+ * 
+ * Return type of stack().
+ */
+template<class T, class U>
+using stack_t = Array<value_t<implicit_t<T,U>>,
+    (dimension_v<T> == 2 || dimension_v<T> == 2) ? 2 : 1>;
 
 }
