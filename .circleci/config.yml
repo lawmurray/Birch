@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@3.4.2
+  codecov: codecov/codecov@3.2.2
 
 executors:
   opensuse:
@@ -139,20 +140,8 @@ commands:
   codecov:
     description: Upload test coverage to Codecov
     steps:
-      - run:
-          name: Upload test coverage to Codecov
+      - codecov/upload:
           when: on_success
-          command: |
-            if [[ -n "$CODECOV" ]]
-            then
-              curl -s https://codecov.io/bash > codecov
-              VERSION=$(grep 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-              for i in 1 256 512
-              do
-                curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM | grep codecov | shasum -a $i -c
-              done
-              bash codecov
-            fi
 
   driver:
     description: Build driver
