@@ -135,7 +135,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ.r.graft(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, chol(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -151,7 +151,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ.l.graft(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, chol(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 

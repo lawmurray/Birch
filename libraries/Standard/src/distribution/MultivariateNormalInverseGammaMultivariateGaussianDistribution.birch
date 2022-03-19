@@ -95,7 +95,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
       Ω.r.graft(p);
       return p;
     } else {
-      return wrap_multivariate_gaussian(μ, chol(Ω));
+      return wrap_multivariate_gaussian(μ, Ω);
     }
   }
 }

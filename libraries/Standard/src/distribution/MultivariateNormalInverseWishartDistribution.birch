@@ -106,7 +106,7 @@ function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
     Σ.graft(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, chol(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 

@@ -1,9 +1,10 @@
 /**
  * Multivariate linear-Gaussian-Gaussian distribution.
  */
-final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,
-    Arg2,Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) <
-    Distribution<Real[_]> {
+final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
+    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) <
+    MultivariateGaussianDistribution<Expression<Real[_]>,
+    Expression<Real[_,_]>>(box(A*μ + c), box(A*Σ*transpose(A) + Ω)) {
   /**
    * Scale.
    */
@@ -27,66 +28,37 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,
   /**
    * Covariance.
    */
-  S:Arg5 <- S;
+  Ω:Arg5 <- Ω;
 
   override function supportsLazy() -> Boolean {
     return true;
   }
 
-  override function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian_multivariate_gaussian(
-        value(A), value(μ), value(Σ), value(c), value(S));
-  }
-
-  override function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_gaussian_multivariate_gaussian(
-        eval(A), eval(μ), eval(Σ), eval(c), eval(S));
-  }
-  
-  override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_gaussian_multivariate_gaussian(x,
-        value(A), value(μ), value(Σ), value(c), value(S));
-  }
-
-  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
-    return box(logpdf_multivariate_gaussian_multivariate_gaussian(x,
-        A, μ, Σ, c, S));
-  }
-
   override function update(x:Real[_]) -> Delay? {
-    return update_multivariate_gaussian_multivariate_gaussian(x,
-        value(A), value(μ), value(Σ), value(c), value(S));
+    return update_multivariate_gaussian_multivariate_gaussian(x, value(A),
+        value(μ), value(Σ), value(c), value(Ω), value(super.μ),
+        value(super.Σ));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    return update_multivariate_gaussian_multivariate_gaussian(x, A, μ,
-        Σ, c, S);
-  }
-
-  override function isMultivariateGaussian() -> Boolean {
-    return true;
-  }
-
-  override function getMultivariateGaussian() -> (Expression<Real[_]>,
-      Expression<Real[_,_]>)? {
-    return box(A*μ + c, chol(A*triouter(Σ)*transpose(A) + triouter(S)));
+    return update_multivariate_gaussian_multivariate_gaussian(x, A, μ, Σ, c,
+        Ω, super.μ, super.Σ);
   }
 }
 
 function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
-    Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> Distribution<Real[_]> {
-  return wrap_multivariate_gaussian_multivariate_gaussian(A, μ,
-      chol(Σ), c, chol(S));
+    Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> Distribution<Real[_]> {
+  return wrap_multivariate_gaussian_multivariate_gaussian(A, μ, Σ, c, Ω);
 }
 function wrap_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
-  return make_multivariate_gaussian_multivariate_gaussian(wrap(A),
-      wrap(μ), wrap(Σ), wrap(c), wrap(S));
+    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
+  return make_multivariate_gaussian_multivariate_gaussian(wrap(A), wrap(μ),
+      wrap(Σ), wrap(c), wrap(Ω));
 }
 function make_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, S:Arg5) -> {
+    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
   return construct<MultivariateGaussianMultivariateGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5>>(A, μ, Σ, c, S);
+      Arg1,Arg2,Arg3,Arg4,Arg5>>(A, μ, Σ, c, Ω);
 }
 
 /**
@@ -96,13 +68,13 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
     Random<Real[_]>>,Arg2>, Σ:Arg3) -> Distribution<Real[_]> {
   μ.l.r.prune();
   if μ.l.r.hasMultivariateGaussian() {
-    let (m, S) <- μ.l.r.getMultivariateGaussian();
-    let p <- wrap_multivariate_gaussian_multivariate_gaussian(μ.l.l, m,
-        S, μ.r, chol(Σ));
+    let (μ1, Σ1) <- μ.l.r.getMultivariateGaussian();
+    let p <- wrap_multivariate_gaussian_multivariate_gaussian(μ.l.l, μ1, Σ,
+        μ.r, Σ1);
     μ.l.r.graft(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, chol(Σ));
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -131,42 +103,6 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
 }
 
 /*
- * Simulate a multivariate Gaussian distribution with a linear transformation
- * and multivariate Gaussian likelihood.
- *
- * - A: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - c: Offset.
- * - Ω: Likelihood covariance.
- */
-function simulate_multivariate_gaussian_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
-  let m <- A*μ + c;
-  let S <- chol(A*triouter(Σ)*transpose(A) + outer(Ω));
-  return simulate_multivariate_gaussian(m, S);
-}
-
-/*
- * Observe a multivariate Gaussian variate with a linear transformation
- * and multivariate Gaussian likelihood.
- *
- * - A: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - c: Offset.
- * - Ω: Likelihood covariance.
- *
- * Returns: the log probability density.
- */
-function logpdf_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, Ω:Arg6) -> {
-  let m <- A*μ + c;
-  let S <- chol(A*triouter(Σ)*transpose(A) + outer(Ω));
-  return logpdf_multivariate_gaussian(x, m, S);
-}
-
-/*
  * Update the parameters of a multivariate Gaussian distribution with a 
  * linear transformation and multivariate Gaussian likelihood.
  *
@@ -176,14 +112,16 @@ function logpdf_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
  * - Σ: Prior covariance.
  * - c: Offset.
  * - Ω: Likelihood covariance.
+ * - m: Precomputed marginal mean.
+ * - T: Precomputed marginal covariance.
  *
  * Returns: the posterior hyperparameters `μ'` and `Σ'`.
  */
-function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, Ω:Arg6) -> {
-  let S <- wrap(triouter(Σ));
-  let K' <- wrap(S*transpose(A)*cholinv(chol(A*S*transpose(A) + triouter(Ω))));
-  let μ' <- μ + K'*(x - A*μ - c);
-  let Σ' <- chol(S - K'*A*S);
+function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
+    Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, Ω:Arg6,
+    m:Arg7, T:Arg8) -> {
+  let K' <- wrap(Σ*transpose(A)*cholinv(chol(T)));
+  let μ' <- μ + K'*(x - m);
+  let Σ' <- Σ - K'*A*Σ;
   return wrap_multivariate_gaussian(μ', Σ');
 }
