@@ -96,24 +96,24 @@ endif
 #
 
 libnumbirch_debug_la_CPPFLAGS = $(AM_CPPFLAGS)
-libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
+libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -flto
 libnumbirch_debug_la_SOURCES = $(SOURCES)
 libnumbirch_debug_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=float
-libnumbirch_debug_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
+libnumbirch_debug_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -flto
 libnumbirch_debug_single_la_SOURCES = $(SOURCES)
 
 libnumbirch_test_la_CPPFLAGS = $(AM_CPPFLAGS)
-libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
+libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -flto --coverage
 libnumbirch_test_la_SOURCES = $(SOURCES)
 libnumbirch_test_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=float
-libnumbirch_test_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
+libnumbirch_test_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -flto --coverage
 libnumbirch_test_single_la_SOURCES = $(SOURCES)
 
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
-libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
+libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3 -flto
 libnumbirch_la_SOURCES = $(SOURCES)
 libnumbirch_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG -DNUMBIRCH_REAL=float
-libnumbirch_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
+libnumbirch_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3 -flto
 libnumbirch_single_la_SOURCES = $(SOURCES)
 
 include_HEADERS = numbirch/numbirch.hpp
