@@ -4,6 +4,7 @@ ENV TZ=Europe/London
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ssh \
+    gpg \
     tar \
     gzip \
     curl \
