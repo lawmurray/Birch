@@ -4,6 +4,7 @@ RUN apk update && apk add --no-cache \
     openssh \
     gpg \
     gpg-agent \
+    gpgv \
     tar \
     gzip \
     curl \
