@@ -28,7 +28,7 @@ abstract class Distribution<Value> < Delay {
   abstract function simulate() -> Value!;
 
   /**
-   * Simulate a value as part of a lazy expression.
+   * Simulate a value for a lazy expression.
    *
    * Return: the value, if supported.
    */
@@ -46,6 +46,18 @@ abstract class Distribution<Value> < Delay {
   abstract function logpdf(x:Value!) -> Real!;
 
   /**
+   * Evaluate the log probability density (or mass) function for a lazy
+     expression.
+   *
+   * - x: The value.
+   *
+   * Return: the log probability density (or mass), if supported.
+   */
+  function logpdfLazy(x:Value!) -> Real!? {
+    return nil;
+  }
+
+  /**
    * Construct a lazy expression for the log probability density (or mass).
    *
    * - x: The value.
@@ -53,7 +65,7 @@ abstract class Distribution<Value> < Delay {
    * Return: expression giving the log probability density (or mass), if
    * supported.
    */
-  function logpdfLazy(x:Expression<Value>) -> Expression<Real>? {
+  function hitch(x:Expression<Value>) -> Expression<Real>? {
     return nil;
   }
 

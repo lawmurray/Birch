@@ -34,7 +34,11 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
     return logpdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real!) -> Real!? {
+    return logpdf_lomax(x, 1.0/(eval(a)*eval(θ)), eval(k));
+  }
+
+  override function hitch(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_lomax(x, 1.0/(a*θ), k));
   }
 

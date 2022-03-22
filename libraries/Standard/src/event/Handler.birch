@@ -127,7 +127,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleObserve<Value>(x:Value, p:Distribution<Value>) -> Value {
     if delayExpressions && p.supportsLazy() {
-      handleFactor(p.logpdfLazy(box(x))!);
+      handleFactor(p.hitch(box(x))!);
     } else {
       handleFactor(p.logpdf(x));
     }
@@ -179,7 +179,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   function handleDelayObserve<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
     if delayExpressions && p.supportsLazy() {
-      handleFactor(p.logpdfLazy(x)!);
+      handleFactor(p.hitch(x)!);
     } else {
       handleFactor(p.logpdf(x.value()));
     }
@@ -220,7 +220,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Boolean>) {
-    let p <- x.getDistribution().logpdfLazy(x);
+    let p <- x.getDistribution().hitch(x);
     if p? {
       if π? {
         π <- box(π! + p!);
@@ -231,7 +231,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Integer>) {
-    let p <- x.getDistribution().logpdfLazy(x);
+    let p <- x.getDistribution().hitch(x);
     if p? {
       if π? {
         π <- box(π! + p!);
@@ -242,7 +242,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Integer[_]>) {
-    let p <- x.getDistribution().logpdfLazy(x);
+    let p <- x.getDistribution().hitch(x);
     if p? {
       if π? {
         π <- box(π! + p!);
@@ -253,7 +253,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Real>) {
-    let p <- x.getDistribution().logpdfLazy(x);
+    let p <- x.getDistribution().hitch(x);
     if p? {
       if π? {
         π <- box(π! + p!);
@@ -264,7 +264,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Real[_]>) {
-    let p <- x.getDistribution().logpdfLazy(x);
+    let p <- x.getDistribution().hitch(x);
     if p? {
       if π? {
         π <- box(π! + p!);
@@ -275,7 +275,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   }
 
   function arg(x:Random<Real[_,_]>) {
-    let p <- x.getDistribution().logpdfLazy(x);
+    let p <- x.getDistribution().hitch(x);
     if p? {
       if π? {
         π <- box(π! + p!);

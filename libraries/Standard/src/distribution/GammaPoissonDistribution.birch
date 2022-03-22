@@ -33,7 +33,11 @@ final class GammaPoissonDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
     return logpdf_gamma_poisson(x, value(k), value(θ));
   }
 
-  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_gamma_poisson(x, eval(k), eval(θ));
+  }
+
+  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_gamma_poisson(x, k, θ));
   }
 

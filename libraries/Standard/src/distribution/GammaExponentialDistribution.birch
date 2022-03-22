@@ -33,7 +33,11 @@ final class GammaExponentialDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
     return logpdf_lomax(x, 1.0/value(θ), value(k));
   }
 
-  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real!) -> Real!? {
+    return logpdf_lomax(x, 1.0/eval(θ), eval(k));
+  }
+
+  override function hitch(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_lomax(x, 1.0/θ, k));
   }
 

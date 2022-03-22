@@ -59,7 +59,12 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         value(σ2), value(α), value(β), value(c), value(s2));
   }
 
-  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real!) -> Real!? {
+    return logpdf_normal_inverse_gamma_gaussian(x, eval(a), eval(μ),
+        eval(σ2), eval(α), eval(β), eval(c), eval(s2));
+  }
+
+  override function hitch(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β,
         c, s2));
   }

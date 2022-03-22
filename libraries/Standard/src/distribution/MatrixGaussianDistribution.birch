@@ -34,7 +34,11 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
     return logpdf_matrix_gaussian(X, value(M), value(U), value(V));
   }
 
-  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+    return logpdf_matrix_gaussian(X, eval(M), eval(U), eval(V));
+  }
+
+  override function hitch(X:Expression<Real[_,_]>) -> Expression<Real>? {
     return box(logpdf_matrix_gaussian(X, M, U, V));
   }
 

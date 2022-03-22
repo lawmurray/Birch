@@ -34,7 +34,11 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
     return logpdf_multivariate_t(x, value(k), value(μ), value(Σ));
   }
 
-  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real[_]) -> Real!? {
+    return logpdf_multivariate_t(x, eval(k), eval(μ), eval(Σ));
+  }
+
+  override function hitch(x:Expression<Real[_]>) -> Expression<Real>? {
     return box(logpdf_multivariate_t(x, k, μ, Σ));
   }
 

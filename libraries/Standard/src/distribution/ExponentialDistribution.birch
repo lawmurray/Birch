@@ -27,7 +27,11 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
     return logpdf_exponential(x, value(λ));
   }
 
-  override function logpdfLazy(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real!) -> Real!? {
+    return logpdf_exponential(x, eval(λ));
+  }
+
+  override function hitch(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_exponential(x, λ));
   }
 

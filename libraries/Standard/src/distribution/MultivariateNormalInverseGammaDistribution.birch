@@ -77,7 +77,12 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(k), value(β));
   }
 
-  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real[_]) -> Real!? {
+    return logpdf_multivariate_normal_inverse_gamma(x, eval(μ), eval(Σ),
+        eval(k), eval(β));
+  }
+
+  override function hitch(x:Expression<Real[_]>) -> Expression<Real>? {
     return box(logpdf_multivariate_normal_inverse_gamma(x, μ, Σ, k, β));
   }
 

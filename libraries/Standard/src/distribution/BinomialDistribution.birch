@@ -33,7 +33,11 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return logpdf_binomial(x, value(n), value(ρ));
   }
 
-  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_binomial(x, eval(n), eval(ρ));
+  }
+
+  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_binomial(x, n, ρ));
   }
 

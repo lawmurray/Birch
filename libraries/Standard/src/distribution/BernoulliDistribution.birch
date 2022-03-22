@@ -23,7 +23,11 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
     return logpdf_bernoulli(x, value(ρ));
   }
 
-  override function logpdfLazy(x:Expression<Boolean>) -> Expression<Real>? {
+  override function logpdfLazy(x:Boolean!) -> Real!? {
+    return logpdf_bernoulli(x, eval(ρ));
+  }
+
+  override function hitch(x:Expression<Boolean>) -> Expression<Real>? {
     return box(logpdf_bernoulli(x, ρ));
   }
 

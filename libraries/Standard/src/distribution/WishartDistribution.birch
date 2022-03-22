@@ -28,7 +28,11 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
     return logpdf_wishart(X, value(Ψ), value(k));
   }
 
-  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+    return logpdf_wishart(X, eval(Ψ), eval(k));
+  }
+
+  override function hitch(X:Expression<Real[_,_]>) -> Expression<Real>? {
     return box(logpdf_wishart(X, Ψ, k));
   }
 

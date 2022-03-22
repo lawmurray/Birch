@@ -34,7 +34,11 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     return logpdf_restaurant_categorical(x, value(α), value(θ), value(n));
   }
 
-  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_restaurant_categorical(x, eval(α), eval(θ), eval(n));
+  }
+
+  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_restaurant_categorical(x, α, θ, n));
   }
 

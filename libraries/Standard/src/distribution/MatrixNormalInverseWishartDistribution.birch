@@ -46,7 +46,12 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(Ψ), value(k));
   }
 
-  override function logpdfLazy(X:Expression<Real[_,_]>) -> Expression<Real>? {   
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {   
+    return logpdf_matrix_normal_inverse_wishart(X, eval(M), eval(Σ),
+        eval(Ψ), eval(k));
+  }
+
+  override function hitch(X:Expression<Real[_,_]>) -> Expression<Real>? {   
     return box(logpdf_matrix_normal_inverse_wishart(X, M, Σ, Ψ, k));
   }
 

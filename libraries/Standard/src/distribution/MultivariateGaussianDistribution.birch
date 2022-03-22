@@ -29,7 +29,11 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
     return logpdf_multivariate_gaussian(x, value(μ), value(Σ));
   }
 
-  override function logpdfLazy(x:Expression<Real[_]>) -> Expression<Real>? {
+  override function logpdfLazy(x:Real[_]) -> Real!? {
+    return logpdf_multivariate_gaussian(x, eval(μ), eval(Σ));
+  }
+
+  override function hitch(x:Expression<Real[_]>) -> Expression<Real>? {
     return box(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 

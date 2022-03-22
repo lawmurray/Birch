@@ -21,8 +21,8 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   p:Real;
   q:Real;
   if lazy && π.supportsLazy() {
-    p <- exp(π.logpdfLazy(box(true))!.value());
-    q <- exp(π.logpdfLazy(box(false))!.value());
+    p <- exp(π.logpdfLazy(true)!);
+    q <- exp(π.logpdfLazy(false)!);
   } else {
     p <- π.pdf(true);
     q <- π.pdf(false);
@@ -68,7 +68,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
       do {
         u <- 2*u;
         if lazy && π.supportsLazy() {
-          p <- exp(π.logpdfLazy(box(u))!.value());
+          p <- exp(π.logpdfLazy(u)!);
         } else {
           p <- π.pdf(u);
         }
@@ -97,7 +97,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   for x in from!!..to!! {
     p:Real;
     if lazy && π.supportsLazy() {
-      p <- exp(π.logpdfLazy(box(x))!.value());
+      p <- exp(π.logpdfLazy(x)!);
     } else {
       p <- π.pdf(x);
     }
@@ -148,7 +148,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
     }
     l:Real;
     if lazy && π.supportsLazy() {
-      l <- π.logpdfLazy(box(x))!.value();
+      l <- π.logpdfLazy(x)!;
     } else {
       l <- π.logpdf(x);
     }
@@ -157,7 +157,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
       let x' <- simulate_gaussian(x, σ2);
       l':Real;
       if lazy && π.supportsLazy() {
-        l' <- π.logpdfLazy(box(x'))!.value();
+        l' <- π.logpdfLazy(x')!;
       } else {
         l' <- π.logpdf(x');
       }
@@ -188,7 +188,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
   }
   l:Real;
   if lazy && π.supportsLazy() {
-    l <- π.logpdfLazy(box(x))!.value();
+    l <- π.logpdfLazy(x)!;
   } else {
     l <- π.logpdf(x);
   }
@@ -197,7 +197,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, B:Integer, S:Integer,
       let x' <- simulate_gaussian(x, σ2);
       l':Real;
       if lazy && π.supportsLazy() {
-        l' <- π.logpdfLazy(box(x'))!.value();
+        l' <- π.logpdfLazy(x')!;
       } else {
         l' <- π.logpdf(x');
       }
@@ -262,7 +262,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
     }
     l:Real;
     if lazy && π.supportsLazy() {
-      l <- π.logpdfLazy(box(x))!.value();
+      l <- π.logpdfLazy(x)!;
     } else {
       l <- π.logpdf(x);
     }
@@ -271,7 +271,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
       let x' <- simulate_multivariate_gaussian(x, Σ);
       l':Real;
       if lazy && π.supportsLazy() {
-        l' <- π.logpdfLazy(box(x'))!.value();
+        l' <- π.logpdfLazy(x')!;
       } else {
         l' <- π.logpdf(x');
       }
@@ -302,7 +302,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
   }
   l:Real;
   if lazy && π.supportsLazy() {
-    l <- π.logpdfLazy(box(x))!.value();
+    l <- π.logpdfLazy(x)!;
   } else {
     l <- π.logpdf(x);
   }
@@ -311,7 +311,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, B:Integer, S:Integer,
       let x' <- simulate_multivariate_gaussian(x, Σ);
       l':Real;
       if lazy && π.supportsLazy() {
-        l' <- π.logpdfLazy(box(x'))!.value();
+        l' <- π.logpdfLazy(x')!;
       } else {
         l' <- π.logpdf(x');
       }
@@ -373,7 +373,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
     l:Real;
     if lazy && π.supportsLazy() {
       x <- π.simulateLazy()!;
-      l <- π.logpdfLazy(box(x))!.value();
+      l <- π.logpdfLazy(x)!;
     } else {
       x <- π.simulate();
       l <- π.logpdf(x);
@@ -382,7 +382,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
       let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
       l':Real;
       if lazy && π.supportsLazy() {
-        l' <- π.logpdfLazy(box(x'))!.value();
+        l' <- π.logpdfLazy(x')!;
       } else {
         l' <- π.logpdf(x');
       }
@@ -409,7 +409,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
   l:Real;
   if lazy && π.supportsLazy() {
     x <- π.simulateLazy()!;
-    l <- π.logpdfLazy(box(x))!.value();
+    l <- π.logpdfLazy(x)!;
   } else {
     x <- π.simulate();
     l <- π.logpdf(x);
@@ -419,7 +419,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, B:Integer, S:Integer,
       let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
       l':Real;
       if lazy && π.supportsLazy() {
-        l' <- π.logpdfLazy(box(x'))!.value();
+        l' <- π.logpdfLazy(x')!;
       } else {
         l' <- π.logpdf(x');
       }

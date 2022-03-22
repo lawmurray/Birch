@@ -26,7 +26,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     return logpdf_categorical(x, value(ρ));
   }
 
-  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_categorical(x, eval(ρ));
+  }
+
+  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_categorical(x, ρ));
   }
 

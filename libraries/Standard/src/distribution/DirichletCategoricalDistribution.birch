@@ -23,7 +23,11 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return logpdf_dirichlet_categorical(x, value(α));
   }
 
-  override function logpdfLazy(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_dirichlet_categorical(x, eval(α));
+  }
+
+  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_dirichlet_categorical(x, α));
   }
 
