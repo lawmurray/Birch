@@ -126,9 +126,9 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   genMax:Integer <- 0;
 
   /**
-   * Number of times `link()` has been called.
+   * Count of number of parents, set by trace().
    */
-  linkCount:Integer <- 0;
+  linkCount:Integer <- 1;
 
   /**
    * Counter used to obtain pre- and post-order traversals of the expression
@@ -238,6 +238,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Returns: The result.
    */
   final function move(x:Real[_]) -> Value! {
+    trace();
     visitor:MoveVisitor(x);
     let y <- move(visitor);
     assert visitor.isFinished();
@@ -245,13 +246,13 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
   final function move(visitor:MoveVisitor) -> Value! {
     if !flagConstant {
-      if visitCount == 0 {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
         doMove(visitor);
         assert x?;
       }
-      visitCount <- visitCount + 1;
       if visitCount >= linkCount {
-        assert visitCount == linkCount || linkCount == 0;
+        assert visitCount == linkCount;
         visitCount <- 0;  // reset for next time
       }
     }
@@ -267,18 +268,19 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Returns: The vectorized arguments and gradients.
    */
   final function args() -> (Real[_], Real[_]) {
+    trace();
     visitor:ArgsVisitor;
     args(visitor);
     return visitor.args();
   }
   final function args(visitor:ArgsVisitor) {
     if !flagConstant {
-      if visitCount == 0 {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
         doArgs(visitor);
       }
-      visitCount <- visitCount + 1;
       if visitCount >= linkCount {
-        assert visitCount == linkCount || linkCount == 0;
+        assert visitCount == linkCount;
         visitCount <- 0;  // reset for next time
       }
     }
@@ -331,20 +333,20 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
   final function grad<Gradient>(g:Gradient) {
-    this.g <- g;
-    doShallowGrad();
-    doDeepGrad();
+    trace();
+    shallowGrad(g);
+    deepGrad();
   }
   final function shallowGrad<Gradient>(g:Gradient) {
     if !flagConstant {
-      if visitCount == 0 {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
         /* (re-)start accumulation */
         this.g <- g;
       } else {
         /* continue accumulation */
         this.g <- this.g! + g;
       }
-      visitCount <- visitCount + 1;
     }
   }
   function doShallowGrad() {
@@ -352,7 +354,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
   final function deepGrad() {
     if !flagConstant && visitCount >= linkCount {
-      assert visitCount == linkCount || linkCount == 0;
+      assert visitCount == linkCount;
       visitCount <- 0;  // reset for next time
       doShallowGrad();
       doDeepGrad();
@@ -375,17 +377,37 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Register this object as a dependency of another expression.
+   * Trace an expression before calling grad() or move(). This traces through
+   * the expression and, for each Expression object, updates the count of its
+   * number of parents. This is necessary to ensure correct and efficient
+   * execution of grad() and move(), as these counts ensure that each node in
+   * the graph is visited exactly once.
    */
-  final function link() {
-    assert visitCount == 0;
-    linkCount <- linkCount + 1;
+  final function trace() {
+    reset();
+    relink();
   }
-  function doLink() {
+  final function reset() {
     assert visitCount == 0;
-    assert linkCount == 0;
-    // internally, called when this is constructed to recursively call link()
-    // on dependencies
+    if !flagConstant && linkCount != 0 {
+      linkCount <- 0;
+      doReset();
+    }
+  }
+  function doReset() {
+    //
+  }
+  final function relink() {
+    assert visitCount == 0;
+    if !flagConstant {
+      linkCount <- linkCount + 1;
+      if linkCount == 1 {
+        doRelink();
+      }
+    }
+  }
+  function doRelink() {
+    //
   }
 
   /**
@@ -436,7 +458,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
       g <- nil;
       gen <- 0;
       genMax <- 0;
-      linkCount <- 0;
+      linkCount <- 1;
       visitCount <- 0;
       flagConstant <- true;
       doConstant();

@@ -525,9 +525,7 @@ template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
 auto box(const T& x) {
   auto y = eval(x);
   using U = typename std::decay<decltype(wait(y))>::type;
-  auto r = construct<BoxedForm<U,T>>(y, x);
-  r->doLink();  ///@todo Implement as RAII
-  return Expression<U>(r);
+  return Expression<U>(construct<BoxedForm<U,T>>(y, x));
 }
 
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
@@ -910,18 +908,33 @@ void args(const T& x, const ArgsVisitor& visitor) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void link(const T& x) {
+void reset(const T& x) {
   //
 }
 
 template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
-void link(T& x) {
-  x.link();
+void reset(T& x) {
+  x.reset();
 }
 
 template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-void link(const T& x) {
-  x->link();
+void reset(const T& x) {
+  x->reset();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void relink(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+void relink(T& x) {
+  x.relink();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+void relink(const T& x) {
+  x->relink();
 }
 
 template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>

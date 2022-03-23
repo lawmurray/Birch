@@ -8,8 +8,12 @@ struct Unary<Middle>(m:Middle) < Form {
   m:Middle <- m;
 
   hpp{{
-  void link() const {
-    birch::link(m);
+  void reset() const {
+    birch::reset(m);
+  }
+
+  void relink() const {
+    birch::relink(m);
   }
 
   void label(const Integer gen) const {
@@ -31,7 +35,7 @@ hpp{{
   using Value = decltype(f(birch::peek(std::declval<Middle>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
-  void reset() const { \
+  void clear() const { \
     const_cast<std::optional<Value>&>(x).reset(); \
   } \
   \
@@ -68,7 +72,7 @@ hpp{{
     auto x = birch::peek(*this); \
     auto m = birch::peek(this->m); \
     auto gm = f_grad(g, x, m, ##__VA_ARGS__); \
-    reset(); \
+    clear(); \
     birch::shallow_grad(this->m, gm); \
   } \
   \
