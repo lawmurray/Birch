@@ -115,17 +115,6 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }}
 
   /**
-   * Generation label.
-   */
-  gen:Integer <- 0;
-
-  /**
-   * Maximum generation label with which constant(Integer) has been called.
-   * This is used to truncate recursions.
-   */
-  genMax:Integer <- 0;
-
-  /**
    * Count of number of parents, set by trace().
    */
   linkCount:Integer <- 1;
@@ -411,53 +400,11 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   }
 
   /**
-   * Label generations.
-   *
-   * - gen: Generation.
-   *
-   * Recursively labels all subexpressions with the given generation,
-   * terminating on subexpressions that are already labeled.
-   */
-  final function label(gen:Integer) {
-    if !flagConstant && this.gen == 0 {
-      this.gen <- gen;
-      doLabel(gen);
-    }
-  }
-  function doLabel(gen:Integer) {
-    //
-  }
-
-  /**
-   * Make older generations constant.
-   *
-   * - gen: Generation limit.
-   *
-   * Removes subexpressions that are labeled with a generation less than
-   * `gen`.
-   */
-  final function constant(gen:Integer) {
-    if !flagConstant && gen > genMax {
-      genMax <- gen;
-      if this.gen < gen {
-        constant();
-      } else {
-        doConstant(gen);
-      }
-    }
-  }
-  function doConstant(gen:Integer) {
-    //
-  }
-
-  /**
    * Render the entire expression constant.
    */
   final override function constant() {
     if !flagConstant {
       g <- nil;
-      gen <- 0;
-      genMax <- 0;
       linkCount <- 1;
       visitCount <- 0;
       flagConstant <- true;

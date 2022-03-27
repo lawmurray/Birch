@@ -983,36 +983,6 @@ void deep_grad(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void label(const T& x, const int gen) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
-void label(T& x, const int gen) {
-  return x.label(gen);
-}
-
-template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-void label(const T& x, const int gen) {
-  return x->label(gen);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void constant(const T& x, const int gen) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
-void constant(T& x, const int gen) {
-  x.constant(gen);
-}
-
-template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
-void constant(const T& x, const int gen) {
-  x->constant(gen);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
 void constant(const T& x) {
   //
 }

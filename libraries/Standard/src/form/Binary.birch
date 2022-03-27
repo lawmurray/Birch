@@ -23,16 +23,6 @@ struct Binary<Left,Right>(l:Left, r:Right) < Form {
     birch::relink(r);
   }
 
-  void label(const Integer gen) const {
-    birch::label(l, gen);
-    birch::label(r, gen);
-  }
-
-  void constant(const Integer gen) const {
-    birch::constant(l, gen);
-    birch::constant(r, gen);
-  }
-
   void constant() const {
     birch::constant(l);
     birch::constant(r);

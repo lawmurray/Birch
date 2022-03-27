@@ -16,14 +16,6 @@ struct Unary<Middle>(m:Middle) < Form {
     birch::relink(m);
   }
 
-  void label(const Integer gen) const {
-    birch::label(m, gen);
-  }
-
-  void constant(const Integer gen) const {
-    birch::constant(m, gen);
-  }
-
   void constant() const {
     birch::constant(m);
   }
