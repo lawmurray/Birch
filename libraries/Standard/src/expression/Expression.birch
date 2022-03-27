@@ -453,7 +453,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Render the entire expression constant.
    */
-  final function constant() {
+  final override function constant() {
     if !flagConstant {
       g <- nil;
       gen <- 0;

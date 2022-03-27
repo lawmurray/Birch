@@ -10,9 +10,61 @@ class Particle(m:Model) {
   m:Model <- m;
 
   /**
-   * Accumulated delayed log-posterior.
+   * Distribution and Random objects for move, by step.
+   */
+  Ξ:Array<Array<Delay>>;
+
+  /**
+   * Factors for move, by step.
+   */
+  Φ:Array<Array<Expression<Real>>>;
+
+  /**
+   * Factors for move, by step.
    */
   π:Expression<Real>?;
+
+  function hoist() {
+    π <- nil;
+    for i in 1..Ξ.size() {
+      for j in 1..Ξ[i].size() {
+        let ξ <- Ξ[i][j].hoist();
+        if ξ? {
+          if π? {
+            π <- box(π! + ξ!);
+          } else {
+            π <- ξ!;
+          }
+        }
+      }
+    }
+    for i in 1..Φ.size() {
+      for j in 1..Φ[i].size() {
+        let φ <- Φ[i][j];
+        if π? {
+          π <- box(π! + φ);
+        } else {
+          π <- φ;
+        }
+      }
+    }
+  }
+
+  function constant(nlags:Integer) {
+    π <- nil;
+    while Ξ.size() >= nlags {
+      for j in 1..Ξ.front().size() {
+        Ξ.front()[j].constant();
+      }
+      Ξ.popFront();
+    }
+    while Φ.size() >= nlags {
+      for j in 1..Φ.front().size() {
+        Φ.front()[j].constant();
+      }
+      Φ.popFront();
+    }
+  }
 
   override function read(buffer:Buffer) {
     m.read(buffer);

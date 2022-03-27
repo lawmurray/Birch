@@ -169,6 +169,12 @@ abstract class Distribution<Value> < Delay {
     }
   }
 
+  override function hoist() -> Expression<Real>? {
+    assert supportsLazy();
+    assert childValue?;
+    return hitch(box(childValue!));
+  }
+
   function isGaussian() -> Boolean {
     return false;
   }

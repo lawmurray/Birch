@@ -200,4 +200,18 @@ abstract class Delay {
     coparent <- node;
     node.coparent <- this;
   }
+
+  /**
+   * Construct a lazy expression for the log-pdf of this node.
+   */
+  function hoist() -> Expression<Real>? {
+    return nil;
+  }
+
+  /**
+   * Render the node constant.
+   */
+  function constant() {
+    //
+  }
 }

@@ -64,7 +64,6 @@ final class Random<Value> < Expression<Value>(nil, false) {
 
   override function doMove(visitor:MoveVisitor) {
     assert this.x?;
-    assert !this.p?;
     visitor.visit(this);
   }
 
@@ -108,6 +107,12 @@ final class Random<Value> < Expression<Value>(nil, false) {
     assert !this.coparent?;
     assert !this.child?;
     return this;
+  }
+
+  override function hoist() -> Expression<Real>? {
+    assert p?;
+    assert p!.supportsLazy();
+    return p!.hitch(this);
   }
 
   /**

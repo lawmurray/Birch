@@ -135,13 +135,8 @@ class ParticleFilter {
         x[n].m.read(input);
         x[n].m.simulate();
       }
-      if h.π? {
-        if x[n].π? {
-          x[n].π <- box(x[n].π! + h.π!);
-        } else {
-          x[n].π <- h.π!;
-        }
-      }
+      x[n].Ξ.pushBack(h.Ξ);
+      x[n].Φ.pushBack(h.Φ);
       w[n] <- w[n] + h.w;
     }
     (ess, lsum) <- resample_reduce(w);
@@ -162,13 +157,8 @@ class ParticleFilter {
         x[n].m.read(t, input);
         x[n].m.simulate(t);
       }
-      if h.π? {
-        if x[n].π? {
-          x[n].π <- box(x[n].π! + h.π!);
-        } else {
-          x[n].π <- h.π!;
-        }
-      }
+      x[n].Ξ.pushBack(h.Ξ);
+      x[n].Φ.pushBack(h.Φ);
       w[n] <- w[n] + h.w;
     }
     (ess, lsum) <- resample_reduce(w);
@@ -197,10 +187,9 @@ class ParticleFilter {
 
         /* pre-compute and bridge-find */
         dynamic parallel for n in 1..nparticles {
-          if κ? && x[n].π? && o[n] >= 1 {
+          if κ? && o[n] >= 1 {
             /* will survive, perform pre-computations */
-            κ!.lag(t, x[n].π!);
-            κ!.precompute(t, x[n].π!);
+            κ!.pre(x[n]);
           }
           if o[n] >= 2 {
             /* will be copied at least once, perform bridge-finding */
@@ -228,12 +217,10 @@ class ParticleFilter {
           do {
             let α <- vector(0.0, nparticles);  // acceptance rate per particle
             parallel for n in 1..nparticles {
-              if x[n].π? {
-                if !first {
-                  x[n].π!.grad(1.0);
-                }
-                α[n] <- κ!.move(t, x[n].π!);
+              if !first {
+                κ!.pre(x[n]);
               }
+              α[n] <- κ!.move(x[n]);
             }
             raccepts <- sum(α)/nparticles;
             stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts! + "\n");
@@ -246,7 +233,12 @@ class ParticleFilter {
             }
             first <- false;
             nattempts <- nattempts + 1;
-          } while !happy && nattempts < 10;
+          } while false && !happy && nattempts < 10;
+
+          /* perform post-computations */
+          parallel for n in 1..nparticles {
+            κ!.post(x[n]);
+          }
         }
 
         /* reset weights */
@@ -255,9 +247,7 @@ class ParticleFilter {
         if κ? {
           /* handle lags */
           parallel for n in 1..nparticles {
-            if x[n].π? {
-              κ!.lag(t, x[n].π!);
-            }
+            κ!.post(x[n]);
           }
         }
 

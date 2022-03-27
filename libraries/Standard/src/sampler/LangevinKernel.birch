@@ -22,6 +22,7 @@ class LangevinKernel < Kernel {
     let N <- x.size();
     let first <- true;
     for n in 1..N {
+      x[n].hoist();
       let π <- x[n].π;
       if π? {
         let (y, g) <- π!.args();
@@ -52,68 +53,78 @@ class LangevinKernel < Kernel {
     }
   }
 
-  override function precompute(t:Integer, π:Expression<Real>) {
-    π.grad(1.0);
+  override function pre(x:Particle) {
+    if x.π? {
+      x.π!.grad(1.0);
+    }
   }
 
-  override function move(t:Integer, π:Expression<Real>) -> Real {
-    /* initial state */
-    let p <- π.eval();
-    let (x, g) <- π.args();
-
-    /* scale */
-    δ:Real[_];
-    let m <- length(x);
-    if length(σ2) == m {
-      δ <- scale*σ2;
-    } else {
-      δ <- vector(scale, m);
-    }
-
-    /* mean of proposal from initial state */
-    let μ <- x + mul(g, δ);
-
-    /* moves */
+  override function move(y:Particle) -> Real {
     let naccepts <- 0;
-    let accept <- true;  // was most recent particle accepted?
-    for n in 1..nmoves {
-      /* proposed state */
-      cpp{{
-      auto z = numbirch::standard_gaussian(m);
-      }}
-      let p' <- π.move(μ + mul(sqrt(2.0*δ), z));
-      π.grad(1.0);
-      let (x', g') <- π.args();
-      let μ' <- x' + mul(g', δ);
+    if y.π? {
+      let π <- y.π!;
 
-      /* proposal correction */
-      let r <- transform_reduce(x' - μ, x - μ', δ, 0.0,
-          \(a:Real, b:Real) -> {
-            return a + b;
-          },
-          \(z':Real, z:Real, δ:Real) -> {
-            let r <- -0.25*(z*z - z'*z')/δ;
-            if isfinite(r) {
-              return r;
-            } else {
-              return 0.0;
-            }
-          });
+      /* initial state */
+      let p <- π.eval();
+      let (x, g) <- π.args();
 
-      /* accept/reject */
-      accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + r;
-      if accept {
-        naccepts <- naccepts + 1;
-        p <- p';
-        x <- x';
-        g <- g';
-        μ <- μ';
+      /* scale */
+      δ:Real[_];
+      let m <- length(x);
+      if length(σ2) == m {
+        δ <- scale*σ2;
+      } else {
+        δ <- vector(scale, m);
+      }
+
+      /* mean of proposal from initial state */
+      let μ <- x + mul(g, δ);
+
+      /* moves */
+      let accept <- true;  // was most recent particle accepted?
+      for n in 1..nmoves {
+        /* proposed state */
+        cpp{{
+        auto z = numbirch::standard_gaussian(m);
+        }}
+        let p' <- π.move(μ + mul(sqrt(2.0*δ), z));
+        π.grad(1.0);
+        let (x', g') <- π.args();
+        let μ' <- x' + mul(g', δ);
+
+        /* proposal correction */
+        let r <- transform_reduce(x' - μ, x - μ', δ, 0.0,
+            \(a:Real, b:Real) -> {
+              return a + b;
+            },
+            \(z':Real, z:Real, δ:Real) -> {
+              let r <- -0.25*(z*z - z'*z')/δ;
+              if isfinite(r) {
+                return r;
+              } else {
+                return 0.0;
+              }
+            });
+
+        /* accept/reject */
+        accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + r;
+        if accept {
+          naccepts <- naccepts + 1;
+          p <- p';
+          x <- x';
+          g <- g';
+          μ <- μ';
+        }
+      }
+      if !accept {
+        /* last proposal was rejected, restore correct arguments */
+        π.move(x);
       }
     }
-    if !accept {
-      /* last proposal was rejected, restore correct arguments */
-      π.move(x);
-    }
     return cast<Real>(naccepts)/nmoves;
+  }
+
+  override function post(x:Particle) {
+    x.constant(nlags);
   }
 }

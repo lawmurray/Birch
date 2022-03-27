@@ -32,45 +32,34 @@ abstract class Kernel {
   scale:Real <- 1.0;
 
   /**
-   * Apply lag.
-   *
-   * - t: Step number.
-   * - π: Log-posterior.
+   * Adapt the kernel to the current ensemble of particles.
    */
-  final function lag(t:Integer, π:Expression<Real>) {
-    ///@todo Can label() and constant() be combined into one pass?
-    π.label(t);
-    π.constant(t - nlags);
-  }
+  abstract function adapt(t:Integer, x:Array<Particle>, w:Real[_]);
 
   /**
    * Perform pre-computations prior to copying a particle. This is typically
    * called during resampling to perform computations that will be the same
    * for all offspring (e.g. gradient at current arguments).
    *
-   * - t: Step number.
-   * - π: Log-posterior.
+   * - x: Particle.
    */
-  function precompute(t:Integer, π:Expression<Real>) {
-    //
-  }
-
-  /**
-   * Adapt the kernel for the current ensemble of particles.
-   */
-  function adapt(t:Integer, x:Array<Particle>, w:Real[_]) {
-    //
-  }
+  abstract function pre(x:Particle);
 
   /**
    * Move a particle.
    *
-   * - t: Step number.
-   * - π: Log-posterior.
+   * - x: Particle.
    *
    * Returns: Acceptance rate of moves.
    */
-  abstract function move(t:Integer, π:Expression<Real>) -> Real;
+  abstract function move(x:Particle) -> Real;
+
+  /**
+   * Perform post-computations after moving a particle.
+   *
+   * - x: Particle.
+   */
+  abstract function post(x:Particle);
 
   override function read(buffer:Buffer) {
     super.read(buffer);
