@@ -171,18 +171,6 @@ abstract class Delay {
   }
 
   /**
-   * Prune the $M$-path from below this.
-   *
-   * Return: If this is a Random node, then this. If this is a Distribution
-   * node, then the updated Distribution for the `n`th parent, which is now
-   * the leaf of the $M$-path.
-   */
-  function prune(n:Integer) -> Delay {
-    assert n == 1;  // otherwise prune(Integer) should have been overridden
-    return prune();
-  }
-
-  /**
    * Is this the grandchild of `node` on the $M$-path.
    */  
   function isGrandChildOf(node:Delay) -> Boolean {
