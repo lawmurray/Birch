@@ -88,6 +88,17 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
     return quantile_normal_inverse_gamma_gaussian(P, value(a),
         value(μ), value(σ2), value(α), value(β), value(c), value(s2));
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(a);
+    global.constant(μ);
+    global.constant(σ2);
+    global.constant(α);
+    global.constant(β);
+    global.constant(c);
+    global.constant(s2);
+  }
 }
 
 function NormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(

@@ -55,6 +55,7 @@ class Particle(m:Model) {
     while Ξ.size() >= nlags {
       for j in 1..Ξ.front().size() {
         Ξ.front()[j].constant();
+        Ξ.front()[j].detach();
       }
       Ξ.popFront();
     }

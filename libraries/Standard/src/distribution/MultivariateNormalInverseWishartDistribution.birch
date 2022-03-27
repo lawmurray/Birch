@@ -64,6 +64,13 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return update_multivariate_normal_inverse_wishart(x, μ, σ2, Ψ, k);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(σ2);
+    global.constant(Ψ);
+    global.constant(k);
+  }
 
   override function isMultivariateNormalInverseWishart() -> Boolean {
     return true;

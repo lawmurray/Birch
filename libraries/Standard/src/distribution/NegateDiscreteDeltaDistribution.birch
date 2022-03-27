@@ -60,6 +60,11 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
 			return nil;
 		}
   }
+
+  override function constant() {
+    super.constant();
+    p.constant();
+  }
 }
 
 /**

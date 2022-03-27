@@ -61,6 +61,13 @@ final class ScaledGammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, �
   override function lower() -> Real!? {
     return 0.0;
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(a);
+    global.constant(k);
+    global.constant(θ);
+  }
 }
 
 function ScaledGammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->

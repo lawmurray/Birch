@@ -68,6 +68,13 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     return value(n);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(ν);
+    global.constant(n);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "ConwayMaxwellPoisson");
     buffer.set("μ", value(μ));

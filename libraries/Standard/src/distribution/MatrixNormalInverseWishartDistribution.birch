@@ -64,6 +64,13 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return update_matrix_normal_inverse_wishart(X, M, Σ, Ψ, k);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(M);
+    global.constant(Σ);
+    global.constant(Ψ);
+    global.constant(k);
+  }
 
   override function isMatrixNormalInverseWishart() -> Boolean {
     return true;

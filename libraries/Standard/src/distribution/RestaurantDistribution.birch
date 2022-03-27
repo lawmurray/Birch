@@ -32,6 +32,13 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
     return 0.0;
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(α);
+    global.constant(θ);
+    global.constant(n);
+  }
+
   override function isRestaurant() -> Boolean {
     return true;
   }

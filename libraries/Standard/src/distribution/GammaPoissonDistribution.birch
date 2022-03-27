@@ -60,6 +60,12 @@ final class GammaPoissonDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
   override function lower() -> Integer!? {
     return 0;
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(θ);
+  }
 }
 
 function GammaPoisson<Arg1,Arg2>(k:Arg1, θ:Arg2) -> Distribution<Integer> {

@@ -48,6 +48,12 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
     return quantile_gaussian(P, value(μ), value(σ2));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(σ2);
+  }
+
   override function isGaussian() -> Boolean {
     return true;
   }

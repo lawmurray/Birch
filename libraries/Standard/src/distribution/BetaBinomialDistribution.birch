@@ -61,6 +61,12 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
   override function upper() -> Integer!? {
     return value(n);
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(α);
+    global.constant(β);
+  }
 }
 
 function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) ->

@@ -26,6 +26,11 @@ final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
     return value(μ);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Delta");
     buffer.set("μ", value(μ));

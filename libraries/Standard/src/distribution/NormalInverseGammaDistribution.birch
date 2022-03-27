@@ -93,6 +93,14 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
         value(β));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(σ2);
+    global.constant(α);
+    global.constant(β);
+  }
+
   override function isNormalInverseGamma() -> Boolean {
     return true;
   }

@@ -45,6 +45,12 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return value(u);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(l);
+    global.constant(u);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "UniformInteger");
     buffer.set("l", value(l));

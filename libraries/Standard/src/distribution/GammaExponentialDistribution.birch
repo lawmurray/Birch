@@ -60,6 +60,12 @@ final class GammaExponentialDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) <
   override function lower() -> Real!? {
     return 0.0;
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(θ);
+  }
 }
 
 function GammaExponential<Arg1,Arg2>(k:Arg1, θ:Arg2) -> Distribution<Real> {

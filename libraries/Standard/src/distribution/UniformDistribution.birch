@@ -56,6 +56,12 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
     return value(u);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(l);
+    global.constant(u);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Uniform");
     buffer.set("l", value(l));

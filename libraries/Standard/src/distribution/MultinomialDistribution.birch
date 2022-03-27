@@ -38,6 +38,12 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return box(logpdf_multinomial(x, n, ρ));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(n);
+    global.constant(ρ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Multinomial");
     buffer.set("n", value(n));

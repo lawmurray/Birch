@@ -49,6 +49,11 @@ final class DiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
   override function upper() -> Integer!? {
 	  return p.upper();
   }
+
+  override function constant() {
+    super.constant();
+    p.constant();
+  }
 }
 
 /**

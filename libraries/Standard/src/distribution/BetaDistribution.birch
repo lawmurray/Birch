@@ -56,6 +56,12 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
     return 1.0;
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(α);
+    global.constant(β);
+  }
+
   override function isBeta() -> Boolean {
     return true;
   }

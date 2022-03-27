@@ -57,6 +57,13 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
   override function lower() -> Real!? {
     return 0.0;
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(α);
+    global.constant(β);
+  }
 }
 
 function InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) ->

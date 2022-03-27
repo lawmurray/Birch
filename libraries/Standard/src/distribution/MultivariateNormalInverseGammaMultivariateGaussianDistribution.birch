@@ -51,6 +51,16 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
     return update_multivariate_normal_inverse_gamma_multivariate_gaussian(
         x, A, μ, Σ, super.k, β, c, Ω, super.μ, super.Σ);
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(A);
+    global.constant(μ);
+    global.constant(Σ);
+    global.constant(β);
+    global.constant(c);
+    global.constant(Ω);
+  }
 }
 
 function MultivariateNormalInverseGammaMultivariateGaussian<Arg1,

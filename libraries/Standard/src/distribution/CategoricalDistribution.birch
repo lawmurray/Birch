@@ -50,6 +50,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     return length(ρ);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(ρ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Categorical");
     buffer.set("ρ", value(ρ));

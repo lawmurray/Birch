@@ -1,7 +1,8 @@
 /**
  * Beta-Bernoulli distribution.
  */
-final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Boolean> {
+final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
+    Distribution<Boolean> {
   /**
    * Prior first shape of success probability,
    */
@@ -42,6 +43,12 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distributio
 
   override function updateLazy(x:Expression<Boolean>) -> Delay? {
     return update_beta_bernoulli(x, α, β);
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(α);
+    global.constant(β);
   }
 }
 

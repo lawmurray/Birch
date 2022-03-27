@@ -37,6 +37,12 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
     return box(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(Σ);
+  }
+
   override function isMultivariateGaussian() -> Boolean {
     return true;
   }

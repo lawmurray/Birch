@@ -214,4 +214,11 @@ abstract class Delay {
   function constant() {
     //
   }
+
+  /**
+   * For a Random, remove its distribution.
+   */
+  function detach() {
+    //
+  }
 }

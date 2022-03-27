@@ -115,6 +115,11 @@ final class Random<Value> < Expression<Value>(nil, false) {
     return p!.hitch(this);
   }
 
+  override function detach() {
+    assert this.isConstant();
+    p <- nil;
+  }
+
   /**
    * Does this have a distribution?
    */

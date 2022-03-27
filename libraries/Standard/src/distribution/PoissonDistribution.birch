@@ -47,6 +47,11 @@ final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
     return 0;
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(λ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Poisson");
     buffer.set("λ", value(λ));

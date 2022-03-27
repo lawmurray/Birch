@@ -42,6 +42,13 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
     return box(logpdf_matrix_gaussian(X, M, U, V));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(M);
+    global.constant(U);
+    global.constant(V);
+  }
+
   override function isMatrixGaussian() -> Boolean {
     return true;
   }

@@ -42,6 +42,13 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
     return box(logpdf_multivariate_t(x, k, μ, Σ));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(μ);
+    global.constant(Σ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateT");
     buffer.set("k", value(k));

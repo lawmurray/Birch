@@ -46,6 +46,15 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
     return update_matrix_normal_inverse_wishart_matrix_gaussian(X,
         A, M, Σ, super.Ψ, super.k, C, Φ, super.M, super.Σ);
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(A);
+    global.constant(M);
+    global.constant(Σ);
+    global.constant(C);
+    global.constant(Φ);
+  }
 }
 
 function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,

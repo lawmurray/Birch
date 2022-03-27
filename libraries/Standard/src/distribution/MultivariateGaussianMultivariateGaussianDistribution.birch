@@ -44,6 +44,15 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
     return update_multivariate_gaussian_multivariate_gaussian(x, A, μ, Σ, c,
         Ω, super.μ, super.Σ);
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(A);
+    global.constant(μ);
+    global.constant(Σ);
+    global.constant(c);
+    global.constant(Ω);
+  }
 }
 
 function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,

@@ -95,6 +95,14 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
     return update_multivariate_normal_inverse_gamma(x, μ, Σ, k, β);
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(Σ);
+    global.constant(k);
+    global.constant(β);
+  }
+
   override function isMultivariateNormalInverseGamma() -> Boolean {
     return true;
   }

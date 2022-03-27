@@ -44,6 +44,12 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   override function updateLazy(x:Expression<Integer[_]>) -> Delay? {
     return update_dirichlet_multinomial(x, n, α);
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(n);
+    global.constant(α);
+  }
 }
 
 function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) ->

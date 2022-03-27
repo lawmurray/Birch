@@ -49,6 +49,13 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   override function updateLazy(x:Expression<Integer>) -> Delay? {
     return update_restaurant_categorical(x, α, θ, n);
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(α);
+    global.constant(θ);
+    global.constant(n);
+  }
 }
 
 function RestaurantCategorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->

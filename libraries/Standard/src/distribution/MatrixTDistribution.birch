@@ -46,6 +46,14 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
   override function hitch(X:Expression<Real[_,_]>) -> Expression<Real>? {
     return box(logpdf_matrix_t(X, k, M, Σ, Ψ));
   }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(M);
+    global.constant(Σ);
+    global.constant(Ψ);
+  }
 }
 
 function MatrixT<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) ->

@@ -53,6 +53,12 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
     return 0.0;
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(λ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Weibull");
     buffer.set("k", value(k));

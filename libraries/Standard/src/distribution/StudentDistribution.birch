@@ -54,6 +54,13 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     return quantile_student_t(P, value(k), value(μ), value(σ2));
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(μ);
+    global.constant(σ2);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Student");
     buffer.set("k", value(k));

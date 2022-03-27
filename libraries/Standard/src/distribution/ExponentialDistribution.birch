@@ -47,6 +47,11 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
     return 0.0;
   }
 
+  override function constant() {
+    super.constant();
+    global.constant(λ);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Exponential");
     buffer.set("λ", value(λ));
