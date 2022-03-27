@@ -536,9 +536,9 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 pack_t<T,U> pack(const T& x, const U& y) {
   assert(rows(x) == rows(y));
-  auto r = rows(x);
-  auto cx = columns(x);
-  auto cy = columns(y);
+  [[maybe_unused]] auto r = rows(x);
+  [[maybe_unused]] auto cx = columns(x);
+  [[maybe_unused]] auto cy = columns(y);
   pack_t<T,U> z(make_shape(r, cx + cy));
 
   if constexpr (is_scalar_v<T>) {
@@ -596,9 +596,9 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 auto pack_grad(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
     const U& y) {
   assert(rows(x) == rows(y));
-  auto r = rows(x);
-  auto cx = columns(x);
-  auto cy = columns(y);
+  [[maybe_unused]] auto r = rows(x);
+  [[maybe_unused]] auto cx = columns(x);
+  [[maybe_unused]] auto cy = columns(y);
 
   if constexpr (is_scalar_v<T>) {
     auto gx = g.slice(1, 1);
@@ -659,9 +659,9 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 stack_t<T,U> stack(const T& x, const U& y) {
   assert(columns(x) == columns(y));
-  auto rx = rows(x);
-  auto ry = rows(y);
-  auto c = columns(x);
+  [[maybe_unused]] auto rx = rows(x);
+  [[maybe_unused]] auto ry = rows(y);
+  [[maybe_unused]] auto c = columns(x);
 
   if constexpr (is_scalar_v<T>) {
     if constexpr (is_scalar_v<U>) {
@@ -735,9 +735,9 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 auto stack_grad(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
     const T& x, const U& y) {
   assert(columns(x) == columns(y));
-  auto rx = rows(x);
-  auto ry = rows(y);
-  auto c = columns(x);
+  [[maybe_unused]] auto rx = rows(x);
+  [[maybe_unused]] auto ry = rows(y);
+  [[maybe_unused]] auto c = columns(x);
 
   if constexpr (is_scalar_v<T>) {
     if constexpr (is_scalar_v<U>) {
