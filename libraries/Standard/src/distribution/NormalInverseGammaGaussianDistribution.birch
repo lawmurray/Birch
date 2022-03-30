@@ -123,7 +123,7 @@ function make_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
     σ2:OpMul<Arg3,Random<Real>>) -> Distribution<Real> {
   μ.l.r.prune();
-  if μ.l.r.hasNormalInverseGamma() && μ.l.r.isGrandChildOf(σ2.r) {
+  if μ.l.r.hasNormalInverseGamma() && μ.l.r == σ2.r.next(2) {
     let (m, s2, α, β) <- μ.l.r.getNormalInverseGamma();
     let p <- wrap_normal_inverse_gamma_gaussian(μ.l.l, m, s2, α, β, μ.r,
         σ2.l);

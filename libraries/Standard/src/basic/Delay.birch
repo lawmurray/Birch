@@ -171,10 +171,12 @@ abstract class Delay {
   }
 
   /**
-   * Is this the grandchild of `node` on the $M$-path.
-   */  
-  function isGrandChildOf(node:Delay) -> Boolean {
-    return node.child? && node.child!.child? && node.child!.child! == this;
+   * Prune the $M$-path from below this without updating. This is used for
+   * joins, to be followed by graftReplace() where the extension of the
+   * $M$-path will absorb the pruned portion.
+   */
+  function pruneReplace() {
+    assert !child?;  // otherwise pruneReplace() should have been overridden
   }
 
   /**
@@ -187,6 +189,26 @@ abstract class Delay {
     assert !node.coparent?;
     coparent <- node;
     node.coparent <- this;
+  }
+
+  /**
+   * Get a proceeding node on the $M$-path.
+   *
+   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   *  the node after that, etc. Must be greater than zero.
+   *
+   * Return: The proceeding node on the $M$-path that is `n` steps from this.
+   * If the $M$-path is insufficiently long, then nil.
+   */
+  function next(n:Integer) -> Delay? {
+    assert n > 0;
+    if n == 1 {
+      return child;
+    } else if child? {
+      return child!.next(n - 1);
+    } else {
+      return nil;
+    }
   }
 
   /**

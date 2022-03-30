@@ -82,7 +82,7 @@ function make_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
 function MatrixGaussian<Arg1,Arg2,Arg3>(M:OpAdd<OpMul<Arg1,Random<Real[_,_]>>,
     Arg2>, Σ:Arg3, Ψ:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
   M.l.r.prune();
-  if M.l.r.hasMatrixNormalInverseWishart() && M.l.r.isGrandChildOf(Ψ) {
+  if M.l.r.hasMatrixNormalInverseWishart() && M.l.r == Ψ.next(2) {
     let (M1, Σ1, Ψ1, k) <- M.l.r.getMatrixNormalInverseWishart();
     let p <- wrap_matrix_normal_inverse_wishart_matrix_gaussian(M.l.l,
         M1, Σ1, Ψ1, k, M.r, chol(Σ));

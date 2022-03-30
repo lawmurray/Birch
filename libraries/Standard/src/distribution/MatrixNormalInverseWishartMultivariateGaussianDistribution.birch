@@ -83,7 +83,7 @@ function MultivariateGaussian<Arg1,Arg2>(
     μ:OpAdd<Inner<Random<Real[_,_]>,Arg1>,Arg2>, Σ:Random<Real[_,_]>) ->
     Distribution<Real[_]> {
   μ.l.l.prune();
-  if μ.l.l.hasMatrixNormalInverseWishart()&& μ.l.l.isGrandChildOf(Σ) {
+  if μ.l.l.hasMatrixNormalInverseWishart() && μ.l.l == Σ.next(2) {
     let (M, Σ1, Ψ, k) <- μ.l.l.getMatrixNormalInverseWishart();
     let p <- wrap_matrix_normal_inverse_wishart_multivariate_gaussian(
         μ.l.r, M, Σ1, Ψ, k, μ.r);

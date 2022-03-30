@@ -89,7 +89,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
     Random<Real[_]>>,Arg2>, Ω:OpMul<Arg3,Random<Real>>) ->
     Distribution<Real[_]> {
   μ.l.r.prune();
-  if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r.isGrandChildOf(Ω.r) {
+  if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r == Ω.r.next(2) {
     let (m, Σ, k, β) <- μ.l.r.getMultivariateNormalInverseGamma();
     let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(
         μ.l.l, m, Σ, k, β, μ.r, chol(Ω.l));
