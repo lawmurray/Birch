@@ -5,15 +5,6 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
-   * Value of next node on the $M$-path. This is an optimization. It is only
-   * used when the Distribution is used with the `<~` or `~>` operator with a
-   * variable of basic type, rather than of Random type, on the left. It keeps
-   * the value of that variable here, rather than wrapping it in a Random
-   * object to keep on the $M$-path.
-   */
-  childValue:Value?;
-
-  /**
    * Are lazy operations supported?
    */
   function supportsLazy() -> Boolean {
@@ -134,40 +125,21 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
-  override function graft(node:Delay) {
-    assert !this.childValue?;
-    super.graft(node);
-  }
-
-  /*
-   * Graft next node on $M$-path as value-only. See documentation for member
-   * variable `childValue`.
-   */
-  function graft(childValue:Value) {
-    assert !this.child?;
-    assert !this.childValue?;
-    this.childValue <- childValue;
-  }
-
   override function prune() -> Delay {
     if child? {
-      let x <- Random<Value>?(child!.prune());
+      let x <- Expression<Value>?(child!.prune());
       assert x?;
       child <- nil;
       return handle_prune(this, x!);
-    } else if childValue? {
-      let x <- childValue!;
-      childValue <- nil;
-      return handle_prune(this, x);
     } else {
       return this;
     }
   }
 
   override function hoist() -> Expression<Real>? {
-    assert supportsLazy();
-    assert childValue?;
-    return hitch(box(childValue!));
+    let x <- Expression<Value>?(child);
+    assert x?;
+    return hitch(x!);
   }
 
   function isGaussian() -> Boolean {
