@@ -96,8 +96,7 @@ function Delta(μ:OpSub<Random<Integer>,Random<Integer>>) ->
   if μ.l.hasBoundedDiscrete() && μ.r.hasBoundedDiscrete() {
     let p <- construct<SubtractDiscreteDeltaDistribution>(
         μ.l.getBoundedDiscrete(), μ.r.getBoundedDiscrete());
-    μ.l.graft(p, 1);
-    μ.r.graft(p, 2);
+    μ.l.graft(p);
     μ.l.join(μ.r);
     return p;
 	} else if μ.l.hasBoundedDiscrete() {

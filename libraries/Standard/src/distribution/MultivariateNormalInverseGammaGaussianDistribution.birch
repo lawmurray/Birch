@@ -136,8 +136,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<Dot<Arg1,Random<Real[_]>>,Arg2>,
     let (m, Σ, k, β) <- μ.l.r.getMultivariateNormalInverseGamma();
     let p <- wrap_multivariate_normal_inverse_gamma_gaussian(μ.l.l, m,
         Σ, k, β, μ.r, σ2.l);
-    μ.l.r.graft(p, 1);
-    σ2.r.graftReplace(p, 2);
+    μ.l.r.graft(p);
     μ.l.r.join(σ2.r);
     return p;
   } else {

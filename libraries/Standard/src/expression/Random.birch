@@ -76,36 +76,24 @@ final class Random<Value> < Expression<Value>(nil, false) {
     p <- nil;
   }
 
-  override function graftReplace(node:Delay) {
-    super.graftReplace(node);
-    p <- nil;
-  }
-
   override function prune() -> Delay {
-    assert !this.coparent? || this.child?;
     if this.child? {
-      if this.coparent? && this.n != 1 {
-        /* defer to co-parent to restore the $M$-path between this and it */
-        this.coparent!.prune();
-        assert !this.coparent?;
-      }
-
       /* restore distribution, conditioned on the value of the child */
       this.p <- Distribution<Value>?(this.child!.prune())!;
       this.child <- nil;
 
-      if this.coparent? && this.n == 1 {
-        /* restore the $M$-path between this and the co-parent */
-        this.coparent!.graftReplace(p!);
+      if this.partner? {
+        /* restore the $M$-path between this and the partner */
+        this.partner!.graft(p!);
         this.p!.graft(this);
-        this.coparent!.coparent <- nil;
-        this.coparent <- nil;
+        this.partner!.partner <- nil;
+        this.partner <- nil;
       }
-
-      assert this.p?;
+    } else if this.partner? {
+      /* defer to partner */
+      this.partner!.prune();
     }
-    assert !this.coparent?;
-    assert !this.child?;
+    assert !this.partner?;
     return this;
   }
 

@@ -139,11 +139,6 @@ abstract class Distribution<Value> < Delay {
     super.graft(node);
   }
 
-  override function graftReplace(node:Delay) {
-    assert !this.childValue?;
-    super.graftReplace(node);
-  }
-
   /*
    * Graft next node on $M$-path as value-only. See documentation for member
    * variable `childValue`.

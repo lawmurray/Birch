@@ -93,8 +93,7 @@ function MultivariateGaussian<Arg1,Arg2>(
     let (μ1, σ2, Ψ, k) <- μ.l.r.getMultivariateNormalInverseWishart();
     let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(
         μ.l.l, μ1, σ2, Ψ, k, μ.r, 1.0);
-    μ.l.r.graft(p, 1);
-    Σ.graftReplace(p, 2);
+    μ.l.r.graft(p);
     μ.l.r.join(Σ);
     return p;
   } else {

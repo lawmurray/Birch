@@ -86,8 +86,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:OpAdd<OpMul<Arg1,Random<Real[_,_]>>,
     let (M1, Σ1, Ψ1, k) <- M.l.r.getMatrixNormalInverseWishart();
     let p <- wrap_matrix_normal_inverse_wishart_matrix_gaussian(M.l.l,
         M1, Σ1, Ψ1, k, M.r, chol(Σ));
-    M.l.r.graft(p, 1);
-    Ψ.graftReplace(p, 2);
+    M.l.r.graft(p);
     M.l.r.join(Ψ);
     return p;
   } else {
