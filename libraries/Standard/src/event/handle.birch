@@ -199,5 +199,5 @@ function handle_delay_observe<Value>(x:Random<Value>) {
  * Returns: Updated distribution.
  */
 function handle_prune<Left,Right>(p:Left, x:Right) -> Delay {
-  return get_handler().handleDelayPrune<Left.Value>(p, x);
+  return get_handler().handleDelayPrune<Left.Value>(p, box(x));
 }
