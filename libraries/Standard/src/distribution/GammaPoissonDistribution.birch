@@ -5,8 +5,8 @@ hpp{{
 /**
  *  Gamma-Poisson distribution.
  */
-final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
-    θ:Arg3) < DiscreteDistribution {
+final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
+    DiscreteDistribution {
   /**
    * Scale.
    */
@@ -27,23 +27,23 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 
   override function simulate() -> Integer! {
-    return simulate_gamma_poisson(value(k), value(a), value(θ));
+    return simulate_gamma_poisson(value(a), value(k), value(θ));
   }
 
   override function simulateLazy() -> Integer!? {
-    return simulate_gamma_poisson(eval(k), eval(a), eval(θ));
+    return simulate_gamma_poisson(eval(a), eval(k), eval(θ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_gamma_poisson(x, value(k), value(a), value(θ));
+    return logpdf_gamma_poisson(x, value(a), value(k), value(θ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real!? {
-    return logpdf_gamma_poisson(x, eval(k), eval(a), eval(θ));
+    return logpdf_gamma_poisson(x, eval(a), eval(k), eval(θ));
   }
 
   override function hitch(x:Expression<Integer>) -> Expression<Real>? {
-    return box(logpdf_gamma_poisson(x, k, a, θ));
+    return box(logpdf_gamma_poisson(x, a, k, θ));
   }
 
   override function update(x:Integer!) -> Delay? {
@@ -55,11 +55,11 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_gamma_poisson(x, value(k), value(a), value(θ));
+    return cdf_gamma_poisson(x, value(a), value(k), value(θ));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_gamma_poisson(P, value(k), value(a), value(θ));
+    return quantile_gamma_poisson(P, value(a), value(k), value(θ));
   }
 
   override function lower() -> Integer!? {
@@ -82,8 +82,7 @@ function wrap_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
     θ:Arg3) -> {
   return make_gamma_poisson(wrap(a), wrap(k), wrap(θ));
 }
-function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
-    θ:Arg3) -> {
+function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
   return construct<GammaPoissonDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
 }
 
