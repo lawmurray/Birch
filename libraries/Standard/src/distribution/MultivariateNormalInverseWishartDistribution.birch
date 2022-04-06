@@ -164,7 +164,7 @@ function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
  */
 function update_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5) -> {
-  let Ψ' <- chol(triouter(Ψ) + outer(pow(x - μ, 2.0)/σ2));
+  let Ψ' <- chol(triouter(Ψ) + outer(x - μ)/σ2);
   let k' <- k + 1;
   return wrap_inverse_wishart(Ψ', k');
 }
