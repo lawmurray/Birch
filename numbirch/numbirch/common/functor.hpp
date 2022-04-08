@@ -635,7 +635,7 @@ struct single_functor {
   const T x;
   const U k;
   const V l;
-  single_functor(const T& x, const U& k, const V& l = 1) :
+  single_functor(const T& x, const U& k, const V& l) :
       x(x), k(k), l(l) {
     //
   }

@@ -24,7 +24,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j) {
 
 template<class T, class U, class>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n) {
-  return for_each(n, single_functor(data(x), data(i)));
+  return for_each(n, single_functor(data(x), 1, data(i)));
 }
 
 template<class T, class U, class V, class>
