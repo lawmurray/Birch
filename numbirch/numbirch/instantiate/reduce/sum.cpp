@@ -16,7 +16,8 @@
 #define REDUCE_SUM_FIRST(f, T) \
     REDUCE_SUM_SIG(f, ARRAY(T, 2)) \
     REDUCE_SUM_SIG(f, ARRAY(T, 1)) \
-    REDUCE_SUM_SIG(f, ARRAY(T, 0))
+    REDUCE_SUM_SIG(f, ARRAY(T, 0)) \
+    REDUCE_SUM_SIG(f, T)
 #define REDUCE_SUM_SIG(f, T) \
     template Array<value_t<T>,0> f(const T&);
 
