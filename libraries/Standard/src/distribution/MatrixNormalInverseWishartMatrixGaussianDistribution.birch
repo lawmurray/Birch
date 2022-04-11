@@ -139,10 +139,8 @@ function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7,Arg8,Arg9,Arg10>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4,
     Ψ:Arg5, k:Arg6, C:Arg7, Φ:Arg8, N:Arg9, T:Arg10) -> {
   let n <- rows(X);
-  let S <- wrap(triouter(Σ));
-  let K' <- wrap(outer(S, cholinv(T)*A));
-  let M' <- wrap(M + K'*(X - N));
-  let Σ' <- wrap(chol(S - K'*A*S));
+  let Σ' <- wrap(chol(cholinv(chol(cholinv(Σ) + transpose(A)*cholinv(Φ)*A))));
+  let M' <- wrap(triouter(Σ')*(cholsolve(Σ, M) + transpose(A)*cholsolve(Φ, X - C)));
   let Ψ' <- chol(triouter(Ψ) + inner(trisolve(Φ, X - C)) +
       inner(trisolve(Σ, M)) - inner(trisolve(Σ', M')));
   let k' <- k + n;

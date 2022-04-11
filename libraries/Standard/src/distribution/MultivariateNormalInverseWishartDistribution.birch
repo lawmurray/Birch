@@ -109,17 +109,25 @@ function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
-    Distribution<Real[_]> {
-  Σ.prune();
-  if Σ.hasInverseWishart() {
-    let (Ψ, k) <- Σ.getInverseWishart();
-    let p <- wrap_multivariate_normal_inverse_wishart(μ, 1.0, Ψ, k);
-    Σ.graft(p);
+function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
+    Σ:OpMul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+  Σ.r.prune();
+  if Σ.r.hasInverseWishart() {
+    let (Ψ, k) <- Σ.r.getInverseWishart();
+    let p <- wrap_multivariate_normal_inverse_wishart(μ, Σ.l, Ψ, k);
+    Σ.r.graft(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);
   }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
+    Distribution<Real[_]> {
+  return MultivariateGaussian(μ, 1.0*Σ);
 }
 
 /*

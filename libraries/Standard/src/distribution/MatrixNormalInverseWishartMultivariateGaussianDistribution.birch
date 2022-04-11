@@ -2,10 +2,10 @@
  * Multivariate Gaussian distribution with linear transformation of
  * matrix-normal-inverse-Wishart prior.
  */
-class MatrixNormalInverseWishartMultivariateGaussianDistribution<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
-    c:Arg6) <  MultivariateTDistribution<Arg5,Expression<Real[_]>,
-    Expression<Real[_,_]>>(k, box(inner(M, a) + c), box(sqrt(1.0 +
+class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
+    φ2:Arg7) < MultivariateTDistribution<Arg5,Expression<Real[_]>,
+    Expression<Real[_,_]>>(k, box(inner(M, a) + c), box(sqrt(φ2 +
     dot(triinner(Σ, a)))*Ψ)) {
   /**
    * Scale.
@@ -32,6 +32,11 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<
    */
   c:Arg6 <- c;
 
+  /**
+   * Additional variance scale.
+   */
+  φ2:Arg7 <- φ2;
+
   override function supportsLazy() -> Boolean {
     return true;
   }
@@ -39,12 +44,12 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<
   override function update(x:Real[_]) -> Delay? {
     return update_matrix_normal_inverse_wishart_multivariate_gaussian(
         x, value(a), value(M), value(Σ), value(Ψ), value(super.k), value(c),
-        value(super.μ));
+        value(φ2));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
     return update_matrix_normal_inverse_wishart_multivariate_gaussian(
-        x, a, M, Σ, Ψ, super.k, c, super.μ);
+        x, a, M, Σ, Ψ, super.k, c, φ2);
   }
 
   override function constant() {
@@ -54,48 +59,48 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<
     global.constant(Σ);
     global.constant(Ψ);
     global.constant(c);
+    global.constant(φ2);
   }
 }
 
-function MatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,Arg3,
-    Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6) ->
-    Distribution<Real[_]> {
+function MatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5,Arg6,Arg7>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
+    φ2:Arg7) -> Distribution<Real[_]> {
   return wrap_matrix_normal_inverse_wishart_multivariate_gaussian(a, M,
-      chol(Σ), chol(Ψ), k, c);
+      chol(Σ), chol(Ψ), k, c, φ2);
 }
-function wrap_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
-    c:Arg6) -> {
-  return make_matrix_normal_inverse_wishart_multivariate_gaussian(
-      wrap(a), wrap(M), wrap(Σ), wrap(Ψ), wrap(k), wrap(c));
+function wrap_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
+    φ2:Arg7) -> {
+  return make_matrix_normal_inverse_wishart_multivariate_gaussian(wrap(a),
+      wrap(M), wrap(Σ), wrap(Ψ), wrap(k), wrap(c), wrap(φ2));
 }
-function make_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5,
-    c:Arg6) -> {
+function make_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
+    φ2:Arg7) -> {
   return construct<MatrixNormalInverseWishartMultivariateGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>>(a, M, Σ, Ψ, k, c);
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, M, Σ, Ψ, k, c, φ2);
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg1,Arg2>(
-    μ:OpAdd<Inner<Random<Real[_,_]>,Arg1>,Arg2>, Σ:Random<Real[_,_]>) ->
-    Distribution<Real[_]> {
+function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<Inner<Random<Real[_,_]>,
+    Arg1>,Arg2>, Σ:OpMul<Arg3,Random<Real[_,_]>>) -> Distribution<Real[_]> {
   μ.l.l.prune();
-  if μ.l.l.hasMatrixNormalInverseWishart() && μ.l.l == Σ.next(2) {
+  if μ.l.l.hasMatrixNormalInverseWishart() && μ.l.l == Σ.r.next(2) {
     let (M, Σ1, Ψ, k) <- μ.l.l.getMatrixNormalInverseWishart();
     let p <- wrap_matrix_normal_inverse_wishart_multivariate_gaussian(
-        μ.l.r, M, Σ1, Ψ, k, μ.r);
+        μ.l.r, M, Σ1, Ψ, k, μ.r, Σ.l);
     μ.l.l.graft(p);
-    μ.l.l.join(Σ);
+    μ.l.l.join(Σ.r);
     return p;
   } else {
-    Σ.prune();
-    if Σ.hasInverseWishart() {
-      let (Ψ, k) <- Σ.getInverseWishart();
-      let p <- wrap_multivariate_normal_inverse_wishart(μ, 1.0, Ψ, k);
-      Σ.graft(p);
+    Σ.r.prune();
+    if Σ.r.hasInverseWishart() {
+      let (Ψ, k) <- Σ.r.getInverseWishart();
+      let p <- wrap_multivariate_normal_inverse_wishart(μ, Σ.l, Ψ, k);
+      Σ.r.graft(p);
       return p;
     } else {
       return wrap_multivariate_gaussian(μ, Σ);
@@ -106,9 +111,22 @@ function MultivariateGaussian<Arg1,Arg2>(
 /**
  * Create multivariate Gaussian distribution.
  */
+function MultivariateGaussian<Arg1,Arg2>(μ:Inner<Random<Real[_,_]>,Arg1>,
+    Σ:OpMul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(μ + 0.0, Σ);
+}
+
+function MultivariateGaussian<Arg1,Arg2>(μ:OpAdd<Inner<Random<Real[_,_]>,
+    Arg1>,Arg2>, Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(μ, 1.0*Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
 function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
     Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
-  return MultivariateGaussian(μ + 0.0, Σ);
+  return MultivariateGaussian(μ + 0.0, 1.0*Σ);
 }
 
 /*
@@ -121,20 +139,17 @@ function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
  * - Σ: Covariance.
  * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
- * - N: Precomputed marginal mean.
+ * - φ2: Additional variance scale.
  *
  * Returns: the posterior hyperparameters `M'`, `Σ'`, `Ψ'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, M:Arg3, Σ:Arg4,
-    Ψ:Arg5, k:Arg6, c:Arg7, N:Arg8) -> {
-  let b <- wrap(triinner(Σ, a));
-  let d <- wrap(trimul(Σ, b));
-  let l' <- wrap(d/(1.0 + dot(b)));
-  let M' <- wrap(outer(M, l', x - N));
-  let Σ' <- wrap(chol(triouter(Σ) - outer(l', d)));  ///@todo cholupdate()
-  let Ψ' <- chol(triouter(Ψ) + outer(x - c) + inner(trisolve(Σ, M)) -
+    Ψ:Arg5, k:Arg6, c:Arg7, φ2:Arg8) -> {
+  let Σ' <- wrap(chol(cholinv(chol(cholinv(Σ) + outer(a)/φ2))));
+  let M' <- wrap(triouter(Σ')*(cholsolve(Σ, M) + outer(a, x - c)/φ2));
+  let Ψ' <- chol(triouter(Ψ) + outer(x - c)/φ2 + inner(trisolve(Σ, M)) -
       inner(trisolve(Σ', M')));
-  let k' <- k + 1.0;
+  let k' <- k + 1;
   return wrap_matrix_normal_inverse_wishart(M', Σ', Ψ', k');
 }
