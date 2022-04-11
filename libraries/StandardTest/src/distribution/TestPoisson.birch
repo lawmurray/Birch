@@ -27,7 +27,7 @@ class TestPoisson < TestModel {
   }
 }
 
-program test_pdf_poisson(N:Integer <- 10000, B:Integer <- 0, S:Integer <- 0,
+program test_pdf_poisson(N:Integer <- 10000, S:Integer <- 0,
     lazy:Boolean <- false) {
   m:TestPoisson;
   m.initialize();

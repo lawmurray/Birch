@@ -44,7 +44,7 @@ program test_conjugacy_dirichlet_categorical(N:Integer <- 10000, lazy:Boolean <-
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_dirichlet_categorical(N:Integer <- 10000, B:Integer <- 0,
+program test_pdf_dirichlet_categorical(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestDirichletCategorical;
   m.initialize();

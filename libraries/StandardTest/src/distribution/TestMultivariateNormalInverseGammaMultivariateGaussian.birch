@@ -12,7 +12,7 @@ class TestMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   Ψ:Random<Real[_,_]>;
 
   override function initialize() {
-    α ~ Uniform(2.5, 10.0);
+    α ~ Uniform(3.0, 10.0);
     β ~ Uniform(0.1, 10.0);
     m ~ MultivariateGaussian(vector(0.0, n), diagonal(100.0, n));
     S ~ MatrixGaussian(matrix(0.0, n, n), diagonal(2.0, n), diagonal(2.0, n));
@@ -60,11 +60,12 @@ program test_conjugacy_multivariate_normal_inverse_gamma_multivariate_gaussian(
 }
 
 program test_pdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+    N:Integer <- 10000, S:Integer <- 100,
+    lazy:Boolean <- false) {
   m:TestMultivariateNormalInverseGammaMultivariateGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_grad_multivariate_normal_inverse_gamma_multivariate_gaussian(

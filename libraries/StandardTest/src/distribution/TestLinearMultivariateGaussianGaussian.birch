@@ -59,7 +59,7 @@ program test_pdf_linear_multivariate_gaussian_gaussian(N:Integer <- 10000,
   m:TestLinearMultivariateGaussianGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_cdf_linear_multivariate_gaussian_gaussian(N:Integer <- 10000) {

@@ -46,7 +46,7 @@ program test_conjugacy_beta_negative_binomial(N:Integer <- 10000, lazy:Boolean <
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_beta_negative_binomial(N:Integer <- 10000, B:Integer <- 0,
+program test_pdf_beta_negative_binomial(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBetaNegativeBinomial;
   m.initialize();

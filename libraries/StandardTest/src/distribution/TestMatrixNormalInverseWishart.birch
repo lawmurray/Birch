@@ -12,7 +12,7 @@ class TestMatrixNormalInverseWishart < TestModel {
 
   override function initialize() {
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
-    k <- simulate_uniform(2.0, 10.0);
+    k <- simulate_uniform(3.0, 10.0);
     M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
     U <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
 
@@ -72,11 +72,11 @@ program test_conjugacy_matrix_normal_inverse_wishart(N:Integer <- 10000,
 }
 
 program test_pdf_matrix_normal_inverse_wishart(N:Integer <- 10000,
-    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+    B:Integer <- 10000, S:Integer <- 100, lazy:Boolean <- false) {
   m:TestMatrixNormalInverseWishart;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_grad_matrix_normal_inverse_wishart(N:Integer <- 1000,

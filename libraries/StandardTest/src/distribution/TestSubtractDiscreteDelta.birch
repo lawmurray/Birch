@@ -46,7 +46,7 @@ program test_conjugacy_subtract_discrete_delta(N:Integer <- 10000,
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_subtract_discrete_delta(N:Integer <- 10000, B:Integer <- 0,
+program test_pdf_subtract_discrete_delta(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestSubtractDiscreteDelta;
   m.initialize();

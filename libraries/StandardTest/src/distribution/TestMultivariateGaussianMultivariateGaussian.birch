@@ -50,18 +50,19 @@ class TestMultivariateGaussianMultivariateGaussian < TestModel {
   }
 }
 
-program test_conjugacy_multivariate_gaussian_multivariate_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_conjugacy_multivariate_gaussian_multivariate_gaussian(
+  N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestMultivariateGaussianMultivariateGaussian;
   test_conjugacy(m, N, lazy);
 }
 
 program test_pdf_multivariate_gaussian_multivariate_gaussian(
-    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20,
+    N:Integer <- 10000, S:Integer <- 100,
     lazy:Boolean <- false) {
   m:TestMultivariateGaussianMultivariateGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_grad_multivariate_gaussian_multivariate_gaussian(

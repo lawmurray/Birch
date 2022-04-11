@@ -54,11 +54,11 @@ program test_conjugacy_chain_multivariate_gaussian(N:Integer <- 10000,
 }
 
 program test_pdf_chain_multivariate_gaussian(N:Integer <- 10000,
-    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+    B:Integer <- 10000, S:Integer <- 100, lazy:Boolean <- false) {
   m:TestChainMultivariateGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_grad_chain_multivariate_gaussian(N:Integer <- 1000,

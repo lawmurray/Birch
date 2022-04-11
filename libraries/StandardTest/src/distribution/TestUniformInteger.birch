@@ -29,7 +29,7 @@ class TestUniformInteger < TestModel {
   }
 }
 
-program test_pdf_uniform_integer(N:Integer <- 10000, B:Integer <- 0,
+program test_pdf_uniform_integer(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestUniformInteger;
   m.initialize();

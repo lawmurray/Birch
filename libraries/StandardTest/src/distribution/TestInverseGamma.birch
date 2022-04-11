@@ -29,12 +29,12 @@ class TestInverseGamma < TestModel {
   }
 }
 
-program test_pdf_inverse_gamma(N:Integer <- 10000, B:Integer <- 1000,
+program test_pdf_inverse_gamma(N:Integer <- 10000,
     S:Integer <- 20, lazy:Boolean <- false) {
   m:TestInverseGamma;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_cdf_inverse_gamma(N:Integer <- 10000) {

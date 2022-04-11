@@ -7,14 +7,14 @@ class TestLinearMultivariateNormalInverseWishartMultivariateGaussian < TestModel
 
   k:Real;
   Ψ:Real[n,n];
-  A:Real[n,n];
+  a:Real;
   μ:Real[n];
   c:Real[n];
 
   override function initialize() {
-    k <- simulate_uniform(2.0, 10.0);
+    k <- simulate_uniform(3.0, 10.0);
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-    A <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+    a <- simulate_uniform(-2.0, 2.0);
     μ <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
     c <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
 
@@ -24,7 +24,7 @@ class TestLinearMultivariateNormalInverseWishartMultivariateGaussian < TestModel
   override function simulate() {
     Σ ~ InverseWishart(Ψ, k);
     x ~ MultivariateGaussian(μ, Σ);
-    y ~ MultivariateGaussian(A*x + c, Σ);
+    y ~ MultivariateGaussian(a*x + c, Σ);
   }
 
   override function forward() -> Real[_] {
@@ -74,11 +74,11 @@ program test_conjugacy_linear_multivariate_normal_inverse_wishart_multivariate_g
 }
 
 program test_pdf_linear_multivariate_normal_inverse_wishart_multivariate_gaussian(
-    N:Integer <- 10000, B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+    N:Integer <- 10000, S:Integer <- 100, lazy:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseWishartMultivariateGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_grad_linear_multivariate_normal_inverse_wishart_multivariate_gaussian(

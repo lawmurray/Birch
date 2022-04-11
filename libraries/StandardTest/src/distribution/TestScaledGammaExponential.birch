@@ -53,7 +53,7 @@ program test_pdf_scaled_gamma_exponential(N:Integer <- 10000,
   m:TestScaledGammaExponential;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_cdf_scaled_gamma_exponential(N:Integer <- 10000) {

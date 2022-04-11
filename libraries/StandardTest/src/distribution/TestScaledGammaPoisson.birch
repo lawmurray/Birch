@@ -48,7 +48,7 @@ program test_conjugacy_scaled_gamma_poisson(N:Integer <- 10000,
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_scaled_gamma_poisson(N:Integer <- 10000, B:Integer <- 0,
+program test_pdf_scaled_gamma_poisson(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestScaledGammaPoisson;
   m.initialize();

@@ -59,7 +59,7 @@ program test_pdf_normal_inverse_gamma_gaussian(N:Integer <- 10000,
   m:TestNormalInverseGammaGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_cdf_normal_inverse_gamma_gaussian(N:Integer <- 10000) {

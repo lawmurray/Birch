@@ -29,7 +29,7 @@ class TestCategorical < TestModel {
   }
 }
 
-program test_pdf_categorical(N:Integer <- 10000, B:Integer <- 0,
+program test_pdf_categorical(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestCategorical;
   m.initialize();

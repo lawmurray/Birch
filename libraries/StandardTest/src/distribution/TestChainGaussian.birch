@@ -49,12 +49,12 @@ program test_conjugacy_chain_gaussian(N:Integer <- 10000, lazy:Boolean <- false)
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_chain_gaussian(N:Integer <- 10000, B:Integer <- 1000,
+program test_pdf_chain_gaussian(N:Integer <- 10000,
     S:Integer <- 20, lazy:Boolean <- false) {
   m:TestChainGaussian;
   m.initialize();
   m.simulate();
-  test_pdf(m.marginal(), N, B, S, lazy);
+  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_cdf_chain_gaussian(N:Integer <- 10000) {
