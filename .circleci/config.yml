@@ -406,7 +406,7 @@ commands:
               fi
 
 jobs:
-  build:
+  base:
     parameters: 
       os:
         type: string
@@ -420,6 +420,24 @@ jobs:
           package: numbirch
       - build_library:
           package: libbirch
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - end_if_pull_request
+      - codecov
+      - slack
+
+  standard:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.os >>
       - build_package:
           dir: libraries
           package: Standard
@@ -427,20 +445,34 @@ jobs:
           dir: libraries
           package: StandardTest
           extra: --jobs=1  # needed to avoid exhausting memory
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - end_if_pull_request
+      - codecov
+      - slack
+
+  libraries:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.os >>
       - build_package:
           dir: libraries
           package: Cairo
       - build_package:
           dir: libraries
           package: SQLite
-      - when:
-          condition:
-            equal: [ opensuse, << parameters.os >> ]
-          steps:
-            - persist_to_workspace:
-                root: ..
-                paths:
-                  - << parameters.os >>
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
       - end_if_pull_request
       - codecov
       - slack
@@ -537,17 +569,31 @@ workflows:
   version: 2
   all:
     jobs:
-      - build:
+      - base:
           matrix:
             parameters:
               os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+
+      - standard:
+          matrix:
+            parameters:
+              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+          requires:
+            - base-<< matrix.os >>
+
+      - libraries:
+          matrix:
+            parameters:
+              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+          requires:
+            - standard-<< matrix.os >>
 
       - test:
           matrix:
             parameters:
               os: [opensuse]
           requires:
-            - build-<< matrix.os >>
+            - libraries-<< matrix.os >>
 
       - example:
           matrix:
@@ -565,8 +611,4 @@ workflows:
                 - master
           requires:
             - example
-            - build-ubuntu
-            - build-debian
-            - build-fedora
-            - build-alpine
-            - build-mac
+            - libraries
