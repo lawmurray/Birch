@@ -129,7 +129,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   
   /* compute the shape for a Gaussian proposal using the iid samples */
   let μ <- sum(x1)/N;
-  let σ2 <- dot(x1)/N - μ*μ;
+  let σ2 <- (dot(x1)/N - μ*μ)*pow(2.4, 2.0);
 
   /* draw Metropolis samples using pdf */
   x2:Real[N];
@@ -214,10 +214,10 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
   for n in 1..N {
     let x <- X1[n,1..D];
     μ <- μ + x;
-    Σ <- Σ + outer(x, x);
+    Σ <- Σ + outer(x);
   }
   μ <- μ/N;
-  Σ <- Σ/N - outer(μ, μ);
+  Σ <- (Σ/N - outer(μ))*pow(2.4, 2.0)/D;
   
   /* draw Metropolis samples using pdf */
   X2:Real[N,D];
@@ -307,7 +307,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     Σ <- Σ + outer(x);
   }
   μ <- μ/N;
-  Σ <- Σ/N - outer(μ);
+  Σ <- (Σ/N - outer(μ))*pow(2.4, 2.0)/(R*C);
 
   /* draw Metropolis samples using pdf */
   X2:Real[N,R*C];

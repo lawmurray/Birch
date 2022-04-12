@@ -71,7 +71,7 @@ program test_conjugacy_scaled_multivariate_normal_inverse_wishart_multivariate_g
 }
 
 program test_pdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
-    N:Integer <- 10000, S:Integer <- 100, lazy:Boolean <- false) {
+    N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestScaledMultivariateNormalInverseWishartMultivariateGaussian;
   m.initialize();
   m.simulate();

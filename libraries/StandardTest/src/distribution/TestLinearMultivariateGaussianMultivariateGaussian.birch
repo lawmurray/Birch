@@ -61,7 +61,7 @@ program test_conjugacy_linear_multivariate_gaussian_multivariate_gaussian(
 }
 
 program test_pdf_linear_multivariate_gaussian_multivariate_gaussian(
-    N:Integer <- 10000, S:Integer <- 100,
+    N:Integer <- 10000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestLinearMultivariateGaussianMultivariateGaussian;
   m.initialize();

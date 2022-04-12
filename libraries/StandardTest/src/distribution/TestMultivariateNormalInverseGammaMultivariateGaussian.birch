@@ -60,7 +60,7 @@ program test_conjugacy_multivariate_normal_inverse_gamma_multivariate_gaussian(
 }
 
 program test_pdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    N:Integer <- 10000, S:Integer <- 100,
+    N:Integer <- 10000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestMultivariateNormalInverseGammaMultivariateGaussian;
   m.initialize();

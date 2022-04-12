@@ -92,7 +92,7 @@ program test_conjugacy_scaled_matrix_normal_inverse_wishart_multivariate_gaussia
 }
 
 program test_pdf_scaled_matrix_normal_inverse_wishart_multivariate_gaussian(
-    N:Integer <- 10000, S:Integer <- 100,
+    N:Integer <- 10000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestScaledMatrixNormalInverseWishartMultivariateGaussian;
   m.initialize();

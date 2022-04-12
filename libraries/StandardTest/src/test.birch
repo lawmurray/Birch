@@ -24,10 +24,10 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
 
   let R <- rows(X1);
   let C <- columns(X1);
-  let B <- 1000;  // number of bootstrap resamples
+  let B <- 10000;  // number of bootstrap resamples
   let nfails <- 0;
   let ntests <- 2*C - 1;
-  let ρ <- 0.01;  // p-value for failure
+  let α <- 0.01/ntests;  // p-value for failure, with Bonferroni correction
   let l <- vector(1, R);
   let u <- vector(2*R, R);
 
@@ -59,14 +59,12 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
       }
     }
     let p <- sum(n)!/Real(B);  // p-value
-    if 100 < R && p < ρ {
+    if 100 < R && p < α {
       nfails <- nfails + 1;
       warn("on test " + c + ", p=" + p);
     }
   }
-
-  let threshold <- floor(quantile_binomial(0.99, ntests, ρ));
-  if 100 < R && nfails > threshold {
+  if 100 < R && 0 < nfails {
     error("***failed*** in aggregate, " + nfails + " of " + ntests + " failed");
     return false;
   } else {

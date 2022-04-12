@@ -9,16 +9,16 @@
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test
 
-  let Δ <- 1.0;      // maximum width for finite difference estimate
+  let Δ <- 1.0e3;      // maximum width for finite difference estimate
   let ntrials <- 50;   // number of trials
-  // ^ the interval width adapts by starting at h, dividing by 10 until either
+  // ^ the interval width adapts by starting at h, dividing by 2 until either
   //   success or ntrials trials, after which the test is considered failed
 
-  let γ <- 1.0e-2;  // acceptable failure rate
+  let γ <- 1.0e-3;  // acceptable failure rate
   let ε <- 1.0e-2;  // relative error threshold for fail
   // ^ the pass criterion is that 100*(1 - γ) percent of gradients computed
   //   are within 100.0*ε percent of the finite difference approximation; e.g.
-  //   with γ = 1.0e-2 and ε = 1.0e-2, that "99% of gradients computed are
+  //   with γ = 1.0e-3 and ε = 1.0e-2, that "99.9% of gradients computed are
   //   within 1% of the finite difference approximation"
 
   parallel for n in 1..N {
@@ -79,8 +79,9 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   }
 
   /* check that failure rate within bounds */
-  let rfail <- sum(failed)/N;
+  let nfailed <- sum(failed)!;
+  let rfail <- nfailed/N;
   if N > 10 && !(rfail <= γ) {  // if N <= 10, smoke test only
-    error("***failed*** in aggregate, " + failed + " of " + N + " failed");
+    error("***failed*** in aggregate, " + nfailed + " of " + N + " failed");
   }
 }

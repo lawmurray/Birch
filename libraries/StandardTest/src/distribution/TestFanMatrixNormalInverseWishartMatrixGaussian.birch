@@ -112,7 +112,7 @@ program test_conjugacy_fan_matrix_normal_inverse_wishart_matrix_gaussian(
 }
 
 program test_pdf_fan_matrix_normal_inverse_wishart_matrix_gaussian(
-    N:Integer <- 10000, S:Integer <- 100,
+    N:Integer <- 10000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestFanMatrixNormalInverseWishartMatrixGaussian;
   m.initialize();
