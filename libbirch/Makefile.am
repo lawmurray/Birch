@@ -11,11 +11,11 @@ endif
 
 AM_CPPFLAGS = -Wall
 
-libbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O -g -flto
+libbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -fno-inline -g
 libbirch_debug_la_LIBADD = $(DEBUG_LIBS)
 libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
 
-libbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O -g -flto --coverage
+libbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -fno-inline -g --coverage
 libbirch_test_la_LIBADD = $(TEST_LIBS)
 libbirch_test_la_SOURCES = $(COMMON_SOURCES)
 
