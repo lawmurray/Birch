@@ -108,13 +108,51 @@ abstract class Delay {
   partner:Delay?;
 
   /**
+   * Is this an internal node on the $M$-path?
+   */
+  final function isInternal() -> Boolean {
+    return child? && child!.child != this;
+  }
+
+  /**
+   * Get a proceeding node on the $M$-path.
+   *
+   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   *  the node after that, etc. Must be greater than zero.
+   *
+   * Return: The proceeding node on the $M$-path that is `n` steps from this.
+   * If the $M$-path is insufficiently long, then nil.
+   */
+  final function next(n:Integer) -> Delay? {
+    assert n > 0;
+    if n == 1 {
+      return child;
+    } else if child? {
+      return child!.next(n - 1);
+    } else {
+      return nil;
+    }
+  }
+
+  /**
    * Extend the $M$-path below this.
    *
    * - node: Node to become the child of this.
    */
-  function graft(node:Delay) {
-    assert !child?;
+  final function graft(node:Delay) {
     this.child <- node;
+  }
+
+  /**
+   * Join this with another node to become partners on the $M$-path; this is
+   * the primary partner.
+   */
+  final function join(node:Delay) {
+    assert !partner?;
+    assert !node.partner?;
+    partner <- node;
+    node.partner <- this;
+    node.child <- nil;
   }
 
   /**
@@ -130,39 +168,6 @@ abstract class Delay {
   }
 
   /**
-   * Join this with another node to become partners on the $M$-path. This is
-   * used only for peculiar cases to establish joint distributions over two or
-   * more Randoms, such as for the normal-inverse-gamma distribution.
-   */
-  function join(node:Delay) {
-    assert !partner?;
-    assert !node.partner?;
-    partner <- node;
-    node.partner <- this;
-    node.child <- nil;
-  }
-
-  /**
-   * Get a proceeding node on the $M$-path.
-   *
-   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
-   *  the node after that, etc. Must be greater than zero.
-   *
-   * Return: The proceeding node on the $M$-path that is `n` steps from this.
-   * If the $M$-path is insufficiently long, then nil.
-   */
-  function next(n:Integer) -> Delay? {
-    assert n > 0;
-    if n == 1 {
-      return child;
-    } else if child? {
-      return child!.next(n - 1);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
    * Construct a lazy expression for the log-pdf of this node.
    */
   function hoist() -> Expression<Real>? {
@@ -173,13 +178,6 @@ abstract class Delay {
    * Render the node constant.
    */
   function constant() {
-    //
-  }
-
-  /**
-   * For a Random, remove its distribution.
-   */
-  function detach() {
     //
   }
 }

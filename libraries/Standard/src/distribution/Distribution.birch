@@ -129,7 +129,6 @@ abstract class Distribution<Value> < Delay {
     if child? {
       let x <- Expression<Value>?(child!.prune());
       assert x?;
-      child <- nil;
       return handle_prune(this, x!);
     } else {
       return this;

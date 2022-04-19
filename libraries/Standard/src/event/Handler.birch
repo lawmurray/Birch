@@ -86,7 +86,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleAssume<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
-    x.assume(p);
+    p.graft(x);
+    x.graft(p);
     if x.hasValue() {
       handleDelayObserve(x);
     } else if !delaySampling {
@@ -105,7 +106,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleSimulate<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
-    x.assume(p);
+    p.graft(x);
+    x.graft(p);
     handleDelaySimulate(x);
     return x;
   }
@@ -120,7 +122,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleObserve<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
-    x.assume(p);
+    p.graft(x);
+    x.graft(p);
     handleDelayObserve(x);
     return x;
   }
@@ -170,13 +173,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleDelaySimulate<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
+    assert p.child == x;
     if delayExpressions && p.supportsLazy() {
       x.set(p.simulateLazy()!);
-      Ξ.pushBack(x);
+      Ξ.pushBack(p);
     } else {
       x.set(p.simulate());
-      x.p <- nil;
     }
+    x.child <- nil;
   }
 
   /**
@@ -186,13 +190,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleDelayObserve<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
+    assert p.child == x;
     if delayExpressions && p.supportsLazy() {
       w <- w + p.logpdfLazy(eval(x))!;
-      Ξ.pushBack(x);
+      Ξ.pushBack(p);
     } else {
       w <- w + p.logpdf(value(x));
-      x.p <- nil;
     }
+    x.child <- nil;
   }
 
   /**
@@ -205,6 +210,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleDelayPrune<Value>(p:Distribution<Value>,
       x:Expression<Value>) -> Delay {
+    assert p.child == x;
     if delayExpressions && p.supportsLazy() {
       return p.updateLazy(x)!;
     } else {

@@ -12,18 +12,13 @@
  */
 final class Random<Value> < Expression<Value>(nil, false) {  
   /**
-   * Associated distribution.
-   */
-  p:Distribution<Value>?;
-
-  /**
    * Value assignment.
    */
   operator <- x:Value! {
     assert !this.hasValue();
     prune();
     this.x <- x;
-    if this.p? {
+    if this.child? {
       handle_delay_observe(this);
     }
     this.constant();
@@ -36,19 +31,6 @@ final class Random<Value> < Expression<Value>(nil, false) {
     assert !this.hasValue();
     this.x <- x;
     this.g <- nil;
-  }
-
-  /**
-   * Assume a distribution for the random variate. When a value for the
-   * random variate is required, it will be simulated from this distribution
-   * and trigger an *update* on the delayed sampling graph.
-   *
-   * - p: The distribution.
-   */
-  function assume(p:Distribution<Value>) {
-    assert !hasDistribution();
-    p.graft(this);
-    this.p <- p;
   }
 
   override function isRandom() -> Boolean {
@@ -71,21 +53,14 @@ final class Random<Value> < Expression<Value>(nil, false) {
     visitor.visit(this);
   }
 
-  override function graft(node:Delay) {
-    super.graft(node);
-    p <- nil;
-  }
-
   override function prune() -> Delay {
-    if this.child? {
-      /* restore distribution, conditioned on the value of the child */
-      this.p <- Distribution<Value>?(this.child!.prune())!;
-      this.child <- nil;
-
+    if this.isInternal() {
+      let p <- this.child!.prune();
+      this.graft(p);
+      p.graft(this);
       if this.partner? {
         /* restore the $M$-path between this and the partner */
-        this.partner!.graft(p!);
-        this.p!.graft(this);
+        this.partner!.graft(p);
         this.partner!.partner <- nil;
         this.partner <- nil;
       }
@@ -97,32 +72,22 @@ final class Random<Value> < Expression<Value>(nil, false) {
     return this;
   }
 
-  override function hoist() -> Expression<Real>? {
-    assert p?;
-    assert p!.supportsLazy();
-    return p!.hitch(this);
-  }
-
-  override function detach() {
-    assert this.isConstant();
-    p <- nil;
-  }
-
   /**
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return this.p? || this.child?;
+    return this.child?;
   }
 
   /**
    * Get the distribution.
    */
   function getDistribution() -> Distribution<Value> {
-    assert this.p? || this.child?;
+    assert this.child?;
     prune();
-    assert this.p?;
-    return this.p!;
+    let p <- Distribution<Value>?(this.child);
+    assert p?;
+    return p!;
   }
 
   function hasGaussian() -> Boolean {
