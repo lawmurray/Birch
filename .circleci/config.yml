@@ -93,7 +93,6 @@ executors:
 commands:
 
   environment:
-    description: Preparing environment
     parameters: 
       os:
         type: string
@@ -129,34 +128,30 @@ commands:
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
 
   end_if_pull_request:
-    description: End early for pull request
     parameters:
       circle_pr_number:
         default: CIRCLE_PR_NUMBER
         type: env_var_name
     steps:
       - when:
-          condition:
-            not:
-              equal: [ "", << parameters.circle_pr_number >> ]
+          name: End early for pull request
+          condition: << parameters.circle_pr_number >>
           steps:
-            run:
-              command: circleci step halt
+            run: circleci step halt
 
   slack:
-    description: Send Slack message on failure
     steps:
       - slack/status:
           fail_only: true
 
   codecov:
-    description: Upload test coverage to Codecov
     parameters:
       birch_mode:
         default: BIRCH_MODE
         type: env_var_name
     steps:
       - when:
+          name: Upload test coverage to Codecov
           condition:
             and:
               - on_success
@@ -165,7 +160,6 @@ commands:
             - codecov/upload
 
   driver:
-    description: Build driver
     steps:
       - run:
           name: Build driver
@@ -276,7 +270,6 @@ commands:
                     fi
 
   osc_identity:
-    description: Configure OSC
     steps:
       - run:
           name: Configure OSC
@@ -292,7 +285,6 @@ commands:
               fi
 
   deploy_obs_package:
-    description: Deploy package
     parameters:
       dir:
         description: Directory containing the package (e.g. libraries)
@@ -336,7 +328,6 @@ commands:
               fi
 
   git_identity:
-    description: Configure Git
     steps:
       - run:
           name: Configure Git
@@ -345,7 +336,6 @@ commands:
               git config --global user.email "birch-machine@indii.org"
 
   brew_checkout:
-    description: Checkout Homebrew tap
     steps:
       - run:
           name: Checkout Homebrew tap
@@ -358,7 +348,6 @@ commands:
               fi
 
   deploy_brew_package:
-    description: Deploy package
     parameters:
       dir:
         description: Directory containing the package (e.g. libraries)
@@ -394,7 +383,6 @@ commands:
               fi
 
   brew_commit:
-    description: Commit Homebrew tap
     steps:
       - git_identity
       - run:
@@ -410,7 +398,6 @@ commands:
               fi
 
   deploy_website:
-    description: Deploy website
     steps:
       - run:
           name: Deploy website
