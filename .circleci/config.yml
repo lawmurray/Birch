@@ -211,6 +211,9 @@ commands:
         description: Extra build flags for birch
         type: string
         default: ""
+      birch_mode:
+        default: BIRCH_MODE
+        type: env_var_name
     steps:
       - run:
           name: Build << parameters.package >> package
@@ -224,43 +227,58 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               birch docs
-      - run:
+      - when:
           name: Smoke test << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              if [[ -e smoke.sh ]]
-              then
-                ./smoke.sh
-              fi
-      - run:
+          condition:
+            or:
+              - equal: [ debug, << parameters.birch_mode >> ]
+              - equal: [ test, << parameters.birch_mode >> ]
+          steps:
+            - run:
+                command: |
+                    cd << parameters.dir >>/<< parameters.package >>
+                    if [[ -e smoke.sh ]]
+                    then
+                      ./smoke.sh
+                    fi
+      - when:
           name: Unit test << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              if [[ "$BIRCH_MODE" = "release" && -e test.sh ]]
-              then
-                env time --format="$FORMAT" --output=time.txt ./test.sh
-                # ^ env time to use GNU time, not Bash built-in time
-              fi
-      - run:
-          name: Upload  << parameters.package >> results to MongoDB Atlas
-          command: |
-              if [[ "$BIRCH_MODE" = "release" && -e test.sh && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
-              then
-                cd << parameters.dir >>/<< parameters.package >>
-                if [[ -e output/test.json ]]
-                then
-                  echo '{ "output": ' > mongodb.json
-                  cat output/test.json >> mongodb.json
-                  if [[ -e time.txt ]]
-                  then
-                    cat time.txt >> mongodb.json
-                  fi
-                  echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
-                  echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
-                  echo '}' >> mongodb.json
-                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file mongodb.json
-                fi
-              fi
+          condition:
+            equal: [ release, << parameters.birch_mode >> ]
+          steps:
+            - run:
+                command: |
+                    cd << parameters.dir >>/<< parameters.package >>
+                    if [[ -e test.sh ]]
+                    then
+                      env time --format="$FORMAT" --output=time.txt ./test.sh
+                      # ^ env time to use GNU time, not Bash built-in time
+                    fi
+      - when:
+          name: Unit test << parameters.package >> package
+          condition:
+            equal: [ release, << parameters.birch_mode >> ]
+          steps:
+            - run:
+                name: Upload  << parameters.package >> results to MongoDB Atlas
+                command: |
+                    if [[ -e test.sh && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
+                    then
+                      cd << parameters.dir >>/<< parameters.package >>
+                      if [[ -e output/test.json ]]
+                      then
+                        echo '{ "output": ' > mongodb.json
+                        cat output/test.json >> mongodb.json
+                        if [[ -e time.txt ]]
+                        then
+                          cat time.txt >> mongodb.json
+                        fi
+                        echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
+                        echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
+                        echo '}' >> mongodb.json
+                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file mongodb.json
+                      fi
+                    fi
 
   osc_identity:
     description: Configure OSC
