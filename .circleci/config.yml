@@ -39,7 +39,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/ubuntu
+    working_directory: /mnt/ramdisk/ubuntu-debug
 
   debian-debug:
     docker:
@@ -51,7 +51,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/debian
+    working_directory: /mnt/ramdisk/debian-debug
 
   fedora-debug:
     docker:
@@ -63,7 +63,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/fedora
+    working_directory: /mnt/ramdisk/fedora-debug
 
   alpine-debug:
     docker:
@@ -75,7 +75,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/alpine
+    working_directory: /mnt/ramdisk/alpine-debug
 
   mac-debug:
     macos:
@@ -87,7 +87,7 @@ executors:
       MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       LIB_FLAGS: "--disable-openmp"
       BIRCH_MODE: debug
-    working_directory: /Users/distiller/project/mac
+    working_directory: /Users/distiller/project/mac-debug
     # ^ hard-coding different home directory for Mac, discovered with SSH
 
 commands:
