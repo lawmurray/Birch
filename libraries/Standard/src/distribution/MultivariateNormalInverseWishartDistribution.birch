@@ -115,7 +115,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   if Σ.r.hasInverseWishart() {
     let (Ψ, k) <- Σ.r.getInverseWishart();
     let p <- wrap_multivariate_normal_inverse_wishart(μ, Σ.l, Ψ, k);
-    Σ.r.graft(p);
+    Σ.r.setNext(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

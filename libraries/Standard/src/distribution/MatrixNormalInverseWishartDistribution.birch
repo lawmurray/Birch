@@ -114,7 +114,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
   if V.hasInverseWishart() {
     let (Ψ, k) <- V.getInverseWishart();
     let p <- wrap_matrix_normal_inverse_wishart(M, chol(U), Ψ, k);
-    V.graft(p);
+    V.setNext(p);
     return p;
   } else {
     return wrap_matrix_gaussian(M, chol(U), chol(V));

@@ -142,7 +142,7 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Arg2,Random<Real>>) ->
   if σ2.r.hasInverseGamma() {
     let (α, β) <- σ2.r.getInverseGamma();
     let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
-    σ2.r.graft(p);
+    σ2.r.setNext(p);
     return p;
   } else {
     return wrap_gaussian(μ, σ2);

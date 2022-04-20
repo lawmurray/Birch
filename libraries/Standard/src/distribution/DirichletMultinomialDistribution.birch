@@ -72,7 +72,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
   if ρ.hasDirichlet() {
     let α <- ρ.getDirichlet();
     let p <- wrap_dirichlet_multinomial(n, α);
-    ρ.graft(p);
+    ρ.setNext(p);
     return p;
   } else {
     return wrap_multinomial(n, ρ);

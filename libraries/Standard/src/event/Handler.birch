@@ -86,8 +86,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleAssume<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
-    p.graft(x);
-    x.graft(p);
+    p.setNext(x);
+    x.setNext(p);
     if x.hasValue() {
       handleDelayObserve(x);
     } else if !delaySampling {
@@ -106,8 +106,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleSimulate<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
-    p.graft(x);
-    x.graft(p);
+    p.setNext(x);
+    x.setNext(p);
     handleDelaySimulate(x);
     return x;
   }
@@ -122,8 +122,8 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleObserve<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
-    p.graft(x);
-    x.graft(p);
+    p.setNext(x);
+    x.setNext(p);
     handleDelayObserve(x);
     return x;
   }
@@ -143,7 +143,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     } else {
       x <- p.simulate();
     }
-    p.graft(box(x));
+    p.setNext(box(x));
     return x;
   }
 
@@ -162,7 +162,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
     } else {
       w <- w + p.logpdf(x);
     }
-    p.graft(box(x));
+    p.setNext(box(x));
     return x;
   }
 
@@ -173,14 +173,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleDelaySimulate<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
-    assert p.child == x;
+    assert p.getNext() == x;
     if delayExpressions && p.supportsLazy() {
       x.set(p.simulateLazy()!);
       Ξ.pushBack(p);
     } else {
       x.set(p.simulate());
     }
-    x.child <- nil;
+    x.setNext(nil);
   }
 
   /**
@@ -190,14 +190,14 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleDelayObserve<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
-    assert p.child == x;
+    assert p.getNext() == x;
     if delayExpressions && p.supportsLazy() {
       w <- w + p.logpdfLazy(eval(x))!;
       Ξ.pushBack(p);
     } else {
       w <- w + p.logpdf(value(x));
     }
-    x.child <- nil;
+    x.setNext(nil);
   }
 
   /**
@@ -210,7 +210,7 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   function handleDelayPrune<Value>(p:Distribution<Value>,
       x:Expression<Value>) -> Delay {
-    assert p.child == x;
+    assert p.getNext() == x;
     if delayExpressions && p.supportsLazy() {
       return p.updateLazy(x)!;
     } else {

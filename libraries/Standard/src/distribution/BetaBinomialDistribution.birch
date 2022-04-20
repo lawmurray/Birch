@@ -88,7 +88,7 @@ function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
   if ρ.hasBeta() {
     let (α, β) <- ρ.getBeta();
     let p <- wrap_beta_binomial(n, α, β);
-    ρ.graft(p);
+    ρ.setNext(p);
     return p;
   } else {
     return wrap_binomial(n, ρ);

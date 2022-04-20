@@ -70,7 +70,7 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
   if ρ.hasBeta() {
     let (α, β) <- ρ.getBeta();
     let p <- wrap_beta_bernoulli(α, β);
-    ρ.graft(p);
+    ρ.setNext(p);
     return p;
   } else {
     return wrap_bernoulli(ρ);

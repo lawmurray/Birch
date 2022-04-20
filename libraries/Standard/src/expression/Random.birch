@@ -15,10 +15,8 @@ final class Random<Value> < Expression<Value>(nil, false) {
    * Value assignment.
    */
   operator <- x:Value! {
-    assert !this.hasValue();
-    prune();
-    this.x <- x;
-    if this.child? {
+    this.set(x);
+    if this.hasDistribution() {
       handle_delay_observe(this);
     }
     this.constant();
@@ -39,7 +37,7 @@ final class Random<Value> < Expression<Value>(nil, false) {
 
   override function doEval() {
     assert !this.x?;
-    prune();
+    this.prune();
     handle_delay_simulate(this);
     assert this.x?;
   }
@@ -55,20 +53,19 @@ final class Random<Value> < Expression<Value>(nil, false) {
 
   override function prune() -> Delay {
     if this.isInternal() {
-      let p <- this.child!.prune();
-      this.graft(p);
-      p.graft(this);
-      if this.partner? {
+      let p <- this.getNext().prune();
+      this.setNext(p);
+      p.setNext(this);
+      if this.hasSide() {
         /* restore the $M$-path between this and the partner */
-        this.partner!.graft(p);
-        this.partner!.partner <- nil;
-        this.partner <- nil;
+        this.getSide().setNext(p);
+        this.getSide().setSide(nil);
+        this.setSide(nil);
       }
-    } else if this.partner? {
+    } else if this.hasSide() {
       /* defer to partner */
-      this.partner!.prune();
+      this.getSide().prune();
     }
-    assert !this.partner?;
     return this;
   }
 
@@ -76,16 +73,16 @@ final class Random<Value> < Expression<Value>(nil, false) {
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return this.child?;
+    return this.hasNext();
   }
 
   /**
    * Get the distribution.
    */
   function getDistribution() -> Distribution<Value> {
-    assert this.child?;
+    assert hasDistribution();
     prune();
-    let p <- Distribution<Value>?(this.child);
+    let p <- Distribution<Value>?(this.getNext());
     assert p?;
     return p!;
   }

@@ -126,8 +126,8 @@ abstract class Distribution<Value> < Delay {
   }
 
   override function prune() -> Delay {
-    if child? {
-      let x <- Expression<Value>?(child!.prune());
+    if this.hasNext() {
+      let x <- Expression<Value>?(this.getNext().prune());
       assert x?;
       return handle_prune(this, x!);
     } else {
@@ -136,7 +136,7 @@ abstract class Distribution<Value> < Delay {
   }
 
   override function hoist() -> Expression<Real>? {
-    let x <- Expression<Value>?(child);
+    let x <- Expression<Value>?(this.getNext());
     assert x?;
     return hitch(x!);
   }

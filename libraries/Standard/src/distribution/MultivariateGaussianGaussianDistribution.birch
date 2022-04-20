@@ -79,7 +79,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<Dot<Arg1,Random<Real[_]>>,Arg2>,
   if μ.l.r.hasMultivariateGaussian() {
     let (μ1, Σ1) <- μ.l.r.getMultivariateGaussian();
     let p <- wrap_multivariate_gaussian_gaussian(μ.l.l, μ1, Σ1, μ.r, σ2);
-    μ.l.r.graft(p);
+    μ.l.r.setNext(p);
     return p;
   } else {
     return wrap_gaussian(μ, σ2);

@@ -85,7 +85,7 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
   if θ.hasInverseGamma() {
     let (α, β) <- θ.getInverseGamma();
     let p <- wrap_inverse_gamma_gamma(k, α, β);
-    θ.graft(p);
+    θ.setNext(p);
     return p;
   } else {
     return wrap_gamma(k, θ);

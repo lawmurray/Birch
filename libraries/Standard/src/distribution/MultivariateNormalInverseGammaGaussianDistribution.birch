@@ -132,25 +132,27 @@ function make_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
 function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<Dot<Arg1,Random<Real[_]>>,Arg2>,
     σ2:OpMul<Arg3,Random<Real>>) -> Distribution<Real> {
   μ.l.r.prune();
-  if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r == σ2.r.next(2) {
+  if μ.l.r.hasMultivariateNormalInverseGamma() && μ.l.r == σ2.r.getNext(2) {
     let (m, Σ, k, β) <- μ.l.r.getMultivariateNormalInverseGamma();
     let p <- wrap_multivariate_normal_inverse_gamma_gaussian(μ.l.l, m,
         Σ, k, β, μ.r, σ2.l);
-    μ.l.r.graft(p);
-    μ.l.r.join(σ2.r);
+    μ.l.r.setNext(p);
+    σ2.r.setNext(nil);
+    μ.l.r.setSide(σ2.r);
+    σ2.r.setSide(μ.l.r);
     return p;
   } else {
     σ2.r.prune();
     if σ2.r.hasInverseGamma() {
       let (α, β) <- σ2.r.getInverseGamma();
       let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
-      σ2.r.graft(p);
+      σ2.r.setNext(p);
       return p;
     } else if μ.l.r.hasMultivariateGaussian() {
       let (m, S) <- μ.l.r.getMultivariateGaussian();
       let p <- wrap_multivariate_gaussian_gaussian(μ.l.l, m, S, μ.r,
           σ2);
-      μ.l.r.graft(p);
+      μ.l.r.setNext(p);
       return p;
     } else {
       return wrap_gaussian(μ, σ2);

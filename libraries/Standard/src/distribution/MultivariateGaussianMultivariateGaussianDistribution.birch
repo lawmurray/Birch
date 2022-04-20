@@ -80,7 +80,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
     let (μ1, Σ1) <- μ.l.r.getMultivariateGaussian();
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(μ.l.l, μ1, Σ1,
         μ.r, Σ);
-    μ.l.r.graft(p);
+    μ.l.r.setNext(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

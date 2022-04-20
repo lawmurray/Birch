@@ -94,7 +94,7 @@ function Poisson<Arg>(λ:OpMul<Arg,Random<Real>>) -> Distribution<Integer> {
   if λ.r.hasGamma() {
     let (k, θ) <- λ.r.getGamma();
     let p <- wrap_gamma_poisson(λ.l, k, θ);
-    λ.r.graft(p);
+    λ.r.setNext(p);
     return p;
   } else {
     return wrap_poisson(λ);
@@ -124,14 +124,14 @@ function Poisson(λ:OpMul<Random<Real>,Random<Real>>) ->
   if λ.l.hasGamma() {
     let (k, θ) <- λ.l.getGamma();
     let p <- wrap_gamma_poisson(λ.r, k, θ);
-    λ.l.graft(p);
+    λ.l.setNext(p);
     return p;
   } else {
     λ.r.prune();
     if λ.r.hasGamma() {
       let (k, θ) <- λ.r.getGamma();
       let p <- wrap_gamma_poisson(λ.l, k, θ);
-      λ.r.graft(p);
+      λ.r.setNext(p);
       return p;
     } else {
       return wrap_poisson(λ);

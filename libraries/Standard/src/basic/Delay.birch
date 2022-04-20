@@ -42,7 +42,7 @@
  *
  * While, if the leaf node is of type Random, it has a backward link to its
  * associated Distribution, note that all other nodes of type Random only have
- * a forward link to the distribution associated with their child node on the
+ * a forward link to the distribution associated with their next node on the
  * $M$-path.
  *
  * User code maintains external references to the Random objects, but
@@ -96,22 +96,39 @@
  */
 abstract class Delay {
   /**
-   * Child node on the $M$-path.
+   * Next node on the $M$-path.
    */
-  child:Delay?;
+  next:Delay?;
 
   /**
-   * Partner node on the $M$-path. This is used only for peculiar cases to
+   * Side node on the $M$-path. This is used only for peculiar cases to
    * establish joint distributions over two or more Randoms, such as for the
    * normal-inverse-gamma distribution.
    */
-  partner:Delay?;
+  side:Delay?;
 
   /**
-   * Is this an internal node on the $M$-path?
+   * Is there a next node on the $M$-path?
    */
-  final function isInternal() -> Boolean {
-    return child? && child!.child != this;
+  final function hasNext() -> Boolean {
+    return next?;
+  }
+
+  /**
+   * Set the next node on the $M$-path.
+   *
+   * - node: Next node.
+   */
+  final function setNext(node:Delay?) {
+    this.next <- node;
+  }
+
+  /**
+   * Get the next node on the $M$-path.
+   */
+  final function getNext() -> Delay {
+    assert next?;
+    return next!;
   }
 
   /**
@@ -121,38 +138,52 @@ abstract class Delay {
    *  the node after that, etc. Must be greater than zero.
    *
    * Return: The proceeding node on the $M$-path that is `n` steps from this.
-   * If the $M$-path is insufficiently long, then nil.
+   * If there is no such node, returns nil. If there is a loop at the end of
+   * the $M$-path, will iterate through that loop as many times as necessary
+   * and return non-nil.
    */
-  final function next(n:Integer) -> Delay? {
+  final function getNext(n:Integer) -> Delay? {
     assert n > 0;
     if n == 1 {
-      return child;
-    } else if child? {
-      return child!.next(n - 1);
+      return next;
+    } else if next? {
+      return next!.getNext(n - 1);
     } else {
       return nil;
     }
   }
 
   /**
-   * Extend the $M$-path below this.
-   *
-   * - node: Node to become the child of this.
+   * Is there a side node on the $M$-path?
    */
-  final function graft(node:Delay) {
-    this.child <- node;
+  final function hasSide() -> Boolean {
+    return side?;
   }
 
   /**
-   * Join this with another node to become partners on the $M$-path; this is
-   * the primary partner.
+   * Set the side node on the $M$-path.
+   *
+   * - node: Side node.
    */
-  final function join(node:Delay) {
-    assert !partner?;
-    assert !node.partner?;
-    partner <- node;
-    node.partner <- this;
-    node.child <- nil;
+  final function setSide(node:Delay?) {
+    this.side <- node;
+  }
+
+  /**
+   * Get the side node on the $M$-path.
+   */
+  final function getSide() -> Delay {
+    assert side?;
+    return side!;
+  }
+
+  /**
+   * Is this an internal node on the $M$-path? A node is internal if
+   * `hasNext()` is true, and it is not part of a loop at the end of the
+   * $M$-path.
+   */
+  final function isInternal() -> Boolean {
+    return next? && next!.next != this;
   }
 
   /**
@@ -163,7 +194,7 @@ abstract class Delay {
    * the leaf of the $M$-path.
    */
   function prune() -> Delay {
-    assert !child?;  // otherwise prune() should have been overridden
+    assert !next?;  // otherwise prune() should have been overridden
     return this;
   }
 
