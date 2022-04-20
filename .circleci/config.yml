@@ -100,7 +100,7 @@ commands:
     steps:
       - when:
           condition:
-            equal: [ mac, << parameters.os >> ]
+            equal: [ mac-debug, << parameters.os >> ]
           steps:
             - restore_cache:
                 key: homebrew
