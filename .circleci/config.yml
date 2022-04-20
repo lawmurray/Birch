@@ -129,15 +129,19 @@ commands:
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
 
   end_if_pull_request:
-    description: End early with success if a pull request
+    description: End early for pull request
+    parameters:
+      circle_pr_number:
+        default: CIRCLE_PR_NUMBER
+        type: env_var_name
     steps:
-      - run:
-          name: End early with success if a pull request
-          when: always
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              circleci step halt
-            fi
+      - when:
+          condition:
+            not:
+              equal: [ "", << parameters.circle_pr_number >> ]
+          steps:
+            run:
+              command: circleci step halt
 
   slack:
     description: Send Slack message on failure
