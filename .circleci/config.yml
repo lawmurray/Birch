@@ -5,23 +5,31 @@ orbs:
   codecov: codecov/codecov@3.2.2
 
 executors:
-  opensuse:
+  opensuse-release:
     docker:
       - image: lawmurray/birch-circleci:opensuse
     resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --enable-release"
-      SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
-      TEST: release  # BIRCH_MODE for running test.sh scripts
-      MONGODB: 1  # upload test results to MongoDB atlas
-      CODECOV: 1  # upload coverage results to Codecov
-    working_directory: /mnt/ramdisk/opensuse
-    # ^ can't use ~/ or $HOME here, won't expand in $CIRCLE_WORKING_DIRECTORY
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
+      MODE_FLAGS: "--disable-debug --disable-test --enable-release --disable-single"
+      BIRCH_MODE: release
+    working_directory: /mnt/ramdisk/opensuse-release
 
-  ubuntu:
+  opensuse-test:
+    docker:
+      - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
+      MODE_FLAGS: "--disable-debug --enable-test --disable-release --disable-single"
+      BIRCH_MODE: test
+    working_directory: /mnt/ramdisk/opensuse-test
+
+  ubuntu-debug:
     docker:
       - image: lawmurray/birch-circleci:ubuntu
     resource_class: large
@@ -29,11 +37,11 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/ubuntu
 
-  debian:
+  debian-debug:
     docker:
       - image: lawmurray/birch-circleci:debian
     resource_class: large
@@ -41,11 +49,11 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/debian
 
-  fedora:
+  fedora-debug:
     docker:
       - image: lawmurray/birch-circleci:fedora
     resource_class: large
@@ -53,11 +61,11 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/fedora
 
-  alpine:
+  alpine-debug:
     docker:
       - image: lawmurray/birch-circleci:alpine
     resource_class: large
@@ -65,20 +73,20 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/alpine
 
-  mac:
+  mac-debug:
     macos:
       xcode: 12.4.0
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
+      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       LIB_FLAGS: "--disable-openmp"
-      SMOKE: debug
+      BIRCH_MODE: debug
     working_directory: /Users/distiller/project/mac
     # ^ hard-coding different home directory for Mac, discovered with SSH
 
@@ -139,9 +147,18 @@ commands:
 
   codecov:
     description: Upload test coverage to Codecov
+    parameters:
+      birch_mode:
+        default: BIRCH_MODE
+        type: env_var_name
     steps:
-      - codecov/upload:
-          when: on_success
+      - when:
+          condition:
+            and:
+              - on_success
+              - equal: [ << parameters.birch_mode >>, test ]
+          steps:
+            - codecov/upload
 
   driver:
     description: Build driver
@@ -158,10 +175,10 @@ commands:
       - run:
           name: Smoke test driver
           command: |
-            if [[ -n "$SMOKE" ]]
+            cd driver
+            if [[ -e smoke.sh ]]
             then
-              cd driver
-              env BIRCH_MODE=$SMOKE ./smoke.sh
+              ./smoke.sh
             fi
 
   build_library:
@@ -203,56 +220,45 @@ commands:
               birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS << parameters.extra >>
           no_output_timeout: 30m
       - run:
-          name: Smoke test << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              if [[ -n "$SMOKE" && -e smoke.sh ]]
-              then
-                env BIRCH_MODE=$SMOKE ./smoke.sh
-              fi
-      - run:
           name: Document << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               birch docs
-
-  test_package:
-    description: Test a Birch package
-    parameters:
-      dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-      package:
-        description: Name of package (e.g. Standard)
-        type: string
-    steps:
+      - run:
+          name: Smoke test << parameters.package >> package
+          command: |
+              cd << parameters.dir >>/<< parameters.package >>
+              if [[ -e smoke.sh ]]
+              then
+                ./smoke.sh
+              fi
       - run:
           name: Unit test << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
-              if [[ -n "$TEST" && -e test.sh ]]
+              if [[ "$BIRCH_MODE" = "release" && -e test.sh ]]
               then
-                env BIRCH_MODE=$TEST time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
+                time --format="$FORMAT" --output=time.txt ./test.sh
                 # ^ env time to use GNU time, not Bash built-in time
               fi
       - run:
           name: Upload  << parameters.package >> results to MongoDB Atlas
           command: |
-              if [[ -n "$MONGODB" && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
+              if [[ "$BIRCH_MODE" = "release" && -e test.sh && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
               then
                 cd << parameters.dir >>/<< parameters.package >>
                 if [[ -e output/test.json ]]
                 then
-                  echo '{ "output": ' > /tmp/mongodb.json
-                  cat output/test.json >> /tmp/mongodb.json
-                  if [[ -e /tmp/time.txt ]]
+                  echo '{ "output": ' > mongodb.json
+                  cat output/test.json >> mongodb.json
+                  if [[ -e time.txt ]]
                   then
-                    cat /tmp/time.txt >> /tmp/mongodb.json
+                    cat time.txt >> mongodb.json
                   fi
-                  echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongodb.json
-                  echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongodb.json
-                  echo '}' >> /tmp/mongodb.json
-                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
+                  echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
+                  echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
+                  echo '}' >> mongodb.json
+                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file mongodb.json
                 fi
               fi
 
@@ -444,7 +450,6 @@ jobs:
       - build_package:
           dir: libraries
           package: StandardTest
-          extra: --jobs=1  # needed to avoid exhausting memory
       - persist_to_workspace:
           root: ..
           paths:
@@ -477,22 +482,6 @@ jobs:
       - codecov
       - slack
 
-  test:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
-      - test_package:
-          dir: libraries
-          package: StandardTest
-      - end_if_pull_request
-      - slack
-
   example:
     parameters: 
       os:
@@ -507,9 +496,6 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_package:
-          dir: examples
-          package: << parameters.package >>
-      - test_package:
           dir: examples
           package: << parameters.package >>
       - end_if_pull_request
@@ -572,39 +558,32 @@ workflows:
       - base:
           matrix:
             parameters:
-              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse-release,opensuse-test,ubuntu-debug,debian-debug,fedora-debug,alpine-debug,mac-debug]
 
       - standard:
           matrix:
             parameters:
-              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse-release,opensuse-test,ubuntu-debug,debian-debug,fedora-debug,alpine-debug,mac-debug]
           requires:
             - base-<< matrix.os >>
 
       - libraries:
           matrix:
             parameters:
-              os: [opensuse,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse-release,opensuse-test,ubuntu-debug,debian-debug,fedora-debug,alpine-debug,mac-debug]
           requires:
             - standard-<< matrix.os >>
-
-      - test:
-          matrix:
-            parameters:
-              os: [opensuse]
-          requires:
-            - libraries-<< matrix.os >>
 
       - example:
           matrix:
             parameters:
-              os: [opensuse]
+              os: [opensuse-release,opensuse-test]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
-            - test-<< matrix.os >>
+            - libraries-<< matrix.os >>
 
       - deploy:
-          os: opensuse
+          os: opensuse-release
           filters:
             branches:
               only:
