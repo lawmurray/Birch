@@ -222,11 +222,6 @@ commands:
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
               birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS << parameters.extra >>
           no_output_timeout: 30m
-      - run:
-          name: Document << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              birch docs
       - when:
           name: Smoke test << parameters.package >> package
           condition:
@@ -237,6 +232,7 @@ commands:
             - run:
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
+                    birch docs
                     if [[ -e smoke.sh ]]
                     then
                       ./smoke.sh
@@ -254,11 +250,6 @@ commands:
                       env time --format="$FORMAT" --output=time.txt ./test.sh
                       # ^ env time to use GNU time, not Bash built-in time
                     fi
-      - when:
-          name: Unit test << parameters.package >> package
-          condition:
-            equal: [ release, << parameters.birch_mode >> ]
-          steps:
             - run:
                 name: Upload  << parameters.package >> results to MongoDB Atlas
                 command: |
