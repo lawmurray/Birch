@@ -18,7 +18,7 @@ executors:
       TEST: release  # BIRCH_MODE for running test.sh scripts
       MONGODB: 1  # upload test results to MongoDB atlas
       CODECOV: 1  # upload coverage results to Codecov
-    working_directory: /root/project/opensuse
+    working_directory: /mnt/ramdisk/opensuse
     # ^ can't use ~/ or $HOME here, won't expand in $CIRCLE_WORKING_DIRECTORY
 
   ubuntu:
@@ -31,7 +31,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
-    working_directory: /root/project/ubuntu
+    working_directory: /mnt/ramdisk/ubuntu
 
   debian:
     docker:
@@ -43,7 +43,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
-    working_directory: /root/project/debian
+    working_directory: /mnt/ramdisk/debian
 
   fedora:
     docker:
@@ -55,7 +55,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
-    working_directory: /root/project/fedora
+    working_directory: /mnt/ramdisk/fedora
 
   alpine:
     docker:
@@ -67,7 +67,7 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
       MODE_FLAGS: "--enable-debug --disable-test --disable-release"
       SMOKE: debug
-    working_directory: /root/project/alpine
+    working_directory: /mnt/ramdisk/alpine
 
   mac:
     macos:
