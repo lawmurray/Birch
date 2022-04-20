@@ -238,7 +238,7 @@ commands:
               cd << parameters.dir >>/<< parameters.package >>
               if [[ "$BIRCH_MODE" = "release" && -e test.sh ]]
               then
-                time --format="$FORMAT" --output=time.txt ./test.sh
+                env time --format="$FORMAT" --output=time.txt ./test.sh
                 # ^ env time to use GNU time, not Bash built-in time
               fi
       - run:
