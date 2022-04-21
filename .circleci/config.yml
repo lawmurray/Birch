@@ -128,14 +128,10 @@ commands:
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
 
   end_if_pull_request:
-    parameters:
-      circle_pr_number:
-        default: CIRCLE_PR_NUMBER
-        type: env_var_name
     steps:
       - when:
           name: End early for pull request
-          condition: << parameters.circle_pr_number >>
+          condition: $CIRCLE_PR_NUMBER
           steps:
             run: circleci step halt
 
@@ -143,21 +139,6 @@ commands:
     steps:
       - slack/status:
           fail_only: true
-
-  codecov:
-    parameters:
-      birch_mode:
-        default: BIRCH_MODE
-        type: env_var_name
-    steps:
-      - when:
-          name: Upload test coverage to Codecov
-          condition:
-            and:
-              - on_success
-              - equal: [ << parameters.birch_mode >>, test ]
-          steps:
-            - codecov/upload
 
   driver:
     steps:
@@ -199,6 +180,8 @@ commands:
   build_package:
     description: Build a Birch package
     parameters:
+      os:
+        type: string
       dir:
         description: Directory containing the package (e.g. libraries)
         type: string
@@ -209,9 +192,6 @@ commands:
         description: Extra build flags for birch
         type: string
         default: ""
-      birch_mode:
-        default: BIRCH_MODE
-        type: env_var_name
     steps:
       - run:
           name: Build << parameters.package >> package
@@ -224,8 +204,12 @@ commands:
           name: Smoke test << parameters.package >> package
           condition:
             or:
-              - equal: [ debug, << parameters.birch_mode >> ]
-              - equal: [ test, << parameters.birch_mode >> ]
+              - matches:
+                  pattern: "-debug$"
+                  value: << parameters.os >>
+              - matches:
+                  pattern: "-test$"
+                  value: << parameters.os >>
           steps:
             - run:
                 command: |
@@ -238,7 +222,9 @@ commands:
       - when:
           name: Unit test << parameters.package >> package
           condition:
-            equal: [ release, << parameters.birch_mode >> ]
+            matches:
+              pattern: "-release$"
+              value: << parameters.os >>
           steps:
             - run:
                 command: |
@@ -431,7 +417,6 @@ jobs:
           paths:
             - << parameters.os >>
       - end_if_pull_request
-      - codecov
       - slack
 
   standard:
@@ -445,9 +430,11 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_package:
+          os: << parameters.os >>
           dir: libraries
           package: Standard
       - build_package:
+          os: << parameters.os >>
           dir: libraries
           package: StandardTest
       - persist_to_workspace:
@@ -455,7 +442,6 @@ jobs:
           paths:
             - << parameters.os >>
       - end_if_pull_request
-      - codecov
       - slack
 
   libraries:
@@ -469,9 +455,11 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_package:
+          os: << parameters.os >>
           dir: libraries
           package: Cairo
       - build_package:
+          os: << parameters.os >>
           dir: libraries
           package: SQLite
       - persist_to_workspace:
@@ -479,7 +467,6 @@ jobs:
           paths:
             - << parameters.os >>
       - end_if_pull_request
-      - codecov
       - slack
 
   example:
@@ -496,10 +483,27 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_package:
+          os: << parameters.os >>
           dir: examples
           package: << parameters.package >>
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
       - end_if_pull_request
-      - codecov
+      - slack
+
+  codecov:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.os >>
+      - codecov/upload
       - slack
 
   deploy:
@@ -548,7 +552,6 @@ jobs:
           package: SQLite
       - brew_commit
       - deploy_website
-      - codecov
       - slack
 
 workflows:
@@ -581,6 +584,12 @@ workflows:
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - libraries-<< matrix.os >>
+
+      - codecov:
+          os: opensuse-test
+          requires:
+            - example
+            - libraries
 
       - deploy:
           os: opensuse-release
