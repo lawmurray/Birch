@@ -203,7 +203,6 @@ commands:
               birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || cat config.log
           no_output_timeout: 30m
       - when:
-          name: Smoke test << parameters.package >> package
           condition:
             or:
               - matches:
@@ -214,6 +213,7 @@ commands:
                   value: << parameters.os >>
           steps:
             - run:
+                name: Smoke test << parameters.package >> package
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
                     birch docs
@@ -222,13 +222,13 @@ commands:
                       ./smoke.sh
                     fi
       - when:
-          name: Unit test << parameters.package >> package
           condition:
             matches:
               pattern: "^.+-release$"
               value: << parameters.os >>
           steps:
             - run:
+                name: Unit test << parameters.package >> package
                 command: |
                     cd << parameters.dir >>/<< parameters.package >>
                     if [[ -e test.sh ]]
