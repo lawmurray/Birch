@@ -137,6 +137,23 @@ commands:
               circleci step halt
             fi
 
+  codecov:
+    parameters: 
+      os:
+        type: string
+    steps:
+      - when:
+          condition:
+            matches:
+              pattern: "^.+-test$"
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Produce coverage report
+                command: lcov --directory . --no-external --capture -o cov.info
+            - codecov/upload:
+                file: cov.info
+
   slack:
     steps:
       - slack/status:
@@ -418,7 +435,8 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
-      - codecov/upload
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
       - slack
 
@@ -444,7 +462,8 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
-      - codecov/upload
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
       - slack
 
@@ -470,7 +489,8 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
-      - codecov/upload
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
       - slack
 
@@ -491,7 +511,8 @@ jobs:
           os: << parameters.os >>
           dir: examples
           package: << parameters.package >>
-      - codecov/upload
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
       - slack
 
