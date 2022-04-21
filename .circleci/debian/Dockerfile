@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     flex \
     bison \
     g++ \
+    lcov \
     gdb \
     libtool \
     libjemalloc-dev \
