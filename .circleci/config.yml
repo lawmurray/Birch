@@ -129,11 +129,13 @@ commands:
 
   end_if_pull_request:
     steps:
-      - run: |
-          if [[ -n "$CIRCLE_PR_NUMBER" ]]
-          then
-            circleci step halt
-          fi
+      - run: 
+         name: End early if pull request
+         command: |
+            if [[ -n "$CIRCLE_PR_NUMBER" ]]
+            then
+              circleci step halt
+            fi
 
   slack:
     steps:
