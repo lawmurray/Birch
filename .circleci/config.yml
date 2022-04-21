@@ -12,8 +12,8 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --disable-test --enable-release --disable-single"
+      LIB_FLAGS: "--disable-debug --disable-test --enable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --disable-test --enable-release --disable-single"
       BIRCH_MODE: release
     working_directory: /mnt/ramdisk/opensuse-release
 
@@ -24,8 +24,9 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --disable-release --disable-single"
+      DRIVER_FLAGS: "CXXFLAGS=\"-O0 -fno-inline --coverage\""
+      LIB_FLAGS: "--disable-debug --enable-test --disable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --enable-test --disable-release --disable-single"
       BIRCH_MODE: test
     working_directory: /mnt/ramdisk/opensuse-test
 
@@ -36,8 +37,8 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      LIB_FLAGS: "--enable-debug --disable-test --disable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/ubuntu-debug
 
@@ -49,7 +50,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      LIB_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/debian-debug
 
@@ -60,8 +61,8 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      LIB_FLAGS: "--enable-debug --disable-test --disable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/fedora-debug
 
@@ -72,8 +73,8 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      LIB_FLAGS: "--enable-debug --disable-test --disable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/alpine-debug
 
@@ -83,9 +84,8 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
-      LIB_FLAGS: "--disable-openmp"
+      LIB_FLAGS: " --disable-openmp --enable-debug --disable-test --disable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --disable-openmp --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
     working_directory: /Users/distiller/project/mac-debug
     # ^ hard-coding different home directory for Mac, discovered with SSH
@@ -148,7 +148,7 @@ commands:
               cd driver
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
+              ./configure --prefix="$PREFIX" $DRIVER_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
       - run:
@@ -173,7 +173,7 @@ commands:
               cd << parameters.package >>
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS $LIB_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $LIB_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
 
@@ -198,7 +198,7 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS << parameters.extra >>
+              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >>
           no_output_timeout: 30m
       - when:
           name: Smoke test << parameters.package >> package
@@ -489,10 +489,6 @@ jobs:
           os: << parameters.os >>
           dir: examples
           package: << parameters.package >>
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
       - codecov/upload
       - end_if_pull_request
       - slack
