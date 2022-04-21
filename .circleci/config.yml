@@ -207,10 +207,10 @@ commands:
           condition:
             or:
               - matches:
-                  pattern: "-debug$"
+                  pattern: "^.+-debug$"
                   value: << parameters.os >>
               - matches:
-                  pattern: "-test$"
+                  pattern: "^.+-test$"
                   value: << parameters.os >>
           steps:
             - run:
@@ -225,7 +225,7 @@ commands:
           name: Unit test << parameters.package >> package
           condition:
             matches:
-              pattern: "-release$"
+              pattern: "^.+-release$"
               value: << parameters.os >>
           steps:
             - run:
