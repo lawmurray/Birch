@@ -24,7 +24,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      DRIVER_FLAGS: "CXXFLAGS=\"-O0 -fno-inline --coverage\""
+      DRIVER_FLAGS: "CXXFLAGS='-O0 -g -fno-inline --coverage'"
       LIB_FLAGS: "--disable-debug --enable-test --disable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --enable-test --disable-release --disable-single"
       BIRCH_MODE: test
