@@ -49,8 +49,8 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose"
-      LIB_FLAGS: "--enable-debug --disable-test --disable-release --disable-single"
+      LIB_FLAGS: "--enable-debug --disable-test --disable-release"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
     working_directory: /mnt/ramdisk/debian-debug
 
@@ -200,7 +200,7 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >>
+              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || cat config.log
           no_output_timeout: 30m
       - when:
           name: Smoke test << parameters.package >> package
