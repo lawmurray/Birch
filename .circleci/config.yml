@@ -416,6 +416,7 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
+      - codecov/upload
       - end_if_pull_request
       - slack
 
@@ -441,6 +442,7 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
+      - codecov/upload
       - end_if_pull_request
       - slack
 
@@ -466,6 +468,7 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
+      - codecov/upload
       - end_if_pull_request
       - slack
 
@@ -490,20 +493,8 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
-      - end_if_pull_request
-      - slack
-
-  codecov:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
       - codecov/upload
+      - end_if_pull_request
       - slack
 
   deploy:
@@ -584,12 +575,6 @@ workflows:
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - libraries-<< matrix.os >>
-
-      - codecov:
-          os: opensuse-test
-          requires:
-            - example
-            - libraries
 
       - deploy:
           os: opensuse-release
