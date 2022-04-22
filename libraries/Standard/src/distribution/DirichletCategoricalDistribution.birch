@@ -67,14 +67,15 @@ function make_dirichlet_categorical<Arg>(α:Arg) -> {
  * Create categorical distribution.
  */
 function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
-  ρ.prune();
-  if ρ.hasDirichlet() {
-    let α <- ρ.getDirichlet();
+  if ρ.hasNext() && ρ.getNext().isDirichlet() {
+    ρ.prune();
+    let α <- ρ.getNext().getDirichlet();
     let p <- wrap_dirichlet_categorical(α);
     ρ.setNext(p);
     return p;
-  } else if ρ.hasRestaurant() {
-    let (α, θ, n) <- ρ.getRestaurant();
+  } else if ρ.hasNext() && ρ.getNext().isRestaurant() {
+    ρ.prune();
+    let (α, θ, n) <- ρ.getNext().getRestaurant();
     let p <- wrap_restaurant_categorical(α, θ, n);
     ρ.setNext(p);
     return p;

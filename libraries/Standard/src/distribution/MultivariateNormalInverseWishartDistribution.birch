@@ -78,7 +78,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function getMultivariateNormalInverseWishart() ->
       (Expression<Real[_]>, Expression<Real>, Expression<Real[_,_]>,
-      Expression<Real>)? {
+      Expression<Real>) {
     return box(μ, σ2, Ψ, k);
   }
 
@@ -111,11 +111,13 @@ function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ:OpMul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
-  Σ.r.prune();
-  if Σ.r.hasInverseWishart() {
-    let (Ψ, k) <- Σ.r.getInverseWishart();
-    let p <- wrap_multivariate_normal_inverse_wishart(μ, Σ.l, Ψ, k);
-    Σ.r.setNext(p);
+  let ω2 <- Σ.l;
+  let Ω <- Σ.r;
+  if Ω.hasNext() && Ω.getNext().isInverseWishart() {
+    Ω.prune();
+    let (Ψ, k) <- Ω.getNext().getInverseWishart();
+    let p <- wrap_multivariate_normal_inverse_wishart(μ, ω2, Ψ, k);
+    Ω.setNext(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

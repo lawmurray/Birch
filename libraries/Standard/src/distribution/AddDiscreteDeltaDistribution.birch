@@ -93,22 +93,26 @@ final class AddDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
  */
 function Delta(μ:OpAdd<Random<Integer>,Random<Integer>>) ->
     Distribution<Integer> {
-  μ.l.prune();
-  μ.r.prune();
-  if μ.l.hasBoundedDiscrete() && μ.r.hasBoundedDiscrete() {
-    let p <- construct<AddDiscreteDeltaDistribution>(μ.l.getBoundedDiscrete(),
-        μ.r.getBoundedDiscrete());
-    μ.l.setNext(p);
-    μ.r.setNext(nil);
-    μ.l.setSide(μ.r);
-    μ.r.setSide(μ.l);
+  let l <- μ.l;
+  let r <- μ.r;
+  if l.hasNext() && l.getNext().isBoundedDiscrete() &&
+      r.hasNext() && r.getNext().isBoundedDiscrete() {
+    l.prune();
+    r.prune();
+    let p <- construct<AddDiscreteDeltaDistribution>(
+        l.getNext().getBoundedDiscrete(),
+        r.getNext().getBoundedDiscrete());
+    l.setNext(p);
+    r.setNext(nil);
+    l.setSide(r);
+    r.setSide(l);
     return p;
-	} else if μ.l.hasBoundedDiscrete() {
-    let r ~ Delta(μ.r);
-    return Delta(μ.l + r);
-  } else if μ.r.hasBoundedDiscrete() {
-    let l ~ Delta(μ.l);
-    return Delta(l + μ.r);
+	} else if l.hasNext() && l.getNext().isBoundedDiscrete() {
+    let x ~ Delta(r);
+    return Delta(l + x);
+  } else if r.hasNext() && r.getNext().isBoundedDiscrete() {
+    let x ~ Delta(l);
+    return Delta(x + r);
   } else {
 		return wrap_delta(μ);
 	}

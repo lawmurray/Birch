@@ -90,11 +90,13 @@ function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
  * Create Poisson distribution.
  */
 function Poisson<Arg>(λ:OpMul<Arg,Random<Real>>) -> Distribution<Integer> {
-  λ.r.prune();
-  if λ.r.hasGamma() {
-    let (k, θ) <- λ.r.getGamma();
-    let p <- wrap_gamma_poisson(λ.l, k, θ);
-    λ.r.setNext(p);
+  let a <- λ.l;
+  let b <- λ.r;
+  if b.hasNext() && b.getNext().isGamma() {
+    b.prune();
+    let (k, θ) <- b.getNext().getGamma();
+    let p <- wrap_gamma_poisson(a, k, θ);
+    b.setNext(p);
     return p;
   } else {
     return wrap_poisson(λ);
@@ -120,22 +122,22 @@ function Poisson(λ:Random<Real>) -> Distribution<Integer> {
  */
 function Poisson(λ:OpMul<Random<Real>,Random<Real>>) ->
     Distribution<Integer> {
-  λ.l.prune();
-  if λ.l.hasGamma() {
-    let (k, θ) <- λ.l.getGamma();
-    let p <- wrap_gamma_poisson(λ.r, k, θ);
-    λ.l.setNext(p);
+  let a <- λ.l;
+  let b <- λ.r;
+  if a.hasNext() && a.getNext().isGamma() {
+    a.prune();
+    let (k, θ) <- a.getNext().getGamma();
+    let p <- wrap_gamma_poisson(b, k, θ);
+    a.setNext(p);
+    return p;
+  } else if b.hasNext() && b.getNext().isGamma() {
+    b.prune();
+    let (k, θ) <- b.getNext().getGamma();
+    let p <- wrap_gamma_poisson(a, k, θ);
+    b.setNext(p);
     return p;
   } else {
-    λ.r.prune();
-    if λ.r.hasGamma() {
-      let (k, θ) <- λ.r.getGamma();
-      let p <- wrap_gamma_poisson(λ.l, k, θ);
-      λ.r.setNext(p);
-      return p;
-    } else {
-      return wrap_poisson(λ);
-    }
+    return wrap_poisson(λ);
   }
 }
 

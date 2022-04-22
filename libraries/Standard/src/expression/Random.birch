@@ -31,6 +31,21 @@ final class Random<Value> < Expression<Value>(nil, false) {
     this.g <- nil;
   }
 
+  /**
+   * Does this have a distribution?
+   */
+  function hasDistribution() -> Boolean {
+    return this.hasNext() && Distribution<Value>?(this.getNext())?;
+  }
+
+  /**
+   * Get the distribution.
+   */
+  function getDistribution() -> Distribution<Value> {
+    assert hasDistribution();
+    return Distribution<Value>?(this.getNext())!;
+  }
+
   override function isRandom() -> Boolean {
     return true;
   }
@@ -52,6 +67,10 @@ final class Random<Value> < Expression<Value>(nil, false) {
   }
 
   override function prune() -> Delay {
+    if this.hasSide() && !this.hasNext() {
+      /* first defer to partner to restore $M$-path */
+      this.getSide().prune();
+    }
     if this.isInternal() {
       let p <- this.getNext().prune();
       this.setNext(p);
@@ -62,171 +81,8 @@ final class Random<Value> < Expression<Value>(nil, false) {
         this.getSide().setSide(nil);
         this.setSide(nil);
       }
-    } else if this.hasSide() {
-      /* defer to partner */
-      this.getSide().prune();
     }
     return this;
-  }
-
-  /**
-   * Does this have a distribution?
-   */
-  function hasDistribution() -> Boolean {
-    return this.hasNext();
-  }
-
-  /**
-   * Get the distribution.
-   */
-  function getDistribution() -> Distribution<Value> {
-    assert hasDistribution();
-    prune();
-    let p <- Distribution<Value>?(this.getNext());
-    assert p?;
-    return p!;
-  }
-
-  function hasGaussian() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isGaussian();
-  }
-
-  function getGaussian() -> (Expression<Real>, Expression<Real>) {
-    return this.getDistribution().getGaussian()!;
-  }
-
-  function hasBeta() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isBeta();
-  }
-
-  function getBeta() -> (Expression<Real>, Expression<Real>) {
-    return this.getDistribution().getBeta()!;
-  }
-
-  function hasGamma() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isGamma();
-  }
-
-  function getGamma() -> (Expression<Real>, Expression<Real>) {
-    return this.getDistribution().getGamma()!;
-  }
-
-  function hasInverseGamma() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isInverseGamma();
-  } 
-
-  function getInverseGamma() -> (Expression<Real>, Expression<Real>) {
-    return this.getDistribution().getInverseGamma()!;
-  }
-
-  function hasInverseWishart() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isInverseWishart();
-  } 
-
-  function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>) {
-    return this.getDistribution().getInverseWishart()!;
-  } 
-
-  function hasNormalInverseGamma() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isNormalInverseGamma();
-  }
-
-  function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
-      Expression<Real>, Expression<Real>) {
-    return this.getDistribution().getNormalInverseGamma()!;
-  }
-
-  function hasDirichlet() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isDirichlet();
-  }
-
-  function getDirichlet() -> Expression<Real[_]> {
-    return this.getDistribution().getDirichlet()!;
-  }
-
-  function hasRestaurant() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isRestaurant();
-  }
-
-  function getRestaurant() -> (Expression<Real>, Expression<Real>,
-      Expression<Integer[_]>) {
-    return this.getDistribution().getRestaurant()!;
-  }
-
-  function hasMultivariateGaussian() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isMultivariateGaussian();
-  }
-
-  function getMultivariateGaussian() -> (Expression<Real[_]>,
-      Expression<Real[_,_]>) {
-    return this.getDistribution().getMultivariateGaussian()!;
-  }
-
-  function hasMultivariateNormalInverseGamma() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isMultivariateNormalInverseGamma();
-  }
-
-  function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
-      Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
-    return this.getDistribution().getMultivariateNormalInverseGamma()!;
-  }
-
-  function hasMultivariateNormalInverseWishart() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isMultivariateNormalInverseWishart();
-  }
-
-  function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
-      Expression<Real>, Expression<Real[_,_]>, Expression<Real>) {
-    return this.getDistribution().getMultivariateNormalInverseWishart()!;
-  }
-
-  function hasMatrixGaussian() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isMatrixGaussian();
-  }
-
-  function getMatrixGaussian() -> (Expression<Real[_,_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>) {
-    return this.getDistribution().getMatrixGaussian()!;
-  }
-
-  function hasMatrixNormalInverseWishart() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isMatrixNormalInverseWishart();
-  }
-
-  function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
-    return this.getDistribution().getMatrixNormalInverseWishart()!;
-  }
-
-  function hasDiscrete() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isDiscrete();
-  }
-
-  function getDiscrete() -> DiscreteDistribution {
-    return this.getDistribution().getDiscrete()!;
-  }
-
-  function hasBoundedDiscrete() -> Boolean {
-    return !this.hasValue() && this.hasDistribution() &&
-        this.getDistribution().isBoundedDiscrete();
-  }
-
-  function getBoundedDiscrete() -> BoundedDiscreteDistribution {
-    return this.getDistribution().getBoundedDiscrete()!;
   }
 
   override function read(buffer:Buffer) {

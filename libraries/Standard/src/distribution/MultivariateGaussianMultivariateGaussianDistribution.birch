@@ -75,12 +75,15 @@ function make_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
  */
 function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
     Random<Real[_]>>,Arg2>, Σ:Arg3) -> Distribution<Real[_]> {
-  μ.l.r.prune();
-  if μ.l.r.hasMultivariateGaussian() {
-    let (μ1, Σ1) <- μ.l.r.getMultivariateGaussian();
-    let p <- wrap_multivariate_gaussian_multivariate_gaussian(μ.l.l, μ1, Σ1,
-        μ.r, Σ);
-    μ.l.r.setNext(p);
+  let A <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  if m.hasNext() && m.getNext().isMultivariateGaussian() {
+    m.prune();
+    let (μ1, Σ1) <- m.getNext().getMultivariateGaussian();
+    let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, μ1, Σ1, c,
+        Σ);
+    m.setNext(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

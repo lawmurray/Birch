@@ -44,7 +44,7 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
   }
 
   override function getRestaurant() -> (Expression<Real>, Expression<Real>,
-      Expression<Integer[_]>)? {
+      Expression<Integer[_]>) {
     return box(α, θ, n);
   }
 

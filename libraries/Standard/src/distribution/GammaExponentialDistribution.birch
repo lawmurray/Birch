@@ -92,11 +92,13 @@ function make_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
  * Create exponential distribution.
  */
 function Exponential<Arg>(λ:OpMul<Arg,Random<Real>>) -> Distribution<Real> {
-  λ.r.prune();
-  if λ.r.hasGamma() {
-    let (k, θ) <- λ.r.getGamma();
-    let p <- wrap_gamma_exponential(λ.l, k, θ);
-    λ.r.setNext(p);
+  let a <- λ.l;
+  let b <- λ.r;
+  if b.hasNext() && b.getNext().isGamma() {
+    b.prune();
+    let (k, θ) <- b.getNext().getGamma();
+    let p <- wrap_gamma_exponential(a, k, θ);
+    b.setNext(p);
     return p;
   } else {
     return wrap_exponential(λ);
@@ -115,22 +117,22 @@ function Exponential<Arg>(λ:OpMul<Random<Real>,Arg>) -> Distribution<Real> {
  */
 function Exponential(λ:OpMul<Random<Real>,Random<Real>>) ->
     Distribution<Real> {
-  λ.l.prune();
-  if λ.l.hasGamma() {
-    let (k, θ) <- λ.l.getGamma();
-    let p <- wrap_gamma_exponential(λ.r, k, θ);
-    λ.l.setNext(p);
+  let a <- λ.l;
+  let b <- λ.r;
+  if a.hasNext() && a.getNext().isGamma() {
+    a.prune();
+    let (k, θ) <- a.getNext().getGamma();
+    let p <- wrap_gamma_exponential(b, k, θ);
+    a.setNext(p);
+    return p;
+  } else if b.hasNext() && b.getNext().isGamma() {
+    b.prune();
+    let (k, θ) <- b.getNext().getGamma();
+    let p <- wrap_gamma_exponential(a, k, θ);
+    b.setNext(p);
     return p;
   } else {
-    λ.r.prune();
-    if λ.r.hasGamma() {
-      let (k, θ) <- λ.r.getGamma();
-      let p <- wrap_gamma_exponential(λ.l, k, θ);
-      λ.r.setNext(p);
-      return p;
-    } else {
-      return wrap_exponential(λ);
-    }
+    return wrap_exponential(λ);
   }
 }
 

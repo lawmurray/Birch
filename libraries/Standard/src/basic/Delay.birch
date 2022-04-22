@@ -211,4 +211,139 @@ abstract class Delay {
   function constant() {
     //
   }
+
+  function isRandom() -> Boolean {
+    return false;
+  }
+
+  function isDistribution() -> Boolean {
+    return false;
+  }
+
+  function isGaussian() -> Boolean {
+    return false;
+  }
+
+  function getGaussian() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isBeta() -> Boolean {
+    return false;
+  }
+
+  function getBeta() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isGamma() -> Boolean {
+    return false;
+  }
+
+  function getGamma() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isInverseGamma() -> Boolean {
+    return false;
+  } 
+
+  function getInverseGamma() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isInverseWishart() -> Boolean {
+    return false;
+  } 
+
+  function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>) {
+    assert false;
+  } 
+
+  function isNormalInverseGamma() -> Boolean {
+    return false;
+  }
+
+  function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
+      Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isDirichlet() -> Boolean {
+    return false;
+  }
+
+  function getDirichlet() -> Expression<Real[_]> {
+    assert false;
+  }
+
+  function isRestaurant() -> Boolean {
+    return false;
+  }
+
+  function getRestaurant() -> (Expression<Real>, Expression<Real>,
+      Expression<Integer[_]>) {
+    assert false;
+  }
+
+  function isMultivariateGaussian() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>) {
+    assert false;
+  }
+
+  function isMultivariateNormalInverseGamma() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isMultivariateNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
+      Expression<Real>, Expression<Real[_,_]>, Expression<Real>) {
+    assert false;
+  }
+
+  function isMatrixGaussian() -> Boolean {
+    return false;
+  }
+
+  function getMatrixGaussian() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>) {
+    assert false;
+  }
+
+  function isMatrixNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
+    assert false;
+  }
+
+  function isDiscrete() -> Boolean {
+    return false;
+  }
+
+  function getDiscrete() -> DiscreteDistribution {
+    assert false;
+  }
+
+  function isBoundedDiscrete() -> Boolean {
+    return false;
+  }
+
+  function getBoundedDiscrete() -> BoundedDiscreteDistribution {
+    assert false;
+  }
 }

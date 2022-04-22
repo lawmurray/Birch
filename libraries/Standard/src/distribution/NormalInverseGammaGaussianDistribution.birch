@@ -122,31 +122,35 @@ function make_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
  */
 function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
     σ2:OpMul<Arg3,Random<Real>>) -> Distribution<Real> {
-  μ.l.r.prune();
-  if μ.l.r.hasNormalInverseGamma() && μ.l.r == σ2.r.getNext(2) {
-    let (m, s2, α, β) <- μ.l.r.getNormalInverseGamma();
-    let p <- wrap_normal_inverse_gamma_gaussian(μ.l.l, m, s2, α, β, μ.r,
-        σ2.l);
-    μ.l.r.setNext(p);
-    σ2.r.setNext(nil);
-    μ.l.r.setSide(σ2.r);
-    σ2.r.setSide(μ.l.r);
+  let a <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  let ω2 <- σ2.l;
+  let τ2 <- σ2.r;
+
+  if (τ2.hasNext() && τ2.getNext().isNormalInverseGamma() &&
+      τ2.getNext(2) == m) || (τ2.hasSide() && τ2.getSide() == m) {
+    m.prune();
+    let (m1, s2, α, β) <- τ2.getNext().getNormalInverseGamma();
+    let p <- wrap_normal_inverse_gamma_gaussian(a, m1, s2, α, β, c, ω2);
+    m.setNext(p);
+    τ2.setNext(nil);
+    m.setSide(τ2);
+    τ2.setSide(m);
+    return p;
+  } else if τ2.hasNext() && τ2.getNext().isInverseGamma() {
+    τ2.prune();
+    let (α, β) <- τ2.getNext().getInverseGamma();
+    let p <- wrap_normal_inverse_gamma(μ, ω2, α, β);
+    τ2.setNext(p);
+    return p;
+  } else if m.hasNext() && m.getNext().isGaussian() {
+    let (m, s2) <- m.getNext().getGaussian();
+    let p <- wrap_gaussian_gaussian(a, m, s2, c, σ2);
+    m.setNext(p);
     return p;
   } else {
-    σ2.r.prune();
-    if σ2.r.hasInverseGamma() {
-      let (α, β) <- σ2.r.getInverseGamma();
-      let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
-      σ2.r.setNext(p);
-      return p;
-    } else if μ.l.r.hasGaussian() {
-      let (m, s2) <- μ.l.r.getGaussian();
-      let p <- wrap_gaussian_gaussian(μ.l.l, m, s2, μ.r, σ2);
-      μ.l.r.setNext(p);
-      return p;
-    } else {
-      return wrap_gaussian(μ, σ2);
-    }
+    return wrap_gaussian(μ, σ2);
   }
 }
 

@@ -88,26 +88,30 @@ function make_multivariate_normal_inverse_wishart_multivariate_gaussian<
 function MultivariateGaussian<Arg1,Arg2,Arg3>(
       μ:OpAdd<OpMul<Arg1,Random<Real[_]>>,Arg2>,
       Σ:OpMul<Arg3,Random<Real[_,_]>>) -> Distribution<Real[_]> {
-  μ.l.r.prune();
-  if μ.l.r.hasMultivariateNormalInverseWishart() && μ.l.r == Σ.r.getNext(2) {
-    let (μ1, σ2, Ψ, k) <- μ.l.r.getMultivariateNormalInverseWishart();
-    let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        μ.l.l, μ1, σ2, Ψ, k, μ.r, Σ.l);
-    μ.l.r.setNext(p);
-    Σ.r.setNext(nil);
-    μ.l.r.setSide(Σ.r);
-    Σ.r.setSide(μ.l.r);
+  let A <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  let ω2 <- Σ.l;
+  let Ω <- Σ.r;
+  if (Ω.hasNext() && Ω.getNext().isMultivariateNormalInverseWishart() &&
+      Ω.getNext(2) == m) || (Ω.hasSide() && Ω.getSide() == m) {
+    m.prune();
+    let (μ1, σ2, Ψ, k) <- m.getNext().getMultivariateNormalInverseWishart();
+    let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
+        μ1, σ2, Ψ, k, c, ω2);
+    m.setNext(p);
+    Ω.setNext(nil);
+    m.setSide(Ω);
+    Ω.setSide(m);
+    return p;
+  } else if Ω.hasNext() && Ω.getNext().isInverseWishart() {
+    Ω.prune();
+    let (Ψ, k) <- Ω.getNext().getInverseWishart();
+    let p <- wrap_multivariate_normal_inverse_wishart(μ, ω2, Ψ, k);
+    Ω.setNext(p);
     return p;
   } else {
-    Σ.r.prune();
-    if Σ.r.hasInverseWishart() {
-      let (Ψ, k) <- Σ.r.getInverseWishart();
-      let p <- wrap_multivariate_normal_inverse_wishart(μ, Σ.l, Ψ, k);
-      Σ.r.setNext(p);
-      return p;
-    } else {
-      return wrap_multivariate_gaussian(μ, Σ);
-    }
+    return wrap_multivariate_gaussian(μ, Σ);
   }
 }
 

@@ -72,11 +72,14 @@ function make_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
  */
 function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
     σ2:Arg3) -> Distribution<Real> {
-  μ.l.r.prune();
-  if μ.l.r.hasGaussian() {
-    let (m, ω2) <- μ.l.r.getGaussian();
-    let p <- wrap_gaussian_gaussian(μ.l.l, m, ω2, μ.r, σ2);
-    μ.l.r.setNext(p);
+  let a <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  if m.hasNext() && m.getNext().isGaussian() {
+    m.prune();
+    let (m1, ω2) <- m.getNext().getGaussian();
+    let p <- wrap_gaussian_gaussian(a, m1, ω2, c, σ2);
+    m.setNext(p);
     return p;
   } else {
     return wrap_gaussian(μ, σ2);

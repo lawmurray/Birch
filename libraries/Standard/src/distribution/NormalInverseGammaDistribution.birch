@@ -106,7 +106,7 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
   }
 
   override function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
-      Expression<Real>, Expression<Real>)? {
+      Expression<Real>, Expression<Real>) {
     return box(μ, σ2, α, β);
   }
 
@@ -138,11 +138,13 @@ function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2,
  */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:OpMul<Arg2,Random<Real>>) ->
     Distribution<Real> {
-  σ2.r.prune();
-  if σ2.r.hasInverseGamma() {
-    let (α, β) <- σ2.r.getInverseGamma();
-    let p <- wrap_normal_inverse_gamma(μ, σ2.l, α, β);
-    σ2.r.setNext(p);
+  let ω2 <- σ2.l;
+  let τ2 <- σ2.r;
+  if τ2.hasNext() && τ2.getNext().isInverseGamma() {
+    τ2.prune();
+    let (α, β) <- τ2.getNext().getInverseGamma();
+    let p <- wrap_normal_inverse_gamma(μ, ω2, α, β);
+    τ2.setNext(p);
     return p;
   } else {
     return wrap_gaussian(μ, σ2);
