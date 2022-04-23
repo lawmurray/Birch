@@ -111,6 +111,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
     ω2.setNext(p);
     return p;
   } else if m.hasNext() && m.getNext().isMultivariateGaussian() {
+    m.prune();
     let (m1, S) <- m.getNext().getMultivariateGaussian();
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, m1, S, c, Σ);
     m.setNext(p);

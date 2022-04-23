@@ -154,6 +154,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<Dot<Arg1,Random<Real[_]>>,Arg2>,
     τ2.setNext(p);
     return p;
   } else if m.hasNext() && m.getNext().isMultivariateGaussian() {
+    m.prune();
     let (m1, S) <- m.getNext().getMultivariateGaussian();
     let p <- wrap_multivariate_gaussian_gaussian(a, m1, S, c, σ2);
     m.setNext(p);

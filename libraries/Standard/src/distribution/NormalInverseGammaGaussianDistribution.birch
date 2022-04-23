@@ -145,8 +145,9 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
     τ2.setNext(p);
     return p;
   } else if m.hasNext() && m.getNext().isGaussian() {
-    let (m, s2) <- m.getNext().getGaussian();
-    let p <- wrap_gaussian_gaussian(a, m, s2, c, σ2);
+    m.prune();
+    let (m1, s2) <- m.getNext().getGaussian();
+    let p <- wrap_gaussian_gaussian(a, m1, s2, c, σ2);
     m.setNext(p);
     return p;
   } else {
