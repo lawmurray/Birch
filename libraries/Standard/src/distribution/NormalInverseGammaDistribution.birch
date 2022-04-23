@@ -13,7 +13,7 @@
  * and is the conjugate prior of a Gaussian distribution with both
  * unknown mean and unknown variance.
  *
- * In model code, it is not usual to use this final class directlyDistribution. Instead,
+ * In model code, it is not usual to use this class directly. Instead,
  * establish the conjugate relationship via code such as the following:
  *
  *     σ2 ~ InverseGamma(α, β);
