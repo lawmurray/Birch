@@ -31,7 +31,7 @@ final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
     return logpdf_poisson(x, eval(λ));
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_poisson(x, λ));
   }
 

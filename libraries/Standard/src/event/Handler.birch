@@ -53,6 +53,11 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
    */
   delayExpressions:Boolean <- delayExpressions;
 
+  /**
+   * Are delayed joins enabled?
+   */
+  delayJoins:Boolean <- true;
+
   function hoist() -> Expression<Real>? {
     π:Expression<Real>?;
     for i in 1..Ξ.size() {
@@ -211,7 +216,9 @@ final class Handler(delaySampling:Boolean, delayExpressions:Boolean) {
   function handleDelayPrune<Value>(p:Distribution<Value>,
       x:Expression<Value>) -> Delay {
     assert p.getNext() == x;
-    if delayExpressions && p.supportsLazy() {
+    if delayJoins && p.supportsJoin() {
+      return p.updateJoin(x)!;
+    } else if delayExpressions && p.supportsLazy() {
       return p.updateLazy(x)!;
     } else {
       return p.update(value(x))!;

@@ -43,7 +43,7 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     return logpdf_matrix_t(X, eval(k), eval(M), eval(Σ), eval(Ψ));
   }
 
-  override function hitch(X:Expression<Real[_,_]>) -> Expression<Real>? {
+  override function logpdfJoin(X:Expression<Real[_,_]>) -> Expression<Real>? {
     return box(logpdf_matrix_t(X, k, M, Σ, Ψ));
   }
 

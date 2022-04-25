@@ -48,7 +48,7 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     return logpdf_conway_maxwell_poisson(x, eval(μ), eval(ν), eval(n));
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_conway_maxwell_poisson(x, μ, ν, n));
   }
 

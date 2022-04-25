@@ -30,8 +30,8 @@ final class DiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
     return p.logpdfLazy(x);
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
-    return p.hitch(x);
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
+    return p.logpdfJoin(x);
   }
 
   override function update(x:Integer!) -> Delay? {

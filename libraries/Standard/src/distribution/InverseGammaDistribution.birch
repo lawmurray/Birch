@@ -36,7 +36,7 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
     return logpdf_inverse_gamma(x, eval(α), eval(β));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_inverse_gamma(x, α, β));
   }
 

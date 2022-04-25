@@ -64,7 +64,7 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         eval(σ2), eval(α), eval(β), eval(c), eval(s2));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β,
         c, s2));
   }

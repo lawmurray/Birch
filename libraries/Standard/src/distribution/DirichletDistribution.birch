@@ -27,7 +27,7 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
     return logpdf_dirichlet(x, eval(α));
   }
 
-  override function hitch(x:Expression<Real[_]>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real[_]>) -> Expression<Real>? {
     return box(logpdf_dirichlet(x, value(α)));
   }
 

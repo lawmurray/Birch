@@ -30,7 +30,7 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     return logpdf_categorical(x, eval(ρ));
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_categorical(x, ρ));
   }
 

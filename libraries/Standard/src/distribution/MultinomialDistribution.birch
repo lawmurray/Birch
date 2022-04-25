@@ -33,7 +33,7 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return logpdf_multinomial(x, eval(n), eval(ρ));
   }
 
-  override function hitch(x:Expression<Integer[_]>) ->
+  override function logpdfJoin(x:Expression<Integer[_]>) ->
       Expression<Real>? {
     return box(logpdf_multinomial(x, n, ρ));
   }

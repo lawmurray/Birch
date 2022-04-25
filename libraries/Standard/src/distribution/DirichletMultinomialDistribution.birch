@@ -33,7 +33,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return logpdf_dirichlet_multinomial(x, eval(n), eval(α));
   }
 
-  override function hitch(x:Expression<Integer[_]>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer[_]>) -> Expression<Real>? {
     return box(logpdf_dirichlet_multinomial(x, n, α));
   }
 

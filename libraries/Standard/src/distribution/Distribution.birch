@@ -5,9 +5,21 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
+   * Is this a subordinate in a joint distribution?
+   */
+  subordinate:Boolean <- false;
+
+  /**
    * Are lazy operations supported?
    */
   function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Are join operations supported?
+   */
+  function supportsJoin() -> Boolean {
     return false;
   }
   
@@ -37,8 +49,8 @@ abstract class Distribution<Value> < Delay {
   abstract function logpdf(x:Value!) -> Real!;
 
   /**
-   * Evaluate the log probability density (or mass) function for a lazy
-     expression.
+   * Evaluate the log probability density (or mass) function using lazy
+   * expressions.
    *
    * - x: The value.
    *
@@ -49,14 +61,16 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Construct a lazy expression for the log probability density (or mass).
+   * Evaluate the log probability density (or mass) function using lazy
+   * expressions, for the joint distribution of this and any distributions
+   * joined with it.
    *
    * - x: The value.
    *
    * Return: expression giving the log probability density (or mass), if
    * supported.
    */
-  function hitch(x:Expression<Value>) -> Expression<Real>? {
+  function logpdfJoin(x:Expression<Value>) -> Expression<Real>? {
     return nil;
   }
 
@@ -70,11 +84,23 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Update the parent node on the $M$-path given the value of this node.
+   * Update the parent node on the $M$-path given the value of this node,
+   * using lazy expressions.
    *
    * - x: The value.
    */
   function updateLazy(x:Expression<Value>) -> Delay? {
+    return nil;
+  }
+
+  /**
+   * Update the parent node on the $M$-path given the value of this node,
+   * using lazy expressions, while propagating any other distributions joined
+   * with this.
+   *
+   * - x: The value.
+   */
+  function updateJoin(x:Expression<Value>) -> Delay? {
     return nil;
   }
 
@@ -138,10 +164,18 @@ abstract class Distribution<Value> < Delay {
   final override function hoist() -> Expression<Real>? {
     let x <- Expression<Value>?(this.getNext());
     assert x?;
-    return hitch(x!);
+    return logpdfJoin(x!);
   }
 
   final override function isDistribution() -> Boolean {
     return true;
+  }
+
+  final override function isSubordinate() -> Boolean {
+    return subordinate;
+  }
+
+  final override function setSubordinate() {
+    subordinate <- true;
   }
 }

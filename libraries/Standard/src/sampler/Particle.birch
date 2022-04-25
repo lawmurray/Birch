@@ -28,12 +28,14 @@ class Particle(m:Model) {
     π <- nil;
     for i in 1..Ξ.size() {
       for j in 1..Ξ[i].size() {
-        let ξ <- Ξ[i][j].hoist();
-        if ξ? {
-          if π? {
-            π <- box(π! + ξ!);
-          } else {
-            π <- ξ!;
+        if !Ξ[i][j].isSubordinate() {
+          let ξ <- Ξ[i][j].hoist();
+          if ξ? {
+            if π? {
+              π <- box(π! + ξ!);
+            } else {
+              π <- ξ!;
+            }
           }
         }
       }

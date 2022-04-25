@@ -42,7 +42,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     return logpdf_student_t(x, eval(k), eval(μ), eval(σ2));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_student_t(x, k, μ, σ2));
   }
 

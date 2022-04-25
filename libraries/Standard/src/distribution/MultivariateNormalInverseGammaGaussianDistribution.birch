@@ -68,7 +68,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
         eval(ω2));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_multivariate_normal_inverse_gamma_gaussian(x, a,
         μ, Σ, c, k, β, ω2));
   }

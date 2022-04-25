@@ -37,7 +37,7 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
     return logpdf_negative_binomial(x, eval(k), eval(ρ));
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_negative_binomial(x, k, ρ));
   }
 

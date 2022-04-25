@@ -37,7 +37,7 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
     return logpdf_weibull(x, eval(k), eval(λ));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_weibull(x, k, λ));
   }
 

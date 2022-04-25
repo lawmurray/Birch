@@ -38,7 +38,7 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
     return logpdf_beta_binomial(x, eval(n), eval(α), eval(β));
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_beta_binomial(x, n, α, β));
   }
 

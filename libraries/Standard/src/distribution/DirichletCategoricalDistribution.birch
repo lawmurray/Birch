@@ -27,7 +27,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return logpdf_dirichlet_categorical(x, eval(α));
   }
 
-  override function hitch(x:Expression<Integer>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
     return box(logpdf_dirichlet_categorical(x, α));
   }
 

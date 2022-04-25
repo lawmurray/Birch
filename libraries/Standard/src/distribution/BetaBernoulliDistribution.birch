@@ -33,7 +33,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
     return logpdf_beta_bernoulli(x, eval(α), eval(β));
   }
 
-  override function hitch(x:Expression<Boolean>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Boolean>) -> Expression<Real>? {
     return box(logpdf_beta_bernoulli(x, α, β));
   }
 

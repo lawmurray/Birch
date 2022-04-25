@@ -70,7 +70,7 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
         eval(β));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_normal_inverse_gamma(x, μ, σ2, α, β));
   }
 

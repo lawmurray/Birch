@@ -132,6 +132,16 @@ abstract class Delay {
   }
 
   /**
+   * Set the next node on the $M$-path to nil and return its previous value.
+   */
+  final function takeNext() -> Delay {
+    assert next?;
+    let r <- next!;
+    next <- nil;
+    return r;
+  }
+  
+  /**
    * Get a proceeding node on the $M$-path.
    *
    * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
@@ -178,12 +188,37 @@ abstract class Delay {
   }
 
   /**
+   * Set the side node on the $M$-path to nil and return its previous value.
+   */
+  final function takeSide() -> Delay {
+    assert side?;
+    let r <- side!;
+    side <- nil;
+    return r;
+  }
+
+  /**
    * Is this an internal node on the $M$-path? A node is internal if
    * `hasNext()` is true, and it is not part of a loop at the end of the
    * $M$-path.
    */
   final function isInternal() -> Boolean {
     return next? && next!.next != this;
+  }
+
+  /**
+   * Is this a subordinate distribution? A subordinate distribution is aside
+   * some other distribution.
+   */
+  function isSubordinate() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Set this as a subordinate distribution.
+   */
+  function setSubordinate() {
+    assert false;
   }
 
   /**
@@ -212,10 +247,16 @@ abstract class Delay {
     //
   }
 
+  /**
+   * Is this a random variable?
+   */
   function isRandom() -> Boolean {
     return false;
   }
 
+  /**
+   * Is this a distribution?
+   */
   function isDistribution() -> Boolean {
     return false;
   }

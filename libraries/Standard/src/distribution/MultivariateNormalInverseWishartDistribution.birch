@@ -51,7 +51,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         eval(Ψ), eval(k));
   }
 
-  override function hitch(x:Expression<Real[_]>) -> Expression<Real>? {   
+  override function logpdfJoin(x:Expression<Real[_]>) -> Expression<Real>? {   
     return box(logpdf_multivariate_normal_inverse_wishart(x, μ, σ2, Ψ, k));
   }
 

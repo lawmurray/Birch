@@ -36,7 +36,7 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
     return logpdf_uniform(x, eval(l), eval(u));
   }
 
-  override function hitch(x:Expression<Real>) -> Expression<Real>? {
+  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
     return box(logpdf_uniform(x, l, u));
   }
 
