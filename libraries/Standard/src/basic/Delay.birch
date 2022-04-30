@@ -134,9 +134,8 @@ abstract class Delay {
   /**
    * Set the next node on the $M$-path to nil and return its previous value.
    */
-  final function takeNext() -> Delay {
-    assert next?;
-    let r <- next!;
+  final function takeNext() -> Delay? {
+    let r <- next;
     next <- nil;
     return r;
   }
@@ -149,8 +148,8 @@ abstract class Delay {
    *
    * Return: The proceeding node on the $M$-path that is `n` steps from this.
    * If there is no such node, returns nil. If there is a loop at the end of
-   * the $M$-path, will iterate through that loop as many times as necessary
-   * and return non-nil.
+   * the $M$-path, will iterate through that loop as many times as given and
+   * return non-nil.
    */
   final function getNext(n:Integer) -> Delay? {
     assert n > 0;
@@ -190,11 +189,32 @@ abstract class Delay {
   /**
    * Set the side node on the $M$-path to nil and return its previous value.
    */
-  final function takeSide() -> Delay {
-    assert side?;
-    let r <- side!;
+  final function takeSide() -> Delay? {
+    let r <- side;
     side <- nil;
     return r;
+  }
+
+  /**
+   * Get a proceeding side node on the $M$-path.
+   *
+   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   *  the node after that, etc. Must be greater than zero.
+   *
+   * Return: The proceeding side node on the $M$-path that is `n` steps from
+   * this. If there is no such node, returns nil. If there is a loop at the
+   * end of the $M$-path, will iterate through that loop as many times as
+   * given and return non-nil.
+   */
+  final function getSide(n:Integer) -> Delay? {
+    assert n > 0;
+    if n == 1 {
+      return side;
+    } else if side? {
+      return side!.getSide(n - 1);
+    } else {
+      return nil;
+    }
   }
 
   /**
@@ -307,6 +327,23 @@ abstract class Delay {
 
   function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
       Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isNormalInverseGammaGaussian() -> Boolean {
+    return false;
+  }
+
+  function getNormalInverseGammaGaussian() -> (Expression<Real>,
+      Expression<Real>, Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function joinNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real>,
+      Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real[_]>, Expression<Real[_]>) {
     assert false;
   }
 

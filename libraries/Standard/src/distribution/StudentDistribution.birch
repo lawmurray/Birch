@@ -138,6 +138,25 @@ function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
 }
 
 /*
+ * Observe a Student's $t$ variate with location and scale.
+ *
+ * - x: Vector of variates.
+ * - k: Degrees of freedom.
+ * - μ: Vector of locations.
+ * - σ2: Vector of scales.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_join_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
+    σ2:Arg4) -> {
+  let n <- length(x);
+  let a <- wrap(0.5*k + 0.5*n);
+  let b <- 0.5*k;
+  return lgamma(a) - lgamma(b) - 0.5*n*log(π) - 0.5*sum(log(σ2)) -
+      a*log1p(dot(x - μ, div(x - μ, σ2)));
+}
+
+/*
  * CDF of a Student's $t$ variate.
  *
  * - x: The variate.

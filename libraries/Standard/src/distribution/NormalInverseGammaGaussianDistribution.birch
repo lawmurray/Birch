@@ -44,6 +44,10 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
     return true;
   }
 
+  override function supportsJoin() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Real! {
     return simulate_normal_inverse_gamma_gaussian(value(a), value(μ),
         value(σ2), value(α), value(β), value(c), value(s2));
@@ -64,9 +68,10 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         eval(σ2), eval(α), eval(β), eval(c), eval(s2));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β,
-        c, s2));
+  override function logpdfJoin(x':Expression<Real>) -> Expression<Real>? {
+    let (x, a, μ, σ2, α, β, c, s2) <- joinNormalInverseGammaGaussian();
+    return box(logpdf_join_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β, c,
+        s2));
   }
 
   override function update(x:Real!) -> Delay? {
@@ -75,8 +80,15 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
-    return update_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β,
-        c, s2);
+    return update_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β, c, s2);
+  }
+
+  override function updateJoin(x':Expression<Real>) -> Delay? {
+    let (x, a, μ, σ2, α, β, c, s2) <- joinNormalInverseGammaGaussian();
+    let p <- update_join_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β, c,
+        s2);
+    p.setSide(this);
+    return p;
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -98,6 +110,31 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
     global.constant(β);
     global.constant(c);
     global.constant(s2);
+  }
+
+  override function isNormalInverseGammaGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getNormalInverseGammaGaussian() -> (Expression<Real>,
+      Expression<Real>, Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real>, Expression<Real>) {
+    return box(a, μ, σ2, α, β, c, s2);
+  }
+
+  override function joinNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real>,
+      Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real[_]>, Expression<Real[_]>) {
+    let x' <- Random<Real>?(this.getNext())!;
+    let (a', μ', σ2', α', β', c', s2') <- getNormalInverseGammaGaussian();
+    if this.hasSide() && this.getSide().isSubordinate() {
+      let (x, a, μ, σ2, α, β, c, s2) <- this.getSide().joinNormalInverseGammaGaussian();
+      return box(stack(x, x'), stack(a, a'), μ, σ2, α, β, stack(c, c'),
+          stack(s2, s2'));
+    } else {
+      return box(vec(x'), vec(a'), μ', σ2', α', β', vec(c'), vec(s2'));
+    }
   }
 }
 
@@ -133,6 +170,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
     m.prune();
     let (m1, s2, α, β) <- τ2.getNext().getNormalInverseGamma();
     let p <- wrap_normal_inverse_gamma_gaussian(a, m1, s2, α, β, c, ω2);
+    p.setSide(τ2.getNext().takeSide());  // carry forward
     m.setNext(p);
     τ2.setNext(nil);
     m.setSide(τ2);
@@ -208,7 +246,7 @@ function Gaussian<Arg>(μ:OpMul<Arg,Random<Real>>, σ2:Random<Real>) ->
 function simulate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5, c:Arg6,
     s2:Arg7) -> {
-  return simulate_student_t(2.0*α, a*μ + c, (β/α)*(a*a*σ2 + s2));
+  return simulate_student_t(2.0*α, a*μ + c, (β/α)*(pow(a, 2.0)*σ2 + s2));
 }
 
 /*
@@ -229,7 +267,28 @@ function simulate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
 function logpdf_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6, c:Arg7,
     s2:Arg8) -> {
-  return logpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(a*a*σ2 + s2));
+  return logpdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(pow(a, 2.0)*σ2 + s2));
+}
+
+/*
+ * Observe Gaussian variates with a normal inverse-gamma prior with linear
+ * transformation.
+ *
+ * - x: Vector of variates.
+ * - a: Vector of scales.
+ * - μ: Mean.
+ * - σ2: Variance.
+ * - α: Variance shape.
+ * - β: Variance scale.
+ * - c: Vector of offsets.
+ * - s2: Vector of likelihood variance scales.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_join_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
+    Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6, c:Arg7,
+    s2:Arg8) -> {
+  return logpdf_join_student_t(x, 2.0*α, a*μ + c, (β/α)*(pow(a, 2.0)*σ2 + s2));
 }
 
 /*
@@ -250,10 +309,37 @@ function logpdf_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 function update_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6, c:Arg7,
     s2:Arg8) -> {
-  let σ2' <- 1.0/(1.0/σ2 + a*a/s2);
+  let σ2' <- 1.0/(1.0/σ2 + pow(a, 2.0)/s2);
   let μ' <- σ2'*(μ/σ2 + a*(x - c)/s2);
   let α' <- α + 0.5;
   let β' <- β + 0.5*(pow(x - c, 2.0)/s2 + pow(μ, 2.0)/σ2 - pow(μ', 2.0)/σ2');
+  return wrap_normal_inverse_gamma(μ', σ2', α', β');
+}
+
+/*
+ * Update the parameters of a normal inverse-gamma distribution with a
+ * Gaussian likelihood.
+ *
+ * - x: Vector of variates.
+ * - a: Vector of scales.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - α: Prior variance shape.
+ * - β: Prior variance scale.
+ * - c: Offset.
+ * - s2: Vector of likelihood variance scales.
+ *
+ * Returns: the posterior hyperparameters `μ'`, `σ2'`, `α'` and `β'`.
+ */
+function update_join_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
+    Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6, c:Arg7,
+    s2:Arg8) -> {
+  let n <- length(x);
+  let z <- wrap(x - c);
+  let σ2' <- 1.0/(1.0/σ2 + dot(a, div(a, s2)));
+  let μ' <- σ2'*(μ/σ2 + dot(a, div(z, s2)));
+  let α' <- α + 0.5*n;
+  let β' <- β + 0.5*(dot(z, div(z, s2)) + pow(μ, 2.0)/σ2 - pow(μ', 2.0)/σ2');
   return wrap_normal_inverse_gamma(μ', σ2', α', β');
 }
 
@@ -275,7 +361,7 @@ function update_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 function cdf_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6, c:Arg7,
     s2:Arg8) -> {
-  return cdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(a*a*σ2 + s2));
+  return cdf_student_t(x, 2.0*α, a*μ + c, (β/α)*(pow(a, 2.0)*σ2 + s2));
 }
 
 /*
@@ -296,5 +382,5 @@ function cdf_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 function quantile_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6,
     c:Arg7, s2:Arg8) -> {
-  return quantile_student_t(P, 2.0*α, a*μ + c, (β/α)*(a*a*σ2 + s2));
+  return quantile_student_t(P, 2.0*α, a*μ + c, (β/α)*(pow(a, 2.0)*σ2 + s2));
 }
