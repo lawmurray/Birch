@@ -1,0 +1,25 @@
+struct Vec<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(vec, vec_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::vec;
+using numbirch::vec_grad;
+
+/**
+ * Vectorize.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Vec<Middle> vec(const Middle& m) {
+  return construct<Vec<Middle>>(m);
+}
+}
+}}

@@ -119,6 +119,27 @@ public:
   /**
    * Constructor.
    *
+   * @tparam E Number of dimensions.
+   * 
+   * @param shape Shape.
+   * @param o Source array to initialize elements. Must have the same number
+   * of elements as the new array, but need not have the same shape, or even
+   * the same number of dimensions.
+   */
+  template<class U, int E>
+  Array(const shape_type& shape, const Array<U,E>& o) :
+      buf(nullptr),
+      ctl(nullptr),
+      shp(shape),
+      isView(false),
+      isDiced(false) {
+    allocate();
+    initialize(o);
+  }
+
+  /**
+   * Constructor.
+   *
    * @param shape Shape.
    * @param value Fill value.
    */
@@ -130,26 +151,6 @@ public:
       isDiced(false) {
     allocate();
     fill(value);
-  }
-
-  /**
-   * Constructor.
-   *
-   * @tparam ...Args Constructor parameter types.
-   *
-   * @param shape Shape.
-   * @param args Constructor arguments.
-   */
-  template<class... Args>
-  Array(const shape_type& shape, Args&&... args) :
-      buf(nullptr),
-      ctl(nullptr),
-      shp(shape),
-      isView(false),
-      isDiced(false) {
-    allocate();
-    dicer();
-    initialize(std::forward<Args>(args)...);
   }
 
   /**
@@ -764,10 +765,21 @@ private:
   }
 
   /**
+   * Initialize from another array.
+   */
+  template<class U, int E, std::enable_if_t<std::is_convertible_v<U,T>,int> = 0>
+  void initialize(const Array<U,E>& o) {
+    auto n = std::min(size(), o.size());
+    auto begin1 = o.beginInternal();
+    auto end1 = begin1.operator+(n);
+    auto begin2 = beginInternal();
+    std::copy(begin1, end1, begin2);
+  }
+
+  /**
    * Copy from another array. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
    */
-
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible_v<U,T>,int> = 0>
   void assign(const Array<U,E>& o) {
@@ -796,7 +808,7 @@ private:
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible_v<U,T>,int> = 0>
   void uninitialized_copy(const Array<U,E>& o) {
-    if (std::is_same_v<T,U>) {
+    if constexpr (std::is_same_v<T,U>) {
       slicer();
       memcpy(data(), shp.stride()*sizeof(T), o.data(),
           o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
@@ -953,21 +965,6 @@ private:
    */
   void dicer() const {
     const_cast<Array*>(this)->dicer();
-  }
-
-  /**
-   * Initialize allocated memory.
-   *
-   * @param args Constructor arguments.
-   */
-  template<class ... Args, std::enable_if_t<
-      std::is_constructible_v<T,Args...>,int> = 0>
-  void initialize(Args&&... args) {
-    auto iter = beginInternal();
-    auto last = endInternal();
-    for (; iter != last; ++iter) {
-      new (&*iter) T(std::forward<Args>(args)...);
-    }
   }
 
   /**

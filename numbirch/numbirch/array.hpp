@@ -775,4 +775,93 @@ auto stack_grad(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
   }
 }
 
+/**
+ * Vectorize a matrix by stacking its columns.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Numeric type.
+ *
+ * @param x Argument.
+ * 
+ * @return Result.
+ * 
+ * If @p x is a scalar then returns a vector with a single element. If @p x is
+ * a vector then returns it as-is.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+Array<value_t<T>,1> vec(const T& x) {
+  return Array<value_t<T>,1>(make_shape(size(x)), x);
+}
+
+/**
+ * Gradient of vec().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
+    const T& x) {
+  if constexpr (std::is_arithmetic_v<T>) {
+    return g.slice(1);
+  } else {
+    return real_t<T>(shape(x), g);
+  }
+}
+
+/**
+ * Matrixize a vector by unstacking its columns.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Numeric type.
+ *
+ * @param x Argument.
+ * @param n Number of columns into which to unstack. Must be a factor of the
+ * size of `x`
+ * 
+ * @return Result.
+ * 
+ * If @p x is a scalar then returns a matrix with a single element. If @p x is
+ * a matrix then reshapes it to the given number of columns as if calling
+ * `mat(vec(x), n)`.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+Array<value_t<T>,2> mat(const T& x, const int n) {
+  assert(size(x) % n == 0);
+  return Array<value_t<T>,2>(make_shape(size(x)/n, n), x);
+}
+
+/**
+ * Gradient of mat().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * @param n Number of columns into which to unstack.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> mat_grad(const real_t<T>& g, const Array<value_t<T>,2>& y,
+    const T& x, const int n) {
+  if constexpr (std::is_arithmetic_v<T>) {
+    return g.slice(1, 1);
+  } else {
+    return real_t<T>(shape(x), g);
+  }
+}
+
 }

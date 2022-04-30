@@ -83,11 +83,13 @@ void free(void* ptr);
  * @ingroup memory
  * 
  * @param[out] dst Destination.
+ * @param dwidth Width of each batch of `dst`, in bytes.
+ * @param dheight Number of batches of `dst`.
  * @param dpitch Stride between batches of `dst`, in bytes.
  * @param src Source.
  * @param spitch Stride between batches of `src`, in bytes.
- * @param width Width of each batch, in bytes.
- * @param height Number of batches.
+ * @param swidth Width of each batch of `src`, in bytes.
+ * @param sheight Number of batches of `src`.
  * 
  * @todo Support copies between different value types.
  */

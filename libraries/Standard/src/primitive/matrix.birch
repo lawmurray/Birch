@@ -29,36 +29,6 @@ function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
 }
 
 /**
- * Vectorize a matrix by stacking its columns. This is the inverse operation
- * of `mat()`.
- *
- * - X: The matrix.
- */
-function vec<Type>(X:Type[_,_]) -> Type[_] {
-  let R <- rows(X);
-  let C <- columns(X);
-  return vector_lambda(\(i:Integer) -> Type {
-        return X[mod(i - 1, R) + 1, (i - 1)/R + 1];
-      }, R*C);
-}
-
-/**
- * Matrixize a vector by unstacking it into columns. This is the inverse
- * operation of `vec()`.
- *
- * - x: The vector.
- * - columns: The number of columns. Must be a factor of the length of `x`.
- */
-function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
-  assert mod(length(x), columns) == 0;
-  let R <- length(x)/columns;
-  let C <- columns;
-  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-        return x[i + (j - 1)*R];
-      }, R, C);
-}
-
-/**
  * Create a matrix filled by a lambda function.
  *
  * - λ: Lambda function.

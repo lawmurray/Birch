@@ -575,7 +575,7 @@ template<class T, class U>
 using pack_t = Array<value_t<implicit_t<T,U>>,2>;
 
 /**
- * @typedef pack_t
+ * @typedef stack_t
  * 
  * @ingroup trait
  * 
