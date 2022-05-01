@@ -1,59 +1,58 @@
 class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   σ2:Random<Real>;
   μ:Random<Real[_]>;
-  x1:Random<Real[_]>;
-  x2:Random<Real[_]>;
-  x3:Random<Real[_]>;
-  x4:Random<Real[_]>;
-  x5:Random<Real[_]>;
+  x:Array<Random<Real[_]>>;
+  A:Array<Real[_,_]>;
+  c:Array<Real[_]>;
+  Ψ:Array<Real[_,_]>;
 
   n:Integer <- 4;
 
   α:Real;
   β:Real;
-  μ_0:Real[n];
+  m:Real[n];
   Σ:Real[n,n];
-  Ψ:Real[n,n];
 
   override function initialize() {
     α <- simulate_uniform(3.0, 10.0);
     β <- simulate_uniform(0.1, 10.0);
-    μ_0 <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+    m <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
     Σ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-
-    Σ <- outer(Σ, Σ) + diagonal(1.0e-2, n);
-    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-2, n);
+    Σ <- outer(Σ) + diagonal(1.0e-2, n);
+    for i in 1..5 {
+      A[i] <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, n);
+      c[i] <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+      let S <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+      Ψ[i] <- outer(S) + diagonal(1.0e-2, n);
+    }
   }
 
   override function simulate() {
     σ2 ~ InverseGamma(α, β);
-    μ ~ MultivariateGaussian(μ_0, Σ*σ2);
-    x1 ~ MultivariateGaussian(μ, Ψ*σ2);
-    x2 ~ MultivariateGaussian(μ, Ψ*σ2);
-    x3 ~ MultivariateGaussian(μ, Ψ*σ2);
-    x4 ~ MultivariateGaussian(μ, Ψ*σ2);
-    x5 ~ MultivariateGaussian(μ, Ψ*σ2);
+    μ ~ MultivariateGaussian(m, Σ*σ2);
+    for i in 1..5 {
+      x[i] ~ MultivariateGaussian(μ, Ψ[1]*σ2);
+    }
   }
 
   override function forward() -> Real[_] {
     σ2.eval();
 		μ.eval();
-		x1.eval();
-		x2.eval();
-		x3.eval();
-		x4.eval();
-		x5.eval();
+		x[1].eval();
+		x[2].eval();
+		x[3].eval();
+		x[4].eval();
+		x[5].eval();
     return vectorize();
   }
 
   override function backward() -> Real[_] {
-    assert !x5.hasValue();
-    x5.eval();
-		x4.eval();
-		x3.eval();
-		x2.eval();
-		x1.eval();
+    assert !x[5].hasValue();
+    x[5].eval();
+		x[4].eval();
+		x[3].eval();
+		x[2].eval();
+		x[1].eval();
     assert !μ.hasValue();
     μ.eval();
     assert !σ2.hasValue();
@@ -62,7 +61,7 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   }
 
   function marginal() -> Distribution<Real[_]> {
-    return x5.getDistribution();
+    return x[5].getDistribution();
   }
 
   function vectorize() -> Real[_] {
@@ -72,15 +71,15 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
 		k <- k + 1;
     y[k..(k + n - 1)] <- μ.eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x1.eval();
+    y[k..(k + n - 1)] <- x[1].eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x2.eval();
+    y[k..(k + n - 1)] <- x[2].eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x3.eval();
+    y[k..(k + n - 1)] <- x[3].eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x4.eval();
+    y[k..(k + n - 1)] <- x[4].eval();
 		k <- k + n;
-    y[k..(k + n - 1)] <- x5.eval();
+    y[k..(k + n - 1)] <- x[5].eval();
     return y;
   }
 
