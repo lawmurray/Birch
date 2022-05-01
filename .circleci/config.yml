@@ -28,7 +28,8 @@ executors:
       LIB_FLAGS: "--disable-debug --enable-test --disable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --enable-test --disable-release --disable-single"
       BIRCH_MODE: test
-    working_directory: /mnt/ramdisk/opensuse-test
+    working_directory: /root/project/opensuse-test
+    # ^ Not enough memory to use ramdisk when test coverage enabled
 
   ubuntu-debug:
     docker:
