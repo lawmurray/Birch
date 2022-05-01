@@ -10,7 +10,7 @@ class TestNormalInverseGamma < TestModel {
   override function initialize() {
     μ ~ Uniform(-10.0, 10.0);
     a2 ~ Uniform(0.1, 100.0);
-    α ~ Uniform(2.5, 10.0);
+    α ~ Uniform(3.0, 10.0);
     β ~ Uniform(0.1, 10.0);
   }
 

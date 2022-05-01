@@ -4,7 +4,7 @@ class TestInverseGamma < TestModel {
   β:Random<Real>;
 
   override function initialize() {
-    α ~ Uniform(2.5, 10.0);
+    α ~ Uniform(3.0, 10.0);
     β ~ Uniform(0.1, 10.0);
   }
 
