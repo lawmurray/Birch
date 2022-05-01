@@ -15,7 +15,7 @@ executors:
       LIB_FLAGS: "--disable-debug --disable-test --enable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --disable-test --enable-release --disable-single"
       BIRCH_MODE: release
-    working_directory: /mnt/ramdisk/opensuse-release
+    working_directory: /root/project/opensuse-release
 
   opensuse-test:
     docker:
@@ -29,7 +29,6 @@ executors:
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --enable-test --disable-release --disable-single"
       BIRCH_MODE: test
     working_directory: /root/project/opensuse-test
-    # ^ Not enough memory to use ramdisk when test coverage enabled
 
   ubuntu-debug:
     docker:
@@ -41,7 +40,7 @@ executors:
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/ubuntu-debug
+    working_directory: /root/project/ubuntu-debug
 
   debian-debug:
     docker:
@@ -53,7 +52,7 @@ executors:
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/debian-debug
+    working_directory: /root/project/debian-debug
 
   fedora-debug:
     docker:
@@ -65,7 +64,7 @@ executors:
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/fedora-debug
+    working_directory: /root/project/fedora-debug
 
   alpine-debug:
     docker:
@@ -77,7 +76,7 @@ executors:
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
       BIRCH_MODE: debug
-    working_directory: /mnt/ramdisk/alpine-debug
+    working_directory: /root/project/alpine-debug
 
   mac-debug:
     macos:
