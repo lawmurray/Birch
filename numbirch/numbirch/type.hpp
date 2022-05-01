@@ -572,7 +572,7 @@ inline constexpr bool all_integral_v = all_integral<Args...>::value;
  * Return type of pack().
  */
 template<class T, class U>
-using pack_t = Array<value_t<implicit_t<T,U>>,2>;
+using pack_t = Array<promote_t<value_t<T>,value_t<U>>,2>;
 
 /**
  * @typedef stack_t
@@ -582,7 +582,7 @@ using pack_t = Array<value_t<implicit_t<T,U>>,2>;
  * Return type of stack().
  */
 template<class T, class U>
-using stack_t = Array<value_t<implicit_t<T,U>>,
+using stack_t = Array<promote_t<value_t<T>,value_t<U>>,
     (dimension_v<T> == 2 || dimension_v<T> == 2) ? 2 : 1>;
 
 }

@@ -300,8 +300,7 @@ constexpr bool conforms(const T& x, const U& y) {
 }
 
 /**
- * Construct diagonal matrix. Diagonal elements are assigned to a given scalar
- * value, while all off-diagonal elements are assigned zero.
+ * Construct diagonal matrix, filling the diagonal with a given scalar.
  * 
  * @ingroup array
  * 
@@ -333,6 +332,43 @@ template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,0> diagonal_grad(const Array<real,2>& g,
     const Array<value_t<T>,2>& y, const T& x, const int n) {
   return sum(g.diagonal());
+}
+
+/**
+ * Construct diagonal matrix, setting the diagonal to a given vector.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Vector to assign to diagonal.
+ * 
+ * @return Diagonal matrix.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<T,2> diagonal(const Array<T,1>& x) {
+  Array<T,2> y(make_shape(length(x), length(x)), T(0));
+  y.diagonal() = x;
+  return y;
+}
+
+/**
+ * Gradient of diagonal().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Vector to assign to diagonal.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
+    const Array<T,1>& x) {
+  return g.diagonal();
 }
 
 /**
@@ -562,7 +598,7 @@ pack_t<T,U> pack(const T& x, const U& y) {
       z.slice(std::make_pair(1, r), std::make_pair(2, 1 + cy)) = y;
     }
   } else {
-    static_assert(is_matrix_v<U>);
+    static_assert(is_matrix_v<T>);
     z.slice(std::make_pair(1, r), std::make_pair(1, cx)) = x;
     if constexpr (is_scalar_v<U>) {
       z.slice(1, cx + 1) = y;
@@ -623,7 +659,7 @@ auto pack_grad(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
           std::make_pair(2, 1 + cy)));
     }
   } else {
-    static_assert(is_matrix_v<U>);
+    static_assert(is_matrix_v<T>);
     auto gx = g.slice(std::make_pair(1, r), std::make_pair(1, cx));
     if constexpr (is_scalar_v<U>) {
       return std::make_pair(gx, g.slice(1, cx + 1));
@@ -700,7 +736,7 @@ stack_t<T,U> stack(const T& x, const U& y) {
       return z;
     }
   } else {
-    static_assert(is_matrix_v<U>);
+    static_assert(is_matrix_v<T>);
     stack_t<T,U> z(make_shape(rx + ry, c));
     z.slice(std::make_pair(1, rx), std::make_pair(1, c)) = x;
     if constexpr (is_scalar_v<U>) {
@@ -761,7 +797,7 @@ auto stack_grad(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
           g.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, 1)));
     }
   } else {
-    static_assert(is_matrix_v<U>);
+    static_assert(is_matrix_v<T>);
     auto gx = g.slice(std::make_pair(1, rx), std::make_pair(1, c));
     if constexpr (is_scalar_v<U>) {
       return std::make_pair(gx, g.slice(rx + 1, 1));
@@ -855,7 +891,7 @@ Array<value_t<T>,2> mat(const T& x, const int n) {
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> mat_grad(const real_t<T>& g, const Array<value_t<T>,2>& y,
+real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
     const T& x, const int n) {
   if constexpr (std::is_arithmetic_v<T>) {
     return g.slice(1, 1);
