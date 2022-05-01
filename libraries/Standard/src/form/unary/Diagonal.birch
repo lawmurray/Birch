@@ -1,4 +1,4 @@
-struct Diagonal<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
+struct DiagonalScalar<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   /**
    * Memoized result.
    */
@@ -14,20 +14,36 @@ struct Diagonal<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   }}
 }
 
+struct DiagonalVector<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(diagonal, diagonal_grad)
+  }}
+}
+
 hpp{{
 namespace birch {
 using numbirch::diagonal;
 using numbirch::diagonal_grad;
 
 /**
- * Create diagonal matrix, filling the diagonal with a given scalar value.
- *
- * - x: The value.
- * - n: Number of rows/columns.
+ * Create diagonal matrix, filling the diagonal with a given scalar.
  */
 template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
-Diagonal<Middle> diagonal(const Middle& m, const int n) {
-  return construct<Diagonal<Middle>>(m, n);
+DiagonalScalar<Middle> diagonal(const Middle& m, const int n) {
+  return construct<DiagonalScalar<Middle>>(m, n);
+}
+
+/**
+ * Create diagonal matrix, setting the diagonal to a given vector.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+DiagonalVector<Middle> diagonal(const Middle& m) {
+  return construct<DiagonalVector<Middle>>(m);
 }
 }
 }}
