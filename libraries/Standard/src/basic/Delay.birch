@@ -330,23 +330,6 @@ abstract class Delay {
     assert false;
   }
 
-  function isNormalInverseGammaGaussian() -> Boolean {
-    return false;
-  }
-
-  function getNormalInverseGammaGaussian() -> (Expression<Real>,
-      Expression<Real>, Expression<Real>, Expression<Real>, Expression<Real>,
-      Expression<Real>, Expression<Real>) {
-    assert false;
-  }
-
-  function joinNormalInverseGammaGaussian() ->
-      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real>,
-      Expression<Real>, Expression<Real>, Expression<Real>,
-      Expression<Real[_]>, Expression<Real[_]>) {
-    assert false;
-  }
-
   function isDirichlet() -> Boolean {
     return false;
   }
@@ -422,6 +405,20 @@ abstract class Delay {
   }
 
   function getBoundedDiscrete() -> BoundedDiscreteDistribution {
+    assert false;
+  }
+
+  function joinNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real>,
+      Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real[_]>, Expression<Real[_]>) {
+    assert false;
+  }
+
+  function joinMatrixNormalInverseWishartMultivariateGaussian() ->
+      (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
+      Expression<Real[_]>) {
     assert false;
   }
 }

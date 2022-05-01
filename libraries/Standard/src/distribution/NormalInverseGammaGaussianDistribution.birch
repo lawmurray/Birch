@@ -112,24 +112,15 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
     global.constant(s2);
   }
 
-  override function isNormalInverseGammaGaussian() -> Boolean {
-    return true;
-  }
-
-  override function getNormalInverseGammaGaussian() -> (Expression<Real>,
-      Expression<Real>, Expression<Real>, Expression<Real>, Expression<Real>,
-      Expression<Real>, Expression<Real>) {
-    return box(a, μ, σ2, α, β, c, s2);
-  }
-
   override function joinNormalInverseGammaGaussian() ->
       (Expression<Real[_]>, Expression<Real[_]>, Expression<Real>,
       Expression<Real>, Expression<Real>, Expression<Real>,
       Expression<Real[_]>, Expression<Real[_]>) {
     let x' <- Random<Real>?(this.getNext())!;
-    let (a', μ', σ2', α', β', c', s2') <- getNormalInverseGammaGaussian();
+    let (a', μ', σ2', α', β', c', s2') <- box(a, μ, σ2, α, β, c, s2);
     if this.hasSide() && this.getSide().isSubordinate() {
-      let (x, a, μ, σ2, α, β, c, s2) <- this.getSide().joinNormalInverseGammaGaussian();
+      let (x, a, μ, σ2, α, β, c, s2) <-
+          this.getSide().joinNormalInverseGammaGaussian();
       return box(stack(x, x'), stack(a, a'), μ, σ2, α, β, stack(c, c'),
           stack(s2, s2'));
     } else {
