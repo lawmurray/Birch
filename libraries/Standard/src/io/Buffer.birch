@@ -1196,6 +1196,18 @@ final class Buffer {
     }
   }
 
+  function doPush(x:Boolean[_,_]) {
+    push(make_buffer(x));
+  }
+
+  function doPush(x:Integer[_,_]) {
+    push(make_buffer(x));
+  }
+
+  function doPush(x:Real[_,_]) {
+    push(make_buffer(x));
+  }
+
   function doPush(t:Integer, x:Boolean) {
     doPush(x);
   }
@@ -1237,6 +1249,18 @@ final class Buffer {
   }
 
   function doPush(t:Integer, x:Real[_]) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Boolean[_,_]) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Integer[_,_]) {
+    doPush(x);
+  }
+
+  function doPush(t:Integer, x:Real[_,_]) {
     doPush(x);
   }
 }
