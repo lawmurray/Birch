@@ -65,14 +65,19 @@ class ParticleFilter {
   trigger:Real <- 0.7;
 
   /**
-   * Should delayed sampling be used?
+   * Should automatic marginalization and conditioning be enabled?
    */
-  delayed:Boolean <- true;
+  autoconj:Boolean <- true;
 
   /**
-   * Should automatic differentiation be used?
+   * Should automatic differentiation be enabled?
    */
   autodiff:Boolean <- false;
+
+  /**
+   * Should automatic joining be enabled?
+   */
+  autojoin:Boolean <- false;
 
   /**
    * Create a particle of the type required for this filter.
@@ -130,7 +135,7 @@ class ParticleFilter {
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
-      let h <- construct<Handler>(delayed, autodiff);
+      let h <- construct<Handler>(autoconj, autodiff, autojoin);
       with h {
         x[n].m.read(input);
         x[n].m.simulate();
@@ -152,7 +157,7 @@ class ParticleFilter {
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
-      let h <- construct<Handler>(delayed, autodiff);
+      let h <- construct<Handler>(autoconj, autodiff, autojoin);
       with h {
         x[n].m.read(t, input);
         x[n].m.simulate(t);
@@ -261,18 +266,21 @@ class ParticleFilter {
   /**
    * Reconfigure particle filter.
    *
-   * - delayed: Should delayed sampling be used?
-   * - autodiff: Should automatic differentiation be used?
+   * - autoconj: Should automatic marginalization and conditioning be enabled?
+   * - autodiff: Should automatic differentiation be enabled?
+   * - autojoin: Should automatic joining be enabled?
    */
-  function reconfigure(delayed:Boolean, autodiff:Boolean) {
-    this.delayed <- delayed;
+  function reconfigure(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
+    this.autoconj <- autoconj;
     this.autodiff <- autodiff;
+    this.autojoin <- autojoin;
   }
 
   override function read(buffer:Buffer) {
     nparticles <-? buffer.get<Integer>("nparticles");
     trigger <-? buffer.get<Real>("trigger");
-    delayed <-? buffer.get<Boolean>("delayed");
+    autoconj <-? buffer.get<Boolean>("autoconj");
     autodiff <-? buffer.get<Boolean>("autodiff");
+    autojoin <-? buffer.get<Boolean>("autojoin");
   }
 }

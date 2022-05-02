@@ -12,7 +12,7 @@ function init() {
   cpp{{
   #pragma omp parallel
   {
-    handler = birch::Handler(std::in_place, true, false);
+    handler = birch::Handler(std::in_place, true, false, false);
   }
   }}
 }

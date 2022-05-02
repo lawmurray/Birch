@@ -205,7 +205,7 @@ program filter(
         bridge(f!.x[n]);
       }
       let f' <- copy(f!);
-      f'.reconfigure(false, false);
+      f'.reconfigure(false, false, false);
 
       /* forecast steps */
       let forecastInputIterator <- inputBuffer.walk("forecast");
