@@ -13,16 +13,16 @@
  */
 class AliveParticleFilter < ParticleFilter {
   override function simulate(t:Integer, input:Buffer) {
+    /* apply bridge finding to all particles in case needed, but actual copy()
+     * is performed as-needed below */
+    parallel for n in 1..nparticles {
+      bridge(x[n]);
+    }
+
     let x0 <- copy(x);
     let w0 <- w;
     let p <- vector(0, nparticles);  // number of propagations per particle
     let (a, o) <- resample_systematic(w);  // initial resample
-
-    /* apply bridge finding to all particles in case needed, but actual copy()
-     * is performed as-needed below */
-    parallel for n in 1..nparticles {
-      bridge(x0[n]);
-    }
 
     /* propagate */
     parallel for n in 1..nparticles {
