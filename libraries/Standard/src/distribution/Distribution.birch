@@ -151,6 +151,13 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
+  override function constant() {
+    if this.hasSide() {
+      this.getSide().constant();
+      this.setSide(nil);
+    }
+  }
+
   final override function prune() -> Delay {
     if this.hasNext() {
       let x <- Expression<Value>?(this.getNext().prune());
