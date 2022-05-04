@@ -37,8 +37,8 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return logpdf_binomial(x, eval(n), eval(ρ));
   }
 
-  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
-    return box(logpdf_binomial(x, n, ρ));
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_binomial(this.getVariate(), n, ρ));
   }
 
   override function cdf(x:Integer!) -> Real!? {

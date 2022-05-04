@@ -10,6 +10,15 @@ abstract class Distribution<Value> < Delay {
   subordinate:Boolean <- false;
 
   /**
+   * Get the variate associated with this distribution.
+   */
+  final function getVariate() -> Expression<Value> {
+    let x <- Expression<Value>?(this.getNext());
+    assert x?;
+    return x!;
+  }
+
+  /**
    * Are lazy operations supported?
    */
   function supportsLazy() -> Boolean {
@@ -70,7 +79,7 @@ abstract class Distribution<Value> < Delay {
    * Return: expression giving the log probability density (or mass), if
    * supported.
    */
-  function logpdfJoin(x:Expression<Value>) -> Expression<Real>? {
+  function hoist() -> Expression<Real>? {
     return nil;
   }
 
@@ -166,12 +175,6 @@ abstract class Distribution<Value> < Delay {
     } else {
       return this;
     }
-  }
-
-  final override function hoist() -> Expression<Real>? {
-    let x <- Expression<Value>?(this.getNext());
-    assert x?;
-    return logpdfJoin(x!);
   }
 
   final override function isDistribution() -> Boolean {

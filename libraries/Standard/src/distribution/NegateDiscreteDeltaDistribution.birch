@@ -31,16 +31,16 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
     return p.logpdfLazy(-x);
   }
 
-  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
-    return p.logpdfJoin(box(-x));
-  }
-
   override function update(x:Integer!) -> Delay? {
     return Delta(-x);
   }
 
   override function updateLazy(x:Expression<Integer>) -> Delay? {
     return Delta(-x);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return p.hoist();
   }
 
   override function lower() -> Integer!? {

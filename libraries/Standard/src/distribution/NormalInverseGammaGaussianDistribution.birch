@@ -68,12 +68,6 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         eval(σ2), eval(α), eval(β), eval(c), eval(s2));
   }
 
-  override function logpdfJoin(x':Expression<Real>) -> Expression<Real>? {
-    let (x, a, μ, σ2, α, β, c, s2) <- joinNormalInverseGammaGaussian();
-    return box(logpdf_join_normal_inverse_gamma_gaussian(x, a, μ, σ2, α, β, c,
-        s2));
-  }
-
   override function update(x:Real!) -> Delay? {
     return update_normal_inverse_gamma_gaussian(x, value(a), value(μ),
         value(σ2), value(α), value(β), value(c), value(s2));
@@ -89,6 +83,12 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         s2);
     p.setSide(this);
     return p;
+  }
+
+  override function hoist() -> Expression<Real>? {
+    let (x, a, μ, σ2, α, β, c, s2) <- joinNormalInverseGammaGaussian();
+    return box(logpdf_join_normal_inverse_gamma_gaussian(this.getVariate(), a, μ, σ2, α, β, c,
+        s2));
   }
 
   override function cdf(x:Real!) -> Real!? {

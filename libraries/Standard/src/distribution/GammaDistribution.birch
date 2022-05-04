@@ -36,8 +36,8 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
     return logpdf_gamma(x, eval(k), eval(θ));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_gamma(x, k, θ));
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_gamma(this.getVariate(), k, θ));
   }
 
   override function cdf(x:Real!) -> Real!? {

@@ -70,10 +70,6 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
         eval(β));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_normal_inverse_gamma(x, μ, σ2, α, β));
-  }
-
   override function update(x:Real!) -> Delay? {
     return update_normal_inverse_gamma(x, value(μ), value(σ2), value(α),
         value(β));
@@ -81,6 +77,10 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
    return update_normal_inverse_gamma(x, μ, σ2, α, β);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_normal_inverse_gamma(this.getVariate(), μ, σ2, α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {

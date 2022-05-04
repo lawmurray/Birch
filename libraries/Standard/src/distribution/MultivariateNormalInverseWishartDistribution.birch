@@ -51,10 +51,6 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         eval(Ψ), eval(k));
   }
 
-  override function logpdfJoin(x:Expression<Real[_]>) -> Expression<Real>? {   
-    return box(logpdf_multivariate_normal_inverse_wishart(x, μ, σ2, Ψ, k));
-  }
-
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart(x, value(μ), value(σ2),
         value(Ψ), value(k));
@@ -62,6 +58,11 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_wishart(x, μ, σ2, Ψ, k);
+  }
+
+  override function hoist() -> Expression<Real>? {   
+    return box(logpdf_multivariate_normal_inverse_wishart(this.getVariate(),
+        μ, σ2, Ψ, k));
   }
 
   override function constant() {

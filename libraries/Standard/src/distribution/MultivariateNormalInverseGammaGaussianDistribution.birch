@@ -68,11 +68,6 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
         eval(ω2));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_multivariate_normal_inverse_gamma_gaussian(x, a,
-        μ, Σ, c, k, β, ω2));
-  }
-
   override function update(x:Real!) -> Delay? {
     return update_multivariate_normal_inverse_gamma_gaussian(x,
         value(a), value(μ), value(Σ), value(c), value(k), value(β),
@@ -82,6 +77,11 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
   override function updateLazy(x:Expression<Real>) -> Delay? {
     return update_multivariate_normal_inverse_gamma_gaussian(x, a,
         μ, Σ, c, k, β, ω2);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_multivariate_normal_inverse_gamma_gaussian(
+        this.getVariate(), a, μ, Σ, c, k, β, ω2));
   }
 
   override function cdf(x:Real!) -> Real!? {

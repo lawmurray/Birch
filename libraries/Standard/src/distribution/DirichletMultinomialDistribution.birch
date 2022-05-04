@@ -33,16 +33,16 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return logpdf_dirichlet_multinomial(x, eval(n), eval(α));
   }
 
-  override function logpdfJoin(x:Expression<Integer[_]>) -> Expression<Real>? {
-    return box(logpdf_dirichlet_multinomial(x, n, α));
-  }
-
   override function update(x:Integer[_]) -> Delay? {
     return update_dirichlet_multinomial(x, value(n), value(α));
   }
 
   override function updateLazy(x:Expression<Integer[_]>) -> Delay? {
     return update_dirichlet_multinomial(x, n, α);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_dirichlet_multinomial(this.getVariate(), n, α));
   }
 
   override function constant() {

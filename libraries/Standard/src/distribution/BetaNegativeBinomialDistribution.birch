@@ -38,10 +38,6 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return logpdf_beta_negative_binomial(x, eval(k), eval(α), eval(β));
   }
 
-  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
-    return box(logpdf_beta_negative_binomial(x, k, α, β));
-  }
-
   override function update(x:Integer!) -> Delay? {
     return update_beta_negative_binomial(x, value(k), value(α), value(β));
   }
@@ -49,7 +45,11 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
   override function updateLazy(x:Expression<Integer>) -> Delay? {
     return update_beta_negative_binomial(x, k, α, β);
   }
-  
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_beta_negative_binomial(this.getVariate(), k, α, β));
+  }
+
   override function lower() -> Integer!? {
     return 0;
   }

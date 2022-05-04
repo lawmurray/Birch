@@ -37,8 +37,8 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
     return logpdf_negative_binomial(x, eval(k), eval(ρ));
   }
 
-  override function logpdfJoin(x:Expression<Integer>) -> Expression<Real>? {
-    return box(logpdf_negative_binomial(x, k, ρ));
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_negative_binomial(this.getVariate(), k, ρ));
   }
 
   override function cdf(x:Integer!) -> Real!? {

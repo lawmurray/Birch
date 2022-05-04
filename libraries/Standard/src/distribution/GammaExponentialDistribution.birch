@@ -42,10 +42,6 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
     return logpdf_lomax(x, 1.0/(eval(a)*eval(θ)), eval(k));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_lomax(x, 1.0/(a*θ), k));
-  }
-
   override function update(x:Real!) -> Delay? {
     return update_gamma_exponential(x, value(a), value(k), value(θ));
   }
@@ -53,7 +49,11 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   override function updateLazy(x:Expression<Real>) -> Delay? {
     return update_gamma_exponential(x, a, k, θ);
   }
-  
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_lomax(this.getVariate(), 1.0/(a*θ), k));
+  }
+
   override function cdf(x:Real!) -> Real!? {
     return cdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }

@@ -38,16 +38,16 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
     return logpdf_inverse_gamma_gamma(x, eval(k), eval(α), eval(β));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_inverse_gamma_gamma(x, k, α, β));
-  }
-
   override function update(x:Real!) -> Delay? {
     return update_inverse_gamma_gamma(x, value(k), value(α), value(β));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
     return update_inverse_gamma_gamma(x, k, α, β);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_inverse_gamma_gamma(this.getVariate(), k, α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {

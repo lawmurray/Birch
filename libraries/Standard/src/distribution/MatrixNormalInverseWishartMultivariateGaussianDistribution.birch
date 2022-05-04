@@ -70,13 +70,6 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
         eval(a), eval(M), eval(Σ), eval(Ψ), eval(k), eval(c), eval(φ2));
   }
 
-  override function logpdfJoin(x':Expression<Real[_]>) -> Expression<Real>? {
-    let (Y, A, M, Σ, Ψ, k, φ2) <-
-        joinMatrixNormalInverseWishartMultivariateGaussian();
-    return box(logpdf_join_matrix_normal_inverse_wishart_multivariate_gaussian(
-        Y, A, M, Σ, Ψ, k, φ2));
-  }
-
   override function update(x:Real[_]) -> Delay? {
     return update_matrix_normal_inverse_wishart_multivariate_gaussian(
         x, value(a), value(M), value(Σ), value(Ψ), value(k), value(c),
@@ -95,6 +88,13 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
         Y, A, M, Σ, Ψ, k, φ2);
     p.setSide(this);
     return p;
+  }
+
+  override function hoist() -> Expression<Real>? {
+    let (Y, A, M, Σ, Ψ, k, φ2) <-
+        joinMatrixNormalInverseWishartMultivariateGaussian();
+    return box(logpdf_join_matrix_normal_inverse_wishart_multivariate_gaussian(
+        Y, A, M, Σ, Ψ, k, φ2));
   }
 
   override function constant() {

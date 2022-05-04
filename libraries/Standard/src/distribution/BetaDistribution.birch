@@ -36,8 +36,8 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
     return logpdf_beta(x, eval(α), eval(β));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_beta(x, α, β));
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_beta(this.getVariate(), α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {

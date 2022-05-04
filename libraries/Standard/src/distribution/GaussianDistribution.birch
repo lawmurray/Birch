@@ -36,8 +36,8 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
     return logpdf_gaussian(x, eval(μ), eval(σ2));
   }
 
-  override function logpdfJoin(x:Expression<Real>) -> Expression<Real>? {
-    return box(logpdf_gaussian(x, μ, σ2));
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_gaussian(this.getVariate(), μ, σ2));
   }
   
   override function cdf(x:Real!) -> Real!? {

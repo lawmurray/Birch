@@ -27,8 +27,8 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
     return logpdf_bernoulli(x, eval(ρ));
   }
 
-  override function logpdfJoin(x:Expression<Boolean>) -> Expression<Real>? {
-    return box(logpdf_bernoulli(x, ρ));
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_bernoulli(this.getVariate(), ρ));
   }
 
   override function constant() {
