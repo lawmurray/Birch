@@ -1,0 +1,95 @@
+/**
+ * Special expression for pack() on an arbitrary number of arguments with
+ * pre-allocation of the final result.
+ *
+ * - Arg: Argument type, e.g. `Real[_]` or `Expression<Real[_]>`.
+ * - Element: Result element type, e.g. `Real`.
+ */
+final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
+  /**
+   * Arguments.
+   */
+  args:Array<Arg>;
+
+  /**
+   * Add an argument.
+   *
+   * - arg: The argument.
+   */
+  function push(arg:Arg) {
+    args.pushBack(arg);
+  }
+
+  override function doEval() {
+    let C <- args.size();
+    if C > 0 {
+      let R <- rows(args[1]);
+      x:Element[R,C];
+      for c in 1..C {
+        x[1..R,c] <- global.eval(args[c]);
+      }
+      this.x <- x;
+    } else {
+      this.x <- matrix(0.0, 0, 0);
+    }
+  }
+
+  override function doMove(visitor:MoveVisitor) {
+    let C <- args.size();
+    if C > 0 {
+      let R <- rows(args[1]);
+      x:Element[R,C];
+      for c in 1..C {
+        x[1..R,c] <- global.move(args[c], visitor);
+      }
+      this.x <- x;
+    } else {
+      this.x <- matrix(0.0, 0, 0);
+    }
+  }
+
+  override function doArgs(visitor:ArgsVisitor) {
+    let C <- args.size();
+    for c in 1..C {
+      global.args(args[c], visitor);
+    }
+  }
+
+  override function doShallowGrad() {
+    let R <- rows(this.g!);
+    let C <- columns(this.g!);
+    for c in 1..C {
+      global.shallow_grad(args[c], this.g![1..R,c]);
+    }
+    this.g <- nil;  // clear intermediate gradient to save memory
+  }
+
+  override function doDeepGrad() {
+    let C <- args.size();
+    for c in 1..C {
+      global.deep_grad(args[c]);
+    }
+  }
+
+  override function doReset() {
+    let C <- args.size();
+    for c in 1..C {
+      global.reset(args[c]);
+    }
+  }
+
+  override function doRelink() {
+    let C <- args.size();
+    for c in 1..C {
+      global.relink(args[c]);
+    }
+  }
+
+  override function doConstant() {
+    let C <- args.size();
+    for c in 1..C {
+      global.constant(args[c]);
+    }
+    args.clear();
+  }
+}

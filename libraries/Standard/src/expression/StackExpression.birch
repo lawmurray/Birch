@@ -1,0 +1,85 @@
+/**
+ * Special expression for stack() on an arbitrary number of arguments with
+ * pre-allocation of the final result.
+ *
+ * - Arg: Argument type, e.g. `Real` or `Expression<Real>`.
+ * - Element: Result element type, e.g. `Real`.
+ */
+final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
+  /**
+   * Arguments.
+   */
+  args:Array<Arg>;
+
+  /**
+   * Add an argument.
+   *
+   * - arg: The argument.
+   */
+  function push(arg:Arg) {
+    args.pushBack(arg);
+  }
+
+  override function doEval() {
+    let R <- args.size();
+    x:Element[R];
+    for r in 1..R {
+      x[r] <- global.eval(args[r]);
+    }
+    this.x <- x;
+  }
+
+  override function doMove(visitor:MoveVisitor) {
+    let R <- args.size();
+    x:Element[R];
+    for r in 1..R {
+      x[r] <- global.move(args[r], visitor);
+    }
+    this.x <- x;
+  }
+
+  override function doArgs(visitor:ArgsVisitor) {
+    let R <- args.size();
+    for r in 1..R {
+      global.args(args[r], visitor);
+    }
+  }
+
+  override function doShallowGrad() {
+    let R <- args.size();
+    x:Element[R];
+    for r in 1..R {
+      global.shallow_grad(args[r], this.g![r]);
+    }
+    this.g <- nil;  // clear intermediate gradient to save memory
+  }
+
+  override function doDeepGrad() {
+    let R <- args.size();
+    for r in 1..R {
+      global.deep_grad(args[r]);
+    }
+  }
+
+  override function doReset() {
+    let R <- args.size();
+    for r in 1..R {
+      global.reset(args[r]);
+    }
+  }
+
+  override function doRelink() {
+    let R <- args.size();
+    for r in 1..R {
+      global.relink(args[r]);
+    }
+  }
+
+  override function doConstant() {
+    let R <- args.size();
+    for r in 1..R {
+      global.constant(args[r]);
+    }
+    args.clear();
+  }
+}

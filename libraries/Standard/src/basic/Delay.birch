@@ -408,14 +408,52 @@ abstract class Delay {
     assert false;
   }
 
-  function joinNormalInverseGammaGaussian() ->
-      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real>,
+  function getMultivariateNormalInverseGammaGaussian() ->
+      (Real[_], Real[_], Real[_,_], Real, Real, Real, Real) {
+    assert false;
+  }
+
+  function getLazyMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real[_,_]>,
       Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real>) {
+    assert false;
+  }
+
+  function joinMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>,
       Expression<Real[_]>, Expression<Real[_]>) {
     assert false;
   }
 
+  function joinLazyMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>,
+      Expression<Real[_]>, Expression<Real[_]>) {
+    assert false;
+  }
+
+  function getMatrixNormalInverseWishartMultivariateGaussian(x:Real[_]) ->
+      (Real[_], Real[_], Real[_,_], Real[_,_], Real[_,_], Real, Real) {
+    assert false;
+  }
+
+  function getLazyMatrixNormalInverseWishartMultivariateGaussian(
+      x:Expression<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
   function joinMatrixNormalInverseWishartMultivariateGaussian() ->
+      (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
+      Expression<Real[_]>) {
+    assert false;
+  }
+
+  function joinLazyMatrixNormalInverseWishartMultivariateGaussian() ->
       (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
       Expression<Real[_]>) {

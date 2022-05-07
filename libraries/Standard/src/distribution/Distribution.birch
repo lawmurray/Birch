@@ -40,11 +40,20 @@ abstract class Distribution<Value> < Delay {
   abstract function simulate() -> Value!;
 
   /**
-   * Simulate a value for a lazy expression.
+   * Simulate a value using lazy expressions.
    *
    * Return: the value, if supported.
    */
   function simulateLazy() -> Value!? {
+    return nil;
+  }
+
+  /**
+   * Simulate a value using lazy expressions and joins.
+   *
+   * Return: the value, if supported.
+   */
+  function simulateJoin() -> Value!? {
     return nil;
   }
 
@@ -71,15 +80,13 @@ abstract class Distribution<Value> < Delay {
 
   /**
    * Evaluate the log probability density (or mass) function using lazy
-   * expressions, for the joint distribution of this and any distributions
-   * joined with it.
+   * expressions and joins.
    *
    * - x: The value.
    *
-   * Return: expression giving the log probability density (or mass), if
-   * supported.
+   * Return: the log probability density (or mass), if supported.
    */
-  function hoist() -> Expression<Real>? {
+  function logpdfJoin(x:Value!) -> Real!? {
     return nil;
   }
 
@@ -104,8 +111,7 @@ abstract class Distribution<Value> < Delay {
 
   /**
    * Update the parent node on the $M$-path given the value of this node,
-   * using lazy expressions, while propagating any other distributions joined
-   * with this.
+   * using lazy expressions and joins.
    *
    * - x: The value.
    */

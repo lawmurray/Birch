@@ -154,14 +154,6 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   }
 }
 
-/**
- * Create multivariate Gaussian distribution.
- */
-function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
-    Σ:OpMul<Random<Real>,Arg2>) -> Distribution<Real[_]> {
-  return MultivariateGaussian(μ, Σ.r*Σ.l);
-}
-
 /*
  * Simulate a multivariate normal inverse-gamma distribution.
  *
