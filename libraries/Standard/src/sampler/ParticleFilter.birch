@@ -190,12 +190,8 @@ class ParticleFilter {
         /* resample */
         let (a, o) <- resample_systematic(w);
 
-        /* pre-compute and bridge-find */
+        /* bridge-find */
         dynamic parallel for n in 1..nparticles {
-          if κ? && o[n] >= 1 {
-            /* will survive, perform pre-computations */
-            κ!.pre(x[n]);
-          }
           if o[n] >= 2 {
             /* will be copied at least once, perform bridge-finding */
             bridge(x[n]);
@@ -217,15 +213,13 @@ class ParticleFilter {
         /* move */
         if κ? && κ!.nmoves > 0 {
           let happy <- false;
-          let first <- true;
           let nattempts <- 0;
           do {
             let α <- vector(0.0, nparticles);  // acceptance rate per particle
             parallel for n in 1..nparticles {
-              if !first {
-                κ!.pre(x[n]);
-              }
+              κ!.pre(x[n]);
               α[n] <- κ!.move(x[n]);
+              κ!.post(x[n]);
             }
             raccepts <- sum(α)/nparticles;
             stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts! + "\n");
@@ -236,31 +230,18 @@ class ParticleFilter {
             } else {
               happy <- true;
             }
-            first <- false;
             nattempts <- nattempts + 1;
-          } while false && !happy && nattempts < 10;
-
-          /* perform post-computations */
-          parallel for n in 1..nparticles {
-            κ!.post(x[n]);
-          }
+          } while !happy && nattempts < 10;
         }
 
         /* reset weights */
         w <- vector(0.0, nparticles);
       } else {
-        if κ? {
-          /* handle lags */
-          parallel for n in 1..nparticles {
-            κ!.post(x[n]);
-          }
-        }
-
         /* normalize weights to sum to nparticles */
         w <- w - vector(lsum - log(nparticles), nparticles);
-        collect();
       }
     }
+    collect();
   }
 
   /**

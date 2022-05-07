@@ -44,6 +44,7 @@ class LangevinKernel < Kernel {
             return;  // mismatched states, cannot adapt
           }
         }
+        x[n].π <- nil;
       } else {
         return;  // mismatched states, cannot adapt
       }
@@ -54,6 +55,7 @@ class LangevinKernel < Kernel {
   }
 
   override function pre(x:Particle) {
+    x.hoist();
     if x.π? {
       x.π!.grad(1.0);
     }
@@ -125,6 +127,7 @@ class LangevinKernel < Kernel {
   }
 
   override function post(x:Particle) {
+    x.π <- nil;
     x.constant(nlags);
   }
 }
