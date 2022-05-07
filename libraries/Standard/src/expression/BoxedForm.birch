@@ -12,6 +12,10 @@ final class BoxedForm<Value,Form>(x:Value!, f:Form) <
    */
   f:Form? <- f;
 
+  override function doEval() {
+    this.x <- global.eval(f!);
+  }
+
   override function doMove(visitor:MoveVisitor) {
     this.x <- global.move(f!, visitor);
   }
