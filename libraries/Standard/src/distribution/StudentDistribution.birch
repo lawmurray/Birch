@@ -90,10 +90,6 @@ function Student<Arg>(k:Arg) -> Distribution<Real> {
   return Student(k, 0.0, 1.0);
 }
 
-hpp{{
-using numbirch::simulate_student_t;
-}}
-
 /*
  * Simulate a Student's $t$-distribution with location and scale.
  *
@@ -102,7 +98,10 @@ using numbirch::simulate_student_t;
  * - σ2: Squared scale.
  */
 function simulate_student_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
-  return μ + sqrt(σ2)*simulate_student_t(k);
+  cpp{{
+  auto x = numbirch::simulate_student_t(k);
+  }}
+  return μ + sqrt(σ2)*x;
 }
 
 /*
