@@ -4,9 +4,7 @@
  */
 class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(A:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, C:Arg6,
-    Φ:Arg7) < MatrixTDistribution<Arg5,Expression<Real[_,_]>,
-    Expression<Real[_,_]>,Arg4>(k, box(A*M + C),
-    box(chol(A*triouter(Σ)*transpose(A) + triouter(Φ))), Ψ) {
+    Φ:Arg7) < Distribution<Real[_,_]> {
   /**
    * Scale.
    */
@@ -23,6 +21,16 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
   Σ:Arg3 <- Σ;
 
   /**
+   * Among-column covariance.
+   */
+  Ψ:Arg4 <- Ψ;
+
+  /**
+   * Degrees of freedom.
+   */
+  k:Arg5 <- k;
+
+  /**
    * Offset.
    */
   C:Arg6 <- C;
@@ -36,15 +44,40 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
     return true;
   }
 
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(value(A),
+        value(M), value(Σ), value(Ψ), value(k), value(C), value(Φ));
+  }
+
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(eval(A),
+        eval(M), eval(Σ), eval(Ψ), eval(k), eval(C), eval(Φ));
+  }
+  
+  override function logpdf(X:Real[_,_]) -> Real! {
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, value(A),
+        value(M), value(Σ), value(Ψ), value(k), value(C), value(Φ));
+  }
+
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, eval(A),
+        eval(M), eval(Σ), eval(Ψ), eval(k), eval(C), eval(Φ));
+  }
+
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(X,
-        value(A), value(M), value(Σ), value(super.Ψ), value(super.k),
-        value(C), value(Φ), value(super.M), value(super.Σ));
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(X, value(A),
+        value(M), value(Σ), value(Ψ), value(k), value(C), value(Φ));
   }
 
   override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(X,
-        A, M, Σ, super.Ψ, super.k, C, Φ, super.M, super.Σ);
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(X, A, M, Σ, Ψ,
+        k, C, Φ);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
+        this.getVariate(), eval(A), eval(M), eval(Σ), eval(Ψ), eval(k),
+        eval(C), eval(Φ)));
   }
 
   override function constant() {
@@ -52,6 +85,8 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
     global.constant(A);
     global.constant(M);
     global.constant(Σ);
+    global.constant(Ψ);
+    global.constant(k);
     global.constant(C);
     global.constant(Φ);
   }
@@ -123,6 +158,47 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, Σ:Arg,
 }
 
 /*
+ * Simulate matrix-normal-inverse-Wishart-matrix-Gaussian variate.
+ *
+ * - A: Scale.
+ * - M: Mean.
+ * - Σ: Among-row spread.
+ * - Ψ: Among-column spread.
+ * - k: Degrees of freedom.
+ * - C: Offset.
+ * - Φ: Among-row spread.
+ *
+ * Returns: the variate.
+ */
+function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, C:Arg6,
+    Φ:Arg7) -> {
+  return simulate_matrix_t(k, A*M + C, chol(A*triouter(Σ)*transpose(A) +
+      triouter(Φ)), Ψ);
+}
+
+/*
+ * Observe matrix-normal-inverse-Wishart-matrix-Gaussian variate.
+ *
+ * - X: The variate.
+ * - A: Scale.
+ * - M: Mean.
+ * - Σ: Among-row spread.
+ * - Ψ: Among-column spread.
+ * - k: Degrees of freedom.
+ * - C: Offset.
+ * - Φ: Among-row spread.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
+    Arg4,Arg5,Arg6,Arg7,Arg8>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5, k:Arg6,
+    C:Arg7, Φ:Arg8) -> {
+  return logpdf_matrix_t(X, k, A*M + C, chol(A*triouter(Σ)*transpose(A) +
+      triouter(Φ)), Ψ);
+}
+
+/*
  * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-Wishart prior.
  *
@@ -140,8 +216,8 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, Σ:Arg,
  * Returns: the posterior hyperparameters `M'`, `Σ'`, `Ψ'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
-    Arg4,Arg5,Arg6,Arg7,Arg8,Arg9,Arg10>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4,
-    Ψ:Arg5, k:Arg6, C:Arg7, Φ:Arg8, N:Arg9, T:Arg10) -> {
+    Arg4,Arg5,Arg6,Arg7,Arg8>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5, k:Arg6,
+    C:Arg7, Φ:Arg8) -> {
   let n <- rows(X);
   let Σ' <- wrap(chol(cholinv(chol(cholinv(Σ) + transpose(A)*cholinv(Φ)*A))));
   let M' <- wrap(triouter(Σ')*(cholsolve(Σ, M) + transpose(A)*cholsolve(Φ, X - C)));
