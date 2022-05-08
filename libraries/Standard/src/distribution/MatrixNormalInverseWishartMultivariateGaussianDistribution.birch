@@ -117,7 +117,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
 
   override function hoist() -> Expression<Real>? {
     let (Y, A, M, Σ, Ψ, k, φ2) <-
-        joinLazyMatrixNormalInverseWishartMultivariateGaussian();
+        joinMatrixNormalInverseWishartMultivariateGaussian();
     return box(logpdf_join_matrix_normal_inverse_wishart_multivariate_gaussian(
         Y, A, M, Σ, Ψ, k, φ2));
   }
@@ -134,13 +134,6 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function getMatrixNormalInverseWishartMultivariateGaussian(
-      x:Real[_]) -> (Real[_], Real[_], Real[_,_], Real[_,_], Real[_,_],
-      Real, Real) {
-    return (eval(x - c), eval(a), eval(M), eval(Σ), eval(Ψ), eval(k),
-        eval(φ2));
-  }
-
-  override function getLazyMatrixNormalInverseWishartMultivariateGaussian(
       x:Expression<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
       Expression<Real>, Expression<Real>) {
@@ -151,29 +144,6 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
       (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
       Expression<Real[_]>) {
-    Y:PackExpression<Real[_],Real>;
-    A:PackExpression<Real[_],Real>;
-    φ2:StackExpression<Real,Real>;
-    p:Delay <- this;
-    while true {
-      let x' <- Expression<Real[_]>?(p.getNext())!;
-      let (y', a', M', Σ', Ψ', k', φ2') <-
-          p.getLazyMatrixNormalInverseWishartMultivariateGaussian(x');
-      Y.push(eval(y'));
-      A.push(eval(a'));
-      φ2.push(eval(φ2'));
-      if p.hasSide() && p.getSide().isSubordinate() {
-        p <- p.getSide();
-      } else {
-        return (Y, A, M', Σ', Ψ', k', φ2);
-      }
-    }
-  }
-
-  override function joinLazyMatrixNormalInverseWishartMultivariateGaussian() ->
-      (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
-      Expression<Real[_]>) {
     Y:PackExpression<Expression<Real[_]>,Real>;
     A:PackExpression<Expression<Real[_]>,Real>;
     φ2:StackExpression<Expression<Real>,Real>;
@@ -181,7 +151,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     while true {
       let x' <- Expression<Real[_]>?(p.getNext())!;
       let (y', a', M', Σ', Ψ', k', φ2') <-
-          p.getLazyMatrixNormalInverseWishartMultivariateGaussian(x');
+          p.getMatrixNormalInverseWishartMultivariateGaussian(x');
       Y.push(y');
       A.push(a');
       φ2.push(φ2');
