@@ -393,6 +393,10 @@ template<class T, class U, class... Args>
 struct implicit<T,U,Args...> {
   using type = typename implicit<typename implicit<T,U>::type,Args...>::type;
 };
+template<class T, int D, class U, int E>
+struct implicit<Array<T,D>,Array<U,E>> {
+  using type = void;
+};
 template<class T, int D, class U>
 struct implicit<Array<T,D>,Array<U,D>> {
   using type = Array<typename promote<T,U>::type,D>;
