@@ -12,7 +12,7 @@ function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {
 
   parallel for n in 1..N {
     let forward <- construct<Handler>(false, lazy, false);
-    let backward <- construct<Handler>(true, lazy, true);
+    let backward <- construct<Handler>(true, lazy, false);
 
     /* initialize consistently between forward and backward versions */
     let m' <- copy(m);
