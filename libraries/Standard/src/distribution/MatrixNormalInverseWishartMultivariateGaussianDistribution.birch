@@ -63,10 +63,10 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     if !this.hasSide() {
       return simulateLazy();
     } else {
-      let (Y, A, M, Σ, Ψ, k, φ2) <-
+      let (Y, A, M, Σ, Ψ, k, Φ) <-
           this.getSide().joinMatrixNormalInverseWishartMultivariateGaussian();
-      let p <- update_join_matrix_normal_inverse_wishart_multivariate_gaussian(
-          eval(Y), eval(A), eval(M), eval(Σ), eval(Ψ), eval(k), eval(φ2));
+      let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
+          eval(Y), eval(A), eval(M), eval(Σ), eval(Ψ), eval(k), eval(Φ));
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
           eval(this.a), eval(p.M), eval(p.Σ), eval(p.Ψ), eval(p.k),
           eval(this.c), eval(this.φ2));
@@ -88,10 +88,10 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     if !this.hasSide() {
       return logpdfLazy(x);
     } else {
-      let (Y, A, M, Σ, Ψ, k, φ2) <-
+      let (Y, A, M, Σ, Ψ, k, Φ) <-
           this.getSide().joinMatrixNormalInverseWishartMultivariateGaussian();
-      let p <- update_join_matrix_normal_inverse_wishart_multivariate_gaussian(
-          eval(Y), eval(A), eval(M), eval(Σ), eval(Ψ), eval(k), eval(φ2));
+      let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
+          eval(Y), eval(A), eval(M), eval(Σ), eval(Ψ), eval(k), eval(Φ));
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
           x, eval(this.a), eval(p.M), eval(p.Σ), eval(p.Ψ), eval(p.k),
           eval(this.c), eval(this.φ2));
@@ -116,10 +116,10 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function hoist() -> Expression<Real>? {
-    let (Y, A, M, Σ, Ψ, k, φ2) <-
+    let (Y, A, M, Σ, Ψ, k, Φ) <-
         joinMatrixNormalInverseWishartMultivariateGaussian();
-    return box(logpdf_join_matrix_normal_inverse_wishart_multivariate_gaussian(
-        Y, A, M, Σ, Ψ, k, φ2));
+    return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
+        Y, A, M, Σ, Ψ, k, Φ));
   }
 
   override function constant() {
@@ -143,7 +143,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   override function joinMatrixNormalInverseWishartMultivariateGaussian() ->
       (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
-      Expression<Real[_]>) {
+      Expression<Real[_,_]>) {
     Y:PackExpression<Expression<Real[_]>,Real>;
     A:PackExpression<Expression<Real[_]>,Real>;
     φ2:StackExpression<Expression<Real>,Real>;
@@ -158,7 +158,8 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
       if p.hasSide() && p.getSide().isSubordinate() {
         p <- p.getSide();
       } else {
-        return (Y, A, M', Σ', Ψ', k', φ2);
+        return (box(transpose(Y)), box(transpose(A)), M', Σ', Ψ', k',
+            box(diagonal(φ2)));
       }
     }
   }
@@ -257,17 +258,6 @@ function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
 function simulate_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4,
     k:Arg5, c:Arg6, φ2:Arg7) -> {
-  // let m <- rows(M);
-  // let n <- columns(M);
-  // cpp{{
-  // auto Y = numbirch::standard_wishart(k, n);
-  // auto Z = numbirch::standard_gaussian(m, n);
-  // auto z = numbirch::standard_gaussian(n);
-  // }}
-  // let Ω <- trisolve(Y, transpose(Ψ));
-  // return inner(M + trimul(Σ, Z)*Ω, a) + c + sqrt(φ2)*inner(Ω, z);
-
-  // still faster...
   return simulate_multivariate_t(k, inner(M, a) + c, sqrt(φ2 +
       dot(triinner(Σ, a)))*Ψ);
 }
@@ -289,61 +279,8 @@ function simulate_matrix_normal_inverse_wishart_multivariate_gaussian<
 function logpdf_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, M:Arg3, Σ:Arg4,
     Ψ:Arg5, k:Arg6, c:Arg7, φ2:Arg8) -> {
-  // let Λ <- chol(cholinv(Σ) + outer(a, a/φ2));
-  // let z <- outer(a, triinner(Λ, x - inner(M, a) - c));
-  // let n <- length(x);
-  // let a <- wrap(0.5*k + 0.5*n);
-  // let b <- 0.5*k;
-  // return lgamma(a) - 0.5*n*log(π) - lgamma(b) - 0.5/lcholdet(Λ) -
-  //     a*log1p(dot(z));
-
   return logpdf_multivariate_t(x, k, inner(M, a) + c, sqrt(φ2 +
       dot(triinner(Σ, a)))*Ψ);
-}
-
-/*
- * Observe Gaussian variates with a normal inverse-gamma prior with linear
- * transformation.
- *
- * - Y: Matrix of variates, minus offsets.
- * - A: Matrix of scales.
- * - M: Mean.
- * - Σ: Covariance.
- * - Ψ: Prior variance shape.
- * - k: Prior degrees of freedom.
- * - φ2: Vector of additional variance scales.
- *
- * Returns: the log probability density.
- */
-function logpdf_join_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5,
-    k:Arg6, φ2:Arg7) -> {
-  let n <- columns(Y);
-  let p <- rows(Y);
-  let r <- rows(A);
-  let a <- wrap(0.5*k + 0.5*(p + n - 1));
-  let b <- 0.5*k + 0.5*(p - 1);  // only used once, no need to wrap
-  let Z <- wrap(Y - inner(M, A));
-
-  if n > r {
-    /* use Woodbury's matrix identity and Sylvester's determinent theorem so
-     * that Cholesky factorizations are of r*r rather than n*n matrices */
-    let Λ <- wrap(diagonal(1.0/φ2));
-    let D <- Λ - outer(Λ, A)*cholinv(chol(cholinv(Σ) + A*outer(Λ, A)))*A*Λ;
-    let d <- sum(log(φ2)) + lcholdet(chol(diagonal(1.0, r) +
-        outer(triinner(Σ, A)*Λ, triinner(Σ, A))));
-    let e <- lcholdet(chol(triouter(Ψ) + Z*outer(D, Z)));
-    return box(lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - 0.5*p*d -
-        (0.5*n + a)*lcholdet(Ψ) - a*e);
-  } else {
-    /* use the marginal */
-    let S <- wrap(chol(inner(triinner(Σ, A)) + diagonal(φ2)));
-    let D <- cholinv(S);
-    let d <- lcholdet(S);
-    let e <- ldet(diagonal(1.0, n) + outer(D, Z)*cholsolve(Ψ, Z));
-    return box(lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - 0.5*p*d -
-        0.5*n*lcholdet(Ψ) - a*e);
-  }
 }
 
 /*
@@ -369,32 +306,5 @@ function update_matrix_normal_inverse_wishart_multivariate_gaussian<
   let Ψ' <- chol(triouter(Ψ) + outer(x - c)/φ2 + inner(trisolve(Σ, M)) -
       inner(trisolve(Σ', M')));
   let k' <- k + 1;
-  return wrap_matrix_normal_inverse_wishart(M', Σ', Ψ', k');
-}
-
-/*
- * Update the parameters of a normal inverse-gamma distribution with a
- * Gaussian likelihood.
- *
- * - Y: Matrix of variates, minus offsets.
- * - A: Matrix of scales.
- * - M: Mean.
- * - Σ: Covariance.
- * - Ψ: Prior variance shape.
- * - k: Prior degrees of freedom.
- * - φ2: Vector of additional variance scales.
- *
- * Returns: the posterior hyperparameters `M'`, `Σ'`, `Ψ'` and `k'`.
- */
-function update_join_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,
-    Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5,
-    k:Arg6, φ2:Arg7) -> {
-  let n <- columns(Y);
-  let Φ <- wrap(diagonal(sqrt(φ2)));
-  let Σ' <- wrap(chol(cholinv(chol(cholinv(Σ) + A*cholinv(Φ)*transpose(A)))));
-  let M' <- wrap(triouter(Σ')*(cholsolve(Σ, M) + A*cholsolve(Φ, transpose(Y))));
-  let Ψ' <- chol(triouter(Ψ) + inner(trisolve(Φ, transpose(Y))) +
-      inner(trisolve(Σ, M)) - inner(trisolve(Σ', M')));
-  let k' <- k + n;
   return wrap_matrix_normal_inverse_wishart(M', Σ', Ψ', k');
 }

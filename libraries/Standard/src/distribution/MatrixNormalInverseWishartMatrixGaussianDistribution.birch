@@ -55,29 +55,28 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, value(A),
-        value(M), value(Σ), value(Ψ), value(k), value(C), value(Φ));
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - value(C),
+        value(A), value(M), value(Σ), value(Ψ), value(k), value(Φ));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real!? {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X, eval(A),
-        eval(M), eval(Σ), eval(Ψ), eval(k), eval(C), eval(Φ));
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - eval(C),
+        eval(A), eval(M), eval(Σ), eval(Ψ), eval(k), eval(Φ));
   }
 
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(X, value(A),
-        value(M), value(Σ), value(Ψ), value(k), value(C), value(Φ));
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(value(X - C),
+        value(A), value(M), value(Σ), value(Ψ), value(k), value(Φ));
   }
 
   override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(X, A, M, Σ, Ψ,
-        k, C, Φ);
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(box(X - C), A,
+        M, Σ, Ψ, k, Φ);
   }
 
   override function hoist() -> Expression<Real>? {
     return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
-        this.getVariate(), eval(A), eval(M), eval(Σ), eval(Ψ), eval(k),
-        eval(C), eval(Φ)));
+        box(this.getVariate() - C), A, M, Σ, Ψ, k, Φ));
   }
 
   override function constant() {
@@ -180,7 +179,7 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
 /*
  * Observe matrix-normal-inverse-Wishart-matrix-Gaussian variate.
  *
- * - X: The variate.
+ * - Y: The variate, minus offset.
  * - A: Scale.
  * - M: Mean.
  * - Σ: Among-row spread.
@@ -192,9 +191,9 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
  * Returns: the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
-    Arg4,Arg5,Arg6,Arg7,Arg8>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5, k:Arg6,
-    C:Arg7, Φ:Arg8) -> {
-  return logpdf_matrix_t(X, k, A*M + C, chol(A*triouter(Σ)*transpose(A) +
+    Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5, k:Arg6,
+    Φ:Arg7) -> {
+  return logpdf_matrix_t(Y, k, A*M, chol(A*triouter(Σ)*transpose(A) +
       triouter(Φ)), Ψ);
 }
 
@@ -202,13 +201,12 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
  * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-Wishart prior.
  *
- * - X: The variate.
+ * - Y: The variate, minus offset.
  * - A: Scale.
  * - M: Prior precision times mean matrix.
  * - Σ: Prior precision.
  * - Ψ: Prior variance shape.
  * - k: Prior degrees of freedom.
- * - C: Offset.
  * - Φ: Among-row covariance.
  * - N: Precomputed marginal mean.
  * - T: Precomputed marginal among-row covariance.
@@ -216,12 +214,12 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
  * Returns: the posterior hyperparameters `M'`, `Σ'`, `Ψ'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
-    Arg4,Arg5,Arg6,Arg7,Arg8>(X:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5, k:Arg6,
-    C:Arg7, Φ:Arg8) -> {
-  let n <- rows(X);
+    Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, M:Arg3, Σ:Arg4, Ψ:Arg5, k:Arg6,
+    Φ:Arg7) -> {
+  let n <- rows(Y);
   let Σ' <- wrap(chol(cholinv(chol(cholinv(Σ) + transpose(A)*cholinv(Φ)*A))));
-  let M' <- wrap(triouter(Σ')*(cholsolve(Σ, M) + transpose(A)*cholsolve(Φ, X - C)));
-  let Ψ' <- chol(triouter(Ψ) + inner(trisolve(Φ, X - C)) +
+  let M' <- wrap(triouter(Σ')*(cholsolve(Σ, M) + transpose(A)*cholsolve(Φ, Y)));
+  let Ψ' <- chol(triouter(Ψ) + inner(trisolve(Φ, Y)) +
       inner(trisolve(Σ, M)) - inner(trisolve(Σ', M')));
   let k' <- k + n;
   return wrap_matrix_normal_inverse_wishart(M', Σ', Ψ', k');
