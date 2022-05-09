@@ -9,7 +9,7 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
   /**
    * Arguments.
    */
-  args:Array<Arg>;
+  m:Array<Arg>;
 
   /**
    * Add an argument.
@@ -17,16 +17,16 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
    * - arg: The argument.
    */
   function push(arg:Arg) {
-    args.pushBack(arg);
+    m.pushBack(arg);
   }
 
   override function doEval() {
-    let C <- args.size();
+    let C <- m.size();
     if C > 0 {
-      let R <- rows(args[1]);
+      let R <- rows(m[1]);
       x:Element[R,C];
       for c in 1..C {
-        x[1..R,c] <- global.eval(args[c]);
+        x[1..R,c] <- global.eval(m[c]);
       }
       this.x <- x;
     } else {
@@ -35,12 +35,12 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
   }
 
   override function doMove(visitor:MoveVisitor) {
-    let C <- args.size();
+    let C <- m.size();
     if C > 0 {
-      let R <- rows(args[1]);
+      let R <- rows(m[1]);
       x:Element[R,C];
       for c in 1..C {
-        x[1..R,c] <- global.move(args[c], visitor);
+        x[1..R,c] <- global.move(m[c], visitor);
       }
       this.x <- x;
     } else {
@@ -49,9 +49,9 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
   }
 
   override function doArgs(visitor:ArgsVisitor) {
-    let C <- args.size();
+    let C <- m.size();
     for c in 1..C {
-      global.args(args[c], visitor);
+      global.args(m[c], visitor);
     }
   }
 
@@ -59,37 +59,37 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
     let R <- rows(this.g!);
     let C <- columns(this.g!);
     for c in 1..C {
-      global.shallow_grad(args[c], this.g![1..R,c]);
+      global.shallow_grad(m[c], this.g![1..R,c]);
     }
     this.g <- nil;  // clear intermediate gradient to save memory
   }
 
   override function doDeepGrad() {
-    let C <- args.size();
+    let C <- m.size();
     for c in 1..C {
-      global.deep_grad(args[c]);
+      global.deep_grad(m[c]);
     }
   }
 
   override function doReset() {
-    let C <- args.size();
+    let C <- m.size();
     for c in 1..C {
-      global.reset(args[c]);
+      global.reset(m[c]);
     }
   }
 
   override function doRelink() {
-    let C <- args.size();
+    let C <- m.size();
     for c in 1..C {
-      global.relink(args[c]);
+      global.relink(m[c]);
     }
   }
 
   override function doConstant() {
-    let C <- args.size();
+    let C <- m.size();
     for c in 1..C {
-      global.constant(args[c]);
+      global.constant(m[c]);
     }
-    args.clear();
+    m.clear();
   }
 }

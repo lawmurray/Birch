@@ -9,7 +9,7 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
   /**
    * Arguments.
    */
-  args:Array<Arg>;
+  m:Array<Arg>;
 
   /**
    * Add an argument.
@@ -17,69 +17,69 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
    * - arg: The argument.
    */
   function push(arg:Arg) {
-    args.pushBack(arg);
+    m.pushBack(arg);
   }
 
   override function doEval() {
-    let R <- args.size();
+    let R <- m.size();
     x:Element[R];
     for r in 1..R {
-      x[r] <- global.eval(args[r]);
+      x[r] <- global.eval(m[r]);
     }
     this.x <- x;
   }
 
   override function doMove(visitor:MoveVisitor) {
-    let R <- args.size();
+    let R <- m.size();
     x:Element[R];
     for r in 1..R {
-      x[r] <- global.move(args[r], visitor);
+      x[r] <- global.move(m[r], visitor);
     }
     this.x <- x;
   }
 
   override function doArgs(visitor:ArgsVisitor) {
-    let R <- args.size();
+    let R <- m.size();
     for r in 1..R {
-      global.args(args[r], visitor);
+      global.args(m[r], visitor);
     }
   }
 
   override function doShallowGrad() {
-    let R <- args.size();
+    let R <- m.size();
     x:Element[R];
     for r in 1..R {
-      global.shallow_grad(args[r], this.g![r]);
+      global.shallow_grad(m[r], this.g![r]);
     }
     this.g <- nil;  // clear intermediate gradient to save memory
   }
 
   override function doDeepGrad() {
-    let R <- args.size();
+    let R <- m.size();
     for r in 1..R {
-      global.deep_grad(args[r]);
+      global.deep_grad(m[r]);
     }
   }
 
   override function doReset() {
-    let R <- args.size();
+    let R <- m.size();
     for r in 1..R {
-      global.reset(args[r]);
+      global.reset(m[r]);
     }
   }
 
   override function doRelink() {
-    let R <- args.size();
+    let R <- m.size();
     for r in 1..R {
-      global.relink(args[r]);
+      global.relink(m[r]);
     }
   }
 
   override function doConstant() {
-    let R <- args.size();
+    let R <- m.size();
     for r in 1..R {
-      global.constant(args[r]);
+      global.constant(m[r]);
     }
-    args.clear();
+    m.clear();
   }
 }
