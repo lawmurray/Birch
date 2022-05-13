@@ -195,29 +195,6 @@ struct simulate_poisson_functor {
 };
 
 template<class R>
-struct simulate_student_t_functor {
-  curandState_t* rngs;
-  simulate_student_t_functor() : rngs(numbirch::rngs) {
-    //
-  }
-  NUMBIRCH_HOST_DEVICE R operator()(const R nu) {
-    #ifndef __CUDA_ARCH__
-    return std::student_t_distribution<R>(nu)(stl<R>::rng());
-    #else
-    R u, x, k = R(0.5)*nu;
-    if constexpr (std::is_same_v<R,double>) {
-      u = curand_gamma_double(curand_rng(rngs), k);
-      x = curand_normal_double(curand_rng(rngs));
-    } else {
-      u = curand_gamma(curand_rng(rngs), k);
-      x = curand_normal(curand_rng(rngs));
-    }
-    return x*std::sqrt(k/u);
-    #endif
-  }
-};
-
-template<class R>
 struct simulate_uniform_functor {
   curandState_t* rngs;
   simulate_uniform_functor() : rngs(numbirch::rngs) {
@@ -306,7 +283,7 @@ struct standard_wishart_functor {
   NUMBIRCH_HOST_DEVICE R operator()(const int i, const int j) {
     if (i == j) {
       /* on diagonal */
-      R nu = get(k) + n - 1 - i;
+      R nu = get(k) - i; // i is 0-based here
       R x;
       #ifndef __CUDA_ARCH__
       x = std::chi_squared_distribution<R>(nu)(stl<R>::rng());

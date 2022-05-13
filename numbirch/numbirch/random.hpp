@@ -178,20 +178,6 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 int_t<T> simulate_poisson(const T& lambda);
 
 /**
- * Simulate a Student's $t$-distribution.
- *
- * @ingroup random
- * 
- * @tparam T Numeric type.
- * 
- * @param nu Degrees of freedom.
- * 
- * @return Variate.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> simulate_student_t(const T& nu);
-
-/**
  * Simulate a uniform distribution.
  *
  * @ingroup random

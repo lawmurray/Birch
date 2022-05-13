@@ -67,12 +67,6 @@ int_t<T> simulate_poisson(const T& lambda) {
   return transform(lambda, simulate_poisson_functor());
 }
 
-template<class T, class>
-real_t<T> simulate_student_t(const T& nu) {
-  prefetch(nu);
-  return transform(nu, simulate_student_t_functor());
-}
-
 template<class T, class U, class>
 real_t<T,U> simulate_uniform(const T& l, const U& u) {
   prefetch(l);

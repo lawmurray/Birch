@@ -33,5 +33,4 @@ RANDOM_UNARY_BOOL(simulate_bernoulli)
 RANDOM_UNARY_REAL(simulate_chi_squared)
 RANDOM_UNARY_REAL(simulate_exponential)
 RANDOM_UNARY_INT(simulate_poisson)
-RANDOM_UNARY_REAL(simulate_student_t)
 }
