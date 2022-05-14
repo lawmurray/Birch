@@ -54,9 +54,9 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   autodiff:Boolean <- autodiff;
 
   /**
-   * Enable automatic joins?
+   * Enable automatic joins? Requires automatic differentiation also.
    */
-  autojoin:Boolean <- autojoin;
+  autojoin:Boolean <- autojoin && autodiff;
 
   function hoist() -> Expression<Real>? {
     π:Expression<Real>?;
