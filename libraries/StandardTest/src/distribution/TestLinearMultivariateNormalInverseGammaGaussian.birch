@@ -72,6 +72,14 @@ program test_pdf_linear_multivariate_normal_inverse_gamma_gaussian(
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_linear_multivariate_normal_inverse_gamma_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearMultivariateNormalInverseGammaGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_linear_multivariate_normal_inverse_gamma_gaussian(
     N:Integer <- 10000) {
   m:TestLinearMultivariateNormalInverseGammaGaussian;

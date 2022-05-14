@@ -39,6 +39,13 @@ program test_pdf_student_t(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_student_t(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestStudent;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_student_t(N:Integer <- 10000) {
   m:TestStudent;
   m.initialize();

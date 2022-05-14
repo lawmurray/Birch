@@ -61,6 +61,14 @@ program test_pdf_chain_multivariate_gaussian(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_chain_multivariate_gaussian(N:Integer <- 10000,
+    B:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestChainMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_grad_chain_multivariate_gaussian(N:Integer <- 1000,
     backward:Boolean <- false) {
   m:TestChainMultivariateGaussian;

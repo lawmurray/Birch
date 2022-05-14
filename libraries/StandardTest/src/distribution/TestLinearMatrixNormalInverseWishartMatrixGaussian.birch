@@ -15,7 +15,7 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < TestModel {
   V:Real[n,n];
 
   override function initialize() {
-    k <- simulate_uniform(3.0, 10.0);
+    k <- simulate_uniform(3.0, 10.0) + p;
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
     A <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
     M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
@@ -88,12 +88,19 @@ program test_conjugacy_linear_matrix_normal_inverse_wishart_matrix_gaussian(
 }
 
 program test_pdf_linear_matrix_normal_inverse_wishart_matrix_gaussian(
-    N:Integer <- 10000, S:Integer <- 20,
-    lazy:Boolean <- false) {
+    N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMatrixGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
+}
+
+program test_z_linear_matrix_normal_inverse_wishart_matrix_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearMatrixNormalInverseWishartMatrixGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
 }
 
 program test_grad_linear_matrix_normal_inverse_wishart_matrix_gaussian(

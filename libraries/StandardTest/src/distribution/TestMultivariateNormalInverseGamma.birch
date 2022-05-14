@@ -60,6 +60,14 @@ program test_pdf_multivariate_normal_inverse_gamma(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_multivariate_normal_inverse_gamma(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000,
     backward:Boolean <- false) {
   m:TestMultivariateNormalInverseGamma;

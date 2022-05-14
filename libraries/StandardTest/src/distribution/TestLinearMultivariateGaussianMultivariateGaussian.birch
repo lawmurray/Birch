@@ -61,12 +61,19 @@ program test_conjugacy_linear_multivariate_gaussian_multivariate_gaussian(
 }
 
 program test_pdf_linear_multivariate_gaussian_multivariate_gaussian(
-    N:Integer <- 10000, S:Integer <- 20,
-    lazy:Boolean <- false) {
+    N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestLinearMultivariateGaussianMultivariateGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
+}
+
+program test_z_linear_multivariate_gaussian_multivariate_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearMultivariateGaussianMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
 }
 
 program test_grad_linear_multivariate_gaussian_multivariate_gaussian(

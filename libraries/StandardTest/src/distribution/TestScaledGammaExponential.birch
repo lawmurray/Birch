@@ -56,6 +56,14 @@ program test_pdf_scaled_gamma_exponential(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_scaled_gamma_exponential(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestScaledGammaExponential;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_scaled_gamma_exponential(N:Integer <- 10000) {
   m:TestScaledGammaExponential;
   m.initialize();

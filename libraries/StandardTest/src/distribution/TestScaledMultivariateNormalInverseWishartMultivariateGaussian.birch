@@ -11,7 +11,7 @@ class TestScaledMultivariateNormalInverseWishartMultivariateGaussian < TestModel
   μ:Real[n];
 
   override function initialize() {
-    k <- simulate_uniform(3.0, 10.0);
+    k <- simulate_uniform(3.0, 10.0) + n;
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
     Ψ <- outer(Ψ) + diagonal(1.0e-1, n);
     a <- simulate_uniform(-2.0, 2.0);
@@ -76,6 +76,14 @@ program test_pdf_scaled_multivariate_normal_inverse_wishart_multivariate_gaussia
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
+}
+
+program test_z_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestScaledMultivariateNormalInverseWishartMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
 }
 
 program test_grad_scaled_multivariate_normal_inverse_wishart_multivariate_gaussian(

@@ -1,16 +1,15 @@
 #!/bin/bash
 set -eov pipefail
 
-N1=4  # for cdf tests
-N2=4  # for gradient tests
-N3=4  # for pdf tests
-N4=4  # for conjugacy tests
+N=4  # for all tests
 
 eval "`grep -r "program test_basic_" src     | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1/"                         | sort`"
-eval "`grep -r "program test_cdf_" src       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N1/"                  | sort`"
-eval "`grep -r "program test_grad_" src      | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N2 --backward false/" | sort`"
-eval "`grep -r "program test_grad_" src      | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N2 --backward true/"  | sort`"
-eval "`grep -r "program test_pdf_" src       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N3 --lazy false/"     | sort`"
-eval "`grep -r "program test_pdf_" src       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N3 --lazy true/"      | sort`"
-eval "`grep -r "program test_conjugacy_" src | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N4 --lazy false/"     | sort`"
-eval "`grep -r "program test_conjugacy_" src | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N4 --lazy true/"      | sort`"
+eval "`grep -r "program test_cdf_" src       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N/"                  | sort`"
+eval "`grep -r "program test_grad_" src      | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --backward false/" | sort`"
+eval "`grep -r "program test_grad_" src      | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --backward true/"  | sort`"
+eval "`grep -r "program test_pdf_" src       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy false/"     | sort`"
+eval "`grep -r "program test_pdf_" src       | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy true/"      | sort`"
+eval "`grep -r "program test_z_" src         | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy false/"     | sort`"
+eval "`grep -r "program test_z_" src         | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy true/"      | sort`"
+eval "`grep -r "program test_conjugacy_" src | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy false/"     | sort`"
+eval "`grep -r "program test_conjugacy_" src | sed -E "s/^.*program ([A-Za-z0-9_]+).*$/birch \1 -N $N --lazy true/"      | sort`"

@@ -53,6 +53,13 @@ program test_pdf_gamma_exponential(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_gamma_exponential(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestGammaExponential;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_gamma_exponential(N:Integer <- 10000) {
   m:TestGammaExponential;
   m.initialize();

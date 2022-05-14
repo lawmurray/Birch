@@ -37,6 +37,13 @@ program test_pdf_uniform(N:Integer <- 10000, S:Integer <- 20,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_uniform(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestUniform;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_uniform(N:Integer <- 10000) {
   m:TestUniform;
   m.initialize();

@@ -41,17 +41,26 @@ class TestGaussianGaussian < TestModel {
   }
 }
 
-program test_conjugacy_gaussian_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_conjugacy_gaussian_gaussian(N:Integer <- 10000,
+    lazy:Boolean <- false) {
   m:TestGaussianGaussian;
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_gaussian_gaussian(N:Integer <- 10000,
-    S:Integer <- 20, lazy:Boolean <- false) {
+program test_pdf_gaussian_gaussian(N:Integer <- 10000, S:Integer <- 20,
+    lazy:Boolean <- false) {
   m:TestGaussianGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
+}
+
+program test_z_gaussian_gaussian(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestGaussianGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
 }
 
 program test_cdf_gaussian_gaussian(N:Integer <- 10000) {

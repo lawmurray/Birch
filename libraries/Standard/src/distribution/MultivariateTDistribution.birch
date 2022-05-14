@@ -79,15 +79,15 @@ function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
  * - x: The variate.
  * - k: Degrees of freedom.
  * - μ: Mean vector.
- * - Σ: Spread matrix.
+ * - Σ: Spread matrix times degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     Σ:Arg4) -> {
   let n <- length(x);
-  let a <- wrap(0.5*k + 0.5*n);
+  let a <- 0.5*k + 0.5*n;
   let b <- 0.5*k;
-  return lgamma(a) - 0.5*n*log(π) - lgamma(b) - 0.5*lcholdet(Σ) -
+  return lgamma(a) - lgamma(b) - 0.5*n*log(π) - 0.5*lcholdet(Σ) -
       a*log1p(dot(trisolve(Σ, x - μ)));
 }

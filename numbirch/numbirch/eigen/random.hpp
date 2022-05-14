@@ -105,7 +105,7 @@ struct standard_wishart_functor {
     auto& rng = stl<real>::rng();
     if (i == j) {
       /* on diagonal */
-      real nu = get(k) - i; // i is 0-based here
+      real nu = get(k) + n - 1 - i; // i is 0-based here
       real x = std::chi_squared_distribution<real>(nu)(rng);
       return std::sqrt(x);
     } else if (i > j) {

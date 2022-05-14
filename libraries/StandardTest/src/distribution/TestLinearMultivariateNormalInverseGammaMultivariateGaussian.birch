@@ -65,12 +65,19 @@ program test_conjugacy_linear_multivariate_normal_inverse_gamma_multivariate_gau
 }
 
 program test_pdf_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
-    N:Integer <- 10000, S:Integer <- 20,
-    lazy:Boolean <- false) {
+    N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
+}
+
+program test_z_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearMultivariateNormalInverseGammaMultivariateGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
 }
 
 program test_grad_linear_multivariate_normal_inverse_gamma_multivariate_gaussian(

@@ -46,6 +46,13 @@ program test_pdf_matrix_gaussian(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_matrix_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestMatrixGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_grad_matrix_gaussian(N:Integer <- 1000,
     backward:Boolean <- false) {
   m:TestMatrixGaussian;

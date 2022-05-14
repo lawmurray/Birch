@@ -98,10 +98,8 @@ function Student<Arg>(k:Arg) -> Distribution<Real> {
  * - σ2: Squared scale.
  */
 function simulate_student_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
-  cpp{{
-  auto x = numbirch::simulate_student_t(k);
-  }}
-  return μ + sqrt(σ2)*x;
+  let u <- simulate_chi_squared(k);
+  return simulate_gaussian(μ, σ2*k/u);
 }
 
 /*
@@ -133,26 +131,7 @@ function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
   let z <- (x - μ)/sqrt(σ2);
   let a <- 0.5*(k + 1.0);
   let b <- 0.5*k;
-  return lgamma(a) - lgamma(b) - 0.5*log(π*k*σ2) - a*log1p(z*z/k);
-}
-
-/*
- * Observe a Student's $t$ variate with location and scale.
- *
- * - x: Vector of variates.
- * - k: Degrees of freedom.
- * - μ: Vector of locations.
- * - σ2: Vector of scales.
- *
- * Returns: the log probability density.
- */
-function logpdf_join_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
-    σ2:Arg4) -> {
-  let n <- length(x);
-  let a <- wrap(0.5*k + 0.5*n);
-  let b <- 0.5*k;
-  return lgamma(a) - lgamma(b) - 0.5*n*log(π) - 0.5*sum(log(σ2)) -
-      a*log1p(dot(x - μ, div(x - μ, σ2)));
+  return lgamma(a) - lgamma(b) - 0.5*log(k*π*σ2) - a*log1p(z*z/k);
 }
 
 /*

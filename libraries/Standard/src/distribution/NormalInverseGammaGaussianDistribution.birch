@@ -228,27 +228,6 @@ function logpdf_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 }
 
 /*
- * Observe Gaussian variates with a normal inverse-gamma prior with linear
- * transformation.
- *
- * - x: Vector of variates.
- * - a: Vector of scales.
- * - μ: Mean.
- * - σ2: Variance.
- * - α: Variance shape.
- * - β: Variance scale.
- * - c: Vector of offsets.
- * - s2: Vector of likelihood variance scales.
- *
- * Returns: the log probability density.
- */
-function logpdf_join_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
-    Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, α:Arg5, β:Arg6, c:Arg7,
-    s2:Arg8) -> {
-  return logpdf_join_student_t(x, 2.0*α, a*μ + c, (β/α)*(pow(a, 2.0)*σ2 + s2));
-}
-
-/*
  * Update the parameters of a normal inverse-gamma distribution with a
  * Gaussian likelihood.
  *

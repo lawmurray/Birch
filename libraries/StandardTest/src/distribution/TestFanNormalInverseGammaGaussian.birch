@@ -81,6 +81,14 @@ program test_pdf_fan_normal_inverse_gamma_gaussian(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_fan_normal_inverse_gamma_gaussian(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestFanNormalInverseGammaGaussian;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_fan_normal_inverse_gamma_gaussian(N:Integer <- 10000) {
   m:TestFanNormalInverseGammaGaussian;
   m.initialize();

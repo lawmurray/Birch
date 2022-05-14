@@ -37,6 +37,13 @@ program test_pdf_weibull(N:Integer <- 10000, S:Integer <- 20,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_weibull(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestWeibull;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_weibull(N:Integer <- 10000) {
   m:TestWeibull;
   m.initialize();

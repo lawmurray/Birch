@@ -44,7 +44,8 @@ class TestNormalInverseGamma < TestModel {
   }
 }
 
-program test_conjugacy_normal_inverse_gamma(N:Integer <- 10000, lazy:Boolean <- false) {
+program test_conjugacy_normal_inverse_gamma(N:Integer <- 10000,
+    lazy:Boolean <- false) {
   m:TestNormalInverseGamma;
   test_conjugacy(m, N, lazy);
 }
@@ -57,6 +58,14 @@ program test_pdf_normal_inverse_gamma(N:Integer <- 10000,
   test_pdf(m.marginal(), N, S, lazy);
 }
 
+program test_z_normal_inverse_gamma(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestNormalInverseGamma;
+  m.initialize();
+  m.simulate();
+  test_z(m.marginal(), N, lazy);
+}
+
 program test_cdf_normal_inverse_gamma(N:Integer <- 10000) {
   m:TestNormalInverseGamma;
   m.initialize();
@@ -64,7 +73,8 @@ program test_cdf_normal_inverse_gamma(N:Integer <- 10000) {
   test_cdf(m.marginal(), N);
 }
 
-program test_grad_normal_inverse_gamma(N:Integer <- 1000, backward:Boolean <- false) {
+program test_grad_normal_inverse_gamma(N:Integer <- 1000,
+    backward:Boolean <- false) {
   m:TestNormalInverseGamma;
   test_grad(m, N, backward);
 }
