@@ -142,10 +142,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
    */
   function handleSimulate<Value>(p:Distribution<Value>) -> Value {
     x:Value!;
-    if autojoin && p.supportsJoin() {
-      x <- p.simulateJoin()!;
-      Ξ.pushBack(p);
-    } else if autodiff && p.supportsLazy() {
+    if autodiff && p.supportsLazy() {
       x <- p.simulateLazy()!;
       Ξ.pushBack(p);
     } else {
@@ -167,10 +164,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
    * Returns: `x`.
    */
   function handleObserve<Value>(x:Value, p:Distribution<Value>) -> Value {
-    if autojoin && p.supportsJoin() {
-      w <- w + p.logpdfJoin(x)!;
-      Ξ.pushBack(p);
-    } else if autodiff && p.supportsLazy() {
+    if autodiff && p.supportsLazy() {
       w <- w + p.logpdfLazy(x)!;
       Ξ.pushBack(p);
     } else {
@@ -190,10 +184,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
    */
   function handleDelaySimulate<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
-    if autojoin && p.supportsJoin() {
-      x.set(p.simulateJoin()!);
-      Ξ.pushBack(p);
-    } else if autodiff && p.supportsLazy() {
+    if autodiff && p.supportsLazy() {
       x.set(p.simulateLazy()!);
       Ξ.pushBack(p);
     } else {
@@ -213,10 +204,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
    */
   function handleDelayObserve<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
-    if autojoin && p.supportsJoin() {
-      w <- w + p.logpdfJoin(eval(x))!;
-      Ξ.pushBack(p);
-    } else if autodiff && p.supportsLazy() {
+    if autodiff && p.supportsLazy() {
       w <- w + p.logpdfLazy(eval(x))!;
       Ξ.pushBack(p);
     } else {

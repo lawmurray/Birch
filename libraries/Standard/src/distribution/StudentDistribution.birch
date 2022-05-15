@@ -111,7 +111,7 @@ function simulate_student_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
  * Returns: the log probability density.
  */
 function logpdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
-  let a <- 0.5*(k + 1.0);
+  let a <- 0.5*k + 0.5;
   let b <- 0.5*k;
   return lgamma(a) - lgamma(b) - 0.5*log(π*k) - a*log1p(x*x/k);
 }
@@ -128,9 +128,9 @@ function logpdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
  */
 function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     σ2:Arg4) -> {
-  let z <- (x - μ)/sqrt(σ2);
-  let a <- 0.5*(k + 1.0);
+  let a <- 0.5*k + 0.5;
   let b <- 0.5*k;
+  let z <- (x - μ)/sqrt(σ2);
   return lgamma(a) - lgamma(b) - 0.5*log(k*π*σ2) - a*log1p(z*z/k);
 }
 

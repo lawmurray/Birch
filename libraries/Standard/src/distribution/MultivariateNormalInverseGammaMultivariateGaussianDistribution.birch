@@ -216,8 +216,8 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- A*μ + c;
-  let S <- β*(A*cholinv(L)*transpose(A) + Ω);
-  return logpdf_multivariate_t(x, k, m, chol(S));
+  let S <- wrap(chol(β*(A*cholinv(L)*transpose(A) + Ω)));
+  return logpdf_multivariate_t(x, k, m, S);
 }
 
 /*

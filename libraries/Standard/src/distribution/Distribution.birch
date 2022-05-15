@@ -49,15 +49,6 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Simulate a value using lazy expressions and joins.
-   *
-   * Return: the value, if supported.
-   */
-  function simulateJoin() -> Value!? {
-    return nil;
-  }
-
-  /**
    * Evaluate the log probability density (or mass) function.
    *
    * - x: The value.
@@ -75,18 +66,6 @@ abstract class Distribution<Value> < Delay {
    * Return: the log probability density (or mass), if supported.
    */
   function logpdfLazy(x:Value!) -> Real!? {
-    return nil;
-  }
-
-  /**
-   * Evaluate the log probability density (or mass) function using lazy
-   * expressions and joins.
-   *
-   * - x: The value.
-   *
-   * Return: the log probability density (or mass), if supported.
-   */
-  function logpdfJoin(x:Value!) -> Real!? {
     return nil;
   }
 
