@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#include "numbirch/array/external.hpp"
-
 namespace numbirch {
 /**
  * Iterator over Array.

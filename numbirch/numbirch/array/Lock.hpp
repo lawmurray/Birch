@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "numbirch/array/external.hpp"
 #include "numbirch/array/Atomic.hpp"
 
 namespace numbirch {

@@ -5,12 +5,23 @@
 
 #include "numbirch/memory.hpp"
 #include "numbirch/type.hpp"
-#include "numbirch/array/external.hpp"
 #include "numbirch/array/ArrayControl.hpp"
 #include "numbirch/array/ArrayShape.hpp"
 #include "numbirch/array/ArrayIterator.hpp"
 #include "numbirch/array/Atomic.hpp"
 #include "numbirch/array/Lock.hpp"
+
+#include <algorithm>
+#include <numeric>
+#include <utility>
+#include <initializer_list>
+#include <memory>
+
+#include <cassert>
+#include <cstdlib>
+#include <cstdint>
+#include <cstddef>
+#include <cstring>
 
 namespace numbirch {
 /**

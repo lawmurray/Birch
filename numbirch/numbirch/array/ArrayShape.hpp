@@ -3,7 +3,11 @@
  */
 #pragma once
 
-#include "numbirch/array/external.hpp"
+#include <utility>
+#include <algorithm>
+
+#include <cassert>
+#include <cstdint>
 
 namespace numbirch {
 template<class T, int D> class Array;

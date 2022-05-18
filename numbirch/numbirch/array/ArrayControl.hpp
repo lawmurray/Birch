@@ -3,8 +3,9 @@
  */
 #pragma once
 
-#include "numbirch/array/external.hpp"
 #include "numbirch/array/Atomic.hpp"
+
+#include <cassert>
 
 namespace numbirch {
 /**
