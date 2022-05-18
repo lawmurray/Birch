@@ -105,7 +105,7 @@ struct standard_wishart_functor {
     auto& rng = stl<real>::rng();
     if (i == j) {
       /* on diagonal */
-      real nu = get(k) + n - 1 - i; // i is 0-based here
+      real nu = get(k) + (n - 1 - i); // i is 0-based here
       real x = std::chi_squared_distribution<real>(nu)(rng);
       return std::sqrt(x);
     } else if (i > j) {
@@ -113,7 +113,7 @@ struct standard_wishart_functor {
       return std::normal_distribution<real>()(rng);
     } else {
       /* in upper triangle */
-      return real(0);
+      return real(0.0);
     }
   }
 };

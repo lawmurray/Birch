@@ -158,7 +158,7 @@ Array<T,0> lcholdet(const Array<T,2>& S) {
   /* log-determinant is twice the sum of logarithms of elements on the main
    * diagonal, all of which should be positive */
   ///@todo Avoid temporary
-  Array<T,0> ldet = sum(transform(L.diagonal(), log_square_functor<T>()));
+  Array<T,0> ldet = sum(transform(L.diagonal(), log_square_functor()));
 
   host_free(bufferOnHost);
   device_free(bufferOnDevice);
@@ -191,7 +191,7 @@ Array<T,0> ldet(const Array<T,2>& A) {
    * $|U|$ here; the logarithm of its absolute value is just the sum of the
    * logarithms of the absolute values of elements on the main diagonal */
   ///@todo Avoid temporary
-  Array<T,0> ldet = sum(transform(LU.diagonal(), log_abs_functor<T>()));
+  Array<T,0> ldet = sum(transform(LU.diagonal(), log_abs_functor()));
 
   device_free(ipiv);
   host_free(bufferOnHost);

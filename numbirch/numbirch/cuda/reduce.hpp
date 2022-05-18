@@ -20,7 +20,7 @@ namespace numbirch {
 template<class R, class T, class>
 Array<R,0> count(const T& x) {
   ///@todo Avoid temporary
-  return sum(transform(x, count_functor<R>()));
+  return sum(transform(x, count_functor()));
 }
 
 template<class R, class T, class>

@@ -129,7 +129,7 @@ auto transform(const T& x, const U& y, Functor f) {
     return f(x, y);
   } else {
     using R = decltype(f(value_t<T>(),value_t<U>()));
-    constexpr int D = dimension_v<T,U>;
+    constexpr int D = dimension_v<implicit_t<T,U>>;
     auto m = width(x, y);
     auto n = height(x, y);
     auto z = Array<R,D>(make_shape<D>(m, n));
@@ -166,7 +166,7 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     return f(x, y, z);
   } else {
     using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
-    constexpr int D = dimension_v<T,U,V>;
+    constexpr int D = dimension_v<implicit_t<T,U,V>>;
     auto m = width(x, y, z);
     auto n = height(x, y, z);
     auto a = Array<R,D>(make_shape<D>(m, n));
@@ -184,7 +184,7 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
 /*
  * Ternary transform returning pair.
  */
-template<class G, class T, class U, class V, class W, class Functor>
+template<class T, class U, class V, class W, class X, class Functor>
 __global__ void kernel_transform_pair(const int m, const int n, const T A,
     const int ldA, const U B, const int ldB, const V C, const int ldC,
     W D, const int ldD, X E, const int ldE, Functor f) {
@@ -206,7 +206,7 @@ auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
     return std::make_pair(a, b);
   } else {
     using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
-    constexpr int D = dimension_v<T,U,V>;
+    constexpr int D = dimension_v<implicit_t<T,U,V>>;
     auto m = width(x, y, z);
     auto n = height(x, y, z);
     auto a = Array<real,D>(make_shape<D>(m, n));
@@ -215,7 +215,7 @@ auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
       CUDA_LAUNCH(kernel_transform_pair<<<grid,block,0,stream>>>(m, n,
-          data(g), stride(g), data(x), stride(x), data(y), stride(y), data(a),
+          data(x), stride(x), data(y), stride(y), data(z), stride(z), data(a),
           stride(a), data(b), stride(b), f));
     }
     return std::make_pair(a, b);
