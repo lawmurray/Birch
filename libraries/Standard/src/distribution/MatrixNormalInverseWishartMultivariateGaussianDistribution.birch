@@ -158,6 +158,18 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     global.constant(k);
     global.constant(c);
     global.constant(φ2);
+
+    if this.hasSide() {
+      let (Y, A, M, Σ, Ψ, k, Φ) <-
+          this.takeSide()!.joinMatrixNormalInverseWishartMultivariateGaussian();
+      let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
+          value(Y), value(A), value(M), value(Σ), value(Ψ), value(k),
+          value(Φ));
+      this.M <- box(p.M);
+      this.Σ <- box(p.Σ);
+      this.Ψ <- box(p.Ψ);
+      this.k <- box(p.k);
+    }
   }
 
   override function getMatrixNormalInverseWishartMultivariateGaussian(

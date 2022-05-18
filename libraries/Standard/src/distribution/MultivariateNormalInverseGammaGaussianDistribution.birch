@@ -173,6 +173,18 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
     global.constant(γ);
     global.constant(c);
     global.constant(ω2);
+
+    if this.hasSide() {
+      let (x, A, ν, Λ, k, γ, c, ω2) <-
+          this.takeSide()!.joinMultivariateNormalInverseGammaGaussian();
+      let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k),
+          value(γ), value(c), diagonal(value(ω2)));
+      this.ν <- box(p.ν);
+      this.Λ <- box(p.Λ);
+      this.k <- box(p.k);
+      this.γ <- box(p.γ);
+    }
   }
 
   override function getMultivariateNormalInverseGammaGaussian() ->
