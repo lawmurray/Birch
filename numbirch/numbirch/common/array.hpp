@@ -4,9 +4,34 @@
 #pragma once
 
 #include "numbirch/array.hpp"
-#include "numbirch/common/functor.hpp"
 
 namespace numbirch {
+template<class T>
+struct diagonal_functor {
+  const T a;
+  diagonal_functor(const T a) :
+      a(a) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    return (i == j) ? get(a) : 0;
+  }
+};
+
+template<class T, class U, class V = int>
+struct single_functor {
+  const T x;
+  const U k;
+  const V l;
+  single_functor(const T& x, const U& k, const V& l) :
+      x(x), k(k), l(l) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    return (i == get(k) - 1 && j == get(l) - 1) ? get(x) : 0;
+  }
+};
+
 template<class T, class>
 Array<value_t<T>,2> diagonal(const T& x, const int n) {
   return for_each(n, n, diagonal_functor(data(x)));

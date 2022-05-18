@@ -5,8 +5,7 @@
 
 #include "numbirch/reduce.hpp"
 #include "numbirch/eigen/eigen.hpp"
-#include "numbirch/eigen/transform.hpp"
-#include "numbirch/common/functor.hpp"
+#include "numbirch/common/reduce.hpp"
 #include "numbirch/common/get.hpp"
 
 namespace numbirch {

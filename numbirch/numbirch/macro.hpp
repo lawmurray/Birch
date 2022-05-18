@@ -47,3 +47,12 @@
 #ifndef NUMBIRCH_REAL
 #define NUMBIRCH_REAL double
 #endif
+
+/**
+ * @internal
+ * 
+ * @def PI
+ * 
+ * Value of pi.
+ */
+static const long double PI = 3.1415926535897932384626433832795;

@@ -13,7 +13,6 @@
 #include "numbirch/macro.hpp"
 #include "numbirch/memory.hpp"
 #include "numbirch/type.hpp"
-#include "numbirch/common/functor.hpp"
 #include "numbirch/common/get.hpp"
 
 

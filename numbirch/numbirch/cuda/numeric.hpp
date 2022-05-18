@@ -11,7 +11,6 @@
 #include "numbirch/cuda/transform.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 #include "numbirch/common/get.hpp"
-#include "numbirch/common/functor.hpp"
 #include "numbirch/transform.hpp"
 #include "numbirch/reduce.hpp"
 #include "numbirch/memory.hpp"

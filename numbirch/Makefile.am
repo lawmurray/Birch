@@ -17,7 +17,7 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 SOURCES =  \
-    numbirch/common/stl.cpp \
+    numbirch/common/random.cpp \
     numbirch/instantiate/array/diagonal.cpp \
     numbirch/instantiate/array/element_matrix.cpp \
     numbirch/instantiate/array/element_vector.cpp \
@@ -141,11 +141,9 @@ nobase_include_HEADERS = \
 
 noinst_HEADERS = \
   numbirch/common/array.hpp \
-  numbirch/common/functor.hpp \
   numbirch/common/get.hpp \
   numbirch/common/random.hpp \
   numbirch/common/reduce.hpp \
-  numbirch/common/stl.hpp \
   numbirch/common/transform.hpp \
   numbirch/cuda/cub.hpp \
   numbirch/cuda/cublas.hpp \

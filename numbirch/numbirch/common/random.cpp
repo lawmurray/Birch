@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "numbirch/common/stl.hpp"
+#include "numbirch/common/random.hpp"
 
 namespace numbirch {
 thread_local std::mt19937 rng32;
