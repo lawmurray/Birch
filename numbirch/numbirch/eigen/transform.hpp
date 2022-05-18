@@ -5,8 +5,7 @@
 
 #include "numbirch/eigen/eigen.hpp"
 #include "numbirch/array.hpp"
-#include "numbirch/type.hpp"
-#include "numbirch/common/get.hpp"
+#include "numbirch/utility.hpp"
 
 namespace numbirch {
 template<class T, int D>

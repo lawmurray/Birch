@@ -5,8 +5,8 @@
  */
 #pragma once
 
+#include "numbirch/utility.hpp"
 #include "numbirch/cuda/cuda.hpp"
-#include "numbirch/macro.hpp"
 #include "numbirch/common/random.hpp"
 
 #include <curand_kernel.h>

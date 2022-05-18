@@ -3,10 +3,10 @@
  */
 #pragma once
 
-#include "numbirch/random.hpp"
 #include "numbirch/common/random.hpp"
-#include "numbirch/common/get.hpp"
 #include "numbirch/eigen/transform.hpp"
+#include "numbirch/random.hpp"
+#include "numbirch/utility.hpp"
 
 namespace numbirch {
 

@@ -24,19 +24,19 @@
     BINARY_SECOND(f, R, T, int) \
     BINARY_SECOND(f, R, T, bool)
 #define BINARY_SECOND(f, R, T, U) \
-    BINARY_SIG(f, R, ARRAY(T, 2), ARRAY(U, 2)) \
-    BINARY_SIG(f, R, ARRAY(T, 1), ARRAY(U, 1)) \
-    BINARY_SIG(f, R, ARRAY(T, 0), ARRAY(U, 0)) \
-    BINARY_SIG(f, R, ARRAY(T, 0), U) \
-    BINARY_SIG(f, R, T, ARRAY(U, 0)) \
-    BINARY_SIG(f, R, ARRAY(T, 2), ARRAY(U, 0)) \
-    BINARY_SIG(f, R, ARRAY(T, 0), ARRAY(U, 2)) \
-    BINARY_SIG(f, R, ARRAY(T, 2), U) \
-    BINARY_SIG(f, R, T, ARRAY(U, 2)) \
-    BINARY_SIG(f, R, ARRAY(T, 1), ARRAY(U, 0)) \
-    BINARY_SIG(f, R, ARRAY(T, 0), ARRAY(U, 1)) \
-    BINARY_SIG(f, R, ARRAY(T, 1), U) \
-    BINARY_SIG(f, R, T, ARRAY(U, 1))
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 2), NUMBIRCH_ARRAY(U, 2)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 1), NUMBIRCH_ARRAY(U, 1)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0), NUMBIRCH_ARRAY(U, 0)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0), U) \
+    BINARY_SIG(f, R, T, NUMBIRCH_ARRAY(U, 0)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 2), NUMBIRCH_ARRAY(U, 0)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0), NUMBIRCH_ARRAY(U, 2)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 2), U) \
+    BINARY_SIG(f, R, T, NUMBIRCH_ARRAY(U, 2)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 1), NUMBIRCH_ARRAY(U, 0)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0), NUMBIRCH_ARRAY(U, 1)) \
+    BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 1), U) \
+    BINARY_SIG(f, R, T, NUMBIRCH_ARRAY(U, 1))
 #define BINARY_SIG(f, R, T, U) \
     template R<T,U> f<T,U,int>(const T&, const U&);
 

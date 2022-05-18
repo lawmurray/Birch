@@ -26,9 +26,9 @@
     ELEMENT_MATRIX_THIRD(f, T, int, int)
 #define ELEMENT_MATRIX_THIRD(f, T, U, V) \
     ELEMENT_MATRIX_SIG(f, T, U, V) \
-    ELEMENT_MATRIX_SIG(f, T, U, ARRAY(V, 0)) \
-    ELEMENT_MATRIX_SIG(f, T, ARRAY(U, 0), V) \
-    ELEMENT_MATRIX_SIG(f, T, ARRAY(U, 0), ARRAY(V, 0))
+    ELEMENT_MATRIX_SIG(f, T, U, NUMBIRCH_ARRAY(V, 0)) \
+    ELEMENT_MATRIX_SIG(f, T, NUMBIRCH_ARRAY(U, 0), V) \
+    ELEMENT_MATRIX_SIG(f, T, NUMBIRCH_ARRAY(U, 0), NUMBIRCH_ARRAY(V, 0))
 #define ELEMENT_MATRIX_SIG(f, T, U, V) \
     template Array<T,0> f<T,U,V,int>(const Array<T,2>& x, const U& i, \
         const V& j);

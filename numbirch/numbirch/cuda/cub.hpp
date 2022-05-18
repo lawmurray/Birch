@@ -5,7 +5,7 @@
  */
 #pragma once
 
-#include "numbirch/macro.hpp"
+#include "numbirch/utility.hpp"
 #include "numbirch/array.hpp"
 
 #include <cub/cub.cuh>

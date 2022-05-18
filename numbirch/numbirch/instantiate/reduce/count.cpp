@@ -14,9 +14,9 @@
     REDUCE_COUNT_FIRST(f, int) \
     REDUCE_COUNT_FIRST(f, bool)
 #define REDUCE_COUNT_FIRST(f, T) \
-    REDUCE_COUNT_SIG(f, ARRAY(T, 2)) \
-    REDUCE_COUNT_SIG(f, ARRAY(T, 1)) \
-    REDUCE_COUNT_SIG(f, ARRAY(T, 0)) \
+    REDUCE_COUNT_SIG(f, NUMBIRCH_ARRAY(T, 2)) \
+    REDUCE_COUNT_SIG(f, NUMBIRCH_ARRAY(T, 1)) \
+    REDUCE_COUNT_SIG(f, NUMBIRCH_ARRAY(T, 0)) \
     REDUCE_COUNT_SIG(f, T)
 #define REDUCE_COUNT_SIG(f, T) \
     template Array<int,0> f(const T&);

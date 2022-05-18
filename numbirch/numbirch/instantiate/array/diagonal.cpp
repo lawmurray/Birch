@@ -22,7 +22,7 @@
     DIAGONAL_FIRST(f, bool)
 #define DIAGONAL_FIRST(f, T) \
     DIAGONAL_SIG(f, T) \
-    DIAGONAL_SIG(f, ARRAY(T, 0))
+    DIAGONAL_SIG(f, NUMBIRCH_ARRAY(T, 0))
 #define DIAGONAL_SIG(f, T) \
     template Array<value_t<T>,2> f<T,int>(const T& x, const int n);
 

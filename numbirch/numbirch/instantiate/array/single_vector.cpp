@@ -24,9 +24,9 @@
     SINGLE_VECTOR_SECOND(f, T, int)
 #define SINGLE_VECTOR_SECOND(f, T, U) \
     SINGLE_VECTOR_SIG(f, T, U) \
-    SINGLE_VECTOR_SIG(f, T, ARRAY(U, 0)) \
-    SINGLE_VECTOR_SIG(f, ARRAY(T, 0), U) \
-    SINGLE_VECTOR_SIG(f, ARRAY(T, 0), ARRAY(U, 0))
+    SINGLE_VECTOR_SIG(f, T, NUMBIRCH_ARRAY(U, 0)) \
+    SINGLE_VECTOR_SIG(f, NUMBIRCH_ARRAY(T, 0), U) \
+    SINGLE_VECTOR_SIG(f, NUMBIRCH_ARRAY(T, 0), NUMBIRCH_ARRAY(U, 0))
 #define SINGLE_VECTOR_SIG(f, T, U) \
     template Array<value_t<T>,1> f<T,U,int>(const T& x, const U& i, \
         const int n);

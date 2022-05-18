@@ -14,9 +14,9 @@
     UNARY_GRAD_FIRST(f, R, int) \
     UNARY_GRAD_FIRST(f, R, bool)
 #define UNARY_GRAD_FIRST(f, R, T) \
-    UNARY_GRAD_SIG(f, R, ARRAY(T, 2)) \
-    UNARY_GRAD_SIG(f, R, ARRAY(T, 1)) \
-    UNARY_GRAD_SIG(f, R, ARRAY(T, 0)) \
+    UNARY_GRAD_SIG(f, R, NUMBIRCH_ARRAY(T, 2)) \
+    UNARY_GRAD_SIG(f, R, NUMBIRCH_ARRAY(T, 1)) \
+    UNARY_GRAD_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     UNARY_GRAD_SIG(f, R, T)
 #define UNARY_GRAD_SIG(f, R, T) \
     template real_t<T> f<T,int>(const real_t<T>&, const R<T>&, const T&);

@@ -3,13 +3,12 @@
  */
 #pragma once
 
+#include "numbirch/utility.hpp"
 #include "numbirch/random.hpp"
-#include "numbirch/macro.hpp"
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/common/random.hpp"
 #include "numbirch/common/transform.hpp"
-#include "numbirch/common/get.hpp"
 
 namespace numbirch {
 

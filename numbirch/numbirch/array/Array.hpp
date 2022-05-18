@@ -4,7 +4,7 @@
 #pragma once
 
 #include "numbirch/memory.hpp"
-#include "numbirch/type.hpp"
+#include "numbirch/utility.hpp"
 #include "numbirch/array/ArrayControl.hpp"
 #include "numbirch/array/ArrayShape.hpp"
 #include "numbirch/array/ArrayIterator.hpp"

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "numbirch/array.hpp"
-#include "numbirch/type.hpp"
+#include "numbirch/utility.hpp"
 
 namespace numbirch {
 /**

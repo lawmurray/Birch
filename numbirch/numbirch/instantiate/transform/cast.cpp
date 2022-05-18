@@ -20,9 +20,9 @@
     CAST_SECOND(f, R, int) \
     CAST_SECOND(f, R, bool)
 #define CAST_SECOND(f, R, T) \
-    CAST_SIG(f, R, ARRAY(T, 2)) \
-    CAST_SIG(f, R, ARRAY(T, 1)) \
-    CAST_SIG(f, R, ARRAY(T, 0)) \
+    CAST_SIG(f, R, NUMBIRCH_ARRAY(T, 2)) \
+    CAST_SIG(f, R, NUMBIRCH_ARRAY(T, 1)) \
+    CAST_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     CAST_SIG(f, R, T)
 #define CAST_SIG(f, R, T) \
     template explicit_t<R,T> f<R,T,int>(const T&);

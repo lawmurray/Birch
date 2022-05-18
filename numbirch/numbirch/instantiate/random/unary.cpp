@@ -17,9 +17,9 @@
     RANDOM_UNARY_FIRST(f, R, int) \
     RANDOM_UNARY_FIRST(f, R, bool)
 #define RANDOM_UNARY_FIRST(f, R, T) \
-    RANDOM_UNARY_SIG(f, R, ARRAY(T, 2)) \
-    RANDOM_UNARY_SIG(f, R, ARRAY(T, 1)) \
-    RANDOM_UNARY_SIG(f, R, ARRAY(T, 0)) \
+    RANDOM_UNARY_SIG(f, R, NUMBIRCH_ARRAY(T, 2)) \
+    RANDOM_UNARY_SIG(f, R, NUMBIRCH_ARRAY(T, 1)) \
+    RANDOM_UNARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     RANDOM_UNARY_SIG(f, R, T)
 #define RANDOM_UNARY_SIG(f, R, T) \
     template R<T> f<T,int>(const T&);

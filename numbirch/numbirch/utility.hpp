@@ -3,9 +3,55 @@
  */
 #pragma once
 
-#include "numbirch/macro.hpp"
+#include "numbirch/utility.hpp"
 
 #include <type_traits>
+#include <cstdint>
+
+#ifdef __CUDACC__
+#define NUMBIRCH_HOST __host__
+#else
+#define NUMBIRCH_HOST
+#endif
+
+#ifdef __CUDACC__
+#define NUMBIRCH_DEVICE __device__
+#else
+#define NUMBIRCH_DEVICE
+#endif
+
+#ifdef __CUDACC__
+#define NUMBIRCH_HOST_DEVICE __host__ __device__
+#else
+#define NUMBIRCH_HOST_DEVICE
+#endif
+
+#ifdef __CUDACC__
+#define NUMBIRCH_CONSTANT __constant__
+#else
+#define NUMBIRCH_CONSTANT
+#endif
+
+/**
+ * @internal
+ * 
+ * @def ARRAY
+ * 
+ * Constructs the type `Array<T,D>`.
+ */
+#define NUMBIRCH_ARRAY(T, D) Array<T,D>
+
+/**
+ * @internal
+ * 
+ * @def NUMBIRCH_REAL
+ * 
+ * Macro to set the default floating point type. Valid values are `float` and
+ * `double`.
+ */
+#ifndef NUMBIRCH_REAL
+#define NUMBIRCH_REAL double
+#endif
 
 namespace numbirch {
 template<class T, int D> class Array;
@@ -17,6 +63,15 @@ template<class T, int D> class Array;
  * @ingroup trait
  */
 using real = NUMBIRCH_REAL;
+
+/**
+ * @internal
+ * 
+ * @def PI
+ * 
+ * Value of pi.
+ */
+static const real PI = 3.1415926535897932384626433832795;
 
 /**
  * @internal
@@ -588,5 +643,53 @@ using pack_t = Array<promote_t<value_t<T>,value_t<U>>,2>;
 template<class T, class U>
 using stack_t = Array<promote_t<value_t<T>,value_t<U>>,
     (dimension_v<T> == 2 || dimension_v<T> == 2) ? 2 : 1>;
+
+/**
+ * @internal
+ *
+ * 0-based element of a matrix, vector, or scalar. A scalar is identified by
+ * having `ld == 0`.
+ */
+template<class T>
+NUMBIRCH_HOST_DEVICE T& get(T* x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
+  return x[k];
+}
+
+/**
+ * @internal
+ *
+ * 0-based element of a matrix, vector, or scalar. A scalar is identified by
+ * having `ld == 0`.
+ */
+template<class T>
+NUMBIRCH_HOST_DEVICE const T& get(const T* x, const int i = 0,
+    const int j = 0, const int ld = 0) {
+  int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
+  return x[k];
+}
+
+/**
+ * @internal
+ * 
+ * 0-based element of a scalar---just returns the scalar.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+NUMBIRCH_HOST_DEVICE T& get(T& x, const int i = 0, const int j = 0,
+    const int ld = 0) {
+  return x;
+}
+
+/**
+ * @internal
+ * 
+ * 0-based element of a scalar---just returns the scalar.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+NUMBIRCH_HOST_DEVICE const T& get(const T& x, const int i = 0,
+    const int j = 0, const int ld = 0) {
+  return x;
+}
 
 }

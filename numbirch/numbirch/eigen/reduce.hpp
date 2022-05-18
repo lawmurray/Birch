@@ -3,10 +3,9 @@
  */
 #pragma once
 
-#include "numbirch/reduce.hpp"
 #include "numbirch/eigen/eigen.hpp"
 #include "numbirch/common/reduce.hpp"
-#include "numbirch/common/get.hpp"
+#include "numbirch/reduce.hpp"
 
 namespace numbirch {
 

@@ -24,7 +24,7 @@
     ELEMENT_VECTOR_SECOND(f, T, int)
 #define ELEMENT_VECTOR_SECOND(f, T, U) \
     ELEMENT_VECTOR_SIG(f, T, U) \
-    ELEMENT_VECTOR_SIG(f, T, ARRAY(U, 0))
+    ELEMENT_VECTOR_SIG(f, T, NUMBIRCH_ARRAY(U, 0))
 #define ELEMENT_VECTOR_SIG(f, T, U) \
     template Array<T,0> f<T,U,int>(const Array<T,1>& x, const U& i);
 

@@ -10,11 +10,8 @@
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 #include "numbirch/array.hpp"
-#include "numbirch/macro.hpp"
 #include "numbirch/memory.hpp"
-#include "numbirch/type.hpp"
-#include "numbirch/common/get.hpp"
-
+#include "numbirch/utility.hpp"
 
 namespace numbirch {
 /*

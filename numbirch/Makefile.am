@@ -130,18 +130,16 @@ nobase_include_HEADERS = \
   numbirch/array/Scalar.hpp \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
-  numbirch/macro.hpp \
   numbirch/memory.hpp \
   numbirch/numbirch.hpp \
   numbirch/numeric.hpp \
   numbirch/random.hpp \
   numbirch/reduce.hpp \
   numbirch/transform.hpp \
-  numbirch/type.hpp
+  numbirch/utility.hpp
 
 noinst_HEADERS = \
   numbirch/common/array.hpp \
-  numbirch/common/get.hpp \
   numbirch/common/random.hpp \
   numbirch/common/reduce.hpp \
   numbirch/common/transform.hpp \
