@@ -2,14 +2,14 @@
  * @file
  */
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/random.hpp"
-#include "numbirch/cuda/transform.hpp"
+#include "numbirch/cuda/random.inl"
+#include "numbirch/cuda/transform.inl"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/random.hpp"
-#include "numbirch/eigen/transform.hpp"
+#include "numbirch/eigen/random.inl"
+#include "numbirch/eigen/transform.inl"
 #endif
-#include "numbirch/common/random.hpp"
+#include "numbirch/common/random.inl"
 
 /**
  * @internal

@@ -2,12 +2,12 @@
  * @file
  */
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/transform.hpp"
+#include "numbirch/cuda/transform.inl"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/transform.hpp"
+#include "numbirch/eigen/transform.inl"
 #endif
-#include "numbirch/common/transform.hpp"
+#include "numbirch/common/transform.inl"
 
 #define TERNARY(f, R) \
     TERNARY_FIRST(f, R, real) \

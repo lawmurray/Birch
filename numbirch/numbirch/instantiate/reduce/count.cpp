@@ -2,12 +2,12 @@
  * @file
  */
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/reduce.hpp"
+#include "numbirch/cuda/reduce.inl"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/reduce.hpp"
+#include "numbirch/eigen/reduce.inl"
 #endif
-#include "numbirch/common/reduce.hpp"
+#include "numbirch/common/reduce.inl"
 
 #define REDUCE_COUNT(f) \
     REDUCE_COUNT_FIRST(f, real) \

@@ -2,10 +2,10 @@
  * @file
  */
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/numeric.hpp"
+#include "numbirch/cuda/numeric.inl"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/numeric.hpp"
+#include "numbirch/eigen/numeric.inl"
 #endif
 
 #define INNER(f) \

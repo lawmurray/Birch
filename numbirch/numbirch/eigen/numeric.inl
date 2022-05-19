@@ -3,9 +3,9 @@
  */
 #pragma once
 
+#include "numbirch/utility.hpp"
 #include "numbirch/eigen/eigen.hpp"
 #include "numbirch/numeric.hpp"
-#include "numbirch/utility.hpp"
 
 namespace numbirch {
 

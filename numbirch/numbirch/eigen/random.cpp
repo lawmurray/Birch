@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "numbirch/eigen/random.hpp"
+#include "numbirch/common/random.hpp"
 
 #if HAVE_OMP_H
 #include <omp.h>

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "numbirch/transform.hpp"
-#include "numbirch/reduce.hpp"
 
 #if defined(HAVE_UNSUPPORTED_EIGEN_SPECIALFUNCTIONS)
 #include <unsupported/Eigen/SpecialFunctions>
@@ -617,23 +616,6 @@ struct ibeta_functor {
     }
   }
 };
-
-/**
- * @internal
- * 
- * Performs the inverse operation of a scalar broadcast during gradient
- * computation. That is, if a scalar was broadcast during the forward pass,
- * upstream gradients must be aggregated, by summation, during the backward
- * pass.
- */
-template<int D, class T>
-auto aggregate(const T& x) {
-  if constexpr (D == 0 && dimension_v<T> != 0) {
-    return sum(x);
-  } else {
-    return x;
-  }
-}
 
 /**
  * @internal

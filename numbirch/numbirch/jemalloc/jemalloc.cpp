@@ -2,7 +2,6 @@
  * @file
  */
 #include "numbirch/jemalloc/jemalloc.hpp"
-#include "numbirch/memory.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -79,7 +78,7 @@ static extent_hooks_t host_hooks = {
   nullptr
 };
 
-unsigned make_arena(extent_hooks_t* hooks) {
+static unsigned make_arena(extent_hooks_t* hooks) {
   [[maybe_unused]] int ret;
   unsigned arena = 0;
   size_t size = sizeof(arena);
@@ -89,7 +88,7 @@ unsigned make_arena(extent_hooks_t* hooks) {
   return arena;
 }
 
-unsigned make_tcache() {
+static unsigned make_tcache() {
   [[maybe_unused]] int ret;
   unsigned tcache = 0;
   size_t size = sizeof(tcache);
@@ -120,29 +119,6 @@ void numbirch::jemalloc_init() {
 
 void numbirch::jemalloc_term() {
   ///@todo
-}
-
-void* numbirch::malloc(const size_t size) {
-  return size == 0 ? nullptr : numbirch_mallocx(size, shared_flags);
-}
-
-void* numbirch::realloc(void* ptr, const size_t size) {
-  if (size > 0) {
-    return numbirch_rallocx(ptr, size, shared_flags);
-  } else {
-    free(ptr);
-    return nullptr;
-  }
-}
-
-void numbirch::free(void* ptr) {
-  /// @todo Actually need to wait on the stream associated with the arena
-  /// where this allocation was made, and only if its a different thread to
-  /// this one, lest it is reused by the associated thread before this thread
-  /// has finished any asynchronous work
-  if (ptr) {
-    numbirch_dallocx(ptr, shared_flags);
-  }
 }
 
 void* numbirch::device_malloc(const size_t size) {

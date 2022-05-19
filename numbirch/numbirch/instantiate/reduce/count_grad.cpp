@@ -2,12 +2,12 @@
  * @file
  */
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/transform.hpp"
+#include "numbirch/cuda/transform.inl"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/transform.hpp"
+#include "numbirch/eigen/transform.inl"
 #endif
-#include "numbirch/common/reduce.hpp"
+#include "numbirch/common/reduce.inl"
 
 #define REDUCE_COUNT_GRAD(f) \
     REDUCE_COUNT_GRAD_FIRST(f, real) \

@@ -2,15 +2,15 @@
  * @file
  */
 #ifdef BACKEND_CUDA
-#include "numbirch/cuda/transform.hpp"
-#include "numbirch/cuda/random.hpp"
+#include "numbirch/cuda/transform.inl"
+#include "numbirch/cuda/random.inl"
 #endif
 #ifdef BACKEND_EIGEN
-#include "numbirch/eigen/transform.hpp"
-#include "numbirch/eigen/random.hpp"
+#include "numbirch/eigen/transform.inl"
+#include "numbirch/eigen/random.inl"
 #endif
-#include "numbirch/common/transform.hpp"
-#include "numbirch/common/random.hpp"
+#include "numbirch/common/transform.inl"
+#include "numbirch/common/random.inl"
 
 #define RANDOM_BINARY(f, R) \
     RANDOM_BINARY_FIRST(f, R, real) \

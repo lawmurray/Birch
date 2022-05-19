@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include "numbirch/random.hpp"
+
 #include <random>
 
 namespace numbirch {

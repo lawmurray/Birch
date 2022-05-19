@@ -77,9 +77,11 @@ if CUDA
       numbirch/cuda/cuda.cpp \
       numbirch/cuda/curand.cpp \
       numbirch/cuda/cusolver.cpp \
+      numbirch/cuda/jemalloc.cpp \
       numbirch/cuda/memory.cpp \
       numbirch/cuda/random.cpp \
-      numbirch/jemalloc/jemalloc.cpp
+      numbirch/jemalloc/jemalloc.cpp \
+      numbirch/jemalloc/memory.cpp
 else
   AM_CPPFLAGS += -DBACKEND_EIGEN \
       -DEIGEN_NO_AUTOMATIC_RESIZING=1 \
@@ -139,24 +141,27 @@ nobase_include_HEADERS = \
   numbirch/utility.hpp
 
 noinst_HEADERS = \
-  numbirch/common/array.hpp \
+  numbirch/common/array.inl \
   numbirch/common/random.hpp \
-  numbirch/common/reduce.hpp \
-  numbirch/common/transform.hpp \
+  numbirch/common/random.inl \
+  numbirch/common/reduce.inl \
+  numbirch/common/transform.inl \
   numbirch/cuda/cub.hpp \
   numbirch/cuda/cublas.hpp \
   numbirch/cuda/cuda.hpp \
   numbirch/cuda/curand.hpp \
   numbirch/cuda/cusolver.hpp \
-  numbirch/cuda/numeric.hpp \
-  numbirch/cuda/random.hpp \
-  numbirch/cuda/reduce.hpp \
-  numbirch/cuda/transform.hpp \
+  numbirch/cuda/memory.inl \
+  numbirch/cuda/numeric.inl \
+  numbirch/cuda/random.inl \
+  numbirch/cuda/reduce.inl \
+  numbirch/cuda/transform.inl \
   numbirch/eigen/eigen.hpp \
-  numbirch/eigen/numeric.hpp \
-  numbirch/eigen/random.hpp \
-  numbirch/eigen/reduce.hpp \
-  numbirch/eigen/transform.hpp \
+  numbirch/eigen/memory.inl \
+  numbirch/eigen/numeric.inl \
+  numbirch/eigen/random.inl \
+  numbirch/eigen/reduce.inl \
+  numbirch/eigen/transform.inl \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
   numbirch/oneapi/numeric.hpp \

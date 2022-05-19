@@ -4,14 +4,9 @@
 #pragma once
 
 #include "numbirch/cuda/cuda.hpp"
-#include "numbirch/cuda/cublas.hpp"
-#include "numbirch/cuda/cusolver.hpp"
-#include "numbirch/cuda/cub.hpp"
-#include "numbirch/cuda/curand.hpp"
-#include "numbirch/jemalloc/jemalloc.hpp"
 #include "numbirch/array.hpp"
-#include "numbirch/memory.hpp"
 #include "numbirch/utility.hpp"
+#include "numbirch/common/transform.inl"
 
 namespace numbirch {
 /*
