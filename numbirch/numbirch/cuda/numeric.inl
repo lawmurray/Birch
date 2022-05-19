@@ -470,13 +470,15 @@ Array<T,2> transpose(const Array<T,2>& A) {
 
 template<class T, class>
 Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x) {
-  // assert(rows(L) == length(x));
-  // Array<T,1> y(make_shape(columns(L)));
-  // auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
-  // auto x1 = make_eigen(x);
-  // auto y1 = make_eigen(y);
-  // y1.noalias() = U1*x1;
-  // return y;
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(x));
+  prefetch(L);
+  prefetch(x);
+  Array<T,1> y(x);
+  CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
+      CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), data(L), stride(L), data(y),
+      stride(y)));
+  return y;
 }
 
 template<class T, class>
@@ -513,13 +515,16 @@ Array<T,2> triinner_grad(const Array<T,2>& g, const Array<T,2>& C,
 
 template<class T, class>
 Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
-  // assert(rows(L) == rows(B));
-  // Array<T,2> C(make_shape(columns(L), columns(B)));
-  // auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
-  // auto B1 = make_eigen(B);
-  // auto C1 = make_eigen(C);
-  // C1.noalias() = U1*B1;
-  // return C;
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(B));
+  prefetch(L);
+  prefetch(B);
+  Array<T,2> C(make_shape(rows(B), columns(B)));
+  CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(B),
+      columns(B), scalar<T>::one, data(L), stride(L), data(B), stride(B),
+      data(C), stride(C)));
+  return C;
 }
 
 template<class T, class>
@@ -563,13 +568,15 @@ Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
 
 template<class T, class>
 Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x) {
-  // assert(columns(L) == length(x));
-  // Array<T,1> y(make_shape(rows(L)));
-  // auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  // auto x1 = make_eigen(x);
-  // auto y1 = make_eigen(y);
-  // y1.noalias() = L1*x1;
-  // return y;
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(x));
+  prefetch(L);
+  prefetch(x);
+  Array<T,1> y(x);
+  CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
+      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), data(L), stride(L), data(y),
+      stride(y)));
+  return y;
 }
 
 template<class T, class>
@@ -590,13 +597,16 @@ std::pair<Array<T,2>,Array<T,1>> trimul_grad(const Array<T,1>& g,
 
 template<class T, class>
 Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B) {
-  // assert(columns(L) == rows(B));
-  // Array<T,2> C(make_shape(rows(L), columns(B)));
-  // auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  // auto B1 = make_eigen(B);
-  // auto C1 = make_eigen(C);
-  // C1.noalias() = L1*B1;
-  // return C;
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(B));
+  prefetch(L);
+  prefetch(B);
+  Array<T,2> C(make_shape(rows(B), columns(B)));
+  CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(B),
+      columns(B), scalar<T>::one, data(L), stride(L), data(B), stride(B),
+      data(C), stride(C)));
+  return C;
 }
 
 template<class T, class>
