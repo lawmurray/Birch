@@ -48,7 +48,8 @@ SOURCES =  \
     numbirch/instantiate/transform/ternary.cpp \
     numbirch/instantiate/transform/unary.cpp \
     numbirch/instantiate/transform/unary_grad.cpp \
-    numbirch/instantiate/transform/unary_operator.cpp
+    numbirch/instantiate/transform/unary_operator.cpp \
+    numbirch/instantiate/memory.cpp
 
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI \
