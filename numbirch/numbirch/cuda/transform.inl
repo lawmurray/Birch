@@ -6,7 +6,6 @@
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/array.hpp"
 #include "numbirch/utility.hpp"
-#include "numbirch/common/transform.inl"
 
 namespace numbirch {
 /*

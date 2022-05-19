@@ -6,8 +6,6 @@
 #include "numbirch/reduce.hpp"
 #include "numbirch/eigen/eigen.hpp"
 
-#include "numbirch/common/reduce.inl"
-
 namespace numbirch {
 
 template<class T, class>

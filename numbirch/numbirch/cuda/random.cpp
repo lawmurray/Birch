@@ -1,7 +1,7 @@
 /**
  * @file
  */
-#include "numbirch/cuda/random.hpp"
+#include "numbirch/cuda/curand.hpp"
 
 #if HAVE_OMP_H
 #include <omp.h>

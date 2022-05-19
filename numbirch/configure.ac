@@ -102,7 +102,6 @@ else
     AC_CHECK_HEADERS([cusolverDn.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([cublasLt], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   else

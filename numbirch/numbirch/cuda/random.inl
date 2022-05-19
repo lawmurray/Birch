@@ -6,7 +6,6 @@
 #include "numbirch/utility.hpp"
 #include "numbirch/cuda/cuda.hpp"
 #include "numbirch/cuda/curand.hpp"
-#include "numbirch/common/random.inl"
 
 namespace numbirch {
 

@@ -58,7 +58,7 @@ if ONEAPI
   AM_CXXFLAGS += -fsycl -qmkl
   AM_LDFLAGS += $(AM_CXXFLAGS)
   SOURCES += \
-      numbirch/jemalloc/jemalloc.cpp \
+      numbirch/jemalloc/memory.cpp \
       numbirch/oneapi/memory.cpp \
       numbirch/oneapi/sycl.cpp
 else
@@ -78,10 +78,8 @@ if CUDA
       numbirch/cuda/cuda.cpp \
       numbirch/cuda/curand.cpp \
       numbirch/cuda/cusolver.cpp \
-      numbirch/cuda/jemalloc.cpp \
       numbirch/cuda/memory.cpp \
       numbirch/cuda/random.cpp \
-      numbirch/jemalloc/jemalloc.cpp \
       numbirch/jemalloc/memory.cpp
 else
   AM_CPPFLAGS += -DBACKEND_EIGEN \
@@ -113,10 +111,10 @@ libnumbirch_test_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g -
 libnumbirch_test_single_la_SOURCES = $(SOURCES)
 
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
-libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3 -flto
+libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
 libnumbirch_la_SOURCES = $(SOURCES)
 libnumbirch_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG -DNUMBIRCH_REAL=float
-libnumbirch_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3 -flto
+libnumbirch_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
 libnumbirch_single_la_SOURCES = $(SOURCES)
 
 include_HEADERS = numbirch/numbirch.hpp

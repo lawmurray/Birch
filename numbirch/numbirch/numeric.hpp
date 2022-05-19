@@ -643,45 +643,6 @@ std::pair<Array<T,2>,Array<T,1>> inner_grad(const Array<T,1>& g,
 }
 
 /**
- * Matrix-vector inner product and addition.
- * 
- * @ingroup linalg
- * 
- * @tparam T Floating point type.
- * 
- * @param x Vector $x$.
- * @param A Matrix $A$.
- * @param y Vector $y$.
- * 
- * @return Result $z = x + A^\top y$.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,1> inner(const Array<T,1>& x, const Array<T,2>& A,
-    const Array<T,1>& y);
-
-/**
- * Gradient of inner().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Floating point type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result $z = x + A^\top y$.
- * @param x Vector $x$.
- * @param A Matrix $A$.
- * @param y Vector $y$.
- * 
- * @return Gradients with respect to @p x, @p A and @p y.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,1>,Array<T,2>,Array<T,1>> inner_grad(const Array<T,1>& g,
-    const Array<T,1>& z, const Array<T,1>& x, const Array<T,2>& A,
-    const Array<T,1>& y) {
-  return std::make_tuple(g, outer(y, g), A*g);
-}
-
-/**
  * Matrix inner product.
  * 
  * @ingroup linalg
@@ -749,45 +710,6 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& g,
     const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& B) {
   return std::make_pair(outer(B, g), A*g);
-}
-
-/**
- * Matrix-matrix inner product and addition.
- * 
- * @ingroup linalg
- * 
- * @tparam T Floating point type.
- * 
- * @param A Matrix $A$.
- * @param B Matrix $B$.
- * @param C Matrix $C$.
- * 
- * @return Result $D = A + B^\top C$.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B,
-    const Array<T,2>& C);
-
-/**
- * Gradient of inner().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Floating point type.
- * 
- * @param g Gradient with respect to result.
- * @param D Result $D = A + B^\top C$.
- * @param A Matrix $A$.
- * @param B Matrix $B$.
- * @param C Matrix $C$.
- * 
- * @return Gradients with respect to @p A, @p B and @p C.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> inner_grad(const Array<T,2>& g,
-    const Array<T,2>& D, const Array<T,2>& A, const Array<T,2>& B,
-    const Array<T,2>& C) {
-  return std::make_tuple(g, outer(C, g), B*g);
 }
 
 /**
@@ -960,45 +882,6 @@ std::pair<Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& g,
 }
 
 /**
- * Vector-vector outer product and addition.
- * 
- * @ingroup linalg
- * 
- * @tparam T Floating point type.
- * 
- * @param A Matrix $A$.
- * @param x Vector $x$.
- * @param y Vector $y$.
- * 
- * @return Result $C = A + xy^\top$.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> outer(const Array<T,2>& A, const Array<T,1>& x,
-    const Array<T,1>& y);
-
-/**
- * Gradient of outer().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Floating point type.
- * 
- * @param g Gradient with respect to result.
- * @param C Result $C = A + xy^\top$.
- * @param A Matrix $A$.
- * @param x Vector $x$.
- * @param y Vector $y$.
- * 
- * @return Gradients with respect to @p A, @p x and @p y.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,2>,Array<T,1>,Array<T,1>> outer_grad(const Array<T,2>& g,
-    const Array<T,2>& C, const Array<T,2>& A, const Array<T,1>& x,
-    const Array<T,1>& y) {
-  return std::make_tuple(g, g*y, inner(g, x));
-}
-
-/**
  * Matrix outer product.
  * 
  * @ingroup linalg
@@ -1066,45 +949,6 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
     const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& B) {
   return std::make_pair(g*B, inner(g, A));
-}
-
-/**
- * Matrix-matrix outer product and addition.
- * 
- * @ingroup linalg
- * 
- * @tparam T Floating point type.
- * 
- * @param A Matrix $A$.
- * @param B Matrix $B$.
- * @param C Matrix $C$.
- * 
- * @return Result $D = A + BC^\top$.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B,
-    const Array<T,2>& C);
-
-/**
- * Gradient of outer().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Floating point type.
- * 
- * @param g Gradient with respect to result.
- * @param D Result $D = A + BC^\top$.
- * @param A Matrix $A$.
- * @param B Matrix $B$.
- * @param C Matrix $C$.
- * 
- * @return Gradients with respect to @p A, @p B and @p C.
- */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::tuple<Array<T,2>,Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
-    const Array<T,2>& D, const Array<T,2>& A, const Array<T,2>& B,
-    const Array<T,2>& C) {
-  return std::make_tuple(g, g*C, inner(g, B));
 }
 
 /**
