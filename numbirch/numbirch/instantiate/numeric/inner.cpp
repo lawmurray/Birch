@@ -16,4 +16,5 @@
 
 namespace numbirch {
 INNER(inner)
+INNER(triinner)
 }

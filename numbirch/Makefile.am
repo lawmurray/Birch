@@ -31,7 +31,6 @@ SOURCES =  \
     numbirch/instantiate/numeric/matrix_grad.cpp \
     numbirch/instantiate/numeric/outer.cpp \
     numbirch/instantiate/numeric/reduce_matrix.cpp \
-    numbirch/instantiate/numeric/triinner.cpp \
     numbirch/instantiate/numeric/triouter.cpp \
     numbirch/instantiate/random/binary.cpp \
     numbirch/instantiate/random/standard_gaussian.cpp \

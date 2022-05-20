@@ -426,7 +426,12 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
-    const Array<T,1>& x, const Array<T,2>& L, const Array<T,1>& y);
+    const Array<T,1>& x, const Array<T,2>& L, const Array<T,1>& y) {
+  auto gy = inner(cholinv(L), g);
+  auto gS = -outer(gy, x);
+  auto gL = tri((gS + transpose(gS))*L);
+  return std::make_pair(gL, gy);
+}
 
 /**
  * Matrix-matrix solve via the Cholesky factorization.
@@ -461,7 +466,12 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> cholsolve_grad(const Array<T,2>& g,
-    const Array<T,2>& B, const Array<T,2>& L, const Array<T,2>& C);
+    const Array<T,2>& B, const Array<T,2>& L, const Array<T,2>& C) {
+  auto gC = inner(cholinv(L), g);
+  auto gS = -outer(gC, B);
+  auto gL = tri((gS + transpose(gS))*L);
+  return std::make_pair(gL, gC);
+}
 
 /**
  * Vector dot product.
@@ -1019,6 +1029,40 @@ real_t<T> transpose_grad(const real_t<T>& g, const T& y, const T& x) {
 }
 
 /**
+ * Extract the lower triangle and diagonal of a matrix.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Lower triangle and diagonal of $A$. The upper triangle is filled
+ * with zeros.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> tri(const Array<T,2>& A);
+
+/**
+ * Gradient of tri().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param L Lower triangle and diagonal of $A$.
+ * @param A Matrix $S$.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> tri_grad(const Array<T,2>& g, const Array<T,2>& L,
+    const Array<T,2>& A) {
+  return tri(g);
+}
+
+/**
  * Lower-triangular-matrix-vector inner product.
  * 
  * @ingroup linalg
@@ -1049,7 +1093,9 @@ Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,1>> triinner_grad(const Array<T,1>& g,
-    const Array<T,1>& y, const Array<T,2>& L, const Array<T,1>& x);
+    const Array<T,1>& y, const Array<T,2>& L, const Array<T,1>& x) {
+  return std::make_pair(tri(outer(x, g)), trimul(L, g));
+}
 
 /**
  * Lower-triangular-matrix inner product.
@@ -1063,7 +1109,9 @@ std::pair<Array<T,2>,Array<T,1>> triinner_grad(const Array<T,1>& g,
  * @return Result $C = L^\top L$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> triinner(const Array<T,2>& L);
+Array<T,2> triinner(const Array<T,2>& L) {
+  return triinner(L, L);
+}
 
 /**
  * Gradient of triinner().
@@ -1080,7 +1128,9 @@ Array<T,2> triinner(const Array<T,2>& L);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triinner_grad(const Array<T,2>& g, const Array<T,2>& C,
-    const Array<T,2>& L);
+    const Array<T,2>& L) {
+  return tri(trimul(L, g + transpose(g)));
+}
 
 /**
  * Lower-triangular-matrix-matrix inner product.
@@ -1113,7 +1163,9 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> triinner_grad(const Array<T,2>& g,
-    const Array<T,2>& C, const Array<T,2>& L, const Array<T,2>& B);
+    const Array<T,2>& C, const Array<T,2>& L, const Array<T,2>& B) {
+  return std::make_pair(tri(outer(B, g)), trimul(L, g));
+}
 
 /**
  * Inverse of a triangular matrix.
@@ -1177,7 +1229,9 @@ Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,1>> trimul_grad(const Array<T,1>& g,
-    const Array<T,1>& y, const Array<T,2>& L, const Array<T,1>& x);
+    const Array<T,1>& y, const Array<T,2>& L, const Array<T,1>& x) {
+  return std::make_pair(tri(outer(g, x)), triinner(L, g));
+}
 
 /**
  * Lower-triangular-matrix-matrix product.
@@ -1210,7 +1264,9 @@ Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> trimul_grad(const Array<T,2>& g,
-    const Array<T,2>& C, const Array<T,2>& L, const Array<T,2>& B);
+    const Array<T,2>& C, const Array<T,2>& L, const Array<T,2>& B) {
+  return std::make_pair(tri(outer(g, B)), triinner(L, g));
+}
 
 /**
  * Lower-triangular-matrix outer product.
@@ -1224,7 +1280,9 @@ std::pair<Array<T,2>,Array<T,2>> trimul_grad(const Array<T,2>& g,
  * @return Result $C = LL^\top$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> triouter(const Array<T,2>& L);
+Array<T,2> triouter(const Array<T,2>& L) {
+  return triouter(L, L);
+}
 
 /**
  * Gradient of triouter().
@@ -1241,7 +1299,9 @@ Array<T,2> triouter(const Array<T,2>& L);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triouter_grad(const Array<T,2>& g, const Array<T,2>& C,
-    const Array<T,2>& L);
+    const Array<T,2>& L) {
+  return tri((g + transpose(g))*L);
+}
 
 /**
  * Matrix-lower-triangular-matrix outer product.
@@ -1274,7 +1334,9 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> triouter_grad(const Array<T,2>& g,
-    const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& L);
+    const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& L) {
+  return std::make_pair(g*L, tri(inner(g, A)));
+}
 
 /**
  * Lower-triangular-matrix-vector solve.
@@ -1307,7 +1369,11 @@ Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,1>> trisolve_grad(const Array<T,1>& g,
-    const Array<T,1>& x, const Array<T,2>& L, const Array<T,1>& y);
+    const Array<T,1>& x, const Array<T,2>& L, const Array<T,1>& y) {
+  auto gy = triinner(triinv(L), g);
+  auto gL = tri(-outer(gy, x));
+  return std::make_pair(gL, gy);
+}
 
 /**
  * Lower-triangular-matrix-matrix solve.
@@ -1340,6 +1406,10 @@ Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> trisolve_grad(const Array<T,2>& g,
-    const Array<T,2>& B, const Array<T,2>& L, const Array<T,2>& C);
+    const Array<T,2>& B, const Array<T,2>& L, const Array<T,2>& C) {
+  auto gC = triinner(triinv(L), g);
+  auto gL = tri(-outer(gC, B));
+  return std::make_pair(gL, gC);
+}
 
 }
