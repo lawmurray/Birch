@@ -53,6 +53,8 @@ struct cublas<double> {
   static constexpr auto gemm = cublasDgemm;
   static constexpr auto trmv = cublasDtrmv;
   static constexpr auto trmm = cublasDtrmm;
+  static constexpr auto trsv = cublasDtrsv;
+  static constexpr auto trsm = cublasDtrsm;
 };
 template<>
 struct cublas<float> {
@@ -62,6 +64,8 @@ struct cublas<float> {
   static constexpr auto gemm = cublasSgemm;
   static constexpr auto trmv = cublasStrmv;
   static constexpr auto trmm = cublasStrmm;
+  static constexpr auto trsv = cublasStrsv;
+  static constexpr auto trsm = cublasStrsm;
 };
 
 /*

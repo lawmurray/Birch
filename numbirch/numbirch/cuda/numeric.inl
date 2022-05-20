@@ -71,17 +71,24 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
 
 template<class T, class>
 Array<T,2> chol(const Array<T,2>& S) {
-  // assert(rows(S) == columns(S));
-  // Array<T,2> L(shape(S));
-  // auto S1 = make_eigen(S);
-  // auto L1 = make_eigen(L);
-  // auto llt = S1.llt();
-  // if (llt.info() == Eigen::Success) {
-  //   L1 = llt.matrixL();
-  // } else {
-  //   L.fill(T(0.0/0.0));
-  // }
-  // return L;
+  assert(rows(S) == columns(S));
+  Array<T,2> L(diagonal(T(1.0), rows(S)));
+
+  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
+  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
+      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
+      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      &bufferOnHostBytes));
+  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+  void* bufferOnHost = host_malloc(bufferOnHostBytes);
+  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
+      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+      bufferOnHost, bufferOnHostBytes, info));
+  host_free(bufferOnHost);
+  device_free(bufferOnDevice);
+
+  return L;
 }
 
 template<class T, class>
@@ -106,36 +113,13 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
 }
 
 template<class T, class>
-Array<T,2> cholinv(const Array<T,2>& S) {
-  assert(rows(S) == columns(S));
-  Array<T,2> L(S);
-  Array<T,2> B(shape(S));
+Array<T,2> cholinv(const Array<T,2>& L) {
+  assert(rows(L) == columns(L));
+  Array<T,2> B(diagonal(T(1.0), rows(L)));
 
-  /* write identity matrix into B */
-  CUDA_CHECK(cudaMemset2DAsync(data(B), stride(B)*sizeof(T), 0,
-      rows(B)*sizeof(T), columns(B), stream));
-  CUBLAS_CHECK(cublas<T>::copy(cublasHandle, rows(B), scalar<T>::one, 0,
-      data(B), stride(B) + 1));
-
-  /* invert via Cholesky factorization */
-  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
-      &bufferOnHostBytes));
-  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = host_malloc(bufferOnHostBytes);
-
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
-      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, info));
   CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
       data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
-
-  host_free(bufferOnHost);
-  device_free(bufferOnDevice);
   return B;
 }
 
@@ -155,30 +139,14 @@ Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
 }
 
 template<class T, class>
-Array<T,1> cholsolve(const Array<T,2>& S, const Array<T,1>& y) {
-  assert(rows(S) == columns(S));
-  assert(columns(S) == length(y));
-  Array<T,2> L(S);
+Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
   Array<T,1> x(y);
 
-  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, length(x),
-      cusolver<T>::CUDA_R, data(L), stride(L), cusolver<T>::CUDA_R,
-      &bufferOnDeviceBytes, &bufferOnHostBytes));
-  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void *bufferOnHost = host_malloc(bufferOnHostBytes);
-
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, length(x), cusolver<T>::CUDA_R, data(L),
-      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, info));
   CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, length(x), 1, cusolver<T>::CUDA_R, data(L),
       stride(L), cusolver<T>::CUDA_R, data(x), length(x), info));
-
-  host_free(bufferOnHost);
-  device_free(bufferOnDevice);
   return x;
 }
 
@@ -206,30 +174,14 @@ std::pair<Array<T,2>,Array<T,1>> cholsolve_grad(const Array<T,1>& g,
 }
 
 template<class T, class>
-Array<T,2> cholsolve(const Array<T,2>& S, const Array<T,2>& C) {
-  assert(rows(S) == columns(S));
-  assert(columns(S) == rows(C));
-  Array<T,2> L(S);
+Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(C));
   Array<T,2> B(C);
 
-  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
-      &bufferOnHostBytes));
-  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = host_malloc(bufferOnHostBytes);
-
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
-      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, info));
   CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
       data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
-
-  host_free(bufferOnHost);
-  device_free(bufferOnDevice);
   return B;
 }
 
@@ -544,12 +496,14 @@ std::pair<Array<T,2>,Array<T,2>> triinner_grad(const Array<T,2>& g,
 
 template<class T, class>
 Array<T,2> triinv(const Array<T,2>& L) {
-  // assert(rows(L) == columns(L));
-  // Array<T,2> B(shape(L));
-  // auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  // auto B1 = make_eigen(B);
-  // B1.noalias() = L1.solve(B1.Identity(rows(B), columns(B)));
-  // return B;
+  assert(rows(L) == columns(L));
+  Array<T,2> B(diagonal(T(1.0), rows(L)));
+
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, data(L), stride(L), data(B),
+      stride(B)));
+  return B;
 }
 
 template<class T, class>
@@ -669,14 +623,14 @@ std::pair<Array<T,2>,Array<T,2>> triouter_grad(const Array<T,2>& g,
 
 template<class T, class>
 Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y) {
-  // assert(rows(L) == columns(L));
-  // assert(columns(L) == length(y));
-  // Array<T,1> x(shape(y));
-  // auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  // auto x1 = make_eigen(x);
-  // auto y1 = make_eigen(y);
-  // x1.noalias() = L1.solve(y1);
-  // return x;
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+  Array<T,1> x(y);
+
+  CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
+      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(x), data(L), stride(L),
+      data(x), stride(x)));
+  return x;
 }
 
 template<class T, class>
@@ -700,14 +654,15 @@ std::pair<Array<T,2>,Array<T,1>> trisolve_grad(const Array<T,1>& g,
 
 template<class T, class>
 Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C) {
-  // assert(rows(L) == columns(L));
-  // assert(columns(L) == rows(C));
-  // Array<T,2> B(shape(C));
-  // auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  // auto B1 = make_eigen(B);
-  // auto C1 = make_eigen(C);
-  // B1.noalias() = L1.solve(C1);
-  // return B;
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(C));
+  Array<T,2> B(C);
+
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, data(L), stride(L), data(B),
+      stride(B)));
+  return B;
 }
 
 template<class T, class>
