@@ -92,27 +92,6 @@ Array<T,2> chol(const Array<T,2>& S) {
 }
 
 template<class T, class>
-Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
-    const Array<T,2>& S) {
-  // assert(rows(g) == columns(g));
-  // assert(rows(L) == columns(L));
-  // assert(rows(S) == columns(S));
-  // assert(rows(g) == rows(L));
-  // assert(rows(g) == rows(S));
-  // Array<T,2> gS(shape(S));
-  // auto g1 = make_eigen(g);
-  // auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
-  // auto S1 = make_eigen(S);
-  // auto gS1 = make_eigen(gS);
-  // gS1 = (U1*g1).template triangularView<Eigen::Lower>();
-  // gS1.diagonal() *= 0.5;
-  // gS1 = U1.solve(U1.solve(gS1).transpose());
-  // gS1 = (gS1.transpose() + gS1).template triangularView<Eigen::Lower>();
-  // gS1.diagonal() *= 0.5;
-  // return gS;
-}
-
-template<class T, class>
 Array<T,2> cholinv(const Array<T,2>& L) {
   assert(rows(L) == columns(L));
   Array<T,2> B(diagonal(T(1.0), rows(L)));

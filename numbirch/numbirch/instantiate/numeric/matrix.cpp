@@ -17,6 +17,7 @@ namespace numbirch {
 MATRIX(chol)
 MATRIX(cholinv)
 MATRIX(inv)
+MATRIX(phi)
 MATRIX(transpose)
 MATRIX(tri)
 MATRIX(triinv)

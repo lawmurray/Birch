@@ -357,7 +357,11 @@ Array<T,2> chol(const Array<T,2>& S);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
-    const Array<T,2>& S);
+    const Array<T,2>& S) {
+  auto A = phi(triinner(L, g));
+  auto B = triinv(L);
+  return phi(triinner(B, A + transpose(A))*B);
+}
 
 /**
  * Inverse of a symmetric positive definite square matrix via the Cholesky
@@ -959,6 +963,42 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 std::pair<Array<T,2>,Array<T,2>> outer_grad(const Array<T,2>& g,
     const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& B) {
   return std::make_pair(g*B, inner(g, A));
+}
+
+/**
+ * Extract the lower triangle and half the diagonal of a matrix.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Lower triangle and half the diagonal of $A$. The upper triangle is
+ * filled with zeros.
+ * 
+ * This function is used as part of the gradient for chol().
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> phi(const Array<T,2>& A);
+
+/**
+ * Gradient of phi().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param L Lower triangle and half the diagonal of $A$.
+ * @param A Matrix $S$.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> phi_grad(const Array<T,2>& g, const Array<T,2>& L,
+    const Array<T,2>& A) {
+  return phi(g);
 }
 
 /**
