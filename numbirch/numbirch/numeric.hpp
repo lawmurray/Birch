@@ -395,7 +395,10 @@ Array<T,2> cholinv(const Array<T,2>& L);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
-    const Array<T,2>& L);
+    const Array<T,2>& L) {
+  auto I = triinv(L);
+  return tri(-triouter(triinner(I, I*(g + transpose(g))), I));
+}
 
 /**
  * Matrix-vector solve via the Cholesky factorization.
@@ -755,7 +758,9 @@ Array<T,2> inv(const Array<T,2>& A);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
-    const Array<T,2>& A);
+    const Array<T,2>& A) {
+  return -outer(inner(B, g), B);
+}
 
 /**
  * Logarithm of the determinant of a symmetric positive definite matrix via
@@ -1236,7 +1241,9 @@ Array<T,2> triinv(const Array<T,2>& L);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
-    const Array<T,2>& L);
+    const Array<T,2>& L) {
+  return tri(-triouter(triinner(B, g), B));
+}
 
 /**
  * Lower-triangular-matrix-vector product.

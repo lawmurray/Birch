@@ -103,21 +103,6 @@ Array<T,2> cholinv(const Array<T,2>& L) {
 }
 
 template<class T, class>
-Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
-    const Array<T,2>& L) {
-  // assert(rows(L) == columns(L));
-  // Array<T,2> gS(shape(L)), gL(shape(L));
-  // auto g1 = make_eigen(g);
-  // auto B1 = make_eigen(B);
-  // auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  // auto gS1 = make_eigen(gS);
-  // auto gL1 = make_eigen(gL);
-  // gS1.noalias() = -B1.transpose()*g1*B1.transpose();
-  // gL1 = ((gS1 + gS1.transpose())*L1).template triangularView<Eigen::Lower>();
-  // return gL;
-}
-
-template<class T, class>
 Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
@@ -217,19 +202,6 @@ Array<T,2> inv(const Array<T,2>& A) {
   host_free(bufferOnHost);
   device_free(bufferOnDevice);
   return B;
-}
-
-template<class T, class>
-Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
-    const Array<T,2>& A) {
-  // assert(rows(B) == columns(B));
-  // assert(rows(A) == columns(A));
-  // Array<T,2> gA(shape(A));
-  // auto g1 = make_eigen(g);
-  // auto B1 = make_eigen(B);
-  // auto gA1 = make_eigen(gA);
-  // gA1.noalias() = -B1.transpose()*g1*B1.transpose();
-  // return gA;
 }
 
 template<class T, class>
@@ -391,20 +363,6 @@ Array<T,2> triinv(const Array<T,2>& L) {
       rows(B), columns(B), scalar<T>::one, data(L), stride(L), data(B),
       stride(B)));
   return B;
-}
-
-template<class T, class>
-Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
-    const Array<T,2>& L) {
-  // assert(rows(B) == columns(B));
-  // assert(rows(L) == columns(L));
-  // Array<T,2> gL(shape(L));
-  // auto g1 = make_eigen(g);
-  // auto B1 = make_eigen(B).transpose().template triangularView<Eigen::Upper>();
-  // auto gL1 = make_eigen(gL);
-  // gL1 = (-(B1*g1*B1)).template triangularView<
-  //     Eigen::Lower>();
-  // return gL;
 }
 
 template<class T, class>

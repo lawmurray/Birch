@@ -28,7 +28,6 @@ SOURCES =  \
     numbirch/instantiate/numeric/frobenius.cpp \
     numbirch/instantiate/numeric/inner.cpp \
     numbirch/instantiate/numeric/matrix.cpp \
-    numbirch/instantiate/numeric/matrix_grad.cpp \
     numbirch/instantiate/numeric/outer.cpp \
     numbirch/instantiate/numeric/reduce_matrix.cpp \
     numbirch/instantiate/numeric/triouter.cpp \
