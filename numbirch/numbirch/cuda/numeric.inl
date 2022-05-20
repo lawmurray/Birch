@@ -451,7 +451,7 @@ std::pair<Array<T,2>,Array<T,1>> triinner_grad(const Array<T,1>& g,
 
 template<class T, class>
 Array<T,2> triinner(const Array<T,2>& L) {
-  // return triinner(L, L);
+  return triinner(L, L);
 }
 
 template<class T, class>
@@ -581,7 +581,7 @@ std::pair<Array<T,2>,Array<T,2>> trimul_grad(const Array<T,2>& g,
 
 template<class T, class>
 Array<T,2> triouter(const Array<T,2>& L) {
-  // return triouter(L, L);
+  return triouter(L, L);
 }
 
 template<class T, class>
@@ -597,13 +597,16 @@ Array<T,2> triouter_grad(const Array<T,2>& g, const Array<T,2>& C,
 
 template<class T, class>
 Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
-  // assert(columns(A) == columns(L));
-  // Array<T,2> C(make_shape(rows(A), rows(L)));
-  // auto A1 = make_eigen(A);
-  // auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
-  // auto C1 = make_eigen(C);
-  // C1.noalias() = A1*U1;
-  // return C;
+  assert(rows(L) == columns(L));
+  assert(columns(A) == columns(L));
+  prefetch(A);
+  prefetch(L);
+  Array<T,2> C(make_shape(rows(A), rows(L)));
+  CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(C),
+      columns(C), scalar<T>::one, data(L), stride(L), data(A), stride(A),
+      data(C), stride(C)));
+  return C;
 }
 
 template<class T, class>
