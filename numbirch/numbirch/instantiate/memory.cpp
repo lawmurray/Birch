@@ -7,12 +7,11 @@
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/memory.inl"
 #endif
+#include "numbirch/utility.hpp"
 
 namespace numbirch {
 
-template void memset(void*, const size_t, const double, const size_t,
-    const size_t);
-template void memset(void*, const size_t, const float, const size_t,
+template void memset(void*, const size_t, const real, const size_t,
     const size_t);
 template void memset(void*, const size_t, const int, const size_t,
     const size_t);

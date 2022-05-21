@@ -109,7 +109,7 @@ void memcpy(void* dst, const size_t dpitch, const void* src,
  * @param width Width of each batch, in bytes.
  * @param height Number of batches.
  */
-template<class T, std::enable_if_t<std::is_arithmetic<T>::value,int> = 0>
+template<class T, class = std::enable_if_t<std::is_arithmetic<T>::value,int>>
 void memset(void* dst, const size_t dpitch, const T value, const size_t width,
     const size_t height);
 
