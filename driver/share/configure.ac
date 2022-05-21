@@ -39,7 +39,7 @@ AC_ARG_ENABLE([single],
   yes) single=true ;;
   no)  single=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-single]) ;;
-esac],[single=false])
+esac],[single=true])
 
 AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
 AM_CONDITIONAL([TEST], [test x$test = xtrue])
