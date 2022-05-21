@@ -260,14 +260,8 @@ Array<T,2> inv(const Array<T,2>& A) {
   assert(rows(A) == columns(A));
   prefetch(A);
   Array<T,2> LU(A);
-  Array<T,2> B(shape(A));
+  Array<T,2> B(diagonal(T(1.0), rows(A)));
   Array<int,0> info;
-
-  /* write identity matrix into B */
-  CUDA_CHECK(cudaMemset2DAsync(data(B), stride(B)*sizeof(T), 0,
-      rows(B)*sizeof(T), columns(B), stream));
-  CUBLAS_CHECK(cublas<T>::copy(cublasHandle, rows(B), scalar<T>::one, 0,
-      data(B), stride(B) + 1));
 
   /* invert via LU factorization with partial pivoting */
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
