@@ -222,7 +222,7 @@ __global__ void kernel_gather(const int m, const int n, const T A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      get(C, i, j, ldC) = get(A, get(I, i, j, ldI) - 1, 1, ldA);
+      get(C, i, j, ldC) = get(A, get(I, i, j, ldI) - 1, 0, ldA);
     }
   }
 }
