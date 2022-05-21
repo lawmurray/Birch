@@ -23,26 +23,10 @@
       } \
     }
 
-/*
- * Call a cuSOLVER function and assert success, on both return code and info
- * code (the latter only if CUDA_SYNC is enabled).
- */
-#define CUSOLVER_CHECK_INFO(call) \
-    { \
-      cusolverStatus_t err = call; \
-      assert(err == CUSOLVER_STATUS_SUCCESS); \
-      if (CUDA_SYNC) { \
-        cudaError_t err = cudaStreamSynchronize(stream); \
-        assert(err == cudaSuccess); \
-        assert(*info == 0); \
-      } \
-    }
-
 namespace numbirch {
 
 extern thread_local cusolverDnHandle_t cusolverDnHandle;
 extern thread_local cusolverDnParams_t cusolverDnParams;
-extern thread_local int* info;
 
 /*
  * cuSOLVER requirements for single and double precision.

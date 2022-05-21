@@ -82,6 +82,44 @@ __global__ void kernel_phi(const int m, const int n, const T* A,
   }
 }
 
+/**
+ * @internal
+ * 
+ * Kernel for nan_on_error().
+ */
+template<class T>
+__global__ void kernel_nan_on_error(const int m, const int n, T* A,
+    const int ldA, const int* info) {
+  if (*info != 0) {
+    for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+        j += gridDim.y*blockDim.y) {
+      for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+          i += gridDim.x*blockDim.x) {
+        get(A, i, j, ldA) = T(0.0/0.0);
+      }
+    }
+  }
+}
+
+/**
+ * @internal
+ * 
+ * Fill a matrix with nan if info code is not zero. This is used for
+ * asynchronous post-processing of cuSOLVER calls that fail, such as a potrf
+ * on a matrix that is not positive definite.
+ */
+template<class T>
+void nan_on_error(T& A, const Array<int,0>& info) {
+  auto m = rows(A);
+  auto n = columns(A);
+  if (m > 0 && n > 0) {
+    auto grid = make_grid(m, n);
+    auto block = make_block(m, n);
+    CUDA_LAUNCH(kernel_nan_on_error<<<grid,block,0,stream>>>(m, n, data(A),
+        stride(A), data(info)));
+  }
+}
+
 template<class T, class>
 Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x) {
   assert(columns(A) == length(x));
@@ -109,7 +147,9 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
 template<class T, class>
 Array<T,2> chol(const Array<T,2>& S) {
   assert(rows(S) == columns(S));
+  prefetch(S);
   Array<T,2> L(tri(S));
+  Array<int,0> info;
 
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
@@ -118,10 +158,11 @@ Array<T,2> chol(const Array<T,2>& S) {
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
   void* bufferOnHost = host_malloc(bufferOnHostBytes);
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
+  CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
       stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, info));
+      bufferOnHost, bufferOnHostBytes, data(info)));
+  nan_on_error(L, info);
   device_free(bufferOnDevice);
   host_free(bufferOnHost);
 
@@ -131,11 +172,14 @@ Array<T,2> chol(const Array<T,2>& S) {
 template<class T, class>
 Array<T,2> cholinv(const Array<T,2>& L) {
   assert(rows(L) == columns(L));
+  prefetch(L);
   Array<T,2> B(diagonal(T(1.0), rows(L)));
+  Array<int,0> info;
 
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
+      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B),
+      data(info)));      
   return B;
 }
 
@@ -143,11 +187,14 @@ template<class T, class>
 Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
+  prefetch(L);
+  prefetch(y);
   Array<T,1> x(y);
+  Array<int,0> info;
 
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, length(x), 1, cusolver<T>::CUDA_R, data(L),
-      stride(L), cusolver<T>::CUDA_R, data(x), length(x), info));
+      stride(L), cusolver<T>::CUDA_R, data(x), length(x), data(info)));
   return x;
 }
 
@@ -155,11 +202,15 @@ template<class T, class>
 Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
+  prefetch(L);
+  prefetch(C);
   Array<T,2> B(C);
+  Array<int,0> info;
 
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B), info));
+      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B),
+      data(info)));
   return B;
 }
 
@@ -207,8 +258,10 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
 template<class T, class>
 Array<T,2> inv(const Array<T,2>& A) {
   assert(rows(A) == columns(A));
+  prefetch(A);
   Array<T,2> LU(A);
   Array<T,2> B(shape(A));
+  Array<int,0> info;
 
   /* write identity matrix into B */
   CUDA_CHECK(cudaMemset2DAsync(data(B), stride(B)*sizeof(T), 0,
@@ -227,13 +280,14 @@ Array<T,2> inv(const Array<T,2>& A) {
   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*std::min(rows(LU),
       columns(LU)));
 
-  CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
+  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
       rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU), stride(LU), ipiv,
       cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
-      bufferOnHostBytes, info));
-  CUSOLVER_CHECK_INFO(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
+      bufferOnHostBytes, data(info)));
+  nan_on_error(LU, info);
+  CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_OP_N, rows(B), columns(B), cusolver<T>::CUDA_R, data(LU),
-      stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), info));
+      stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), data(info)));
 
   device_free(ipiv);
   device_free(bufferOnDevice);
@@ -251,7 +305,9 @@ Array<T,0> lcholdet(const Array<T,2>& L) {
 
 template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
+  prefetch(A);
   Array<T,2> LU(A);
+  Array<int,0> info;
 
   /* LU factorization with partial pivoting */
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
@@ -263,10 +319,11 @@ Array<T,0> ldet(const Array<T,2>& A) {
   void* bufferOnHost = host_malloc(bufferOnHostBytes);
   auto ipiv = (int64_t*)device_malloc(sizeof(int64_t)*rows(LU));
 
-  CUSOLVER_CHECK_INFO(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
+  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
       rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU), stride(LU),
       ipiv, cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, info));
+      bufferOnHost, bufferOnHostBytes, data(info)));
+  nan_on_error(LU, info);
 
   /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
    * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
