@@ -52,8 +52,10 @@ Proceed as follows:
 ./bootstrap
 ./configure
 make
-sudo make install
+make install
 ```
+
+If installing system wide, the last command may require `sudo`.
 
 ### From source: CUDA backend
 
@@ -61,32 +63,56 @@ To use the CUDA backend you will need an Nvidia GPU. You are unlikely to see spe
 
 In addition to the requirements for the default backend, the CUDA backend requires [CUDA](https://developer.nvidia.com/cuda-downloads) and a custom build of [jemalloc](http://jemalloc.net/). It may also require a more recent version of Eigen compatible with your version of CUDA.
 
-For the custom build of jemalloc, run, from within the `jemalloc` directory (or the source directory of a separate jemalloc source package):
+#### 1. Build jemalloc
+
+Run, from within the `jemalloc` directory (or the source directory of a separate jemalloc source package):
 
 ```
 ./configure --disable-initial-exec-tls --disable-documentation \
     --with-jemalloc-prefix=numbirch_ \
     --with-install-suffix=_numbirch
 make
-sudo make install
+make install
 ```
 
-Replace `./configure` with `./autogen.sh` if the former does not exist.
+Replace `./configure` with `./autogen.sh` if the former does not exist. If installing system wide, the last command may require `sudo`.
 
 The options `--with-jemalloc-prefix=numbirch` and `--with-install-suffix=_numbirch` are critical and no other values should be used; NumBirch and some dependencies are hard-coded to work with these values.
 
-Finally, back in the root directory of the NumBirch sources, build NumBirch with the CUDA backend:
+#### 2. Install the `nvcc_wrapper` script
+
+The `nvcc_wrapper` script is a thin wrapper around `nvcc` that resolves some incompatibilites between it and the GNU Autotools, specifically around command-line options that lead to incorrect dependency detection and shared library behavior. It must be installed somewhere on your `$PATH` but *outside* the NumBirch source directory to work correctly. It is, however, only required for building NumBirch; developers who expect to rebuild NumBirch frequently may like to install it to a permanent location, users who expect to rebuild infrequently may like to install to a temporary location instead:
+
+    mkdir $HOME/tmpbin
+    export OLDPATH=$PATH
+    export PATH=$HOME/tmpbin:$OLDPATH
+    cp nvcc_wrapper $HOME/tmpbin/.
+
+#### 3. Install NumBirch
+
+Finally, in the root directory of the NumBirch sources, build NumBirch with the CUDA backend:
 
 ```
 ./bootstrap
 ./configure --enable-cuda
 make
-sudo make install
+make install
 ```
+
+If installing system wide, the last command may require `sudo`.
+
+#### 4. Clean up
+
+If you installed `nvcc_wrapper` to a temporary location, you may now clean up:
+
+    rm $HOME/tmpbin/nvcc_wrapper
+    rmdir $HOME/tmpbin
+    export PATH=$OLDPATH
 
 ### From source: oneAPI backend
 
-@attention The oneAPI backend is neither complete nor working at the moment.
+!!! attention
+    The oneAPI backend is neither complete nor working at the moment.
 
 The oneAPI requires the [Intel oneAPI Base Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#gs.g8tsv3). Once installed, run
 
@@ -102,7 +128,7 @@ Then, to build with the oneAPI backend:
 ./bootstrap
 ./configure --enable-oneapi
 make
-sudo make install
+make install
 ```
 
 To run using the oneAPI backend you will need an Intel GPU, such as the integrated graphics on an Intel CPU.

@@ -66,7 +66,6 @@ if CUDA
       -default-stream=per-thread \
       -expt-relaxed-constexpr \
       -arch=sm_70 \
-      -Wno-deprecated-gpu-targets \
       -Xcompiler="-Wall" \
       -Xcompiler="-Wno-unused-result" \
       -Xcompiler="-Wno-unknown-pragmas" \

@@ -64,13 +64,10 @@ esac],[eigen=true])
 
 # Programs
 if $oneapi; then
-  CC=./dpcpp_wrapper
-  CXX=./dpcpp_wrapper
-  LD=ld
+  CXX=dpcpp_wrapper
 else
   if $cuda; then
-    CC=./nvcc_wrapper
-    CXX=./nvcc_wrapper
+    CXX=nvcc_wrapper
   fi
 fi
 AC_PROG_CXX
