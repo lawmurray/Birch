@@ -23,8 +23,10 @@ namespace numbirch {
  */
 static const int CUDA_TRANSPOSE_SIZE = 16;
 
-/*
- * Matrix transpose kernel.
+/**
+ * @internal
+ * 
+ * Kernel for transpose().
  */
 template<class T>
 __global__ void kernel_transpose(const int m, const int n, const T* A,
@@ -42,6 +44,40 @@ __global__ void kernel_transpose(const int m, const int n, const T* A,
   j = blockIdx.y*blockDim.y + threadIdx.y;
   if (i < m && j < n) {
     get(B, i, j, ldB) = tile[threadIdx.y][threadIdx.x];
+  }
+}
+
+/**
+ * @internal
+ * 
+ * Kernel for tri().
+ */
+template<class T>
+__global__ void kernel_tri(const int m, const int n, const T* A,
+    const int ldA, T* B, const int ldB) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      get(B, i, j, ldB) = (i <= j) ? get(A, i, j, ldA) : T(0.0);
+    }
+  }
+}
+
+/**
+ * @internal
+ * 
+ * Kernel for phi().
+ */
+template<class T>
+__global__ void kernel_phi(const int m, const int n, const T* A,
+    const int ldA, T* B, const int ldB) {
+  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
+      j += gridDim.y*blockDim.y) {
+    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
+        i += gridDim.x*blockDim.x) {
+      get(B, i, j, ldB) = (i <= j) ? T(0.5)*get(A, i, j, ldA) : T(0.0);
+    }
   }
 }
 
@@ -275,6 +311,19 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
 }
 
 template<class T, class>
+Array<T,2> phi(const Array<T,2>& A) {
+  prefetch(A);
+  auto m = rows(A);
+  auto n = columns(A);
+  Array<T,2> B(make_shape(m, n));
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  CUDA_LAUNCH(kernel_phi<<<grid,block,0,stream>>>(m, n, data(A), stride(A),
+      data(B), stride(B)));
+  return B;
+}
+
+template<class T, class>
 Array<T,2> transpose(const Array<T,2>& A) {
   prefetch(A);
   Array<T,2> B(make_shape(columns(A), rows(A)));
@@ -293,6 +342,19 @@ Array<T,2> transpose(const Array<T,2>& A) {
 
   CUDA_LAUNCH(kernel_transpose<<<grid,block,shared,stream>>>(rows(B),
       columns(B), data(A), stride(A), data(B), stride(B)));
+  return B;
+}
+
+template<class T, class>
+Array<T,2> tri(const Array<T,2>& A) {
+  prefetch(A);
+  auto m = rows(A);
+  auto n = columns(A);
+  Array<T,2> B(make_shape(m, n));
+  auto grid = make_grid(m, n);
+  auto block = make_block(m, n);
+  CUDA_LAUNCH(kernel_tri<<<grid,block,0,stream>>>(m, n, data(A), stride(A),
+      data(B), stride(B)));
   return B;
 }
 
