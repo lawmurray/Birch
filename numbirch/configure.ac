@@ -9,6 +9,32 @@ AC_CONFIG_MACRO_DIR([m4])
 # still take precedence over these, however
 : ${CXXFLAGS=""}
 
+AC_ARG_ENABLE([oneapi],
+[AS_HELP_STRING[--enable-oneapi], [Use DPC++]],
+[case "${enableval}" in
+  yes) oneapi=true ;;
+  no)  oneapi=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-oneapi]) ;;
+esac],[oneapi=false])
+AM_CONDITIONAL([ONEAPI], [test x$oneapi = xtrue])
+
+AC_ARG_ENABLE([cuda],
+[AS_HELP_STRING[--enable-cuda], [Use CUDA]],
+[case "${enableval}" in
+  yes) cuda=true ;;
+  no)  cuda=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-cuda]) ;;
+esac],[cuda=false])
+AM_CONDITIONAL([CUDA], [test x$cuda = xtrue])
+
+AC_ARG_ENABLE([eigen],
+[AS_HELP_STRING[--enable-eigen], [Use eigen]],
+[case "${enableval}" in
+  yes) eigen=true ;;
+  no)  eigen=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-eigen]) ;;
+esac],[eigen=true])
+
 AC_ARG_ENABLE([debug],
 [AS_HELP_STRING[--enable-debug], [Build debug library]],
 [case "${enableval}" in
@@ -36,31 +62,14 @@ AC_ARG_ENABLE([release],
 esac],[release=true])
 AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 
-AC_ARG_ENABLE([oneapi],
-[AS_HELP_STRING[--enable-oneapi], [Use DPC++]],
+AC_ARG_ENABLE([single],
+[AS_HELP_STRING[--enable-single], [Build single precision libraries]],
 [case "${enableval}" in
-  yes) oneapi=true ;;
-  no)  oneapi=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-oneapi]) ;;
-esac],[oneapi=false])
-AM_CONDITIONAL([ONEAPI], [test x$oneapi = xtrue])
-
-AC_ARG_ENABLE([cuda],
-[AS_HELP_STRING[--enable-cuda], [Use CUDA]],
-[case "${enableval}" in
-  yes) cuda=true ;;
-  no)  cuda=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-cuda]) ;;
-esac],[cuda=false])
-AM_CONDITIONAL([CUDA], [test x$cuda = xtrue])
-
-AC_ARG_ENABLE([eigen],
-[AS_HELP_STRING[--enable-eigen], [Use eigen]],
-[case "${enableval}" in
-  yes) eigen=true ;;
-  no)  eigen=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-eigen]) ;;
-esac],[eigen=true])
+  yes) single=true ;;
+  no)  single=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-single]) ;;
+esac],[single=true])
+AM_CONDITIONAL([SINGLE], [test x$single = xtrue])
 
 # Programs
 if $oneapi; then

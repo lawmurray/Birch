@@ -1,15 +1,21 @@
 lib_LTLIBRARIES =
 if DEBUG
 lib_LTLIBRARIES += libnumbirch-debug.la
+if SINGLE
 lib_LTLIBRARIES += libnumbirch-debug-single.la
+endif
 endif
 if TEST
 lib_LTLIBRARIES += libnumbirch-test.la
+if SINGLE
 lib_LTLIBRARIES += libnumbirch-test-single.la
+endif
 endif
 if RELEASE
 lib_LTLIBRARIES += libnumbirch.la
+if SINGLE
 lib_LTLIBRARIES += libnumbirch-single.la
+endif
 endif
 
 AM_CPPFLAGS = 
