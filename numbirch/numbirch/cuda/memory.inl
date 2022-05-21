@@ -14,7 +14,7 @@ __global__ void kernel_memset(void* dst, const size_t dpitch, const T value,
   auto A = (T*)dst;
   auto ld = dpitch/sizeof(T);
   auto m = width/sizeof(T);
-  auto n = height/sizeof(T);
+  auto n = height;
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
