@@ -76,7 +76,8 @@ __global__ void kernel_phi(const int m, const int n, const T* A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      get(B, i, j, ldB) = (i <= j) ? T(0.5)*get(A, i, j, ldA) : T(0.0);
+      T a = (i == j) ? T(0.5) : T(1.0);
+      get(B, i, j, ldB) = (i <= j) ? a*get(A, i, j, ldA) : T(0.0);
     }
   }
 }
