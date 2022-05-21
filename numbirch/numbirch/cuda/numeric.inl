@@ -59,7 +59,7 @@ __global__ void kernel_tri(const int m, const int n, const T* A,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      get(B, i, j, ldB) = (i <= j) ? get(A, i, j, ldA) : T(0.0);
+      get(B, i, j, ldB) = (i >= j) ? get(A, i, j, ldA) : T(0.0);
     }
   }
 }
@@ -77,7 +77,7 @@ __global__ void kernel_phi(const int m, const int n, const T* A,
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
       T a = (i == j) ? T(0.5) : T(1.0);
-      get(B, i, j, ldB) = (i <= j) ? a*get(A, i, j, ldA) : T(0.0);
+      get(B, i, j, ldB) = (i >= j) ? a*get(A, i, j, ldA) : T(0.0);
     }
   }
 }
@@ -109,7 +109,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
 template<class T, class>
 Array<T,2> chol(const Array<T,2>& S) {
   assert(rows(S) == columns(S));
-  Array<T,2> L(diagonal(T(1.0), rows(S)));
+  Array<T,2> L(tri(S));
 
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
@@ -122,8 +122,8 @@ Array<T,2> chol(const Array<T,2>& S) {
       CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
       stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
       bufferOnHost, bufferOnHostBytes, info));
-  host_free(bufferOnHost);
   device_free(bufferOnDevice);
+  host_free(bufferOnHost);
 
   return L;
 }
@@ -236,8 +236,8 @@ Array<T,2> inv(const Array<T,2>& A) {
       stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), info));
 
   device_free(ipiv);
-  host_free(bufferOnHost);
   device_free(bufferOnDevice);
+  host_free(bufferOnHost);
   return B;
 }
 
@@ -278,8 +278,8 @@ Array<T,0> ldet(const Array<T,2>& A) {
   Array<T,0> ldet = sum(transform(LU.diagonal(), log_abs_functor()));
 
   device_free(ipiv);
-  host_free(bufferOnHost);
   device_free(bufferOnDevice);
+  host_free(bufferOnHost);
   return ldet;
 }
 

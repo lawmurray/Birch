@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/memory.hpp"
+#include "numbirch/utility.hpp"
 #include "numbirch/cuda/cuda.hpp"
 
 namespace numbirch {
@@ -19,7 +20,7 @@ __global__ void kernel_memset(void* dst, const size_t dpitch, const T value,
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      A[i + j*ld] = value;
+      get(A, i, j, ld) = value;
     }
   }
 }

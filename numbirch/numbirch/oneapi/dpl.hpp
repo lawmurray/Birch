@@ -31,7 +31,7 @@ static auto make_dpl_matrix(T* A, const int m, const int n, const int ldA) {
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T& {
         int c = i/m;
         int r = i - c*m;
-        return A[r + c*ldA];
+        return get(A, r, c, ldA);
       });
 }
 
@@ -42,7 +42,7 @@ static auto make_dpl_matrix_transpose(T* A, const int m, const int n,
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T& {
         int c = i/m;
         int r = i - c*m;
-        return A[c + r*ldA];
+        return get(A, c, r, ldA);
       });
 }
 
@@ -53,7 +53,7 @@ static auto make_dpl_matrix_lower(const T* A, const int m, const int n,
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T {
         int c = i/m;
         int r = i - c*m;
-        return (c <= r) ? A[r + c*ldA] : 0.0;
+        return (c <= r) ? get(A, r, c, ldA) : 0.0;
       });
 }
 
@@ -64,7 +64,7 @@ static auto make_dpl_matrix_symmetric(const T* A, const int m, const int n,
       dpl::experimental::ranges::iota_view(0, m*n), [=](int i) -> T {
         int c = i/m;
         int r = i - c*m;
-        return A[(c <= r) ? (r + c*ldA) : (c + r*ldA)];
+        return (c <= r) ? get(A, r, c, ldA) : get(A, c, r, ldA);
       });
 }
 

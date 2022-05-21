@@ -19,7 +19,7 @@ struct vector_element_functor {
     //
   }
   NUMBIRCH_HOST_DEVICE T& operator()(const int i) const {
-    return x[i*incx];
+    return get(x, 0, i, incx);
   }
   T* x;
   int incx;
@@ -36,7 +36,7 @@ struct matrix_element_functor {
   NUMBIRCH_HOST_DEVICE T& operator()(const int i) const {
     int c = i/m;
     int r = i - c*m;
-    return A[r + c*ldA];
+    return get(A, r, c, ldA);
   }
   T* A;
   int m;
