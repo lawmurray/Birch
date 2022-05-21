@@ -7,6 +7,7 @@
 #include "numbirch/array/Scalar.hpp"
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
+#include "numbirch/array.hpp"
 #include "numbirch/transform.hpp"
 
 namespace numbirch {
@@ -795,7 +796,9 @@ Array<T,0> lcholdet(const Array<T,2>& L);
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
-    const Array<T,2>& L);
+    const Array<T,2>& L) {
+  return T(2.0)*g*transpose(triinv(L));
+}
 
 /**
  * Logarithm of the absolute value of the determinant of a square matrix.

@@ -205,41 +205,11 @@ Array<T,2> inv(const Array<T,2>& A) {
 }
 
 template<class T, class>
-Array<T,0> lcholdet(const Array<T,2>& S) {
-  Array<T,2> L(S);
-  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
-  CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
-      &bufferOnHostBytes));
-  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = host_malloc(bufferOnHostBytes);
-
-  CUSOLVER_CHECK_INFO(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
-      stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, info));
-
+Array<T,0> lcholdet(const Array<T,2>& L) {
   /* log-determinant is twice the sum of logarithms of elements on the main
    * diagonal, all of which should be positive */
   ///@todo Avoid temporary
-  Array<T,0> ldet = sum(transform(L.diagonal(), log_square_functor()));
-
-  host_free(bufferOnHost);
-  device_free(bufferOnDevice);
-  return ldet;
-}
-
-template<class T, class>
-Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
-    const Array<T,2>& L) {
-  // Array<T,2> gL(shape(L));
-  // auto g1 = make_eigen(g);
-  // auto L1 = make_eigen(L);
-  // auto gL1 = make_eigen(gL);
-  // gL1 = (T(2.0)*g.value()/L1.diagonal().array()).matrix().asDiagonal();
-  // assert(gL1.isDiagonal());
-  // return gL;
+  return sum(transform(L.diagonal(), log_square_functor()));
 }
 
 template<class T, class>

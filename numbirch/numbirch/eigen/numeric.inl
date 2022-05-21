@@ -147,18 +147,6 @@ Array<T,0> lcholdet(const Array<T,2>& L) {
 }
 
 template<class T, class>
-Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
-    const Array<T,2>& L) {
-  Array<T,2> gL(shape(L));
-  auto g1 = make_eigen(g);
-  auto L1 = make_eigen(L);
-  auto gL1 = make_eigen(gL);
-  gL1 = (T(2.0)*g.value()/L1.diagonal().array()).matrix().asDiagonal();
-  assert(gL1.isDiagonal());
-  return gL;
-}
-
-template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
   auto A1 = make_eigen(A);
   return A1.householderQr().logAbsDeterminant();
