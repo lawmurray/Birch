@@ -6,7 +6,10 @@
 
 #include <cassert>
 #include <cstring>
+
+#if HAVE_OMP_H
 #include <omp.h>
+#endif
 
 namespace numbirch {
 /*
@@ -117,16 +120,19 @@ void jemalloc_init() {
     shared_arena = make_arena(&hooks);
     shared_tcache = make_tcache();
     shared_flags = MALLOCX_ARENA(shared_arena)|MALLOCX_TCACHE(shared_tcache);
+    assert(shared_arena > 0);
 
     /* device arena setup */
     device_arena = make_arena(&device_hooks);
     device_tcache = make_tcache();
     device_flags = MALLOCX_ARENA(device_arena)|MALLOCX_TCACHE(device_tcache);
+    assert(device_arena > 0);
 
     /* host arena setup */
     host_arena = make_arena(&host_hooks);
     host_tcache = make_tcache();
     host_flags = MALLOCX_ARENA(host_arena)|MALLOCX_TCACHE(host_tcache);
+    assert(host_arena > 0);
   }
 }
 
@@ -135,6 +141,7 @@ void jemalloc_term() {
 }
 
 bool shared_owns(void* ptr) {
+  assert(shared_arena > 0);
   [[maybe_unused]] int ret;
   unsigned arena = 0;
   size_t size = sizeof(arena);
@@ -144,6 +151,7 @@ bool shared_owns(void* ptr) {
   //ret = numbirch_mallctl("arenas.lookup", &arena, &size, &ptr, sizeof(ptr));
   ret = numbirch_mallctlbymib(mib, 2, &arena, &size, &ptr, sizeof(ptr));  
   assert(ret == 0);
+  assert(arena > 0);
 
   return arena == shared_arena;
 }
@@ -166,6 +174,14 @@ void shared_free(void* ptr, const size_t size) {
     numbirch_sdallocx(ptr, size, shared_flags);
   }
 }
+
+void shared_free_async(void* ptr) {
+  assert(shared_arena == 0 && shared_flags == 0);
+  // ^ should be called by an external thread (e.g. of the CUDA runtime)
+  numbirch_dallocx(ptr, MALLOCX_TCACHE_NONE);
+  // ^ skip the thread cache, as an external thread will never malloc()
+}
+
 
 void* device_malloc(const size_t size) {
   assert(device_arena > 0);

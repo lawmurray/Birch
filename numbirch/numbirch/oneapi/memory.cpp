@@ -7,6 +7,10 @@
 #include "numbirch/oneapi/sycl.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
+#if HAVE_OMP_H
+#include <omp.h>
+#endif
+
 namespace numbirch {
 
 void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
@@ -57,7 +61,7 @@ void device_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
 }
 
 void init() {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     device = sycl::device(sycl::gpu_selector());
     context = sycl::context(device);

@@ -15,7 +15,7 @@ __global__ void kernel_seed(const int s, curandState_t* rngs) {
 }
 
 void seed(const int s) {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     /* seed device generators */
     #if HAVE_OMP_H

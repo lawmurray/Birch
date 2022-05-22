@@ -3,6 +3,10 @@
  */
 #include "numbirch/cuda/cuda.hpp"
 
+#if HAVE_OMP_H
+#include <omp.h>
+#endif
+
 namespace numbirch {
 
 thread_local int device = 0;
@@ -10,7 +14,7 @@ thread_local cudaStream_t stream = 0;
 thread_local unsigned max_blocks = 64;
 
 void cuda_init() {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUDA_CHECK(cudaGetDevice(&device));
 
@@ -44,7 +48,7 @@ void cuda_init() {
 }
 
 void cuda_term() {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUDA_CHECK(cudaStreamSynchronize(stream));
     #pragma omp barrier

@@ -3,6 +3,10 @@
  */
 #include "numbirch/cuda/cublas.hpp"
 
+#if HAVE_OMP_H
+#include <omp.h>
+#endif
+
 namespace numbirch {
 
 thread_local cublasHandle_t cublasHandle;
@@ -40,7 +44,7 @@ void cublas_init() {
   CUBLAS_CHECK(cublasSetVector(1, sizeof(int), &oneI1, 1, oneI, 1));
   CUBLAS_CHECK(cublasSetVector(1, sizeof(int), &zeroI1, 1, zeroI, 1));
 
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     size_t size = 1 << 21; // 4 MB as recommended in CUBLAS docs
     CUBLAS_CHECK(cublasCreate(&cublasHandle));
@@ -54,7 +58,7 @@ void cublas_init() {
 }
 
 void cublas_term() {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUBLAS_CHECK(cublasDestroy(cublasHandle));
     CUDA_CHECK(cudaFree(cublasWorkspace));

@@ -10,7 +10,7 @@
 namespace numbirch {
 
 void seed(const int s) {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     #if HAVE_OMP_H
     auto n = omp_get_thread_num();
@@ -28,7 +28,7 @@ void seed(const int s) {
 }
 
 void seed() {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     std::random_device rd;
     rng32.seed(rd());

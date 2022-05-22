@@ -130,7 +130,7 @@ void free(void* ptr) {
        * all asynchronous operations associated with this thread have finished
        * with it before it is return by malloc() again on that other thread;
        * this ensures consistent ordering across threads */
-      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free, ptr));
+      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free_async, ptr));
     }
   }
 }
@@ -141,7 +141,7 @@ void free(void* ptr, const size_t size) {
     if (shared_owns(ptr)) {
       shared_free(ptr, size);
     } else {
-      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free, ptr));
+      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free_async, ptr));
     }
   }
 }

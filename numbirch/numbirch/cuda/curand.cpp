@@ -3,6 +3,10 @@
  */
 #include "numbirch/cuda/curand.hpp"
 
+#if HAVE_OMP_H
+#include <omp.h>
+#endif
+
 namespace numbirch {
 thread_local curandState_t* rngs = nullptr;
 
@@ -15,7 +19,7 @@ void curand_init() {
 }
 
 void curand_term() {
-  #pragma omp parallel
+  #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUDA_CHECK(cudaFree(rngs));
   }
