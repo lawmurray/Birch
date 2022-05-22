@@ -117,8 +117,19 @@ void* malloc(const size_t size) {
 void free(void* ptr) {
   if (ptr) {
     if (shared_owns(ptr)) {
+      /* as the allocation is from the shared arena of this thread, it can be
+       * returned to the pool immediately and safely returned by malloc()
+       * again, even before preceding asynchronous operations that use it have
+       * completed; threads provide consistent ordering internally, and this
+       * allows allocations and deallocations of the same block to be streamed
+       * and so minimize overall memory use */
       shared_free(ptr);
     } else {
+      /* as the allocation is from the shared arena of a different thread, its
+       * return to the pool should be inserted into the stream, to ensure that
+       * all asynchronous operations associated with this thread have finished
+       * with it before it is return by malloc() again on that other thread;
+       * this ensures consistent ordering across threads */
       CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free, ptr));
     }
   }

@@ -35,6 +35,11 @@ static thread_local unsigned host_arena = 0;
 static thread_local unsigned host_tcache = 0;
 static thread_local int host_flags = 0;
 
+/*
+ * MIB for "arenas.lookup" to avoid repeated name lookups.
+ */
+static size_t mib[2] = {0, 0};
+
 /**
  * Custom extent hooks structure.
  */
@@ -100,6 +105,12 @@ static unsigned make_tcache() {
 }
 
 void jemalloc_init() {
+  /* convert "arenas.lookup" name to mib for faster lookups in future */
+  [[maybe_unused]] int ret;
+  size_t miblen = 2;
+  ret = numbirch_mallctlnametomib("arenas.lookup", mib, &miblen);
+  assert(ret == 0);
+
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     /* shared arena setup */
@@ -127,8 +138,13 @@ bool shared_owns(void* ptr) {
   [[maybe_unused]] int ret;
   unsigned arena = 0;
   size_t size = sizeof(arena);
-  ret = numbirch_mallctl("arenas.lookup", &arena, &size, &ptr, sizeof(ptr));
+
+  /* rather than using the name "arenas.lookup" repeatedly, jemalloc_init()
+   * establishes mib to look up by index */
+  //ret = numbirch_mallctl("arenas.lookup", &arena, &size, &ptr, sizeof(ptr));
+  ret = numbirch_mallctlbymib(mib, 2, &arena, &size, &ptr, sizeof(ptr));  
   assert(ret == 0);
+
   return arena == shared_arena;
 }
 
