@@ -39,12 +39,6 @@ void term() {
   cuda_term();
 }
 
-void memcpy(void* dst, const size_t dpitch, const void* src,
-    const size_t spitch, const size_t width, const size_t height) {
-  CUDA_CHECK(cudaMemcpy2DAsync(dst, dpitch, src, spitch, width, height,
-      cudaMemcpyDefault, stream));
-}
-
 void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
   if (!new_addr) {

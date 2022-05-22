@@ -130,27 +130,6 @@ public:
   /**
    * Constructor.
    *
-   * @tparam E Number of dimensions.
-   * 
-   * @param shape Shape.
-   * @param o Source array to initialize elements. Must have the same number
-   * of elements as the new array, but need not have the same shape, or even
-   * the same number of dimensions.
-   */
-  template<class U, int E>
-  Array(const shape_type& shape, const Array<U,E>& o) :
-      buf(nullptr),
-      ctl(nullptr),
-      shp(shape),
-      isView(false),
-      isDiced(false) {
-    allocate();
-    initialize(o);
-  }
-
-  /**
-   * Constructor.
-   *
    * @param shape Shape.
    * @param value Fill value.
    */
@@ -734,8 +713,7 @@ public:
    * @param value The value.
    */
   void fill(const T& value) {
-    memset(data(), shp.stride()*sizeof(T), value, shp.width()*sizeof(T),
-        shp.height());
+    memset(data(), shp.stride(), value, shp.width(), shp.height());
   }
 
   /**
@@ -776,18 +754,6 @@ private:
   }
 
   /**
-   * Initialize from another array.
-   */
-  template<class U, int E, std::enable_if_t<std::is_convertible_v<U,T>,int> = 0>
-  void initialize(const Array<U,E>& o) {
-    auto n = std::min(size(), o.size());
-    auto begin1 = o.beginInternal();
-    auto end1 = begin1.operator+(n);
-    auto begin2 = beginInternal();
-    std::copy(begin1, end1, begin2);
-  }
-
-  /**
    * Copy from another array. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
    */
@@ -796,17 +762,9 @@ private:
   void assign(const Array<U,E>& o) {
     if (isView) {
       assert(conforms(o) && "array sizes are different");
-      if (std::is_same_v<T,U>) {
-        slicer();
-        memcpy(data(), shp.stride()*sizeof(T), o.data(),
-            o.shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
-      } else {
-        auto n = std::min(size(), o.size());
-        auto begin1 = o.beginInternal();
-        auto end1 = begin1.operator+(n);
-        auto begin2 = beginInternal();
-        std::copy(begin1, end1, begin2);
-      }
+      slicer();
+      memcpy(data(), shp.stride(), o.data(), o.shp.stride(), shp.width(),
+          shp.height());
     } else {
       Array tmp(o);
       swap(tmp);
@@ -816,21 +774,11 @@ private:
   /**
    * Copy from another array when this is uninitialized.
    */
-  template<class U, int E, std::enable_if_t<D == E &&
-      std::is_convertible_v<U,T>,int> = 0>
-  void uninitialized_copy(const Array<U,E>& o) {
-    if constexpr (std::is_same_v<T,U>) {
-      slicer();
-      memcpy(data(), shp.stride()*sizeof(T), o.data(),
-          o.shp.stride()*sizeof(T), shp.width()*sizeof(T),
-          shp.height());
-    } else {
-      auto n = std::min(size(), o.size());
-      auto begin1 = o.beginInternal();
-      auto end1 = begin1.operator+(n);
-      auto begin2 = beginInternal();
-      std::uninitialized_copy(begin1, end1, begin2);
-    }
+  template<class U>
+  void uninitialized_copy(const Array<U,D>& o) {
+    slicer();
+    memcpy(data(), shp.stride(), o.data(), o.shp.stride(), shp.width(),
+        shp.height());
   }
 
   /**
@@ -931,8 +879,8 @@ private:
       } else {
         slicer();
         T* buf = (T*)malloc(volume()*sizeof(T));
-        memcpy(buf, shp.stride()*sizeof(T), this->buf,
-            shp.stride()*sizeof(T), shp.width()*sizeof(T), shp.height());
+        memcpy(buf, shp.stride(), this->buf, shp.stride(), shp.width(),
+            shp.height());
 
         /* memory order is important here: the new control block should not
          * become visible to other threads until after the buffer is set, if

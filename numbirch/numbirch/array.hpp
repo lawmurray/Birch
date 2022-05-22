@@ -826,9 +826,7 @@ auto stack_grad(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
  * a vector then returns it as-is.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-Array<value_t<T>,1> vec(const T& x) {
-  return Array<value_t<T>,1>(make_shape(size(x)), x);
-}
+Array<value_t<T>,1> vec(const T& x);
 
 /**
  * Gradient of vec().
@@ -846,10 +844,12 @@ Array<value_t<T>,1> vec(const T& x) {
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x) {
-  if constexpr (std::is_arithmetic_v<T>) {
+  if constexpr (is_scalar_v<T>) {
     return g.slice(1);
+  } else if constexpr (is_vector_v<T>) {
+    return g;
   } else {
-    return real_t<T>(shape(x), g);
+    return mat(g, columns(x));
   }
 }
 
@@ -871,10 +871,7 @@ real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * `mat(vec(x), n)`.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-Array<value_t<T>,2> mat(const T& x, const int n) {
-  assert(size(x) % n == 0);
-  return Array<value_t<T>,2>(make_shape(size(x)/n, n), x);
-}
+Array<value_t<T>,2> mat(const T& x, const int n);
 
 /**
  * Gradient of mat().
@@ -893,10 +890,12 @@ Array<value_t<T>,2> mat(const T& x, const int n) {
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
     const T& x, const int n) {
-  if constexpr (std::is_arithmetic_v<T>) {
+  if constexpr (is_scalar_v<T>) {
     return g.slice(1, 1);
+  } else if constexpr (is_vector_v<T>) {
+    return vec(g);
   } else {
-    return real_t<T>(shape(x), g);
+    return mat(g, columns(x));
   }
 }
 

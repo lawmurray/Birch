@@ -27,8 +27,12 @@ SOURCES =  \
     numbirch/instantiate/array/diagonal.cpp \
     numbirch/instantiate/array/element_matrix.cpp \
     numbirch/instantiate/array/element_vector.cpp \
+    numbirch/instantiate/array/mat.cpp \
     numbirch/instantiate/array/single_matrix.cpp \
     numbirch/instantiate/array/single_vector.cpp \
+    numbirch/instantiate/array/vec.cpp \
+    numbirch/instantiate/memory/memcpy.cpp \
+    numbirch/instantiate/memory/memset.cpp \
     numbirch/instantiate/numeric/binary_matrix.cpp \
     numbirch/instantiate/numeric/dot.cpp \
     numbirch/instantiate/numeric/frobenius.cpp \
@@ -52,8 +56,7 @@ SOURCES =  \
     numbirch/instantiate/transform/ternary.cpp \
     numbirch/instantiate/transform/unary.cpp \
     numbirch/instantiate/transform/unary_grad.cpp \
-    numbirch/instantiate/transform/unary_operator.cpp \
-    numbirch/instantiate/memory.cpp
+    numbirch/instantiate/transform/unary_operator.cpp
 
 if ONEAPI
   AM_CPPFLAGS += -DBACKEND_ONEAPI \

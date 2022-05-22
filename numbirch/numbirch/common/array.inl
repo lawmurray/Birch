@@ -32,6 +32,41 @@ struct single_functor {
   }
 };
 
+template<class T>
+struct reshape_functor {
+  /**
+   * Width of source array.
+   */
+  const int m1;
+
+  /**
+   * Width of destination array.
+   */
+  const int m2;
+
+  /**
+   * Source buffer.
+   */
+  const T A;
+
+  /**
+   * Source stride.
+   */
+  const int ldA;
+
+  reshape_functor(const int m1, const int m2, const T& A, const int ldA) :
+      m1(m1), m2(m2), A(A), ldA(ldA) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    // (i,j) is the element in the destination, (k,l) in the source
+    auto s = i + j*m2;  // serial index
+    auto k = s % m1;
+    auto l = s / m1;
+    return get(A, k, l, ldA);
+  }
+};
+
 template<class T, class>
 Array<value_t<T>,2> diagonal(const T& x, const int n) {
   return for_each(n, n, diagonal_functor(data(x)));
@@ -56,6 +91,18 @@ template<class T, class U, class V, class>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n) {
   return for_each(m, n, single_functor(data(x), data(i), data(j)));
+}
+
+template<class T, class>
+Array<value_t<T>,1> vec(const T& x) {
+  return for_each(size(x), reshape_functor(width(x), 1, data(x), stride(x)));
+}
+
+template<class T, class>
+Array<value_t<T>,2> mat(const T& x, const int n) {
+  assert(size(x) % n == 0);
+  return for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, data(x),
+      stride(x)));
 }
 
 }

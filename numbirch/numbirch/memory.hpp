@@ -82,35 +82,40 @@ void free(void* ptr);
  * 
  * @ingroup memory
  * 
- * @param[out] dst Destination.
- * @param dwidth Width of each batch of `dst`, in bytes.
- * @param dheight Number of batches of `dst`.
- * @param dpitch Stride between batches of `dst`, in bytes.
- * @param src Source.
- * @param spitch Stride between batches of `src`, in bytes.
- * @param swidth Width of each batch of `src`, in bytes.
- * @param sheight Number of batches of `src`.
+ * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
- * @todo Support copies between different value types.
+ * @param[out] dst Destination.
+ * @param dwidth Width of each batch of `dst`, in elements.
+ * @param dheight Number of batches of `dst`.
+ * @param dpitch Stride between batches of `dst`, in elements.
+ * @param src Source.
+ * @param spitch Stride between batches of `src`, in elements.
+ * @param swidth Width of each batch of `src`, in elements.
+ * @param sheight Number of batches of `src`.
  */
-void memcpy(void* dst, const size_t dpitch, const void* src,
-    const size_t spitch, const size_t width, const size_t height);
+template<class T, class U, class = std::enable_if_t<std::is_arithmetic_v<T> &&
+    std::is_arithmetic_v<U>,int>>
+void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
+    const int width, const int height);
 
 /**
- * Set memory by repeating a single value.
+ * Set memory by filling with a single value.
  * 
  * @ingroup memory
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param[out] dst Destination.
- * @param dpitch Stride between batches of `dst`, in bytes.
+ * @param dpitch Stride between batches of `dst`, in elements.
  * @param value Value to set.
- * @param width Width of each batch, in bytes.
+ * @param width Width of each batch, in elements.
  * @param height Number of batches.
  */
-template<class T, class = std::enable_if_t<std::is_arithmetic<T>::value,int>>
-void memset(void* dst, const size_t dpitch, const T value, const size_t width,
-    const size_t height);
+template<class T, class U, class = std::enable_if_t<
+    std::is_arithmetic_v<T>,int>>
+void memset(T* dst, const int dpitch, const U value, const int width,
+    const int height);
 
 }
