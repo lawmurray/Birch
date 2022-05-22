@@ -160,6 +160,13 @@ void shared_free(void* ptr) {
   }
 }
 
+void shared_free(void* ptr, const size_t size) {
+  assert(shared_arena > 0);
+  if (ptr) {
+    numbirch_sdallocx(ptr, size, shared_flags);
+  }
+}
+
 void* device_malloc(const size_t size) {
   assert(device_arena > 0);
   return size == 0 ? nullptr : numbirch_mallocx(size, device_flags);
@@ -172,6 +179,13 @@ void device_free(void* ptr) {
   }
 }
 
+void device_free(void* ptr, const size_t size) {
+  assert(device_arena > 0);
+  if (ptr) {
+    numbirch_sdallocx(ptr, size, device_flags);
+  }
+}
+
 void* host_malloc(const size_t size) {
   assert(host_arena > 0);
   return size == 0 ? nullptr : numbirch_mallocx(size, host_flags);
@@ -181,6 +195,13 @@ void host_free(void* ptr) {
   assert(host_arena > 0);
   if (ptr) {
     numbirch_dallocx(ptr, host_flags);
+  }
+}
+
+void host_free(void* ptr, const size_t size) {
+  assert(host_arena > 0);
+  if (ptr) {
+    numbirch_sdallocx(ptr, size, host_flags);
   }
 }
 

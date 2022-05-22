@@ -135,4 +135,15 @@ void free(void* ptr) {
   }
 }
 
+void free(void* ptr, const size_t size) {
+  /* see free() above for comments, this version merely inserts size */
+  if (ptr) {
+    if (shared_owns(ptr)) {
+      shared_free(ptr, size);
+    } else {
+      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free, ptr));
+    }
+  }
+}
+
 }

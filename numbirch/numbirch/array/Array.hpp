@@ -820,7 +820,7 @@ private:
     if (!isView) {
       auto ctl = this->ctl.exchange(nullptr);
       if (!ctl || ctl->decShared() == 0) {
-        free((void*)buf);
+        free((void*)buf, volume()*sizeof(T));
         delete ctl;
       }
     }

@@ -78,6 +78,16 @@ void* realloc(void* ptr, const size_t size);
 void free(void* ptr);
 
 /**
+ * Free memory.
+ * 
+ * @ingroup memory
+ * 
+ * @param ptr Existing allocation.
+ * @param size Size of the existing allocation.
+ */
+void free(void* ptr, const size_t size);
+
+/**
  * Copy memory.
  * 
  * @ingroup memory

@@ -39,6 +39,11 @@ void* shared_malloc(const size_t size);
 void shared_free(void* ptr);
 
 /*
+ * Free for the shared arena.
+ */
+void shared_free(void* ptr, const size_t size);
+
+/*
  * Allocate for the device arena.
  */
 void* device_malloc(const size_t size);
@@ -49,14 +54,24 @@ void* device_malloc(const size_t size);
 void device_free(void* ptr);
 
 /*
+ * Free for the device arena.
+ */
+void device_free(void* ptr, const size_t size);
+
+/*
  * Allocate for the host arena.
  */
 void* host_malloc(const size_t size);
 
 /*
- * Free for the free arena.
+ * Free for the host arena.
  */
 void host_free(void* ptr);
+
+/*
+ * Free for the host arena.
+ */
+void host_free(void* ptr, const size_t size);
 
 /*
  * Custom alloc() extent hook. This is implemented by the specific backend.
