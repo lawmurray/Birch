@@ -38,4 +38,8 @@ void free(void* ptr) {
   std::free(ptr);
 }
 
+void free(void* ptr, const size_t size) {
+  std::free(ptr);
+}
+
 }
