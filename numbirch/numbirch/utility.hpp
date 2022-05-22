@@ -555,7 +555,7 @@ using real_t = typename real_s<Args...>::type;
  */
 template<class... Args>
 struct int_s {
-  using type = typename explicit_s<real,Args...>::type;
+  using type = typename explicit_s<int,Args...>::type;
 };
 template<class... Args>
 using int_t = typename int_s<Args...>::type;
