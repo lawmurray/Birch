@@ -24,6 +24,21 @@ void jemalloc_init();
 void jemalloc_term();
 
 /*
+ * Does an allocation belong to the shared arena for the current thread?
+ */
+bool shared_owns(void* ptr);
+
+/*
+ * Allocate for the shared arena.
+ */
+void* shared_malloc(const size_t size);
+
+/*
+ * Free for the shared arena.
+ */
+void shared_free(void* ptr);
+
+/*
  * Allocate for the device arena.
  */
 void* device_malloc(const size_t size);

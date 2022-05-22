@@ -110,4 +110,18 @@ void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
   CUDA_CHECK(cudaFreeHost(addr));
 }
 
+void* malloc(const size_t size) {
+  return shared_malloc(size);
+}
+
+void free(void* ptr) {
+  if (ptr) {
+    if (shared_owns(ptr)) {
+      shared_free(ptr);
+    } else {
+      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free, ptr));
+    }
+  }
+}
+
 }

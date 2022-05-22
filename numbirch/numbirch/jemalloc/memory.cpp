@@ -123,6 +123,27 @@ void jemalloc_term() {
   ///@todo
 }
 
+bool shared_owns(void* ptr) {
+  [[maybe_unused]] int ret;
+  unsigned arena = 0;
+  size_t size = sizeof(arena);
+  ret = numbirch_mallctl("arenas.lookup", &arena, &size, &ptr, sizeof(ptr));
+  assert(ret == 0);
+  return arena == shared_arena;
+}
+
+void* shared_malloc(const size_t size) {
+  assert(shared_arena > 0);
+  return size == 0 ? nullptr : numbirch_mallocx(size, shared_flags);
+}
+
+void shared_free(void* ptr) {
+  assert(shared_arena > 0);
+  if (ptr) {
+    numbirch_dallocx(ptr, shared_flags);
+  }
+}
+
 void* device_malloc(const size_t size) {
   assert(device_arena > 0);
   return size == 0 ? nullptr : numbirch_mallocx(size, device_flags);
@@ -147,26 +168,12 @@ void host_free(void* ptr) {
   }
 }
 
-void* malloc(const size_t size) {
-  return size == 0 ? nullptr : numbirch_mallocx(size, shared_flags);
-}
-
 void* realloc(void* ptr, const size_t size) {
   if (size > 0) {
     return numbirch_rallocx(ptr, size, shared_flags);
   } else {
     free(ptr);
     return nullptr;
-  }
-}
-
-void free(void* ptr) {
-  /// @todo Actually need to wait on the stream associated with the arena
-  /// where this allocation was made, and only if its a different thread to
-  /// this one, lest it is reused by the associated thread before this thread
-  /// has finished any asynchronous work
-  if (ptr) {
-    numbirch_dallocx(ptr, shared_flags);
   }
 }
 

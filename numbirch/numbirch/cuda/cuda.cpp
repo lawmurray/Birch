@@ -46,6 +46,9 @@ void cuda_init() {
 void cuda_term() {
   #pragma omp parallel
   {
+    CUDA_CHECK(cudaStreamSynchronize(stream));
+    #pragma omp barrier
+
     /* don't use CUDA_CHECK here, because it tries to use stream after
      * destruction when CUDA_SYNC is true */
     cudaError_t err = cudaStreamDestroy(stream);
