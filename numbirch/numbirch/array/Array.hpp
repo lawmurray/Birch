@@ -530,6 +530,25 @@ public:
   }
 
   /**
+   * Get the diagonal of a matrix as a vector.
+   */
+  template<int E = D, std::enable_if_t<E == 2,int> = 0>
+  Array<T,1> diagonal() {
+    own();
+    slicer();
+    return shp.diagonal(buf);
+  }
+
+  /**
+   * Get the diagonal of a matrix as a vector.
+   */
+  template<int E = D, std::enable_if_t<E == 2,int> = 0>
+  Array<T,1> diagonal() const {
+    slicer();
+    return shp.diagonal(buf);
+  }
+
+  /**
    * Underlying buffer.
    */
   T* data() {
@@ -633,14 +652,6 @@ public:
   }
 
   /**
-   * Get the diagonal of a matrix as a vector.
-   */
-  template<int E = D, std::enable_if_t<E == 2,int> = 0>
-  Array<T,1> diagonal() const {
-    return shp.diagonal(buf);
-  }
-
-  /**
    * Push an element onto the end of a vector. The vector length is increased
    * by one.
    *
@@ -672,6 +683,7 @@ public:
       slicer();
       buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
       dicer();
+      ///@todo Use memcpy()
       std::memmove((void*)(buf + i + 1), (void*)(buf + i), (n - i)*sizeof(T));
       new (buf + i) T(x);
       shp = s;
@@ -698,7 +710,7 @@ public:
     } else {
       own();
       dicer();
-      std::destroy(buf + i, buf + i + len);
+      ///@todo Use memcpy()
       std::memmove((void*)(buf + i), (void*)(buf + i + len),
           (n - len - i)*sizeof(T));
       slicer();
@@ -761,10 +773,7 @@ private:
       std::is_convertible_v<U,T>,int> = 0>
   void assign(const Array<U,E>& o) {
     if (isView) {
-      assert(conforms(o) && "array sizes are different");
-      slicer();
-      memcpy(data(), shp.stride(), o.data(), o.shp.stride(), shp.width(),
-          shp.height());
+      uninitialized_copy(o);
     } else {
       Array tmp(o);
       swap(tmp);
@@ -776,7 +785,7 @@ private:
    */
   template<class U>
   void uninitialized_copy(const Array<U,D>& o) {
-    slicer();
+    assert(conforms(o) && "array sizes are different");
     memcpy(data(), shp.stride(), o.data(), o.shp.stride(), shp.width(),
         shp.height());
   }
@@ -809,7 +818,6 @@ private:
     assert(!buf);
     assert(!ctl.load());
     assert(!isDiced);
-    slicer();
     buf = (T*)malloc(volume()*sizeof(T));
   }
 
