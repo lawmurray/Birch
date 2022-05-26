@@ -41,7 +41,7 @@ Array<T,2> chol(const Array<T,2>& S) {
   if (llt.info() == Eigen::Success) {
     L1 = llt.matrixL();
   } else {
-    L.fill(T(0.0/0.0));
+    L = T(0.0/0.0);
   }
   return L;
 }
