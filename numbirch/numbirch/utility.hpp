@@ -653,7 +653,7 @@ using stack_t = Array<promote_t<value_t<T>,value_t<U>>,
 template<class T>
 NUMBIRCH_HOST_DEVICE T& get(T* x, const int i = 0, const int j = 0,
     const int ld = 0) {
-  int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
+  int64_t k = (ld == 0) ? 0 : (i + j*int64_t(ld));
   return x[k];
 }
 
@@ -666,7 +666,7 @@ NUMBIRCH_HOST_DEVICE T& get(T* x, const int i = 0, const int j = 0,
 template<class T>
 NUMBIRCH_HOST_DEVICE const T& get(const T* x, const int i = 0,
     const int j = 0, const int ld = 0) {
-  int k = (ld == 0) ? 0 : (i + j*int64_t(ld));
+  int64_t k = (ld == 0) ? 0 : (i + j*int64_t(ld));
   return x[k];
 }
 
