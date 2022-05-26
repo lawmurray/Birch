@@ -16,6 +16,7 @@
 #include <utility>
 #include <initializer_list>
 #include <memory>
+#include <atomic>
 
 #include <cassert>
 #include <cstdlib>
@@ -103,7 +104,7 @@ public:
    * @param value 
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  Array(const T& value) :
+  Array(const T value) :
       buf(nullptr),
       ctl(nullptr),
       shp(),
@@ -133,7 +134,7 @@ public:
    * @param shape Shape.
    * @param value Fill value.
    */
-  Array(const shape_type& shape, const T& value) :
+  Array(const shape_type& shape, const T value) :
       buf(nullptr),
       ctl(nullptr),
       shp(shape),
@@ -301,8 +302,9 @@ public:
   /**
    * Value assignment. Fills the entire array with the given value.
    */
-  Array& operator=(const T& value) {
+  Array& operator=(const T value) {
     fill(value);
+    wait();
     return *this;
   }
 
@@ -318,7 +320,7 @@ public:
    * Value conversion (scalar only).
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator const T&() const {
+  operator const T() const {
     return value();
   }
 
@@ -480,7 +482,7 @@ public:
    * @copydoc dice()
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  const T& dice(const Args&... args) const {
+  const T dice(const Args&... args) const {
     dicer();
     return shp.dice(buf, args...);
   }
@@ -525,7 +527,7 @@ public:
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  const T& operator()(const Args&... args) const {
+  const T operator()(const Args&... args) const {
     return dice(args...);
   }
 
@@ -657,7 +659,7 @@ public:
    *
    * @param x Value.
    */
-  void push(const T& x) {
+  void push(const T x) {
     insert(size(), x);
   }
 
@@ -669,7 +671,7 @@ public:
    * @param i Position.
    * @param x Value.
    */
-  void insert(const int i, const T& x) {
+  void insert(const int i, const T x) {
     static_assert(D == 1, "insert() supports only one-dimensional arrays");
     assert(!isView);
 
@@ -724,7 +726,7 @@ public:
    *
    * @param value The value.
    */
-  void fill(const T& value) {
+  void fill(const T value) {
     memset(data(), shp.stride(), value, shp.width(), shp.height());
   }
 
@@ -976,13 +978,13 @@ template<class T>
 Array(const std::initializer_list<T>&) -> Array<T,1>;
 
 template<class T>
-Array(const T& value) -> Array<T,0>;
+Array(const T value) -> Array<T,0>;
 
 template<class T>
-Array(const ArrayShape<1>& shape, const T& value) -> Array<T,1>;
+Array(const ArrayShape<1>& shape, const T value) -> Array<T,1>;
 
 template<class T>
-Array(const ArrayShape<2>& shape, const T& value) -> Array<T,2>;
+Array(const ArrayShape<2>& shape, const T value) -> Array<T,2>;
 
 template<class T>
 Array(const ArrayShape<1>& shape, const Array<T,0>& value) -> Array<T,1>;
