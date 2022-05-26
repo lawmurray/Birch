@@ -8,7 +8,6 @@
 #include "numbirch/array/ArrayControl.hpp"
 #include "numbirch/array/ArrayShape.hpp"
 #include "numbirch/array/ArrayIterator.hpp"
-#include "numbirch/array/Atomic.hpp"
 #include "numbirch/array/Lock.hpp"
 
 #include <algorithm>
@@ -226,11 +225,7 @@ public:
       isView(false),
       isDiced(false) {
     if (!o.isView) {
-      ArrayControl* ctl = nullptr;
       std::tie(ctl, buf, isDiced) = o.share();
-      if (ctl) {
-        this->ctl.store(ctl);
-      }
     } else {
       compact();
       allocate();
@@ -801,7 +796,7 @@ private:
    */
   void allocate() {
     assert(!buf);
-    assert(!ctl.load());
+    assert(!ctl);
     assert(!isDiced);
     buf = (T*)malloc(volume()*sizeof(T));
   }
@@ -811,13 +806,13 @@ private:
    */
   void release() {
     if (!isView) {
-      auto ctl = this->ctl.exchange(nullptr);
       if (!ctl || ctl->decShared() == 0) {
-        free((void*)buf, volume()*sizeof(T));
+        free(buf, volume()*sizeof(T));
         delete ctl;
       }
     }
     buf = nullptr;
+    ctl = nullptr;
     isView = false;
     isDiced = false;
   }
@@ -829,17 +824,15 @@ private:
    */
   std::tuple<ArrayControl*,T*,bool> share() {
     assert(!isView);
-    auto ctl = this->ctl.load();
+    #pragma omp flush(ctl, buf)
     if (ctl) {
       ctl->incShared();
     } else if (buf) {
       lock.set();
-      ctl = this->ctl.load();  // another thread may have updated in meantime
-      if (ctl) {
+      if (ctl) {  // another thread may have set in the meantime
         ctl->incShared();
       } else {
         ctl = new ArrayControl(2);  // one ref for current, one ref for new
-        this->ctl.store(ctl);
       }
       lock.unset();
     }
@@ -858,28 +851,23 @@ private:
    * buffer is shared is indicated by the presence of a control block.
    */
   void own() {
-    auto ctl = this->ctl.load();
+    #pragma omp flush(ctl, buf)
     if (ctl) {
       assert(!isView);
       lock.set();
-      ctl = this->ctl.load();  // another thread may have updated in meantime
-      if (!ctl) {
+      if (!ctl) {  // another thread may have cleared in the meantime
         // last reference optimization already applied by another thread
       } else if (ctl->decShared() == 0) {
         /* apply last reference optimization */
         delete ctl;
-        this->ctl.store(nullptr);
+        ctl = nullptr;
       } else {
         isDiced = false;
-        T* buf = (T*)malloc(volume()*sizeof(T));
-        memcpy(buf, stride(), this->buf, stride(), width(), height());
+        T* ptr = (T*)malloc(volume()*sizeof(T));
+        memcpy(ptr, stride(), this->buf, stride(), width(), height());
         wait();
-
-        /* memory order is important here: the new control block should not
-         * become visible to other threads until after the buffer is set, if
-         * the use of the control block as a lock is to be successful */
-        this->buf = buf;
-        this->ctl.store(nullptr);
+        buf = ptr;
+        ctl = nullptr;
       }
       lock.unset();
     }
@@ -893,7 +881,7 @@ private:
   /**
    * Control block for sharing the buffer.
    */
-  Atomic<ArrayControl*> ctl;
+  ArrayControl* ctl;
 
   /**
    * Shape.
