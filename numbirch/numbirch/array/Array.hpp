@@ -49,7 +49,8 @@ namespace numbirch {
  * 
  * @li *sliced*, where it supports further slice() operations without
  * transition, or
- * @li *diced*, where it supports further dice() operations without transition.
+ * @li *diced*, where it supports further dice() operations without
+ * transition.
  * 
  * The transition between the two states is automatic, on demand. The only
  * implication is that of performance: a transition from *sliced* to *diced*
@@ -157,8 +158,7 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    dicer();
-    std::uninitialized_copy(values.begin(), values.end(), beginInternal());
+    std::uninitialized_copy(values.begin(), values.end(), begin());
   }
 
   /**
@@ -174,11 +174,11 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    dicer();
+    T* ptr = diced();
     int64_t t = 0;
     for (auto row : values) {
       for (auto x : row) {
-        new (buf + shp.transpose(t++)) T(x);
+        new (ptr + shp.transpose(t++)) T(x);
       }
     }
   }
@@ -198,9 +198,8 @@ public:
       isView(false),
       isDiced(false) {
     allocate();
-    dicer();
     int64_t n = 0;
-    for (auto iter = beginInternal(); iter != endInternal(); ++iter) {
+    for (auto iter = begin(); iter != end(); ++iter) {
       new (&*iter) T(l(++n));
     }
   }
@@ -353,34 +352,28 @@ public:
    * Iterator to the first element.
    */
   ArrayIterator<T,D> begin() {
-    own();
-    dicer();
-    return ArrayIterator<T,D>(buf, shp, 0);
+    return ArrayIterator<T,D>(diced(), shape(), 0);
   }
 
   /**
    * @copydoc begin()
    */
-  ArrayIterator<T,D> begin() const {
-    dicer();
-    return ArrayIterator<T,D>(buf, shp, 0);
+  ArrayIterator<const T,D> begin() const {
+    return ArrayIterator<const T,D>(diced(), shape(), 0);
   }
 
   /**
    * Iterator to one past the last element.
    */
   ArrayIterator<T,D> end() {
-    own();
-    dicer();
-    return ArrayIterator<T,D>(buf, shp, size());
+    return ArrayIterator<T,D>(diced(), shape(), size());
   }
 
   /**
    * @copydoc end()
    */
-  ArrayIterator<T,D> end() const {
-    dicer();
-    return ArrayIterator<T,D>(buf, shp, size());
+  ArrayIterator<const T,D> end() const {
+    return ArrayIterator<const T,D>(diced(), shape(), size());
   }
 
   /**
@@ -390,9 +383,7 @@ public:
    */
   auto& value() {
     if constexpr (D == 0) {
-      own();
-      dicer();
-      return *buf;
+      return *diced();
     } else {
       return *this;
     }
@@ -405,8 +396,7 @@ public:
    */
   const auto& value() const {
     if constexpr (D == 0) {
-      dicer();
-      return *buf;
+      return *diced();
     } else {
       return *this;
     }
@@ -446,9 +436,7 @@ public:
    */
   template<class... Args>
   auto slice(Args&&... args) {
-    own();
-    slicer();
-    return shp.slice(buf, std::forward<Args>(args)...);
+    return shp.slice(sliced(), std::forward<Args>(args)...);
   }
 
   /**
@@ -456,8 +444,7 @@ public:
    */
   template<class... Args>
   const auto slice(Args&&... args) const {
-    slicer();
-    return shp.slice(buf, std::forward<Args>(args)...);
+    return shp.slice(sliced(), std::forward<Args>(args)...);
   }
 
   /**
@@ -473,9 +460,7 @@ public:
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   T& dice(const Args&... args) {
-    own();
-    dicer();
-    return shp.dice(buf, args...);
+    return shp.dice(diced(), args...);
   }
 
   /**
@@ -483,8 +468,7 @@ public:
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   const T dice(const Args&... args) const {
-    dicer();
-    return shp.dice(buf, args...);
+    return shp.dice(diced(), args...);
   }
 
   /**
@@ -536,9 +520,7 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() {
-    own();
-    slicer();
-    return shp.diagonal(buf);
+    return shp.diagonal(sliced());
   }
 
   /**
@@ -546,25 +528,61 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() const {
-    slicer();
-    return shp.diagonal(buf);
+    return shp.diagonal(sliced());
   }
 
   /**
-   * Underlying buffer.
+   * Get underlying buffer for use in a slice operation.
+   */
+  T* sliced() {
+    own();
+    isDiced = false;
+    return buf;
+  }
+
+  /**
+   * @copydoc sliced()
+   */
+  const T* sliced() const {
+    const_cast<Array*>(this)->isDiced = false;
+    return buf;
+  }
+
+  /**
+   * Get underlying buffer for use in a dice operation.
+   */
+  T* diced() {
+    own();
+    if (!isDiced) {
+      wait();
+      isDiced = true;
+    }
+    return buf;
+  }
+
+  /**
+   * @copydoc diced()
+   */
+  const T* diced() const {
+    if (!isDiced) {
+      wait();
+      const_cast<Array*>(this)->isDiced = true;
+    }
+    return buf;
+  }
+
+  /**
+   * Get underlying buffer. Synonym of sliced().
    */
   T* data() {
-    own();
-    slicer();
-    return buf;
+    return sliced();
   }
 
   /**
-   * @copydoc data()
+   * Get underlying buffer. Synonym of sliced().
    */
   const T* data() const {
-    slicer();
-    return buf;
+    return sliced();
   }
 
   /**
@@ -681,13 +699,10 @@ public:
       Array tmp(s, x);
       swap(tmp);
     } else {
-      own();
-      slicer();
-      buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
-      dicer();
+      buf = (T*)realloc((void*)sliced(), s.volume()*sizeof(T));
       ///@todo Use memcpy()
-      std::memmove((void*)(buf + i + 1), (void*)(buf + i), (n - i)*sizeof(T));
-      new (buf + i) T(x);
+      std::memmove(diced() + i + 1, diced() + i, (n - i)*sizeof(T));
+      new (diced() + i) T(x);
       shp = s;
     }
   }
@@ -710,13 +725,9 @@ public:
     if (s.size() == 0) {
       release();
     } else {
-      own();
-      dicer();
       ///@todo Use memcpy()
-      std::memmove((void*)(buf + i), (void*)(buf + i + len),
-          (n - len - i)*sizeof(T));
-      slicer();
-      buf = (T*)realloc((void*)buf, s.volume()*sizeof(T));
+      std::memmove(diced() + i, diced() + i + len, (n - len - i)*sizeof(T));
+      buf = (T*)realloc(sliced(), s.volume()*sizeof(T));
     }
     shp = s;
   }
@@ -739,34 +750,6 @@ public:
   }
 
 private:
-  /**
-   * Iterator for use internally.
-   */
-  ArrayIterator<T,D> beginInternal() {
-    return ArrayIterator<T,D>(buf, shp, 0);
-  }
-
-  /**
-   * @copydoc beginInternal()
-   */
-  ArrayIterator<T,D> beginInternal() const {
-    return ArrayIterator<T,D>(buf, shp, 0);
-  }
-
-  /**
-   * Iterator for use internally.
-   */
-  ArrayIterator<T,D> endInternal() {
-    return ArrayIterator<T,D>(buf, shp, size());
-  }
-
-  /**
-   * @copydoc endInternal()
-   */
-  ArrayIterator<T,D> endInternal() const {
-    return ArrayIterator<T,D>(buf, shp, size());
-  }
-
   /**
    * Copy from another array. For a view the shapes of the two arrays must
    * conform, otherwise a resize is permitted.
@@ -887,10 +870,10 @@ private:
         delete ctl;
         this->ctl.store(nullptr);
       } else {
-        slicer();
+        isDiced = false;
         T* buf = (T*)malloc(volume()*sizeof(T));
-        memcpy(buf, shp.stride(), this->buf, shp.stride(), shp.width(),
-            shp.height());
+        memcpy(buf, stride(), this->buf, stride(), width(), height());
+        wait();
 
         /* memory order is important here: the new control block should not
          * become visible to other threads until after the buffer is set, if
@@ -900,40 +883,6 @@ private:
       }
       lock.unset();
     }
-  }
-
-  /**
-   * Prepare for block-wise access. This allows asynchronous read or write by
-   * a device.
-   */
-  void slicer() {
-    isDiced = false;
-  }
-
-  /**
-   * @copydoc slicer()
-   */
-  void slicer() const {
-    const_cast<Array*>(this)->slicer();
-  }
-
-  /**
-   * Prepare for element-wise access. If the array is currently prepared for
-   * block-wise access, this requires synchronization with the device to
-   * ensure that all asynchronous reads and writes have completed.
-   */
-  void dicer() {
-    if (!isDiced) {
-      wait();
-      isDiced = true;
-    }
-  }
-
-  /**
-   * @copydoc dicer()
-   */
-  void dicer() const {
-    const_cast<Array*>(this)->dicer();
   }
 
   /**

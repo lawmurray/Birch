@@ -15,10 +15,12 @@ namespace numbirch {
 template<class T, int D>
 class ArrayIterator {
 public:
-  using value_type = T;
+  using value_type = std::remove_const_t<T>;
   using difference_type = std::ptrdiff_t;
   using pointer = T*;
+  using const_pointer = const T*;
   using reference = T&;
+  using const_reference = const T&;
   using iterator_category = std::random_access_iterator_tag;
 
   explicit ArrayIterator(T* buf, const ArrayShape<D> shp,
@@ -33,6 +35,10 @@ public:
     return buf[shp.offset(pos + i)];
   }
 
+  const_reference operator[](const difference_type i) const {
+    return buf[shp.offset(pos + i)];
+  }
+
   difference_type operator-(const ArrayIterator& o) const {
     return pos - o.pos;
   }
@@ -41,7 +47,7 @@ public:
     return *get();
   }
 
-  reference operator*() const {
+  const_reference operator*() const {
     return *get();
   }
 
@@ -49,7 +55,7 @@ public:
     return get();
   }
 
-  pointer operator->() const {
+  const_pointer operator->() const {
     return get();
   }
 
@@ -121,11 +127,18 @@ public:
     return result;
   }
 
-protected:
+private:
   /**
    * Raw pointer for the current position.
    */
-  pointer get() const {
+  pointer get() {
+    return buf + shp.offset(pos);
+  }
+
+  /**
+   * Raw pointer for the current position.
+   */
+  const_pointer get() const {
     return buf + shp.offset(pos);
   }
 

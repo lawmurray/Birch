@@ -72,7 +72,6 @@ else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA
   AM_CXXFLAGS += -x cu -G \
-      -default-stream=per-thread \
       -expt-relaxed-constexpr \
       -arch=sm_70 \
       -Xcompiler="-Wall" \
