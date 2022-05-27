@@ -26,6 +26,18 @@ void term() {
   //
 }
 
+void* record() {
+  return 0;
+}
+
+void wait(void* evt) {
+  //
+}
+
+void forget(void* evt) {
+  //
+}
+
 void* malloc(const size_t size) {
   return std::malloc(size);
 }

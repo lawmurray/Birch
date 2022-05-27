@@ -17,8 +17,7 @@ namespace numbirch {
 void init();
 
 /**
- * Synchronize with the device. This waits for all operations to complete for
- * the current thread.
+ * Synchronize with the device stream associated with the current thread.
  * 
  * @ingroup memory
  */
@@ -30,6 +29,36 @@ void wait();
  * @ingroup memory
  */
 void term();
+
+/**
+ * Record an event in the device stream associated with the current thread.
+ * 
+ * @ingroup memory
+ * 
+ * @return A type-erased event handle that may be later passed to wait() or
+ * forget().
+ */
+void* record();
+
+/**
+ * Wait on an event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle, previously returned by record().
+ */
+void wait(void* evt);
+
+/**
+ * Forget an event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle, previously returned by record().
+ * 
+ * Forgets the event, so that it may no longer be passed to wait().
+ */
+void forget(void* evt);
 
 /**
  * Allocate memory.

@@ -39,6 +39,27 @@ void term() {
   cuda_term();
 }
 
+void* record() {
+  cudaEvent_t evt;
+  CUDA_CHECK(cudaEventCreate(&evt));
+  CUDA_CHECK(cudaEventRecord(evt, stream));
+  return (void*)evt;
+}
+
+void wait(void* evt) {
+  if (evt != 0) {
+    cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+    CUDA_CHECK(cudaEventSynchronize(e));
+  }
+}
+
+void forget(void* evt) {
+  if (evt != 0) {
+    cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+    CUDA_CHECK(cudaEventDestroy(e));
+  }
+}
+
 void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
   if (!new_addr) {
