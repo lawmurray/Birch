@@ -54,4 +54,8 @@ void free(void* ptr, const size_t size) {
   std::free(ptr);
 }
 
+void memcpy(void* dst, const void* src, size_t n) {
+  std::memcpy(dst, src, n);
+}
+
 }

@@ -121,6 +121,17 @@ void free(void* ptr, const size_t size);
  * 
  * @ingroup memory
  * 
+ * @param[out] dst Destination.
+ * @param src Source.
+ * @param n Number of bytes.
+ */
+void memcpy(void* dst, const void* src, size_t n);
+
+/**
+ * Copy memory.
+ * 
+ * @ingroup memory
+ * 
  * @tparam T Arithmetic type.
  * @tparam U Arithmetic type.
  * 
@@ -139,7 +150,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
     const int width, const int height);
 
 /**
- * Set memory by filling with a single value.
+ * Fill memory with a single value.
  * 
  * @ingroup memory
  * 

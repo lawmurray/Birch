@@ -167,4 +167,8 @@ void free(void* ptr, const size_t size) {
   }
 }
 
+void memcpy(void* dst, const void* src, size_t n) {
+  CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
+}
+
 }
