@@ -261,16 +261,13 @@ void birch::CppGenerator::visit(const LocalVariable* o) {
 void birch::CppGenerator::visit(const TupleVariable* o) {
   Name* tmp = new Name();
   int i = 0;
-  start("auto [");
+  line("auto " << tmp << " = " << o->value << ';');
   for (auto iter = o->locals->begin(); iter != o->locals->end(); ++iter) {
     auto local = dynamic_cast<const LocalVariable*>(*iter);
     assert(local);
-    if (iter != o->locals->begin()) {
-      middle(", ");
-    }
-    middle(local->name);
+    line("auto " << local->name << " = std::move(std::get<" << i++ <<
+        ">(" << tmp << "));");
   }
-  finish("] = " << o->value << ';');
 }
 
 void birch::CppGenerator::visit(const Function* o) {
