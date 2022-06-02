@@ -7,6 +7,7 @@
 #include "numbirch/array/Recorder.hpp"
 
 #include <cassert>
+#include <cstdint>
 
 namespace numbirch {
 /**

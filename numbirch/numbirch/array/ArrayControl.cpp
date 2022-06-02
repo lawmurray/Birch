@@ -5,6 +5,8 @@
 
 #include "numbirch/memory.hpp"
 
+#include <algorithm>
+
 namespace numbirch {
 
 ArrayControl::ArrayControl(const size_t bytes) :
