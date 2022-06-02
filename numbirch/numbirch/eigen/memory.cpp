@@ -42,8 +42,8 @@ void* malloc(const size_t size) {
   return std::malloc(size);
 }
 
-void* realloc(void* ptr, const size_t size) {
-  return std::realloc(ptr, size);
+void* realloc(void* oldptr, const size_t oldsize, const size_t newsize) {
+  return std::realloc(oldptr, newsize);
 }
 
 void free(void* ptr) {
@@ -56,6 +56,34 @@ void free(void* ptr, const size_t size) {
 
 void memcpy(void* dst, const void* src, size_t n) {
   std::memcpy(dst, src, n);
+}
+
+void* event_create() {
+  //
+}
+
+void event_destroy(void* evt) {
+  //
+}
+
+void event_record_read(void* evt) {
+  //
+}
+
+void event_record_write(void* evt) {
+  //
+}
+
+bool event_test(void* evt) {
+  //
+}
+
+void event_wait(void* evt) {
+  //
+}
+
+void event_join(void* evt) {
+  //
 }
 
 }
