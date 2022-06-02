@@ -39,27 +39,6 @@ void term() {
   cuda_term();
 }
 
-void* record() {
-  cudaEvent_t evt;
-  CUDA_CHECK(cudaEventCreate(&evt));
-  CUDA_CHECK(cudaEventRecord(evt, stream));
-  return (void*)evt;
-}
-
-void wait(void* evt) {
-  if (evt != 0) {
-    cudaEvent_t e = static_cast<cudaEvent_t>(evt);
-    CUDA_CHECK(cudaEventSynchronize(e));
-  }
-}
-
-void forget(void* evt) {
-  if (evt != 0) {
-    cudaEvent_t e = static_cast<cudaEvent_t>(evt);
-    CUDA_CHECK(cudaEventDestroy(e));
-  }
-}
-
 void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     size_t alignment, bool *zero, bool *commit, unsigned arena_ind) {
   if (!new_addr) {
@@ -169,6 +148,66 @@ void free(void* ptr, const size_t size) {
 
 void memcpy(void* dst, const void* src, size_t n) {
   CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
+}
+
+void* event_create() {
+  cudaEvent_t evt;
+  CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
+  return static_cast<void*>(evt);
+}
+
+void event_destroy(void* evt) {
+  assert(evt != 0);
+  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  CUDA_CHECK(cudaEventDestroy(e));
+}
+
+void event_record_read(void* evt) {
+  assert(evt != 0);
+  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+
+  /* concurrent reads are permitted; evt should be such that waiting or
+   * joining on it ensures that *all* reads are finished; this is accomplished
+   * with the auxiliary streams; first, join this thread's auxiliary stream
+   * with the existing read event (which may be on a different stream),
+   * blocking the auxiliary stream on all previous reads */
+  CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e));
+
+  /* record a new event to indicate when the new read finishes */
+  CUDA_CHECK(cudaEventRecord(e, stream));
+  
+  /* join the auxiliary stream to that new event, so that it is now blocked on
+   * all previous reads and the new read */
+  CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e));
+
+  /* record a new event in the auxiliary stream to indicate when all previous
+   * reads and the new read are complete */
+  CUDA_CHECK(cudaEventRecord(e, aux_stream));
+}
+
+void event_record_write(void* evt) {
+  assert(evt != 0);
+  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  CUDA_CHECK(cudaEventRecord(e, stream));
+}
+
+bool event_test(void* evt) {
+  assert(evt != 0);
+  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  cudaError_t err = cudaEventQuery(e);
+  return err == cudaSuccess;
+}
+
+void event_wait(void* evt) {
+  assert(evt != 0);
+  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  CUDA_CHECK(cudaEventSynchronize(e));
+}
+
+void event_join(void* evt) {
+  assert(evt != 0);
+  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  CUDA_CHECK(cudaStreamWaitEvent(stream, e));
 }
 
 }

@@ -50,7 +50,7 @@ auto for_each(const int n, Functor f) {
   auto x = Array<decltype(f(0,0)),1>(make_shape(n));
   auto grid = make_grid(1, n);
   auto block = make_block(1, n);
-  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, data(x),
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, data(sliced(x)),
       stride(x), f));
   return x;
 }
@@ -59,7 +59,7 @@ auto for_each(const int m, const int n, Functor f) {
   auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, data(A),
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, data(sliced(A)),
       stride(A), f));
   return A;
 }
@@ -67,9 +67,9 @@ auto for_each(const int m, const int n, Functor f) {
 /*
  * Unary transform.
  */
-template<class T, class R, class Functor>
+template<class T, class U, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
-    const int ldA, R B, const int ldB, Functor f) {
+    const int ldA, U B, const int ldB, Functor f) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
@@ -91,8 +91,8 @@ auto transform(const T& x, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(x),
-          stride(x), data(y), stride(y), f));
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
+          stride(x), data(sliced(y)), stride(y), f));
     }
     return y;
   }
@@ -101,9 +101,9 @@ auto transform(const T& x, Functor f) {
 /*
  * Binary transform.
  */
-template<class T, class U, class R, class Functor>
+template<class T, class U, class V, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
-    const int ldA, const U B, const int ldB, R C, const int ldC,
+    const int ldA, const U B, const int ldB, V C, const int ldC,
     Functor f) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
@@ -126,8 +126,8 @@ auto transform(const T& x, const U& y, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(x),
-          stride(x), data(y), stride(y), data(z), stride(z), f));
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
+          stride(x), data(sliced(y)), stride(y), data(sliced(z)), stride(z), f));
     }
     return z;
   }
@@ -136,10 +136,10 @@ auto transform(const T& x, const U& y, Functor f) {
 /*
  * Ternary transform.
  */
-template<class T, class U, class V, class R, class Functor>
+template<class T, class U, class V, class W, class Functor>
 __global__ void kernel_transform(const int m, const int n, const T A,
     const int ldA, const U B, const int ldB, const V C, const int ldC,
-    R D, const int ldD, Functor f) {
+    W D, const int ldD, Functor f) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
@@ -163,8 +163,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(x),
-          stride(x), data(y), stride(y), data(z), stride(z), data(a),
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
+          stride(x), data(sliced(y)), stride(y), data(sliced(z)), stride(z), data(sliced(a)),
           stride(a), f));
     }
     return a;
@@ -205,8 +205,8 @@ auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
       CUDA_LAUNCH(kernel_transform_pair<<<grid,block,0,stream>>>(m, n,
-          data(x), stride(x), data(y), stride(y), data(z), stride(z), data(a),
-          stride(a), data(b), stride(b), f));
+          data(sliced(x)), stride(x), data(sliced(y)), stride(y), data(sliced(z)), stride(z), data(sliced(a)),
+          stride(a), data(sliced(b)), stride(b), f));
     }
     return std::make_pair(a, b);
   }
@@ -215,9 +215,9 @@ auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
 /*
  * Unary gather.
  */
-template<class T, class U, class R>
+template<class T, class U, class V>
 __global__ void kernel_gather(const int m, const int n, const T A,
-    const int ldA, const U I, const int ldI, R C, const int ldC) {
+    const int ldA, const U I, const int ldI, V C, const int ldC) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
@@ -235,8 +235,8 @@ auto gather(const T& x, const U& i) {
   if (m > 0 && n > 0) {
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, data(x),
-        stride(x), data(i), stride(i), data(z), stride(z)));
+    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
+        stride(x), data(sliced(i)), stride(i), data(sliced(z)), stride(z)));
   }
   return z;
 }
@@ -244,10 +244,10 @@ auto gather(const T& x, const U& i) {
 /*
  * Binary gather.
  */
-template<class T, class U, class V, class R>
+template<class T, class U, class V, class W>
 __global__ void kernel_gather(const int m, const int n, const T A,
     const int ldA, const U I, const int ldI, const V J, const int ldJ,
-    R D, const int ldD) {
+    W D, const int ldD) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
@@ -270,8 +270,8 @@ auto gather(const T& x, const U& i, const V& j) {
   if (m > 0 && n > 0) {
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, data(x),
-        stride(x), data(i), stride(i), data(j), stride(j), data(z),
+    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
+        stride(x), data(sliced(i)), stride(i), data(sliced(j)), stride(j), data(sliced(z)),
         stride(z)));
   }
   return z;

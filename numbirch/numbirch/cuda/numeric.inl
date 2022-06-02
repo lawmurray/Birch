@@ -115,8 +115,8 @@ void nan_on_error(T& A, const Array<int,0>& info) {
   if (m > 0 && n > 0) {
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_nan_on_error<<<grid,block,0,stream>>>(m, n, data(A),
-        stride(A), data(info)));
+    CUDA_LAUNCH(kernel_nan_on_error<<<grid,block,0,stream>>>(m, n, data(sliced(A)),
+        stride(A), data(sliced(info))));
   }
 }
 
@@ -127,8 +127,8 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x) {
   prefetch(x);
   Array<T,1> y(make_shape(rows(A)));
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_N, rows(A), columns(A),
-      scalar<T>::one, data(A), stride(A), data(x), stride(x), scalar<T>::zero,
-      data(y), stride(y)));
+      scalar<T>::one, data(sliced(A)), stride(A), data(sliced(x)), stride(x), scalar<T>::zero,
+      data(sliced(y)), stride(y)));
   return y;
 }
 
@@ -139,8 +139,8 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
   prefetch(B);
   Array<T,2> C(make_shape(rows(A), columns(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N,
-      rows(C), columns(C), columns(A), scalar<T>::one, data(A), stride(A),
-      data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
+      rows(C), columns(C), columns(A), scalar<T>::one, data(sliced(A)), stride(A),
+      data(sliced(B)), stride(B), scalar<T>::zero, data(sliced(C)), stride(C)));
   return C;
 }
 
@@ -154,14 +154,14 @@ Array<T,2> chol(const Array<T,2>& S) {
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
   CUSOLVER_CHECK(cusolverDnXpotrf_bufferSize(cusolverDnHandle,
       cusolverDnParams, CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      data(sliced(L)), stride(L), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
   void* bufferOnHost = host_malloc(bufferOnHostBytes);
   CUSOLVER_CHECK(cusolverDnXpotrf(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(L),
+      CUBLAS_FILL_MODE_LOWER, rows(L), cusolver<T>::CUDA_R, data(sliced(L)),
       stride(L), cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, data(info)));
+      bufferOnHost, bufferOnHostBytes, data(sliced(info))));
   nan_on_error(L, info);
   device_free(bufferOnDevice, bufferOnDeviceBytes);
   host_free(bufferOnHost, bufferOnHostBytes);
@@ -178,8 +178,8 @@ Array<T,2> cholinv(const Array<T,2>& L) {
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B),
-      data(info)));      
+      data(sliced(L)), stride(L), cusolver<T>::CUDA_R, data(sliced(B)), stride(B),
+      data(sliced(info))));      
   return B;
 }
 
@@ -193,8 +193,8 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_FILL_MODE_LOWER, length(x), 1, cusolver<T>::CUDA_R, data(L),
-      stride(L), cusolver<T>::CUDA_R, data(x), length(x), data(info)));
+      CUBLAS_FILL_MODE_LOWER, length(x), 1, cusolver<T>::CUDA_R, data(sliced(L)),
+      stride(L), cusolver<T>::CUDA_R, data(sliced(x)), length(x), data(sliced(info))));
   return x;
 }
 
@@ -209,8 +209,8 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
-      data(L), stride(L), cusolver<T>::CUDA_R, data(B), stride(B),
-      data(info)));
+      data(sliced(L)), stride(L), cusolver<T>::CUDA_R, data(sliced(B)), stride(B),
+      data(sliced(info))));
   return B;
 }
 
@@ -220,8 +220,8 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
   prefetch(x);
   prefetch(y);
   Array<T,0> z;
-  CUBLAS_CHECK(cublas<T>::dot(cublasHandle, length(x), data(x), stride(x),
-      data(y), stride(y), data(z)));
+  CUBLAS_CHECK(cublas<T>::dot(cublasHandle, length(x), data(sliced(x)), stride(x),
+      data(sliced(y)), stride(y), data(sliced(z))));
   return z;
 }
 
@@ -238,8 +238,8 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
   prefetch(x);
   Array<T,1> y(make_shape(columns(A)));
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_T, rows(A), columns(A),
-      scalar<T>::one, data(A), stride(A), data(x), stride(x), scalar<T>::zero,
-      data(y), stride(y)));
+      scalar<T>::one, data(sliced(A)), stride(A), data(sliced(x)), stride(x), scalar<T>::zero,
+      data(sliced(y)), stride(y)));
   return y;
 }
 
@@ -250,8 +250,8 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
   prefetch(B);
   Array<T,2> C(make_shape(columns(A), columns(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
-      rows(C), columns(C), rows(A), scalar<T>::one, data(A), stride(A),
-      data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
+      rows(C), columns(C), rows(A), scalar<T>::one, data(sliced(A)), stride(A),
+      data(sliced(B)), stride(B), scalar<T>::zero, data(sliced(C)), stride(C)));
   return C;
 }
 
@@ -267,7 +267,7 @@ Array<T,2> inv(const Array<T,2>& A) {
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0,
       ipivBytes = sizeof(int64_t)*std::min(rows(LU), columns(LU));
   CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU),
+      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, data(sliced(LU)),
       stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
@@ -275,13 +275,13 @@ Array<T,2> inv(const Array<T,2>& A) {
   auto ipiv = (int64_t*)device_malloc(ipivBytes);
 
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
-      rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU), stride(LU), ipiv,
+      rows(LU), columns(LU), cusolver<T>::CUDA_R, data(sliced(LU)), stride(LU), ipiv,
       cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
-      bufferOnHostBytes, data(info)));
+      bufferOnHostBytes, data(sliced(info))));
   nan_on_error(LU, info);
   CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
-      CUBLAS_OP_N, rows(B), columns(B), cusolver<T>::CUDA_R, data(LU),
-      stride(LU), ipiv, cusolver<T>::CUDA_R, data(B), stride(B), data(info)));
+      CUBLAS_OP_N, rows(B), columns(B), cusolver<T>::CUDA_R, data(sliced(LU)),
+      stride(LU), ipiv, cusolver<T>::CUDA_R, data(sliced(B)), stride(B), data(sliced(info))));
 
   device_free(ipiv, ipivBytes);
   device_free(bufferOnDevice, bufferOnDeviceBytes);
@@ -307,7 +307,7 @@ Array<T,0> ldet(const Array<T,2>& A) {
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0,
       ipivBytes = sizeof(int64_t)*rows(LU);
   CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU),
+      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, data(sliced(LU)),
       stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
@@ -315,9 +315,9 @@ Array<T,0> ldet(const Array<T,2>& A) {
   auto ipiv = (int64_t*)device_malloc(ipivBytes);
 
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
-      rows(LU), columns(LU), cusolver<T>::CUDA_R, data(LU), stride(LU),
+      rows(LU), columns(LU), cusolver<T>::CUDA_R, data(sliced(LU)), stride(LU),
       ipiv, cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, data(info)));
+      bufferOnHost, bufferOnHostBytes, data(sliced(info))));
   nan_on_error(LU, info);
 
   /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
@@ -346,8 +346,8 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
    * outer product, the first matrix is transposed to a single-column matrix,
    * while the second is not */
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
-      rows(A), columns(A), 1, scalar<T>::one, data(x), stride(x), data(y),
-      stride(y), scalar<T>::zero, data(A), stride(A)));
+      rows(A), columns(A), 1, scalar<T>::one, data(sliced(x)), stride(x), data(sliced(y)),
+      stride(y), scalar<T>::zero, data(sliced(A)), stride(A)));
   return A;
 }
 
@@ -358,8 +358,8 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
   prefetch(B);
   Array<T,2> C(make_shape(rows(A), rows(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T,
-      rows(C), columns(C), columns(A), scalar<T>::one, data(A), stride(A),
-      data(B), stride(B), scalar<T>::zero, data(C), stride(C)));
+      rows(C), columns(C), columns(A), scalar<T>::one, data(sliced(A)), stride(A),
+      data(sliced(B)), stride(B), scalar<T>::zero, data(sliced(C)), stride(C)));
   return C;
 }
 
@@ -371,8 +371,8 @@ Array<T,2> phi(const Array<T,2>& A) {
   Array<T,2> B(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  CUDA_LAUNCH(kernel_phi<<<grid,block,0,stream>>>(m, n, data(A), stride(A),
-      data(B), stride(B)));
+  CUDA_LAUNCH(kernel_phi<<<grid,block,0,stream>>>(m, n, data(sliced(A)), stride(A),
+      data(sliced(B)), stride(B)));
   return B;
 }
 
@@ -394,7 +394,7 @@ Array<T,2> transpose(const Array<T,2>& A) {
   size_t shared = CUDA_TRANSPOSE_SIZE*CUDA_TRANSPOSE_SIZE*sizeof(T);
 
   CUDA_LAUNCH(kernel_transpose<<<grid,block,shared,stream>>>(rows(B),
-      columns(B), data(A), stride(A), data(B), stride(B)));
+      columns(B), data(sliced(A)), stride(A), data(sliced(B)), stride(B)));
   return B;
 }
 
@@ -406,8 +406,8 @@ Array<T,2> tri(const Array<T,2>& A) {
   Array<T,2> B(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  CUDA_LAUNCH(kernel_tri<<<grid,block,0,stream>>>(m, n, data(A), stride(A),
-      data(B), stride(B)));
+  CUDA_LAUNCH(kernel_tri<<<grid,block,0,stream>>>(m, n, data(sliced(A)), stride(A),
+      data(sliced(B)), stride(B)));
   return B;
 }
 
@@ -419,7 +419,7 @@ Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x) {
   prefetch(x);
   Array<T,1> y(x);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
-      CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), data(L), stride(L), data(y),
+      CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), data(sliced(L)), stride(L), data(sliced(y)),
       stride(y)));
   return y;
 }
@@ -433,8 +433,8 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
   Array<T,2> C(make_shape(rows(B), columns(B)));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(B),
-      columns(B), scalar<T>::one, data(L), stride(L), data(B), stride(B),
-      data(C), stride(C)));
+      columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)), stride(B),
+      data(sliced(C)), stride(C)));
   return C;
 }
 
@@ -445,7 +445,7 @@ Array<T,2> triinv(const Array<T,2>& L) {
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
-      rows(B), columns(B), scalar<T>::one, data(L), stride(L), data(B),
+      rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
       stride(B)));
   return B;
 }
@@ -458,7 +458,7 @@ Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x) {
   prefetch(x);
   Array<T,1> y(x);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
-      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), data(L), stride(L), data(y),
+      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), data(sliced(L)), stride(L), data(sliced(y)),
       stride(y)));
   return y;
 }
@@ -472,8 +472,8 @@ Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B) {
   Array<T,2> C(make_shape(rows(B), columns(B)));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(B),
-      columns(B), scalar<T>::one, data(L), stride(L), data(B), stride(B),
-      data(C), stride(C)));
+      columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)), stride(B),
+      data(sliced(C)), stride(C)));
   return C;
 }
 
@@ -486,8 +486,8 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
   Array<T,2> C(make_shape(rows(A), rows(L)));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(C),
-      columns(C), scalar<T>::one, data(L), stride(L), data(A), stride(A),
-      data(C), stride(C)));
+      columns(C), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(A)), stride(A),
+      data(sliced(C)), stride(C)));
   return C;
 }
 
@@ -498,8 +498,8 @@ Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y) {
   Array<T,1> x(y);
 
   CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
-      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(x), data(L), stride(L),
-      data(x), stride(x)));
+      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(x), data(sliced(L)), stride(L),
+      data(sliced(x)), stride(x)));
   return x;
 }
 
@@ -511,7 +511,7 @@ Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C) {
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
-      rows(B), columns(B), scalar<T>::one, data(L), stride(L), data(B),
+      rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
       stride(B)));
   return B;
 }

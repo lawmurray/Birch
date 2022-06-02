@@ -5,10 +5,9 @@
 
 #include "numbirch/memory.hpp"
 #include "numbirch/utility.hpp"
-#include "numbirch/array/ArrayControl.hpp"
 #include "numbirch/array/ArrayShape.hpp"
 #include "numbirch/array/ArrayIterator.hpp"
-#include "numbirch/array/Lock.hpp"
+#include "numbirch/array/ArrayControl.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -77,11 +76,9 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array() :
-      buf(nullptr),
       ctl(nullptr),
       shp(),
-      isView(false),
-      isDiced(false) {
+      isView(false) {
     allocate();
   }
 
@@ -90,11 +87,9 @@ public:
    */
   template<int E = D, std::enable_if_t<E != 0,int> = 0>
   Array() :
-      buf(nullptr),
       ctl(nullptr),
       shp(),
-      isView(false),
-      isDiced(false) {
+      isView(false) {
     //
   }
 
@@ -105,11 +100,9 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array(const T value) :
-      buf(nullptr),
       ctl(nullptr),
       shp(),
-      isView(false),
-      isDiced(false) {
+      isView(false) {
     allocate();
     fill(value);
   }
@@ -117,29 +110,25 @@ public:
   /**
    * Constructor.
    *
-   * @param shape Shape.
+   * @param shp Shape.
    */
-  Array(const shape_type& shape) :
-      buf(nullptr),
+  Array(const shape_type& shp) :
       ctl(nullptr),
-      shp(shape),
-      isView(false),
-      isDiced(false) {
+      shp(shp),
+      isView(false) {
     allocate();
   }
 
   /**
    * Constructor.
    *
-   * @param shape Shape.
+   * @param shp Shape.
    * @param value Fill value.
    */
-  Array(const shape_type& shape, const T value) :
-      buf(nullptr),
+  Array(const shape_type& shp, const T value) :
       ctl(nullptr),
-      shp(shape),
-      isView(false),
-      isDiced(false) {
+      shp(shp),
+      isView(false) {
     allocate();
     fill(value);
   }
@@ -151,13 +140,11 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
   Array(const std::initializer_list<T>& values) :
-      buf(nullptr),
       ctl(nullptr),
-      shp(values.size()),
-      isView(false),
-      isDiced(false) {
+      shp(make_shape(values.size())),
+      isView(false) {
     allocate();
-    std::uninitialized_copy(values.begin(), values.end(), begin());
+    std::copy(values.begin(), values.end(), begin());
   }
 
   /**
@@ -167,17 +154,15 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array(const std::initializer_list<std::initializer_list<T>>& values) :
-      buf(nullptr),
       ctl(nullptr),
-      shp(values.size(), values.begin()->size()),
-      isView(false),
-      isDiced(false) {
+      shp(make_shape(values.size(), values.begin()->size())),
+      isView(false) {
     allocate();
     T* ptr = diced();
     int64_t t = 0;
     for (auto row : values) {
       for (auto x : row) {
-        new (ptr + shp.transpose(t++)) T(x);
+        ptr[shp.transpose(t++)] = T(x);
       }
     }
   }
@@ -187,49 +172,47 @@ public:
    *
    * @param l Lambda called to construct each element. Argument is a 1-based
    * serial index.
-   * @param shape Shape.
+   * @param shp Shape.
    */
   template<class L, std::enable_if_t<std::is_invocable_r_v<T,L,int>,int> = 0>
-  Array(const L& l, const shape_type& shape) :
-      buf(nullptr),
+  Array(const L& l, const shape_type& shp) :
       ctl(nullptr),
-      shp(shape),
-      isView(false),
-      isDiced(false) {
+      shp(shp),
+      isView(false) {
     allocate();
     int64_t n = 0;
-    for (auto iter = begin(); iter != end(); ++iter) {
-      new (&*iter) T(l(++n));
+    auto iter = begin();
+    auto to = end();
+    for (; iter != to; ++iter) {
+      *iter = T(l(++n));
     }
   }
 
   /**
    * View constructor.
    */
-  Array(const T* buf, const shape_type& shape) :
-      buf(const_cast<T*>(buf)),
-      ctl(nullptr),
-      shp(shape),
-      isView(true),
-      isDiced(false) {
-    assert((buf == nullptr) == (shape.volume() == 0));
+  Array(ArrayControl* ctl, const shape_type& shp) :
+      ctl(ctl),
+      shp(shp),
+      isView(true) {
+    assert((ctl == nullptr) == (shp.volume() == 0));
   }
 
   /**
    * Copy constructor.
    */
   Array(const Array& o) :
-      buf(nullptr),
       ctl(nullptr),
       shp(o.shp),
-      isView(false),
-      isDiced(false) {
-    if (!o.isView) {
-      std::tie(ctl, buf, isDiced) = o.share();
+      isView(false) {
+    if (!o.isView && volume() > 0) {
+      auto c = o.control();
+      c->incShared();
+      ctl.store(c);
     } else {
-      compact();
+      shp.compact();
       allocate();
-      uninitialized_copy(o);
+      copy(o);
     }
   }
 
@@ -238,31 +221,27 @@ public:
    */
   template<class U, std::enable_if_t<std::is_convertible_v<U,T>,int> = 0>
   Array(const Array<U,D>& o) :
-      buf(nullptr),
       ctl(nullptr),
       shp(o.shp),
-      isView(false),
-      isDiced(false) {
-    compact();
+      isView(false) {
+    shp.compact();
     allocate();
-    uninitialized_copy(o);
+    copy(o);
   }
 
   /**
    * Move constructor.
    */
   Array(Array&& o) :
-      buf(nullptr),
       ctl(nullptr),
       shp(o.shp),
-      isView(false),
-      isDiced(false) {
+      isView(false) {
     if (!o.isView) {
       swap(o);
     } else {
-      compact();
+      shp.compact();
       allocate();
-      uninitialized_copy(o);
+      copy(o);
     }
   }
 
@@ -298,7 +277,6 @@ public:
    */
   Array& operator=(const T value) {
     fill(value);
-    wait();
     return *this;
   }
 
@@ -401,14 +379,9 @@ public:
    * Is the value (for a scalar) or are the elements (for vectors and
    * matrices) available without waiting for asynchronous device operations to
    * complete?
-   * 
-   * In the current implementation, once a device operation is launched that
-   * depends on the buffer, this returns false until a call to value() (for a
-   * scalar) or an element is accessed (for vectors and matrices), after which
-   * it returns true.
    */
   bool has_value() const {
-    return isDiced;
+    return volume() == 0 || control()->test();
   }
 
   /**
@@ -430,16 +403,19 @@ public:
    * dice()).
    */
   template<class... Args>
-  auto slice(Args&&... args) {
-    return shp.slice(sliced(), std::forward<Args>(args)...);
+  auto slice(const Args... args) {
+    own();
+    auto view = shp.slice(args...);
+    return Array<T,view.dims()>(control(), view);
   }
 
   /**
    * @copydoc slice()
    */
   template<class... Args>
-  const auto slice(Args&&... args) const {
-    return shp.slice(sliced(), std::forward<Args>(args)...);
+  auto slice(const Args... args) const {
+    auto view = shp.slice(args...);
+    return Array<T,view.dims()>(control(), view);
   }
 
   /**
@@ -454,16 +430,17 @@ public:
    * arguments.
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  T& dice(const Args&... args) {
-    return shp.dice(diced(), args...);
+  T& dice(const Args... args) {
+    own();
+    return diced()[shp.dice(args...)];
   }
 
   /**
    * @copydoc dice()
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  const T dice(const Args&... args) const {
-    return shp.dice(diced(), args...);
+  const T dice(const Args... args) const {
+    return diced()[shp.dice(args...)];
   }
 
   /**
@@ -473,8 +450,8 @@ public:
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
   template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
-  auto operator()(Args&&... args) {
-    return slice(std::forward<Args>(args)...);
+  auto operator()(const Args... args) {
+    return slice(args...);
   }
 
   /**
@@ -484,8 +461,8 @@ public:
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
   template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
-  auto operator()(Args&&... args) const {
-    return slice(std::forward<Args>(args)...);
+  auto operator()(const Args... args) const {
+    return slice(args...);
   }
 
   /**
@@ -495,7 +472,7 @@ public:
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  T& operator()(const Args&... args) {
+  T& operator()(const Args... args) {
     return dice(args...);
   }
 
@@ -506,7 +483,7 @@ public:
    * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
    */
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  const T operator()(const Args&... args) const {
+  const T operator()(const Args... args) const {
     return dice(args...);
   }
 
@@ -515,7 +492,8 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() {
-    return shp.diagonal(sliced());
+    own();
+    return Array<T,1>(control(), shp.diagonal());
   }
 
   /**
@@ -523,61 +501,7 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() const {
-    return shp.diagonal(sliced());
-  }
-
-  /**
-   * Get underlying buffer for use in a slice operation.
-   */
-  T* sliced() {
-    own();
-    isDiced = false;
-    return buf;
-  }
-
-  /**
-   * @copydoc sliced()
-   */
-  const T* sliced() const {
-    const_cast<Array*>(this)->isDiced = false;
-    return buf;
-  }
-
-  /**
-   * Get underlying buffer for use in a dice operation.
-   */
-  T* diced() {
-    own();
-    if (!isDiced) {
-      wait();
-      isDiced = true;
-    }
-    return buf;
-  }
-
-  /**
-   * @copydoc diced()
-   */
-  const T* diced() const {
-    if (!isDiced) {
-      wait();
-      const_cast<Array*>(this)->isDiced = true;
-    }
-    return buf;
-  }
-
-  /**
-   * Get underlying buffer. Synonym of sliced().
-   */
-  T* data() {
-    return sliced();
-  }
-
-  /**
-   * Get underlying buffer. Synonym of sliced().
-   */
-  const T* data() const {
-    return sliced();
+    return Array<T,1>(control(), shp.diagonal());
   }
 
   /**
@@ -585,6 +509,13 @@ public:
    */
   ArrayShape<D> shape() const {
     return shp;
+  }
+
+  /**
+   * Offset into buffer.
+   */
+  int64_t offset() const {
+    return shp.offset();
   }
 
   /**
@@ -667,73 +598,56 @@ public:
   }
 
   /**
-   * Push an element onto the end of a vector. The vector length is increased
-   * by one.
-   *
-   * @param x Value.
-   */
-  void push(const T x) {
-    insert(size(), x);
-  }
-
-  /**
-   * Insert an element into a vector at a given position. The element is
-   * inserted just before the existing element at that position, and the
-   * vector length increased by one.
-   *
-   * @param i Position.
-   * @param x Value.
-   */
-  void insert(const int i, const T x) {
-    static_assert(D == 1, "insert() supports only one-dimensional arrays");
-    assert(!isView);
-
-    auto n = size();
-    ArrayShape<1> s(n + 1);
-    if (!buf) {
-      Array tmp(s, x);
-      swap(tmp);
-    } else {
-      buf = (T*)realloc((void*)sliced(), s.volume()*sizeof(T));
-      ///@todo Use memcpy()
-      std::memmove(diced() + i + 1, diced() + i, (n - i)*sizeof(T));
-      new (diced() + i) T(x);
-      shp = s;
-    }
-  }
-
-  /**
-   * Erase elements from a vector from a given position forward. The vector
-   * length is reduced by the number of elements erased.
-   *
-   * @param i Position.
-   * @param len Number of elements to erase.
-   */
-  void erase(const int i, const int len = 1) {
-    static_assert(D == 1, "erase() supports only one-dimensional arrays");
-    assert(!isView);
-    assert(len > 0);
-    assert(size() >= len);
-
-    auto n = size();
-    ArrayShape<1> s(n - len);
-    if (s.size() == 0) {
-      release();
-    } else {
-      ///@todo Use memcpy()
-      std::memmove(diced() + i, diced() + i + len, (n - len - i)*sizeof(T));
-      buf = (T*)realloc(sliced(), s.volume()*sizeof(T));
-    }
-    shp = s;
-  }
-
-  /**
    * Fill with scalar value.
    *
    * @param value The value.
    */
   void fill(const T value) {
-    memset(data(), shp.stride(), value, shp.width(), shp.height());
+    memset(data(sliced()), stride(), value, width(), height());
+  }
+
+  /**
+   * Push a value onto the end of a vector, resizing it if necessary.
+   * 
+   * @param value The value.
+   * 
+   * push() is typically used when initializing vectors of unknown length on
+   * host. It works by extending the array by one with a realloc(), then
+   * pushing the new value with dice(), not slice(), to keep operations on the
+   * host.
+   */
+  template<int E = D, std::enable_if_t<E == 1,int> = 0>
+  void push(const T value) {
+    assert(!isView);
+
+    ArrayControl* d = nullptr;
+    size_t newsize = (volume() + stride())*sizeof(T);
+    if (volume() == 0) {
+      /* allocate new */
+      d = new ArrayControl(newsize);
+    } else {
+      /* use ctl as a lock: exchange with nullptr, copy on write if necessary,
+       * resize buffer */
+      ArrayControl* c = ctl.exchange(nullptr);
+      while (!c) {
+        c = ctl.exchange(nullptr);
+      }
+      if (c->numShared() > 1) {
+        /* copy-on-write and resize simultaneously */
+        d = new ArrayControl(*c, newsize);
+        if (c->decShared() == 0) {
+          delete c;
+        }
+      } else {
+        d = c;
+        d->realloc(newsize);
+      }
+    }
+
+    /* update shape, return ctl, write last element */
+    shp.extend(1);
+    d->template diced<T>(offset())[shp.dice(rows() - 1)] = value;
+    ctl.store(d);
   }
 
   /**
@@ -744,6 +658,75 @@ public:
     shp = ArrayShape<D>();
   }
 
+  /**
+   * Get underlying buffer for use in a slice operation.
+   */
+  Recorder<T> sliced() {
+    if (volume() > 0) {
+      own();
+      return control()->template sliced<T>(offset());
+    } else {
+      return Recorder<T>();
+    }
+  }
+
+  /**
+   * @copydoc sliced()
+   */
+  Recorder<const T> sliced() const {
+    if (volume() > 0) {
+      return control()->template sliced<const T>(offset());
+    } else {
+      return Recorder<const T>();
+    }
+  }
+
+  /**
+   * Get underlying buffer for use in a dice operation.
+   */
+  T* diced() {
+    if (volume() > 0) {
+      own();
+      return control()->template diced<T>(offset());
+    } else {
+      return nullptr;
+    }
+  }
+
+  /**
+   * @copydoc diced()
+   */
+  const T* diced() const {
+    if (volume() > 0) {
+      return control()->template diced<const T>(offset());
+    } else {
+      return nullptr;
+    }
+  }
+
+  /**
+   * @internal
+   * 
+   * Get the control block.
+   */
+  ArrayControl* control() {
+    if (volume() > 0) {
+      /* ctl is used as a lock, it may be set to nullptr while another thread
+       * is working on a copy-on-write, see own() */
+      auto c = ctl.load();
+      while (!c) {
+        c = ctl.load();
+      }
+      return c;
+    } else {
+      return nullptr;
+    }
+  }
+
+  ArrayControl* control() const {
+    return const_cast<Array*>(this)->control();
+  }
+
 private:
   /**
    * Copy from another array. For a view the shapes of the two arrays must
@@ -752,8 +735,8 @@ private:
   template<class U, int E, std::enable_if_t<D == E &&
       std::is_convertible_v<U,T>,int> = 0>
   void assign(const Array<U,E>& o) {
-    if (isView) {
-      uninitialized_copy(o);
+    if (!std::is_same_v<U,T> || isView) {
+      copy(o);
     } else {
       Array tmp(o);
       swap(tmp);
@@ -761,89 +744,47 @@ private:
   }
 
   /**
-   * Copy from another array when this is uninitialized.
+   * Copy from another array.
    */
   template<class U>
-  void uninitialized_copy(const Array<U,D>& o) {
+  void copy(const Array<U,D>& o) {
     assert(conforms(o) && "array sizes are different");
-    memcpy(data(), shp.stride(), o.data(), o.shp.stride(), shp.width(),
-        shp.height());
+    memcpy(data(sliced()), stride(), data(o.sliced()), o.stride(), width(),
+        height());
   }
 
   /**
    * Swap with another array.
    */
   void swap(Array& o) {
-    std::swap(buf, o.buf);
     std::swap(ctl, o.ctl);
     std::swap(shp, o.shp);
     assert(!isView);
     assert(!o.isView);
-    std::swap(isDiced, o.isDiced);
-  }
-
-  /**
-   * Compact the array by reducing the volume to match the size. This is only
-   * possible prior to allocation.
-   */
-  void compact() {
-    assert(!buf);
-    shp = shp.compact();
   }
 
   /**
    * Allocate memory for this, leaving uninitialized.
    */
   void allocate() {
-    assert(!buf);
-    assert(!ctl);
-    assert(!isDiced);
-    buf = (T*)malloc(volume()*sizeof(T));
+    assert(!ctl.load());
+    if (volume() > 0) {
+      ctl.store(new ArrayControl(volume()*sizeof(T)));
+    }
   }
 
   /**
    * Release the buffer, deallocating if this is the last reference to it.
    */
   void release() {
-    if (!isView) {
-      if (!ctl || ctl->decShared() == 0) {
-        free(buf, volume()*sizeof(T));
-        delete ctl;
+    if (!isView && volume() > 0) {
+      ArrayControl* c = ctl.exchange(nullptr);
+      // ^ c can still be nullptr here, e.g. due to the use of swap in the
+      //   move constructor
+      if (c && c->decShared() == 0) {
+        delete c;
       }
     }
-    buf = nullptr;
-    ctl = nullptr;
-    isView = false;
-    isDiced = false;
-  }
-
-  /**
-   * Share the buffer.
-   * 
-   * @return A pair giving pointers to the control block and buffer.
-   */
-  std::tuple<ArrayControl*,T*,bool> share() {
-    assert(!isView);
-    #pragma omp flush(ctl, buf)
-    if (ctl) {
-      ctl->incShared();
-    } else if (buf) {
-      lock.set();
-      if (ctl) {  // another thread may have set in the meantime
-        ctl->incShared();
-      } else {
-        ctl = new ArrayControl(2);  // one ref for current, one ref for new
-      }
-      lock.unset();
-    }
-    return std::make_tuple(ctl, buf, isDiced);
-  }
-
-  /**
-   * @copydoc share()
-   */
-  std::tuple<ArrayControl*,T*,bool> share() const {
-    return const_cast<Array*>(this)->share();
   }
 
   /**
@@ -851,37 +792,28 @@ private:
    * buffer is shared is indicated by the presence of a control block.
    */
   void own() {
-    #pragma omp flush(ctl, buf)
-    if (ctl) {
-      assert(!isView);
-      lock.set();
-      if (!ctl) {  // another thread may have cleared in the meantime
-        // last reference optimization already applied by another thread
-      } else if (ctl->decShared() == 0) {
-        /* apply last reference optimization */
-        delete ctl;
-        ctl = nullptr;
-      } else {
-        isDiced = false;
-        T* ptr = (T*)malloc(volume()*sizeof(T));
-        memcpy(ptr, stride(), this->buf, stride(), width(), height());
-        wait();
-        buf = ptr;
-        ctl = nullptr;
+    if (!isView && volume() > 0) {
+      /* use ctl as a lock: exchange with nullptr, copy on write if necessary,
+       * restore value */
+      ArrayControl* c = ctl.exchange(nullptr);
+      while (!c) {
+        c = ctl.exchange(nullptr);
       }
-      lock.unset();
+      if (c->numShared() > 1) {
+        ctl.store(new ArrayControl(*c));
+        if (c->decShared() == 0) {
+          delete c;
+        }
+      } else {
+        ctl.store(c);
+      }
     }
   }
 
   /**
-   * Buffer containing elements.
+   * Buffer control block.
    */
-  T* buf;
-
-  /**
-   * Control block for sharing the buffer.
-   */
-  ArrayControl* ctl;
+  Atomic<ArrayControl*> ctl;
 
   /**
    * Shape.
@@ -893,19 +825,6 @@ private:
    * semantics, as it cannot be resized or moved.
    */
   bool isView;
-
-  /**
-   * Is the array prepared for element-wise access? If false, the array is
-   * prepared for block-wise access. This is not atomic as a thread only
-   * synchronizes with its own device anyway to convert from block-wise to
-   * element-wise operations.
-   */
-  bool isDiced;
-
-  /**
-   * Lock for operations requiring mutual exclusion.
-   */
-  Lock lock;
 };
 
 template<class T>
@@ -928,11 +847,5 @@ Array(const ArrayShape<1>& shape, const Array<T,0>& value) -> Array<T,1>;
 
 template<class T>
 Array(const ArrayShape<2>& shape, const Array<T,0>& value) -> Array<T,2>;
-
-template<class T, int D>
-Array(T* buf, const ArrayShape<D>& shape) -> Array<T,D>;
-
-template<class T, int D>
-Array(const T* buf, const ArrayShape<D>& shape) -> Array<T,D>;
 
 }

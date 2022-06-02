@@ -214,40 +214,42 @@ ArrayShape<0> shape(const T& x) {
 }
 
 /**
- * @internal
- *
- * Buffer of an array.
+ * Buffer of an array for a slice operation.
  * 
  * @ingroup array
- * 
- * @see Array::data()
  */
-template<class T, int D>
-const T* data(const Array<T,D>& x) {
+template<class T, class = std::enable_if_t<!is_arithmetic_v<T>,int>>
+auto sliced(T&& x) {
+  return x.sliced();
+}
+
+/**
+ * Buffer of a scalar for a slice operation---just the scalar itself.
+ * 
+ * @ingroup array
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+constexpr const T& sliced(const T& x) {
+  return x;
+}
+
+/**
+ * Force Recorder object to raw pointer.
+ * 
+ * @ingroup array
+ */
+template<class T>
+T* data(const Recorder<T>& x) {
   return x.data();
 }
 
 /**
- * @internal
- *
- * Buffer of an array.
+ * Force non-Recorder object to raw pointer---just the object itself.
  * 
  * @ingroup array
  */
-template<class T, int D>
-T* data(Array<T,D>& x) {
-  return x.data();
-}
-
-/**
- * @internal
- *
- * Buffer of a scalar---just the scalar itself.
- * 
- * @ingroup array
- */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
-constexpr const T data(const T& x) {
+template<class T>
+constexpr const T& data(const T& x) {
   return x;
 }
 

@@ -64,7 +64,7 @@ public:
     value = this->value;
     return value;
     #else
-    return this->value.load(std::memory_order_relaxed);
+    return this->value.load(std::memory_order_seq_cst);
     #endif
   }
 
@@ -76,7 +76,7 @@ public:
     #pragma omp atomic write seq_cst
     this->value = value;
     #else
-    this->value.store(value, std::memory_order_relaxed);
+    this->value.store(value, std::memory_order_seq_cst);
     #endif
   }
 
@@ -90,14 +90,14 @@ public:
   T exchange(const T& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture
+    #pragma omp atomic capture seq_cst
     {
       old = this->value;
       this->value = value;
     }
     return old;
     #else
-    return this->value.exchange(value, std::memory_order_relaxed);
+    return this->value.exchange(value, std::memory_order_seq_cst);
     #endif
   }
 

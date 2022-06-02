@@ -221,13 +221,33 @@ void host_free(void* ptr, const size_t size) {
   }
 }
 
-void* realloc(void* ptr, const size_t size) {
-  if (size > 0) {
-    return numbirch_rallocx(ptr, size, shared_flags);
+void* realloc(void* oldptr, const size_t oldsize, const size_t newsize) {
+  void* newptr = nullptr;
+  if (newsize == 0) {
+    free(oldptr);
+  } else if (newsize == oldsize) {
+    newptr = oldptr;
+  } else if (newsize < oldsize) {
+    /* shrinking, should be able to maintain current allocation */
+    newptr = numbirch_rallocx(oldptr, newsize, shared_flags);
+    assert(newptr == oldptr);
   } else {
-    free(ptr);
-    return nullptr;
+    /* growing, maintain current allocation if possible */
+    size_t extra = newsize - oldsize;
+    size_t size = numbirch_xallocx(oldptr, oldsize, extra, shared_flags);
+    if (size == newsize) {
+      /* successful */
+      newptr = oldptr;
+    } else {
+      /* cannot extend in place, allocate a new buffer and copy with device
+       * functions, rather than using rallocx(), which will copy with host
+       * functions internally */
+      newptr = shared_malloc(newsize);
+      memcpy(newptr, oldptr, oldsize);
+      free(oldptr, oldsize);
+    }
   }
+  return newptr;
 }
 
 }

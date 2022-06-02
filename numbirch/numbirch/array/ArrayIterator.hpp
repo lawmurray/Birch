@@ -32,11 +32,11 @@ public:
   }
 
   reference operator[](const difference_type i) {
-    return buf[shp.offset(pos + i)];
+    return buf[shp.serial(pos + i)];
   }
 
   const_reference operator[](const difference_type i) const {
-    return buf[shp.offset(pos + i)];
+    return buf[shp.serial(pos + i)];
   }
 
   difference_type operator-(const ArrayIterator& o) const {
@@ -132,14 +132,14 @@ private:
    * Raw pointer for the current position.
    */
   pointer get() {
-    return buf + shp.offset(pos);
+    return buf + shp.serial(pos);
   }
 
   /**
    * Raw pointer for the current position.
    */
   const_pointer get() const {
-    return buf + shp.offset(pos);
+    return buf + shp.serial(pos);
   }
 
   /**

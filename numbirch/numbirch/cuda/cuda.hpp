@@ -22,7 +22,8 @@
  * @def CUDA_SYNC
  * 
  * If true, all CUDA calls are synchronous, which can be helpful to determine
- * precisely which call causes an error.
+ * precisely which call causes an error. Can also set the environment variable
+ * CUDA_LAUNCH_BLOCKING=1.
  */
 #define CUDA_SYNC 0
 
@@ -79,9 +80,16 @@ extern thread_local int device;
 /**
  * @internal
  * 
- * Stream used by each host thread.
+ * Device stream used by each host thread.
  */
 extern thread_local cudaStream_t stream;
+
+/**
+ * @internal
+ * 
+ * Auxiliary device stream used by each host thread.
+ */
+extern thread_local cudaStream_t aux_stream;
 
 /**
  * @internal

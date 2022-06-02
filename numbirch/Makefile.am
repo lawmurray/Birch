@@ -23,6 +23,7 @@ AM_CXXFLAGS =
 AM_LDFLAGS = 
 
 SOURCES =  \
+    numbirch/array/ArrayControl.cpp \
     numbirch/common/random.cpp \
     numbirch/instantiate/array/diagonal.cpp \
     numbirch/instantiate/array/element_matrix.cpp \
@@ -72,7 +73,6 @@ else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA
   AM_CXXFLAGS += -x cu -G \
-      -expt-relaxed-constexpr \
       -arch=sm_70 \
       -Xcompiler="-Wall" \
       -Xcompiler="-Wno-unused-result" \
@@ -129,6 +129,7 @@ nobase_include_HEADERS = \
   numbirch/array/ArrayControl.hpp \
   numbirch/array/ArrayIterator.hpp \
   numbirch/array/ArrayShape.hpp \
+  numbirch/array/Recorder.hpp \
   numbirch/array/Atomic.hpp \
   numbirch/array/Future.hpp \
   numbirch/array/Lock.hpp \

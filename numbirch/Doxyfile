@@ -871,10 +871,12 @@ INPUT                  = README.md \
                          numbirch/transform.hpp \
                          numbirch/type.hpp \
                          numbirch/array/Array.hpp \
+                         numbirch/array/ArrayControl.hpp \
                          numbirch/array/ArrayIterator.hpp \
                          numbirch/array/ArrayShape.hpp \
                          numbirch/array/Future.hpp \
                          numbirch/array/Matrix.hpp \
+                         numbirch/array/Recorder.hpp \
                          numbirch/array/Scalar.hpp \
                          numbirch/array/Vector.hpp
 

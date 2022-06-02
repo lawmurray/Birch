@@ -31,36 +31,6 @@ void wait();
 void term();
 
 /**
- * Record an event in the device stream associated with the current thread.
- * 
- * @ingroup memory
- * 
- * @return A type-erased event handle that may be later passed to wait() or
- * forget().
- */
-void* record();
-
-/**
- * Wait on an event.
- * 
- * @ingroup memory
- * 
- * @param evt A type-erased event handle, previously returned by record().
- */
-void wait(void* evt);
-
-/**
- * Forget an event.
- * 
- * @ingroup memory
- * 
- * @param evt A type-erased event handle, previously returned by record().
- * 
- * Forgets the event, so that it may no longer be passed to wait().
- */
-void forget(void* evt);
-
-/**
  * Allocate memory.
  * 
  * @ingroup memory
@@ -82,10 +52,14 @@ void* malloc(const size_t size);
  * 
  * @ingroup memory
  * 
- * @param ptr Existing allocation.
- * @param size New size of allocation.
+ * @param oldptr Existing allocation.
+ * @param oldsize Old size of allocation.
+ * @param newsize New size of allocation.
  * 
  * @return Resized allocation.
+ * 
+ * realloc() is considered a write to the allocated memory with respect to
+ * sequencing and synchronization.
  * 
  * @attention If there may be outstanding writes to the existing allocation,
  * one should call wait() before calling realloc(). realloc() may return
@@ -95,7 +69,7 @@ void* malloc(const size_t size);
  * realloc() to ensure that the memory is no longer in use. Array handles this
  * for you.
  */
-void* realloc(void* ptr, const size_t size);
+void* realloc(void* oldptr, const size_t oldsize, const size_t newsize);
 
 /**
  * Free memory.
@@ -136,13 +110,11 @@ void memcpy(void* dst, const void* src, size_t n);
  * @tparam U Arithmetic type.
  * 
  * @param[out] dst Destination.
- * @param dwidth Width of each batch of `dst`, in elements.
- * @param dheight Number of batches of `dst`.
  * @param dpitch Stride between batches of `dst`, in elements.
  * @param src Source.
  * @param spitch Stride between batches of `src`, in elements.
- * @param swidth Width of each batch of `src`, in elements.
- * @param sheight Number of batches of `src`.
+ * @param width Width of each batch, in elements.
+ * @param height Number of batches.
  */
 template<class T, class U, class = std::enable_if_t<std::is_arithmetic_v<T> &&
     std::is_arithmetic_v<U>,int>>
@@ -167,5 +139,80 @@ template<class T, class U, class = std::enable_if_t<
     std::is_arithmetic_v<T>,int>>
 void memset(T* dst, const int dpitch, const U value, const int width,
     const int height);
+
+/**
+ * Create an event.
+ * 
+ * @ingroup memory
+ * 
+ * @return A type-erased event handle.
+ */
+void* event_create();
+
+/**
+ * Destroy an event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle.
+ * 
+ * Non-blocking for the host thread, even if the event is yet to occur (it can
+ * still be destroyed in this case).
+ */
+void event_destroy(void* evt);
+
+/**
+ * Record a read event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle.
+ */
+void event_record_read(void* evt);
+
+/**
+ * Record a write event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle.
+ */
+void event_record_write(void* evt);
+
+/**
+ * Test an event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle.
+ * 
+ * @return Has the event occurred yet?
+ * 
+ * Non-blocking for the host thread.
+ */
+bool event_test(void* evt);
+
+/**
+ * Wait on an event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle.
+ * 
+ * Blocks the host thread until the event occurs.
+ */
+void event_wait(void* evt);
+
+/**
+ * Join on an event.
+ * 
+ * @ingroup memory
+ * 
+ * @param evt A type-erased event handle.
+ * 
+ * Non-blocking for the host thread, but enqueues a wait on its device stream
+ * so that, when reached, the device stream will block until the event occurs.
+ */
+void event_join(void* evt);
 
 }
