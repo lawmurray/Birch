@@ -133,7 +133,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Is this a Random expression?
    */
-  function isRandom() -> Boolean {
+  override function isRandom() -> Boolean {
     return false;
   }
   
