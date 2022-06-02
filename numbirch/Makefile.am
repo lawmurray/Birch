@@ -132,7 +132,6 @@ nobase_include_HEADERS = \
   numbirch/array/Recorder.hpp \
   numbirch/array/Atomic.hpp \
   numbirch/array/Future.hpp \
-  numbirch/array/Lock.hpp \
   numbirch/array/Matrix.hpp \
   numbirch/array/Scalar.hpp \
   numbirch/array/Vector.hpp \
