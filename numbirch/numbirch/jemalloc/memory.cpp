@@ -13,30 +13,37 @@
 
 namespace numbirch {
 /*
- * Unified shared arena and thread cache for jemalloc. Allocations in this
- * arena will migrate between host and device on demand.
+ * Unified shared arena and thread cache. Allocations in this arena will
+ * migrate between host and device on demand.
  */
 static thread_local unsigned shared_arena = 0;
 static thread_local unsigned shared_tcache = 0;
 static thread_local int shared_flags = 0;
 
 /*
- * Device arena and thread cache for jemalloc. These use the same custom
- * allocation hooks as for shared allocations (i.e. unified shared memory),
- * and so can be accessed from the host, but by using a separate arena, we
- * expect these allocations to gravitate onto the device and stay there, even
- * when reused.
+ * Device arena and thread cache. These use the same custom allocation hooks
+ * as for shared allocations (i.e. unified shared memory), and so can be
+ * accessed from the host, but by using a separate arena, we expect these
+ * allocations to gravitate onto the device and stay there, even when reused.
  */
 static thread_local unsigned device_arena = 0;
 static thread_local unsigned device_tcache = 0;
 static thread_local int device_flags = 0;
 
 /*
- * Host arena and thread cache for jemalloc. These use host memory only.
+ * Host arena and thread cache. These use host memory only.
  */
 static thread_local unsigned host_arena = 0;
 static thread_local unsigned host_tcache = 0;
 static thread_local int host_flags = 0;
+
+/*
+ * Event arena and thread cache. For the CUDA backend, events seem to consume
+ * significant memory, so a global arena is shared between threads.
+ */
+static unsigned event_arena = 0;
+static thread_local unsigned event_tcache = 0;
+static thread_local int event_flags = 0;
 
 /*
  * MIB for "arenas.lookup" to avoid repeated name lookups.
@@ -44,7 +51,7 @@ static thread_local int host_flags = 0;
 static size_t mib[2] = {0, 0};
 
 /**
- * Custom extent hooks structure.
+ * Custom extent hooks for shared arena.
  */
 static extent_hooks_t hooks = {
   extent_alloc,
@@ -59,7 +66,7 @@ static extent_hooks_t hooks = {
 };
 
 /**
- * Custom extent hooks structure.
+ * Custom extent hooks for device arena.
  */
 static extent_hooks_t device_hooks = {
   device_extent_alloc,
@@ -74,12 +81,27 @@ static extent_hooks_t device_hooks = {
 };
 
 /**
- * Custom extent hooks structure.
+ * Custom extent hooks for host arena.
  */
 static extent_hooks_t host_hooks = {
   host_extent_alloc,
   nullptr,
   host_extent_destroy,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr
+};
+
+/**
+ * Custom extent hooks for event arena.
+ */
+static extent_hooks_t event_hooks = {
+  event_extent_alloc,
+  nullptr,
+  event_extent_destroy,
   nullptr,
   nullptr,
   nullptr,
@@ -114,25 +136,30 @@ void jemalloc_init() {
   ret = numbirch_mallctlnametomib("arenas.lookup", mib, &miblen);
   assert(ret == 0);
 
+  /* event arena setup */
+  event_arena = make_arena(&event_hooks);
+
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
-    /* shared arena setup */
+    /* shared arena and thread cache setup */
     shared_arena = make_arena(&hooks);
     shared_tcache = make_tcache();
     shared_flags = MALLOCX_ARENA(shared_arena)|MALLOCX_TCACHE(shared_tcache);
-    assert(shared_arena > 0);
 
-    /* device arena setup */
+    /* device arena and thread cache setup */
     device_arena = make_arena(&device_hooks);
     device_tcache = make_tcache();
     device_flags = MALLOCX_ARENA(device_arena)|MALLOCX_TCACHE(device_tcache);
-    assert(device_arena > 0);
 
-    /* host arena setup */
+    /* host arena and thread cache setup */
     host_arena = make_arena(&host_hooks);
     host_tcache = make_tcache();
     host_flags = MALLOCX_ARENA(host_arena)|MALLOCX_TCACHE(host_tcache);
-    assert(host_arena > 0);
+
+    /* event thread cache setup */
+    event_tcache = make_tcache();
+    event_flags = MALLOCX_ARENA(event_arena)|MALLOCX_TCACHE(event_tcache)|
+        MALLOCX_ALIGN(sizeof(void*));
   }
 }
 
@@ -218,6 +245,25 @@ void host_free(void* ptr, const size_t size) {
   assert(host_arena > 0);
   if (ptr) {
     numbirch_sdallocx(ptr, size, host_flags);
+  }
+}
+
+void* event_malloc(const size_t size) {
+  assert(event_arena > 0);
+  return size == 0 ? nullptr : numbirch_mallocx(size, event_flags);
+}
+
+void event_free(void* ptr) {
+  assert(event_arena > 0);
+  if (ptr) {
+    numbirch_dallocx(ptr, event_flags);
+  }
+}
+
+void event_free(void* ptr, const size_t size) {
+  assert(event_arena > 0);
+  if (ptr) {
+    numbirch_sdallocx(ptr, size, event_flags);
   }
 }
 

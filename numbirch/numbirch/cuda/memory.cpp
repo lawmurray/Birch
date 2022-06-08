@@ -110,6 +110,39 @@ void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
   CUDA_CHECK(cudaFreeHost(addr));
 }
 
+void* event_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
+    size_t size, size_t alignment, bool *zero, bool *commit,
+    unsigned arena_ind) {
+  if (!new_addr) {
+    CUDA_CHECK(cudaMallocHost(&new_addr, size));
+    *commit = true;
+  }
+  cudaEvent_t* evts = static_cast<cudaEvent_t*>(new_addr);
+  for (size_t i = 0; i < size/sizeof(cudaEvent_t); ++i) {
+    CUDA_CHECK(cudaEventCreateWithFlags(&evts[i], cudaEventDisableTiming));
+  }
+  return new_addr;
+}
+
+bool event_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind) {
+  cudaEvent_t* evts = static_cast<cudaEvent_t*>(addr);
+  for (size_t i = 0; i < size/sizeof(cudaEvent_t); ++i) {
+    CUDA_CHECK(cudaEventDestroy(evts[i]));
+  }
+  CUDA_CHECK(cudaFreeHost(addr));
+  return false;
+}
+
+void event_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
+    size_t size, bool committed, unsigned arena_ind) {
+  cudaEvent_t* evts = static_cast<cudaEvent_t*>(addr);
+  for (size_t i = 0; i < size/sizeof(cudaEvent_t); ++i) {
+    CUDA_CHECK(cudaEventDestroy(evts[i]));
+  }
+  CUDA_CHECK(cudaFreeHost(addr));
+}
+
 void* malloc(const size_t size) {
   return shared_malloc(size);
 }
@@ -151,20 +184,16 @@ void memcpy(void* dst, const void* src, size_t n) {
 }
 
 void* event_create() {
-  cudaEvent_t evt;
-  CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-  return static_cast<void*>(evt);
+  return event_malloc(sizeof(cudaEvent_t));
 }
 
 void event_destroy(void* evt) {
-  assert(evt != 0);
-  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
-  CUDA_CHECK(cudaEventDestroy(e));
+  return event_free(evt, sizeof(cudaEvent_t));
 }
 
 void event_record_read(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
 
   /* concurrent reads are permitted; evt should be such that waiting or
    * joining on it ensures that *all* reads are finished; this is accomplished
@@ -187,26 +216,26 @@ void event_record_read(void* evt) {
 
 void event_record_write(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
   CUDA_CHECK(cudaEventRecord(e, stream));
 }
 
 bool event_test(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
   cudaError_t err = cudaEventQuery(e);
   return err == cudaSuccess;
 }
 
 void event_wait(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
   CUDA_CHECK(cudaEventSynchronize(e));
 }
 
 void event_join(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = static_cast<cudaEvent_t>(evt);
+  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
   CUDA_CHECK(cudaStreamWaitEvent(stream, e));
 }
 

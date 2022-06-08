@@ -19,14 +19,22 @@ ArrayControl::ArrayControl(const size_t bytes) :
 }
 
 ArrayControl::ArrayControl(const ArrayControl& o) :
-    ArrayControl(o.bytes) {
+    buf(malloc(o.bytes)),
+    readEvt(event_create()),
+    writeEvt(event_create()),
+    bytes(o.bytes),
+    r(1) {
   event_join(o.writeEvt);
-  memcpy(buf, o.buf, bytes);
+  memcpy(buf, o.buf, o.bytes);
   event_record_write(writeEvt);
 }
 
 ArrayControl::ArrayControl(const ArrayControl& o, const size_t bytes) :
-    ArrayControl(bytes) {
+    buf(malloc(bytes)),
+    readEvt(event_create()),
+    writeEvt(event_create()),
+    bytes(bytes),
+    r(1) {
   event_join(o.writeEvt);
   memcpy(buf, o.buf, std::min(bytes, o.bytes));
   event_record_write(writeEvt);

@@ -17,9 +17,9 @@ thread_local unsigned max_blocks = 64;
 void cuda_init() {
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
+    int value = 0;
     CUDA_CHECK(cudaGetDevice(&device));
 
-    int value = 0;
     /* check device support */
     CUDA_CHECK(cudaDeviceGetAttribute(&value,
         cudaDevAttrConcurrentKernels, device));
@@ -42,12 +42,12 @@ void cuda_init() {
      * a thread spinning rather than blocking can prevent another thread from
      * resuming to schedule kernels that can execute concurrently; on some
      * examples shows ~10% performance improvement */
-    cudaStreamAttrValue val;
-    val.syncPolicy = cudaSyncPolicyBlockingSync;
-    CUDA_CHECK(cudaStreamSetAttribute(stream,
-        cudaStreamAttributeSynchronizationPolicy, &val));
-    CUDA_CHECK(cudaStreamSetAttribute(aux_stream,
-        cudaStreamAttributeSynchronizationPolicy, &val));
+    // cudaStreamAttrValue val;
+    // val.syncPolicy = cudaSyncPolicyBlockingSync;
+    // CUDA_CHECK(cudaStreamSetAttribute(stream,
+    //     cudaStreamAttributeSynchronizationPolicy, &val));
+    // CUDA_CHECK(cudaStreamSetAttribute(aux_stream,
+    //     cudaStreamAttributeSynchronizationPolicy, &val));
   }
 }
 
