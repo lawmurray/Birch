@@ -70,7 +70,7 @@ function make_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,Random<Real>>,Arg2>,
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<OpMul<Arg1,Random<Real>>,Arg2>,
     σ2:Arg3) -> Distribution<Real> {
   let a <- μ.l.l;
   let m <- μ.l.r;
@@ -97,7 +97,7 @@ function Gaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real>>, σ2:Arg2) ->
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:OpAdd<Random<Real>,Arg1>, σ2:Arg2) ->
+function Gaussian<Arg1,Arg2>(μ:Add<Random<Real>,Arg1>, σ2:Arg2) ->
     Distribution<Real> {
   return Gaussian(1.0*μ.l + μ.r, σ2);
 }

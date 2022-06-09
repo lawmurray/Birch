@@ -30,24 +30,6 @@ T operator+(const T& x) {
 }
 
 /**
- * Gradient of operator+().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param y Result.
- * @param x Argument.
- * 
- * @return Gradient with respect to @p x.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> op_pos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return pos_grad(g, y, x);
-}
-
-/**
  * Negation.
  * 
  * @ingroup linalg
@@ -63,24 +45,6 @@ real_t<T> op_pos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 T operator-(const T& x) {
   return neg(x);
-}
-
-/**
- * Gradient of operator-().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param y Result.
- * @param x Argument.
- * 
- * @return Gradient with respect to @p x.
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> op_neg_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return neg_grad(g, y, x);
 }
 
 /**
@@ -105,28 +69,6 @@ implicit_t<T,U> operator+(const T& x, const U& y) {
 }
 
 /**
- * Gradient of operator+().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> op_add_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  return add_grad(g, z, x, y);
-}
-
-/**
  * Subtraction.
  * 
  * @ingroup linalg
@@ -145,28 +87,6 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> operator-(const T& x, const U& y) {
   return sub(x, y);
-}
-
-/**
- * Gradient of operator-().
- * 
- * @ingroup linalg_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> op_sub_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  return sub_grad(g, z, x, y);
 }
 
 /**
@@ -304,28 +224,6 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> operator/(const T& x, const U& y) {
   return div(x, y);
-}
-
-/**
- * Gradient of operator/().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<real_t<T>,real_t<U>> op_div_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  return div_grad(g, z, x, y);
 }
 
 /**

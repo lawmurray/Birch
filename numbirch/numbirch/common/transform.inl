@@ -810,9 +810,6 @@ implicit_t<T,U> add(const T& x, const U& y) {
 template<class T, class U, class>
 std::pair<real_t<T>,real_t<U>> add_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
-  prefetch(g);
-  prefetch(x);
-  prefetch(y);
   return std::make_pair(aggregate<dimension_v<T>>(g),
       aggregate<dimension_v<U>>(g));
 }

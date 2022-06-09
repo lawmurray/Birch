@@ -89,7 +89,7 @@ final class SubtractDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
 /**
  * Create delta distribution.
  */
-function Delta(μ:OpSub<Random<Integer>,Random<Integer>>) ->
+function Delta(μ:Sub<Random<Integer>,Random<Integer>>) ->
     Distribution<Integer> {
   let l <- μ.l;
   let r <- μ.r;
@@ -119,7 +119,7 @@ function Delta(μ:OpSub<Random<Integer>,Random<Integer>>) ->
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpSub<Random<Integer>,Arg>) -> Distribution<Integer> {
+function Delta<Arg>(μ:Sub<Random<Integer>,Arg>) -> Distribution<Integer> {
   let r ~ Delta(μ.r);
   return Delta(μ.l - r);
 }
@@ -127,7 +127,7 @@ function Delta<Arg>(μ:OpSub<Random<Integer>,Arg>) -> Distribution<Integer> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpSub<Arg,Random<Integer>>) -> Distribution<Integer> {
+function Delta<Arg>(μ:Sub<Arg,Random<Integer>>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   return Delta(l - μ.r);
 }
@@ -135,7 +135,7 @@ function Delta<Arg>(μ:OpSub<Arg,Random<Integer>>) -> Distribution<Integer> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg1,Arg2>(μ:OpSub<Arg1,Arg2>) -> Distribution<Integer> {
+function Delta<Arg1,Arg2>(μ:Sub<Arg1,Arg2>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   let r ~ Delta(μ.r);
   return Delta(l - r);

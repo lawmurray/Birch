@@ -21,5 +21,14 @@ template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
 Pos<Middle> pos(const Middle& m) {
   return construct<Pos<Middle>>(m);
 }
+
+/**
+ * Unary plus.
+ */
+template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+Pos<Middle> operator+(const Middle& m) {
+  return construct<Pos<Middle>>(m);
+}
+
 }
 }}

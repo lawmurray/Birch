@@ -70,7 +70,7 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
 /**
  * Create delta distribution.
  */
-function Delta(μ:OpNeg<Random<Integer>>) -> Distribution<Integer> {
+function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
   let m <- μ.m;
 	if m.hasNext() && m.getNext().isBoundedDiscrete() {
   	m.prune();
@@ -86,7 +86,7 @@ function Delta(μ:OpNeg<Random<Integer>>) -> Distribution<Integer> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpNeg<Arg>) -> Distribution<Integer> {
+function Delta<Arg>(μ:Neg<Arg>) -> Distribution<Integer> {
   let m ~ Delta(μ.m);
   return Delta(-m);
 }

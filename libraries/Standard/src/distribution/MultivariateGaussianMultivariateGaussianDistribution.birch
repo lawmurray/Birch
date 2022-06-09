@@ -73,7 +73,7 @@ function make_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:OpAdd<OpMul<Arg1,
+function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<OpMul<Arg1,
     Random<Real[_]>>,Arg2>, Σ:Arg3) -> Distribution<Real[_]> {
   let A <- μ.l.l;
   let m <- μ.l.r;
@@ -101,7 +101,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real[_]>>,
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg1,Arg2>(μ:OpAdd<Random<Real[_]>,Arg1>,
+function MultivariateGaussian<Arg1,Arg2>(μ:Add<Random<Real[_]>,Arg1>,
     Σ:Arg2) -> Distribution<Real[_]> {
   return MultivariateGaussian(1.0*μ.l + μ.r, Σ);
 }

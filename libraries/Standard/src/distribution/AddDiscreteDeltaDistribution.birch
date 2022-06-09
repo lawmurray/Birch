@@ -91,7 +91,7 @@ final class AddDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
 /**
  * Create delta distribution.
  */
-function Delta(μ:OpAdd<Random<Integer>,Random<Integer>>) ->
+function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     Distribution<Integer> {
   let l <- μ.l;
   let r <- μ.r;
@@ -121,7 +121,7 @@ function Delta(μ:OpAdd<Random<Integer>,Random<Integer>>) ->
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpAdd<Random<Integer>,Arg>) -> Distribution<Integer> {
+function Delta<Arg>(μ:Add<Random<Integer>,Arg>) -> Distribution<Integer> {
   let r ~ Delta(μ.r);
   return Delta(μ.l + r);
 }
@@ -129,7 +129,7 @@ function Delta<Arg>(μ:OpAdd<Random<Integer>,Arg>) -> Distribution<Integer> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg>(μ:OpAdd<Arg,Random<Integer>>) -> Distribution<Integer> {
+function Delta<Arg>(μ:Add<Arg,Random<Integer>>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   return Delta(l + μ.r);
 }
@@ -137,7 +137,7 @@ function Delta<Arg>(μ:OpAdd<Arg,Random<Integer>>) -> Distribution<Integer> {
 /**
  * Create delta distribution.
  */
-function Delta<Arg1,Arg2>(μ:OpAdd<Arg1,Arg2>) -> Distribution<Integer> {
+function Delta<Arg1,Arg2>(μ:Add<Arg1,Arg2>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   let r ~ Delta(μ.r);
   return Delta(l + r);

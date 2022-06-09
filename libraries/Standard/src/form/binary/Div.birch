@@ -22,5 +22,14 @@ template<class Left, class Right, std::enable_if_t<
 Div<Left,Right> div(const Left& l, const Right& r) {
   return construct<Div<Left,Right>>(l, r);
 }
+
+/**
+ * Element-wise division.
+ */
+template<class Left, class Right, std::enable_if_t<
+    is_delay<Left,Right>::value,int> = 0>
+Div<Left,Right> operator/(const Left& l, const Right& r) {
+  return construct<Div<Left,Right>>(l, r);
+}
 }
 }}

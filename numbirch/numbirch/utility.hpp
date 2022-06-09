@@ -701,7 +701,7 @@ NUMBIRCH_HOST_DEVICE const T& get(const T& x, const int i = 0,
  * pass.
  */
 template<int D, class T>
-auto aggregate(const T& x) {
+constexpr auto aggregate(const T& x) {
   if constexpr (D == 0 && dimension_v<T> != 0) {
     return sum(x);
   } else {
