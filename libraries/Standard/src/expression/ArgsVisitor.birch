@@ -35,11 +35,11 @@ class ArgsVisitor {
    */
   function visit(v:Random<Real>) {
     reserve(n + 1);
-    x[n + 1] <- v.x!;
+    x[(n + 1)..(n + 1)] <- v.x!;
     if v.g? {
-      g[n + 1] <- v.g!;
+      g[(n + 1)..(n + 1)] <- v.g!;
     } else {
-      g[n + 1] <- 0.0;
+      g[(n + 1)..(n + 1)] <- 0.0;
     }
     n <- n + 1;
   }

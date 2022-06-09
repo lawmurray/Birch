@@ -142,7 +142,7 @@ class ParticleFilter {
       }
       x[n].Ξ.pushBack(h.Ξ);
       x[n].Φ.pushBack(h.Φ);
-      w[n] <- w[n] + h.w;
+      w[n..n] <- w[n..n] + h.w;
     }
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
@@ -164,7 +164,7 @@ class ParticleFilter {
       }
       x[n].Ξ.pushBack(h.Ξ);
       x[n].Φ.pushBack(h.Φ);
-      w[n] <- w[n] + h.w;
+      w[n..n] <- w[n..n] + h.w;
     }
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
@@ -218,7 +218,7 @@ class ParticleFilter {
             let α <- vector(0.0, nparticles);  // acceptance rate per particle
             parallel for n in 1..nparticles {
               κ!.pre(x[n]);
-              α[n] <- κ!.move(x[n]);
+              α[n..n] <- κ!.move(x[n]);
               κ!.post(x[n]);
             }
             raccepts <- sum(α)/nparticles;

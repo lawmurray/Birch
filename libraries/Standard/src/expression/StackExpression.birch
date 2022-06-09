@@ -24,7 +24,7 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
     let R <- m.size();
     x:Element[R];
     for r in 1..R {
-      x[r] <- global.eval(m[r]);
+      x[r..r] <- global.eval(m[r]);
     }
     this.x <- x;
   }
@@ -33,7 +33,7 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
     let R <- m.size();
     x:Element[R];
     for r in 1..R {
-      x[r] <- global.move(m[r], visitor);
+      x[r..r] <- global.move(m[r], visitor);
     }
     this.x <- x;
   }
