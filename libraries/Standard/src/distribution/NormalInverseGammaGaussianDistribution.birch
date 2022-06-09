@@ -114,8 +114,8 @@ function make_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2,Arg3>(μ:Add<OpMul<Arg1,Random<Real>>,Arg2>,
-    σ2:OpMul<Arg3,Random<Real>>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
+    σ2:Mul<Arg3,Random<Real>>) -> Distribution<Real> {
   let a <- μ.l.l;
   let m <- μ.l.r;
   let c <- μ.r;
@@ -153,7 +153,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<OpMul<Arg1,Random<Real>>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:Add<OpMul<Arg1,Random<Real>>,Arg2>,
+function Gaussian<Arg1,Arg2>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
     σ2:Random<Real>) -> Distribution<Real> {
   return Gaussian(μ, 1.0*σ2);
 }
@@ -161,15 +161,15 @@ function Gaussian<Arg1,Arg2>(μ:Add<OpMul<Arg1,Random<Real>>,Arg2>,
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real>>,
-    σ2:OpMul<Arg2,Random<Real>>) -> Distribution<Real> {
+function Gaussian<Arg1,Arg2>(μ:Mul<Arg1,Random<Real>>,
+    σ2:Mul<Arg2,Random<Real>>) -> Distribution<Real> {
   return Gaussian(μ + 0.0, σ2);
 }
 
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:Random<Real>, σ2:OpMul<Arg,Random<Real>>) ->
+function Gaussian<Arg>(μ:Random<Real>, σ2:Mul<Arg,Random<Real>>) ->
      Distribution<Real> {
   return Gaussian(1.0*μ + 0.0, σ2);
 }
@@ -184,7 +184,7 @@ function Gaussian(μ:Random<Real>, σ2:Random<Real>) -> Distribution<Real> {
 /**
  * Create Gaussian distribution.
  */
-function Gaussian<Arg>(μ:OpMul<Arg,Random<Real>>, σ2:Random<Real>) ->
+function Gaussian<Arg>(μ:Mul<Arg,Random<Real>>, σ2:Random<Real>) ->
     Distribution<Real> {
   return Gaussian(μ + 0.0, 1.0*σ2);
 }

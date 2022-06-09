@@ -146,7 +146,7 @@ function make_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
-    Σ:OpMul<Arg2,Random<Real>>) -> Distribution<Real[_]> {
+    Σ:Mul<Arg2,Random<Real>>) -> Distribution<Real[_]> {
   let Ω <- Σ.l;
   let ω2 <- Σ.r;
   if ω2.hasNext() && ω2.getNext().isInverseGamma() {

@@ -111,7 +111,7 @@ function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
-    Σ:OpMul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+    Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
   let ω2 <- Σ.l;
   let Ω <- Σ.r;
   if Ω.hasNext() && Ω.getNext().isInverseWishart() {

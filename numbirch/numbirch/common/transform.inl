@@ -325,6 +325,21 @@ struct floor_grad_functor {
   }
 };
 
+struct hadamard_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
+    return x*y;
+  }
+};
+
+struct hadamard_grad_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
+      const U y) const {
+    return pair<real,real>{g*y, g*x};
+  }
+};
+
 struct lfact_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return std::lgamma(x + real(1));
@@ -397,21 +412,6 @@ struct log_abs_functor {
 struct log_square_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return real(2)*std::log(x);
-  }
-};
-
-struct mul_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
-    return x*y;
-  }
-};
-
-struct mul_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{g*y, g*x};
   }
 };
 
@@ -1074,20 +1074,20 @@ real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
 }
 
 template<class T, class U, class>
-implicit_t<T,U> mul(const T& x, const U& y) {
+implicit_t<T,U> hadamard(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
-  return transform(x, y, mul_functor());
+  return transform(x, y, hadamard_functor());
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> mul_grad(const real_t<T,U>& g,
+std::pair<real_t<T>,real_t<U>> hadamard_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
   return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      mul_grad_functor()));
+      hadamard_grad_functor()));
 }
 
 template<class T, class>

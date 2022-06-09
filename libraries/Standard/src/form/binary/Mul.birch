@@ -5,21 +5,21 @@ struct Mul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(mul, mul_grad)
+  BIRCH_BINARY_FUNCTION_FORM(operator*, mul_grad)
   }}
 }
 
 hpp{{
 namespace birch {
-using numbirch::mul;
+using numbirch::operator*;
 using numbirch::mul_grad;
 
 /**
- * Element-wise multiplication.
+ * Multiplication.
  */
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>
-Mul<Left,Right> mul(const Left& l, const Right& r) {
+Mul<Left,Right> operator*(const Left& l, const Right& r) {
   return construct<Mul<Left,Right>>(l, r);
 }
 }

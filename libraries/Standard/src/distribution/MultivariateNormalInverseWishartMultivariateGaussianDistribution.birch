@@ -86,8 +86,8 @@ function make_multivariate_normal_inverse_wishart_multivariate_gaussian<
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2,Arg3>(
-      μ:Add<OpMul<Arg1,Random<Real[_]>>,Arg2>,
-      Σ:OpMul<Arg3,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+      μ:Add<Mul<Arg1,Random<Real[_]>>,Arg2>,
+      Σ:Mul<Arg3,Random<Real[_,_]>>) -> Distribution<Real[_]> {
   let A <- μ.l.l;
   let m <- μ.l.r;
   let c <- μ.r;
@@ -119,15 +119,15 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Add<Random<Real[_]>,Arg1>,
-    Σ:OpMul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+    Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
   return MultivariateGaussian(1.0*μ.l + μ.r, Σ);
 }
 
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real[_]>>,
-    Σ:OpMul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+function MultivariateGaussian<Arg1,Arg2>(μ:Mul<Arg1,Random<Real[_]>>,
+    Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
   return MultivariateGaussian(μ + 0.0, Σ);
 }
 
@@ -135,7 +135,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:OpMul<Arg1,Random<Real[_]>>,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1>(μ:Random<Real[_]>,
-    Σ:OpMul<Arg1,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+    Σ:Mul<Arg1,Random<Real[_,_]>>) -> Distribution<Real[_]> {
   return MultivariateGaussian(1.0*μ + 0.0, Σ);
 }
 
@@ -143,7 +143,7 @@ function MultivariateGaussian<Arg1>(μ:Random<Real[_]>,
  * Create multivariate Gaussian distribution.
  */
 function MultivariateGaussian<Arg1,Arg2>(
-      μ:Add<OpMul<Arg1,Random<Real[_]>>,Arg2>, Σ:Random<Real[_,_]>) ->
+      μ:Add<Mul<Arg1,Random<Real[_]>>,Arg2>, Σ:Random<Real[_,_]>) ->
       Distribution<Real[_]> {
   return MultivariateGaussian(μ, 1.0*Σ);
 }
@@ -159,7 +159,7 @@ function MultivariateGaussian<Arg1>(μ:Add<Random<Real[_]>,Arg1>,
 /**
  * Create multivariate Gaussian distribution.
  */
-function MultivariateGaussian<Arg1>(μ:OpMul<Arg1,Random<Real[_]>>,
+function MultivariateGaussian<Arg1>(μ:Mul<Arg1,Random<Real[_]>>,
     Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
   return MultivariateGaussian(μ + 0.0, 1.0*Σ);
 }

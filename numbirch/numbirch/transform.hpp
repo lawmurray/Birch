@@ -755,7 +755,7 @@ real_t<T> exp(const T& x);
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return mul(g, y);
+  return hadamard(g, y);
 }
 
 /**
@@ -787,7 +787,7 @@ real_t<T> expm1(const T& x);
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return mul(g, y);
+  return hadamard(g, y);
 }
 
 /**
@@ -853,6 +853,45 @@ real_t<T,U> gamma_p(const T& x, const U& y);
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 real_t<T,U> gamma_q(const T& x, const U& y);
+
+/**
+ * Element-wise multiplication (Hadamard product).
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result.
+ * 
+ * @see operator+()
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+implicit_t<T,U> hadamard(const T& x, const U& y);
+
+/**
+ * Gradient of hadamard().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Gradients with respect to @p x and @p y.
+ */
+template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
+    is_numeric_v<U>,int>>
+std::pair<real_t<T>,real_t<U>> hadamard_grad(const real_t<T,U>& g,
+    const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Normalized incomplete beta.
@@ -1103,45 +1142,6 @@ real_t<T> log1p(const T& x);
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
-
-/**
- * Element-wise multiplication.
- * 
- * @ingroup transform
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- * 
- * @see operator+()
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> mul(const T& x, const U& y);
-
-/**
- * Gradient of mul().
- * 
- * @ingroup transform_grad
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param g Gradient with respect to result.
- * @param z Result.
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Gradients with respect to @p x and @p y.
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-std::pair<real_t<T>,real_t<U>> mul_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y);
 
 /**
  * Negation.

@@ -113,7 +113,7 @@ function make_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
 /**
  * Create matrix Gaussian distribution.
  */
-function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<OpMul<Arg1,Random<Real[_,_]>>,
+function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
     Arg2>, Σ:Arg3, Ψ:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
   let A <- M.l.l;
   let M1 <- M.l.r;
@@ -143,7 +143,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<OpMul<Arg1,Random<Real[_,_]>>,
 /**
  * Create matrix Gaussian distribution.
  */
-function MatrixGaussian<Arg1,Arg2>(M:OpMul<Arg1,Random<Real[_,_]>>, Σ:Arg2,
+function MatrixGaussian<Arg1,Arg2>(M:Mul<Arg1,Random<Real[_,_]>>, Σ:Arg2,
     Ψ:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
   return MatrixGaussian(M + 0.0, Σ, Ψ);
 }

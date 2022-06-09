@@ -98,5 +98,5 @@ function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
  */
 function logpdf_dirichlet<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
   assert length(x) == length(α);
-  return sum(mul(α, log(x)) - log(x) - lgamma(α)) + lgamma(sum(α));
+  return sum(hadamard(α, log(x)) - log(x) - lgamma(α)) + lgamma(sum(α));
 }

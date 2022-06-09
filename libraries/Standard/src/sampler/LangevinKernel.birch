@@ -32,7 +32,7 @@ class LangevinKernel < Kernel {
          * still propagate */
         if v[n] > 0.0 {
           let z <- v[n]*y;
-          let z2 <- v[n]*mul(y, y);
+          let z2 <- v[n]*pow(y, 2.0);
           if first {
             s <- z;
             s2 <- z2;
@@ -50,7 +50,7 @@ class LangevinKernel < Kernel {
       }
     }
     if !first {
-      σ2 <- s2 - mul(s, s);
+      σ2 <- s2 - pow(s, 2.0);
     }
   }
 
@@ -80,7 +80,7 @@ class LangevinKernel < Kernel {
       }
 
       /* mean of proposal from initial state */
-      let μ <- x + mul(g, δ);
+      let μ <- x + hadamard(g, δ);
 
       /* moves */
       let accept <- true;  // was most recent particle accepted?
@@ -89,10 +89,10 @@ class LangevinKernel < Kernel {
         cpp{{
         auto z = numbirch::standard_gaussian(m);
         }}
-        let p' <- π.move(μ + mul(sqrt(2.0*δ), z));
+        let p' <- π.move(μ + hadamard(sqrt(2.0*δ), z));
         π.grad(1.0);
         let (x', g') <- π.args();
-        let μ' <- x' + mul(g', δ);
+        let μ' <- x' + hadamard(g', δ);
 
         /* proposal correction */
         let r <- transform_reduce(x' - μ, x - μ', δ, 0.0,

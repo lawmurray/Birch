@@ -228,7 +228,7 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
 template<class T, class>
 Array<T,0> frobenius(const Array<T,2>& x, const Array<T,2>& y) {
   ///@todo Avoid temporary
-  return sum(mul(x, y));
+  return sum(hadamard(x, y));
 }
 
 template<class T, class>

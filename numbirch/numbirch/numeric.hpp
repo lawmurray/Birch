@@ -103,14 +103,14 @@ implicit_t<T,U> operator-(const T& x, const U& y) {
  * @return Result.
  * 
  * @note operator*() supports only multiplication by a scalar on the left or
- * right; for element-wise multiplication, see mul().
+ * right; for element-wise multiplication, see hadamard().
  * 
- * @see mul()
+ * @see hadamard()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
 implicit_t<T,U> operator*(const T& x, const U& y) {
-  return mul(x, y);
+  return hadamard(x, y);
 }
 
 /**
@@ -130,9 +130,9 @@ implicit_t<T,U> operator*(const T& x, const U& y) {
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-std::pair<real_t<T>,real_t<U>> op_mul_grad(const real_t<T,U>& g,
+std::pair<real_t<T>,real_t<U>> mul_grad(const real_t<T,U>& g,
     const implicit_t<T,U>& z, const T& x, const U& y) {
-  return mul_grad(g, z, x, y);
+  return hadamard_grad(g, z, x, y);
 }
 
 /**
@@ -165,7 +165,7 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
  * @return Gradients with respect to @p A and @p x.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,1>> op_mul_grad(const Array<T,1>& g,
+std::pair<Array<T,2>,Array<T,1>> mul_grad(const Array<T,1>& g,
     const Array<T,1>& y, const Array<T,2>& A, const Array<T,1>& x) {
   return std::make_pair(outer(g, x), inner(A, g));
 }
@@ -200,7 +200,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
  * @return Gradients with respect to @p A and @p B.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-std::pair<Array<T,2>,Array<T,2>> op_mul_grad(const Array<T,2>& g,
+std::pair<Array<T,2>,Array<T,2>> mul_grad(const Array<T,2>& g,
     const Array<T,2>& C, const Array<T,2>& A, const Array<T,2>& B) {
   return std::make_pair(outer(g, B), inner(A, g));
 }
