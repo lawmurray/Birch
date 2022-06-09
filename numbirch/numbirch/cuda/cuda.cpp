@@ -42,12 +42,12 @@ void cuda_init() {
      * a thread spinning rather than blocking can prevent another thread from
      * resuming to schedule kernels that can execute concurrently; on some
      * examples shows ~10% performance improvement */
-    // cudaStreamAttrValue val;
-    // val.syncPolicy = cudaSyncPolicyBlockingSync;
-    // CUDA_CHECK(cudaStreamSetAttribute(stream,
-    //     cudaStreamAttributeSynchronizationPolicy, &val));
-    // CUDA_CHECK(cudaStreamSetAttribute(aux_stream,
-    //     cudaStreamAttributeSynchronizationPolicy, &val));
+    cudaStreamAttrValue val;
+    val.syncPolicy = cudaSyncPolicyBlockingSync;
+    CUDA_CHECK(cudaStreamSetAttribute(stream,
+        cudaStreamAttributeSynchronizationPolicy, &val));
+    CUDA_CHECK(cudaStreamSetAttribute(aux_stream,
+        cudaStreamAttributeSynchronizationPolicy, &val));
   }
 }
 
