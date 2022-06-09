@@ -9,6 +9,8 @@
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
+#include <iostream>
+
 /*
  * Disable retention of extents by jemalloc. This is critical as the custom
  * extent hooks for the CUDA backend allocate physical memory---which should
@@ -17,6 +19,34 @@
 const char* numbirch_malloc_conf = "retain:false";
 
 namespace numbirch {
+
+/**
+ * @internal
+ * 
+ * Event. Pointers to objects of this type are type-erased to `void*` for use
+ * by the various event management functions.
+ */
+struct Event {
+  /**
+   * Event.
+   */
+  cudaEvent_t event;
+
+  /**
+   * Stream on which the event is recorded.
+   */
+  cudaStream_t stream;
+
+  Event() :
+      event(0),
+      stream(0) {
+    CUDA_CHECK(cudaEventCreateWithFlags(&event, cudaEventDisableTiming));
+  }
+
+  ~Event() {
+    CUDA_CHECK(cudaEventDestroy(event));
+  }
+};
 
 void init() {
   cuda_init();
@@ -113,22 +143,23 @@ void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
 void* event_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
     size_t size, size_t alignment, bool *zero, bool *commit,
     unsigned arena_ind) {
+  assert(!*zero);
   if (!new_addr) {
     CUDA_CHECK(cudaMallocHost(&new_addr, size));
     *commit = true;
   }
-  cudaEvent_t* evts = static_cast<cudaEvent_t*>(new_addr);
-  for (size_t i = 0; i < size/sizeof(cudaEvent_t); ++i) {
-    CUDA_CHECK(cudaEventCreateWithFlags(&evts[i], cudaEventDisableTiming));
+  Event* evts = static_cast<Event*>(new_addr);
+  for (size_t i = 0; i < size/sizeof(Event); ++i) {
+    new (evts + i) Event();
   }
   return new_addr;
 }
 
 bool event_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
     size_t size, bool committed, unsigned arena_ind) {
-  cudaEvent_t* evts = static_cast<cudaEvent_t*>(addr);
-  for (size_t i = 0; i < size/sizeof(cudaEvent_t); ++i) {
-    CUDA_CHECK(cudaEventDestroy(evts[i]));
+  Event* evts = static_cast<Event*>(addr);
+  for (size_t i = 0; i < size/sizeof(Event); ++i) {
+    evts[i].~Event();
   }
   CUDA_CHECK(cudaFreeHost(addr));
   return false;
@@ -136,9 +167,9 @@ bool event_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
 
 void event_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
     size_t size, bool committed, unsigned arena_ind) {
-  cudaEvent_t* evts = static_cast<cudaEvent_t*>(addr);
-  for (size_t i = 0; i < size/sizeof(cudaEvent_t); ++i) {
-    CUDA_CHECK(cudaEventDestroy(evts[i]));
+  Event* evts = static_cast<Event*>(addr);
+  for (size_t i = 0; i < size/sizeof(Event); ++i) {
+    evts[i].~Event();
   }
   CUDA_CHECK(cudaFreeHost(addr));
 }
@@ -184,59 +215,74 @@ void memcpy(void* dst, const void* src, size_t n) {
 }
 
 void* event_create() {
-  return event_malloc(sizeof(cudaEvent_t));
+  return event_malloc(sizeof(Event));
 }
 
 void event_destroy(void* evt) {
-  return event_free(evt, sizeof(cudaEvent_t));
+  return event_free(evt, sizeof(Event));
 }
 
 void event_record_read(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
+  Event* e = static_cast<Event*>(evt);
+  if (e->stream == stream || e->stream == 0) {
+    /* just update the record in this stream */
+    CUDA_CHECK(cudaEventRecord(e->event, stream));
+    e->stream = stream;
+  } else {
+    /* concurrent reads are permitted; evt should be such that waiting or
+     * joining on it ensures that *all* reads are finished; this is
+     * accomplished with the auxiliary streams; first, join this thread's
+     * auxiliary stream with the existing read event (which may be on a
+     * different stream), blocking the auxiliary stream on all previous reads
+     */
+    if (e->stream != aux_stream) {
+      CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e->event));
+    }
 
-  /* concurrent reads are permitted; evt should be such that waiting or
-   * joining on it ensures that *all* reads are finished; this is accomplished
-   * with the auxiliary streams; first, join this thread's auxiliary stream
-   * with the existing read event (which may be on a different stream),
-   * blocking the auxiliary stream on all previous reads */
-  CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e));
+    /* record a new event to indicate when the new read finishes */
+    CUDA_CHECK(cudaEventRecord(e->event, stream));
+    
+    /* join the auxiliary stream to that new event, so that it is now blocked
+     * on all previous reads and the new read */
+    CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e->event));
 
-  /* record a new event to indicate when the new read finishes */
-  CUDA_CHECK(cudaEventRecord(e, stream));
-  
-  /* join the auxiliary stream to that new event, so that it is now blocked on
-   * all previous reads and the new read */
-  CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e));
-
-  /* record a new event in the auxiliary stream to indicate when all previous
-   * reads and the new read are complete */
-  CUDA_CHECK(cudaEventRecord(e, aux_stream));
+    /* record a new event in the auxiliary stream to indicate when all
+     * previous reads and the new read are complete */
+    CUDA_CHECK(cudaEventRecord(e->event, aux_stream));
+    e->stream = aux_stream;
+  }
 }
 
 void event_record_write(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
-  CUDA_CHECK(cudaEventRecord(e, stream));
+  Event* e = static_cast<Event*>(evt);
+  CUDA_CHECK(cudaEventRecord(e->event, stream));
+  e->stream = stream;
 }
 
 bool event_test(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
-  cudaError_t err = cudaEventQuery(e);
+  Event* e = static_cast<Event*>(evt);
+  cudaError_t err = cudaEventQuery(e->event);
   return err == cudaSuccess;
 }
 
 void event_wait(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
-  CUDA_CHECK(cudaEventSynchronize(e));
+  Event* e = static_cast<Event*>(evt);
+  CUDA_CHECK(cudaEventSynchronize(e->event));
 }
 
 void event_join(void* evt) {
   assert(evt != 0);
-  cudaEvent_t e = *static_cast<cudaEvent_t*>(evt);
-  CUDA_CHECK(cudaStreamWaitEvent(stream, e));
+  Event* e = static_cast<Event*>(evt);
+
+  /* if the event is already in the current stream then no need to join as
+   * operations will follow it anyway; avoid the CUDA API call */
+  if (e->stream != stream) {
+    CUDA_CHECK(cudaStreamWaitEvent(stream, e->event));
+  }
 }
 
 }

@@ -158,8 +158,7 @@ void jemalloc_init() {
 
     /* event thread cache setup */
     event_tcache = make_tcache();
-    event_flags = MALLOCX_ARENA(event_arena)|MALLOCX_TCACHE(event_tcache)|
-        MALLOCX_ALIGN(sizeof(void*));
+    event_flags = MALLOCX_ARENA(event_arena)|MALLOCX_TCACHE(event_tcache);
   }
 }
 
