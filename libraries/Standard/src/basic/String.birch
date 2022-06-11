@@ -10,17 +10,6 @@ using String = std::string;
 /**
  * Convert to string.
  */
-function to_string(x:Boolean) -> String {
-  if x {
-    return "true";
-  } else {
-    return "false";
-  }
-}
-
-/**
- * Convert to string.
- */
 function to_string(x:Real) -> String {
   cpp{{
   std::stringstream buf;
@@ -36,10 +25,42 @@ function to_string(x:Real) -> String {
 /**
  * Convert to string.
  */
+function to_string(x:Real!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
 function to_string(x:Integer) -> String {
   cpp{{
   return std::to_string(x);
   }}
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Integer!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Boolean) -> String {
+  if x {
+    return "true";
+  } else {
+    return "false";
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Boolean!) -> String {
+  return to_string(x!);
 }
 
 /**

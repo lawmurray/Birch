@@ -38,24 +38,9 @@ namespace numbirch {
  * @li A dice() returns a reference of type `const T&` or `T&` to an
  * individual element.
  * 
- * The "slice and dice" operator()() combines the two, acting as slice() when
- * the result would have one or more dimensions, and a dice() if the result
- * would have zero dimensions. 
- * 
- * Internally, an Array is in one of two corresponding states according to the
- * most recent such operation:
- * 
- * @li *sliced*, where it supports further slice() operations without
- * transition, or
- * @li *diced*, where it supports further dice() operations without
- * transition.
- * 
- * The transition between the two states is automatic, on demand. The only
- * implication is that of performance: a transition from *sliced* to *diced*
- * may require synchronization with the device to ensure that all device reads
- * and writes have concluded before the host can access an individual element.
- * A performance consideration is to be careful with the interleaving of
- * slice() and dice() to minimize the number of potential synchronizations.
+ * The use of dice() may trigger synchronization with the device to ensure
+ * that all device reads and writes have concluded before the host can access
+ * an individual element.
  */
 template<class T, int D>
 class Array {
@@ -385,6 +370,38 @@ public:
   }
 
   /**
+   * @copydoc slice()
+   */
+  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
+  auto operator()(const Args... args) {
+    return slice(args...);
+  }
+
+  /**
+   * @copydoc slice()
+   */
+  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
+  auto operator()(const Args... args) const {
+    return slice(args...);
+  }
+
+  /**
+   * @copydoc slice()
+   */
+  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
+  auto operator()(const Args... args) {
+    return slice(args...);
+  }
+
+  /**
+   * @copydoc slice()
+   */
+  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
+  auto operator()(const Args... args) const {
+    return slice(args...);
+  }
+
+  /**
    * Slice.
    *
    * @tparam Args Argument types.
@@ -441,50 +458,6 @@ public:
   template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
   const T dice(const Args... args) const {
     return diced()[shp.dice(args...)];
-  }
-
-  /**
-   * @copydoc slice()
-   * 
-   * @note operator()() is overloaded to behave as slice() when one or more
-   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
-   */
-  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
-  auto operator()(const Args... args) {
-    return slice(args...);
-  }
-
-  /**
-   * @copydoc slice()
-   * 
-   * @note operator()() is overloaded to behave as slice() when one or more
-   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
-   */
-  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
-  auto operator()(const Args... args) const {
-    return slice(args...);
-  }
-
-  /**
-   * @copydoc dice()
-   * 
-   * @note operator()() is overloaded to behave as slice() when one or more
-   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
-   */
-  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  T& operator()(const Args... args) {
-    return dice(args...);
-  }
-
-  /**
-   * @copydoc dice()
-   * 
-   * @note operator()() is overloaded to behave as slice() when one or more
-   * arguments is a range (`std::pair<int,int>`) and dice() otherwise.
-   */
-  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  const T operator()(const Args... args) const {
-    return dice(args...);
   }
 
   /**

@@ -81,6 +81,18 @@ abstract class Writer {
   abstract function visit(value:Integer[_,_]);
   abstract function visit(value:Boolean[_,_]);
   abstract function visitNil();
+
+  final function visit(value:Real!) {
+    return visit(value!);
+  }
+
+  final function visit(value:Integer!) {
+    return visit(value!);
+  }
+
+  final function visit(value:Boolean!) {
+    return visit(value!);
+  }
 }
 
 /**
