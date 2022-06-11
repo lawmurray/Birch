@@ -47,7 +47,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
       let min_δ <- inf;   // ...and associated distance
       let t <- 1;
       let pass <- false;
-      while t <= ntrials {
+      while t <= ntrials && Δ' > 0.0 {  // may == 0.0 in single precision
         let y <- x;
         let z <- x;
         y[i] <- y[i] - 0.5*Δ';
