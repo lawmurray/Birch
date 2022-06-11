@@ -1154,6 +1154,36 @@ template<class T, class U, class V, class = std::enable_if_t<
 real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
 
 /**
+ * Is value finite?
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+bool_t<T> isfinite(const T& x);
+
+/**
+ * Gradient of operator!().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
+
+/**
  * Logarithm of beta.
  * 
  * @ingroup transform

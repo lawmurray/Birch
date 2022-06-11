@@ -270,6 +270,13 @@ struct hadamard_grad2_functor {
   }
 };
 
+struct isfinite_functor {
+  template<class T>
+  NUMBIRCH_HOST_DEVICE bool operator()(const T x) const {
+    return std::isfinite(x);
+  }
+};
+
 struct lfact_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return std::lgamma(x + real(1));
@@ -604,8 +611,7 @@ bool_t<T> operator!(const T& x) {
 }
 
 template<class T, class>
-real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y,
-    const T& x) {
+real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, zero_grad_functor());
 }
@@ -1028,6 +1034,18 @@ real_t<T,U,V> ibeta(const T& x, const U& y, const V& z) {
   prefetch(y);
   prefetch(z);
   return transform(x, y, z, ibeta_functor());
+}
+
+template<class T, class>
+bool_t<T> isfinite(const T& x) {
+  prefetch(x);
+  return transform(x, isfinite_functor());
+}
+
+template<class T, class>
+real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+  prefetch(x);
+  return transform(g, x, zero_grad_functor());
 }
 
 template<class T, class U, class>

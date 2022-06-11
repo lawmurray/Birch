@@ -54,12 +54,3 @@ function isnan(x:Real) -> Boolean {
   return std::isnan(x);
   }}
 }
-
-/**
- * Is the value finite (i.e. not `inf` or `nan`)?
- */
-function isfinite(x:Real) -> Boolean {
-  cpp{{
-  return std::isfinite(x);
-  }}
-}
