@@ -260,7 +260,8 @@ public:
   /**
    * Value assignment. Fills the entire array with the given value.
    */
-  Array& operator=(const T value) {
+  template<class U, std::enable_if_t<is_arithmetic_v<U>,int> = 0>
+  Array& operator=(const U value) {
     fill(value);
     return *this;
   }
