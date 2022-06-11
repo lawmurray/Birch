@@ -100,7 +100,7 @@ using numbirch::simulate_gamma;
  * Returns: the log probability density.
  */
 function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return if_then_else(0.0 < x, (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ),
+  return where(0.0 < x, (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ),
       -inf);
 }
 
@@ -114,7 +114,7 @@ function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return if_then_else(0.0 < x, gamma_p(k, x/θ), 0.0);
+  return where(0.0 < x, gamma_p(k, x/θ), 0.0);
 }
 
 /*

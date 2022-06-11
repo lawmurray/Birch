@@ -118,7 +118,7 @@ function simulate_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
  */
 function logpdf_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
     θ:Arg3, n:Arg4) -> {
-  return log(if_then_else(element(n, x) == 0, count(n)*α + θ,
+  return log(where(element(n, x) == 0, count(n)*α + θ,
       element(n, x) - α)) - log(sum(n) + θ);
 }
 

@@ -575,6 +575,15 @@ struct ibeta_functor {
   }
 };
 
+struct where_functor {
+  template<class T, class U, class V>
+  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y, const V z)
+      const {
+    using W = implicit_t<T,U,V>;
+    return x ? W(y) : W(z);
+  }
+};
+
 struct zero_grad_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x) const {
@@ -1316,6 +1325,14 @@ template<class T, class>
 real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   prefetch(x);
   return transform(g, x, tanh_grad_functor());
+}
+
+template<class T, class U, class V, class>
+implicit_t<T,U,V> where(const T& x, const U& y, const V& z) {
+  prefetch(x);
+  prefetch(y);
+  prefetch(z);
+  return transform(x, y, z, where_functor());
 }
 
 }

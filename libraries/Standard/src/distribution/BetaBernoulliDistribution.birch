@@ -97,7 +97,7 @@ function simulate_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
  * Returns: the log probability mass.
  */
 function logpdf_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
-  return if_then_else(x, log(α), log(β)) - log(α + β);
+  return where(x, log(α), log(β)) - log(α + β);
 }
 
 /*
@@ -110,5 +110,5 @@ function logpdf_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
  * Returns: the posterior hyperparameters `α'` and `β'`.
  */
 function update_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
-  return wrap_beta(if_then_else(x, α + 1.0, α), if_then_else(x, β, β + 1.0));
+  return wrap_beta(where(x, α + 1.0, α), where(x, β, β + 1.0));
 }

@@ -93,7 +93,7 @@ using numbirch::simulate_weibull;
  * Returns: the log probability density.
  */
 function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
-  return if_then_else(0.0 < x, log(k) + (k - 1.0)*log(x) - k*log(λ) -
+  return where(0.0 < x, log(k) + (k - 1.0)*log(x) - k*log(λ) -
       pow(x/λ, k), -inf);
 }
 
@@ -107,7 +107,7 @@ function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
-  return if_then_else(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
+  return where(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
 }
 
 /*

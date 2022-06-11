@@ -130,7 +130,7 @@ function simulate_lomax<Arg1,Arg2>(λ:Arg1, α:Arg2) -> {
  * Return: the log probability density.
  */
 function logpdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
-  return if_then_else(0.0 <= x, log(α) - log(λ) - (α + 1.0)*log1p(x/λ), -inf);
+  return where(0.0 <= x, log(α) - log(λ) - (α + 1.0)*log1p(x/λ), -inf);
 }
 
 /*
@@ -157,7 +157,7 @@ function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
-  return if_then_else(0.0 < x, 1.0 - pow((1.0 + x/λ), -α), 0.0);
+  return where(0.0 < x, 1.0 - pow((1.0 + x/λ), -α), 0.0);
 }
 
 /*

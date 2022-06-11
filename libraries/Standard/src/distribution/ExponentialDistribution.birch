@@ -84,7 +84,7 @@ using numbirch::simulate_exponential;
  * Returns: the log probability density.
  */
 function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
-  return if_then_else(0.0 <= x, log(λ) - λ*x, -inf);
+  return where(0.0 <= x, log(λ) - λ*x, -inf);
 }
 
 /*
@@ -96,7 +96,7 @@ function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
  * Return: the cumulative probability.
  */
 function cdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
-  return if_then_else(0.0 < x, -expm1(-λ*x), 0.0);
+  return where(0.0 < x, -expm1(-λ*x), 0.0);
 }
 
 /*

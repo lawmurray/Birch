@@ -68,5 +68,5 @@ using numbirch::simulate_bernoulli;
  * Returns: the log probability mass.
  */
 function logpdf_bernoulli<Arg1,Arg2>(x:Arg1, ρ:Arg2) -> {
-  return if_then_else(x, log(ρ), log1p(-ρ));
+  return where(x, log(ρ), log1p(-ρ));
 }

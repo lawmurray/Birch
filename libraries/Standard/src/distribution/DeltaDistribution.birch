@@ -15,7 +15,7 @@ final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return if_then_else(x == value(μ), 0.0, -inf);
+    return where(x == value(μ), 0.0, -inf);
   }
 
   override function lower() -> Integer!? {

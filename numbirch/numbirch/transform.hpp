@@ -1837,4 +1837,95 @@ real_t<T> tanh(const T& x);
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
+/**
+ * Conditional.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * @tparam V Numeric type.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Where @p x is true, elements of @p y, elsewhere elements of @p z.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
+
+/**
+ * Gradient of where().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * @tparam V Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param r Result.
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<U,V>& r,
+    const T& x, const U& y, const V& z) {
+  return Array(shape(x), real(0));
+}
+
+/**
+ * Gradient of where().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * @tparam V Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param r Result.
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<U,V>& r,
+    const T& x, const U& y, const V& z) {
+  return where(x, g, real(0));
+}
+
+/**
+ * Gradient of where().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * @tparam U Numeric type.
+ * @tparam V Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param r Result.
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class U, class V, class = std::enable_if_t<
+    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+real_t<V> where_grad3(const real_t<U,V>& g, const implicit_t<U,V>& r,
+    const T& x, const U& y, const V& z) {
+  return where(x, real(0), g);
+}
+
 }

@@ -47,10 +47,7 @@
 #define TERNARY_SIG(f, R, T, U, V) \
     template R<T,U,V> f<T,U,V,int>(const T&, const U&, const V&);
 
-#define TERNARY_ARITHMETIC(f) TERNARY(f, implicit_t)
-#define TERNARY_REAL(f) TERNARY(f, real_t)
-#define TERNARY_BOOL(f) TERNARY(f, bool_t)
-
 namespace numbirch {
-TERNARY_REAL(ibeta)
+TERNARY(ibeta, real_t)
+TERNARY(where, implicit_t)
 }

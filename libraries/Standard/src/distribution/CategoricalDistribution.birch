@@ -43,7 +43,7 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function lower() -> Integer!? {
-    return if_then_else(length(ρ) > 0, 1, 0);
+    return length(ρ) > 0;
   }
 
   override function upper() -> Integer!? {
