@@ -12,7 +12,8 @@ struct Inner<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::inner;
-using numbirch::inner_grad;
+using numbirch::inner_grad1;
+using numbirch::inner_grad2;
 
 /**
  * Inner product.

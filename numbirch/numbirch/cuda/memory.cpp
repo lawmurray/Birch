@@ -143,7 +143,6 @@ void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
 void* event_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
     size_t size, size_t alignment, bool *zero, bool *commit,
     unsigned arena_ind) {
-  assert(!*zero);
   if (!new_addr) {
     CUDA_CHECK(cudaMallocHost(&new_addr, size));
     *commit = true;

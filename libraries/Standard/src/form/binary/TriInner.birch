@@ -12,7 +12,8 @@ struct TriInner<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::triinner;
-using numbirch::triinner_grad;
+using numbirch::triinner_grad1;
+using numbirch::triinner_grad2;
 
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>

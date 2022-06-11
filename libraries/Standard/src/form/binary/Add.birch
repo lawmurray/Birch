@@ -12,7 +12,8 @@ struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::add;
-using numbirch::add_grad;
+using numbirch::add_grad1;
+using numbirch::add_grad2;
 
 /**
  * Addition.

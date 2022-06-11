@@ -12,7 +12,8 @@ struct LBeta<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::lbeta;
-using numbirch::lbeta_grad;
+using numbirch::lbeta_grad1;
+using numbirch::lbeta_grad2;
 
 /**
  * Logarithm of the beta function.

@@ -18,7 +18,8 @@ struct VectorSingle<Left,Right>(x:Left, i:Right, n:Integer) <
 hpp{{
 namespace birch {
 using numbirch::single;
-using numbirch::single_grad;
+using numbirch::single_grad1;
+using numbirch::single_grad2;
 
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>

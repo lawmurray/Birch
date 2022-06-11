@@ -15,7 +15,8 @@ struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::element;
-using numbirch::element_grad;
+using numbirch::element_grad1;
+using numbirch::element_grad2;
 
 /**
  * Element of a vector.

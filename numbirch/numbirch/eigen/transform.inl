@@ -130,41 +130,6 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
 }
 
 /*
- * Ternary transform returning pair.
- */
-template<class T, class U, class V, class R, class S, class Functor>
-void kernel_transform_pair(const int m, const int n, const T A, const int ldA,
-    const U B, const int ldB, const V C, const int ldC, R D, const int ldD,
-    S E, const int ldE, Functor f) {
-  for (int j = 0; j < n; ++j) {
-    for (int i = 0; i < m; ++i) {
-      auto pair = f(get(A, i, j, ldA), get(B, i, j, ldB), get(C, i, j, ldC));
-      get(D, i, j, ldD) = pair.first;
-      get(E, i, j, ldE) = pair.second;
-    }
-  }
-}
-template<class T, class U, class V, class Functor>
-auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
-  if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> &&
-      is_arithmetic_v<V>) {
-    auto [a, b] = f(x, y, z);
-    return std::make_pair(a, b);
-  } else {
-    using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()).first);
-    using S = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()).second);
-    constexpr int D = dimension_v<implicit_t<T,U,V>>;
-    auto m = width(x, y, z);
-    auto n = height(x, y, z);
-    auto a = Array<R,D>(make_shape<D>(m, n));
-    auto b = Array<S,D>(make_shape<D>(m, n));
-    kernel_transform_pair(m, n, data(sliced(x)), stride(x), data(sliced(y)), stride(y),
-        data(sliced(z)), stride(z), data(sliced(a)), stride(a), data(sliced(b)), stride(b), f);
-    return std::make_pair(a, b);
-  }
-}
-
-/*
  * Unary gather.
  */
 template<class T, class U, class R>

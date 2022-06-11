@@ -23,7 +23,9 @@ struct MatrixSingle<Left,Middle,Right>(x:Left, i:Middle, j:Right, m:Integer,
 hpp{{
 namespace birch {
 using numbirch::single;
-using numbirch::single_grad;
+using numbirch::single_grad1;
+using numbirch::single_grad2;
+using numbirch::single_grad3;
 
 template<class Left, class Middle, class Right, std::enable_if_t<
     is_delay<Left,Middle,Right>::value,int> = 0>

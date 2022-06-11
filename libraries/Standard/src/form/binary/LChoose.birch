@@ -12,7 +12,8 @@ struct LChoose<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::lchoose;
-using numbirch::lchoose_grad;
+using numbirch::lchoose_grad1;
+using numbirch::lchoose_grad2;
 
 /**
  * Logarithm of the binomial coefficient.

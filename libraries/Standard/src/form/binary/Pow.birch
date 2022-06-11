@@ -12,7 +12,8 @@ struct Pow<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::pow;
-using numbirch::pow_grad;
+using numbirch::pow_grad1;
+using numbirch::pow_grad2;
 
 /**
  * Power.

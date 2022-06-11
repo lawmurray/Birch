@@ -12,7 +12,8 @@ struct TriMul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::trimul;
-using numbirch::trimul_grad;
+using numbirch::trimul_grad1;
+using numbirch::trimul_grad2;
 
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>

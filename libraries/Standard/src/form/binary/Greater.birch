@@ -12,7 +12,8 @@ struct Greater<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::operator>;
-using numbirch::greater_grad;
+using numbirch::greater_grad1;
+using numbirch::greater_grad2;
 
 /**
  * Greater than comparison.

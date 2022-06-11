@@ -12,7 +12,8 @@ struct Dot<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::dot;
-using numbirch::dot_grad;
+using numbirch::dot_grad1;
+using numbirch::dot_grad2;
 
 /**
  * Dot product.

@@ -12,7 +12,8 @@ struct CopySign<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::copysign;
-using numbirch::copysign_grad;
+using numbirch::copysign_grad1;
+using numbirch::copysign_grad2;
 
 /**
  * Copy sign of a number.

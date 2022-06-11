@@ -997,5 +997,20 @@ void constant(const T& x) {
   x->constant();
 }
 
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+bool is_constant(const T& x) {
+  return true;
+}
+
+template<class T, std::enable_if_t<is_form<T>::value,int> = 0>
+bool is_constant(T& x) {
+  return x.isConstant();
+}
+
+template<class T, std::enable_if_t<is_expression<T>::value,int> = 0>
+bool is_constant(const T& x) {
+  return x->isConstant();
+}
+
 }
 }}

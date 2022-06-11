@@ -27,6 +27,10 @@ struct Binary<Left,Right>(l:Left, r:Right) < Form {
     birch::constant(l);
     birch::constant(r);
   }
+
+  bool isConstant() const {
+    return birch::is_constant(l) && birch::is_constant(r);
+  }
   }}
 }
 
@@ -77,10 +81,13 @@ hpp{{
     auto x = birch::peek(*this); \
     auto l = birch::peek(this->l); \
     auto r = birch::peek(this->r); \
-    auto [gl, gr] = f_grad(g, x, l, r, ##__VA_ARGS__); \
+    if (!birch::is_constant(this->l)) { \
+      birch::shallow_grad(this->l, f_grad ## 1(g, x, l, r, ##__VA_ARGS__)); \
+    } \
+    if (!birch::is_constant(this->r)) { \
+      birch::shallow_grad(this->r, f_grad ## 2(g, x, l, r, ##__VA_ARGS__)); \
+    } \
     clear(); \
-    birch::shallow_grad(this->l, gl); \
-    birch::shallow_grad(this->r, gr); \
   } \
   \
   void deepGrad() const { \

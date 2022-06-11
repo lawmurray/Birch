@@ -49,15 +49,31 @@ function logz_conway_maxwell_poisson(μ:Real, ν:Real, n:Integer) -> Real {
   return mx + log(Z);
 }
 
-function logz_conway_maxwell_poisson_grad<Gradient,Value>(g:Gradient, x:Value,
-    μ:Real, ν:Real, n:Integer) -> (Real, Real, Real) {
+function logz_conway_maxwell_poisson_grad1<Gradient,Value>(g:Gradient, x:Value,
+    μ:Real, ν:Real, n:Integer) -> {
   let log_λ <- ν*log(μ);
   let mx <- μ*log_λ - ν*lfact(μ);  // renormalizer
   let log_xf <- 0.0;  // accumulator of lfact(x)
   let z <- 0.0;
   let Z <- exp(-mx);  // for x == 0
   let gλ <- 0.0;
-  let gμ <- 0.0;
+  for x in 1..n {
+    log_xf <- log_xf + log(x);
+    z <- exp(x*log_λ - ν*log_xf - mx);
+    Z <- Z + z;
+    gλ <- gλ + x*z;
+  }
+  return g*gλ*ν/(μ*Z);
+}
+
+function logz_conway_maxwell_poisson_grad2<Gradient,Value>(g:Gradient, x:Value,
+    μ:Real, ν:Real, n:Integer) -> {
+  let log_λ <- ν*log(μ);
+  let mx <- μ*log_λ - ν*lfact(μ);  // renormalizer
+  let log_xf <- 0.0;  // accumulator of lfact(x)
+  let z <- 0.0;
+  let Z <- exp(-mx);  // for x == 0
+  let gλ <- 0.0;
   let gν <- 0.0;
   for x in 1..n {
     log_xf <- log_xf + log(x);
@@ -66,7 +82,10 @@ function logz_conway_maxwell_poisson_grad<Gradient,Value>(g:Gradient, x:Value,
     gλ <- gλ + x*z;
     gν <- gν - log_xf*z;
   }
-  gμ <- g*gλ*ν/(μ*Z);
-  gν <- g*(gν + gλ*log(μ))/Z;
-  return (gμ, gν, 0.0);
+  return g*(gν + gλ*log(μ))/Z;
+}
+
+function logz_conway_maxwell_poisson_grad3<Gradient,Value>(g:Gradient, x:Value,
+    μ:Real, ν:Real, n:Integer) -> {
+  return 0.0;
 }

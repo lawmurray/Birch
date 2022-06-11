@@ -19,6 +19,10 @@ struct Unary<Middle>(m:Middle) < Form {
   void constant() const {
     birch::constant(m);
   }
+
+  bool isConstant() const {
+    return birch::is_constant(m);
+  }
   }}
 }
 
@@ -63,9 +67,10 @@ hpp{{
   void shallowGrad(const G& g) const { \
     auto x = birch::peek(*this); \
     auto m = birch::peek(this->m); \
-    auto gm = f_grad(g, x, m, ##__VA_ARGS__); \
+    if (!birch::is_constant(this->m)) { \
+      birch::shallow_grad(this->m, f_grad(g, x, m, ##__VA_ARGS__)); \
+    } \
     clear(); \
-    birch::shallow_grad(this->m, gm); \
   } \
   \
   void deepGrad() const { \

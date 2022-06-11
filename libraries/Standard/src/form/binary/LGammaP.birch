@@ -12,7 +12,8 @@ struct LGammaP<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::lgamma;
-using numbirch::lgamma_grad;
+using numbirch::lgamma_grad1;
+using numbirch::lgamma_grad2;
 
 /**
  * Logarithm of the multivariate gamma function.

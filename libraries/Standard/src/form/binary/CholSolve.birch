@@ -12,7 +12,8 @@ struct CholSolve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::cholsolve;
-using numbirch::cholsolve_grad;
+using numbirch::cholsolve_grad1;
+using numbirch::cholsolve_grad2;
 
 /**
  * Solve a system of equations where the left argument is a symmetric

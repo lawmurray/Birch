@@ -13,7 +13,8 @@ struct GreaterOrEqual<Left,Right>(l:Left, r:Right) <
 hpp{{
 namespace birch {
 using numbirch::operator>=;
-using numbirch::greater_or_equal_grad;
+using numbirch::greater_or_equal_grad1;
+using numbirch::greater_or_equal_grad2;
 
 /**
  * Greater than or equal to comparison.

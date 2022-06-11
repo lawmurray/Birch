@@ -12,7 +12,8 @@ struct Mul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::operator*;
-using numbirch::mul_grad;
+using numbirch::mul_grad1;
+using numbirch::mul_grad2;
 
 /**
  * Multiplication.

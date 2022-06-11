@@ -16,7 +16,9 @@ struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
 hpp{{
 namespace birch {
 using numbirch::element;
-using numbirch::element_grad;
+using numbirch::element_grad1;
+using numbirch::element_grad2;
+using numbirch::element_grad3;
 
 /**
  * Element of a matrix.

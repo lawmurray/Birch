@@ -12,7 +12,8 @@ struct Less<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::operator<;
-using numbirch::less_grad;
+using numbirch::less_grad1;
+using numbirch::less_grad2;
 
 /**
  * Less than comparison.

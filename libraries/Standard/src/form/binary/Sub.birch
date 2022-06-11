@@ -12,7 +12,8 @@ struct Sub<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::sub;
-using numbirch::sub_grad;
+using numbirch::sub_grad1;
+using numbirch::sub_grad2;
 
 /**
  * Subtraction.

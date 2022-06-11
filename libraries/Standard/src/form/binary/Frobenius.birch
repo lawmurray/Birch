@@ -12,7 +12,8 @@ struct Frobenius<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::frobenius;
-using numbirch::frobenius_grad;
+using numbirch::frobenius_grad1;
+using numbirch::frobenius_grad2;
 
 /**
  * Frobenius product.

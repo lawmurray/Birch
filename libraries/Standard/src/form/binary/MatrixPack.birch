@@ -12,7 +12,8 @@ struct MatrixPack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::pack;
-using numbirch::pack_grad;
+using numbirch::pack_grad1;
+using numbirch::pack_grad2;
 
 /**
  * Pack two matrices next to one another (i.e. append rows) to create a

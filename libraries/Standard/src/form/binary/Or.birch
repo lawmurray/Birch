@@ -12,7 +12,8 @@ struct Or<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::operator||;
-using numbirch::or_grad;
+using numbirch::or_grad1;
+using numbirch::or_grad2;
 
 /**
  * Logical `or`.

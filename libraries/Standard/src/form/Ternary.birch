@@ -35,6 +35,11 @@ struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
     birch::constant(m);
     birch::constant(r);
   }
+
+  bool isConstant() const {
+    return birch::is_constant(l) && birch::is_constant(m) &&
+        birch::is_constant(r);
+  }
   }}
 }
 
@@ -76,7 +81,8 @@ hpp{{
     auto l = birch::move(this->l, visitor); \
     auto m = birch::move(this->m, visitor); \
     auto r = birch::move(this->r, visitor); \
-    return f(l, m, r, ##__VA_ARGS__); \
+    const_cast<std::optional<Value>&>(x) = f(l, m, r, ##__VA_ARGS__); \
+    return *x; \
   } \
   \
   void args(const ArgsVisitor& visitor) const { \
@@ -91,11 +97,16 @@ hpp{{
     auto l = birch::peek(this->l); \
     auto m = birch::peek(this->m); \
     auto r = birch::peek(this->r); \
-    auto [gl, gm, gr] = f_grad(g, x, l, m, r, ##__VA_ARGS__); \
+    if (!birch::is_constant(this->l)) { \
+      birch::shallow_grad(this->l, f_grad ## 1(g, x, l, m, r, ##__VA_ARGS__)); \
+    } \
+    if (!birch::is_constant(this->m)) { \
+      birch::shallow_grad(this->m, f_grad ## 2(g, x, l, m, r, ##__VA_ARGS__)); \
+    } \
+    if (!birch::is_constant(this->r)) { \
+      birch::shallow_grad(this->r, f_grad ## 3(g, x, l, m, r, ##__VA_ARGS__)); \
+    } \
     clear(); \
-    birch::shallow_grad(this->l, gl); \
-    birch::shallow_grad(this->m, gm); \
-    birch::shallow_grad(this->r, gr); \
   } \
   \
   void deepGrad() const { \

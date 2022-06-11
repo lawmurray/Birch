@@ -12,7 +12,8 @@ struct And<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::operator&&;
-using numbirch::and_grad;
+using numbirch::and_grad1;
+using numbirch::and_grad2;
 
 /**
  * Logical `and`.

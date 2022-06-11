@@ -36,8 +36,10 @@
     BINARY_GRAD_SIG(f, R, NUMBIRCH_ARRAY(T, 1), U) \
     BINARY_GRAD_SIG(f, R, T, NUMBIRCH_ARRAY(U, 1))
 #define BINARY_GRAD_SIG(f, R, T, U) \
-    template std::pair<real_t<T>,real_t<U>> f<T,U,int>( \
-        const real_t<T,U>&, const R<T,U>&, const T&, const U&);
+    template real_t<T> f ## 1<T,U,int>(const real_t<T,U>&, const R<T,U>&, \
+        const T&, const U&); \
+    template real_t<U> f ## 2<T,U,int>(const real_t<T,U>&, const R<T,U>&, \
+        const T&, const U&);
 
 #define BINARY_ARITHMETIC_GRAD(f) BINARY_GRAD(f, implicit_t)
 #define BINARY_REAL_GRAD(f) BINARY_GRAD(f, real_t)

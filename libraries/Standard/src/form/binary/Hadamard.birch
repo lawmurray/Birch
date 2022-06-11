@@ -12,7 +12,8 @@ struct Hadamard<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::hadamard;
-using numbirch::hadamard_grad;
+using numbirch::hadamard_grad1;
+using numbirch::hadamard_grad2;
 
 /**
  * Element-wise multiplication (Hadamard product).

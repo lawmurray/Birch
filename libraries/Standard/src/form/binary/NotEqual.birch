@@ -12,7 +12,8 @@ struct NotEqual<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::operator!=;
-using numbirch::not_equal_grad;
+using numbirch::not_equal_grad1;
+using numbirch::not_equal_grad2;
 
 /**
  * Not equal to comparison.

@@ -12,7 +12,8 @@ struct Div<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::div;
-using numbirch::div_grad;
+using numbirch::div_grad1;
+using numbirch::div_grad2;
 
 /**
  * Element-wise division.

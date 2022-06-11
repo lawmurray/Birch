@@ -12,7 +12,8 @@ struct Outer<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::outer;
-using numbirch::outer_grad;
+using numbirch::outer_grad1;
+using numbirch::outer_grad2;
 
 /**
  * Outer product.

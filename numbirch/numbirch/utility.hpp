@@ -74,66 +74,6 @@ using real = NUMBIRCH_REAL;
 static const real PI = 3.1415926535897932384626433832795;
 
 /**
- * @internal
- *
- * Pair of values.
- * 
- * @tparam T Arithmetic type.
- * @tparam U Arithmetic type.
- */
-template<class T, class U>
-struct pair {
-  using first_type = T;
-  using second_type = U;
-
-  T first;
-  U second;
-};
-
-/**
- * @internal
- *
- * Triple of values of a given type.
- * 
- * @tparam T Arithmetic type.
- * @tparam U Arithmetic type.
- * @tparam V Arithmetic type.
- */
-template<class T, class U, class V>
-struct triple {
-  using first_type = T;
-  using second_type = U;
-  using third_type = V;
-
-  T first;
-  U second;
-  V third;
-};
-
-/**
- * @internal
- *
- * Quad of values of a given type.
- * 
- * @tparam T Arithmetic type.
- * @tparam U Arithmetic type.
- * @tparam V Arithmetic type.
- * @tparam W Arithmetic type.
- */
-template<class T, class U, class V, class W>
-struct quad {
-  using first_type = T;
-  using second_type = U;
-  using third_type = V;
-  using fourth_type = W;
-
-  T first;
-  U second;
-  V third;
-  W fourth;
-};
-
-/**
  * @var is_integral_v
  * 
  * Is `T` an integral type?

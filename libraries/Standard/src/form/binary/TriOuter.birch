@@ -12,7 +12,8 @@ struct TriOuter<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 hpp{{
 namespace birch {
 using numbirch::triouter;
-using numbirch::triouter_grad;
+using numbirch::triouter_grad1;
+using numbirch::triouter_grad2;
 
 template<class Left, class Right, std::enable_if_t<
     is_delay<Left,Right>::value,int> = 0>

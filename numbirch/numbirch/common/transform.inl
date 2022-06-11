@@ -48,25 +48,10 @@ struct not_functor {
   }
 };
 
-struct not_grad_functor {
-  template<class T>
-  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x) const {
-    return real(0);
-  }
-};
-
 struct and_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE bool operator()(const T x, const U y) const {
     return bool(x && y);
-  }
-};
-
-struct and_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
   }
 };
 
@@ -77,14 +62,6 @@ struct or_functor {
   }
 };
 
-struct or_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
-  }
-};
-
 struct equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE bool operator()(const T x, const U y) const {
@@ -92,27 +69,10 @@ struct equal_functor {
   }
 };
 
-struct equal_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
-  }
-};
-
-
 struct not_equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE bool operator()(const T x, const U y) const {
     return bool(x != y);
-  }
-};
-
-struct not_equal_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
   }
 };
 
@@ -123,26 +83,10 @@ struct less_functor {
   }
 };
 
-struct less_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
-  }
-};
-
 struct less_or_equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE bool operator()(const T x, const U y) const {
     return bool(x <= y);
-  }
-};
-
-struct less_or_equal_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
   }
 };
 
@@ -153,26 +97,10 @@ struct greater_functor {
   }
 };
 
-struct greater_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
-  }
-};
-
 struct greater_or_equal_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE bool operator()(const T x, const U y) const {
     return bool(x >= y);
-  }
-};
-
-struct greater_or_equal_grad_functor {
-  template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{real(0), real(0)};
   }
 };
 
@@ -236,13 +164,6 @@ struct ceil_functor {
   }
 };
 
-struct ceil_grad_functor {
-  template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const T x) const {
-    return real(0.0);
-  }
-};
-
 struct cos_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return std::cos(x);
@@ -287,11 +208,19 @@ struct div_functor {
   }
 };
 
-struct div_grad_functor {
+struct div_grad1_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{g/y, -g*x/(y*y)};
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
+    return g/y;
+  }
+};
+
+struct div_grad2_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
+    return -g*x/(y*y);
   }
 };
 
@@ -318,13 +247,6 @@ struct floor_functor {
   }
 };
 
-struct floor_grad_functor {
-  template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const T x) const {
-    return real(0);
-  }
-};
-
 struct hadamard_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
@@ -332,11 +254,19 @@ struct hadamard_functor {
   }
 };
 
-struct hadamard_grad_functor {
+struct hadamard_grad1_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
-    return pair<real,real>{g*y, g*x};
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
+    return g*y;
+  }
+};
+
+struct hadamard_grad2_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
+    return g*x;
   }
 };
 
@@ -369,13 +299,23 @@ struct lgamma_grad_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
     return g*Eigen::numext::digamma(x);
   }
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const real x,
+};
+
+struct lgamma_grad1_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
       const int y) const {
-    real z = 0.0;
+    real z = real(0);
     for (int i = 1; i <= y; ++i) {
       z += Eigen::numext::digamma(x + real(0.5)*(1 - i));
     }
-    return pair<real,real>{g*z, real(0)};
+    return g*z;
+  }
+};
+
+struct lgamma_grad2_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
+      const int y) const {
+    return real(0);
   }
 };
 
@@ -446,13 +386,6 @@ struct round_functor {
   }
 };
 
-struct round_grad_functor {
-  template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const T x) const {
-    return real(0);
-  }
-};
-
 struct sin_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
     return std::sin(x);
@@ -517,8 +450,8 @@ struct copysign_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE T operator()(const T x, const U y) const {
     if constexpr (is_integral_v<T>) {
-      // don't use std::copysign, as it promotes to floating point, which
-      // we don't wish to do here
+      /* don't use std::copysign, as it promotes to floating point, which
+       * we don't wish to do here */
       return (y >= U(0)) ? std::abs(x) : -std::abs(x);
     } else {
       return std::copysign(real(x), real(y));
@@ -526,19 +459,27 @@ struct copysign_functor {
   }
 };
 
-struct copysign_grad_functor {
+struct copysign_grad1_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const T x,
-      const U y) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
     T z;
     if constexpr (is_integral_v<T>) {
-      // don't use std::copysign, as it promotes to floating point, which
-      // we don't wish to do here
+      /* don't use std::copysign, as it promotes to floating point, which
+       * we don't wish to do here */
       z = (y >= U(0)) ? std::abs(x) : -std::abs(x);
     } else {
       z = std::copysign(real(x), real(y));
     }
-    return pair<real,real>{z == x ? g: -g, real(0)};
+    return z == x ? g: -g;
+  }
+};
+
+struct copysign_grad2_functor {
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
+    return real(0);
   }
 };
 
@@ -560,13 +501,17 @@ struct lbeta_functor {
   }
 };
 
-struct lbeta_grad_functor {
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const real x,
+struct lbeta_grad1_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
       const real y) const {
-    real d = Eigen::numext::digamma(x + y);
-    real gx = Eigen::numext::digamma(x) - d;
-    real gy = Eigen::numext::digamma(y) - d;
-    return pair<real,real>{g*gx, g*gy};
+    return g*(Eigen::numext::digamma(x) - Eigen::numext::digamma(x + y));
+  }
+};
+
+struct lbeta_grad2_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
+      const real y) const {
+    return g*(Eigen::numext::digamma(y) - Eigen::numext::digamma(x + y));
   }
 };
 
@@ -577,13 +522,21 @@ struct lchoose_functor {
   }
 };
 
-struct lchoose_grad_functor {
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const real x,
+struct lchoose_grad1_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
       const real y) const {
     real d = Eigen::numext::digamma(x - y + real(1));
     real gx = Eigen::numext::digamma(x + real(1)) - d;
+    return g*gx;
+  }
+};
+
+struct lchoose_grad2_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
+      const real y) const {
+    real d = Eigen::numext::digamma(x - y + real(1));
     real gy = -Eigen::numext::digamma(y + real(1)) + d;
-    return pair<real,real>{g*gx, g*gy};
+    return g*gy;
   }
 };
 
@@ -593,12 +546,17 @@ struct pow_functor {
   }
 };
 
-struct pow_grad_functor {
-  NUMBIRCH_HOST_DEVICE pair<real,real> operator()(const real g, const real x,
+struct pow_grad1_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
       const real y) const {
-    real gx = y*std::pow(x, y - real(1));
-    real gy = std::pow(x, y)*std::log(x);
-    return pair<real,real>{g*gx, g*gy};
+    return g*y*std::pow(x, y - real(1));
+  }
+};
+
+struct pow_grad2_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x,
+      const real y) const {
+    return g*std::pow(x, y)*std::log(x);
   }
 };
 
@@ -617,15 +575,18 @@ struct ibeta_functor {
   }
 };
 
-/**
- * @internal
- * 
- * Convenience function to apply aggregate to a pair.
- */
-template<int D, int E, class T, class U>
-auto aggregate(const std::pair<T,U>& x) {
-  return std::make_pair(aggregate<D>(x.first), aggregate<E>(x.second));
-}
+struct zero_grad_functor {
+  template<class T>
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x) const {
+    return real(0);
+  }
+
+  template<class T, class U>
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
+      const {
+    return real(0);
+  }
+};
 
 template<class T, class>
 bool_t<T> operator!(const T& x) {
@@ -637,7 +598,7 @@ template<class T, class>
 real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y,
     const T& x) {
   prefetch(x);
-  return transform(g, x, not_grad_functor());
+  return transform(g, x, zero_grad_functor());
 }
 
 template<class T, class U, class>
@@ -648,13 +609,21 @@ bool_t<T,U> operator&&(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> and_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      and_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -665,13 +634,21 @@ bool_t<T,U> operator||(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> or_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      or_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -682,13 +659,21 @@ bool_t<T,U> operator==(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> equal_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      equal_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -699,13 +684,21 @@ bool_t<T,U> operator!=(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> not_equal_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      not_equal_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -716,13 +709,21 @@ bool_t<T,U> operator<(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> less_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      less_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -733,13 +734,21 @@ bool_t<T,U> operator<=(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> less_or_equal_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      less_or_equal_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -750,13 +759,21 @@ bool_t<T,U> operator>(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> greater_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      greater_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class U, class>
@@ -767,13 +784,21 @@ bool_t<T,U> operator>=(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> greater_or_equal_grad(const real_t<T,U>& g,
-    const bool_t<T,U>& z, const T& x, const U& y) {
+real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      greater_or_equal_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<class T, class>
@@ -808,10 +833,15 @@ implicit_t<T,U> add(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> add_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
-  return std::make_pair(aggregate<dimension_v<T>>(g),
-      aggregate<dimension_v<U>>(g));
+real_t<T> add_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
+    const U& y) {
+  return aggregate<dimension_v<T>>(g);
+}
+
+template<class T, class U, class>
+real_t<U> add_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
+    const U& y) {
+  return aggregate<dimension_v<U>>(g);
 }
 
 template<class T, class>
@@ -853,7 +883,7 @@ T ceil(const T& x) {
 template<class T, class>
 real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x) {
   prefetch(x);
-  return transform(g, x, ceil_grad_functor());
+  return transform(g, x, zero_grad_functor());
 }
 
 template<class T, class U, class>
@@ -864,13 +894,23 @@ implicit_t<T,U> copysign(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> copysign_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
+real_t<T> copysign_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      copysign_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y,
+      copysign_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> copysign_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y,
+      copysign_grad2_functor()));
 }
 
 template<class T, class>
@@ -918,13 +958,21 @@ implicit_t<T,U> div(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> div_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
+real_t<T> div_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      div_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, div_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> div_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, div_grad2_functor()));
 }
 
 template<class T, class>
@@ -948,7 +996,7 @@ T floor(const T& x) {
 template<class T, class>
 real_t<T> floor_grad(const real_t<T>& g, const T& y, const T& x) {
   prefetch(x);
-  return transform(g, x, floor_grad_functor());
+  return transform(g, x, zero_grad_functor());
 }
 
 template<class T, class U, class>
@@ -981,13 +1029,21 @@ real_t<T,U> lbeta(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> lbeta_grad(const real_t<T,U>& g,
-    const real_t<T,U>& z, const T& x, const U& y) {
+real_t<T> lbeta_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      lbeta_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, lbeta_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> lbeta_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, lbeta_grad2_functor()));
 }
 
 template<class T, class U, class>
@@ -998,13 +1054,23 @@ real_t<T,U> lchoose(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> lchoose_grad(const real_t<T,U>& g,
-    const real_t<T,U>& z, const T& x, const U& y) {
+real_t<T> lchoose_grad1(const real_t<T,U>& g, const real_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      lchoose_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y,
+      lchoose_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> lchoose_grad2(const real_t<T,U>& g, const real_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y,
+      lchoose_grad2_functor()));
 }
 
 template<class T, class>
@@ -1040,13 +1106,23 @@ real_t<T,U> lgamma(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> lgamma_grad(const real_t<T,U>& g,
-    const real_t<T,U>& z, const T& x, const U& y) {
+real_t<T> lgamma_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      lgamma_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y,
+      lgamma_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> lgamma_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y,
+      lgamma_grad2_functor()));
 }
 
 template<class T, class>
@@ -1081,13 +1157,23 @@ implicit_t<T,U> hadamard(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> hadamard_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
+real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      hadamard_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y,
+      hadamard_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y,
+      hadamard_grad2_functor()));
 }
 
 template<class T, class>
@@ -1104,13 +1190,21 @@ real_t<T,U> pow(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> pow_grad(const real_t<T,U>& g,
-    const real_t<T,U>& z, const T& x, const U& y) {
+real_t<T> pow_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+    const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return aggregate<dimension_v<T>,dimension_v<U>>(transform_pair(g, x, y,
-      pow_grad_functor()));
+  return aggregate<dimension_v<T>>(transform(g, x, y, pow_grad1_functor()));
+}
+
+template<class T, class U, class>
+real_t<U> pow_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+    const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return aggregate<dimension_v<U>>(transform(g, x, y, pow_grad2_functor()));
 }
 
 template<class T, class>
@@ -1134,7 +1228,7 @@ T round(const T& x) {
 template<class T, class>
 real_t<T> round_grad(const real_t<T>& g, const T& y, const T& x) {
   prefetch(x);
-  return transform(g, x, round_grad_functor());
+  return transform(g, x, zero_grad_functor());
 }
 
 template<class T, class>
@@ -1183,13 +1277,21 @@ implicit_t<T,U> sub(const T& x, const U& y) {
 }
 
 template<class T, class U, class>
-std::pair<real_t<T>,real_t<U>> sub_grad(const real_t<T,U>& g,
-    const implicit_t<T,U>& z, const T& x, const U& y) {
+real_t<T> sub_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
-  return std::make_pair(aggregate<dimension_v<T>>(g),
-      neg(aggregate<dimension_v<U>>(g)));
+  return aggregate<dimension_v<T>>(g);
+}
+
+template<class T, class U, class>
+real_t<U> sub_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
+  prefetch(g);
+  prefetch(x);
+  prefetch(y);
+  return neg(aggregate<dimension_v<U>>(g));
 }
 
 template<class T, class>

@@ -172,47 +172,6 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
 }
 
 /*
- * Ternary transform returning pair.
- */
-template<class T, class U, class V, class W, class X, class Functor>
-__global__ void kernel_transform_pair(const int m, const int n, const T A,
-    const int ldA, const U B, const int ldB, const V C, const int ldC,
-    W D, const int ldD, X E, const int ldE, Functor f) {
-  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
-      j += gridDim.y*blockDim.y) {
-    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
-        i += gridDim.x*blockDim.x) {
-      auto pair = f(get(A, i, j, ldA), get(B, i, j, ldB), get(C, i, j, ldC));
-      get(D, i, j, ldD) = pair.first;
-      get(E, i, j, ldE) = pair.second;
-    }
-  }
-}
-template<class T, class U, class V, class Functor>
-auto transform_pair(const T& x, const U& y, const V& z, Functor f) {
-  if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> &&
-      is_arithmetic_v<V>) {
-    auto [a, b] = f(x, y, z);
-    return std::make_pair(a, b);
-  } else {
-    using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>()));
-    constexpr int D = dimension_v<implicit_t<T,U,V>>;
-    auto m = width(x, y, z);
-    auto n = height(x, y, z);
-    auto a = Array<real,D>(make_shape<D>(m, n));
-    auto b = Array<real,D>(make_shape<D>(m, n));
-    if (m > 0 && n > 0) {
-      auto grid = make_grid(m, n);
-      auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform_pair<<<grid,block,0,stream>>>(m, n,
-          data(sliced(x)), stride(x), data(sliced(y)), stride(y), data(sliced(z)), stride(z), data(sliced(a)),
-          stride(a), data(sliced(b)), stride(b), f));
-    }
-    return std::make_pair(a, b);
-  }
-}
-
-/*
  * Unary gather.
  */
 template<class T, class U, class V>
