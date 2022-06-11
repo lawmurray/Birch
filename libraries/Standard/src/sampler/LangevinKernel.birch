@@ -95,18 +95,8 @@ class LangevinKernel < Kernel {
         let μ' <- x' + hadamard(g', δ);
 
         /* proposal correction */
-        let r <- transform_reduce(x' - μ, x - μ', δ, 0.0,
-            \(a:Real, b:Real) -> {
-              return a + b;
-            },
-            \(z':Real, z:Real, δ:Real) -> {
-              let r <- -0.25*(z*z - z'*z')/δ;
-              if isfinite(r) {
-                return r;
-              } else {
-                return 0.0;
-              }
-            });
+        let q <- (pow(x - μ', 2.0) - pow(x' - μ, 2.0))/δ;
+        let r <- -0.25*sum(where(isfinite(q), q, 0.0));
 
         /* accept/reject */
         accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + r;
