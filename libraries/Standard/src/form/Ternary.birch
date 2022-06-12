@@ -81,8 +81,7 @@ hpp{{
     auto l = birch::move(this->l, visitor); \
     auto m = birch::move(this->m, visitor); \
     auto r = birch::move(this->r, visitor); \
-    const_cast<std::optional<Value>&>(x) = f(l, m, r, ##__VA_ARGS__); \
-    return *x; \
+    return f(l, m, r, ##__VA_ARGS__); \
   } \
   \
   void args(const ArgsVisitor& visitor) const { \
