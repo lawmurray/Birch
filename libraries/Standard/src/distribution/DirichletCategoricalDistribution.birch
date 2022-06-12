@@ -44,7 +44,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function upper() -> Integer!? {
-    return rows(eval(α));
+    return length(value(α));
   }
 
   override function constant() {

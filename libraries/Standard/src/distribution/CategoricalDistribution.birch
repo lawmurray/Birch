@@ -43,11 +43,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function lower() -> Integer!? {
-    return length(ρ) > 0;
+    return 1;
   }
 
   override function upper() -> Integer!? {
-    return length(ρ);
+    return length(value(ρ));
   }
 
   override function constant() {
