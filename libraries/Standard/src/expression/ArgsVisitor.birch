@@ -74,7 +74,7 @@ class ArgsVisitor {
     if v.g? {
       g[(n + 1)..(n + m)] <- v.g!;
     } else {
-      g[(n + 1)..(n + m)] <- vector(0.0, m);
+      g[(n + 1)..(n + m)] <- 0.0;
     }
     v.g <- nil;
     n <- n + m;
@@ -101,7 +101,7 @@ class ArgsVisitor {
     if v.g? {
       g[(n + 1)..(n + m)] <- vec(v.g!);
     } else {
-      g[(n + 1)..(n + m)] <- vector(0.0, m);
+      g[(n + 1)..(n + m)] <- 0.0;
     }
     v.g <- nil;
     n <- n + m;
