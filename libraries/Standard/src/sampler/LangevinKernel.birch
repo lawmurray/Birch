@@ -15,42 +15,40 @@ class LangevinKernel < Kernel {
   σ2:Real[_];
 
   override function adapt(t:Integer, x:Array<Particle>, w:Real[_]) {
+    assert x.size() == length(w);
+
     σ2 <- vector(0.0, 0);
-    s:Real[_];  // sum of states
-    s2:Real[_];  // sum of squared states
-    let v <- norm_exp(w);  // normalized weights
-    let N <- x.size();
-    let first <- true;
-    for n in 1..N {
-      x[n].hoist();
-      let π <- x[n].π;
+    let N <- length(w);
+    if N > 0 {
+      x[1].hoist();
+      let π <- x[1].π;
       if π? {
         let (y, g) <- π!.args();
+        let P <- length(y);
+        Y:Real[P,N];
+        Y[1..P,1] <- where(isfinite(y), y, 0.0);
 
-        /* skip when weight is zero, as this will have no effect on the
-         * computation, unless that weight results from NaN values, which will
-         * still propagate */
-        if v[n] > 0.0 {
-          let z <- v[n]*y;
-          let z2 <- v[n]*pow(y, 2.0);
-          if first {
-            s <- z;
-            s2 <- z2;
-            first <- false;
-          } else if length(y) == length(s) {
-            s <- s + z;
-            s2 <- s2 + z2;
+        let incompatible <- false;
+        dynamic parallel for n in 2..N {
+          x[n].hoist();
+          let π <- x[n].π;
+          if π? {
+            let (y, g) <- π!.args();
+            if length(y) == P {
+              Y[1..P,n] <- where(isfinite(y), y, 0.0);
+            } else {
+              incompatible <- true;
+            }
           } else {
-            return;  // mismatched states, cannot adapt
+            incompatible <- true;
           }
         }
-        x[n].π <- nil;
-      } else {
-        return;  // mismatched states, cannot adapt
+        if !incompatible {
+          let v <- norm_exp(w);  // normalized weights
+          let μ <- Y*v;
+          σ2 <- pow(Y, 2.0)*v - pow(μ, 2.0);
+        }
       }
-    }
-    if !first {
-      σ2 <- s2 - pow(s, 2.0);
     }
   }
 
