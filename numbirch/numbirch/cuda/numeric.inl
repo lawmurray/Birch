@@ -439,6 +439,31 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
 }
 
 template<class T, class>
+Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& y) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+  Array<T,1> x(y, true);
+
+  CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
+      CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, length(x), data(sliced(L)), stride(L),
+      data(sliced(x)), stride(x)));
+  return x;
+}
+
+template<class T, class>
+Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(C));
+  Array<T,2> B(C, true);
+
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
+      stride(B)));
+  return B;
+}
+
+template<class T, class>
 Array<T,2> triinv(const Array<T,2>& L) {
   assert(rows(L) == columns(L));
   Array<T,2> B(diagonal(T(1.0), rows(L)));

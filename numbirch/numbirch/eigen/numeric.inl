@@ -224,6 +224,30 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
 }
 
 template<class T, class>
+Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& y) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+  Array<T,1> x(shape(y));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto x1 = make_eigen(x);
+  auto y1 = make_eigen(y);
+  x1.noalias() = L1.transpose().solve(y1);
+  return x;
+}
+
+template<class T, class>
+Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == rows(C));
+  Array<T,2> B(shape(C));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto B1 = make_eigen(B);
+  auto C1 = make_eigen(C);
+  B1.noalias() = L1.transpose().solve(C1);
+  return B;
+}
+
+template<class T, class>
 Array<T,2> triinv(const Array<T,2>& L) {
   assert(rows(L) == columns(L));
   Array<T,2> B(shape(L));

@@ -17,6 +17,7 @@
 namespace numbirch {
 BINARY_MATRIX(operator*)
 BINARY_MATRIX(cholsolve)
+BINARY_MATRIX(triinnersolve)
 BINARY_MATRIX(trimul)
 BINARY_MATRIX(trisolve)
 }
