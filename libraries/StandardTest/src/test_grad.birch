@@ -46,7 +46,6 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
       let min_fd <- inf;  // closest finite difference estimate...
       let min_δ <- inf;   // ...and associated distance
       let t <- 1;
-      let pass <- false;
       while t <= ntrials && Δ' > 0.0 {  // may == 0.0 in single precision
         let y <- x;
         let z <- x;
@@ -56,7 +55,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let r <- π.move(z)!;
         let fd <- (r - q)/Δ';
         let δ <- abs(g[i] - fd);
-        pass <- δ <= ε*min(abs(g[i]), abs(fd));
+        let pass <- δ <= ε*min(abs(g[i]), abs(fd));
         if δ < min_δ {
           min_δ <- δ;
           min_fd <- fd;

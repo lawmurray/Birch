@@ -189,7 +189,7 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(columns(L) == length(y));
   prefetch(L);
   prefetch(y);
-  Array<T,1> x(y);
+  Array<T,1> x(y, true);
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
@@ -204,7 +204,7 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
   assert(columns(L) == rows(C));
   prefetch(L);
   prefetch(C);
-  Array<T,2> B(C);
+  Array<T,2> B(C, true);
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
@@ -417,7 +417,7 @@ Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x) {
   assert(columns(L) == length(x));
   prefetch(L);
   prefetch(x);
-  Array<T,1> y(x);
+  Array<T,1> y(x, true);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), data(sliced(L)), stride(L), data(sliced(y)),
       stride(y)));
@@ -456,7 +456,7 @@ Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x) {
   assert(columns(L) == length(x));
   prefetch(L);
   prefetch(x);
-  Array<T,1> y(x);
+  Array<T,1> y(x, true);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), data(sliced(L)), stride(L), data(sliced(y)),
       stride(y)));
@@ -495,7 +495,7 @@ template<class T, class>
 Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
-  Array<T,1> x(y);
+  Array<T,1> x(y, true);
 
   CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(x), data(sliced(L)), stride(L),
@@ -507,7 +507,7 @@ template<class T, class>
 Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
-  Array<T,2> B(C);
+  Array<T,2> B(C, true);
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,

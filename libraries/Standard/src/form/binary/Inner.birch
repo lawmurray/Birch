@@ -19,7 +19,7 @@ using numbirch::inner_grad2;
  * Inner product.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 Inner<Left,Right> inner(const Left& l, const Right& r) {
   return construct<Inner<Left,Right>>(l, r);
 }

@@ -18,7 +18,7 @@ using numbirch::lcholdet_grad;
  * Log-determinant of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 LCholDet<Middle> lcholdet(const Middle& m) {
   return construct<LCholDet<Middle>>(m);
 }

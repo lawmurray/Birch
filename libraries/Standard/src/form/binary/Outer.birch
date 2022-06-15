@@ -19,7 +19,7 @@ using numbirch::outer_grad2;
  * Outer product.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 Outer<Left,Right> outer(const Left& l, const Right& r) {
   return construct<Outer<Left,Right>>(l, r);
 }

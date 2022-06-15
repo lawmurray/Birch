@@ -19,7 +19,7 @@ using numbirch::not_equal_grad2;
  * Not equal to comparison.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 NotEqual<Left,Right> operator!=(const Left& l, const Right& r) {
   return construct<NotEqual<Left,Right>>(l, r);
 }

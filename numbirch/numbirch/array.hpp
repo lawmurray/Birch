@@ -218,8 +218,18 @@ ArrayShape<0> shape(const T& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<!is_arithmetic_v<T>,int>>
-auto sliced(T&& x) {
+template<class T, int D>
+Recorder<T> sliced(Array<T,D>& x) {
+  return x.sliced();
+}
+
+/**
+ * Buffer of an array for a slice operation.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+Recorder<const T> sliced(const Array<T,D>& x) {
   return x.sliced();
 }
 
@@ -228,8 +238,8 @@ auto sliced(T&& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-constexpr const T& sliced(const T& x) {
+template<class T>
+auto sliced(const T& x) {
   return x;
 }
 
@@ -249,7 +259,7 @@ T* data(const Recorder<T>& x) {
  * @ingroup array
  */
 template<class T>
-constexpr const T& data(const T& x) {
+auto data(const T& x) {
   return x;
 }
 

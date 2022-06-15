@@ -14,7 +14,7 @@ namespace birch {
 using numbirch::frobenius;
 using numbirch::frobenius_grad;
 
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 FrobeniusSelf<Middle> frobenius(const Middle& m) {
   return construct<FrobeniusSelf<Middle>>(m);
 }

@@ -16,7 +16,7 @@ using numbirch::triouter_grad1;
 using numbirch::triouter_grad2;
 
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 TriOuter<Left,Right> triouter(const Left& l, const Right& r) {
   return construct<TriOuter<Left,Right>>(l, r);
 }

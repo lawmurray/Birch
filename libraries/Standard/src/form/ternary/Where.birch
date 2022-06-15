@@ -21,7 +21,7 @@ using numbirch::where_grad3;
  * Conditional.
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay<Left,Middle,Right>::value,int> = 0>
+    is_delay_v<Left,Middle,Right>,int> = 0>
 Where<Left,Middle,Right> where(const Left& l, const Middle& m,
     const Right& r) {
   return construct<Where<Left,Middle,Right>>(l, m, r);

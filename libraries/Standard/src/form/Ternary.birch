@@ -54,20 +54,20 @@ hpp{{
     const_cast<std::optional<Value>&>(x).reset(); \
   } \
   \
-  const Value& value() const { \
+  auto value() const { \
     auto x = this->eval(); \
     this->constant(); \
     return x; \
   } \
   \
-  Value eval() const { \
+  auto eval() const { \
     auto l = birch::eval(this->l); \
     auto m = birch::eval(this->m); \
     auto r = birch::eval(this->r); \
     return f(l, m, r, ##__VA_ARGS__); \
   } \
   \
-  const Value& peek() const { \
+  auto peek() const { \
     if (!x) { \
       auto l = birch::peek(this->l); \
       auto m = birch::peek(this->m); \
@@ -77,7 +77,7 @@ hpp{{
     return *x; \
   } \
   \
-  Value move(const MoveVisitor& visitor) const { \
+  auto move(const MoveVisitor& visitor) const { \
     auto l = birch::move(this->l, visitor); \
     auto m = birch::move(this->m, visitor); \
     auto r = birch::move(this->r, visitor); \

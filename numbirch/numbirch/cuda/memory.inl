@@ -7,8 +7,6 @@
 #include "numbirch/utility.hpp"
 #include "numbirch/cuda/cuda.hpp"
 
-#include <iostream>
-
 namespace numbirch {
 
 template<class T, class U>
@@ -23,8 +21,8 @@ __global__ void kernel_memcpy(T* dst, const int dpitch, const U* src,
   }
 }
 
-template<class T, class U>
-__global__ void kernel_memset(T* dst, const int dpitch, const U value,
+template<class T>
+__global__ void kernel_memset(T* dst, const int dpitch, const T value,
     const int width, const int height) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < height;
       j += gridDim.y*blockDim.y) {
@@ -46,8 +44,8 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
   }
 }
 
-template<class T, class U, class>
-void memset(T* dst, const int dpitch, const U value, const int width,
+template<class T, class>
+void memset(T* dst, const int dpitch, const T value, const int width,
     const int height) {
   if (width > 0 && height > 0) {
     auto grid = make_grid(width, height);

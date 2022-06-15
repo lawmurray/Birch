@@ -20,7 +20,7 @@ using numbirch::pack_grad2;
  * new matrix.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 MatrixPack<Left,Right> pack(const Left& l, const Right& r) {
   return construct<MatrixPack<Left,Right>>(l, r);
 }

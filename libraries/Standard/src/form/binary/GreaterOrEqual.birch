@@ -20,7 +20,7 @@ using numbirch::greater_or_equal_grad2;
  * Greater than or equal to comparison.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 GreaterOrEqual<Left,Right> operator>=(const Left& l, const Right& r) {
   return construct<GreaterOrEqual<Left,Right>>(l, r);
 }

@@ -109,8 +109,7 @@ function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
  * Return: the cumulative probability.
  */
 function cdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
-  return where(x <= l, 0.0, where(x <= u, (x - l)/(u - l),
-      1.0));
+  return where(x <= l, 0.0, where(x <= u, (x - l)/(u - l), 1.0));
 }
 
 /*

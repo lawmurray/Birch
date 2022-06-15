@@ -14,7 +14,7 @@ namespace birch {
 using numbirch::outer;
 using numbirch::outer_grad;
 
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 OuterSelf<Middle> outer(const Middle& m) {
   return construct<OuterSelf<Middle>>(m);
 }

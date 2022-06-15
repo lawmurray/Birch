@@ -346,7 +346,7 @@ struct log1p_functor {
 
 struct log1p_grad_functor {
   NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
-    return g/(x + real(1.0));
+    return g/(x + real(1));
   }
 };
 

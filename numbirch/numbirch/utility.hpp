@@ -98,7 +98,7 @@ struct is_integral<bool> {
   static constexpr bool value = true;
 };
 template<class T>
-inline constexpr bool is_integral_v = is_integral<T>::value;
+inline constexpr bool is_integral_v = is_integral<std::decay_t<T>>::value;
 
 /**
  * @var is_floating_point_v
@@ -122,7 +122,8 @@ struct is_floating_point<real> {
   static constexpr bool value = true;
 };
 template<class T>
-inline constexpr bool is_floating_point_v = is_floating_point<T>::value;
+inline constexpr bool is_floating_point_v =
+    is_floating_point<std::decay_t<T>>::value;
 
 /**
  * @var is_arithmetic_v
@@ -142,7 +143,7 @@ struct is_arithmetic {
       is_floating_point<T>::value;
 };
 template<class T>
-inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
+inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
 
 /**
  * @typedef value_t
@@ -161,7 +162,7 @@ struct value<Array<T,D>> {
   using type = T;
 };
 template<class T>
-using value_t = typename value<T>::type;
+using value_t = typename value<std::decay_t<T>>::type;
 
 /**
  * @var dimension_v
@@ -179,7 +180,7 @@ struct dimension<Array<T,D>> {
   static constexpr int value = D;
 };
 template<class T>
-inline constexpr int dimension_v = dimension<T>::value;
+inline constexpr int dimension_v = dimension<std::decay_t<T>>::value;
 
 /**
  * @var is_array_v
@@ -200,7 +201,7 @@ struct is_array<Array<T,D>> {
   static constexpr bool value = true;
 };
 template<class T>
-inline constexpr bool is_array_v = is_array<T>::value;
+inline constexpr bool is_array_v = is_array<std::decay_t<T>>::value;
 
 /**
  * @var is_scalar_v
@@ -217,7 +218,7 @@ struct is_scalar {
       dimension<T>::value == 0;
 };
 template<class T>
-inline constexpr bool is_scalar_v = is_scalar<T>::value;
+inline constexpr bool is_scalar_v = is_scalar<std::decay_t<T>>::value;
 
 /**
  * @var is_vector_v
@@ -234,7 +235,7 @@ struct is_vector {
       dimension<T>::value == 1;
 };
 template<class T>
-inline constexpr bool is_vector_v = is_vector<T>::value;
+inline constexpr bool is_vector_v = is_vector<std::decay_t<T>>::value;
 
 /**
  * @var is_matrix_v
@@ -251,7 +252,7 @@ struct is_matrix {
       dimension<T>::value == 2;
 };
 template<class T>
-inline constexpr bool is_matrix_v = is_matrix<T>::value;
+inline constexpr bool is_matrix_v = is_matrix<std::decay_t<T>>::value;
 
 /**
  * @var is_numeric_v
@@ -269,7 +270,7 @@ struct is_numeric {
   static constexpr bool value = is_array<T>::value || is_scalar<T>::value;
 };
 template<class T>
-inline constexpr bool is_numeric_v = is_numeric<T>::value;
+inline constexpr bool is_numeric_v = is_numeric<std::decay_t<T>>::value;
 
 /**
  * @typedef promote_t
@@ -289,7 +290,8 @@ struct promote {
 };
 template<class T, class U, class... Args>
 struct promote<T,U,Args...> {
-  using type = typename promote<typename promote<T,U>::type,Args...>::type;
+  using type = typename promote<typename promote<std::decay_t<T>,
+      std::decay_t<U>>::type,Args...>::type;
 };
 template<>
 struct promote<double,double> {
@@ -386,7 +388,8 @@ struct implicit {
 };
 template<class T, class U, class... Args>
 struct implicit<T,U,Args...> {
-  using type = typename implicit<typename implicit<T,U>::type,Args...>::type;
+  using type = typename implicit<typename implicit<std::decay_t<T>,
+      std::decay_t<U>>::type,Args...>::type;
 };
 template<class T, int D, class U, int E>
 struct implicit<Array<T,D>,Array<U,E>> {
@@ -534,7 +537,7 @@ using bool_t = typename bool_s<Args...>::type;
 template<class T, class U>
 struct promotes_to {
   static constexpr bool value = std::is_same<
-      promote_t<T,U>,U>::value;
+      promote_t<T,U>,std::decay_t<U>>::value;
 };
 template<class T, class U>
 inline constexpr bool promotes_to_v = promotes_to<T,U>::value;
@@ -552,12 +555,11 @@ struct all_integral {
 };
 template<class Arg>
 struct all_integral<Arg> {
-  static const bool value = is_integral<
-      typename std::decay<Arg>::type>::value;
+  static const bool value = is_integral<Arg>::value;
 };
 template<class Arg, class... Args>
 struct all_integral<Arg,Args...> {
-  static const bool value = all_integral<Arg>::value &&
+  static const bool value = is_integral<Arg>::value &&
       all_integral<Args...>::value;
 };
 template<class... Args>

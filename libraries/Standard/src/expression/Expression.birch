@@ -207,7 +207,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    *
    * Returns: The result.
    */
-  function eval() -> Value! {
+  final function eval() -> Value! {
     if !x? {
       doEval();
       assert x?;
@@ -358,7 +358,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    *
    * Returns: The result.
    */
-  function peek() -> Value! {
+  final function peek() -> Value! {
     /* forms use peek() for fine-grain memoization, but this terminates at
      * the nearest Expression objects; so here should behave as for eval(),
      * reverting to coarse-grain memoization */

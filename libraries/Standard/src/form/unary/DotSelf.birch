@@ -14,7 +14,7 @@ namespace birch {
 using numbirch::dot;
 using numbirch::dot_grad;
 
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 DotSelf<Middle> dot(const Middle& m) {
   return construct<DotSelf<Middle>>(m);
 }

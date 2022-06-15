@@ -24,7 +24,7 @@ using numbirch::element_grad3;
  * Element of a matrix.
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay<Left,Middle,Right>::value,int> = 0>
+    is_delay_v<Left,Middle,Right>,int> = 0>
 MatrixElement<Left,Middle,Right> element(const Left& l, const Middle& m,
     const Right& r) {
   return construct<MatrixElement<Left,Middle,Right>>(l, m, r);

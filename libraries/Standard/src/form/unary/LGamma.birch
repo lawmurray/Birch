@@ -17,7 +17,7 @@ using numbirch::lgamma_grad;
 /**
  * Logarithm of the gamma function.
  */
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 LGamma<Middle> lgamma(const Middle& m) {
   return construct<LGamma<Middle>>(m);
 }

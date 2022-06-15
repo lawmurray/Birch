@@ -19,7 +19,7 @@ using numbirch::less_or_equal_grad2;
  * Less than or equal to comparison.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 LessOrEqual<Left,Right> operator<=(const Left& l, const Right& r) {
   return construct<LessOrEqual<Left,Right>>(l, r);
 }

@@ -18,7 +18,7 @@ using numbirch::cast_grad;
  * Cast.
  */
 template<class To, class Middle, std::enable_if_t<
-    is_delay<Middle>::value,int> = 0>
+    is_delay_v<Middle>,int> = 0>
 Cast<To,Middle> cast(const Middle& m) {
   return construct<Cast<To,Middle>>(m);
 }

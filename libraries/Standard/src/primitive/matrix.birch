@@ -44,11 +44,12 @@ function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
 function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
   using T = decltype(wait(λ(1,1)));
-  return numbirch::Array<T,2>([&](const int64_t s) {
+  return numbirch::Array<T,2>(numbirch::make_shape(rows, columns),
+      [&](const int64_t s) {
         int j = (s - 1)/rows + 1;
         int i = (s - 1)%rows + 1;
         return λ(i, j);
-      }, numbirch::make_shape(rows, columns));
+      });
   }}
 }
 

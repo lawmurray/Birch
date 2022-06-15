@@ -14,7 +14,7 @@ namespace birch {
 using numbirch::triinv;
 using numbirch::triinv_grad;
 
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 TriInv<Middle> triinv(const Middle& m) {
   return construct<TriInv<Middle>>(m);
 }

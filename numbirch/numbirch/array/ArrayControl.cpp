@@ -26,6 +26,7 @@ ArrayControl::ArrayControl(const ArrayControl& o) :
     r(1) {
   event_join(o.writeEvt);
   memcpy(buf, o.buf, o.bytes);
+  event_record_read(o.readEvt);
   event_record_write(writeEvt);
 }
 
@@ -37,6 +38,7 @@ ArrayControl::ArrayControl(const ArrayControl& o, const size_t bytes) :
     r(1) {
   event_join(o.writeEvt);
   memcpy(buf, o.buf, std::min(bytes, o.bytes));
+  event_record_read(o.readEvt);
   event_record_write(writeEvt);
 }
 

@@ -78,6 +78,7 @@ public:
    * Decrement the shared reference count and return the new value.
    */
   int decShared() {
+    assert(numShared() > 0);
     return --r;
   }
 
@@ -98,6 +99,8 @@ public:
 
   /**
    * Get underlying buffer for use in a slice operation.
+   * 
+   * @param k Offset into underlying buffer.
    * 
    * @return Recorder wrapper around the raw pointers. Pass to data() to
    * return the raw pointer while injecting event recording code via its
@@ -120,6 +123,8 @@ public:
 
   /**
    * Get underlying buffer for use in a dice operation.
+   * 
+   * @param k Offset into underlying buffer.
    * 
    * @return Raw pointer.
    */

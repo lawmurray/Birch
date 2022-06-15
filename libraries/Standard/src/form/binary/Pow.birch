@@ -19,7 +19,7 @@ using numbirch::pow_grad2;
  * Power.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 Pow<Left,Right> pow(const Left& l, const Right& r) {
   return construct<Pow<Left,Right>>(l, r);
 }

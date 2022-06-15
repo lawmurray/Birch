@@ -17,7 +17,7 @@ using numbirch::tanh_grad;
 /**
  * Hyperbolic tangent.
  */
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Tanh<Middle> tanh(const Middle& m) {
   return construct<Tanh<Middle>>(m);
 }

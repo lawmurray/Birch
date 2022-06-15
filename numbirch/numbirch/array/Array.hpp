@@ -57,39 +57,15 @@ public:
   static constexpr int ndims = D;
 
   /**
-   * Default constructor for scalar. The array contains one element.
+   * Default constructor.
    */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
   Array() :
       ctl(nullptr),
       shp(),
       isView(false) {
-    allocate();
-  }
-
-  /**
-   * Constructor for non-scalar. The array is empty.
-   */
-  template<int E = D, std::enable_if_t<E != 0,int> = 0>
-  Array() :
-      ctl(nullptr),
-      shp(),
-      isView(false) {
-    //
-  }
-
-  /**
-   * Constructor (scalar only).
-   * 
-   * @param value 
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  Array(const T value) :
-      ctl(nullptr),
-      shp(),
-      isView(false) {
-    allocate();
-    fill(value);
+    if (volume() > 0) {
+      allocate();
+    }
   }
 
   /**
@@ -101,7 +77,28 @@ public:
       ctl(nullptr),
       shp(shp),
       isView(false) {
-    allocate();
+    if (volume() > 0) {
+      allocate();
+    }
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param value Fill value.
+   * 
+   * Typically this is used for construction of scalars, which have one
+   * element by default. Arrays of higher dimension have no elements by
+   * default.
+   */
+  Array(const T value) :
+      ctl(nullptr),
+      shp(),
+      isView(false) {
+    if (volume() > 0) {
+      allocate();
+      fill(value);
+    }
   }
 
   /**
@@ -114,8 +111,49 @@ public:
       ctl(nullptr),
       shp(shp),
       isView(false) {
-    allocate();
-    fill(value);
+    if (volume() > 0) {
+      allocate();
+      fill(value);
+    }
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param shp Shape.
+   * @param value Fill value.
+   */
+  Array(const shape_type& shp, const Array<T,0>& value) :
+      ctl(nullptr),
+      shp(shp),
+      isView(false) {
+    if (volume() > 0) {
+      allocate();
+      fill(value);
+    }
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param shp Shape.
+   * @param l Lambda called to construct each element. Argument is a 1-based
+   * serial index.
+   */
+  template<class L, std::enable_if_t<std::is_invocable_r_v<T,L,int>,int> = 0>
+  Array(const shape_type& shp, const L& l) :
+      ctl(nullptr),
+      shp(shp),
+      isView(false) {
+    if (volume() > 0) {
+      allocate();
+      int64_t n = 0;
+      auto iter = begin();
+      auto to = end();
+      for (; iter != to; ++iter) {
+        *iter = l(++n);
+      }
+    }
   }
 
   /**
@@ -128,8 +166,10 @@ public:
       ctl(nullptr),
       shp(make_shape(values.size())),
       isView(false) {
-    allocate();
-    std::copy(values.begin(), values.end(), begin());
+    if (volume() > 0) {
+      allocate();
+      std::copy(values.begin(), values.end(), begin());
+    }
   }
 
   /**
@@ -142,34 +182,15 @@ public:
       ctl(nullptr),
       shp(make_shape(values.size(), values.begin()->size())),
       isView(false) {
-    allocate();
-    T* ptr = diced();
-    int64_t t = 0;
-    for (auto row : values) {
-      for (auto x : row) {
-        ptr[shp.transpose(t++)] = T(x);
+    if (volume() > 0) {
+      allocate();
+      T* ptr = diced();
+      int64_t t = 0;
+      for (auto row : values) {
+        for (auto x : row) {
+          ptr[shp.transpose(t++)] = T(x);
+        }
       }
-    }
-  }
-
-  /**
-   * Constructor.
-   *
-   * @param l Lambda called to construct each element. Argument is a 1-based
-   * serial index.
-   * @param shp Shape.
-   */
-  template<class L, std::enable_if_t<std::is_invocable_r_v<T,L,int>,int> = 0>
-  Array(const L& l, const shape_type& shp) :
-      ctl(nullptr),
-      shp(shp),
-      isView(false) {
-    allocate();
-    int64_t n = 0;
-    auto iter = begin();
-    auto to = end();
-    for (; iter != to; ++iter) {
-      *iter = T(l(++n));
     }
   }
 
@@ -180,38 +201,48 @@ public:
       ctl(ctl),
       shp(shp),
       isView(true) {
-    assert((ctl == nullptr) == (shp.volume() == 0));
+    //
   }
 
   /**
    * Copy constructor.
+   * 
+   * @param o Source object.
+   * @param immediate Copy immediately? By default this is false, enabling
+   * copy-on-write. If the copy is to be written to immediately, there are
+   * some minor savings in reference count overhead by setting this to true to
+   * copy immediately instead.
    */
-  Array(const Array& o) :
+  Array(const Array& o, const bool immediate = false) :
       ctl(nullptr),
       shp(o.shp),
       isView(false) {
-    if (!o.isView && volume() > 0) {
-      auto c = o.control();
-      c->incShared();
-      ctl.store(c);
-    } else {
-      shp.compact();
-      allocate();
-      copy(o);
+    if (volume() > 0) {
+      if (immediate || o.isView) {
+        allocate();
+        copy(o);
+      } else {
+        auto c = o.control();
+        if (c) {
+          c->incShared();
+          ctl.store(c);
+        }
+      }
     }
   }
 
   /**
    * Generic copy constructor.
    */
-  template<class U, std::enable_if_t<std::is_convertible_v<U,T>,int> = 0>
+  template<class U, std::enable_if_t<is_arithmetic_v<U>,int> = 0>
   Array(const Array<U,D>& o) :
       ctl(nullptr),
       shp(o.shp),
       isView(false) {
-    shp.compact();
-    allocate();
-    copy(o);
+    if (volume() > 0) {
+      allocate();
+      copy(o);
+    }
   }
 
   /**
@@ -223,8 +254,7 @@ public:
       isView(false) {
     if (!o.isView) {
       swap(o);
-    } else {
-      shp.compact();
+    } else if (volume() > 0) {
       allocate();
       copy(o);
     }
@@ -234,14 +264,21 @@ public:
    * Destructor.
    */
   ~Array() {
-    release();
+    if (volume() > 0) {
+      release();
+    }
   }
 
   /**
    * Copy assignment.
    */
   Array& operator=(const Array& o) {
-    assign(o);
+    if (isView) {
+      copy(o);
+    } else {
+      Array tmp(o);
+      swap(tmp);
+    }
     return *this;
   }
 
@@ -249,10 +286,13 @@ public:
    * Move assignment.
    */
   Array& operator=(Array&& o) {
-    if (!isView && !o.isView) {
-      swap(o);
+    if (isView) {
+      copy(o);
+    } else if (o.isView) {
+      Array tmp(o);
+      swap(tmp);
     } else {
-      assign(o);
+      swap(o);
     }
     return *this;
   }
@@ -296,15 +336,50 @@ public:
    * 
    * @see value()
    */
-  auto& operator*() {
+  decltype(auto) operator*() {
     return value();
   }
 
   /**
    * @copydoc operator*()
    */
-  const auto& operator*() const {
+  decltype(auto) operator*() const {
     return value();
+  }
+
+  /**
+   * Value.
+   * 
+   * @return For a scalar, the value. For a vector or matrix, `*this`.
+   */
+  decltype(auto) value() {
+    if constexpr (D == 0) {
+      return *diced();
+    } else {
+      return *this;
+    }
+  }
+
+  /**
+   * Value.
+   * 
+   * @return For a scalar, the value. For a vector or matrix, `*this`.
+   */
+  decltype(auto) value() const {
+    if constexpr (D == 0) {
+      return *diced();
+    } else {
+      return *this;
+    }
+  }
+
+  /**
+   * Is the value (for a scalar) or are the elements (for vectors and
+   * matrices) available without waiting for asynchronous device operations to
+   * complete?
+   */
+  bool has_value() const {
+    return volume() == 0 || control()->test();
   }
 
   /**
@@ -336,44 +411,9 @@ public:
   }
 
   /**
-   * Value.
-   * 
-   * @return For a scalar, the value. For a vector or matrix, `*this`.
-   */
-  auto& value() {
-    if constexpr (D == 0) {
-      return *diced();
-    } else {
-      return *this;
-    }
-  }
-
-  /**
-   * Value.
-   * 
-   * @return For a scalar, the value. For a vector or matrix, `*this`.
-   */
-  const auto& value() const {
-    if constexpr (D == 0) {
-      return *diced();
-    } else {
-      return *this;
-    }
-  }
-
-  /**
-   * Is the value (for a scalar) or are the elements (for vectors and
-   * matrices) available without waiting for asynchronous device operations to
-   * complete?
-   */
-  bool has_value() const {
-    return volume() == 0 || control()->test();
-  }
-
-  /**
    * @copydoc slice()
    */
-  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
   auto operator()(const Args... args) {
     return slice(args...);
   }
@@ -381,24 +421,8 @@ public:
   /**
    * @copydoc slice()
    */
-  template<class... Args, std::enable_if_t<!all_integral_v<Args...>,int> = 0>
-  auto operator()(const Args... args) const {
-    return slice(args...);
-  }
-
-  /**
-   * @copydoc slice()
-   */
-  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  auto operator()(const Args... args) {
-    return slice(args...);
-  }
-
-  /**
-   * @copydoc slice()
-   */
-  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
-  auto operator()(const Args... args) const {
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
+  const auto operator()(const Args... args) const {
     return slice(args...);
   }
 
@@ -420,9 +444,8 @@ public:
    * return value will be of type `Array<T,0>` a.k.a. `Scalar<T>` (c.f.
    * dice()).
    */
-  template<class... Args>
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
   auto slice(const Args... args) {
-    own();
     auto view = shp.slice(args...);
     return Array<T,view.dims()>(control(), view);
   }
@@ -430,8 +453,8 @@ public:
   /**
    * @copydoc slice()
    */
-  template<class... Args>
-  auto slice(const Args... args) const {
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
+  const auto slice(const Args... args) const {
     auto view = shp.slice(args...);
     return Array<T,view.dims()>(control(), view);
   }
@@ -447,16 +470,17 @@ public:
    * @see slice(), which returns a `Scalar<T>` rather than `T&` for the same
    * arguments.
    */
-  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
+      all_integral_v<Args...>,int> = 0>
   T& dice(const Args... args) {
-    own();
     return diced()[shp.dice(args...)];
   }
 
   /**
    * @copydoc dice()
    */
-  template<class... Args, std::enable_if_t<all_integral_v<Args...>,int> = 0>
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
+      all_integral_v<Args...>,int> = 0>
   const T dice(const Args... args) const {
     return diced()[shp.dice(args...)];
   }
@@ -466,7 +490,6 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() {
-    own();
     return Array<T,1>(control(), shp.diagonal());
   }
 
@@ -572,23 +595,13 @@ public:
   }
 
   /**
-   * Fill with scalar value.
-   *
-   * @param value The value.
-   */
-  void fill(const T value) {
-    memset(data(sliced()), stride(), value, width(), height());
-  }
-
-  /**
    * Push a value onto the end of a vector, resizing it if necessary.
    * 
    * @param value The value.
    * 
    * push() is typically used when initializing vectors of unknown length on
    * host. It works by extending the array by one with a realloc(), then
-   * pushing the new value with dice(), not slice(), to keep operations on the
-   * host.
+   * pushing the new value.
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
   void push(const T value) {
@@ -602,10 +615,10 @@ public:
     } else {
       /* use ctl as a lock: exchange with nullptr, copy on write if necessary,
        * resize buffer */
-      ArrayControl* c = ctl.exchange(nullptr);
-      while (!c) {
+      ArrayControl* c;
+      do {
         c = ctl.exchange(nullptr);
-      }
+      } while (!c);
       if (c->numShared() > 1) {
         /* copy-on-write and resize simultaneously */
         d = new ArrayControl(*c, newsize);
@@ -617,19 +630,9 @@ public:
         d->realloc(newsize);
       }
     }
-
-    /* update shape, return ctl, write last element */
+    memset(data(d->template sliced<T>(volume())), stride(), value, 1, 1);
     shp.extend(1);
-    d->template diced<T>(offset())[shp.dice(rows() - 1)] = value;
-    ctl.store(d);
-  }
-
-  /**
-   * Clear, erasing all elements.
-   */
-  void clear() {
-    release();
-    shp = ArrayShape<D>();
+    ctl.store(d);  // also unlocks
   }
 
   /**
@@ -637,7 +640,6 @@ public:
    */
   Recorder<T> sliced() {
     if (volume() > 0) {
-      own();
       return control()->template sliced<T>(offset());
     } else {
       return Recorder<T>();
@@ -660,7 +662,6 @@ public:
    */
   T* diced() {
     if (volume() > 0) {
-      own();
       return control()->template diced<T>(offset());
     } else {
       return nullptr;
@@ -685,40 +686,79 @@ public:
    */
   ArrayControl* control() {
     if (volume() > 0) {
-      /* ctl is used as a lock, it may be set to nullptr while another thread
-       * is working on a copy-on-write, see own() */
-      auto c = ctl.load();
-      while (!c) {
-        c = ctl.load();
+      if (isView) {
+        return ctl.load();
+      } else {
+        /* ctl is used as a lock, it may be set to nullptr while another
+         * thread is working on a copy-on-write */
+        ArrayControl* c;
+        do {
+          c = ctl.exchange(nullptr);
+        } while (!c);
+        if (c->numShared() > 1) {
+          /* copy for write */
+          ArrayControl* d = new ArrayControl(*c);
+          if (c->decShared() == 0) {
+            delete c;
+          }
+          c = d;
+        }
+        ctl.store(c);
+        return c;
       }
-      return c;
     } else {
       return nullptr;
     }
   }
 
+  /**
+   * @internal
+   * 
+   * Get the control block.
+   */
   ArrayControl* control() const {
-    return const_cast<Array*>(this)->control();
+    if (volume() > 0) {
+      if (isView) {
+        return ctl.load();
+      } else {
+        /* ctl is used as a lock, it may be set to nullptr while another thread
+         * is working on a copy-on-write */
+        ArrayControl* c;
+        do {
+          c = const_cast<Array*>(this)->ctl.load();
+        } while (!c);
+        return c;
+      }
+    } else {
+      return nullptr;
+    }
   }
 
 private:
   /**
-   * Copy from another array. For a view the shapes of the two arrays must
-   * conform, otherwise a resize is permitted.
+   * Fill with scalar value.
+   *
+   * @param value The value.
    */
-  template<class U, int E, std::enable_if_t<D == E &&
-      std::is_convertible_v<U,T>,int> = 0>
-  void assign(const Array<U,E>& o) {
-    if (!std::is_same_v<U,T> || isView) {
-      copy(o);
-    } else {
-      Array tmp(o);
-      swap(tmp);
-    }
+  void fill(const T value) {
+    memset(data(sliced()), stride(), value, width(), height());
+  }
+
+  /**
+   * Fill with scalar value.
+   *
+   * @param value The value.
+   */
+  template<class U>
+  void fill(const Array<U,0>& value) {
+    memcpy(data(sliced()), stride(), data(value.sliced()), value.stride(),
+        width(), height());
   }
 
   /**
    * Copy from another array.
+   * 
+   * @param o The other array.
    */
   template<class U>
   void copy(const Array<U,D>& o) {
@@ -731,56 +771,33 @@ private:
    * Swap with another array.
    */
   void swap(Array& o) {
-    std::swap(ctl, o.ctl);
-    std::swap(shp, o.shp);
     assert(!isView);
     assert(!o.isView);
+    auto c = ctl.exchange(nullptr);
+    auto d = o.ctl.exchange(nullptr);
+    std::swap(shp, o.shp);
+    ctl.store(d);
+    o.ctl.store(c);
   }
 
   /**
    * Allocate memory for this, leaving uninitialized.
    */
   void allocate() {
+    assert(volume() > 0);
     assert(!ctl.load());
-    if (volume() > 0) {
-      ctl.store(new ArrayControl(volume()*sizeof(T)));
-    }
+    shp.compact();
+    ctl.store(new ArrayControl(shp.volume()*sizeof(T)));
   }
 
   /**
    * Release the buffer, deallocating if this is the last reference to it.
    */
   void release() {
-    if (!isView && volume() > 0) {
-      ArrayControl* c = ctl.exchange(nullptr);
-      // ^ c can still be nullptr here, e.g. due to the use of swap in the
-      //   move constructor
-      if (c && c->decShared() == 0) {
-        delete c;
-      }
-    }
-  }
-
-  /**
-   * Ensure that the buffer is not shared, copying it if necessary. That the
-   * buffer is shared is indicated by the presence of a control block.
-   */
-  void own() {
-    if (!isView && volume() > 0) {
-      /* use ctl as a lock: exchange with nullptr, copy on write if necessary,
-       * restore value */
-      ArrayControl* c = ctl.exchange(nullptr);
-      while (!c) {
-        c = ctl.exchange(nullptr);
-      }
-      if (c->numShared() > 1) {
-        ctl.store(new ArrayControl(*c));
-        if (c->decShared() == 0) {
-          delete c;
-        }
-      } else {
-        ctl.store(c);
-      }
+    assert(volume() > 0);
+    ArrayControl* c = ctl.exchange(nullptr);
+    if (!isView && c && c->decShared() == 0) {
+      delete c;
     }
   }
 

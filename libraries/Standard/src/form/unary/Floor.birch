@@ -17,7 +17,7 @@ using numbirch::floor_grad;
 /**
  * Round to largest integer value not greater than argument.
  */
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Floor<Middle> floor(const Middle& m) {
   return construct<Floor<Middle>>(m);
 }

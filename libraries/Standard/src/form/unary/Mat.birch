@@ -19,7 +19,7 @@ namespace birch {
 using numbirch::mat;
 using numbirch::mat_grad;
 
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Mat<Middle> mat(const Middle& m, const int n) {
   return construct<Mat<Middle>>(m, n);
 }

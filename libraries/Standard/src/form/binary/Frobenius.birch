@@ -19,7 +19,7 @@ using numbirch::frobenius_grad2;
  * Frobenius product.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 Frobenius<Left,Right> frobenius(const Left& l, const Right& r) {
   return construct<Frobenius<Left,Right>>(l, r);
 }

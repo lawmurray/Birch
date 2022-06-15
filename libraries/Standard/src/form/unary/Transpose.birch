@@ -17,7 +17,7 @@ using numbirch::transpose_grad;
 /**
  * Matrix transpose.
  */
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Transpose<Middle> transpose(const Middle& m) {
   return construct<Transpose<Middle>>(m);
 }

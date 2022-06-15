@@ -19,7 +19,7 @@ using numbirch::mul_grad2;
  * Multiplication.
  */
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 Mul<Left,Right> operator*(const Left& l, const Right& r) {
   return construct<Mul<Left,Right>>(l, r);
 }

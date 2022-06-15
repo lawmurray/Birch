@@ -73,6 +73,7 @@ else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA
   AM_CXXFLAGS += -x cu -G \
+      -expt-relaxed-constexpr \
       -arch=sm_70 \
       -Xcompiler="-Wall" \
       -Xcompiler="-Wno-unused-result" \

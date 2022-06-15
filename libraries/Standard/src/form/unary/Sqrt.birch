@@ -17,7 +17,7 @@ using numbirch::sqrt_grad;
 /**
  * Square root.
  */
-template<class Middle, std::enable_if_t<is_delay<Middle>::value,int> = 0>
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Sqrt<Middle> sqrt(const Middle& m) {
   return construct<Sqrt<Middle>>(m);
 }

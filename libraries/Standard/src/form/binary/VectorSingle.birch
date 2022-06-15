@@ -22,7 +22,7 @@ using numbirch::single_grad1;
 using numbirch::single_grad2;
 
 template<class Left, class Right, std::enable_if_t<
-    is_delay<Left,Right>::value,int> = 0>
+    is_delay_v<Left,Right>,int> = 0>
 VectorSingle<Left,Right> single(const Left& x, const Right& i, const int n) {
   return construct<VectorSingle<Left,Right>>(x, i, n);
 }
