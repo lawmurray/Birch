@@ -356,7 +356,7 @@ Array<T,2> cholinv(const Array<T,2>& L);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
-  return tri(-transpose(trisolve(L, cholsolve(L, g + transpose(g)))));
+  return tri(-transpose(trisolve(L, transpose(cholsolve(L, g + transpose(g))))));
 }
 
 /**
