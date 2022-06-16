@@ -169,11 +169,11 @@ Array<T,2> chol(const Array<T,2>& S) {
   return L;
 }
 
-template<class T, class>
-Array<T,2> cholinv(const Array<T,2>& L) {
+template<class T, class U, class>
+Array<T,2> cholsolve(const Array<T,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   prefetch(L);
-  Array<T,2> B(diagonal(T(1.0), rows(L)));
+  Array<T,2> B(diagonal(y, rows(L)));
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
@@ -438,6 +438,18 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
   return C;
 }
 
+template<class T, class U, class>
+Array<T,2> triinnersolve(const Array<T,2>& L, const U& y) {
+  assert(rows(L) == columns(L));
+  Array<T,2> B(diagonal(y, rows(L)));
+
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
+      stride(B)));
+  return B;
+}
+
 template<class T, class>
 Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(rows(L) == columns(L));
@@ -458,18 +470,6 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C) {
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
-      rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
-      stride(B)));
-  return B;
-}
-
-template<class T, class>
-Array<T,2> triinv(const Array<T,2>& L) {
-  assert(rows(L) == columns(L));
-  Array<T,2> B(diagonal(T(1.0), rows(L)));
-
-  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
-      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
       rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
       stride(B)));
   return B;
@@ -514,6 +514,18 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
       columns(C), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(A)), stride(A),
       data(sliced(C)), stride(C)));
   return C;
+}
+
+template<class T, class U, class>
+Array<T,2> trisolve(const Array<T,2>& L, const U& y) {
+  assert(rows(L) == columns(L));
+  Array<T,2> B(diagonal(y, rows(L)));
+
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, data(sliced(L)), stride(L), data(sliced(B)),
+      stride(B)));
+  return B;
 }
 
 template<class T, class>

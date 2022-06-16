@@ -46,15 +46,14 @@ Array<T,2> chol(const Array<T,2>& S) {
   return L;
 }
 
-template<class T, class>
-Array<T,2> cholinv(const Array<T,2>& L) {
+template<class T, class U, class>
+Array<T,2> cholsolve(const Array<T,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   Array<T,2> B(shape(L));
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
   auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
   auto B1 = make_eigen(B);
-  auto I1 = B1.Identity(rows(B), columns(B));
-  B1.noalias() = U1.solve(L1.solve(I1));
+  B1.noalias() = U1.solve(L1.solve(value(y)*B1.Identity(rows(B), columns(B))));
   return B;
 }
 
@@ -223,6 +222,18 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
   return C;
 }
 
+template<class T, class U, class>
+Array<T,2> triinnersolve(const Array<T,2>& L, const U& y) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+  Array<T,1> x(shape(y));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto B1 = make_eigen(B);
+  B1.noalias() = L1.solve(value(y)*B1.Identity(rows(B), columns(B)));
+  return B;
+
+}
+
 template<class T, class>
 Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& y) {
   assert(rows(L) == columns(L));
@@ -244,16 +255,6 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C) {
   auto B1 = make_eigen(B);
   auto C1 = make_eigen(C);
   B1.noalias() = L1.transpose().solve(C1);
-  return B;
-}
-
-template<class T, class>
-Array<T,2> triinv(const Array<T,2>& L) {
-  assert(rows(L) == columns(L));
-  Array<T,2> B(shape(L));
-  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
-  auto B1 = make_eigen(B);
-  B1.noalias() = L1.solve(B1.Identity(rows(B), columns(B)));
   return B;
 }
 
@@ -288,6 +289,16 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
   auto C1 = make_eigen(C);
   C1.noalias() = A1*U1;
   return C;
+}
+
+template<class T, class U, class>
+Array<T,2> trisolve(const Array<T,2>& L, const U& y) {
+  assert(rows(L) == columns(L));
+  Array<T,2> B(shape(L));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto B1 = make_eigen(B);
+  B1.noalias() = L1.solve(value(y)*B1.Identity(rows(B), columns(B)));
+  return B;
 }
 
 template<class T, class>

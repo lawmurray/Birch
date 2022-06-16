@@ -337,7 +337,9 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
  * @return Result $S^{-1} = (LL^\top)^{-1}$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> cholinv(const Array<T,2>& L);
+Array<T,2> cholinv(const Array<T,2>& L) {
+  return cholsolve(L, T(1));
+}
 
 /**
  * Gradient of cholinv().
@@ -356,7 +358,74 @@ Array<T,2> cholinv(const Array<T,2>& L);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
-  return tri(-transpose(trisolve(L, transpose(cholsolve(L, g + transpose(g))))));
+  return cholsolve_grad1(g, B, L, T(1));
+}
+
+/**
+ * Matrix-scalar solve via the Cholesky factorization.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $SB = LL^\top B = Iy$.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,2> cholsolve(const Array<T,2>& L, const U& y);
+
+/**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $SB = LL^\top B = Iy$.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,2> cholsolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L, const U& y) {
+  auto gy = cholsolve(L, g);
+  auto gS = outer(gy, -B);
+  auto gL = tri((gS + transpose(gS))*L);
+  return gL;
+}
+
+/**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $SB = LL^\top B = Iy$.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to  @p y.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,0> cholsolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L, const U& y) {
+  return sum(cholsolve(L, g));
 }
 
 /**
@@ -1377,6 +1446,67 @@ Array<T,2> triinner_grad2(const Array<T,2>& g, const Array<T,2>& C,
 }
 
 /**
+ * Lower-triangular-matrix-scalar inner solve.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $LB = Iy$.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,2> triinnersolve(const Array<T,2>& L, const U& y);
+
+/**
+ * Gradient of triinnersolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L, const U& y) {
+  return tri(outer(-B, trisolve(L, g)));
+}
+
+/**
+ * Gradient of triinnersolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to  @p y.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,0> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L, const U& y) {
+  return sum(trisolve(L, g));
+}
+
+/**
  * Lower-triangular-matrix-vector inner solve.
  * 
  * @ingroup linalg
@@ -1504,7 +1634,9 @@ Array<T,2> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * @return Result $L^{-1}$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> triinv(const Array<T,2>& L);
+Array<T,2> triinv(const Array<T,2>& L) {
+  return trisolve(L, T(1));
+}
 
 /**
  * Gradient of triinv().
@@ -1522,7 +1654,7 @@ Array<T,2> triinv(const Array<T,2>& L);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
-  return tri(-triouter(triinner(B, g), B));
+  return trisolve(L, B, T(1));
 }
 
 /**
@@ -1726,6 +1858,67 @@ Array<T,2> triouter_grad2(const Array<T,2>& g, const Array<T,2>& C,
 }
 
 /**
+ * Lower-triangular-matrix-scalar solve.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $LB = Iy$.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,2> trisolve(const Array<T,2>& L, const U& y);
+
+/**
+ * Gradient of trisolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L, const U& y) {
+  return tri(outer(triinnersolve(L, g), -B));
+}
+
+/**
+ * Gradient of trisolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * @tparam U Floating point scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to  @p y.
+ */
+template<class T, class U, class = std::enable_if_t<
+    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+Array<T,0> trisolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
+    const Array<T,2>& L, const U& y) {
+  return sum(triinnersolve(L, g));
+}
+
+/**
  * Lower-triangular-matrix-vector solve.
  * 
  * @ingroup linalg
@@ -1757,9 +1950,7 @@ Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> trisolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
-  auto gy = triinnersolve(L, g);
-  auto gL = tri(outer(gy, -x));
-  return gL;
+  return tri(outer(triinnersolve(L, g), -x));
 }
 
 /**
@@ -1779,8 +1970,7 @@ Array<T,2> trisolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> trisolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
-  auto gy = triinnersolve(L, g);
-  return gy;
+  return triinnersolve(L, g);
 }
 
 /**
@@ -1815,9 +2005,7 @@ Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
-  auto gC = triinnersolve(L, g);
-  auto gL = tri(outer(gC, -B));
-  return gL;
+  return tri(outer(triinnersolve(L, g), -B));
 }
 
 /**
@@ -1837,8 +2025,7 @@ Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> trisolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
-  auto gC = triinnersolve(L, g);
-  return gC;
+  return triinnersolve(L, g);
 }
 
 }

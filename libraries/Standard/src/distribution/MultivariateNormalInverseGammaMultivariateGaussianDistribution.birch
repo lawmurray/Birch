@@ -190,7 +190,7 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- A*μ + c;
-  let S <- β*(A*cholinv(L)*transpose(A) + Ω);
+  let S <- β*(A*cholsolve(L, transpose(A)) + Ω);
   return simulate_multivariate_t(k, m, chol(S));
 }
 
@@ -216,7 +216,7 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- A*μ + c;
-  let S <- wrap(chol(β*(A*cholinv(L)*transpose(A) + Ω)));
+  let S <- wrap(chol(β*(A*cholsolve(L, transpose(A)) + Ω)));
   return logpdf_multivariate_t(x, k, m, S);
 }
 
@@ -240,7 +240,7 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     ν:Arg3, Λ:Arg4, k:Arg5, γ:Arg6, c:Arg7, Ω:Arg8) -> {
   let n <- length(x);
   let L <- wrap(chol(Ω));
-  let Λ' <- Λ + transpose(A)*cholinv(L)*A;
+  let Λ' <- Λ + transpose(A)*cholsolve(L, A);
   let ν' <- ν + transpose(A)*cholsolve(L, x - c);
   let k' <- k + n;
   let γ' <- γ + dot(x - c, cholsolve(L, x - c));
