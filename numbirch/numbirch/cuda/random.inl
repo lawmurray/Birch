@@ -206,10 +206,14 @@ struct simulate_uniform_int_functor {
     return std::uniform_int_distribution<int>(l, u)(stl<int>::rng());
     // ^ uniform_int_distribution requires integral type
     #else
+    /* curand_uniform() returns a real value u on the interval (0,1], use
+     * (1 - u) here to ensure the cast lands in the right range */
     if constexpr (std::is_same_v<real,double>) {
-      return l + int(real(u - l + 1)*curand_uniform_double(curand_rng(rngs)));
+      return l + int(real(u - l + 1)*(real(1) -
+          curand_uniform_double(curand_rng(rngs))));
     } else {
-      return l + int(real(u - l + 1)*curand_uniform(curand_rng(rngs)));
+      return l + int(real(u - l + 1)*(real(1) -
+          curand_uniform(curand_rng(rngs))));
     }
     #endif
   }
