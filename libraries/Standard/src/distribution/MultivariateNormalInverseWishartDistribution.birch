@@ -94,7 +94,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
 function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
     σ2:Arg2, Ψ:Arg3, k:Arg4) -> Distribution<Real[_]> {
-  return wrap_multivariate_normal_inverse_wishart(μ, σ2, chol(Ψ), k);
+  return wrap_multivariate_normal_inverse_wishart(μ, σ2, Ψ, k);
 }
 function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
     σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
@@ -143,7 +143,7 @@ function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
  */
 function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
     μ:Arg1, σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
-  return simulate_multivariate_t(k, μ, sqrt(σ2)*Ψ);
+  return simulate_multivariate_t(k, μ, σ2*Ψ);
 }
 
 /*
@@ -159,7 +159,7 @@ function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
  */
 function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5) -> {
-  return logpdf_multivariate_t(x, k, μ, sqrt(σ2)*Ψ);
+  return logpdf_multivariate_t(x, k, μ, σ2*Ψ);
 }
 
 /*
@@ -175,7 +175,7 @@ function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
  */
 function update_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5) -> {
-  let Ψ' <- chol(triouter(Ψ) + outer(x - μ)/σ2);
+  let Ψ' <- Ψ + outer(x - μ)/σ2;
   let k' <- k + 1;
   return wrap_inverse_wishart(Ψ', k');
 }

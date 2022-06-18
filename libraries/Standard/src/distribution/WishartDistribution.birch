@@ -53,7 +53,7 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
  * Create Wishart distribution.
  */
 function Wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> Distribution<Real[_,_]> {
-  return wrap_wishart(chol(Ψ), k);
+  return wrap_wishart(Ψ, k);
 }
 function wrap_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   return make_wishart(wrap(Ψ), wrap(k));
@@ -74,7 +74,7 @@ function simulate_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   cpp{{
   auto A = numbirch::standard_wishart(k, n);
   }}
-  return triouter(trimul(Ψ, A));
+  return triouter(trimul(chol(Ψ), A));
 }
 
 /*
@@ -90,6 +90,7 @@ function logpdf_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
   let l <- wrap(k + (p + 1.0));
   let L <- wrap(chol(X));
-  return 0.5*(k*lcholdet(L) - frobenius(trisolve(Ψ, L)) -
-      l*(p*log(2.0) + lcholdet(Ψ))) - lgamma(0.5*l, p);
+  let J <- wrap(chol(Ψ));
+  return 0.5*(k*lcholdet(L) - frobenius(trisolve(J, L)) -
+      l*(p*log(2.0) + lcholdet(J))) - lgamma(0.5*l, p);
 }

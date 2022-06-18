@@ -132,9 +132,9 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
 function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, Ω:Arg6,
     m:Arg7, T:Arg8) -> {
-  let Λ <- wrap(chol(T));
+  let L <- wrap(chol(T));
   let K' <- wrap(Σ*transpose(A));
-  let μ' <- μ + K'*cholsolve(Λ, x - m);
-  let Σ' <- Σ - K'*cholsolve(Λ, A*Σ);
+  let μ' <- μ + K'*cholsolve(L, x - m);
+  let Σ' <- Σ - K'*cholsolve(L, A*Σ);
   return wrap_multivariate_gaussian(μ', Σ');
 }

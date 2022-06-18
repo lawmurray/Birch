@@ -90,7 +90,7 @@ final class InverseWishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) <
  */
 function InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) ->
     Distribution<Real[_,_]> {
-  return wrap_inverse_wishart(chol(Ψ), k);
+  return wrap_inverse_wishart(Ψ, k);
 }
 function wrap_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   return make_inverse_wishart(wrap(Ψ), wrap(k));
@@ -111,7 +111,7 @@ function simulate_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   cpp{{
   auto Y = numbirch::standard_wishart(k, n);
   }}
-  return inner(trisolve(Y, transpose(Ψ)));
+  return inner(trisolve(Y, transpose(chol(Ψ))));
 }
 
 /*
@@ -127,6 +127,7 @@ function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
   let l <- wrap(k + (p + 1.0));
   let L <- wrap(chol(X));
-  return -0.5*((l + (p + 1.0))*lcholdet(L) + frobenius(trisolve(L, Ψ)) +
-      l*(p*log(2.0) - lcholdet(Ψ))) - lgamma(0.5*l, p);
+  let J <- wrap(chol(Ψ));
+  return -0.5*((l + (p + 1.0))*lcholdet(L) + frobenius(trisolve(L, J)) +
+      l*(p*log(2.0) - lcholdet(J))) - lgamma(0.5*l, p);
 }

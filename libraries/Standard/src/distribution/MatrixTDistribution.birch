@@ -58,7 +58,7 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
 
 function MatrixT<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) ->
     Distribution<Real[_,_]> {
-  return wrap_matrix_t(k, M, chol(Σ), chol(Ψ));
+  return wrap_matrix_t(k, M, Σ, Ψ);
 }
 function wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
     Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) -> {
@@ -85,7 +85,7 @@ function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
   auto Y = numbirch::standard_wishart(k, n);
   auto Z = numbirch::standard_gaussian(m, n);
   }}
-  return M + trimul(Σ, Z)*trisolve(Y, transpose(Ψ));
+  return M + trimul(chol(Σ), Z)*trisolve(Y, transpose(chol(Ψ)));
 }
 
 /*
@@ -106,7 +106,9 @@ function logpdf_matrix_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2, M:Arg3,
   let a <- 0.5*k + 0.5*(p + n - 1);
   let b <- 0.5*k + 0.5*(p - 1);
   let Z <- wrap(X - M);
-  return lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - 0.5*p*lcholdet(Σ) -
-      0.5*n*lcholdet(Ψ) - a*ldet(diagonal(1.0, n) +
-      cholsolve(Σ, Z)*cholsolve(Ψ, transpose(Z)));
+  let L <- wrap(chol(Σ));
+  let J <- wrap(chol(Ψ));
+  return lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - 0.5*p*lcholdet(L) -
+      0.5*n*lcholdet(J) - a*ldet(diagonal(1.0, n) +
+      cholsolve(L, Z)*cholsolve(J, transpose(Z)));
 }
