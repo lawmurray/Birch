@@ -154,15 +154,15 @@ inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
  * @ingroup trait
  */
 template<class T>
-struct value {
+struct value_s {
   using type = T;
 };
 template<class T, int D>
-struct value<Array<T,D>> {
+struct value_s<Array<T,D>> {
   using type = T;
 };
 template<class T>
-using value_t = typename value<std::decay_t<T>>::type;
+using value_t = typename value_s<std::decay_t<T>>::type;
 
 /**
  * @var dimension_v
@@ -649,6 +649,26 @@ constexpr auto aggregate(const T& x) {
   } else {
     return x;
   }
+}
+
+/**
+ * @internal
+ * 
+ * Value of a scalar.
+ */
+template<class T>
+constexpr auto value(const Array<T,0>& y) {
+  return y.value();
+}
+
+/**
+ * @internal
+ * 
+ * Value of a scalar.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+constexpr auto value(const T& y) {
+  return y;
 }
 
 }
