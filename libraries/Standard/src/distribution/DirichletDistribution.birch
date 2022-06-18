@@ -69,9 +69,7 @@ function make_dirichlet<Arg>(α:Arg) -> {
  * - α: Concentrations.
  */
 function simulate_dirichlet<Arg1>(α:Arg1) -> {
-  let x <- transform(α, \(α:Real) -> Real {
-        return simulate_gamma(α, 1.0);
-      });
+  let x <- simulate_gamma(α, 1.0);
   return x/sum(x);
 }
 
@@ -82,9 +80,7 @@ function simulate_dirichlet<Arg1>(α:Arg1) -> {
  * - D: Number of dimensions.
  */
 function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
-  let x <- vector_lambda(\(i:Integer) -> Real {
-        return simulate_gamma(α, 1.0);
-      }, D);
+  let x <- simulate_gamma(α, vector(1.0, D));
   return x/sum(x);
 }
 
