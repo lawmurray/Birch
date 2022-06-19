@@ -44,12 +44,12 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
         x, value(a), value(μ), value(σ2), value(Ψ), value(this.k), value(c),
-        value(ω2), value(super.μ));
+        value(ω2));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, a, μ, σ2, Ψ, this.k, c, ω2, super.μ);
+        x, a, μ, σ2, Ψ, this.k, c, ω2);
   }
 
   override function constant() {
@@ -184,13 +184,12 @@ function MultivariateGaussian(μ:Random<Real[_]>, Σ:Random<Real[_,_]>) ->
  * - k: Prior degrees of freedom.
  * - c: Offset.
  * - ω2: Among-row covariance.
- * - N: Precomputed marginal mean.
  *
  * Returns: the posterior hyperparameters `μ'`, `σ2'`, `Ψ'` and `k'`.
  */
 function update_multivariate_normal_inverse_wishart_multivariate_gaussian<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8,Arg9>(x:Arg1, a:Arg2, μ:Arg3,
-    σ2:Arg4, Ψ:Arg5, k:Arg6, c:Arg7, ω2:Arg8, N:Arg9) -> {
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3,
+    σ2:Arg4, Ψ:Arg5, k:Arg6, c:Arg7, ω2:Arg8) -> {
   let σ2' <- wrap(1.0/(1.0/σ2 + a*a/ω2));
   let μ' <- wrap(σ2'*(μ/σ2 + a*(x - c)/ω2));
   let Ψ' <- Ψ + outer(x - c)/ω2 + outer(μ)/σ2 - outer(μ')/σ2';

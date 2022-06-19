@@ -63,9 +63,9 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
     μ <- μ + x;
     Σ <- Σ + outer(x);
   }
-  μ <- μ/N;              // sample mean and location for multivariate t
-  Σ <- Σ/N - outer(μ);   // sample covariance
-  Σ <- chol(Σ*(k - 2));  // spread for multivariate t proposal
+  μ <- μ/N;            // sample mean and location for multivariate t
+  Σ <- Σ/N - outer(μ); // sample covariance
+  Σ <- Σ*(k - 2);      // spread for multivariate t proposal
 
   /* draw importance samples */
   z:Real[N];
@@ -112,9 +112,9 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
     μ <- μ + x;
     Σ <- Σ + outer(x);
   }
-  μ <- μ/N;                  // sample mean and location for matrix-t
-  Σ <- Σ/N - outer(μ);       // sample covariance
-  Σ <- chol(Σ*(k - 2));  // spread for matrix-t proposal
+  μ <- μ/N;             // sample mean and location for matrix-t
+  Σ <- Σ/N - outer(μ);  // sample covariance
+  Σ <- Σ*(k - 2);       // spread for matrix-t proposal
 
   /* draw importance samples */
   z:Real[N];

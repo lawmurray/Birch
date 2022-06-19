@@ -240,7 +240,7 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     ν:Arg3, Λ:Arg4, k:Arg5, γ:Arg6, c:Arg7, Ω:Arg8) -> {
   let n <- length(x);
   let L <- wrap(chol(Ω));
-  let Λ' <- Λ + transpose(A)*cholsolve(L, A);
+  let Λ' <- Λ + inner(trisolve(L, A));
   let ν' <- ν + transpose(A)*cholsolve(L, x - c);
   let k' <- k + n;
   let γ' <- γ + dot(x - c, cholsolve(L, x - c));
