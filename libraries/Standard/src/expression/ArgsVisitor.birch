@@ -35,11 +35,19 @@ class ArgsVisitor {
    */
   function visit(v:Random<Real>) {
     reserve(n + 1);
-    x[n + 1] <- v.x!;
+    let y <- v.x!;
+    cpp{{
+    x.slice(n + 1) = y;
+    }}
     if v.g? {
-      g[n + 1] <- v.g!;
+      let z <- v.g!;
+      cpp{{
+      g.slice(n + 1) = z;
+      }}
     } else {
-      g[n + 1] <- 0.0;
+      cpp{{
+      g.slice(n + 1) = Real(0);
+      }}
     }
     n <- n + 1;
   }

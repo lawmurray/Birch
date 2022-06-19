@@ -413,7 +413,8 @@ public:
   /**
    * @copydoc slice()
    */
-  template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
+      !all_integral_v<Args...>,int> = 0>
   auto operator()(const Args... args) {
     return slice(args...);
   }
@@ -421,9 +422,28 @@ public:
   /**
    * @copydoc slice()
    */
-  template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
+      !all_integral_v<Args...>,int> = 0>
   const auto operator()(const Args... args) const {
     return slice(args...);
+  }
+
+  /**
+   * @copydoc dice()
+   */
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
+      all_integral_v<Args...>,int> = 0>
+  T& operator()(const Args... args) {
+    return dice(args...);
+  }
+
+  /**
+   * @copydoc slice()
+   */
+  template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
+      all_integral_v<Args...>,int> = 0>
+  const T& operator()(const Args... args) const {
+    return dice(args...);
   }
 
   /**
@@ -481,7 +501,7 @@ public:
    */
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       all_integral_v<Args...>,int> = 0>
-  const T dice(const Args... args) const {
+  const T& dice(const Args... args) const {
     return diced()[shp.dice(args...)];
   }
 

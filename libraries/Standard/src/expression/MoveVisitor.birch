@@ -27,7 +27,10 @@ class MoveVisitor(x:Real[_]) {
    * v: Argument.
    */
   function visit(v:Random<Real>) {
-    v.x <- x[n + 1];
+    cpp{{
+    auto y = x.slice(n + 1);
+    }}
+    v.x <- y;
     v.g <- nil;
     n <- n + 1;
   }
