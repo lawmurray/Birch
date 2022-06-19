@@ -325,7 +325,7 @@ function simulate_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- dot(a, μ) + c;
-  let s2 <- (β/k)*(ω2 + dot(a, cholsolve(L, a)));
+  let s2 <- (β/k)*(ω2 + dot(trisolve(L, a)));
   return simulate_student_t(k, m, s2);
 }
 
@@ -351,7 +351,7 @@ function logpdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- dot(a, μ) + c;
-  let s2 <- (β/k)*(ω2 + dot(a, cholsolve(L, a)));
+  let s2 <- (β/k)*(ω2 + dot(trisolve(L, a)));
   return logpdf_student_t(x, k, m, s2);
 }
 
@@ -402,7 +402,7 @@ function cdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- dot(a, μ) + c;
-  let s2 <- (β/k)*(ω2 + dot(a, cholsolve(L, a)));
+  let s2 <- (β/k)*(ω2 + dot(trisolve(L, a)));
   return cdf_student_t(x, k, m, s2);
 }
 
@@ -428,6 +428,6 @@ function quantile_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
   let m <- dot(a, μ) + c;
-  let s2 <- (β/k)*(ω2 + dot(a, cholsolve(L, a)));
+  let s2 <- (β/k)*(ω2 + dot(trisolve(L, a)));
   return quantile_student_t(P, k, m, s2);
 }
