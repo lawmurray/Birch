@@ -1,26 +1,22 @@
 /**
  * Multivariate normal-inverse-Wishart distribution.
- *
- * !!! note
- *     This class does not inherit from MultivariateTDistribution, as it is
- *     typically used for a random variable that is marginalized out.
  */
 final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
-    μ:Arg1, σ2:Arg2, Ψ:Arg3, k:Arg4) < Distribution<Real[_]> {
+    ν:Arg1, λ:Arg2, Γ:Arg3, k:Arg4) < Distribution<Real[_]> {
   /**
-   * Mean.
+   * Concentration times mean.
    */
-  μ:Arg1 <- μ;
+  ν:Arg1 <- ν;
 
   /**
-   * Scale.
+   * Concentration.
    */
-  σ2:Arg2 <- σ2;
+  λ:Arg2 <- λ;
   
   /**
-   * Spread.
+   * Accumulator for spread.
    */
-  Ψ:Arg3 <- Ψ;
+  Γ:Arg3 <- Γ;
   
   /**
    * Degrees of freedom.
@@ -32,44 +28,44 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_wishart(value(μ), value(σ2),
-        value(Ψ), value(k));
+    return simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
+        value(Γ), value(k));
   }
 
   override function simulateLazy() -> Real[_]? {
-    return simulate_multivariate_normal_inverse_wishart(eval(μ), eval(σ2),
-        eval(Ψ), eval(k));
+    return simulate_multivariate_normal_inverse_wishart(eval(ν), eval(λ),
+        eval(Γ), eval(k));
   }
   
   override function logpdf(x:Real[_]) -> Real! {   
-    return logpdf_multivariate_normal_inverse_wishart(x, value(μ), value(σ2),
-        value(Ψ), value(k));
+    return logpdf_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
+        value(Γ), value(k));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real!? {   
-    return logpdf_multivariate_normal_inverse_wishart(x, eval(μ), eval(σ2),
-        eval(Ψ), eval(k));
+    return logpdf_multivariate_normal_inverse_wishart(x, eval(ν), eval(λ),
+        eval(Γ), eval(k));
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_multivariate_normal_inverse_wishart(x, value(μ), value(σ2),
-        value(Ψ), value(k));
+    return update_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
+        value(Γ), value(k));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    return update_multivariate_normal_inverse_wishart(x, μ, σ2, Ψ, k);
+    return update_multivariate_normal_inverse_wishart(x, ν, λ, Γ, k);
   }
 
   override function hoist() -> Expression<Real>? {   
     return box(logpdf_multivariate_normal_inverse_wishart(this.getVariate(),
-        μ, σ2, Ψ, k));
+        ν, λ, Γ, k));
   }
 
   override function constant() {
     super.constant();
-    global.constant(μ);
-    global.constant(σ2);
-    global.constant(Ψ);
+    global.constant(ν);
+    global.constant(λ);
+    global.constant(Γ);
     global.constant(k);
   }
 
@@ -80,31 +76,34 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   override function getMultivariateNormalInverseWishart() ->
       (Expression<Real[_]>, Expression<Real>, Expression<Real[_,_]>,
       Expression<Real>) {
-    return box(μ, σ2, Ψ, k);
+    return box(ν, λ, Γ, k);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateNormalInverseWishart");
-    buffer.set("μ", value(μ));
-    buffer.set("σ2", value(σ2));
-    buffer.set("Ψ", value(Ψ));
+    buffer.set("ν", value(ν));
+    buffer.set("λ", value(λ));
+    buffer.set("Γ", value(Γ));
     buffer.set("k", value(k));
   }
 }
 
 function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
     σ2:Arg2, Ψ:Arg3, k:Arg4) -> Distribution<Real[_]> {
-  return wrap_multivariate_normal_inverse_wishart(μ, σ2, Ψ, k);
+  let ν <- μ/σ2;
+  let λ <- 1.0/σ2;
+  let Γ <- wrap(Ψ + outer(μ, ν));
+  return wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
 }
-function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
-    σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
-  return make_multivariate_normal_inverse_wishart(wrap(μ), wrap(σ2), wrap(Ψ),
+function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
+    λ:Arg2, Γ:Arg3, k:Arg4) -> {
+  return make_multivariate_normal_inverse_wishart(wrap(ν), wrap(λ), wrap(Γ),
       wrap(k));
 }
-function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
-    σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
+function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
+    λ:Arg2, Γ:Arg3, k:Arg4) -> {
   return construct<MultivariateNormalInverseWishartDistribution<Arg1,Arg2,
-      Arg3,Arg4>>(μ, σ2, Ψ, k);
+      Arg3,Arg4>>(ν, λ, Γ, k);
 }
 
 /**
@@ -117,7 +116,10 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   if Ω.hasNext() && Ω.getNext().isInverseWishart() {
     Ω.prune();
     let (Ψ, k) <- Ω.getNext().getInverseWishart();
-    let p <- wrap_multivariate_normal_inverse_wishart(μ, ω2, Ψ, k);
+    let ν <- μ/ω2;
+    let λ <- 1.0/ω2;
+    let Γ <- wrap(Ψ + outer(μ, ν));
+    let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
     Ω.setNext(p);
     return p;
   } else {
@@ -136,46 +138,53 @@ function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
 /*
  * Simulate a multivariate normal-inverse-Wishart distribution.
  *
- * - μ: Mean.
- * - σ2: Covariance.
- * - Ψ: Covariance shape.
+ * - ν: Concentration times mean.
+ * - λ: Concentration.
+ * - Γ: Accumulator of spread.
  * - k: Degrees of freedom.
  */
 function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
-    μ:Arg1, σ2:Arg2, Ψ:Arg3, k:Arg4) -> {
-  return simulate_multivariate_t(k, μ, σ2*Ψ);
+    ν:Arg1, λ:Arg2, Γ:Arg3, k:Arg4) -> {
+  let μ <- wrap(ν/λ);
+  let σ2 <- wrap(1.0/λ);
+  let Σ <- σ2*(Γ - outer(μ, ν));
+  return simulate_multivariate_t(k, μ, Σ);
 }
 
 /*
  * Observe a multivariate normal-inverse-Wishart variate.
  *
  * - x: The variate.
- * - μ: Mean.
- * - σ2: Covariance.
- * - Ψ: Prior variance spread.
- * - k: Prior degrees of freedom.
+ * - ν: Concentration times mean.
+ * - λ: Concentration.
+ * - Γ: Accumulator of spread.
+ * - k: Degrees of freedom.
  *
  * Returns: the log probability density.
  */
 function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
-    x:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5) -> {
-  return logpdf_multivariate_t(x, k, μ, σ2*Ψ);
+    x:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4, k:Arg5) -> {
+  let μ <- wrap(ν/λ);
+  let σ2 <- wrap(1.0/λ);
+  let Σ <- σ2*(Γ - outer(μ, ν));
+  return logpdf_multivariate_t(x, k, μ, Σ);
 }
 
 /*
  * Update the parameters of a multivariate normal-inverse-Wishart variate.
  *
  * - x: The variate.
- * - μ: Mean.
- * - σ2: Variance scale.
- * - Ψ: Prior variance spread.
+ * - ν: Prior concentration times mean.
+ * - λ: Prior concentration.
+ * - Γ: Prior accumulator of spread.
  * - k: Prior degrees of freedom.
  *
  * Returns: the posterior hyperparameters `Ψ'` and `k'`.
  */
 function update_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
-    x:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5) -> {
-  let Ψ' <- Ψ + outer(x - μ)/σ2;
+    x:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4, k:Arg5) -> {
+  let μ <- wrap(ν/λ);
+  let Ψ' <- Γ - outer(μ, ν) + outer(sqrt(λ)*(x - μ));
   let k' <- k + 1;
   return wrap_inverse_wishart(Ψ', k');
 }
