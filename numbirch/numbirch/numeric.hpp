@@ -928,7 +928,9 @@ Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
  * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,0> lcholdet(const Array<T,2>& L);
+Array<T,0> lcholdet(const Array<T,2>& L) {
+  return T(2.0)*sum(log(L.diagonal()));
+}
 
 /**
  * Gradient of `lcholdet()`.
@@ -981,6 +983,42 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,0>& d,
     const Array<T,2>& A) {
   return g*transpose(inv(A));
+}
+
+/**
+ * Logarithm of the absolute value of the determinant of a lower-triangular
+ * matrix.
+ * 
+ * @ingroup linalg
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * 
+ * @return Result $\log|\det L|$.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,0> ltridet(const Array<T,2>& L) {
+  return sum(log(L.diagonal()));
+}
+
+/**
+ * Gradient of `ltridet()`.
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @tparam T Floating point type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param d Result $\log|\det L|$.
+ * @param L Lower-triangular matrix $L$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+Array<T,2> ltridet_grad(const Array<T,0>& g, const Array<T,0>& d,
+    const Array<T,2>& L) {
+  return g*transpose(triinv(L));
 }
 
 /**

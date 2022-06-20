@@ -14,6 +14,5 @@
     template Array<T,0> f(const Array<T,2>&);
 
 namespace numbirch {
-REDUCE_MATRIX(lcholdet)
 REDUCE_MATRIX(ldet)
 }

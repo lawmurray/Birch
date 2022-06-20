@@ -290,14 +290,6 @@ Array<T,2> inv(const Array<T,2>& A) {
 }
 
 template<class T, class>
-Array<T,0> lcholdet(const Array<T,2>& L) {
-  /* log-determinant is twice the sum of logarithms of elements on the main
-   * diagonal, all of which should be positive */
-  ///@todo Avoid temporary
-  return sum(transform(L.diagonal(), log_square_functor()));
-}
-
-template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
   prefetch(A);
   Array<T,2> LU(A);

@@ -135,17 +135,6 @@ Array<T,2> inv(const Array<T,2>& A) {
 }
 
 template<class T, class>
-Array<T,0> lcholdet(const Array<T,2>& L) {
-  auto L1 = make_eigen(L);
-
-  /* we have $S = LL^\top$; the determinant of $S$ is the square of the
-   * determinant of $L$, the determinant of $L$ is the product of the
-   * elements along the diagonal, as it is a triangular matrix; adjust for
-   * log-determinant */
-  return T(2.0)*L1.diagonal().array().log().sum();
-}
-
-template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
   auto A1 = make_eigen(A);
   return A1.householderQr().logAbsDeterminant();
