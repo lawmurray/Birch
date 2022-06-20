@@ -174,7 +174,6 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
   let L <- wrap(chol(Λ));
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
-  let Σ <- β*cholinv(L);
 
   /* now the same as simulate_multivariate_t(k, μ, β*cholinv(L)), but can
    * inline and simplify */
@@ -182,7 +181,7 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
   auto Y = numbirch::standard_wishart(k, n);
   auto z = numbirch::standard_gaussian(n);
   }}
-  return μ + triinnersolve(L, triinnersolve(Y, z)/sqrt(β));
+  return μ + triinnersolve(L, triinnersolve(Y, z))*sqrt(β);
 }
 
 /*
@@ -202,14 +201,13 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
   let L <- wrap(chol(Λ));
   let μ <- wrap(cholsolve(L, ν));
   let β <- γ - dot(ν, μ);  // actually two times beta
-  let Σ <- β*cholinv(L);
 
   /* now the same as logpdf_multivariate_t(x, k, μ, β*cholinv(L)), but can
    * inline and simplify */
   let a <- 0.5*k + 0.5*n;
   let b <- 0.5*k;
-  return lgamma(a) - lgamma(b) - 0.5*n*log(π) + 0.5*lcholdet(L) -
-      a*log1p(dot(triinner(L, (x - μ)/sqrt(β))));
+  return lgamma(a) - lgamma(b) - 0.5*n*(log(π) + log(β)) + 0.5*lcholdet(L) -
+      a*log1p(dot(triinner(L, x - μ))/β);
 }
 
 /*
