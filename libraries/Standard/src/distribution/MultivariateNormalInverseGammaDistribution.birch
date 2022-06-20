@@ -206,7 +206,7 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
    * inline and simplify */
   let a <- 0.5*k + 0.5*n;
   let b <- 0.5*k;
-  return lgamma(a) - lgamma(b) - 0.5*n*(log(π) + log(β)) + 0.5*lcholdet(L) -
+  return lgamma(a) - lgamma(b) - 0.5*n*(log(π) + log(β)) + ltridet(L) -
       a*log1p(dot(triinner(L, x - μ))/β);
 }
 

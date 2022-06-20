@@ -89,6 +89,6 @@ function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
   let a <- 0.5*k + 0.5*n;
   let b <- 0.5*k;
   let L <- chol(Σ);
-  return lgamma(a) - lgamma(b) - 0.5*n*log(π) - 0.5*lcholdet(L) -
+  return lgamma(a) - lgamma(b) - 0.5*n*log(π) - ltridet(L) -
       a*log1p(dot(trisolve(L, x - μ)));
 }

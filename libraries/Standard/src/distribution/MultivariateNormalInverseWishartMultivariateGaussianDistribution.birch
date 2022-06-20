@@ -263,8 +263,8 @@ function logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian<
 function update_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3,
     λ:Arg4, Γ:Arg5, k:Arg6, c:Arg7, ω2:Arg8) -> {
-  let ν' <- wrap(ν + a*(x - c)/ω2);
-  let λ' <- wrap(λ + a*a/ω2);
+  let ν' <- ν + a*(x - c)/ω2;
+  let λ' <- λ + a*a/ω2;
   let Γ' <- Γ + outer((x - c)/sqrt(ω2));
   let k' <- k + 1;
   return wrap_multivariate_normal_inverse_wishart(ν', λ', Γ', k');

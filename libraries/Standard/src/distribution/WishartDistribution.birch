@@ -91,6 +91,6 @@ function logpdf_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let l <- wrap(k + (p + 1.0));
   let L <- wrap(chol(X));
   let J <- wrap(chol(Ψ));
-  return 0.5*(k*lcholdet(L) - frobenius(trisolve(J, L)) -
-      l*(p*log(2.0) + lcholdet(J))) - lgamma(0.5*l, p);
+  return 0.5*(frobenius(trisolve(J, L)) - l*p*log(2.0)) + l*ltridet(J) +
+      k*ltridet(L) - lgamma(0.5*l, p);
 }

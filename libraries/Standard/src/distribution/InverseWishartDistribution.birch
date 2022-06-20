@@ -128,6 +128,6 @@ function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let l <- wrap(k + (p + 1.0));
   let L <- wrap(chol(X));
   let J <- wrap(chol(Ψ));
-  return -0.5*((l + (p + 1.0))*lcholdet(L) + frobenius(trisolve(L, J)) +
-      l*(p*log(2.0) - lcholdet(J))) - lgamma(0.5*l, p);
+  return -0.5*(frobenius(trisolve(L, J)) + l*p*log(2.0)) - l*ltridet(J) -
+      (l + (p + 1.0))*ltridet(L) - lgamma(0.5*l, p);
 }
