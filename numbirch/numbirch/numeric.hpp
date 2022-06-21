@@ -320,7 +320,8 @@ template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
     const Array<T,2>& S) {
   auto A = phi(triinner(L, g));
-  return phi(triinnersolve(L, A + transpose(A))*triinv(L));
+  return phi(transpose(triinnersolve(L, transpose(triinnersolve(L, A +
+      transpose(A))))));
 }
 
 /**
@@ -582,7 +583,7 @@ Array<T,0> dot(const Array<T,1>& x) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,1> dot_grad(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,1>& x) {
-  return T(2.0)*g*x;
+  return T(2)*g*x;
 }
 
 /**
@@ -674,7 +675,7 @@ Array<T,0> frobenius(const Array<T,2>& A) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> frobenius_grad(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,2>& A) {
-  return T(2.0)*g*A;
+  return T(2)*g*A;
 }
 
 /**
@@ -929,7 +930,7 @@ Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,0> lcholdet(const Array<T,2>& L) {
-  return T(2.0)*sum(log(L.diagonal()));
+  return T(2)*ltridet(L);
 }
 
 /**
@@ -949,7 +950,7 @@ Array<T,0> lcholdet(const Array<T,2>& L) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
     const Array<T,2>& L) {
-  return T(2.0)*g*transpose(triinv(L));
+  return ltridet_grad(T(2)*g, d, L);
 }
 
 /**
@@ -1018,7 +1019,7 @@ Array<T,0> ltridet(const Array<T,2>& L) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> ltridet_grad(const Array<T,0>& g, const Array<T,0>& d,
     const Array<T,2>& L) {
-  return g*transpose(triinv(L));
+  return diagonal(g/L.diagonal());
 }
 
 /**
@@ -1212,8 +1213,6 @@ Array<T,2> outer_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Lower triangle and half the diagonal of $A$. The upper triangle is
  * filled with zeros.
- * 
- * This function is used as part of the gradient for chol().
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> phi(const Array<T,2>& A);
