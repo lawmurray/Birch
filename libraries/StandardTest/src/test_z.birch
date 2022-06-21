@@ -15,8 +15,8 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
     μ <- μ + x;
     σ2 <- σ2 + x*x;
   }
-  μ <- μ/N;                  // sample mean and location for Student's t
-  σ2 <- σ2/N - μ*μ;          // sample variance
+  μ <- μ/N;              // sample mean and location for Student's t
+  σ2 <- σ2/N - μ*μ;      // sample variance
   σ2 <- σ2/(k/(k - 2));  // spread for Student's t proposal
 
   /* draw importance samples */
@@ -56,16 +56,20 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   
   /* compute the shape for a t-distribution proposal using iid samples */
   let k <- 3 + D;  // degrees of freedom
-  let μ <- vector(0.0, D);
-  let Σ <- matrix(0.0, D, D);
-  for n in 1..N {
-    let x <- π.simulate();
-    μ <- μ + x;
-    Σ <- Σ + outer(x);
-  }
-  μ <- μ/N;            // sample mean and location for multivariate t
-  Σ <- Σ/N - outer(μ); // sample covariance
-  Σ <- Σ*(k - 2);      // spread for multivariate t proposal
+  μ:Real[D];
+  Σ:Real[D,D];
+  do {
+    μ <- 0.0;
+    Σ <- 0.0;
+    for n in 1..N {
+      let x <- π.simulate();
+      μ <- μ + x;
+      Σ <- Σ + outer(x);
+    }
+    μ <- μ/N;             // sample mean and location for matrix-t
+    Σ <- Σ/N - outer(μ);  // sample covariance
+    Σ <- Σ*(k - 2);         // spread for multivariate t proposal
+  } while sum(isfinite(chol(Σ))) == 0;
 
   /* draw importance samples */
   z:Real[N];
@@ -105,16 +109,20 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   
   /* compute the shape for a t-distribution proposal using iid samples */
   let k <- 3 + R*C;  // degrees of freedom
-  let μ <- vector(0.0, R*C);
-  let Σ <- matrix(0.0, R*C, R*C);
-  for n in 1..N {
-    let x <- vec(π.simulate());
-    μ <- μ + x;
-    Σ <- Σ + outer(x);
-  }
-  μ <- μ/N;             // sample mean and location for matrix-t
-  Σ <- Σ/N - outer(μ);  // sample covariance
-  Σ <- Σ*(k - 2);       // spread for matrix-t proposal
+  μ:Real[R*C];
+  Σ:Real[R*C,R*C];
+  do {
+    μ <- 0.0;
+    Σ <- 0.0;
+    for n in 1..N {
+      let x <- vec(π.simulate());
+      μ <- μ + x;
+      Σ <- Σ + outer(x);
+    }
+    μ <- μ/N;             // sample mean and location for matrix-t
+    Σ <- Σ/N - outer(μ);  // sample covariance
+    Σ <- Σ*(k - 2);       // spread for matrix-t proposal
+  } while sum(isfinite(chol(Σ))) == 0;
 
   /* draw importance samples */
   z:Real[N];

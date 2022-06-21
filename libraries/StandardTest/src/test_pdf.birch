@@ -127,9 +127,16 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
     x1[n] <- π.simulate();
   }
   
-  /* compute the shape for a Gaussian proposal using the iid samples */
-  let μ <- sum(x1)/N;
-  let σ2 <- (dot(x1)/N - μ*μ)*pow(2.4, 2.0);
+  /* compute the shape for a Gaussian proposal using iid samples */
+  let μ <- 0.0;
+  let σ2 <- 0.0;
+  for n in 1..N*S {
+    let x <- π.simulate();
+    μ <- μ + x;
+    σ2 <- σ2 + x*x;
+  }
+  μ <- μ/(N*S);
+  σ2 <- (σ2/(N*S) - μ*μ)*pow(2.4, 2.0);
 
   /* draw Metropolis samples using pdf */
   x2:Real[N];
@@ -208,16 +215,20 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     X1[n,1..D] <- π.simulate();
   }
   
-  /* compute the shape for a Gaussian proposal using the iid samples */
-  let μ <- vector(0.0, D);
-  let Σ <- matrix(0.0, D, D);
-  for n in 1..N {
-    let x <- X1[n,1..D];
-    μ <- μ + x;
-    Σ <- Σ + outer(x);
-  }
-  μ <- μ/N;
-  Σ <- (Σ/N - outer(μ))*pow(2.4, 2.0)/D;
+  /* compute the shape for a Gaussian proposal using iid samples */
+  μ:Real[D];
+  Σ:Real[D,D];
+  do {
+    μ <- 0.0;
+    Σ <- 0.0;
+    for n in 1..N*S {
+      let x <- π.simulate();
+      μ <- μ + x;
+      Σ <- Σ + outer(x);
+    }
+    μ <- μ/(N*S);
+    Σ <- (Σ/(N*S) - outer(μ))*pow(2.4, 2.0)/D;
+  } while sum(isfinite(chol(Σ))) == 0;
   
   /* draw Metropolis samples using pdf */
   X2:Real[N,D];
@@ -298,16 +309,20 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     X1[n,1..R*C] <- vec(π.simulate());
   }
   
-  /* compute the shape for a Gaussian proposal using the iid samples */
-  let μ <- vector(0.0, R*C);
-  let Σ <- matrix(0.0, R*C, R*C);
-  for n in 1..N {
-    let x <- X1[n,1..R*C];
-    μ <- μ + x;
-    Σ <- Σ + outer(x);
-  }
-  μ <- μ/N;
-  Σ <- (Σ/N - outer(μ))*pow(2.4, 2.0)/(R*C);
+  /* compute the shape for a Gaussian proposal using iid samples */
+  μ:Real[R*C];
+  Σ:Real[R*C,R*C];
+  do {
+    μ <- 0.0;
+    Σ <- 0.0;
+    for n in 1..N*S {
+      let x <- vec(π.simulate());
+      μ <- μ + x;
+      Σ <- Σ + outer(x);
+    }
+    μ <- μ/(N*S);
+    Σ <- (Σ/(N*S) - outer(μ))*pow(2.4, 2.0)/(R*C);
+  } while sum(isfinite(chol(Σ))) == 0;
 
   /* draw Metropolis samples using pdf */
   X2:Real[N,R*C];
