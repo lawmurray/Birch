@@ -95,9 +95,9 @@ function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(A:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, C:Arg6,
     Φ:Arg7) -> Distribution<Real[_,_]> {
   let L <- wrap(chol(Σ));
-  let Λ <- wrap(cholinv(L));
-  let N <- wrap(cholsolve(L, M));
-  let Γ <- wrap(Ψ + inner(M, N));
+  let Λ <- cholinv(L);
+  let N <- cholsolve(L, M);
+  let Γ <- Ψ + inner(trisolve(L, M));
   return wrap_matrix_normal_inverse_wishart_matrix_gaussian(A, N, Λ, Γ, k, C,
       Φ);
 }
@@ -137,9 +137,9 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
     Ψ.prune();
     let (Ψ1, k) <- Ψ.getNext().getInverseWishart();
     let L <- wrap(chol(Σ));
-    let Λ <- wrap(cholinv(L));
-    let N <- wrap(cholsolve(L, M));
-    let Γ <- wrap(Ψ1 + inner(M, N));
+    let Λ <- cholinv(L);
+    let N <- cholsolve(L, M);
+    let Γ <- Ψ1 + inner(trisolve(L, M));
     let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
     Ψ.setNext(p);
     return p;

@@ -27,6 +27,10 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
+  override function supportsJoin() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
         value(Γ), value(k));
@@ -92,7 +96,7 @@ function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
     σ2:Arg2, Ψ:Arg3, k:Arg4) -> Distribution<Real[_]> {
   let ν <- μ/σ2;
   let λ <- 1.0/σ2;
-  let Γ <- wrap(Ψ + outer(μ, ν));
+  let Γ <- Ψ + outer(μ/sqrt(σ2));
   return wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
 }
 function wrap_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
@@ -111,14 +115,14 @@ function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
-  let ω2 <- Σ.l;
+  let σ2 <- Σ.l;
   let Ω <- Σ.r;
   if Ω.hasNext() && Ω.getNext().isInverseWishart() {
     Ω.prune();
     let (Ψ, k) <- Ω.getNext().getInverseWishart();
-    let ν <- μ/ω2;
-    let λ <- 1.0/ω2;
-    let Γ <- wrap(Ψ + outer(μ, ν));
+    let ν <- μ/σ2;
+    let λ <- 1.0/σ2;
+    let Γ <- Ψ + outer(μ/sqrt(σ2));
     let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
     Ω.setNext(p);
     return p;
@@ -145,9 +149,8 @@ function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
  */
 function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
     ν:Arg1, λ:Arg2, Γ:Arg3, k:Arg4) -> {
-  let μ <- wrap(ν/λ);
-  let σ2 <- wrap(1.0/λ);
-  let Σ <- σ2*(Γ - outer(μ, ν));
+  let μ <- ν/λ;
+  let Σ <- (Γ - outer(ν/sqrt(λ)))/λ;
   return simulate_multivariate_t(k, μ, Σ);
 }
 
@@ -164,9 +167,8 @@ function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
  */
 function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4, k:Arg5) -> {
-  let μ <- wrap(ν/λ);
-  let σ2 <- wrap(1.0/λ);
-  let Σ <- σ2*(Γ - outer(μ, ν));
+  let μ <- ν/λ;
+  let Σ <- (Γ - outer(ν/sqrt(λ)))/λ;
   return logpdf_multivariate_t(x, k, μ, Σ);
 }
 
@@ -183,8 +185,7 @@ function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
  */
 function update_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4, k:Arg5) -> {
-  let μ <- wrap(ν/λ);
-  let Ψ' <- Γ - outer(μ, ν) + outer(sqrt(λ)*(x - μ));
+  let Ψ' <- Γ - outer(ν/sqrt(λ)) + outer(sqrt(λ)*(x - ν/λ));
   let k' <- k + 1;
   return wrap_inverse_wishart(Ψ', k');
 }

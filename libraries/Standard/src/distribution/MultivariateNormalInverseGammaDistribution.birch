@@ -128,7 +128,7 @@ function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, Σ:Arg2,
   let Λ <- wrap(cholinv(L));
   let ν <- wrap(cholsolve(L, μ));
   let k <- 2.0*α;
-  let γ <- 2.0*β + dot(ν, μ);
+  let γ <- 2.0*β + dot(trisolve(L, μ));
   return wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
 }
 function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
@@ -173,7 +173,7 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
   let n <- length(ν);
   let L <- wrap(chol(Λ));
   let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(ν, μ);  // actually two times beta
+  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
 
   /* now the same as simulate_multivariate_t(k, μ, β*cholinv(L)), but can
    * inline and simplify */
@@ -200,7 +200,7 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
   let n <- length(x);
   let L <- wrap(chol(Λ));
   let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(ν, μ);  // actually two times beta
+  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
 
   /* now the same as logpdf_multivariate_t(x, k, μ, β*cholinv(L)), but can
    * inline and simplify */
@@ -227,6 +227,6 @@ function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
   let n <- length(x);
   let L <- wrap(chol(Λ));
   let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(ν, μ);  // actually two times beta
+  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
   return wrap_inverse_gamma(0.5*(k + n), 0.5*(β + dot(triinner(L, x - μ))));
 }

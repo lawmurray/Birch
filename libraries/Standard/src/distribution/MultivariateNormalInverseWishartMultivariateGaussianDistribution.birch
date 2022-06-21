@@ -91,9 +91,9 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 function MultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
     ω2:Arg7) -> Distribution<Real[_]> {
-  let ν <- wrap(μ/σ2);
-  let λ <- wrap(1.0/σ2);
-  let Γ <- wrap(Ψ + outer(μ, ν));
+  let ν <- μ/σ2;
+  let λ <- 1.0/σ2;
+  let Γ <- Ψ + outer(μ/sqrt(σ2));
   return wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(a, ν,
       λ, Γ, k, c, ω2);
 }
@@ -135,9 +135,9 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
   } else if Ω.hasNext() && Ω.getNext().isInverseWishart() {
     Ω.prune();
     let (Ψ, k) <- Ω.getNext().getInverseWishart();
-    let ν <- wrap(μ/ω2);
-    let λ <- wrap(1.0/ω2);
-    let Γ <- wrap(Ψ + outer(μ, ν));
+    let ν <- μ/ω2;
+    let λ <- 1.0/ω2;
+    let Γ <- Ψ + outer(μ/sqrt(ω2));
     let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
     Ω.setNext(p);
     return p;
@@ -219,8 +219,8 @@ function MultivariateGaussian(μ:Random<Real[_]>, Σ:Random<Real[_,_]>) ->
 function simulate_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
     k:Arg5, c:Arg6, ω2:Arg7) -> {
-  let μ <- wrap(ν/λ);
-  let Σ <- (a*a/λ + ω2)*(Γ - outer(μ, ν));
+  let μ <- ν/λ;
+  let Σ <- (a*a/λ + ω2)*(Γ - outer(ν/sqrt(λ)));
   return simulate_multivariate_t(k, a*μ + c, Σ);
 }
 
@@ -240,8 +240,8 @@ function simulate_multivariate_normal_inverse_wishart_multivariate_gaussian<
 function logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(y:Arg1, a:Arg2, ν:Arg3, λ:Arg4,
     Γ:Arg5, k:Arg6, ω2:Arg7) -> {
-  let μ <- wrap(ν/λ);
-  let Σ <- (a*a/λ + ω2)*(Γ - outer(μ, ν));
+  let μ <- ν/λ;
+  let Σ <- (a*a/λ + ω2)*(Γ - outer(ν/sqrt(λ)));
   return logpdf_multivariate_t(y, k, a*μ, Σ);
 }
 
