@@ -81,10 +81,8 @@ function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     Ψ:Arg4) -> {
   let m <- rows(M);
   let n <- columns(M);
-  cpp{{
-  auto Y = numbirch::standard_wishart(k, n);
-  auto Z = numbirch::standard_gaussian(m, n);
-  }}
+  let Y <- standard_wishart(k, n);
+  let Z <- standard_gaussian(m, n);
   return M + trimul(chol(Σ), Z)*trisolve(Y, transpose(chol(Ψ)));
 }
 

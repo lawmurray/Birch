@@ -2,7 +2,7 @@
  * Filter a model.
  *
  *     birch filter [options...]
-
+ *
  * - `--config`: Name of the configuration file, if any.
  *
  * - `--seed`: Random number seed. If used, overrides `seed` in the config

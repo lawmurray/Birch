@@ -177,10 +177,9 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
 
   /* now the same as simulate_multivariate_t(k, μ, β*cholinv(L)), but can
    * inline and simplify */
-  cpp{{
-  auto Y = numbirch::standard_wishart(k, n);
-  auto z = numbirch::standard_gaussian(n);
-  }}
+  let Y <- standard_wishart(k, n);
+  let z <- standard_gaussian(n);
+  
   return μ + triinnersolve(L, triinnersolve(Y, z))*sqrt(β);
 }
 

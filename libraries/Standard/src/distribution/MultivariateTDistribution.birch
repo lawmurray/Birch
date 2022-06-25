@@ -66,10 +66,8 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
  */
 function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
   let n <- length(μ);
-  cpp{{
-  auto Y = numbirch::standard_wishart(k, n);
-  auto z = numbirch::standard_gaussian(n);
-  }}
+  let Y <- standard_wishart(k, n);
+  let z <- standard_gaussian(n);
   return μ + inner(trisolve(Y, transpose(chol(Σ))), z);
 }
 

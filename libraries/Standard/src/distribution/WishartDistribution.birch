@@ -62,6 +62,10 @@ function make_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   return construct<WishartDistribution<Arg1,Arg2>>(Ψ, k);
 }
 
+hpp{{
+using numbirch::standard_wishart;
+}}
+
 /*
  * Simulate a Wishart distribution.
  *
@@ -71,9 +75,7 @@ function make_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
 function simulate_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   assert rows(Ψ) == columns(Ψ);
   let n <- rows(Ψ);
-  cpp{{
-  auto A = numbirch::standard_wishart(k, n);
-  }}
+  let A <- standard_wishart(k, n);
   return triouter(trimul(chol(Ψ), A));
 }
 

@@ -10,7 +10,7 @@
  *
  * A Kernel is applied to a Particle. It applies an invariant update to the
  * Random objects encountered in the execution of that particle, as though
- * probabilistic events had been handled this way *post hoc*. Mathematically,
+ * probabilistic events had always been handled this way. Mathematically,
  * these Random objects constitute a sample from some target distribution. A
  * Kernel object represents a Markov kernel that is applied to the sample to
  * update it in a manner invariant to that target distribution.
@@ -32,40 +32,54 @@ abstract class Kernel {
   scale:Real <- 1.0;
 
   /**
-   * Adapt the kernel to the current ensemble of particles.
+   * Target acceptance rate for PID controller.
    */
-  abstract function adapt(t:Integer, x:Array<Particle>, w:Real[_]);
+  raccepts:Real <- 0.574;
 
-  /**
-   * Perform pre-computations prior to copying a particle. This is typically
-   * called during resampling to perform computations that will be the same
-   * for all offspring (e.g. gradient at current arguments).
-   *
-   * - x: Particle.
+  /*
+   * Hyperparameters for PID controller on scale.
    */
-  abstract function pre(x:Particle);
+  Ki:Real <- 1.2;
+  Kp:Real <- 0.6;
+  Kd:Real <- 0.3;
+
+  /*
+   * Last three errors for PID controller on scale.
+   */
+  e1:Real <- 0.0;
+  e2:Real <- 0.0;
+  e3:Real <- 0.0;
 
   /**
    * Move a particle.
    *
    * - x: Particle.
    *
-   * Returns: Acceptance rate of moves.
+   * Returns: Acceptance rate of moves on this particle.
    */
   abstract function move(x:Particle) -> Real;
 
   /**
-   * Perform post-computations after moving a particle.
+   * Adapt the scale using a PID controller.
    *
-   * - x: Particle.
+   * - raccepts: Acceptance rate of last move step.
    */
-  abstract function post(x:Particle);
+  function adapt(raccepts:Real) {
+    e3 <- e2;
+    e2 <- e1;
+    e1 <- raccepts - this.raccepts;
+    scale <- exp(log(scale) + (Ki + Kp + Kd)*e1 - (Kp + 2.0*Kd)*e2 + Kd*e3);
+  }
 
   override function read(buffer:Buffer) {
     super.read(buffer);
     nlags <-? buffer.get<Integer>("nlags");
     nmoves <-? buffer.get<Integer>("nmoves");
     scale <-? buffer.get<Real>("scale");
+    raccepts <-? buffer.get<Real>("raccepts");
+    Ki <-? buffer.get<Real>("Ki");
+    Kp <-? buffer.get<Real>("Kp");
+    Kd <-? buffer.get<Real>("Kd");
   }
   
   override function write(buffer:Buffer) {
@@ -73,5 +87,9 @@ abstract class Kernel {
     buffer.set("nlags", nlags);
     buffer.set("nmoves", nmoves);
     buffer.set("scale", scale);
+    buffer.set("raccepts", raccepts);
+    buffer.set("Ki", Ki);
+    buffer.set("Kp", Kp);
+    buffer.set("Kd", Kd);
   }
 }

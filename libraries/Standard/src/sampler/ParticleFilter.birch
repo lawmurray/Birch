@@ -142,7 +142,9 @@ class ParticleFilter {
       }
       x[n].Ξ.pushBack(h.Ξ);
       x[n].Φ.pushBack(h.Φ);
-      w[n] <- w[n] + h.w;
+      cpp{{
+      w.slice(n) = w.slice(n) + h->w;
+      }}
     }
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
@@ -164,7 +166,9 @@ class ParticleFilter {
       }
       x[n].Ξ.pushBack(h.Ξ);
       x[n].Φ.pushBack(h.Φ);
-      w[n] <- w[n] + h.w;
+      cpp{{
+      w.slice(n) = w.slice(n) + h->w;
+      }}
     }
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(nparticles);
@@ -182,11 +186,6 @@ class ParticleFilter {
       r <- t;
       raccepts <- nil;
       if ess <= trigger*nparticles {
-        /* adapt move kernel */
-        if κ? {
-          κ!.adapt(t, x, w);
-        }
-
         /* resample */
         let (a, o) <- resample_systematic(w);
 
@@ -206,32 +205,19 @@ class ParticleFilter {
           }
         }
 
-        /* good time for cycle collection given many particles will not
-         * survive */
+        /* many particles won't have survived, good time to cycle collect */
         collect();
 
         /* move */
-        if κ? && κ!.nmoves > 0 {
-          let happy <- false;
-          let nattempts <- 0;
-          do {
-            let α <- vector(0.0, nparticles);  // acceptance rate per particle
-            parallel for n in 1..nparticles {
-              κ!.pre(x[n]);
-              α[n] <- κ!.move(x[n]);
-              κ!.post(x[n]);
-            }
-            raccepts <- sum(α)/nparticles;
-            stderr.print(nattempts + ": scale=" + κ!.scale + ", raccepts=" + raccepts! + "\n");
-            if raccepts! < 0.2 {
-              κ!.scale <- 0.1*κ!.scale;
-            } else if raccepts! > 0.8 {
-              κ!.scale <- 5.0*κ!.scale;
-            } else {
-              happy <- true;
-            }
-            nattempts <- nattempts + 1;
-          } while !happy && nattempts < 10;
+        if κ? {
+          let α <- vector(0.0, nparticles);  // acceptance rate per particle
+          parallel for n in 1..nparticles {
+            α[n] <- κ!.move(x[n]);
+          }
+          raccepts <- sum(α)/nparticles;
+
+          /* update acceptance rate errors for next scale update */
+          κ!.adapt(raccepts!);
         }
 
         /* reset weights */
