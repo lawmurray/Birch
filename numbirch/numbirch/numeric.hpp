@@ -1573,11 +1573,9 @@ Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& x);
  * @return Gradient with respect to @p L.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,2> triinnersolve_grad1(const Array<T,1>& g, const Array<T,1>& y,
-    const Array<T,2>& L, const Array<T,1>& x) {
-  auto gy = trisolve(L, g);
-  auto gL = tri(outer(-x, gy));
-  return gL;
+Array<T,2> triinnersolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
+    const Array<T,2>& L, const Array<T,1>& y) {
+  return tri(outer(-x, trisolve(L, g)));
 }
 
 /**
@@ -1595,10 +1593,9 @@ Array<T,2> triinnersolve_grad1(const Array<T,1>& g, const Array<T,1>& y,
  * @return Gradient with respect to @p y.
  */
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
-Array<T,1> triinnersolve_grad2(const Array<T,1>& g, const Array<T,1>& y,
-    const Array<T,2>& L, const Array<T,1>& x) {
-  auto gy = trisolve(L, g);
-  return gy;
+Array<T,1> triinnersolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
+    const Array<T,2>& L, const Array<T,1>& y) {
+  return trisolve(L, g);
 }
 
 /**
@@ -1633,9 +1630,7 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C);
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
-  auto gC = trisolve(L, g);
-  auto gL = tri(outer(-B, gC));
-  return gL;
+  return tri(outer(-B, trisolve(L, g)));
 }
 
 /**
@@ -1655,8 +1650,7 @@ Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
-  auto gC = trisolve(L, g);
-  return gC;
+  return trisolve(L, g);
 }
 
 /**
@@ -1691,7 +1685,7 @@ Array<T,2> triinv(const Array<T,2>& L) {
 template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
 Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
-  return trisolve(L, B, T(1));
+  return trisolve_grad1(g, B, L, T(1));
 }
 
 /**
