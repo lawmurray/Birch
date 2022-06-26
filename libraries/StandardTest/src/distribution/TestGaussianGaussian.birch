@@ -1,19 +1,23 @@
-class TestGaussianGaussian < TestModel {
+class TestLinearGaussianGaussian < TestModel {
   μ_1:Random<Real>;
   x:Random<Real>;
+  a:Random<Real>;
+  c:Random<Real>;
   μ_0:Random<Real>;
   σ2_0:Random<Real>;
   σ2_1:Random<Real>;
 
   override function initialize() {
+    a ~ Uniform(-2.0, 2.0);
+    c ~ Uniform(-10.0, 10.0);
     μ_0 ~ Uniform(-10.0, 10.0);
-    σ2_0 ~ Uniform(0.1, 10.0);
-    σ2_1 ~ Uniform(0.1, 10.0);
+    σ2_0 ~ Uniform(0.1, 2.0);
+    σ2_1 ~ Uniform(0.1, 2.0);
   }
 
   override function simulate() {
     μ_1 ~ Gaussian(μ_0, σ2_0);
-    x ~ Gaussian(μ_1, σ2_1);
+    x ~ Gaussian(a*μ_1 + c, σ2_1);
   }
 
   override function forward() -> Real[_] {
@@ -43,13 +47,13 @@ class TestGaussianGaussian < TestModel {
 
 program test_conjugacy_gaussian_gaussian(N:Integer <- 10000,
     lazy:Boolean <- false) {
-  m:TestGaussianGaussian;
+  m:TestLinearGaussianGaussian;
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_gaussian_gaussian(N:Integer <- 10000, S:Integer <- 20,
-    lazy:Boolean <- false) {
-  m:TestGaussianGaussian;
+program test_pdf_gaussian_gaussian(N:Integer <- 10000,
+    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestLinearGaussianGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
@@ -57,14 +61,14 @@ program test_pdf_gaussian_gaussian(N:Integer <- 10000, S:Integer <- 20,
 
 program test_z_gaussian_gaussian(N:Integer <- 10000,
     lazy:Boolean <- false) {
-  m:TestGaussianGaussian;
+  m:TestLinearGaussianGaussian;
   m.initialize();
   m.simulate();
   test_z(m.marginal(), N, lazy);
 }
 
 program test_cdf_gaussian_gaussian(N:Integer <- 10000) {
-  m:TestGaussianGaussian;
+  m:TestLinearGaussianGaussian;
   m.initialize();
   m.simulate();
   test_cdf(m.marginal(), N);
@@ -72,6 +76,6 @@ program test_cdf_gaussian_gaussian(N:Integer <- 10000) {
 
 program test_grad_gaussian_gaussian(N:Integer <- 1000,
     backward:Boolean <- false) {
-  m:TestGaussianGaussian;
+  m:TestLinearGaussianGaussian;
   test_grad(m, N, backward);
 }

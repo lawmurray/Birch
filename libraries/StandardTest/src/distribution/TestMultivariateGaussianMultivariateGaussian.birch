@@ -1,19 +1,23 @@
-class TestMultivariateGaussianMultivariateGaussian < TestModel {
-  μ_1:Random<Real[_]>;
+class TestLinearMultivariateGaussianMultivariateGaussian < TestModel {
+  μ:Random<Real[_]>;
   x:Random<Real[_]>;
 
   n:Integer <- 4;
 
+  A:Real[n,n];
   μ_0:Real[n];
   Σ_0:Real[n,n];
+  c:Real[n];
   Σ_1:Real[n,n];
 
   override function initialize() {
     for i in 1..n {
       μ_0[i] <- simulate_uniform(-10.0, 10.0);
+      c[i] <- simulate_uniform(-10.0, 10.0);
       for j in 1..n {
         Σ_0[i,j] <- simulate_uniform(-2.0, 2.0);
         Σ_1[i,j] <- simulate_uniform(-2.0, 2.0);
+        A[i,j] <- simulate_uniform(-2.0, 2.0);
       }
     }
     Σ_0 <- outer(Σ_0, Σ_0) + diagonal(1.0e-2, n);
@@ -21,13 +25,13 @@ class TestMultivariateGaussianMultivariateGaussian < TestModel {
   }
 
   override function simulate() {
-    μ_1 ~ MultivariateGaussian(μ_0, Σ_0);
-    x ~ MultivariateGaussian(μ_1, Σ_1);
+    μ ~ MultivariateGaussian(μ_0, Σ_0);
+    x ~ MultivariateGaussian(A*μ + c, Σ_1);
   }
 
   override function forward() -> Real[_] {
     y:Real[2*n];
-    y[1..n] <- μ_1.eval();
+    y[1..n] <- μ.eval();
     y[(n + 1)..2*n] <- x.eval();
     return y;
   }
@@ -36,8 +40,8 @@ class TestMultivariateGaussianMultivariateGaussian < TestModel {
     y:Real[2*n];
     assert !x.hasValue();
     y[(n + 1)..2*n] <- x.eval();
-    assert !μ_1.hasValue();
-    y[1..n] <- μ_1.eval();
+    assert !μ.hasValue();
+    y[1..n] <- μ.eval();
     return y;
   }
 
@@ -51,14 +55,14 @@ class TestMultivariateGaussianMultivariateGaussian < TestModel {
 }
 
 program test_conjugacy_multivariate_gaussian_multivariate_gaussian(
-  N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestMultivariateGaussianMultivariateGaussian;
+    N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestLinearMultivariateGaussianMultivariateGaussian;
   test_conjugacy(m, N, lazy);
 }
 
 program test_pdf_multivariate_gaussian_multivariate_gaussian(
     N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
-  m:TestMultivariateGaussianMultivariateGaussian;
+  m:TestLinearMultivariateGaussianMultivariateGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
@@ -66,7 +70,7 @@ program test_pdf_multivariate_gaussian_multivariate_gaussian(
 
 program test_z_multivariate_gaussian_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestMultivariateGaussianMultivariateGaussian;
+  m:TestLinearMultivariateGaussianMultivariateGaussian;
   m.initialize();
   m.simulate();
   test_z(m.marginal(), N, lazy);
@@ -74,6 +78,6 @@ program test_z_multivariate_gaussian_multivariate_gaussian(
 
 program test_grad_multivariate_gaussian_multivariate_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestMultivariateGaussianMultivariateGaussian;
+  m:TestLinearMultivariateGaussianMultivariateGaussian;
   test_grad(m, N, backward);
 }

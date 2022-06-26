@@ -57,13 +57,13 @@ class TestLinearMultivariateNormalInverseGammaGaussian < TestModel {
   }
 }
 
-program test_conjugacy_linear_multivariate_normal_inverse_gamma_gaussian(
+program test_conjugacy_multivariate_normal_inverse_gamma_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseGammaGaussian;
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_linear_multivariate_normal_inverse_gamma_gaussian(
+program test_pdf_multivariate_normal_inverse_gamma_gaussian(
     N:Integer <- 10000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseGammaGaussian;
@@ -72,7 +72,7 @@ program test_pdf_linear_multivariate_normal_inverse_gamma_gaussian(
   test_pdf(m.marginal(), N, S, lazy);
 }
 
-program test_z_linear_multivariate_normal_inverse_gamma_gaussian(
+program test_z_multivariate_normal_inverse_gamma_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseGammaGaussian;
   m.initialize();
@@ -80,7 +80,7 @@ program test_z_linear_multivariate_normal_inverse_gamma_gaussian(
   test_z(m.marginal(), N, lazy);
 }
 
-program test_cdf_linear_multivariate_normal_inverse_gamma_gaussian(
+program test_cdf_multivariate_normal_inverse_gamma_gaussian(
     N:Integer <- 10000) {
   m:TestLinearMultivariateNormalInverseGammaGaussian;
   m.initialize();
@@ -88,7 +88,7 @@ program test_cdf_linear_multivariate_normal_inverse_gamma_gaussian(
   test_cdf(m.marginal(), N);
 }
 
-program test_grad_linear_multivariate_normal_inverse_gamma_gaussian(
+program test_grad_multivariate_normal_inverse_gamma_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMultivariateNormalInverseGammaGaussian;
   test_grad(m, N, backward);

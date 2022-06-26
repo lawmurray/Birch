@@ -1,4 +1,4 @@
-class TestMultivariateNormalInverseWishartMultivariateGaussian < TestModel {
+class TestLinearMultivariateNormalInverseWishartMultivariateGaussian < TestModel {
   Σ:Random<Real[_,_]>;
   x:Random<Real[_]>;
   y:Random<Real[_]>;
@@ -7,19 +7,24 @@ class TestMultivariateNormalInverseWishartMultivariateGaussian < TestModel {
 
   k:Real;
   Ψ:Real[n,n];
+  a:Real;
   μ:Real[n];
+  c:Real[n];
 
   override function initialize() {
     k <- simulate_uniform(3.0, 10.0) + n;
     Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-1, n);
+    a <- simulate_uniform(-2.0, 2.0);
     μ <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+    c <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+
+    Ψ <- outer(Ψ) + diagonal(1.0e-1, n);
   }
 
   override function simulate() {
     Σ ~ InverseWishart(Ψ, k);
     x ~ MultivariateGaussian(μ, Σ);
-    y ~ MultivariateGaussian(x, Σ);
+    y ~ MultivariateGaussian(a*x + c, Σ);
   }
 
   override function forward() -> Real[_] {
@@ -64,13 +69,13 @@ class TestMultivariateNormalInverseWishartMultivariateGaussian < TestModel {
 
 program test_conjugacy_multivariate_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestMultivariateNormalInverseWishartMultivariateGaussian;
+  m:TestLinearMultivariateNormalInverseWishartMultivariateGaussian;
   test_conjugacy(m, N, lazy);
 }
 
 program test_pdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
-  m:TestMultivariateNormalInverseWishartMultivariateGaussian;
+  m:TestLinearMultivariateNormalInverseWishartMultivariateGaussian;
   m.initialize();
   m.simulate();
   test_pdf(m.marginal(), N, S, lazy);
@@ -78,7 +83,7 @@ program test_pdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
 
 program test_z_multivariate_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestMultivariateNormalInverseWishartMultivariateGaussian;
+  m:TestLinearMultivariateNormalInverseWishartMultivariateGaussian;
   m.initialize();
   m.simulate();
   test_z(m.marginal(), N, lazy);
@@ -86,6 +91,6 @@ program test_z_multivariate_normal_inverse_wishart_multivariate_gaussian(
 
 program test_grad_multivariate_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
-  m:TestMultivariateNormalInverseWishartMultivariateGaussian;
+  m:TestLinearMultivariateNormalInverseWishartMultivariateGaussian;
   test_grad(m, N, backward);
 }

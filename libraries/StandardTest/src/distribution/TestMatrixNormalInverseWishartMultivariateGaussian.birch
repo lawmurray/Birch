@@ -87,13 +87,13 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   }
 }
 
-program test_conjugacy_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+program test_conjugacy_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
   test_conjugacy(m, N, lazy);
 }
 
-program test_pdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+program test_pdf_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
   m.initialize();
@@ -101,7 +101,7 @@ program test_pdf_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
   test_pdf(m.marginal(), N, S, lazy);
 }
 
-program test_z_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+program test_z_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
   m.initialize();
@@ -109,7 +109,7 @@ program test_z_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
   test_z(m.marginal(), N, lazy);
 }
 
-program test_grad_linear_matrix_normal_inverse_wishart_multivariate_gaussian(
+program test_grad_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 1000, backward:Boolean <- false) {
   m:TestLinearMatrixNormalInverseWishartMultivariateGaussian;
   test_grad(m, N, backward);
