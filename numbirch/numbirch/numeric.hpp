@@ -65,6 +65,16 @@ T operator-(const T& x) {
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> operator+(const T& x, const U& y) {
+  /* optimizations for addition of scalar zero */
+  if constexpr (is_arithmetic_v<T>) {
+    if (value(x) == 0) {
+      return y;
+    }
+  } else if constexpr (is_arithmetic_v<U>) {
+    if (value(y) == 0) {
+      return x;
+    }
+  }
   return add(x, y);
 }
 
@@ -86,6 +96,12 @@ implicit_t<T,U> operator+(const T& x, const U& y) {
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> operator-(const T& x, const U& y) {
+  /* optimization for subtraction of scalar zero */
+  if constexpr (is_arithmetic_v<U>) {
+    if (value(y) == 0) {
+      return x;
+    }
+  }
   return sub(x, y);
 }
 
@@ -110,6 +126,16 @@ implicit_t<T,U> operator-(const T& x, const U& y) {
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
 implicit_t<T,U> operator*(const T& x, const U& y) {
+  /* optimizations for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<T>) {
+    if (value(x) == 1) {
+      return y;
+    }
+  } else if constexpr (is_arithmetic_v<U>) {
+    if (value(y) == 1) {
+      return x;
+    }
+  }
   return hadamard(x, y);
 }
 
@@ -132,6 +158,12 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
 real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
+  /* optimization for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<U>) {
+    if (value(y) == 1) {
+      return g;
+    }
+  }
   return hadamard_grad1(g, z, x, y);
 }
 
@@ -154,6 +186,12 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
 real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
     const U& y) {
+  /* optimization for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<T>) {
+    if (value(x) == 1) {
+      return g;
+    }
+  }
   return hadamard_grad2(g, z, x, y);
 }
 
@@ -285,6 +323,12 @@ Array<T,2> mul_grad2(const Array<T,2>& g, const Array<T,2>& C,
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> operator/(const T& x, const U& y) {
+  /* optimization for division of scalar one */
+  if constexpr (is_arithmetic_v<U>) {
+    if (value(y) == 1) {
+      return x;
+    }
+  }
   return div(x, y);
 }
 
