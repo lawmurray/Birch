@@ -192,7 +192,7 @@ commands:
               cd << parameters.package >>
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $LIB_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $LIB_FLAGS CXXFLAGS="-march=native" || cat config.log
               make $MAKE_FLAGS
               make install
 
