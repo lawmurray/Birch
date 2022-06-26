@@ -94,9 +94,10 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1, Σ:Arg2,
     Ψ:Arg3, k:Arg4) -> Distribution<Real[_,_]> {
   let L <- wrap(chol(Σ));
+  let O <- wrap(trisolve(L, M));
+  let N <- triinnersolve(L, O);
   let Λ <- cholinv(L);
-  let N <- cholsolve(L, M);
-  let Γ <- Ψ + inner(trisolve(L, M));
+  let Γ <- Ψ + inner(O);
   return wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
 }
 function wrap_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
@@ -119,9 +120,10 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
     V.prune();
     let (Ψ, k) <- V.getNext().getInverseWishart();
     let L <- wrap(chol(U));
+    let O <- trisolve(L, M);
+    let N <- triinnersolve(L, O);
     let Λ <- cholinv(L);
-    let N <- cholsolve(L, M);
-    let Γ <- Ψ + inner(trisolve(L, M));
+    let Γ <- Ψ + inner(O);
     let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
     V.setNext(p);
     return p;
@@ -141,9 +143,10 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
 function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
     Λ:Arg2, Γ:Arg3, k:Arg4) -> {
   let L <- wrap(chol(Λ));
-  let M <- wrap(cholsolve(L, N));
+  let O <- wrap(trisolve(L, N));
+  let M <- wrap(triinnersolve(L, O));
   let Σ <- cholinv(L);
-  let Ψ <- Γ - inner(trisolve(L, N));
+  let Ψ <- Γ - inner(O);
   return simulate_matrix_t(k, M, Σ, Ψ);
 }
 
@@ -161,9 +164,10 @@ function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
 function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     X:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5) -> {
   let L <- wrap(chol(Λ));
-  let M <- wrap(cholsolve(L, N));
+  let O <- wrap(trisolve(L, N));
+  let M <- wrap(triinnersolve(L, O));
   let Σ <- cholinv(L);
-  let Ψ <- Γ - inner(trisolve(L, N));
+  let Ψ <- Γ - inner(O);
   return logpdf_matrix_t(X, k, M, Σ, Ψ);
 }
 
@@ -182,8 +186,9 @@ function update_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     X:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5) -> {
   let n <- rows(X);
   let L <- wrap(chol(Λ));
-  let M <- wrap(cholsolve(L, N));
-  let Ψ' <- Γ - inner(trisolve(L, N)) + inner(triinner(L, X - M));
+  let O <- wrap(trisolve(L, N));
+  let M <- wrap(triinnersolve(L, O));
+  let Ψ' <- Γ - inner(O) + inner(triinner(L, X - M));
   let k' <- k + n;
   return wrap_inverse_wishart(Ψ', k');
 }

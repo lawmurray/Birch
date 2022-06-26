@@ -125,10 +125,11 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, Σ:Arg2,
     α:Arg3, β:Arg4) -> Distribution<Real[_]> {
   let L <- wrap(chol(Σ));
-  let Λ <- wrap(cholinv(L));
-  let ν <- wrap(cholsolve(L, μ));
+  let o <- wrap(trisolve(L, μ));
+  let ν <- triinnersolve(L, o);
+  let Λ <- cholinv(L);
   let k <- 2.0*α;
-  let γ <- 2.0*β + dot(trisolve(L, μ));
+  let γ <- 2.0*β + dot(o);
   return wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
 }
 function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
@@ -172,8 +173,9 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
     ν:Arg1, Λ:Arg2, k:Arg3, γ:Arg4) -> {
   let n <- length(ν);
   let L <- wrap(chol(Λ));
-  let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
+  let o <- wrap(trisolve(L, ν));
+  let μ <- triinnersolve(L, o);
+  let β <- γ - dot(o);  // actually two times beta
 
   /* now the same as simulate_multivariate_t(k, μ, β*cholinv(L)), but can
    * inline and simplify */
@@ -198,8 +200,9 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5) -> {
   let n <- length(x);
   let L <- wrap(chol(Λ));
-  let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
+  let o <- wrap(trisolve(L, ν));
+  let μ <- triinnersolve(L, o);
+  let β <- γ - dot(o);  // actually two times beta
 
   /* now the same as logpdf_multivariate_t(x, k, μ, β*cholinv(L)), but can
    * inline and simplify */
@@ -225,7 +228,8 @@ function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5) -> {
   let n <- length(x);
   let L <- wrap(chol(Λ));
-  let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
+  let o <- wrap(trisolve(L, ν));
+  let μ <- triinnersolve(L, o);
+  let β <- γ - dot(o);  // actually two times beta
   return wrap_inverse_gamma(0.5*(k + n), 0.5*(β + dot(triinner(L, x - μ))));
 }

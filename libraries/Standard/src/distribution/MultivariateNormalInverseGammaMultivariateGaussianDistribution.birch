@@ -94,10 +94,11 @@ function MultivariateNormalInverseGammaMultivariateGaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5,
     c:Arg6, Ω:Arg7) -> Distribution<Real[_]> {
   let L <- wrap(chol(Σ));
+  let o <- wrap(trisolve(L, μ));
+  let ν <- triinnersolve(L, o);
   let Λ <- wrap(cholinv(L));
-  let ν <- wrap(cholsolve(L, μ));
   let k <- 2.0*α;
-  let γ <- 2.0*β + dot(trisolve(L, μ));
+  let γ <- 2.0*β + dot(o);
   return wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(
       A, ν, Λ, k, γ, c, Ω);
 }
@@ -187,8 +188,9 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, ν:Arg2, Λ:Arg3, k:Arg4,
     γ:Arg5, c:Arg6, Ω:Arg7) -> {
   let L <- wrap(chol(Λ));
-  let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
+  let o <- wrap(trisolve(L, ν));
+  let μ <- triinnersolve(L, o);
+  let β <- γ - dot(o);  // actually two times beta
   let m <- A*μ + c;
   let S <- β*(inner(trisolve(L, transpose(A))) + Ω);
   return simulate_multivariate_t(k, m, S);
@@ -213,8 +215,9 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, ν:Arg3, Λ:Arg4,
     k:Arg5, γ:Arg6, c:Arg7, Ω:Arg8) -> {
   let L <- wrap(chol(Λ));
-  let μ <- wrap(cholsolve(L, ν));
-  let β <- γ - dot(trisolve(L, ν));  // actually two times beta
+  let o <- wrap(trisolve(L, ν));
+  let μ <- triinnersolve(L, o);
+  let β <- γ - dot(o);  // actually two times beta
   let m <- A*μ + c;
   let S <- β*(inner(trisolve(L, transpose(A))) + Ω);
   return logpdf_multivariate_t(x, k, m, S);
@@ -240,9 +243,10 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     ν:Arg3, Λ:Arg4, k:Arg5, γ:Arg6, c:Arg7, Ω:Arg8) -> {
   let n <- length(x);
   let L <- wrap(chol(Ω));
+  let o <- wrap(trisolve(L, x - c));
   let Λ' <- Λ + inner(trisolve(L, A));
-  let ν' <- ν + transpose(A)*cholsolve(L, x - c);
+  let ν' <- ν + transpose(A)*triinnersolve(L, o);
   let k' <- k + n;
-  let γ' <- γ + dot(trisolve(L, x - c));
+  let γ' <- γ + dot(o);
   return wrap_multivariate_normal_inverse_gamma(ν', Λ', k', γ');
 }
