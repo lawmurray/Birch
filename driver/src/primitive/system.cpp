@@ -109,28 +109,6 @@ fs::path birch::remove_first(const fs::path& path) {
   }
 }
 
-fs::path birch::remove_common_prefix(const fs::path& base, const fs::path& path) {
-  auto iter1 = base.begin();
-  auto end1 = base.end();
-  auto iter2 = path.begin();
-  auto end2 = path.end();
-  while (iter1 != end1 && iter2 != end2 && *iter1 == *iter2) {
-    ++iter1;
-    ++iter2;
-  }
-  if (iter2 != end2) {
-    auto result = *iter2;
-    ++iter2;
-    while (iter2 != end2) {
-      result /= *iter2;
-      ++iter2;
-    }
-    return result;
-  } else {
-    return fs::path();
-  }
-}
-
 std::string birch::read_all(const fs::path& path) {
   fs_stream::ifstream in(path);
   std::stringstream buf;
