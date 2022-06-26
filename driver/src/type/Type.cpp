@@ -61,14 +61,6 @@ const birch::Type* birch::Type::unwrap() const {
   return this;
 }
 
-birch::Type* birch::Type::element() {
-  return this;
-}
-
-const birch::Type* birch::Type::element() const {
-  return this;
-}
-
 birch::TypeIterator birch::Type::begin() {
   if (isEmpty()) {
     return end();

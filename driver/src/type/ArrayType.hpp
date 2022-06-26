@@ -26,8 +26,6 @@ public:
   virtual void accept(Visitor* visitor) const;
 
   virtual int depth() const;
-  virtual Type* element();
-  virtual const Type* element() const;
   virtual bool isArray() const;
 
   /**

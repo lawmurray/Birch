@@ -85,12 +85,6 @@ public:
   virtual const Type* unwrap() const;
 
   /**
-   * For a sequence or array type, the element type, otherwise this.
-   */
-  virtual Type* element();
-  virtual const Type* element() const;
-
-  /**
    * Iterator to first element if this is a list, to one-past-the-last if
    * this is empty, otherwise to this.
    */
