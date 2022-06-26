@@ -44,6 +44,6 @@ class ParticleSampler {
     if b == 0 {
       error("particle filter degenerated");
     }
-    return (filter.x[b].m, filter.lnormalize);
+    return (filter.x[b], filter.lnormalize);
   }
 }

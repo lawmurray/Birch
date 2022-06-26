@@ -9,7 +9,7 @@
  * ```
  */
 class LangevinKernel < Kernel {
-  override function move(y:Particle) -> Real {
+  override function move(y:Model) -> Real {
     let naccepts <- 0;
     if nmoves > 0 {
       y.hoist();

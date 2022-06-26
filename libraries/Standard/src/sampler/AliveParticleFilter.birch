@@ -30,11 +30,11 @@ class AliveParticleFilter < ParticleFilter {
         x[n] <- global.copy(x0[a[n]]);
         p[n] <- p[n] + 1;
 
-        let m <- x[n].m;
+        let m <- x[n];
         let h <- construct<Handler>(autoconj, autodiff, autojoin);
         with h {
-          x[n].m.read(t, input);
-          x[n].m.simulate(t);
+          x[n].read(t, input);
+          x[n].simulate(t);
         }
         x[n].Ξ.pushBack(h.Ξ);
         x[n].Φ.pushBack(h.Φ);

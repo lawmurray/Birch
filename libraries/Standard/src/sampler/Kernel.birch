@@ -57,7 +57,7 @@ abstract class Kernel {
    *
    * Returns: Acceptance rate of moves on this particle.
    */
-  abstract function move(x:Particle) -> Real;
+  abstract function move(x:Model) -> Real;
 
   /**
    * Adapt the scale using a PID controller.
