@@ -28,9 +28,9 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
       m'.initialize();
       m'.simulate();
       if backward {
-        m'.backwardGrad();
+        m'.backward();
       } else {
-        m'.forwardGrad();
+        m'.forward();
       }
     }
 

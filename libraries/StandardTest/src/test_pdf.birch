@@ -9,8 +9,10 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   /* simulate, counting the occurrence of each value */
   let k <- 0;
   for n in 1..N {
-    if π.simulate() {
-      k <- k + 1;
+    if lazy && π.supportsLazy() {
+      k <- k + π.simulateLazy()!;
+    } else {
+      k <- k + π.simulate();
     }
   }
 
@@ -124,14 +126,23 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   /* iid samples */
   x1:Real[N];
   for n in 1..N {
-    x1[n] <- π.simulate();
+    if lazy && π.supportsLazy() {
+      x1[n] <- π.simulateLazy()!;
+    } else {
+      x1[n] <- π.simulate();
+    }
   }
   
   /* compute the shape for a Gaussian proposal using iid samples */
   let μ <- 0.0;
   let σ2 <- 0.0;
   for n in 1..N*S {
-    let x <- π.simulate();
+    x:Real;
+    if lazy && π.supportsLazy() {
+      x <- π.simulateLazy()!;
+    } else {
+      x <- π.simulate();
+    }
     μ <- μ + x;
     σ2 <- σ2 + x*x;
   }
@@ -207,12 +218,20 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
  */
 function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     lazy:Boolean) {  
-  let D <- rows(π.simulate());
-  
   /* iid samples */
+  D:Integer <- 0;
+  if lazy && π.supportsLazy() {
+    D <- rows(π.simulateLazy()!);
+  } else {
+    D <- rows(π.simulate());
+  }
   X1:Real[N,D];
-  for n in 1..N {
-    X1[n,1..D] <- π.simulate();
+  parallel for n in 1..N {
+    if lazy && π.supportsLazy() {
+      X1[n,1..D] <- π.simulateLazy()!;
+    } else {
+      X1[n,1..D] <- π.simulate();
+    }
   }
   
   /* compute the shape for a Gaussian proposal using iid samples */
@@ -222,7 +241,12 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     μ <- 0.0;
     Σ <- 0.0;
     for n in 1..N*S {
-      let x <- π.simulate();
+      x:Real[_];
+      if lazy && π.supportsLazy() {
+        x <- π.simulateLazy()!;
+      } else {
+        x <- π.simulate();
+      }
       μ <- μ + x;
       Σ <- Σ + outer(x);
     }
@@ -300,13 +324,24 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
  */
 function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     lazy:Boolean) {
-  let R <- rows(π.simulate());
-  let C <- columns(π.simulate());
+  R:Integer <- 0;
+  C:Integer <- 0;
+  if lazy && π.supportsLazy() {
+    R <- rows(π.simulateLazy()!);
+    C <- columns(π.simulateLazy()!);
+  } else {
+    R <- rows(π.simulate());
+    C <- columns(π.simulate());
+  }
   
   /* iid samples */
   X1:Real[N,R*C];
-  for n in 1..N {
-    X1[n,1..R*C] <- vec(π.simulate());
+  parallel for n in 1..N {
+    if lazy && π.supportsLazy() {
+      X1[n,1..R*C] <- vec(π.simulateLazy()!);
+    } else {
+      X1[n,1..R*C] <- vec(π.simulate());
+    }
   }
   
   /* compute the shape for a Gaussian proposal using iid samples */
@@ -316,7 +351,12 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     μ <- 0.0;
     Σ <- 0.0;
     for n in 1..N*S {
-      let x <- vec(π.simulate());
+      x:Real[_];
+      if lazy && π.supportsLazy() {
+        x <- vec(π.simulateLazy()!);
+      } else {
+        x <- vec(π.simulate());
+      }
       μ <- μ + x;
       Σ <- Σ + outer(x);
     }

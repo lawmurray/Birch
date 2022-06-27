@@ -57,16 +57,6 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
     return vectorize();
   }
 
-  override function backwardGrad() {
-    assert !y.hasValue();
-    y.eval();
-    assert !X.hasValue();
-    X.eval();
-    assert !V.hasValue();
-    // ^ currently can't do finite difference gradient estimates on symmetric
-    //   matrices
-  }
-
   function marginal() -> Distribution<Real[_]> {
     return y.getDistribution();
   }

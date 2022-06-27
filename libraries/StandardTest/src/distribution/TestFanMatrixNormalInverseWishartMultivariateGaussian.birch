@@ -62,20 +62,6 @@ class TestFanMatrixNormalInverseWishartMultivariateGaussian < TestModel {
     return vectorize();
   }
 
-  override function backwardGrad() {
-    assert !y[5].hasValue();
-    y[5].eval();
-    y[4].eval();
-    y[3].eval();
-    y[2].eval();
-    y[1].eval();
-    assert !X.hasValue();
-    X.eval();
-    assert !Σ.hasValue();
-    // ^ currently can't do finite difference gradient estimates on symmetric
-    //   matrices
-  }
-
   function marginal() -> Distribution<Real[_]> {
     return y[5].getDistribution();
   }

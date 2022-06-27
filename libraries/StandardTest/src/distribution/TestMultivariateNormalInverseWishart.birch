@@ -34,14 +34,6 @@ class TestMultivariateNormalInverseWishart < TestModel {
     return vectorize();
   }
 
-  override function backwardGrad() {
-    assert !x.hasValue();
-    x.eval();
-    assert !Σ.hasValue();
-    // ^ currently can't do finite difference gradient estimates on symmetric
-    //   matrices
-  }
-
   function marginal() -> Distribution<Real[_]> {
     return x.getDistribution();
   }
