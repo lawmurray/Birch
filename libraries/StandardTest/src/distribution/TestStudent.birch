@@ -34,15 +34,19 @@ class TestStudent < TestModel {
 program test_pdf_student_t(N:Integer <- 10000,
     S:Integer <- 20, lazy:Boolean <- false) {
   m:TestStudent;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_z_student_t(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestStudent;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_z(m.marginal(), N, lazy);
 }
 

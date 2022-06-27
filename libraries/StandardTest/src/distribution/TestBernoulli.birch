@@ -31,8 +31,10 @@ class TestBernoulli < TestModel {
 program test_pdf_bernoulli(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBernoulli;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, lazy);
 }
 

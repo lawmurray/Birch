@@ -57,16 +57,20 @@ program test_conjugacy_multivariate_gaussian_gaussian(
 program test_pdf_multivariate_gaussian_gaussian(N:Integer <- 10000,
     B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestLinearMultivariateGaussianGaussian;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_z_multivariate_gaussian_gaussian(N:Integer <- 10000,
     lazy:Boolean <- false) {
   m:TestLinearMultivariateGaussianGaussian;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_z(m.marginal(), N, lazy);
 }
 

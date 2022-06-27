@@ -49,7 +49,9 @@ program test_conjugacy_add_discrete_delta(N:Integer <- 10000,
 program test_pdf_add_discrete_delta(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestAddDiscreteDelta;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, lazy);
 }

@@ -27,11 +27,13 @@ class TestGeometric < TestModel {
   }
 }
 
-program test_pdf_geometric(N:Integer <- 10000,
-    S:Integer <- 0, lazy:Boolean <- false) {
+program test_pdf_geometric(N:Integer <- 10000, S:Integer <- 0,
+    lazy:Boolean <- false) {
   m:TestGeometric;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, lazy);
 }
 
@@ -42,8 +44,7 @@ program test_cdf_geometric() {
   test_cdf(m.marginal());
 }
 
-program test_grad_geometric(N:Integer <- 1000,
-    backward:Boolean <- false) {
+program test_grad_geometric(N:Integer <- 1000, backward:Boolean <- false) {
   m:TestGeometric;
   test_grad(m, N, backward);
 }

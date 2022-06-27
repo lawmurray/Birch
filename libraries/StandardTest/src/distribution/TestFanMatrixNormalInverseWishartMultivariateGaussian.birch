@@ -99,16 +99,20 @@ program test_conjugacy_fan_matrix_normal_inverse_wishart_multivariate_gaussian(
 program test_pdf_fan_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
   m:TestFanMatrixNormalInverseWishartMultivariateGaussian;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_z_fan_matrix_normal_inverse_wishart_multivariate_gaussian(
     N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestFanMatrixNormalInverseWishartMultivariateGaussian;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_z(m.marginal(), N, lazy);
 }
 

@@ -30,8 +30,10 @@ class TestPoisson < TestModel {
 program test_pdf_poisson(N:Integer <- 10000, S:Integer <- 0,
     lazy:Boolean <- false) {
   m:TestPoisson;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, lazy);
 }
 

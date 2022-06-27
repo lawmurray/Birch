@@ -32,8 +32,10 @@ class TestNegativeBinomial < TestModel {
 program test_pdf_negative_binomial(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestNegativeBinomial;
-  m.initialize();
-  m.simulate();
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
   test_pdf(m.marginal(), N, lazy);
 }
 
