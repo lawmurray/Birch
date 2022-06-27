@@ -42,15 +42,6 @@ class TestWishart < TestModel {
   }
 }
 
-program test_z_wishart(N:Integer <- 10000, lazy:Boolean <- false) {
-  m:TestWishart;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_z(m.marginal(), N, lazy);
-}
-
 program test_grad_wishart(N:Integer <- 1000, backward:Boolean <- false) {
   m:TestWishart;
   test_grad(m, N, backward);
