@@ -1,7 +1,7 @@
 class TestWishart < TestModel {
   Σ:Random<Real[_,_]>;
   
-  p:Integer <- 5;
+  p:Integer <- 3;
   Ψ:Real[p,p];
   k:Real;
 
@@ -40,16 +40,6 @@ class TestWishart < TestModel {
   override function size() -> Integer {
     return p*p;
   }
-}
-
-program test_pdf_wishart(N:Integer <- 10000, B:Integer <- 10000,
-    S:Integer <- 20, lazy:Boolean <- false) {
-  m:TestWishart;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, S, lazy);
 }
 
 program test_z_wishart(N:Integer <- 10000, lazy:Boolean <- false) {

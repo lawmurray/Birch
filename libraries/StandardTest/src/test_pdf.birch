@@ -252,7 +252,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     }
     μ <- μ/(N*S);
     Σ <- (Σ/(N*S) - outer(μ))*pow(2.4, 2.0)/D;
-  } while sum(isfinite(chol(Σ))) == 0;
+  } while N >= 100 && sum(isfinite(chol(Σ))) == 0;
   
   /* draw Metropolis samples using pdf */
   X2:Real[N,D];
@@ -362,7 +362,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     }
     μ <- μ/(N*S);
     Σ <- (Σ/(N*S) - outer(μ))*pow(2.4, 2.0)/(R*C);
-  } while sum(isfinite(chol(Σ))) == 0;
+  } while N >= 100 && sum(isfinite(chol(Σ))) == 0;
 
   /* draw Metropolis samples using pdf */
   X2:Real[N,R*C];
