@@ -75,6 +75,9 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         }
       }
     }
+
+    /* smoke test for constant */
+    π.constant();
   }
 
   /* check that failure rate within bounds */

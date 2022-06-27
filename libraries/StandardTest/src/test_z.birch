@@ -42,6 +42,9 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
     exit(1);
   }
+
+  /* smoke test for constant */
+  π.constant();
 }
 
 /*
@@ -94,6 +97,9 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
     exit(1);
   }
+
+  /* smoke test for constant */
+  π.constant();
 }
 
 /*
@@ -148,4 +154,7 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
     exit(1);
   }
+
+  /* smoke test for constant */
+  π.constant();
 }

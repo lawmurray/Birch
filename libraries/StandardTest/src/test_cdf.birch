@@ -60,6 +60,9 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   if failed {
     error("***failed***");
   }
+
+  /* smoke test for constant */
+  q.constant();
 }
 
 /*
@@ -114,4 +117,7 @@ function test_cdf(q:Distribution<Integer>) {
   if failed {
     error("***failed***");
   }
+
+  /* smoke test for constant */
+  q.constant();
 }
