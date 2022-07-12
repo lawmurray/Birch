@@ -60,12 +60,8 @@ public:
    * Default constructor.
    */
   Array() :
-      ctl(nullptr),
-      shp(),
       isView(false) {
-    if (volume() > 0) {
-      allocate();
-    }
+    allocate();
   }
 
   /**
@@ -74,12 +70,9 @@ public:
    * @param shp Shape.
    */
   Array(const shape_type& shp) :
-      ctl(nullptr),
       shp(shp),
       isView(false) {
-    if (volume() > 0) {
-      allocate();
-    }
+    allocate();
   }
 
   /**
@@ -92,13 +85,9 @@ public:
    * default.
    */
   Array(const T value) :
-      ctl(nullptr),
-      shp(),
       isView(false) {
-    if (volume() > 0) {
-      allocate();
-      fill(value);
-    }
+    allocate();
+    fill(value);
   }
 
   /**
@@ -108,13 +97,10 @@ public:
    * @param value Fill value.
    */
   Array(const shape_type& shp, const T value) :
-      ctl(nullptr),
       shp(shp),
       isView(false) {
-    if (volume() > 0) {
-      allocate();
-      fill(value);
-    }
+    allocate();
+    fill(value);
   }
 
   /**
@@ -124,13 +110,10 @@ public:
    * @param value Fill value.
    */
   Array(const shape_type& shp, const Array<T,0>& value) :
-      ctl(nullptr),
       shp(shp),
       isView(false) {
-    if (volume() > 0) {
-      allocate();
-      fill(value);
-    }
+    allocate();
+    fill(value);
   }
 
   /**
@@ -142,11 +125,10 @@ public:
    */
   template<class L, std::enable_if_t<std::is_invocable_r_v<T,L,int>,int> = 0>
   Array(const shape_type& shp, const L& l) :
-      ctl(nullptr),
       shp(shp),
       isView(false) {
+    allocate();
     if (volume() > 0) {
-      allocate();
       int64_t n = 0;
       auto iter = begin();
       auto to = end();
@@ -163,11 +145,10 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
   Array(const std::initializer_list<T>& values) :
-      ctl(nullptr),
       shp(make_shape(values.size())),
       isView(false) {
+    allocate();
     if (volume() > 0) {
-      allocate();
       std::copy(values.begin(), values.end(), begin());
     }
   }
@@ -179,11 +160,10 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array(const std::initializer_list<std::initializer_list<T>>& values) :
-      ctl(nullptr),
       shp(make_shape(values.size(), values.begin()->size())),
       isView(false) {
+    allocate();
     if (volume() > 0) {
-      allocate();
       T* ptr = diced();
       int64_t t = 0;
       for (auto row : values) {
@@ -214,20 +194,18 @@ public:
    * copy immediately instead.
    */
   Array(const Array& o, const bool immediate = false) :
-      ctl(nullptr),
       shp(o.shp),
       isView(false) {
-    if (volume() > 0) {
-      if (immediate || o.isView) {
-        allocate();
-        copy(o);
-      } else {
-        auto c = o.control();
-        if (c) {
-          c->incShared();
-          ctl.store(c);
-        }
-      }
+    if (immediate || o.isView) {
+      allocate();
+      copy(o);
+    } else if (volume() > 0) {
+      auto c = o.control();
+      assert(c);
+      c->incShared();
+      ctl.store(c);
+    } else {
+      ctl.store(nullptr);
     }
   }
 
@@ -236,25 +214,22 @@ public:
    */
   template<class U, std::enable_if_t<is_arithmetic_v<U>,int> = 0>
   Array(const Array<U,D>& o) :
-      ctl(nullptr),
       shp(o.shp),
       isView(false) {
-    if (volume() > 0) {
-      allocate();
-      copy(o);
-    }
+    allocate();
+    copy(o);
   }
 
   /**
    * Move constructor.
    */
   Array(Array&& o) :
-      ctl(nullptr),
       shp(o.shp),
       isView(false) {
     if (!o.isView) {
+      ctl.store(nullptr);
       swap(o);
-    } else if (volume() > 0) {
+    } else {
       allocate();
       copy(o);
     }
@@ -264,9 +239,7 @@ public:
    * Destructor.
    */
   ~Array() {
-    if (volume() > 0) {
-      release();
-    }
+    release();
   }
 
   /**
@@ -761,7 +734,9 @@ private:
    * @param value The value.
    */
   void fill(const T value) {
-    memset(data(sliced()), stride(), value, width(), height());
+    if (volume() > 0) {
+      memset(data(sliced()), stride(), value, width(), height());
+    }
   }
 
   /**
@@ -771,8 +746,10 @@ private:
    */
   template<class U>
   void fill(const Array<U,0>& value) {
-    memcpy(data(sliced()), stride(), data(value.sliced()), value.stride(),
-        width(), height());
+    if (volume() > 0) {
+      memcpy(data(sliced()), stride(), data(value.sliced()), value.stride(),
+          width(), height());
+    }
   }
 
   /**
@@ -783,8 +760,10 @@ private:
   template<class U>
   void copy(const Array<U,D>& o) {
     assert(conforms(o) && "array sizes are different");
-    memcpy(data(sliced()), stride(), data(o.sliced()), o.stride(), width(),
-        height());
+    if (volume() > 0) {
+      memcpy(data(sliced()), stride(), data(o.sliced()), o.stride(), width(),
+          height());
+    }
   }
 
   /**
@@ -804,20 +783,23 @@ private:
    * Allocate memory for this, leaving uninitialized.
    */
   void allocate() {
-    assert(volume() > 0);
-    assert(!ctl.load());
     shp.compact();
-    ctl.store(new ArrayControl(shp.volume()*sizeof(T)));
+    ArrayControl* c = nullptr;
+    if (volume() > 0) {
+      c = new ArrayControl(shp.volume()*sizeof(T));
+    }
+    ctl.store(c);
   }
 
   /**
    * Release the buffer, deallocating if this is the last reference to it.
    */
   void release() {
-    assert(volume() > 0);
-    ArrayControl* c = ctl.exchange(nullptr);
-    if (!isView && c && c->decShared() == 0) {
-      delete c;
+    if (volume() > 0) {
+      ArrayControl* c = ctl.exchange(nullptr);
+      if (!isView && c && c->decShared() == 0) {
+        delete c;
+      }
     }
   }
 
