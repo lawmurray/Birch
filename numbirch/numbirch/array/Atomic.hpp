@@ -40,6 +40,10 @@ class Atomic {
 public:
   /**
    * Default constructor.
+   *
+   * The value remains uninitialized and should be set with e.g. store(). This
+   * saves an atomic write in situations where initialization is unnecessary,
+   * however.
    */
   Atomic() = default;
 
@@ -60,11 +64,11 @@ public:
   T load() const {
     #if NUMBIRCH_ATOMIC_OPENMP
     T value;
-    #pragma omp atomic read seq_cst
+    #pragma omp atomic read
     value = this->value;
     return value;
     #else
-    return this->value.load(std::memory_order_seq_cst);
+    return this->value.load(std::memory_order_relaxed);
     #endif
   }
 
@@ -73,10 +77,10 @@ public:
    */
   void store(const T& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic write seq_cst
+    #pragma omp atomic write
     this->value = value;
     #else
-    this->value.store(value, std::memory_order_seq_cst);
+    this->value.store(value, std::memory_order_relaxed);
     #endif
   }
 
@@ -90,14 +94,14 @@ public:
   T exchange(const T& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture seq_cst
+    #pragma omp atomic capture
     {
       old = this->value;
       this->value = value;
     }
     return old;
     #else
-    return this->value.exchange(value, std::memory_order_seq_cst);
+    return this->value.exchange(value, std::memory_order_relaxed);
     #endif
   }
 
