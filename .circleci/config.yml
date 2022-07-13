@@ -5,7 +5,7 @@ orbs:
   codecov: codecov/codecov@3.2.2
 
 executors:
-  opensuse-release:
+  opensuse-bench:
     docker:
       - image: lawmurray/birch-circleci:opensuse
     resource_class: large
@@ -15,9 +15,9 @@ executors:
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--disable-assert"
       BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
-    working_directory: /root/project/opensuse-release
+    working_directory: /root/project/opensuse-bench
 
-  opensuse-test:
+  opensuse-cover:
     docker:
       - image: lawmurray/birch-circleci:opensuse
     resource_class: large
@@ -26,9 +26,9 @@ executors:
       CXXFLAGS: "-O0 -g -Wall -fno-inline --coverage"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/opensuse-test
+    working_directory: /root/project/opensuse-cover
 
-  ubuntu-debug:
+  ubuntu:
     docker:
       - image: lawmurray/birch-circleci:ubuntu
     resource_class: large
@@ -37,9 +37,9 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/ubuntu-debug
+    working_directory: /root/project/ubuntu
 
-  debian-debug:
+  debian:
     docker:
       - image: lawmurray/birch-circleci:debian
     resource_class: large
@@ -48,9 +48,9 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/debian-debug
+    working_directory: /root/project/debian
 
-  fedora-debug:
+  fedora:
     docker:
       - image: lawmurray/birch-circleci:fedora
     resource_class: large
@@ -59,9 +59,9 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/fedora-debug
+    working_directory: /root/project/fedora
 
-  alpine-debug:
+  alpine:
     docker:
       - image: lawmurray/birch-circleci:alpine
     resource_class: large
@@ -70,9 +70,9 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/alpine-debug
+    working_directory: /root/project/alpine
 
-  mac-debug:
+  mac:
     macos:
       xcode: 13.4.1
     environment:
@@ -80,7 +80,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /Users/distiller/project/mac-debug
+    working_directory: /Users/distiller/project/mac
 
 commands:
 
@@ -91,7 +91,7 @@ commands:
     steps:
       - when:
           condition:
-            equal: [ mac-debug, << parameters.os >> ]
+            equal: [ mac, << parameters.os >> ]
           steps:
             - restore_cache:
                 key: homebrew
@@ -136,7 +136,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: "^.+-test$"
+              pattern: "^.+-cover$"
               value: << parameters.os >>
           steps:
             - run:
@@ -212,13 +212,10 @@ commands:
           no_output_timeout: 30m
       - when:
           condition:
-            or:
-              - matches:
-                  pattern: "^.+-debug$"
-                  value: << parameters.os >>
-              - matches:
-                  pattern: "^.+-test$"
-                  value: << parameters.os >>
+            not:
+              matches:
+                pattern: "^.+-bench$"
+                value: << parameters.os >>
           steps:
             - run:
                 name: Smoke test << parameters.package >> package
@@ -232,7 +229,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: "^.+-release$"
+              pattern: "^.+-bench$"
               value: << parameters.os >>
           steps:
             - run:
@@ -562,32 +559,32 @@ workflows:
       - base:
           matrix:
             parameters:
-              os: [opensuse-release,opensuse-test,ubuntu-debug,debian-debug,fedora-debug,alpine-debug,mac-debug]
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
 
       - standard:
           matrix:
             parameters:
-              os: [opensuse-release,opensuse-test,ubuntu-debug,debian-debug,fedora-debug,alpine-debug,mac-debug]
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
           requires:
             - base-<< matrix.os >>
 
       - libraries:
           matrix:
             parameters:
-              os: [opensuse-release,opensuse-test,ubuntu-debug,debian-debug,fedora-debug,alpine-debug,mac-debug]
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
           requires:
             - standard-<< matrix.os >>
 
       - example:
           matrix:
             parameters:
-              os: [opensuse-release,opensuse-test]
+              os: [opensuse-bench,opensuse-cover]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
             - libraries-<< matrix.os >>
 
       - deploy:
-          os: opensuse-release
+          os: opensuse-bench
           filters:
             branches:
               only:
