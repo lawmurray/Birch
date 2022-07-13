@@ -469,8 +469,8 @@ void birch::Driver::configure() {
       cxxflags << " -g";
     }
     if (enableCoverage) {
-      cflags << " --coverage";
-      cxxflags << " --coverage";
+      cflags << " -fno-inline -fprofile-abs-path --coverage";
+      cxxflags << "  -fno-inline -fprofile-abs-path --coverage";
     }
     if (enableWarnings) {
       cppflags << " -Wall";
