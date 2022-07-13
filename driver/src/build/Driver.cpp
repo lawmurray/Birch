@@ -1234,9 +1234,7 @@ void birch::Driver::target(const std::string& cmd) {
   }
 
   /* concurrency */
-  if (jobs > 1) {
-    buf << " -j " << jobs;
-  }
+  buf << " -j " << jobs;
 
   /* target */
   buf << ' ' << cmd << " 2>&1";  // stderr to stdout so pipe has both
