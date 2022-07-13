@@ -59,7 +59,7 @@ void memcpy(void* dst, const void* src, size_t n) {
 }
 
 void* event_create() {
-  //
+  return 0;
 }
 
 void event_destroy(void* evt) {
@@ -75,7 +75,7 @@ void event_record_write(void* evt) {
 }
 
 bool event_test(void* evt) {
-  //
+  return true;
 }
 
 void event_wait(void* evt) {
