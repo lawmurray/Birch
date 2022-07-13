@@ -148,11 +148,6 @@ private:
   std::string unit;
 
   /**
-   * Run mode ("debug", "test", or "release").
-   */
-  std::string mode;
-
-  /**
    * Floating point precision run mode ("single" or "double").
    */
   std::string precision;
@@ -164,59 +159,69 @@ private:
   int jobs;
 
   /**
-   * Enable test build?
-   */
-  bool test;
-
-  /**
-   * Enable debug build?
-   */
-  bool debug;
-
-  /**
-   * Enable release build?
-   */
-  bool release;
-
-  /**
    * Enable single-precision builds?
    */
-  bool single;
+  bool enableSingle;
+
+  /**
+   * Enable double-precision builds?
+   */
+  bool enableDouble;
 
   /**
    * Enable static library?
    */
-  bool staticLib;
+  bool enableStatic;
 
   /**
    * Enable shared library?
    */
-  bool sharedLib;
+  bool enableShared;
 
   /**
    * Enable OpenMP?
    */
-  bool openmp;
+  bool enableOpenmp;
+
+  /**
+   * Enable assertions?
+   */
+  bool enableAssert;
+
+  /**
+   * Enable optimizations?
+   */
+  bool enableOptimize;
+
+  /**
+   * Enable debug information?
+   */
+  bool enableDebug;
+
+  /**
+   * Enable coverage information?
+   */
+  bool enableCoverage;
 
   /**
    * Enable compiler warnings?
    */
-  bool warnings;
+  bool enableWarnings;
 
   /**
    * Enable compiler notes?
    */
-  bool notes;
+  bool enableNotes;
 
   /**
-   * Enable translation of C++ compiler messages?
+   * Enable translation of compiler messages from C++ to Birch?
    */
-  bool translate;
+  bool enableTranslate;
 
   /**
    * Enable verbose reporting?
    */
-  bool verbose;
+  bool enableVerbose;
 
   /**
    * Is the bootstrap file new?

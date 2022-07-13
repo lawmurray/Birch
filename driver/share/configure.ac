@@ -4,35 +4,6 @@ AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
-# Both debug and release libraries are built, with AM_CXXFLAGS provided for
-# these that should override the default CXXFLAGS; user-defined CXXFLAGS will
-# still take precedence over these, however
-: ${CXXFLAGS=""}
-
-AC_ARG_ENABLE([debug],
-[AS_HELP_STRING[--enable-debug], [Build debug library]],
-[case "${enableval}" in
-  yes) debug=true ;;
-  no)  debug=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
-esac],[debug=true])
-
-AC_ARG_ENABLE([test],
-[AS_HELP_STRING[--enable-test], [Build test library]],
-[case "${enableval}" in
-  yes) test=true ;;
-  no)  test=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-test]) ;;
-esac],[test=false])
-
-AC_ARG_ENABLE([release],
-[AS_HELP_STRING[--enable-release], [Build release library]],
-[case "${enableval}" in
-  yes) release=true ;;
-  no)  release=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-release]) ;;
-esac],[release=true])
-
 AC_ARG_ENABLE([single],
 [AS_HELP_STRING[--enable-single], [Build single precision libraries]],
 [case "${enableval}" in
@@ -40,11 +11,16 @@ AC_ARG_ENABLE([single],
   no)  single=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-single]) ;;
 esac],[single=true])
-
-AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
-AM_CONDITIONAL([TEST], [test x$test = xtrue])
-AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
 AM_CONDITIONAL([SINGLE], [test x$single = xtrue])
+
+AC_ARG_ENABLE([double],
+[AS_HELP_STRING[--enable-double], [Build double precision libraries]],
+[case "${enableval}" in
+  yes) double=true ;;
+  no)  double=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-double]) ;;
+esac],[double=true])
+AM_CONDITIONAL([DOUBLE], [test x$double = xtrue])
 
 # Programs
 AC_PROG_CXX
@@ -53,7 +29,7 @@ AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
 AC_ENABLE_SHARED
-LT_INIT([dlopen,pic-only])
+LT_INIT([dlopen])
 
 # Checks for basic things
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
@@ -71,29 +47,13 @@ AX_CHECK_COMPILE_FLAG([-Wno-int-to-pointer-cast], [CXXFLAGS="$CXXFLAGS  -Wno-int
 AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-parameter"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
-if $debug; then
-  AC_CHECK_LIB([birch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-debug], [main], [DEBUG_LIBS="$DEBUG_LIBS -lnumbirch-debug"], [AC_MSG_ERROR([required library not found])])
+if $single; then
+  AC_CHECK_LIB([birch], [main], [SINGLE_LIBS="$SINGLE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch-single], [main], [SINGLE_LIBS="$SINGLE_LIBS -lnumbirch-single"], [AC_MSG_ERROR([required library not found])])
 fi
-if $test; then
-  AC_CHECK_LIB([birch-test], [main], [TEST_LIBS="$TEST_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-test], [main], [TEST_LIBS="$TEST_LIBS -lnumbirch-test"], [AC_MSG_ERROR([required library not found])])
-fi
-if $release; then
-  AC_CHECK_LIB([birch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch], [main], [RELEASE_LIBS="$RELEASE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])])
-fi
-if $debug && $single; then
-  AC_CHECK_LIB([birch-debug], [main], [DEBUG_SINGLE_LIBS="$DEBUG_SINGLE_LIBS -lbirch-debug"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-debug-single], [main], [DEBUG_SINGLE_LIBS="$DEBUG_SINGLE_LIBS -lnumbirch-debug-single"], [AC_MSG_ERROR([required library not found])])
-fi
-if $test && $single; then
-  AC_CHECK_LIB([birch-test], [main], [TEST_SINGLE_LIBS="$TEST_SINGLE_LIBS -lbirch-test"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-test-single], [main], [TEST_SINGLE_LIBS="$TEST_SINGLE_LIBS -lnumbirch-test-single"], [AC_MSG_ERROR([required library not found])])
-fi
-if $release && $single; then
-  AC_CHECK_LIB([birch], [main], [RELEASE_SINGLE_LIBS="$RELEASE_SINGLE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
-  AC_CHECK_LIB([numbirch-single], [main], [RELEASE_SINGLE_LIBS="$RELEASE_SINGLE_LIBS -lnumbirch-single"], [AC_MSG_ERROR([required library not found])])
+if $double; then
+  AC_CHECK_LIB([birch], [main], [DOUBLE_LIBS="$DOUBLE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
+  AC_CHECK_LIB([numbirch], [main], [DOUBLE_LIBS="$DOUBLE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])])
 fi
 
 # Checks for libraries
