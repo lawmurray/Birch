@@ -1,28 +1,12 @@
-lib_LTLIBRARIES =
-if DEBUG
-lib_LTLIBRARIES += libbirch-debug.la
-endif
-if TEST
-lib_LTLIBRARIES += libbirch-test.la
-endif
-if RELEASE
-lib_LTLIBRARIES += libbirch.la
-endif
+lib_LTLIBRARIES = libbirch.la
 
-AM_CPPFLAGS = -Wall
+AM_CXXFLAGS = $(OPENMP_CXXFLAGS)
 
-libbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -fno-inline -g
-libbirch_debug_la_LIBADD = $(DEBUG_LIBS)
-libbirch_debug_la_SOURCES = $(COMMON_SOURCES)
-
-libbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O0 -fno-inline -g --coverage
-libbirch_test_la_LIBADD = $(TEST_LIBS)
-libbirch_test_la_SOURCES = $(COMMON_SOURCES)
-
-libbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
-libbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3 -flto
-libbirch_la_LIBADD = $(RELEASE_LIBS)
-libbirch_la_SOURCES = $(COMMON_SOURCES)
+libbirch_la_SOURCES = \
+  libbirch/Any.cpp \
+  libbirch/BiconnectedMemo.cpp \
+  libbirch/Memo.cpp \
+  libbirch/memory.cpp
 
 include_HEADERS = \
   libbirch/libbirch.hpp
@@ -51,12 +35,6 @@ nobase_include_HEADERS = \
   libbirch/Spanner.hpp \
   libbirch/thread.hpp \
   libbirch/type.hpp
-
-COMMON_SOURCES =  \
-  libbirch/Any.cpp \
-  libbirch/BiconnectedMemo.cpp \
-  libbirch/Memo.cpp \
-  libbirch/memory.cpp
 
 dist_noinst_DATA =  \
   Doxyfile \

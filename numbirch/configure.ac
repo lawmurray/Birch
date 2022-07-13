@@ -4,11 +4,6 @@ AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
 
-# Both debug and release libraries are built, with AM_CXXFLAGS provided for
-# these that should override the default CXXFLAGS; user-defined CXXFLAGS will
-# still take precedence over these, however
-: ${CXXFLAGS=""}
-
 AC_ARG_ENABLE([oneapi],
 [AS_HELP_STRING[--enable-oneapi], [Use DPC++]],
 [case "${enableval}" in
@@ -35,32 +30,14 @@ AC_ARG_ENABLE([eigen],
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-eigen]) ;;
 esac],[eigen=true])
 
-AC_ARG_ENABLE([debug],
-[AS_HELP_STRING[--enable-debug], [Build debug library]],
+AC_ARG_ENABLE([double],
+[AS_HELP_STRING[--enable-double], [Build double precision libraries]],
 [case "${enableval}" in
-  yes) debug=true ;;
-  no)  debug=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
-esac],[debug=true])
-AM_CONDITIONAL([DEBUG], [test x$debug = xtrue])
-
-AC_ARG_ENABLE([test],
-[AS_HELP_STRING[--enable-test], [Build test library]],
-[case "${enableval}" in
-  yes) test=true ;;
-  no)  test=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-test]) ;;
-esac],[test=false])
-AM_CONDITIONAL([TEST], [test x$test = xtrue])
-
-AC_ARG_ENABLE([release],
-[AS_HELP_STRING[--enable-release], [Build release library]],
-[case "${enableval}" in
-  yes) release=true ;;
-  no)  release=false ;;
-  *) AC_MSG_ERROR([bad value ${enableval} for --enable-release]) ;;
-esac],[release=true])
-AM_CONDITIONAL([RELEASE], [test x$release = xtrue])
+  yes) double=true ;;
+  no)  double=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-double]) ;;
+esac],[double=true])
+AM_CONDITIONAL([DOUBLE], [test x$double = xtrue])
 
 AC_ARG_ENABLE([single],
 [AS_HELP_STRING[--enable-single], [Build single precision libraries]],
@@ -82,21 +59,15 @@ fi
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-
-AC_DISABLE_STATIC
-AC_ENABLE_SHARED
-LT_INIT([dlopen,pic-only])
+LT_INIT([dlopen])
 
 # Checks for basic things
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
 
-# Checks for compiler flags
-AX_CHECK_COMPILE_FLAG([-fprofile-abs-path], [CXXFLAGS="$CXXFLAGS -fprofile-abs-path"], [], [-Werror])
-
 # Check for build specifics
 if $oneapi; then
-  AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+  AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
 else
   AC_OPENMP
   AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
@@ -109,7 +80,7 @@ else
     AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   else
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_CHECK_HEADERS([Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
   fi

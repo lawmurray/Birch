@@ -1,26 +1,14 @@
 lib_LTLIBRARIES =
-if DEBUG
-lib_LTLIBRARIES += libnumbirch-debug.la
-if SINGLE
-lib_LTLIBRARIES += libnumbirch-debug-single.la
-endif
-endif
-if TEST
-lib_LTLIBRARIES += libnumbirch-test.la
-if SINGLE
-lib_LTLIBRARIES += libnumbirch-test-single.la
-endif
-endif
-if RELEASE
-lib_LTLIBRARIES += libnumbirch.la
 if SINGLE
 lib_LTLIBRARIES += libnumbirch-single.la
 endif
+if DOUBLE
+lib_LTLIBRARIES += libnumbirch.la
 endif
 
 AM_CPPFLAGS = 
-AM_CXXFLAGS = 
-AM_LDFLAGS = 
+AM_CXXFLAGS = $(OPENMP_CXXFLAGS)
+AM_LDFLAGS =
 
 SOURCES =  \
     numbirch/array/ArrayControl.cpp \
@@ -73,10 +61,9 @@ if ONEAPI
 else
 if CUDA
   AM_CPPFLAGS += -DBACKEND_CUDA
-  AM_CXXFLAGS += -x cu -G \
+  AM_CXXFLAGS += -x cu \
       -expt-relaxed-constexpr \
       -arch=sm_70 \
-      -Xcompiler="-Wall" \
       -Xcompiler="-Wno-unused-result" \
       -Xcompiler="-Wno-unknown-pragmas" \
       -Xcompiler="-Wno-deprecated-declarations"
@@ -98,30 +85,10 @@ else
 endif
 endif
 
-#
-# Notes on compiler differences:
-#   - nvcc does not support -O without a number, must be e.g. -O1
-#
-
-libnumbirch_debug_la_CPPFLAGS = $(AM_CPPFLAGS)
-libnumbirch_debug_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
-libnumbirch_debug_la_SOURCES = $(SOURCES)
-libnumbirch_debug_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=float
-libnumbirch_debug_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g
-libnumbirch_debug_single_la_SOURCES = $(SOURCES)
-
-libnumbirch_test_la_CPPFLAGS = $(AM_CPPFLAGS)
-libnumbirch_test_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
-libnumbirch_test_la_SOURCES = $(SOURCES)
-libnumbirch_test_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=float
-libnumbirch_test_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O1 -g --coverage
-libnumbirch_test_single_la_SOURCES = $(SOURCES)
-
-libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG
-libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
+libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=double
 libnumbirch_la_SOURCES = $(SOURCES)
-libnumbirch_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNDEBUG -DNUMBIRCH_REAL=float
-libnumbirch_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(OPENMP_CXXFLAGS) -O3
+
+libnumbirch_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=float
 libnumbirch_single_la_SOURCES = $(SOURCES)
 
 include_HEADERS = numbirch/numbirch.hpp
