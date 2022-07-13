@@ -13,8 +13,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--disable-debug --disable-test --enable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --disable-test --enable-release --disable-single"
-      BIRCH_MODE: release
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
     working_directory: /root/project/opensuse-release
 
   opensuse-test:
@@ -26,8 +25,7 @@ executors:
       MAKE_FLAGS: "-j8"
       DRIVER_CXXFLAGS: "-O0 -g -fno-inline --coverage"
       LIB_FLAGS: "--disable-debug --enable-test --disable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-debug --enable-test --disable-release --disable-single"
-      BIRCH_MODE: test
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/opensuse-test
 
   ubuntu-debug:
@@ -38,8 +36,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
-      BIRCH_MODE: debug
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/ubuntu-debug
 
   debian-debug:
@@ -50,8 +47,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
-      BIRCH_MODE: debug
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/debian-debug
 
   fedora-debug:
@@ -62,8 +58,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
-      BIRCH_MODE: debug
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/fedora-debug
 
   alpine-debug:
@@ -74,8 +69,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--enable-debug --disable-test --disable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
-      BIRCH_MODE: debug
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/alpine-debug
 
   mac-debug:
@@ -85,8 +79,7 @@ executors:
       OMP_NUM_THREADS: 4
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: " --disable-openmp --enable-debug --disable-test --disable-release"
-      BIRCH_FLAGS: "--unit=unity --arch=native --disable-openmp --jobs=1 --enable-verbose --enable-debug --disable-test --disable-release --disable-single"
-      BIRCH_MODE: debug
+      BIRCH_FLAGS: "--unit=unity --arch=native --disable-openmp --jobs=1 --disable-optimize --disable-static --disable-single"
     working_directory: /Users/distiller/project/mac-debug
     # ^ hard-coding different home directory for Mac, discovered with SSH
 
