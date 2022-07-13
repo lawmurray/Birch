@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
       driver.audit();
     } else if (prog.compare("docs") == 0) {
       driver.docs();
-    } else if (prog.compare("help") == 0) {
+    } else if (prog.compare("help") == 0 || prog.compare("--help") == 0) {
       driver.help();
     } else if (prog.compare("abort") == 0) {
       abort(0);
