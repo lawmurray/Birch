@@ -264,7 +264,8 @@ dist_pkgdata_DATA = \
   share/LICENSE \
   share/Makefile.am \
 	share/mkdocs.yml  \
-  share/README.md
+  share/README.md \
+  share/standalone.cpp
 
 dist_noinst_DATA = \
   Doxyfile \

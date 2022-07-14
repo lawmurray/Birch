@@ -20,6 +20,7 @@ birch::Driver::Driver(int argc, char** argv) :
     enableDouble(true),
     enableStatic(true),
     enableShared(true),
+    enableStandalone(false),
     enableOpenmp(true),
     enableAssert(true),
     enableOptimize(true),
@@ -147,6 +148,8 @@ birch::Driver::Driver(int argc, char** argv) :
     DISABLE_STATIC_ARG,
     ENABLE_SHARED_ARG,
     DISABLE_SHARED_ARG,
+    ENABLE_STANDALONE_ARG,
+    DISABLE_STANDALONE_ARG,
     ENABLE_OPENMP_ARG,
     DISABLE_OPENMP_ARG,
     ENABLE_ASSERT_ARG,
@@ -186,6 +189,8 @@ birch::Driver::Driver(int argc, char** argv) :
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
       { "disable-shared", no_argument, 0, DISABLE_SHARED_ARG },
+      { "enable-standalone", no_argument, 0, ENABLE_STANDALONE_ARG },
+      { "disable-standalone", no_argument, 0, DISABLE_STANDALONE_ARG },
       { "enable-openmp", no_argument, 0, ENABLE_OPENMP_ARG },
       { "disable-openmp", no_argument, 0, DISABLE_OPENMP_ARG },
       { "enable-assert", no_argument, 0, ENABLE_ASSERT_ARG },
@@ -277,6 +282,12 @@ birch::Driver::Driver(int argc, char** argv) :
       break;
     case DISABLE_SHARED_ARG:
       enableShared = false;
+      break;
+    case ENABLE_STANDALONE_ARG:
+      enableStandalone = true;
+      break;
+    case DISABLE_STANDALONE_ARG:
+      enableStandalone = false;
       break;
     case ENABLE_OPENMP_ARG:
       enableOpenmp = true;
@@ -396,17 +407,14 @@ void birch::Driver::run(const std::string& prog,
   //   loads NumBirch shared library, which in turn may load various Intel
   //   oneAPI shared libraries
   msg = dlerror();
-  if (handle == NULL) {
-    std::stringstream buf;
-    buf << msg << '.';
-    throw DriverException(buf.str());
+  if (handle == nullptr) {
+    throw DriverException(msg);
   } else {
     addr = dlsym(handle, prog.c_str());
     msg = dlerror();
-    if (msg != NULL) {
+    if (msg != nullptr) {
       std::stringstream buf;
-      buf << "Could not find program " << prog << " in " << so.string()
-          << '.';
+      buf << "no program " << prog << " in " << so.string();
       throw DriverException(buf.str());
     } else {
       auto argv = largv;
@@ -415,7 +423,7 @@ void birch::Driver::run(const std::string& prog,
       int ret = fcn(argv.size(), argv.data());
       if (ret != 0) {
         std::stringstream buf;
-        buf << "Program " << prog << " exited with code " << ret << '.';
+        buf << "program " << prog << " exited with code " << ret;
         throw DriverException(buf.str());
       }
     }
@@ -512,6 +520,11 @@ void birch::Driver::configure() {
       options << " --enable-shared";
     } else {
       options << " --disable-shared";
+    }
+    if (enableStandalone) {
+      options << " --enable-standalone";
+    } else {
+      options << " --disable-standalone";
     }
     if (enableOpenmp) {
       #ifdef __APPLE__
@@ -667,6 +680,7 @@ void birch::Driver::clean() {
   fs::remove(tarName + ".birch");
   fs::remove(tarName + ".cpp");
   fs::remove(tarName + ".hpp");
+  fs::remove(tarName + "-standalone.cpp");
 
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
@@ -924,6 +938,9 @@ void birch::Driver::help() {
       std::cout << "  --enable-shared / --disable-shared (default enabled):" << std::endl;
       std::cout << "  Enable/disable shared library build." << std::endl;
       std::cout << std::endl;
+      std::cout << "  --enable-standalone / --disable-standalone (default disabled):" << std::endl;
+      std::cout << "  Enable/disable standalone program build." << std::endl;
+      std::cout << std::endl;
       std::cout << "  --enable-openmp / --disable-openmp (default enabled):" << std::endl;
       std::cout << "  Enable/disable OpenMP support." << std::endl;
       std::cout << std::endl;
@@ -1080,6 +1097,10 @@ void birch::Driver::meta() {
 void birch::Driver::setup() {
   auto tarName = tar(packageName);
   auto canonicalName = canonical(packageName);
+
+  /* copy source files */
+  copy_if_newer(find(shareDirs, "standalone.cpp"),
+      tarName + "-standalone.cpp");
 
   /* copy build files */
   newBootstrap = copy_if_newer(find(shareDirs, "bootstrap"), "bootstrap");

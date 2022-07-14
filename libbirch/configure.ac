@@ -14,10 +14,11 @@ LT_INIT([dlopen])
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
 AC_OPENMP
+CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
 
 # Checks for libraries
 AC_CHECK_LIB([atomic], [main], [], [], [])
-AC_CHECK_LIB([omp], [main], [], [], [])
+AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])

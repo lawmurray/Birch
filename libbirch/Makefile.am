@@ -1,7 +1,5 @@
 lib_LTLIBRARIES = libbirch.la
 
-AM_CXXFLAGS = $(OPENMP_CXXFLAGS)
-
 libbirch_la_SOURCES = \
   libbirch/Any.cpp \
   libbirch/BiconnectedMemo.cpp \

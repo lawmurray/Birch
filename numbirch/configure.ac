@@ -70,8 +70,9 @@ if $oneapi; then
   AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
 else
   AC_OPENMP
+  CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
   AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
-  AC_SEARCH_LIBS([omp_get_max_threads], [omp])
+  AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])
   AC_CHECK_HEADERS([eigen3/unsupported/Eigen/SpecialFunctions], [], [AC_CHECK_HEADERS([unsupported/Eigen/SpecialFunctions], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
 
   if $cuda; then

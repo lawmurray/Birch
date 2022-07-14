@@ -179,6 +179,11 @@ private:
   bool enableShared;
 
   /**
+   * Enable standalone program build?
+   */
+  bool enableStandalone;
+
+  /**
    * Enable OpenMP?
    */
   bool enableOpenmp;
