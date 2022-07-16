@@ -370,8 +370,7 @@ birch::Driver::Driver(int argc, char** argv) :
   }
 }
 
-void birch::Driver::run(const std::string& prog,
-    const std::vector<char*>& xargv) {
+std::string birch::Driver::library() {
   /* get package information */
   try {
     /* load the package meta information, if indeed there is any, otherwise
@@ -387,48 +386,21 @@ void birch::Driver::run(const std::string& prog,
   if (precision.compare("single") == 0) {
     name += "-single";
   }
-  fs::path so = name;
+  fs::path lib = name;
   #ifdef __APPLE__
-  so.replace_extension(".dylib");
+  lib.replace_extension(".dylib");
   #else
-  so.replace_extension(".so");
+  lib.replace_extension(".so");
   #endif
+  return find(libDirs, lib);
+}
 
-  /* dynamically load possible programs */
-  typedef int prog_t(int argc, char** argv);
-  void* handle;
-  void* addr;
-  char* msg;
-  prog_t* fcn;
+int birch::Driver::argc() {
+  return largv.size();
+}
 
-  auto path = find(libDirs, so);
-  handle = dlopen(path.c_str(), RTLD_NOW|RTLD_GLOBAL);
-  // ^ RTLD_GLOBAL required to avoid missing symbols when dlopen() in turn
-  //   loads NumBirch shared library, which in turn may load various Intel
-  //   oneAPI shared libraries
-  msg = dlerror();
-  if (handle == nullptr) {
-    throw DriverException(msg);
-  } else {
-    addr = dlsym(handle, prog.c_str());
-    msg = dlerror();
-    if (msg != nullptr) {
-      std::stringstream buf;
-      buf << "no program " << prog << " in " << so.string();
-      throw DriverException(buf.str());
-    } else {
-      auto argv = largv;
-      argv.insert(argv.end(), xargv.begin(), xargv.end());
-      fcn = reinterpret_cast<prog_t*>(addr);
-      int ret = fcn(argv.size(), argv.data());
-      if (ret != 0) {
-        std::stringstream buf;
-        buf << "program " << prog << " exited with code " << ret;
-        throw DriverException(buf.str());
-      }
-    }
-    dlclose(handle);
-  }
+char** birch::Driver::argv() {
+  return largv.data();
 }
 
 void birch::Driver::bootstrap() {

@@ -240,12 +240,10 @@ function make<Type>() -> Type? {
  */
 function make<Type>(name:String) -> Type? {
   result:Object?;
-  symbol:String <- "make_" + name + "_";
   cpp{{
-  using make_t = Object_*();
-  void* addr = dlsym(RTLD_DEFAULT, symbol.c_str());
-  if (addr) {
-    result = Object(reinterpret_cast<make_t*>(addr)());
+  auto f = retrieve_factory(name);
+  if (f) {
+    result = Object(f());
   }
   }}
   return Type?(result);

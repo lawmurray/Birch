@@ -157,19 +157,26 @@ void birch::CppClassGenerator::visit(const Class* o) {
       line("};\n");
     }
 
-    /* C linkage function */
+    /* factory function if default constructible */
     if (!o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
       genSourceLine(o->loc);
+      start("Object_* make_" << o->name << "_()");
       if (header) {
-        line("extern \"C\" " << o->name << "_* make_" << o->name << "_();");
+        line(';');
       } else {
-        line(o->name << "_* make_" << o->name << "_() {");
+        line(" {");
         in();
         genSourceLine(o->loc);
         line("return new " << o->name << "_();");
         genSourceLine(o->loc);
         out();
         line("}");
+
+        if (!o->braces->isEmpty()) {
+          start("static int register_factory_" << o->name);
+          middle("_ = ::register_factory(");
+          finish("\"" << o->name << "\", make_" << o->name << "_);");
+        }
       }
       line("");
     }

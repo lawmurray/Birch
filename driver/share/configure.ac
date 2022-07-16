@@ -68,7 +68,6 @@ fi
 # Checks for libraries
 AC_CHECK_LIB([stdc++fs], [main], [], [], [])
 AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])
-AC_SEARCH_LIBS([dlopen], [dl], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])

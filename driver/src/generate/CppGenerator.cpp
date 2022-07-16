@@ -296,10 +296,11 @@ void birch::CppGenerator::visit(const Program* o) {
   if (!o->braces->isEmpty()) {
     genDoc(o->loc);
     genSourceLine(o->loc);
+    start("int " << o->name << "(int argc_, char** argv_)");
     if (header) {
-      line("extern \"C\" int " << o->name << "(int, char**);");
+      finish(';');
     } else {
-      line("int " << o->name << "(int argc_, char** argv_) {");
+      finish(" {");
       in();
 
       /* program options */
@@ -449,6 +450,13 @@ void birch::CppGenerator::visit(const Program* o) {
       line("return 0;");
       out();
       line("}\n");
+
+      /* register program */
+      if (!o->braces->isEmpty()) {
+        start("static int register_program_" << o->name);
+        middle("_ = ::register_program(");
+        finish("\"" << o->name << "\", " << o->name << ");");
+      }
     }
   }
 }

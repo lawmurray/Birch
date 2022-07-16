@@ -20,12 +20,20 @@ public:
   Driver(int argc, char** argv);
 
   /**
-   * Run user program.
-   *
-   * @param prog Name of the program.
-   * @param xargs Extra arguments.
+   * Remaining number of command-line options after processing those
+   * recognized.
    */
-  void run(const std::string& prog, const std::vector<char*>& xargs = {});
+  int argc();
+
+  /**
+   * Determine name of the shared library for this package.
+   */
+  std::string library();
+
+  /**
+   * Remaining command-line options after processing those recognized.
+   */
+  char** argv();
 
   /**
    * Bootstrap package.
