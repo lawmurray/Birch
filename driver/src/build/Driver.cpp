@@ -1153,6 +1153,7 @@ void birch::Driver::setup() {
   /* footer */
   configureStream << "AC_SUBST([DOUBLE_LIBS])\n";
   configureStream << "AC_SUBST([SINGLE_LIBS])\n";
+  configureStream << "AC_SUBST([STANDALONE_LIBS])\n";
   configureStream << "\n";
   configureStream << "AC_CONFIG_FILES([Makefile])\n";
   configureStream << "AC_OUTPUT\n";

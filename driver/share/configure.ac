@@ -56,19 +56,20 @@ AX_CHECK_COMPILE_FLAG([-Wno-int-to-pointer-cast], [CXXFLAGS="$CXXFLAGS  -Wno-int
 AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-parameter"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
+AC_CHECK_LIB([birch], [main], [], [AC_MSG_ERROR([required library not found])])
 if $single; then
-  AC_CHECK_LIB([birch], [main], [SINGLE_LIBS="$SINGLE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
   AC_CHECK_LIB([numbirch-single], [main], [SINGLE_LIBS="$SINGLE_LIBS -lnumbirch-single"], [AC_MSG_ERROR([required library not found])])
 fi
 if $double; then
-  AC_CHECK_LIB([birch], [main], [DOUBLE_LIBS="$DOUBLE_LIBS -lbirch"], [AC_MSG_ERROR([required library not found])])
   AC_CHECK_LIB([numbirch], [main], [DOUBLE_LIBS="$DOUBLE_LIBS -lnumbirch"], [AC_MSG_ERROR([required library not found])])
+fi
+if $standalone; then
+  AC_CHECK_LIB([jemalloc], [mallocx], [STANDALONE_LIBS="$STANDALONE_LIBS -ljemalloc"], [])
 fi
 
 # Checks for libraries
-AC_CHECK_LIB([stdc++fs], [main], [], [], [])
-AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])
-AC_SEARCH_LIBS([mallocx], [jemalloc], [], [], [])
+AC_CHECK_LIB([stdc++fs], [main], [], [])
+AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [])
 
 # Checks for headers
 AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])
