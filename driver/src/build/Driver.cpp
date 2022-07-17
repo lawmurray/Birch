@@ -637,6 +637,7 @@ void birch::Driver::clean() {
   fs::remove("config.sub");
   fs::remove("configure");
   fs::remove("configure.ac");
+  fs::remove("configure.log");
   fs::remove("depcomp");
   fs::remove("install-sh");
   fs::remove("libtool");
@@ -645,25 +646,36 @@ void birch::Driver::clean() {
   fs::remove("Makefile.am");
   fs::remove("Makefile.in");
   fs::remove("missing");
+  fs::remove(tarName + ".cpp");
+  fs::remove(tarName + ".hpp");
+
+  /* library artifacts */
   fs::remove("lib" + canonicalName + "_la" + tarName + ".lo");
   fs::remove("lib" + canonicalName + "_single_la" + tarName + ".lo");
   fs::remove("lib" + tarName + ".la");
   fs::remove("lib" + tarName + "-single.la");
-  fs::remove(tarName + ".birch");
-  fs::remove(tarName + ".cpp");
-  fs::remove(tarName + ".hpp");
+
+  /* standalone program artifacts */
+  fs::remove(canonicalName + '-' + tarName + "-standalone.o");
+  fs::remove(canonicalName + "_single-" + tarName + "-standalone.o");
+  fs::remove(tarName);
+  fs::remove(tarName + "-single");
   fs::remove(tarName + "-standalone.cpp");
+  fs::remove(tarName + "-standalone.o");
 
   if (unit == "unity") {
     /* sources go into one *.cpp file for the whole package */
     fs::path source = tarName;
     source.replace_extension(".cpp");
     fs::remove(source);
-    source.replace_extension(".lo");
 
     fs::path object = source.parent_path() / ("lib" + canonicalName +
         "_la-" + source.filename().string());
+    object.replace_extension(".lo");
     fs::remove(object);
+    object.replace_extension(".o");
+    fs::remove(object);
+
   } else if (unit == "file") {
     /* sources go into one *.cpp file for each *.birch file */
     for (auto file : metaFiles["manifest.source"]) {
@@ -674,10 +686,12 @@ void birch::Driver::clean() {
         fs::path source = file;
         source.replace_extension(".cpp");
         fs::remove(source);
-        source.replace_extension(".lo");
 
         fs::path object = source.parent_path() / ("lib" + canonicalName +
             "_la-" + source.filename().string());
+        object.replace_extension(".lo");
+        fs::remove(object);
+        object.replace_extension(".o");
         fs::remove(object);
       }
     }
