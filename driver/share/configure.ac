@@ -38,7 +38,7 @@ AC_PROG_INSTALL
 
 AC_DISABLE_STATIC
 AC_ENABLE_SHARED
-LT_INIT([dlopen])
+LT_INIT([dlopen,disable-static])
 
 # Checks for basic things
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])

@@ -18,7 +18,7 @@ birch::Driver::Driver(int argc, char** argv) :
     jobs(std::thread::hardware_concurrency()),
     enableSingle(true),
     enableDouble(true),
-    enableStatic(true),
+    enableStatic(false),
     enableShared(true),
     enableStandalone(false),
     enableOpenmp(true),
