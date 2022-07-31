@@ -499,14 +499,7 @@ void birch::Driver::configure() {
       options << " --disable-standalone";
     }
     if (enableOpenmp) {
-      #ifdef __APPLE__
-      /* the system compiler on Apple requires different options for
-        * OpenMP; disable the configure check and customize these */
-      options << " --disable-openmp";
-      cppflags << " -Xpreprocessor -fopenmp";
-      #else
       options << " --enable-openmp";
-      #endif
     } else {
       options << " --disable-openmp";
     }
