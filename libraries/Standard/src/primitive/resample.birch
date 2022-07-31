@@ -26,17 +26,33 @@ function resample_multinomial(w:Real[_]) -> Integer[_] {
 
 /**
  * Exponentiate and sum a vector, return the logarithm of the sum.
+ *
+ * The result is computed in a numerically stable way that avoids
+ * intermediate over- and underflow, using a single pass over the data.
+ *
+ * Reference: [Sebastian Nowozin: Streaming Log-sum-exp Computation](http://www.nowozin.net/sebastian/blog/streaming-log-sum-exp-computation.html)
  */
 function log_sum_exp(x:Real[_]) -> Real {
   if length(x) > 0 {
-    let mx <- max(x);
-    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
-        \(x:Real) -> { return nan_exp(x - mx); });
-    return mx + log(r);
+    let (mx, r) <- transform_reduce(x, (-inf, 0.0),
+        \(x:(Real, Real), y:(Real, Real)) -> {
+          let (xa, xb) <- x;
+          let (ya, yb) <- y;
+          if xa > ya {
+            return (xa, xb + (yb + 1.0)*nan_exp(ya - xa));
+          } else {
+            return (ya, yb + (xb + 1.0)*nan_exp(xa - ya));
+          }
+        },
+        \(x:Real) -> {
+          return (x, 0.0);
+        });
+    return mx + log1p(r);
   } else {
     return -inf;
   }
 }
+
 
 /**
  * Take the logarithm of each element of a vector and return the sum.
@@ -66,10 +82,7 @@ function norm_exp(x:Real[_]) -> Real[_] {
   if length(x) == 0 {
     return x;
   } else {
-    let mx <- max(x);
-    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
-        \(x:Real) -> { return nan_exp(x - mx); });
-    let W <- mx + log(r);
+    let W <- log_sum_exp(x);
     return transform(x, \(x:Real) -> { return nan_exp(x - W); });
   }
 }
@@ -214,15 +227,25 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
   if length(w) == 0 {
     return (0.0, 0.0);
   } else {
-    let N <- length(w);
-    let W <- 0.0;
-    let W2 <- 0.0;
-    let mx <- max(w);    
-    for n in 1..N {
-      let v <- nan_exp(w[n] - mx);
-      W <- W + v;
-      W2 <- W2 + v*v;
-    }
-    return (W*W/W2, log(W) + mx);
+    let (mw, r, rsq) <- transform_reduce(w, (-inf, 0.0, 0.0),
+        \(x:(Real, Real, Real), y:(Real, Real, Real)) -> {
+          let (xa, xb, xc) <- x;
+          let (ya, yb, yc) <- y;
+          v:Real;
+          if xa > ya {
+            v <- nan_exp(ya - xa);
+            return (xa, xb + (yb + 1.0)*v, xc + (yc + 1.0)*v*v);
+          } else {
+            v <- nan_exp(xa - ya);
+            return (ya, yb + (xb + 1.0)*v, yc + (xc + 1.0)*v*v);
+          }
+        },
+        \(x:Real) -> {
+          return (x, 0.0, 0.0);
+        });
+    let rp1 <- r + 1.0;
+    let ess <- rp1*rp1/(rsq + 1.0);
+    let log_sum_weights <- mw + log1p(r);
+    return (ess, log_sum_weights);
   }
 }
