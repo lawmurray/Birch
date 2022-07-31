@@ -1066,6 +1066,15 @@ void birch::Driver::meta() {
     packageVersion = metaContents["version"].front();
   }
 
+  /* update some old names */
+  for (auto& value : metaContents["require.package"]) {
+    if (value == "Standard" || value == "Cairo" || value == "SQLite") {
+      warn(std::string("package ") + value + " is now named Birch." + value +
+          ", update package meta file.");
+      value = std::string("Birch.") + value;
+    }
+  }
+
   /* check manifest files */
   readFiles("manifest.header");
   readFiles("manifest.source");

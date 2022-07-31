@@ -18,4 +18,4 @@ manifest:
     - toy.sh
 require: 
   package: 
-    - Standard
+    - Birch.Standard

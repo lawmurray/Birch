@@ -148,7 +148,7 @@ std::string birch::upper(const std::string& str) {
 }
 
 std::string birch::tar(const std::string& name) {
-  return "birch-" + lower(name);
+  return std::regex_replace(lower(name), std::regex("\\."), "-");
 }
 
 std::string birch::canonical(const std::string& name) {

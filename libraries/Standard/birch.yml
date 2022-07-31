@@ -1,4 +1,4 @@
-name: Standard
+name: Birch.Standard
 manifest:
   source:
     - src/*.birch

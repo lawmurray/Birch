@@ -20,5 +20,5 @@ manifest:
     - test.sh
 require: 
   package: 
-    - Standard
-    - Cairo
+    - Birch.Standard
+    - Birch.Cairo
