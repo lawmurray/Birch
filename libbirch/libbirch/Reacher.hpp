@@ -69,8 +69,7 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  template<class T>
-  void visitObject(T* o);
+  void visitObject(Any* o);
 };
 }
 
@@ -82,15 +81,5 @@ void libbirch::Reacher::visit(Shared<T>& o) {
   if (!bridge && ptr) {
     ptr->incShared_();
     visitObject(ptr);
-  }
-}
-
-template<class T>
-void libbirch::Reacher::visitObject(T* o) {
-  if (!(o->f_.exchangeOr(SCANNED) & SCANNED)) {
-    o->f_.maskAnd(~MARKED);  // unset for next time
-  }
-  if (!(o->f_.exchangeOr(REACHED) & REACHED)) {
-    o->accept_(*this);
   }
 }

@@ -466,7 +466,7 @@ T* libbirch::Shared<T>::get() {
       if (!o->isUniqueHead_()) {  // last reference optimization
         /* copy biconnected component */
         set_copy();
-        o = BiconnectedCopier(o).visitObject(o);
+        o = static_cast<T*>(BiconnectedCopier(o).visitObject(o));
         unset_copy();
 
         /* replace pointer */
@@ -494,7 +494,7 @@ libbirch::Shared<T> libbirch::Shared<T>::copy() {
     /* the copy is not necessarily of a biconnected component here, use the
      * general-purpose Copier rather than special-purpose BiconnectedCopier */
     set_copy();
-    ptr = Copier().visitObject(ptr);
+    ptr = static_cast<T*>(Copier().visitObject(ptr));
     unset_copy();
   }
   return Shared<T>(ptr, bridge);

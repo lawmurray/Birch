@@ -67,8 +67,7 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  template<class T>
-  void visitObject(T* o);
+  void visitObject(Any* o);
 };
 }
 
@@ -80,13 +79,5 @@ void libbirch::BiconnectedCollector::visit(Shared<T>& o) {
   if (!bridge && ptr) {
     visitObject(ptr);
     o.releaseBiconnected();
-  }
-}
-
-template<class T>
-void libbirch::BiconnectedCollector::visitObject(T* o) {
-  auto old = o->f_.exchangeOr(COLLECTED);
-  if (!(old & COLLECTED)) {
-    o->accept_(*this);
   }
 }

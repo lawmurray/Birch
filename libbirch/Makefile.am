@@ -2,9 +2,18 @@ lib_LTLIBRARIES = libbirch.la
 
 libbirch_la_SOURCES = \
   libbirch/Any.cpp \
+  libbirch/BiconnectedCollector.cpp \
+  libbirch/BiconnectedCopier.cpp \
   libbirch/BiconnectedMemo.cpp \
+  libbirch/Bridger.cpp \
+  libbirch/Collector.cpp \
+  libbirch/Copier.cpp \
+  libbirch/Marker.cpp \
   libbirch/Memo.cpp \
-  libbirch/memory.cpp
+  libbirch/memory.cpp \
+  libbirch/Reacher.cpp \
+  libbirch/Scanner.cpp \
+  libbirch/Spanner.cpp
 
 include_HEADERS = \
   libbirch/libbirch.hpp

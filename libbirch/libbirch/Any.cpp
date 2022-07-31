@@ -18,9 +18,29 @@ libbirch::Any::Any(const Any& o) : Any() {
   //  
 }
 
+libbirch::Any::~Any() {
+  assert(r_.load() == 0);
+}
+
+libbirch::Any& libbirch::Any::operator=(const Any&) {
+  return *this;
+}
+
 void libbirch::Any::destroy_() {
   Destroyer v;
   this->accept_(v);
+}
+
+void libbirch::Any::deallocate_() {
+  delete this;
+}
+
+int libbirch::Any::numShared_() const {
+  return r_.load();
+}
+
+void libbirch::Any::incShared_() {
+  r_.increment();
 }
 
 void libbirch::Any::decShared_() {
@@ -43,6 +63,11 @@ void libbirch::Any::decShared_() {
     /* not already registered as a possible root, register now */
     register_possible_root(this);
   }
+}
+
+void libbirch::Any::decSharedReachable_() {
+  assert(numShared_() > 0);
+  r_.decrement();
 }
 
 void libbirch::Any::decSharedBiconnected_() {
@@ -100,4 +125,20 @@ void libbirch::Any::decSharedBridge_() {
       deallocate_();
     }
   }
+}
+
+bool libbirch::Any::isUnique_() const {
+  return numShared_() == 1;
+}
+
+bool libbirch::Any::isUniqueHead_() const {
+  return numShared_() == a_;
+}
+
+bool libbirch::Any::isPossibleRoot_() const {
+  return f_.load() & POSSIBLE_ROOT;
+}
+
+void libbirch::Any::unbuffer_() {
+  f_.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
 }

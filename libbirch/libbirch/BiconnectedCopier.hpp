@@ -76,8 +76,7 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  template<class T>
-  T* visitObject(T* o);
+  Any* visitObject(Any* o);
 
 private:
   /**
@@ -93,18 +92,8 @@ template<class T>
 void libbirch::BiconnectedCopier::visit(Shared<T>& o) {
   auto [ptr, bridge] = o.unpack();
   if (!bridge) {
-    ptr = visitObject(ptr);
+    ptr = static_cast<T*>(visitObject(ptr));
     ptr->incShared_();
     o.store(ptr);
   }
-}
-
-template<class T>
-T* libbirch::BiconnectedCopier::visitObject(T* o) {
-  auto& value = m.get(o);
-  if (!value) {
-    value = o->copy_();
-    value->accept_(*this);
-  }
-  return static_cast<T*>(value);
 }

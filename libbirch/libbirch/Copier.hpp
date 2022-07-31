@@ -67,8 +67,7 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  template<class T>
-  T* visitObject(T* o);
+  Any* visitObject(Any* o);
 
 private:
   /**
@@ -84,24 +83,8 @@ template<class T>
 void libbirch::Copier::visit(Shared<T>& o) {
   auto [ptr, bridge] = o.unpack();
   if (!bridge && ptr) {
-    ptr = visitObject(ptr);
+    ptr = static_cast<T*>(visitObject(ptr));
     ptr->incShared_();
     o.store(ptr);
-  }
-}
-
-template<class T>
-T* libbirch::Copier::visitObject(T* o) {
-  auto& value = m.get(o);
-  if (value) {
-    return static_cast<T*>(value);
-  } else {
-    value = o->copy_();
-
-    /* copy the value into a non-reference, as the reference may be
-     * invalidated if m is resized during the call to accept_() below */
-    T* result = static_cast<T*>(value);
-    result->accept_(*this);
-    return result;
   }
 }

@@ -69,8 +69,7 @@ public:
   template<class T>
   void visit(Shared<T>& o);
 
-  template<class T>
-  void visitObject(T* o);
+  void visitObject(Any* o);
 };
 }
 
@@ -82,17 +81,5 @@ void libbirch::Collector::visit(Shared<T>& o) {
   if (!bridge && ptr) {
     o.store(nullptr);
     visitObject(ptr);
-  }
-}
-
-template<class T>
-void libbirch::Collector::visitObject(T* o) {
-  if (!(o->f_.load() & REACHED)) {
-    auto old = o->f_.exchangeOr(COLLECTED);
-    if (!(old & COLLECTED)) {
-      assert(o->numShared_() == 0);
-      o->accept_(*this);
-      register_unreachable(o);
-    }
   }
 }
