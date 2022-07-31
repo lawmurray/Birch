@@ -444,8 +444,8 @@ jobs:
           package: Standard
       - build_package:
           os: << parameters.os >>
-          dir: libraries
-          package: StandardTest
+          dir: tests
+          package: Test
       - persist_to_workspace:
           root: ..
           paths:

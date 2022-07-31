@@ -1,4 +1,4 @@
-name: Birch.StandardTest
+name: Birch.Test
 description:
 manifest:
   source:
@@ -16,4 +16,4 @@ manifest:
     - test.sh
 require:
   package:
-    - Standard
+    - Birch.Standard
