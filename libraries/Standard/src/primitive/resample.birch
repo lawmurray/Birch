@@ -53,7 +53,6 @@ function log_sum_exp(x:Real[_]) -> Real {
   }
 }
 
-
 /**
  * Take the logarithm of each element of a vector and return the sum.
  */
