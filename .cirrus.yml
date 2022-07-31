@@ -12,7 +12,7 @@ env:
 task:
   name: FreeBSD
   freebsd_instance:
-    image_family: freebsd-12-2
+    image_family: freebsd-12-3
     cpu: 8
     memory: 16G
   install_script:
@@ -51,7 +51,7 @@ task:
 example_task_template: &EXAMPLE_TASK_TEMPLATE
   depends_on: FreeBSD
   freebsd_instance:
-    image_family: freebsd-12-2
+    image_family: freebsd-12-3
     cpu: 4
     memory: 8G
   download_cache_script:
