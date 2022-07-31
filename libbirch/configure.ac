@@ -18,10 +18,10 @@ CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
 
 # Checks for libraries
 AC_CHECK_LIB([atomic], [main], [], [], [])
-AS_IF([test "$OPENMP_CXXFLAGS" != ""], AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], []))
+AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])])
 
 # Checks for headers
-AS_IF([test "$OPENMP_CXXFLAGS" != ""], AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT]))
+AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -69,10 +69,10 @@ fi
 
 # Checks for libraries
 AC_CHECK_LIB([stdc++fs], [main], [], [])
-AS_IF([test "$OPENMP_CXXFLAGS" != ""], AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], []))
+AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])])
 
 # Checks for headers
-AS_IF([test "$OPENMP_CXXFLAGS" != ""], AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT]))
+AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
 AC_CHECK_HEADERS([numbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
