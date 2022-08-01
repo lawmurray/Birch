@@ -442,6 +442,25 @@ jobs:
           os: << parameters.os >>
           dir: libraries
           package: Standard
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - codecov:
+          os: << parameters.os >>
+      - end_if_pull_request
+      - slack
+
+  test:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.os >>
       - build_package:
           os: << parameters.os >>
           dir: tests
@@ -568,12 +587,19 @@ workflows:
           requires:
             - base-<< matrix.os >>
 
-      - libraries:
+      - test:
           matrix:
             parameters:
               os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
           requires:
             - standard-<< matrix.os >>
+
+      - libraries:
+          matrix:
+            parameters:
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+          requires:
+            - test-<< matrix.os >>
 
       - example:
           matrix:
