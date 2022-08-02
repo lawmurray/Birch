@@ -51,6 +51,7 @@ public:
   virtual void visit(const StatementList* o);
   virtual void visit(const GlobalVariable* o);
   virtual void visit(const MemberVariable* o);
+  virtual void visit(const MemberPhantom* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const TupleVariable* o);
   virtual void visit(const Function* o);
@@ -62,6 +63,7 @@ public:
   virtual void visit(const ConversionOperator* o);
   virtual void visit(const SliceOperator* o);
   virtual void visit(const Class* o);
+  virtual void visit(const Struct* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Generic* o);
   virtual void visit(const ExpressionStatement* o);
@@ -84,6 +86,7 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const OptionalType* o);
+  virtual void visit(const FutureType* o);
   virtual void visit(const DeducedType* o);
 };
 }

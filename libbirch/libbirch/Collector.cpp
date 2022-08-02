@@ -3,7 +3,9 @@
  */
 #include "libbirch/Collector.hpp"
 
-void libbirch::Collector::visit(Any* o) {
+#include "libbirch/Any.hpp"
+
+void libbirch::Collector::visitObject(Any* o) {
   if (!(o->f_.load() & REACHED)) {
     auto old = o->f_.exchangeOr(COLLECTED);
     if (!(old & COLLECTED)) {

@@ -1,27 +1,25 @@
-struct InvFunction {
-function compute<Value>(m:Value) -> {
-    return inv(m);
-  }
+struct Inv<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    let m1 <- transpose(inv(m));
-    return -m1*d*m1;
-  }
-}
-struct Inv<Middle> = Unary<InvFunction,Middle>;
-
-/**
- * Inverse of a matrix.
- */
-function inv<Middle>(m:Middle) -> {
-  return construct<Inv<Middle>>(m);
-}
-
-/**
- * Inverse of a matrix.
- */
-function inv(X:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().inverse();
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(inv, inv_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::inv;
+using numbirch::inv_grad;
+
+/**
+ * Inverse of a matrix.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Inv<Middle> inv(const Middle& m) {
+  return construct<Inv<Middle>>(m);
+}
+}
+}}

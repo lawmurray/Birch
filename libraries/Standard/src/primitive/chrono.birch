@@ -20,7 +20,8 @@ function tic() {
 function toc() -> Real {
   elapsed:Real;
   cpp {{
-  std::chrono::duration<double> e = std::chrono::steady_clock::now() - savedTimePoint;
+  std::chrono::duration<Real> e = std::chrono::steady_clock::now() -
+      savedTimePoint;
   elapsed = e.count();
   }}
   return elapsed;

@@ -58,16 +58,15 @@ public:
 
   virtual void visit(const File* o);
   virtual void visit(const GlobalVariable* o);
-  virtual void visit(const MemberVariable* o);
   virtual void visit(const LocalVariable* o);
   virtual void visit(const TupleVariable* o);
   virtual void visit(const Function* o);
-  virtual void visit(const MemberFunction* o);
   virtual void visit(const Program* o);
   virtual void visit(const BinaryOperator* o);
   virtual void visit(const UnaryOperator* o);
   virtual void visit(const Basic* o);
   virtual void visit(const Class* o);
+  virtual void visit(const Struct* o);
   virtual void visit(const Generic* o);
   virtual void visit(const Braces* o);
   virtual void visit(const ExpressionStatement* o);
@@ -87,6 +86,7 @@ public:
   virtual void visit(const ArrayType* o);
   virtual void visit(const TupleType* o);
   virtual void visit(const OptionalType* o);
+  virtual void visit(const FutureType* o);
   virtual void visit(const MemberType* o);
   virtual void visit(const NamedType* o);
   virtual void visit(const TypeList* o);
@@ -190,11 +190,11 @@ template<class T>
 void birch::CppGenerator::genInit(const T* o) {
   if (!o->brackets->isEmpty()) {
     if (!o->value->isEmpty()) {
-      middle("(libbirch::make_shape(" << o->brackets << "), " << o->value << ')');
+      middle("(numbirch::make_shape(" << o->brackets << "), " << o->value << ')');
     } else if (!o->args->isEmpty()) {
-      middle("(libbirch::make_shape(" << o->brackets << "), " << o->args << ')');
+      middle("(numbirch::make_shape(" << o->brackets << "), " << o->args << ')');
     } else {
-      middle("(libbirch::make_shape(" << o->brackets << "))");
+      middle("(numbirch::make_shape(" << o->brackets << "))");
     }
   } else if (!o->value->isEmpty()) {
     if (!inConstructor) {
@@ -226,7 +226,7 @@ void birch::CppGenerator::genTemplateParams(const ObjectType* o) {
     for (auto iter = o->typeParams->begin(); iter != o->typeParams->end();
         ++iter) {
       if (iter != o->typeParams->begin()) {
-        middle(',');
+        middle(", ");
       }
       middle("class " << *iter);
     }

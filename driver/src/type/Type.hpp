@@ -55,6 +55,11 @@ public:
    * Is this an optional type?
    */
   virtual bool isOptional() const;
+  
+  /**
+   * Is this a future type?
+   */
+  virtual bool isFuture() const;
 
   /**
    * Is this a deduced type?
@@ -78,12 +83,6 @@ public:
    */
   virtual Type* unwrap();
   virtual const Type* unwrap() const;
-
-  /**
-   * For a sequence or array type, the element type, otherwise this.
-   */
-  virtual Type* element();
-  virtual const Type* element() const;
 
   /**
    * Iterator to first element if this is a list, to one-past-the-last if

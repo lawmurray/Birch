@@ -1,0 +1,51 @@
+/**
+ * Delta distribution, representing a distribution on a discrete space with
+ * all probability mass at one location.
+ *
+ * - μ: Location.
+ */
+final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
+  /**
+   * Location.
+   */
+  μ:Arg <- μ;
+
+  override function simulate() -> Integer! {
+    return value(μ);
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return where(x == value(μ), 0.0, -inf);
+  }
+
+  override function lower() -> Integer!? {
+    return value(μ);
+  }
+  
+  override function upper() -> Integer!? {
+    return value(μ);
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Delta");
+    buffer.set("μ", value(μ));
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Arg>(μ:Arg) -> Distribution<Integer> {
+  return wrap_delta(μ);
+}
+function wrap_delta<Arg>(μ:Arg) -> Distribution<Integer> {
+  return make_delta(wrap(μ));
+}
+function make_delta<Arg>(μ:Arg) -> Distribution<Integer> {
+  return construct<DeltaDistribution<Arg>>(μ);
+}

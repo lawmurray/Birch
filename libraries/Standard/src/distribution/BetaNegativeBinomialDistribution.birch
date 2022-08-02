@@ -1,0 +1,134 @@
+/**
+ * Beta-negative-binomial distribution.
+ */
+final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) < DiscreteDistribution {
+  /**
+   * Number of successes before the experiment is stopped.
+   */
+  k:Arg1 <- k;
+
+  /**
+   * First shape.
+   */
+  α:Arg2 <- α;
+
+  /**
+   * Second shape.
+   */
+  β:Arg3 <- β;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer! {
+    return simulate_beta_negative_binomial(value(k), value(α), value(β));
+  }
+
+  override function simulateLazy() -> Integer!? {
+    return simulate_beta_negative_binomial(eval(k), eval(α), eval(β));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return logpdf_beta_negative_binomial(x, value(k), value(α), value(β));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_beta_negative_binomial(x, eval(k), eval(α), eval(β));
+  }
+
+  override function update(x:Integer!) -> Delay? {
+    return update_beta_negative_binomial(x, value(k), value(α), value(β));
+  }
+
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_beta_negative_binomial(x, k, α, β);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_beta_negative_binomial(this.getVariate(), k, α, β));
+  }
+
+  override function lower() -> Integer!? {
+    return 0;
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(α);
+    global.constant(β);
+  }
+}
+
+function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) ->
+    Distribution<Integer> {
+  return wrap_beta_negative_binomial(k, α, β);
+}
+function wrap_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
+  return make_beta_negative_binomial(wrap(k), wrap(α), wrap(β));
+}
+function make_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
+  return construct<BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>>(k, α, β);
+}
+
+/**
+ * Create negative binomial distribution.
+ */
+function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
+    Distribution<Integer> {
+  if ρ.hasNext() && ρ.getNext().isBeta() {
+    ρ.prune();
+    let (α, β) <- ρ.getNext().getBeta();
+    let p <- wrap_beta_negative_binomial(k, α, β);
+    ρ.setNext(p);
+    return p;
+  } else {
+    return wrap_negative_binomial(k, ρ);
+  }
+}
+
+/*
+ * Simulate a beta-negative-binomial distribution.
+ *
+ * - k: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ */
+function simulate_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
+  return simulate_negative_binomial(k, simulate_beta(α, β));
+}
+
+/*
+ * Observe a beta-negative-binomial variate
+ *
+ * - x: The variate.
+ * - k: Number of successes.
+ * - α: Shape.
+ * - β: Shape.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
+    k:Arg2, α:Arg3, β:Arg4) -> {
+  return lbeta(α + k, β + x) - lbeta(α, β) + lchoose(x + k - 1, x);
+}
+
+/*
+ * Update the parameters of a Beta distribution with a Negative Binomial likelihood.
+ *
+ * - x: The variate.
+ * - k: Number of successes.
+ * - α: Prior first shape.
+ * - β: Prior second shape.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
+    α:Arg3, β:Arg4) -> {
+  return wrap_beta(α + k, β + x);
+}

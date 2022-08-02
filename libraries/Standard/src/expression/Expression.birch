@@ -3,6 +3,9 @@
  *
  * - Value: Result type.
  *
+ * - x: Evaluated value of the expression (optional).
+ * - flagConstant: Is this a constant expression?
+ *
  * ```mermaid
  * classDiagram
  *    Expression <|-- Random
@@ -45,34 +48,37 @@
  *     Call `value()` on an `Expression` to evaluate it.
  *
  * The simplest use case of a delayed expression is to assemble it and then
- * evaluate it by calling `value()`. Evaluations are memoized, so further
- * calls `value()` do not require re-evaluation, they simply return the
- * memoized value.
+ * evaluate it by calling `value()`.
  *
  * Once `value()` is called on an `Expression`, it and all subexpressions that
- * constitute it are considered *constant*. This particularly affects any
+ * constitute it are rendered *constant*. This particularly affects any
  * `Random` objects in the expression, the value of which can no longer be
- * alterated.
+ * altered.
+ *
+ * Evaluations are memoized at *checkpoints*. Each `Expression` object that
+ * occurs in the delayed expression forms such a checkpoint. Further calls to
+ * `value()` are optimized to retrieve these memoized evaluations rather than
+ * re-evaluated the whole expression.
  *
  * ### Advanced use
  * 
  * More elaborate use cases include computing gradients and applying Markov
  * kernels. Call `eval()` to evaluate the expression in the same way as for
  * `value()`, but without rendering it constant. Any `Random` objects in the
- * expression that have not previously been rendered constant by a call to
- * `value()` are then considered *arguments* eligible for moving.
+ * expression that have not been rendered constant by a previous call to
+ * `value()` are considered *arguments* of the expression.
  *
- * After updating the value of arguments, use `reval()` to re-evaluate
- * the expression with those new values.
+ * Use `grad()` to compute the gradient of an expression with respect to its
+ * arguments. The gradients are accumulated in the `Random` arguments and can
+ * be retrieved from them.
  *
- * At any time, use `grad()` to compute the gradient of an expression with
- * respect to its arguments. The gradient is accumulated into those arguments
- * (the `Random` objects).
+ * Use `set()` to update the value of `Random` arguments, then `move()` on
+ * the whole expression to re-evaluate it.
  *
  * Use `value()`, not `eval()`, unless you are taking responsibility for
- * correctness (e.g. moving arguments in a manner invariant to some
- * target distribution, using a Markov kernel). Otherwise, program
- * behavior may lack self-consistency. Consider, for example:
+ * correctness (e.g. moving arguments in a manner invariant to some target
+ * distribution, using a Markov kernel). Otherwise, program behavior may lack
+ * self-consistency. Consider, for example:
  *
  *     if x.value() >= 0.0 {
  *       doThis();
@@ -80,36 +86,93 @@
  *       doThat();
  *     }
  *
- * This is correct usage. Using `eval()` instead of `value()` here allows
- * some other part of the code to later change the value of the random
- * variable `x` to a negative value, and the program lacks
- * self-consistency: it executed `doThis()` instead of `doThat()` based
- * on a previous value of `x`.
+ * This is correct usage. Using `x.eval()` instead of `x.value()` here would
+ * allow the value of `x` to be later changed to a negative value, and the
+ * program would lack self-consistency, as it executed `doThis()` instead of
+ * `doThat()` based on the previous value.
  *
- * !!! attention
- *     Correctness is the programmer's responsibility when using the advanced
- *     interface.
+ * ### Checkpoints and memoization
+ *
+ * `eval()` memoizes only at checkpoints defined by `Expression` objects. This
+ * reduces memory use. Internally, `grad()` benefits from re-evaluating
+ * expressions between checkpoints to memoize intermediate results. It does so
+ * by calling `peek()`. These memoized intermediate results are cleared again
+ * as `grad()` progresses.
  */
-abstract class Expression<Value> < Delay {
+abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
+  /**
+   * Memoized result.
+   */
+  x:Value!? <- x;
+
+  /**
+   * Accumulated upstream gradient.
+   */
+  phantom g;
+  hpp{{
+  std::optional<numbirch::Future<numbirch::Array<Real,
+      numbirch::Future<Value>::ndims>>> g;
+  }}
+
+  /**
+   * Count of number of parents, set by trace().
+   */
+  linkCount:Integer <- 1;
+
+  /**
+   * Counter used to obtain pre- and post-order traversals of the expression
+   * graph.
+   */
+  visitCount:Integer <- 0;
+
+  /**
+   * Is this a constant expression?
+   */
+  flagConstant:Boolean <- flagConstant;
+
   /**
    * Is this a Random expression?
    */
-  abstract function isRandom() -> Boolean;
+  override function isRandom() -> Boolean {
+    return false;
+  }
   
   /**
    * Is this a constant expression?
    */
-  abstract function isConstant() -> Boolean;
+  final function isConstant() -> Boolean {
+    return flagConstant;
+  }
+
+  /**
+   * Does this have a value?
+   */
+  final function hasValue() -> Boolean {
+    return x?;
+  }
+
+  /**
+   * Does this have a gradient?
+   */
+  final function hasGradient() -> Boolean {
+    return g?;
+  }
 
   /**
    * Number of rows in result.
    */
-  abstract function rows() -> Integer;
+  final function rows() -> Integer {
+    eval();
+    return global.rows(x!);
+  }
   
   /**
    * Number of columns in result.
    */
-  abstract function columns() -> Integer;
+  final function columns() -> Integer {
+    eval();
+    return global.columns(x!);
+  }
 
   /**
    * Length of result. This is synonymous with `rows()`.
@@ -126,35 +189,99 @@ abstract class Expression<Value> < Delay {
   }
 
   /**
-   * Get result and render constant.
+   * Evaluate and render constant.
    *
    * Returns: The result.
    */
-  abstract function value() -> Value;
-
-  /**
-   * Get result.
-   *
-   * Returns: The result.
-   */
-  abstract function peek() -> Value;
+  final function value() -> Value! {
+    /* need to call eval() before constant() for Random in particular; a
+     * Random may have an associated distribution from which it is yet to
+     * simulate, constant() will remove this */
+    eval();
+    constant();
+    return x!;
+  }
 
   /**
    * Evaluate.
+   *
+   * Returns: The result.
    */
-  abstract function eval() -> Value;
+  final function eval() -> Value! {
+    if !x? {
+      doEval();
+      assert x?;
+    }
+    return x!;
+  }
+  function doEval() {
+    //
+  }
 
   /**
-   * Re-evaluate.
+   * Re-evaluate, ignoring memos. Memoizes at coarse-grain (i.e. Expression
+   * objects, not forms).
+   *
+   * - x: Vectorized arguments.
+   *
+   * Returns: The result.
    */
-  abstract function reval() -> Value;
+  final function move(x:Real[_]) -> Value! {
+    trace();
+    visitor:MoveVisitor(x);
+    let y <- move(visitor);
+    assert visitor.isFinished();
+    return y;
+  }
+  final function move(visitor:MoveVisitor) -> Value! {
+    if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        doMove(visitor);
+        assert x?;
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+      }
+    }
+    return x!;
+  }
+  function doMove(visitor:MoveVisitor) {
+    //
+  }
 
   /**
-   * Evaluate gradient of the expression with respect to its arguments.
+   * Vectorize arguments and gradients.
    *
-   * - d: Upstream gradient.
+   * Returns: The vectorized arguments and gradients.
+   */
+  final function args() -> (Real[_], Real[_]) {
+    trace();
+    visitor:ArgsVisitor;
+    args(visitor);
+    return visitor.args();
+  }
+  final function args(visitor:ArgsVisitor) {
+    if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        doArgs(visitor);
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+      }
+    }
+  }
+  function doArgs(visitor:ArgsVisitor) {
+    //
+  }
+
+  /**
+   * Evaluate gradient with respect to arguments. Clears memos at fine-grain.
    *
-   * `eval()` must have been called before calling `grad()`.
+   * - g: Upstream gradient.
    *
    * The expression is treated as a function, and the arguments defined
    * as those `Random` objects in the expression that are not constant.
@@ -194,90 +321,101 @@ abstract class Expression<Value> < Delay {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  abstract function grad(d:Value);
+  final function grad<Gradient>(g:Gradient) {
+    trace();
+    shallowGrad(g);
+    deepGrad();
+  }
+  final function shallowGrad<Gradient>(g:Gradient) {
+    if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        /* (re-)start accumulation */
+        this.g <- g;
+      } else {
+        /* continue accumulation */
+        this.g <- this.g! + g;
+      }
+    }
+  }
+  function doShallowGrad() {
+    //
+  }
+  final function deepGrad() {
+    if !flagConstant && visitCount >= linkCount {
+      assert visitCount == linkCount;
+      visitCount <- 0;  // reset for next time
+      doShallowGrad();
+      doDeepGrad();
+    }
+  }
+  function doDeepGrad() {
+    //
+  }
 
   /**
-   * Label generations.
+   * Evaluate.
    *
-   * - gen: Generation.
-   *
-   * Recursively labels all subexpressions with the given generation,
-   * terminating on subexpressions that are already labeled.
+   * Returns: The result.
    */
-  abstract function label(gen:Integer);
+  final function peek() -> Value! {
+    /* forms use peek() for fine-grain memoization, but this terminates at
+     * the nearest Expression objects; so here should behave as for eval(),
+     * reverting to coarse-grain memoization */
+    return eval();
+  }
 
   /**
-   * Make older generations constant.
-   *
-   * - gen: Generation limit.
-   *
-   * Removes subexpressions that are labeled with a generation less than
-   * `gen`.
+   * Trace an expression before calling grad() or move(). This traces through
+   * the expression and, for each Expression object, updates the count of its
+   * number of parents. This is necessary to ensure correct and efficient
+   * execution of grad() and move(), as these counts ensure that each node in
+   * the graph is visited exactly once.
    */
-  abstract function constant(gen:Integer);
+  final function trace() {
+    reset();
+    relink();
+  }
+  final function reset() {
+    assert visitCount == 0;
+    if !flagConstant && linkCount != 0 {
+      linkCount <- 0;
+      doReset();
+    }
+  }
+  function doReset() {
+    //
+  }
+  final function relink() {
+    assert visitCount == 0;
+    if !flagConstant {
+      linkCount <- linkCount + 1;
+      if linkCount == 1 {
+        doRelink();
+      }
+    }
+  }
+  function doRelink() {
+    //
+  }
 
   /**
    * Render the entire expression constant.
    */
-  abstract function constant();
+  final override function constant() {
+    if !flagConstant {
+      g <- nil;
+      linkCount <- 1;
+      visitCount <- 0;
+      flagConstant <- true;
+      doConstant();
+    }
+  }
+  function doConstant() {
+    //
+  }
 
   override function write(buffer:Buffer) {
-    buffer.set(value());
+    buffer.set(value()!);
   }
-}
-
-function length<Type>(x:Type) -> Integer {
-  return x.length();
-}
-
-function size<Type>(x:Type) -> Integer {
-  return x.size();
-}
-
-function rows<Type>(x:Type) -> Integer {
-  return x.rows();
-}
-
-function columns<Type>(x:Type) -> Integer {
-  return x.columns();
-}
-
-function value<Type>(x:Type) -> {
-  return x.value();
-}
-
-function peek<Type>(x:Type) -> {
-  return x.peek();
-}
-
-function eval<Type>(x:Type) -> {
-  return x.eval();
-}
-
-function reval<Type>(x:Type) -> {
-  return x.reval();
-}
-
-function grad<Type,Gradient>(x:Type, d:Gradient) {
-  x.grad(d);
-}
-
-function grad<Type,Gradient>(x:Type, d:Gradient, i:Integer) {
-  x.grad(d, i);
-}
-
-function grad<Type,Gradient>(x:Type, d:Gradient, i:Integer, j:Integer) {
-  x.grad(d, i, j);
-}
-
-function label<Type>(x:Type, gen:Integer) {
-  x.label(gen);
-}
-
-function constant<Type>(x:Type, gen:Integer) {
-  x.constant(gen);
-}
-
-function constant<Type>(x:Type) {
-  x.constant();
 }

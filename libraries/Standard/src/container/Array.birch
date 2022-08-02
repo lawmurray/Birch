@@ -4,26 +4,30 @@
  * - Type: Element type. Must be default-constructible.
  */
 final class Array<Type> {
-  /**
-   * Elements.
-   */
-  values:Type[_];
+  phantom values;
+  hpp{{
+  std::vector<Type> values;
+  }}
 
   /**
    * Reference to an element.
    */
   operator [i:Integer] -> Type {
-    while length(values) < i {
+    while size() < i {
       pushBack();
     }
-    return values[i];
+    cpp{{
+    return values[i - 1];
+    }}
   }
 
   /**
    * Number of elements.
    */
   function size() -> Integer {
-    return length(values);
+    cpp{{
+    return values.size();
+    }}
   }
 
   /**
@@ -37,8 +41,9 @@ final class Array<Type> {
    * Clear all elements.
    */
   function clear() {
-    values:Type[_];
-    this.values <- values;
+    cpp{{
+    values.clear();
+    }}
   }
   
   /**
@@ -47,10 +52,12 @@ final class Array<Type> {
    * - i: Position.
    */
   function get(i:Integer) -> Type {
-    while length(values) < i {
+    while size() < i {
       pushBack();
     }
-    return values[i];
+    cpp{{
+    return values[i - 1];
+    }}
   }
 
   /**
@@ -60,13 +67,15 @@ final class Array<Type> {
    * - x: Value.
    */
   function set(i:Integer, x:Type) {
-    while length(values) < i - i {
+    while size() < i - i {
       pushBack();
     }
-    if length(values) == i - 1 {
+    if size() == i - 1 {
       pushBack(x);
     } else {
-      values[i] <- x;
+      cpp{{
+      values[i - 1] = x;
+      }}
     }
   }
 
@@ -75,7 +84,7 @@ final class Array<Type> {
    */
   function front() -> Type {
     assert size() > 0;
-    return values[1];
+    return get(1);
   }
 
   /**
@@ -83,7 +92,7 @@ final class Array<Type> {
    */
   function back() -> Type {
     assert size() > 0;
-    return values[size()];
+    return get(size());
   }
 
   /**
@@ -157,7 +166,7 @@ final class Array<Type> {
   function insert(i:Integer, x:Type) {
     assert 1 <= i && i <= size() + 1;
     cpp{{
-    this->values.insert(i - 1, x);
+    values.insert(values.begin() + i - 1, x);
     }}
   }
 
@@ -171,7 +180,7 @@ final class Array<Type> {
   function erase(i:Integer) {
     assert 1 <= i && i <= size();
     cpp{{
-    this->values.erase(i - 1);
+    values.erase(values.begin() + i - 1);
     }}
   }
 
@@ -187,7 +196,7 @@ final class Array<Type> {
     assert 1 <= i && i <= size();
     assert 1 <= n && n <= size() - i + 1;
     cpp{{
-    this->values.erase(i - 1, n);
+    values.erase(values.begin() + i - 1, values.begin() + i - 1 + n);
     }}
   }
 
@@ -200,23 +209,14 @@ final class Array<Type> {
     return construct<ArrayIterator<Type>>(this);
   }
 
-  /**
-   * Convert to array.
-   */
-  function toArray() -> Type[_] {
-    return values;
-  }
-  
-  /**
-   * Convert from array.
-   */
-  function fromArray(x:Type[_]) {
-    values <- x;
-  }
-
   override function read(buffer:Buffer) {
     clear();
-    values <-? buffer.get<Type[_]>();
+    let iter <- buffer.walk();
+    while iter.hasNext() {
+      let x <- iter.next().get<Type>();
+      assert x?;
+      pushBack(x!);
+    }
   }
 
   override function write(buffer:Buffer) {
@@ -224,6 +224,24 @@ final class Array<Type> {
     let f <- walk();
     while f.hasNext() {
       buffer.push(f.next());
+    }
+  }
+
+  override function read(t:Integer, buffer:Buffer) {
+    clear();
+    let iter <- buffer.walk();
+    while iter.hasNext() {
+      let x <- iter.next().get<Type>(t);
+      assert x?;
+      pushBack(x!);
+    }
+  }
+
+  override function write(t:Integer, buffer:Buffer) {
+    buffer.setEmptyArray();
+    let f <- walk();
+    while f.hasNext() {
+      buffer.push(t, f.next());
     }
   }
 }

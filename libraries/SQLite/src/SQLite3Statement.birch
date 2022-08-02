@@ -14,9 +14,9 @@ class SQLite3Statement {
    */ 
   function bind(i:Integer, x:Integer) {
     cpp{{
-    auto res = sqlite3_bind_int64(this->stmt, i, x);
+    auto res = sqlite3_bind_int(this->stmt, i, x);
     if (res != SQLITE_OK) {
-      birch::error("sqlite3_bind_int64 failed");
+      birch::error("sqlite3_bind_int failed");
     }
     }}
   }

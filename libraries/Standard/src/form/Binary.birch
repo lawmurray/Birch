@@ -1,12 +1,7 @@
 /*
  * Function form with two arguments.
  */
-struct Binary<Function,Left,Right>(l:Left, r:Right) {
-  /**
-   * Function.
-   */
-  f:Function;
-
+struct Binary<Left,Right>(l:Left, r:Right) < Form {
   /**
    * Left argument.
    */
@@ -17,40 +12,86 @@ struct Binary<Function,Left,Right>(l:Left, r:Right) {
    */
   r:Right <- r;
 
-  function value() -> {
-    return f.compute(global.value(l), global.value(r));
+  hpp{{
+  void reset() const {
+    birch::reset(l);
+    birch::reset(r);
   }
 
-  function peek() -> {
-    return f.compute(global.peek(l), global.peek(r));
+  void relink() const {
+    birch::relink(l);
+    birch::relink(r);
   }
 
-  function eval() -> {
-    return f.compute(global.eval(l), global.eval(r));
+  void constant() const {
+    birch::constant(l);
+    birch::constant(r);
   }
 
-  function reval() -> {
-    return f.compute(global.reval(l), global.reval(r));
+  bool isConstant() const {
+    return birch::is_constant(l) && birch::is_constant(r);
   }
-
-  function grad<Gradient>(d:Gradient) {
-    let (dl, dr) <- f.grad(d, global.peek(l), global.peek(r));
-    global.grad(l, dl);
-    global.grad(r, dr);
-  }
-
-  function label(gen:Integer) {
-    global.label(l, gen);
-    global.label(r, gen);
-  }
-
-  function constant(gen:Integer) {
-    global.constant(l, gen);
-    global.constant(r, gen);
-  }
-
-  function constant() {
-    global.constant(l);
-    global.constant(r);
-  }
+  }}
 }
+
+hpp{{
+#define BIRCH_BINARY_FUNCTION_FORM(f, f_grad, ...) \
+  using Value = decltype(f(birch::peek(std::declval<Left>()), \
+        birch::peek(std::declval<Right>()), ##__VA_ARGS__)); \
+  std::optional<Value> x; \
+  \
+  void clear() const { \
+    const_cast<std::optional<Value>&>(x).reset(); \
+  } \
+  \
+  auto value() const { \
+    auto x = this->eval(); \
+    this->constant(); \
+    return x; \
+  } \
+  \
+  auto eval() const { \
+    auto l = birch::eval(this->l); \
+    auto r = birch::eval(this->r); \
+    return f(l, r, ##__VA_ARGS__); \
+  } \
+  \
+  auto peek() const { \
+    if (!x) { \
+      auto l = birch::peek(this->l); \
+      auto r = birch::peek(this->r); \
+      const_cast<std::optional<Value>&>(x) = f(l, r, ##__VA_ARGS__); \
+    } \
+    return *x; \
+  } \
+  \
+  auto move(const MoveVisitor& visitor) const { \
+    auto l = birch::move(this->l, visitor); \
+    auto r = birch::move(this->r, visitor); \
+    return f(l, r, ##__VA_ARGS__); \
+  } \
+  \
+  void args(const ArgsVisitor& visitor) const { \
+    birch::args(this->l, visitor); \
+    birch::args(this->r, visitor); \
+  } \
+  \
+  template<class G> \
+  void shallowGrad(const G& g) const { \
+    auto x = birch::peek(*this); \
+    auto l = birch::peek(this->l); \
+    auto r = birch::peek(this->r); \
+    if (!birch::is_constant(this->l)) { \
+      birch::shallow_grad(this->l, f_grad ## 1(g, x, l, r, ##__VA_ARGS__)); \
+    } \
+    if (!birch::is_constant(this->r)) { \
+      birch::shallow_grad(this->r, f_grad ## 2(g, x, l, r, ##__VA_ARGS__)); \
+    } \
+    clear(); \
+  } \
+  \
+  void deepGrad() const { \
+    birch::deep_grad(this->l); \
+    birch::deep_grad(this->r); \
+  }
+}}

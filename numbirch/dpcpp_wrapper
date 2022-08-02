@@ -1,0 +1,1 @@
+eval dpcpp `echo "$@" | sed -E 's:/tmp/[^[:space:]]+\.o::g'`

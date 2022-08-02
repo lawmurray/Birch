@@ -1,38 +1,19 @@
-hpp{{
-/*
- * Pseudorandom number generator for each thread.
- */
-extern thread_local std::mt19937_64 rng;
-}}
-
-cpp{{
-thread_local std::mt19937_64 rng = std::mt19937_64(std::random_device()());
-}}
-
-/*
+/**
  * Seed the pseudorandom number generator.
  *
  * - seed: Seed value.
  */
 function seed(s:Integer) {
   cpp{{
-  #pragma omp parallel num_threads(libbirch::get_max_threads())
-  {
-    rng.seed(s + libbirch::get_thread_num());
-  }
+  numbirch::seed(s);
   }}
 }
 
-/*
+/**
  * Seed the pseudorandom number generator with entropy.
  */
 function seed() {
   cpp{{
-  std::random_device rd;
-  #pragma omp parallel num_threads(libbirch::get_max_threads())
-  {
-    #pragma omp critical
-    rng.seed(rd());
-  }
+  numbirch::seed();
   }}
 }

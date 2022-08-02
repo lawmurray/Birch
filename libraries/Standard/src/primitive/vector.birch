@@ -12,73 +12,19 @@
  */
 function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   cpp{{
-  /* wrap λ in another lambda function to translate 0-based indices into
-   * 1-based indices */
-  return libbirch::make_array_from_lambda(libbirch::make_shape(length),
-        [&](int64_t i) { return λ(i + 1); });
+  using T = decltype(wait(λ(1)));
+  return numbirch::Array<T,1>(numbirch::make_shape(length), λ);
   }}
 }
 
 /**
  * Create vector filled with a given value.
+ *
+ * - x: The value.
+ * - length: Length.
  */
-function vector<Type>(x:Type, length:Integer) -> Type[_] {
+function vector<Type>(x:Type, length:Integer) -> {
   cpp{{
-  return libbirch::make_array_from_value<Type>(libbirch::make_shape(length),
-      x);
+  return numbirch::Array(numbirch::make_shape(length), x);
   }}
-}
-
-function rows<Type>(x:Type[_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-function columns<Type>(x:Type[_]) -> Integer {
-  return 1;
-}
-
-function length<Type>(x:Type[_]) -> Integer {
-  return rows(x);
-}
-
-function size<Type>(x:Type[_]) -> Integer {
-  return rows(x)*columns(x);
-}
-
-function value<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function peek<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function eval<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function reval<Type>(x:Type[_]) -> Type[_] {
-  return x;
-}
-
-function grad<Type,Gradient>(x:Type[_], d:Gradient) {
-  //
-}
-
-function grad<Type,Gradient>(x:Type[_], d:Gradient, i:Integer) {
-  //
-}
-
-function label<Type>(x:Type[_], gen:Integer) {
-  //
-}
-
-function constant<Type>(x:Type[_], gen:Integer) {
-  //
-}
-
-function constant<Type>(x:Type[_]) {
-  //
 }

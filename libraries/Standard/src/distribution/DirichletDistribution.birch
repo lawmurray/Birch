@@ -1,0 +1,98 @@
+/**
+ * Dirichlet distribution.
+ */
+final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
+  /**
+   * Concentration.
+   */
+  α:Arg <- α;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_dirichlet(value(α));
+  }
+  
+  override function simulateLazy() -> Real[_]? {
+    return simulate_dirichlet(eval(α));
+  }
+
+  override function logpdf(x:Real[_]) -> Real! {
+    return logpdf_dirichlet(x, value(α));
+  }
+
+  override function logpdfLazy(x:Real[_]) -> Real!? {
+    return logpdf_dirichlet(x, eval(α));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_dirichlet(this.getVariate(), value(α)));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(α);
+  }
+
+  override function isDirichlet() -> Boolean {
+    return true;
+  }
+
+  override function getDirichlet() -> Expression<Real[_]> {
+    return box(α);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Dirichlet");
+    buffer.set("α", value(α));
+  }
+}
+
+/**
+ * Create Dirichlet distribution.
+ */
+function Dirichlet<Arg>(α:Arg) -> Distribution<Real[_]> {
+  return wrap_dirichlet(α);
+}
+function wrap_dirichlet<Arg>(α:Arg) -> {
+  return make_dirichlet(wrap(α));
+}
+function make_dirichlet<Arg>(α:Arg) -> {
+  return construct<DirichletDistribution<Arg>>(α);
+}
+
+/*
+ * Simulate a Dirichlet distribution.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet<Arg1>(α:Arg1) -> {
+  let x <- simulate_gamma(α, 1.0);
+  return x/sum(x);
+}
+
+/*
+ * Simulate a Dirichlet distribution.
+ *
+ * - α: Concentrations.
+ * - D: Number of dimensions.
+ */
+function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
+  let x <- simulate_gamma(α, vector(1.0, D));
+  return x/sum(x);
+}
+
+/*
+ * Observe a Dirichlet variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_dirichlet<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
+  assert length(x) == length(α);
+  return sum(hadamard(α, log(x)) - log(x) - lgamma(α)) + lgamma(sum(α));
+}

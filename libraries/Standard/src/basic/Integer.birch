@@ -1,17 +1,11 @@
 /**
- * 64-bit signed integer.
+ * Signed integer. This is represented with a 32-bit signed integer.
  */
 type Integer;
 
-/*
- * Operators
- */
-operator (+x:Integer) -> Integer;
-operator (x:Integer > y:Integer) -> Boolean;
-operator (x:Integer >= y:Integer) -> Boolean;
-operator (x:Integer <= y:Integer) -> Boolean;
-operator (x:Integer == y:Integer) -> Boolean;
-operator (x:Integer != y:Integer) -> Boolean;
+hpp{{
+using Integer = int;
+}}
 
 /**
  * Modulus.
@@ -38,52 +32,4 @@ function min(x:Integer, y:Integer) -> Integer {
   cpp{{
   return std::min(x, y);
   }}
-}
-
-function rows(x:Integer) -> Integer {
-  return 1;
-}
-
-function columns(x:Integer) -> Integer {
-  return 1;
-}
-
-function length(x:Integer) -> Integer {
-  return 1;
-}
-
-function size(x:Integer) -> Integer {
-  return 1;
-}
-
-function value(x:Integer) -> Integer {
-  return x;
-}
-
-function peek(x:Integer) -> Integer {
-  return x;
-}
-
-function eval(x:Integer) -> Integer {
-  return x;
-}
-
-function reval(x:Integer) -> Integer {
-  return x;
-}
-
-function grad<Gradient>(x:Integer, d:Gradient) {
-  //
-}
-
-function label(x:Integer, gen:Integer) {
-  //
-}
-
-function constant(x:Integer, gen:Integer) {
-  //
-}
-
-function constant(x:Integer) {
-  //
 }

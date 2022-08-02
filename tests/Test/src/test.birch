@@ -1,0 +1,86 @@
+/*
+ * Compare two empirical distributions for the purposes of tests.
+ *
+ * - x1: First empirical distribution.
+ * - x2: Second empirical distribution.
+ *
+ * Return: Did the test pass?
+ */
+function pass(x1:Real[_], x2:Real[_]) -> Boolean {
+  return pass(mat(x1, 1), mat(x2, 1));
+}
+
+/*
+ * Compare two empirical distributions for the purposes of tests.
+ *
+ * - X1: First empirical distribution.
+ * - X2: Second empirical distribution.
+ *
+ * Return: Did the test pass?
+ */
+function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
+  assert rows(X1) == rows(X2);
+  assert columns(X1) == columns(X2);
+
+  let R <- rows(X1);
+  let C <- columns(X1);
+  let B <- 10000;  // number of bootstrap resamples
+  let nfails <- 0;
+  let ntests <- 2*C - 1;
+  let α <- 0.001/ntests;  // p-value for failure, with Bonferroni correction
+  let l <- vector(1, R);
+  let u <- vector(2*R, R);
+
+  for c in 1..ntests {
+    x1:Real[_];
+    x2:Real[_];
+    if c <= C {
+      /* test marginal */
+      x1 <- X1[1..R,c];
+      x2 <- X2[1..R,c];
+    } else {
+      /* test random projection */
+      let v <- vector_lambda(\(i:Integer) -> {
+          return simulate_gaussian(0.0, 1.0);
+        }, C);
+      v <- v/sqrt(dot(v));
+      x1 <- X1*v;
+      x2 <- X2*v;
+    }
+    let δ <- wasserstein(x1, x2);  // observed distance
+    let z0 <- stack(x1, x2);
+    let n <- vector(0, B);  // to record test failures
+    parallel for b in 1..B {
+      let z1' <- gather(simulate_uniform_int(l, u), z0);
+      let z2' <- gather(simulate_uniform_int(l, u), z0);
+      let δ' <- wasserstein(z1', z2');  // bootstrap sample difference
+      if δ' > δ {
+        n[b] <- 1;
+      }
+    }
+    let p <- sum(n)!/Real(B);  // p-value
+    if 100 < R && p < α {
+      nfails <- nfails + 1;
+      warn("on test " + c + ", p=" + p);
+    }
+  }
+  if 100 < R && 0 < nfails {
+    error("***failed*** in aggregate, " + nfails + " of " + ntests + " failed");
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/**
+ * 1-Wasserstein distance between two univariate empirical distributions with
+ * equal number of samples.
+ *
+ * - x1: Samples from the first distribution, sorted.
+ * - x2: Samples from the second distribution, sorted.
+ *
+ * Return: 1-Wasserstein distance between `x1` and `x2`.
+ */
+function wasserstein(x1:Real[_], x2:Real[_]) -> Real {
+  return sum(abs(sort(x1) - sort(x2)))/length(x1);
+}

@@ -2,6 +2,9 @@ FROM alpine:latest
 RUN apk update && apk add --no-cache \
     git \
     openssh \
+    gpg \
+    gpg-agent \
+    gpgv \
     tar \
     gzip \
     curl \

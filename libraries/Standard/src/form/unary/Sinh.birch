@@ -1,33 +1,25 @@
-struct SinhFunction {
-function compute<Value>(m:Value) -> {
-    return sinh(m);
-  }
+struct Sinh<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*cosh(m);
-  }
-}
-struct Sinh<Middle> = Unary<SinhFunction,Middle>;
-
-/**
- * Hyperbolic sine.
- */
-function sinh<Middle>(m:Middle) -> {
-  return construct<Sinh<Middle>>(m);
-}
-
-/**
- * Hyperbolic sine.
- */
-function sinh(m:Integer) -> Real {
-  return sinh(scalar<Real>(m));
-}
-
-/**
- * Hyperbolic sine.
- */
-function sinh(m:Real) -> Real {
-  cpp {{
-  return std::sinh(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(sinh, sinh_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::sinh;
+using numbirch::sinh_grad;
+
+/**
+ * Hyperbolic sine.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Sinh<Middle> sinh(const Middle& m) {
+  return construct<Sinh<Middle>>(m);
+}
+}
+}}

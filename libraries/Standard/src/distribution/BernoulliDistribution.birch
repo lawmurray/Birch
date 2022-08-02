@@ -1,0 +1,72 @@
+/**
+ * Bernoulli distribution.
+ */
+final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
+  /**
+   * Success probability.
+   */
+  ρ:Arg <- ρ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Boolean! {
+    return simulate_bernoulli(value(ρ));
+  }
+  
+  override function simulateLazy() -> Boolean!? {
+    return simulate_bernoulli(eval(ρ));
+  }
+  
+  override function logpdf(x:Boolean!) -> Real! {
+    return logpdf_bernoulli(x, value(ρ));
+  }
+
+  override function logpdfLazy(x:Boolean!) -> Real!? {
+    return logpdf_bernoulli(x, eval(ρ));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_bernoulli(this.getVariate(), ρ));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(ρ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Bernoulli");
+    buffer.set("ρ", value(ρ));
+  }
+}
+
+/**
+ * Create Bernoulli distribution.
+ */
+function Bernoulli<Arg>(ρ:Arg) -> Distribution<Boolean> {
+  return wrap_bernoulli(ρ);
+}
+function wrap_bernoulli<Arg>(ρ:Arg) -> {
+  return make_bernoulli(wrap(ρ));
+}
+function make_bernoulli<Arg>(ρ:Arg) -> {
+  return construct<BernoulliDistribution<Arg>>(ρ);
+}
+
+hpp{{
+using numbirch::simulate_bernoulli;
+}}
+
+/*
+ * Observe a Bernoulli variate.
+ *
+ * - x: The variate.
+ * - ρ: Probability of a true result.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_bernoulli<Arg1,Arg2>(x:Arg1, ρ:Arg2) -> {
+  return where(x, log(ρ), log1p(-ρ));
+}

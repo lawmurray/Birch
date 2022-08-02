@@ -153,7 +153,6 @@ class YAMLReader < Reader {
    * Parse a sequence (array).
    */
   function parseSequence(buffer:Buffer) {
-    buffer.setEmptyArray();
     cpp{{
     nextEvent();
     while (event.type != YAML_SEQUENCE_END_EVENT) {
@@ -191,13 +190,13 @@ class YAMLReader < Reader {
     auto data = (char*)event.data.scalar.value;
     auto length = event.data.scalar.length;
     auto endptr = data;
-    auto intValue = int64_t(std::strtoll(data, &endptr, 10));
+    auto intValue = Integer(std::strtol(data, &endptr, 10));
     if (endptr == data + length) {
       buffer->set(intValue);
     } else {
-      auto realValue = std::strtod(data, &endptr);
+      auto realValue = Real(std::strtod(data, &endptr));
       if (endptr == data + length) {
-        buffer->set(realValue);
+        buffer->set(Real(realValue));
       } else if (std::strcmp(data, "true") == 0) {
         buffer->set(true);
       } else if (std::strcmp(data, "false") == 0) {
@@ -225,11 +224,11 @@ class YAMLReader < Reader {
     auto data = (char*)event.data.scalar.value;
     auto length = event.data.scalar.length;
     auto endptr = data;
-    auto intValue = int64_t(std::strtoll(data, &endptr, 10));
+    auto intValue = Integer(std::strtol(data, &endptr, 10));
     if (endptr == data + length) {
       buffer->push(intValue);
     } else {
-      auto realValue = std::strtod(data, &endptr);
+      auto realValue = Real(std::strtod(data, &endptr));
       if (endptr == data + length) {
         buffer->push(realValue);
       } else if (std::strcmp(data, "true") == 0) {

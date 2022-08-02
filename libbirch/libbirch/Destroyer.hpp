@@ -5,14 +5,13 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
 /**
  * @internal
  * 
  * Visitor for releasing shared pointers of an object.
- *
- * @ingroup libbirch
  */
 class Destroyer {
 public:
@@ -20,8 +19,29 @@ public:
     //
   }
 
-  template<class Arg>
-  void visit(Arg& arg) {
+  template<class T, std::enable_if_t<
+      is_visitable<T,Destroyer>::value,int> = 0>
+  void visit(T& o) {
+    o.accept_(*this);
+  }
+
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Destroyer>::value &&
+      is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
+    if (!std::is_trivial<typename T::value_type>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
+  }
+
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Destroyer>::value &&
+      !is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
     //
   }
 
@@ -43,36 +63,12 @@ public:
     }
   }
 
-  template<class T, class F>
-  void visit(Array<T,F>& o);
-
-  template<class T>
-  void visit(Inplace<T>& o);
-
   template<class T>
   void visit(Shared<T>& o);
 };
 }
 
-#include "libbirch/Array.hpp"
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
-
-template<class T, class F>
-void libbirch::Destroyer::visit(Array<T,F>& o) {
-  if (!std::is_trivially_copyable<T>::value) {
-    auto iter = o.begin();
-    auto last = o.end();
-    for (; iter != last; ++iter) {
-      visit(*iter);
-    }
-  }
-}
-
-template<class T>
-void libbirch::Destroyer::visit(Inplace<T>& o) {
-  o->accept_(*this);
-}
 
 template<class T>
 void libbirch::Destroyer::visit(Shared<T>& o) {

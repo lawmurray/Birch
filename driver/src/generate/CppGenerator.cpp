@@ -4,6 +4,7 @@
 #include "src/generate/CppGenerator.hpp"
 
 #include "src/generate/CppClassGenerator.hpp"
+#include "src/generate/CppStructGenerator.hpp"
 #include "src/primitive/string.hpp"
 
 birch::CppGenerator::CppGenerator(std::ostream& base, const int level,
@@ -39,16 +40,16 @@ void birch::CppGenerator::visit(const Literal<bool>* o) {
 }
 
 void birch::CppGenerator::visit(const Literal<int64_t>* o) {
-  middle("Integer(" << o->str << ')');
+  middle(o->str);
 }
 
 void birch::CppGenerator::visit(const Literal<double>* o) {
   if (o->str == "nan") {
-    middle("std::numeric_limits<double>::quiet_NaN()");
+    middle("std::numeric_limits<Real>::quiet_NaN()");
   } else if (o->str == "inf") {
-    middle("std::numeric_limits<double>::infinity()");
+    middle("std::numeric_limits<Real>::infinity()");
   } else {
-    middle(o->str);
+    middle("Real(" << o->str << ')');
   }
 }
 
@@ -72,7 +73,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
   if (o->single->isEmpty()) {
     middle("std::nullopt");
   } else if (!inSequence) {
-    middle("libbirch::make_array_from_sequence(");
+    middle("numbirch::Array(");
     ++inSequence;
     middle("{ " << o->single << " }");
     --inSequence;
@@ -83,7 +84,7 @@ void birch::CppGenerator::visit(const Sequence* o) {
 }
 
 void birch::CppGenerator::visit(const Cast* o) {
-  middle("libbirch::cast<" << o->returnType << ">(" << o->single << ')');
+  middle("birch::optional_cast<" << o->returnType << ">(" << o->single << ')');
 }
 
 void birch::CppGenerator::visit(const Call* o) {
@@ -111,21 +112,21 @@ void birch::CppGenerator::visit(const UnaryCall* o) {
 void birch::CppGenerator::visit(const Assign* o) {
   ++inAssign;
   if (*o->name == "<-?") {
-    start("libbirch::optional_assign(" << o->left << ", ");
+    middle("birch::optional_assign(" << o->left << ", ");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else if (*o->name == "<~") {
-    start(o->left << "= handle_simulate(");
+    middle(o->left << "= handle_simulate(");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else if (*o->name == "~>") {
-    start("handle_observe(" << o->left << ", ");
+    middle("handle_observe(" << o->left << ", ");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else if (*o->name == "~") {
-    start("handle_assume(" << o->left << ", ");
+    middle("handle_assume(" << o->left << ", ");
     --inAssign;
-    finish(o->right << ");");
+    middle(o->right << ')');
   } else {
     middle(o->left << " = ");
     --inAssign;
@@ -138,11 +139,11 @@ void birch::CppGenerator::visit(const Slice* o) {
 }
 
 void birch::CppGenerator::visit(const Query* o) {
-  middle(o->single << ".has_value()");
+  middle("(bool(" << o->single << "))");
 }
 
 void birch::CppGenerator::visit(const Get* o) {
-  middle(o->single << ".value()");
+  middle("(*(" << o->single << "))");
 }
 
 void birch::CppGenerator::visit(const LambdaFunction* o) {
@@ -168,7 +169,7 @@ void birch::CppGenerator::visit(const Span* o) {
 }
 
 void birch::CppGenerator::visit(const Range* o) {
-  middle("libbirch::make_range(" << o->left << ", " << o->right <<')');
+  middle("std::make_pair(" << o->left << ", " << o->right << ')');
 }
 
 void birch::CppGenerator::visit(const Member* o) {
@@ -185,11 +186,11 @@ void birch::CppGenerator::visit(const Member* o) {
 }
 
 void birch::CppGenerator::visit(const This* o) {
-  middle("this->shared_from_this_()");
+  middle("libbirch::Shared<this_type_>(this)");
 }
 
 void birch::CppGenerator::visit(const Super* o) {
-  middle("this->shared_from_base_()");
+  middle("libbirch::Shared<base_type_>(this)");
 }
 
 void birch::CppGenerator::visit(const Global* o) {
@@ -247,10 +248,6 @@ void birch::CppGenerator::visit(const GlobalVariable* o) {
   --inGlobal;
 }
 
-void birch::CppGenerator::visit(const MemberVariable* o) {
-  assert(false);  // should be in CppClassGenerator
-}
-
 void birch::CppGenerator::visit(const LocalVariable* o) {
   if (o->has(LET)) {
     start("auto " << o->name);
@@ -268,7 +265,8 @@ void birch::CppGenerator::visit(const TupleVariable* o) {
   for (auto iter = o->locals->begin(); iter != o->locals->end(); ++iter) {
     auto local = dynamic_cast<const LocalVariable*>(*iter);
     assert(local);
-    line("auto " << local->name << " = std::get<" << i++ << ">(" << tmp << ");");
+    line("auto " << local->name << " = std::move(std::get<" << i++ <<
+        ">(" << tmp << "));");
   }
 }
 
@@ -294,18 +292,15 @@ void birch::CppGenerator::visit(const Function* o) {
   }
 }
 
-void birch::CppGenerator::visit(const MemberFunction* o) {
-  assert(false);  // should be in CppClassGenerator
-}
-
 void birch::CppGenerator::visit(const Program* o) {
   if (!o->braces->isEmpty()) {
     genDoc(o->loc);
     genSourceLine(o->loc);
+    start("int " << o->name << "(int argc_, char** argv_)");
     if (header) {
-      line("extern \"C\" int " << o->name << "(int, char**);");
+      finish(';');
     } else {
-      line("int " << o->name << "(int argc_, char** argv_) {");
+      finish(" {");
       in();
 
       /* program options */
@@ -435,22 +430,33 @@ void birch::CppGenerator::visit(const Program* o) {
         line("}\n");
       }
 
-      /* older compiler versions that do not support thread-safe static local
-       * variable initialization require Eigen to initialize such variables
-       * before entering a parallel region (LibBirch and the standard library
-       * currently use thread_local to avoid doing similar) */
+      /* initialization */
       genSourceLine(o->loc);
-      line("Eigen::initParallel();\n");
+      line("numbirch::init();\n");
+      genSourceLine(o->loc);
+      line("birch::init();\n");
 
       /* body of program */
       *this << o->braces;
 
+      /* termination */
+      genSourceLine(o->loc);
+      line("birch::term();\n");
       genSourceLine(o->loc);
       line("libbirch::collect();");
+      genSourceLine(o->loc);
+      line("numbirch::term();\n");
       genSourceLine(o->loc);
       line("return 0;");
       out();
       line("}\n");
+
+      /* register program */
+      if (!o->braces->isEmpty()) {
+        start("static int register_program_" << o->name);
+        middle("_ = ::register_program(");
+        finish("\"" << o->name << "\", " << o->name << ");");
+      }
     }
   }
 }
@@ -523,6 +529,14 @@ void birch::CppGenerator::visit(const Class* o) {
   }
 }
 
+void birch::CppGenerator::visit(const Struct* o) {
+  if (includeInline || !o->isGeneric()) {
+    CppStructGenerator auxStruct(base, level, header, includeInline,
+        includeLines, o);
+    auxStruct << o;
+  }
+}
+
 void birch::CppGenerator::visit(const Generic* o) {
   middle(o->name);
 }
@@ -563,8 +577,8 @@ void birch::CppGenerator::visit(const If* o) {
 void birch::CppGenerator::visit(const For* o) {
   auto index = genIndex(o->index);
   genSourceLine(o->loc);
-  start("for (auto " << index << " = " << o->from << "; ");
-  finish(index << " <= " << o->to << "; ++" << index << ") {");
+  start("for (int " << index << " = int(" << o->from << "); ");
+  finish(index << " <= int(" << o->to << "); ++" << index << ") {");
   in();
   *this << o->braces->strip();
   out();
@@ -574,6 +588,9 @@ void birch::CppGenerator::visit(const For* o) {
 void birch::CppGenerator::visit(const Parallel* o) {
   auto index = genIndex(o->index);
   genSourceLine(o->loc);
+  line("#if HAVE_NUMBIRCH_HPP");
+  line("numbirch::wait();");
+  line("#endif");
   line("#pragma omp parallel");
   line("{");
   in();
@@ -584,12 +601,15 @@ void birch::CppGenerator::visit(const Parallel* o) {
     middle("static");
   }
   finish(')');
-  start("for (auto " << index << " = " << o->from << "; ");
-  finish(index << " <= " << o->to << "; ++" << index << ") {");
+  start("for (int " << index << " = int(" << o->from << "); ");
+  finish(index << " <= int(" << o->to << "); ++" << index << ") {");
   in();
   *this << o->braces->strip();
   out();
   line("}");
+  line("#if HAVE_NUMBIRCH_HPP");
+  line("numbirch::wait();");
+  line("#endif");
   out();
   line("}");
 }
@@ -654,7 +674,7 @@ void birch::CppGenerator::visit(const EmptyType* o) {
 }
 
 void birch::CppGenerator::visit(const ArrayType* o) {
-  middle("libbirch::DefaultArray<" << o->single << ',' << o->depth() << '>');
+  middle("numbirch::Array<" << o->single << ',' << o->depth() << '>');
 }
 
 void birch::CppGenerator::visit(const TupleType* o) {
@@ -663,6 +683,10 @@ void birch::CppGenerator::visit(const TupleType* o) {
 
 void birch::CppGenerator::visit(const OptionalType* o) {
   middle("std::optional<" << o->single << '>');
+}
+
+void birch::CppGenerator::visit(const FutureType* o) {
+  middle("numbirch::Future<" << o->single << '>');
 }
 
 void birch::CppGenerator::visit(const MemberType* o) {
@@ -681,7 +705,7 @@ void birch::CppGenerator::visit(const TypeList* o) {
 }
 
 void birch::CppGenerator::visit(const DeducedType* o) {
-  middle("decltype(auto)");
+  middle("auto");
 }
 
 void birch::CppGenerator::genDoc(const Location* loc) {

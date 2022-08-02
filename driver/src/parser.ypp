@@ -90,15 +90,15 @@
 %glr-parser
 
 %expect-rr 0
-%expect 6
+%expect 7
 // ^ Type?(...) vs x?
 // ^ for generic function calls, f<Type>(expr) ambiguous with f < x > (expr),
 //   the former is favoured by %dprec directives 
-// ^ for generic class declaration, opening '<' ambiguous with inheritance,
-//   but closing '>' disambiguates
+// ^ for generic class and struct declarations, opening '<' ambiguous with
+//   inheritance, but closing '>' disambiguates
 
 %token <valString> PROGRAM CLASS STRUCT TYPE FUNCTION OPERATOR AUTO LET
-%token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR
+%token <valString> IF ELSE FOR IN WHILE DO WITH ASSERT RETURN FACTOR PHANTOM
 %token <valString> CPP HPP THIS SUPER GLOBAL PARALLEL DYNAMIC
 %token <valString> ABSTRACT OVERRIDE FINAL ACYCLIC
 %token <valString> NIL DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE NAME
@@ -137,17 +137,20 @@
 %type <valStatement> for_variable_declaration function_declaration
 %type <valStatement> program_declaration
 %type <valStatement> member_variable_declaration member_function_declaration
+%type <valStatement> member_phantom_declaration
 %type <valStatement> binary_operator_declaration unary_operator_declaration
 %type <valStatement> assignment_operator_declaration conversion_operator_declaration
 %type <valStatement> slice_operator_declaration
-%type <valStatement> class_declaration basic_declaration
+%type <valStatement> class_declaration struct_declaration basic_declaration
 %type <valStatement> cpp hpp expression_statement if for parallel
 %type <valStatement> while do_while with block assertion return factor
 %type <valStatement> statement statements optional_statements
 %type <valStatement> class_statement class_statements optional_class_statements
+%type <valStatement> struct_statement struct_statements optional_struct_statements
 %type <valStatement> file_statement file_statements optional_file_statements
 %type <valStatement> braces optional_braces
 %type <valStatement> class_braces optional_class_braces
+%type <valStatement> struct_braces optional_struct_braces
 
 %type <valType> named_type primary_type type type_list
 %type <valType> return_type optional_return_type optional_auto_return_type
@@ -498,6 +501,10 @@ member_variable_declaration
     | name ':' type brackets arguments ';'        { push_raw(); $$ = new birch::MemberVariable(birch::NONE, $1, new birch::ArrayType($3, $4->width(), make_loc(@$)), $4, $5, empty_name(@$), empty_expr(@$), make_doc_loc(@$)); }
     ;
 
+member_phantom_declaration
+    : PHANTOM name ';'  { push_raw(); $$ = new birch::MemberPhantom(birch::NONE, $2, make_doc_loc(@$)); }
+    ;
+
 local_variable_declaration
     : AUTO name init_operator expression ';'      { yywarn("the auto keyword is deprecated, use let instead"); push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, $4, make_doc_loc(@$)); }
     | LET name init_operator expression ';'       { push_raw(); $$ = new birch::LocalVariable(birch::LET, $2, empty_type(@$), empty_expr(@$), empty_expr(@$), $3, $4, make_doc_loc(@$)); }
@@ -588,8 +595,12 @@ class_declaration
     : class_annotation CLASS name optional_generics optional_parameters '<' named_type optional_arguments { push_raw(); } optional_class_braces  { $$ = new birch::Class($1, $3, $4, $5, $7, false, $8, $10, make_doc_loc(@$)); }
     | class_annotation CLASS name optional_generics optional_parameters { push_raw(); } optional_class_braces                                    { $$ = new birch::Class($1, $3, $4, $5, empty_type(@$), false, empty_expr(@$), $7, make_doc_loc(@$)); }
     | class_annotation CLASS name optional_generics '=' named_type { push_raw(); } ';'                                                           { $$ = new birch::Class($1, $3, $4, empty_expr(@$), $6, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
-    | STRUCT name optional_generics optional_parameters { push_raw(); } optional_class_braces                                                    { $$ = new birch::Class(birch::STRUCT, $2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
-    | STRUCT name optional_generics '=' named_type { push_raw(); } ';'                                                                           { $$ = new birch::Class(birch::STRUCT, $2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
+    ;
+
+struct_declaration
+    : STRUCT name optional_generics optional_parameters '<' named_type optional_arguments { push_raw(); } optional_struct_braces  { $$ = new birch::Struct(birch::NONE, $2, $3, $4, $6, false, $7, $9, make_doc_loc(@$)); }
+    | STRUCT name optional_generics optional_parameters { push_raw(); } optional_struct_braces                                    { $$ = new birch::Struct(birch::NONE, $2, $3, $4, empty_type(@$), false, empty_expr(@$), $6, make_doc_loc(@$)); }
+    | STRUCT name optional_generics '=' named_type { push_raw(); } ';'                                                            { $$ = new birch::Struct(birch::NONE, $2, $3, empty_expr(@$), $5, true, empty_expr(@$), empty_stmt(@$), make_doc_loc(@$)); }
     ;
 
 basic_declaration
@@ -692,6 +703,7 @@ optional_statements
 
 class_statement
     : member_variable_declaration
+    | member_phantom_declaration
     | member_function_declaration
     | assignment_operator_declaration
     | conversion_operator_declaration
@@ -708,7 +720,23 @@ optional_class_statements
     : class_statements
     |                   { $$ = empty_stmt(@$); }
     ;
+
+struct_statement
+    : member_variable_declaration
+    | member_phantom_declaration
+    | hpp
+    ;
     
+struct_statements
+    : struct_statement
+    | struct_statement struct_statements  { $$ = new birch::StatementList($1, $2, make_loc(@$)); }
+    ;
+    
+optional_struct_statements
+    : struct_statements
+    |                   { $$ = empty_stmt(@$); }
+    ;
+
 file_statement
     : global_variable_declaration
     | function_declaration
@@ -716,6 +744,7 @@ file_statement
     | binary_operator_declaration
     | unary_operator_declaration
     | class_declaration
+    | struct_declaration
     | basic_declaration
     | cpp
     | hpp
@@ -766,7 +795,16 @@ optional_class_braces
     : class_braces
     | ';'           { $$ = empty_stmt(@$); }
     ;
-    
+
+struct_braces
+    : '{' optional_struct_statements '}'  { $$ = new birch::Braces($2, make_loc(@$)); }
+    ;
+
+optional_struct_braces
+    : struct_braces
+    | ';'            { $$ = empty_stmt(@$); }
+    ;
+
 double_braces
     : DOUBLE_BRACE_OPEN DOUBLE_BRACE_CLOSE
     ;
@@ -789,6 +827,7 @@ primary_type
 type
     : primary_type
     | type '?'                                              { $$ = new birch::OptionalType($1, make_loc(@$)); }
+    | type '!'                                              { $$ = new birch::FutureType($1, make_loc(@$)); }
     | named_type '.' named_type                             { $$ = new birch::MemberType($1, $3, make_loc(@$)); }
     | type '[' shape ']'                                    { $$ = new birch::ArrayType($1, $3, make_loc(@$)); }
     ;

@@ -1,5 +1,5 @@
 /**
-*@file
+ * @file
  */
 #include "libbirch/Memo.hpp"
 

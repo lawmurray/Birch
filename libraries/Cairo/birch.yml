@@ -1,5 +1,5 @@
 
-name: Cairo
+name: Birch.Cairo
 manifest: 
   source: 
     - src/Context.birch
@@ -14,7 +14,7 @@ manifest:
     - README.md
 require: 
   package: 
-    - Standard
+    - Birch.Standard
   header: 
     - cairo/cairo.h
     - cairo/cairo-pdf.h

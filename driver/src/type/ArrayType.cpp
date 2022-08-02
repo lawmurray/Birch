@@ -24,11 +24,3 @@ int birch::ArrayType::depth() const {
 bool birch::ArrayType::isArray() const {
   return true;
 }
-
-birch::Type* birch::ArrayType::element() {
-  return single->element();
-}
-
-const birch::Type* birch::ArrayType::element() const {
-  return single->element();
-}

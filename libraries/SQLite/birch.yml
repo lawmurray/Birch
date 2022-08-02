@@ -1,4 +1,4 @@
-name: SQLite
+name: Birch.SQLite
 manifest: 
   source: 
     - src/SQLite3.birch
@@ -9,7 +9,7 @@ manifest:
     - README.md
 require: 
   package: 
-    - Standard
+    - Birch.Standard
   header: 
     - sqlite3.h
   library: 

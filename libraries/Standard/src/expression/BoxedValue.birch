@@ -1,57 +1,8 @@
 /**
  * Boxed value.
  */
-final acyclic class BoxedValue<Value>(x:Value) < Expression<Value> {  
-  /**
-   * Constant value.
-   */
-  x:Value <- x;
-
-  override function isRandom() -> Boolean {
-    return false;
-  }
-
-  override function isConstant() -> Boolean {
-    return true;
-  }
-
-  override function rows() -> Integer {
-    return global.rows(x);
-  }
-
-  override function columns() -> Integer {
-    return global.columns(x);
-  }
-
-  override function value() -> Value {
-    return x;
-  }
-
-  override function peek() -> Value {
-    return x;
-  }
-
-  override function eval() -> Value {
-    return x;
-  }
-
-  override function reval() -> Value {
-    return x;
-  }
-
-  override function grad(d:Value) {
-    //
-  }
-
-  override function label(gen:Integer) {
-    //
-  }
-
-  override function constant(gen:Integer) {
-    //
-  }
-
-  override function constant() {
-    //
+final acyclic class BoxedValue<Value>(x:Value!) < Expression<Value>(x, true) {  
+  override function doShallowGrad() {
+    this.g <- nil;  // clear intermediate gradient to save memory
   }
 }

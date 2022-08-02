@@ -159,6 +159,10 @@ void birch::Visitor::visit(const MemberVariable* o) {
   o->value->accept(this);
 }
 
+void birch::Visitor::visit(const MemberPhantom* o) {
+  //
+}
+
 void birch::Visitor::visit(const LocalVariable* o) {
   o->type->accept(this);
   o->brackets->accept(this);
@@ -222,6 +226,14 @@ void birch::Visitor::visit(const SliceOperator* o) {
 }
 
 void birch::Visitor::visit(const Class* o) {
+  o->typeParams->accept(this);
+  o->params->accept(this);
+  o->base->accept(this);
+  o->args->accept(this);
+  o->braces->accept(this);
+}
+
+void birch::Visitor::visit(const Struct* o) {
   o->typeParams->accept(this);
   o->params->accept(this);
   o->base->accept(this);
@@ -324,6 +336,10 @@ void birch::Visitor::visit(const TupleType* o) {
 }
 
 void birch::Visitor::visit(const OptionalType* o) {
+  o->single->accept(this);
+}
+
+void birch::Visitor::visit(const FutureType* o) {
   o->single->accept(this);
 }
 

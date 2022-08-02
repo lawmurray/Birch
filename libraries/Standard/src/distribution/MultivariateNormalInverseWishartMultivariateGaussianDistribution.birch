@@ -1,0 +1,271 @@
+/**
+ * Multivariate Gaussian with linear transformation of a
+ * multivariate-normal-inverse-Wishart prior.
+ */
+class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
+    k:Arg5, c:Arg6, ω2:Arg7) < Distribution<Real[_]> {
+  /**
+   * Scale.
+   */
+  a:Arg1 <- a;
+
+  /**
+   * Concentration times mean.
+   */
+  ν:Arg2 <- ν;
+
+  /**
+   * Concentration.
+   */
+  λ:Arg3 <- λ;
+  
+  /**
+   * Accumulator of spread.
+   */
+  Γ:Arg4 <- Γ;
+
+  /**
+   * Degrees of freedom.
+   */
+  k:Arg5 <- k;
+
+  /**
+   * Offset.
+   */
+  c:Arg6 <- c;
+
+  /**
+   * Likelihood scale.
+   */
+  ω2:Arg7 <- ω2;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        value(a), value(ν), value(λ), value(Γ), value(k), value(c),
+        value(ω2));
+  }
+
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(c), eval(ω2));
+  }
+  
+  override function logpdf(x:Real[_]) -> Real! {
+    return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        x - value(c), value(a), value(ν), value(λ), value(Γ), value(k),
+        value(ω2));
+  }
+
+  override function logpdfLazy(x:Real[_]) -> Real!? {
+    return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        x - eval(c), eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(ω2));
+  }
+
+  override function update(x:Real[_]) -> Delay? {
+    return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        x, value(a), value(ν), value(λ), value(Γ), value(k), value(c),
+        value(ω2));
+  }
+
+  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+    return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        x, a, ν, λ, Γ, k, c, ω2);
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(a);
+    global.constant(ν);
+    global.constant(λ);
+    global.constant(Γ);
+    global.constant(c);
+    global.constant(ω2);
+  }
+}
+
+function MultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, μ:Arg2, σ2:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
+    ω2:Arg7) -> Distribution<Real[_]> {
+  let ν <- μ/σ2;
+  let λ <- 1.0/σ2;
+  let Γ <- Ψ + outer(μ/sqrt(σ2));
+  return wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(a, ν,
+      λ, Γ, k, c, ω2);
+}
+function wrap_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
+    k:Arg5, c:Arg6, ω2:Arg7) -> {
+  return make_multivariate_normal_inverse_wishart_multivariate_gaussian(
+      wrap(a), wrap(ν), wrap(λ), wrap(Γ), wrap(k), wrap(c), wrap(ω2));
+}
+function make_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
+    k:Arg5, c:Arg6, ω2:Arg7) -> {
+  return construct<MultivariateNormalInverseWishartMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, ν, λ, Γ, k, c, ω2);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1,Arg2,Arg3>(
+      μ:Add<Mul<Arg1,Random<Real[_]>>,Arg2>,
+      Σ:Mul<Arg3,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+  let A <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  let ω2 <- Σ.l;
+  let Ω <- Σ.r;
+  if (Ω.hasNext() && Ω.getNext().isMultivariateNormalInverseWishart() &&
+      Ω.getNext(2) == m) || (Ω.hasSide() && Ω.getSide() == m) {
+    m.prune();
+    let (ν, λ, Γ, k) <- m.getNext().getMultivariateNormalInverseWishart();
+    let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
+        ν, λ, Γ, k, c, ω2);
+    m.setNext(p);
+    Ω.setNext(nil);
+    m.setSide(Ω);
+    Ω.setSide(m);
+    return p;
+  } else if Ω.hasNext() && Ω.getNext().isInverseWishart() {
+    Ω.prune();
+    let (Ψ, k) <- Ω.getNext().getInverseWishart();
+    let ν <- μ/ω2;
+    let λ <- 1.0/ω2;
+    let Γ <- Ψ + outer(μ/sqrt(ω2));
+    let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
+    Ω.setNext(p);
+    return p;
+  } else {
+    return wrap_multivariate_gaussian(μ, Σ);
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1,Arg2>(μ:Add<Random<Real[_]>,Arg1>,
+    Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(1.0*μ.l + μ.r, Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1,Arg2>(μ:Mul<Arg1,Random<Real[_]>>,
+    Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(μ + 0.0, Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1>(μ:Random<Real[_]>,
+    Σ:Mul<Arg1,Random<Real[_,_]>>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(1.0*μ + 0.0, Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1,Arg2>(
+      μ:Add<Mul<Arg1,Random<Real[_]>>,Arg2>, Σ:Random<Real[_,_]>) ->
+      Distribution<Real[_]> {
+  return MultivariateGaussian(μ, 1.0*Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1>(μ:Add<Random<Real[_]>,Arg1>,
+    Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(1.0*μ.l + μ.r, 1.0*Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1>(μ:Mul<Arg1,Random<Real[_]>>,
+    Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
+  return MultivariateGaussian(μ + 0.0, 1.0*Σ);
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian(μ:Random<Real[_]>, Σ:Random<Real[_,_]>) ->
+    Distribution<Real[_]> {
+  return MultivariateGaussian(1.0*μ + 0.0, 1.0*Σ);
+}
+
+/*
+ * Simulate multivariate-normal-inverse-Wishart-multivariate-Gaussian variate.
+ *
+ * - a: Scale.
+ * - ν: Concentration times mean.
+ * - λ: Concentration.
+ * - Γ: Accumulator for spread.
+ * - k: Degrees of freedom.
+ * - c: Offset.
+ * - ω2: Additional spread.
+ *
+ * Returns: the variate.
+ */
+function simulate_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
+    k:Arg5, c:Arg6, ω2:Arg7) -> {
+  let μ <- ν/λ;
+  let Σ <- (a*a/λ + ω2)*(Γ - outer(ν/sqrt(λ)));
+  return simulate_multivariate_t(k, a*μ + c, Σ);
+}
+
+/*
+ * Observe multivariate-normal-inverse-Wishart-multivariate-Gaussian variate.
+ *
+ * - y: The variate, minus offset.
+ * - a: Scale.
+ * - ν: Concentration times mean.
+ * - λ: Concentration.
+ * - Γ: Accumulator for spread.
+ * - k: Degrees of freedom.
+ * - ω2: Additional spread.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(y:Arg1, a:Arg2, ν:Arg3, λ:Arg4,
+    Γ:Arg5, k:Arg6, ω2:Arg7) -> {
+  let μ <- ν/λ;
+  let Σ <- (a*a/λ + ω2)*(Γ - outer(ν/sqrt(λ)));
+  return logpdf_multivariate_t(y, k, a*μ, Σ);
+}
+
+/*
+ * Update the parameters of a Gaussian variate with linear transformation
+ * of multivariate-normal-inverse-Wishart prior.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - ν: Prior concentration times mean.
+ * - λ: Prior concentration.
+ * - Γ: Prior accumulator of spread.
+ * - k: Prior degrees of freedom.
+ * - c: Offset.
+ * - ω2: Among-row covariance.
+ *
+ * Returns: the posterior hyperparameters `ν'`, `λ'`, `Γ'` and `k'`.
+ */
+function update_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3,
+    λ:Arg4, Γ:Arg5, k:Arg6, c:Arg7, ω2:Arg8) -> {
+  let ν' <- ν + a*(x - c)/ω2;
+  let λ' <- λ + a*a/ω2;
+  let Γ' <- Γ + outer((x - c)/sqrt(ω2));
+  let k' <- k + 1;
+  return wrap_multivariate_normal_inverse_wishart(ν', λ', Γ', k');
+}

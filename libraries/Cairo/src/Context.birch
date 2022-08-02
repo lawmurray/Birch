@@ -194,9 +194,8 @@ class Context {
    *
    */
   function deviceToUserDistance(ux:Real, uy:Real) -> (Real, Real) {
-    ux1:Real <- ux;
-    uy1:Real <- uy;
     cpp{{
+    double ux1, uy1;
     cairo_device_to_user_distance(this->cr, &ux1, &uy1);
     }}
     return (ux1, uy1);

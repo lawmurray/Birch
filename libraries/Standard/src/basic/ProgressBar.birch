@@ -30,7 +30,7 @@ class ProgressBar {
   function update(progress:Real) {
     assert 0.0 <= progress && progress <= 1.0;
     let old <- current;
-    current <- scalar<Integer>(progress*maximum);
+    current <- cast<Integer>(progress*maximum);
     if current != old {
       /* redraw */
       out.flush();

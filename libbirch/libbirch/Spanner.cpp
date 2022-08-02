@@ -3,8 +3,10 @@
  */
 #include "libbirch/Spanner.hpp"
 
-std::tuple<int,int,int> libbirch::Spanner::visit(const int i, const int j,
-    Any* o) {
+#include "libbirch/Any.hpp"
+
+std::tuple<int,int,int> libbirch::Spanner::visitObject(const int i,
+    const int j, Any* o) {
   if (!(o->f_.exchangeOr(CLAIMED) & CLAIMED)) {
     /* just claimed by this thread */
     assert(o->p_ == -1);

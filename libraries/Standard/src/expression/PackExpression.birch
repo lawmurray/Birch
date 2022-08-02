@@ -1,0 +1,95 @@
+/**
+ * Special expression for pack() on an arbitrary number of arguments with
+ * pre-allocation of the final result.
+ *
+ * - Arg: Argument type, e.g. `Real[_]` or `Expression<Real[_]>`.
+ * - Element: Result element type, e.g. `Real`.
+ */
+final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
+  /**
+   * Arguments.
+   */
+  m:Array<Arg>;
+
+  /**
+   * Add an argument.
+   *
+   * - arg: The argument.
+   */
+  function push(arg:Arg) {
+    m.pushBack(arg);
+  }
+
+  override function doEval() {
+    let C <- m.size();
+    if C > 0 {
+      let R <- rows(m[1]);
+      x:Element[R,C];
+      for c in 1..C {
+        x[1..R,c] <- global.eval(m[c]);
+      }
+      this.x <- x;
+    } else {
+      this.x <- matrix(0.0, 0, 0);
+    }
+  }
+
+  override function doMove(visitor:MoveVisitor) {
+    let C <- m.size();
+    if C > 0 {
+      let R <- rows(m[1]);
+      x:Element[R,C];
+      for c in 1..C {
+        x[1..R,c] <- global.move(m[c], visitor);
+      }
+      this.x <- x;
+    } else {
+      this.x <- matrix(0.0, 0, 0);
+    }
+  }
+
+  override function doArgs(visitor:ArgsVisitor) {
+    let C <- m.size();
+    for c in 1..C {
+      global.args(m[c], visitor);
+    }
+  }
+
+  override function doShallowGrad() {
+    let R <- rows(this.g!);
+    let C <- columns(this.g!);
+    for c in 1..C {
+      global.shallow_grad(m[c], this.g![1..R,c]);
+    }
+    this.g <- nil;  // clear intermediate gradient to save memory
+  }
+
+  override function doDeepGrad() {
+    let C <- m.size();
+    for c in 1..C {
+      global.deep_grad(m[c]);
+    }
+  }
+
+  override function doReset() {
+    let C <- m.size();
+    for c in 1..C {
+      global.reset(m[c]);
+    }
+  }
+
+  override function doRelink() {
+    let C <- m.size();
+    for c in 1..C {
+      global.relink(m[c]);
+    }
+  }
+
+  override function doConstant() {
+    let C <- m.size();
+    for c in 1..C {
+      global.constant(m[c]);
+    }
+    m.clear();
+  }
+}

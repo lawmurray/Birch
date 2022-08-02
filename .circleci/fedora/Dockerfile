@@ -14,6 +14,7 @@ RUN yum -y update && yum -y install \
     flex \
     bison \
     gcc-c++ \
+    lcov \
     gdb \
     autoconf \
     automake \

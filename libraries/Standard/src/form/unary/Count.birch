@@ -1,0 +1,25 @@
+struct Count<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(count, count_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::count;
+using numbirch::count_grad;
+
+/**
+ * Count of nonzero elements.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Count<Middle> count(const Middle& m) {
+  return construct<Count<Middle>>(m);
+}
+}
+}}

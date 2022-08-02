@@ -7,8 +7,7 @@
 
 birch::BirchGenerator::BirchGenerator(std::ostream& base, const int level,
     const bool header) :
-    IndentableGenerator(base, level, header),
-    type(nullptr) {
+    IndentableGenerator(base, level, header) {
   base << std::fixed;
   // ^ forces floating point representation of integers to have decimal
   //   places
@@ -178,6 +177,10 @@ void birch::BirchGenerator::visit(const MemberVariable* o) {
   finish(';');
 }
 
+void birch::BirchGenerator::visit(const MemberPhantom* o) {
+  line("phantom " << o->name << ';');
+}
+
 void birch::BirchGenerator::visit(const LocalVariable* o) {
   if (o->has(LET)) {
     start("let " << o->name);
@@ -273,7 +276,7 @@ void birch::BirchGenerator::visit(const MemberFunction* o) {
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
-  if (!o->braces->isEmpty() && (!header || o->isGeneric() || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty() && (!header || o->isGeneric())) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -315,7 +318,7 @@ void birch::BirchGenerator::visit(const UnaryOperator* o) {
 void birch::BirchGenerator::visit(const AssignmentOperator* o) {
   start("");
   middle("operator <- " << o->single);
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -325,7 +328,7 @@ void birch::BirchGenerator::visit(const AssignmentOperator* o) {
 void birch::BirchGenerator::visit(const ConversionOperator* o) {
   start("");
   middle("operator -> " << o->returnType);
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -335,7 +338,7 @@ void birch::BirchGenerator::visit(const ConversionOperator* o) {
 void birch::BirchGenerator::visit(const SliceOperator* o) {
   start("");
   middle("operator [" << o->params << "] -> " << o->returnType);
-  if (!o->braces->isEmpty() && (!header || (type && type->isGeneric()))) {
+  if (!o->braces->isEmpty()) {
     finish(o->braces << "\n");
   } else {
     finish(';');
@@ -343,7 +346,6 @@ void birch::BirchGenerator::visit(const SliceOperator* o) {
 }
 
 void birch::BirchGenerator::visit(const Class* o) {
-  type = o;
   start("");
   if (o->has(ABSTRACT)) {
     middle("abstract ");
@@ -374,7 +376,32 @@ void birch::BirchGenerator::visit(const Class* o) {
   } else {
     finish(';');
   }
-  type = nullptr;
+}
+
+void birch::BirchGenerator::visit(const Struct* o) {
+  start("struct " << o->name);
+  if (o->isGeneric()) {
+    middle('<' << o->typeParams << '>');
+  }
+  if (!o->isAlias() && !o->params->isEmpty()) {
+    middle('(' << o->params << ')');
+  }
+  if (!o->base->isEmpty()) {
+    if (o->isAlias()) {
+      middle(" = ");
+    } else {
+      middle(" < ");
+    }
+    middle(o->base);
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
+  }
+  if (!o->braces->isEmpty()) {
+    finish(o->braces << "\n");
+  } else {
+    finish(';');
+  }
 }
 
 void birch::BirchGenerator::visit(const Basic* o) {
@@ -484,6 +511,10 @@ void birch::BirchGenerator::visit(const TupleType* o) {
 
 void birch::BirchGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
+}
+
+void birch::BirchGenerator::visit(const FutureType* o) {
+  middle(o->single << '!');
 }
 
 void birch::BirchGenerator::visit(const TypeList* o) {

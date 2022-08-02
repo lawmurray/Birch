@@ -1,33 +1,25 @@
-struct CoshFunction {
-function compute<Value>(m:Value) -> {
-    return cosh(m);
-  }
+struct Cosh<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return -d*sinh(m);
-  }
-}
-struct Cosh<Middle> = Unary<CoshFunction,Middle>;
-
-/**
- * Hyperbolic cosine.
- */
-function cosh<Middle>(m:Middle) -> {
-  return construct<Cosh<Middle>>(m);
-}
-
-/**
- * Hyperbolic cosine.
- */
-function cosh(m:Integer) -> Real {
-  return cosh(scalar<Real>(m));
-}
-
-/**
- * Cosine.
- */
-function cosh(m:Real) -> Real {
-  cpp {{
-  return std::cosh(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(cosh, cosh_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::cosh;
+using numbirch::cosh_grad;
+
+/**
+ * Hyperbolic cosine.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Cosh<Middle> cosh(const Middle& m) {
+  return construct<Cosh<Middle>>(m);
+}
+}
+}}

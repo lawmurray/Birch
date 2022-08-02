@@ -1,0 +1,6 @@
+hpp{{
+using numbirch::digamma;
+using numbirch::gamma_p;
+using numbirch::gamma_q;
+using numbirch::ibeta;
+}}

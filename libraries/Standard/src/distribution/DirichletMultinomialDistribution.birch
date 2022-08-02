@@ -1,0 +1,121 @@
+/**
+ * Dirichlet-multinomial distribution.
+ */
+final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
+    Distribution<Integer[_]> {
+  /**
+   * Number of trials.
+   */
+  n:Arg1 <- n;
+   
+  /**
+   * Category concentrations.
+   */
+  α:Arg2 <- α;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer[_] {
+    return simulate_dirichlet_multinomial(value(n), value(α));
+  }
+
+  override function simulateLazy() -> Integer[_]? {
+    return simulate_dirichlet_multinomial(eval(n), eval(α));
+  }
+
+  override function logpdf(x:Integer[_]) -> Real! {
+    return logpdf_dirichlet_multinomial(x, value(n), value(α));
+  }
+
+  override function logpdfLazy(x:Integer[_]) -> Real!? {
+    return logpdf_dirichlet_multinomial(x, eval(n), eval(α));
+  }
+
+  override function update(x:Integer[_]) -> Delay? {
+    return update_dirichlet_multinomial(x, value(n), value(α));
+  }
+
+  override function updateLazy(x:Expression<Integer[_]>) -> Delay? {
+    return update_dirichlet_multinomial(x, n, α);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_dirichlet_multinomial(this.getVariate(), n, α));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(n);
+    global.constant(α);
+  }
+}
+
+function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) ->
+    Distribution<Integer[_]> {
+  return wrap_dirichlet_multinomial(n, α);
+}
+function wrap_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+  return make_dirichlet_multinomial(wrap(n), wrap(α));
+}
+function make_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+  return construct<DirichletMultinomialDistribution<Arg1,Arg2>>(n, α);
+}
+
+/**
+ * Create multinomial distribution.
+ */
+function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
+    Distribution<Integer[_]> {
+  if ρ.hasNext() && ρ.getNext().isDirichlet() {
+    ρ.prune();
+    let α <- ρ.getNext().getDirichlet();
+    let p <- wrap_dirichlet_multinomial(n, α);
+    ρ.setNext(p);
+    return p;
+  } else {
+    return wrap_multinomial(n, ρ);
+  }
+}
+
+/*
+ * Simulate a Dirichlet-multinomial distribution.
+ *
+ * - n: Number of trials.
+ * - α: Concentrations.
+ */
+function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+  return simulate_multinomial(n, simulate_dirichlet(α));
+}
+
+/*
+ * Observe a Dirichlet-multinomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
+    α:Arg3) -> {
+  assert length(x) == length(α);
+  return lfact(n) + lgamma(sum(α)) - lgamma(n + sum(α)) +
+      sum(lgamma(x + α) - lgamma(α) - lfact(x));
+}
+
+/*
+ * Update the parameters of a Dirichlet distribution with a multinomial
+ * likelihood.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - α': Prior concentrations.
+ *
+ * Returns: the posterior hyperparameters `α'`.
+ */
+function update_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
+    α:Arg3) -> {
+  return wrap_dirichlet(α + x);
+}

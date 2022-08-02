@@ -1,0 +1,120 @@
+/**
+ * Matrix Gaussian distribution.
+ */
+class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
+    Distribution<Real[_,_]> {
+  /**
+   * Mean.
+   */
+  M:Arg1 <- M;
+  
+  /**
+   * Among-row covariance.
+   */
+  U:Arg2 <- U;
+
+  /**
+   * Among-column covariance.
+   */
+  V:Arg3 <- V;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_gaussian(value(M), value(U), value(V));
+  }
+
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_gaussian(eval(M), eval(U), eval(V));
+  }
+  
+  override function logpdf(X:Real[_,_]) -> Real! {
+    return logpdf_matrix_gaussian(X, value(M), value(U), value(V));
+  }
+
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+    return logpdf_matrix_gaussian(X, eval(M), eval(U), eval(V));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_matrix_gaussian(this.getVariate(), M, U, V));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(M);
+    global.constant(U);
+    global.constant(V);
+  }
+
+  override function isMatrixGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getMatrixGaussian() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>) {
+    return box(M, U, V);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "MatrixGaussian");
+    buffer.set("M", value(M));
+    buffer.set("U", value(U));
+    buffer.set("V", value(V));
+  }
+}
+
+/**
+ * Create matrix Gaussian distribution.
+ */
+function MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
+    Distribution<Real[_,_]> {
+  return wrap_matrix_gaussian(M, U, V);
+}
+function wrap_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
+  return make_matrix_gaussian(wrap(M), wrap(U), wrap(V));
+}
+function make_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
+  return construct<MatrixGaussianDistribution<Arg1,Arg2,Arg3>>(M, U, V);
+}
+
+/*
+ * Simulate a matrix Gaussian distribution.
+ *
+ * - M: Mean.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
+ */
+function simulate_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
+  assert rows(M) == rows(U);
+  assert rows(M) == columns(U);
+  assert columns(M) == rows(V);
+  assert columns(M) == columns(V);
+  let m <- rows(M);
+  let n <- columns(M);
+  let Z <- standard_gaussian(m, n);
+  return M + triouter(trimul(chol(U), Z), chol(V));
+}
+
+/*
+ * Observe a matrix Gaussian distribution.
+ *
+ * - X: The variate.
+ * - M: Mean.
+ * - U: Among-row covariance.
+ * - V: Among-column covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
+    V:Arg4) -> {
+  let n <- rows(X);
+  let p <- columns(X);
+  let Z <- wrap(X - M);
+  let L <- wrap(chol(U));
+  let J <- wrap(chol(V));
+  return -0.5*(frobenius(Z*cholinv(J), cholsolve(L, Z)) + n*p*log(2.0*π)) -
+      n*ltridet(J) - p*ltridet(L);
+}

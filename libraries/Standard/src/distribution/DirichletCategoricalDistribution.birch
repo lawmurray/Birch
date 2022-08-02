@@ -1,0 +1,120 @@
+/**
+ * Dirichlet-categorical distribution.
+ */
+final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer> {
+  /**
+   * Concentrations.
+   */
+  α:Arg <- α;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer! {
+    return simulate_dirichlet_categorical(value(α));
+  }
+
+  override function simulateLazy() -> Integer!? {
+    return simulate_dirichlet_categorical(eval(α));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return logpdf_dirichlet_categorical(x, value(α));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_dirichlet_categorical(x, eval(α));
+  }
+
+  override function update(x:Integer!) -> Delay? {
+    return update_dirichlet_categorical(x, value(α));
+  }
+
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_dirichlet_categorical(x, α);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_dirichlet_categorical(this.getVariate(), α));
+  }
+
+  override function lower() -> Integer!? {
+    return 1;
+  }
+
+  override function upper() -> Integer!? {
+    return length(value(α));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(α);
+  }
+}
+
+function DirichletCategorical<Arg>(α:Arg) -> Distribution<Integer> {
+  return wrap_dirichlet_categorical(α);
+}
+function wrap_dirichlet_categorical<Arg>(α:Arg) -> {
+  return make_dirichlet_categorical(wrap(α));
+}
+function make_dirichlet_categorical<Arg>(α:Arg) -> {
+  return construct<DirichletCategoricalDistribution<Arg>>(α);
+}
+
+/**
+ * Create categorical distribution.
+ */
+function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
+  if ρ.hasNext() && ρ.getNext().isDirichlet() {
+    ρ.prune();
+    let α <- ρ.getNext().getDirichlet();
+    let p <- wrap_dirichlet_categorical(α);
+    ρ.setNext(p);
+    return p;
+  } else if ρ.hasNext() && ρ.getNext().isRestaurant() {
+    ρ.prune();
+    let (α, θ, n) <- ρ.getNext().getRestaurant();
+    let p <- wrap_restaurant_categorical(α, θ, n);
+    ρ.setNext(p);
+    return p;
+  } else {
+    return wrap_categorical(ρ);
+  }
+}
+
+/*
+ * Simulate a Dirichlet-categorical distribution.
+ *
+ * - α: Concentrations.
+ */
+function simulate_dirichlet_categorical<Arg1>(α:Arg1) -> {
+  return simulate_categorical(simulate_dirichlet(α));
+}
+
+/*
+ * Observe a Dirichlet-categorical variate.
+ *
+ * - x: The variate.
+ * - α: Concentrations.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
+  return lfact(element(α, x)) - lgamma(element(α, x)) + lgamma(sum(α)) -
+      lfact(sum(α));
+}
+
+/*
+ * Update the parameters of a Dirichlet distribution with a categorical
+ * likelihood.
+ *
+ * - x: The variate.
+ * - α: Prior concentrations.
+ *
+ * Returns: the posterior hyperparameters `α'`.
+ */
+function update_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
+  return wrap_dirichlet(α + single(1.0, x, length(α)));
+}

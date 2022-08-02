@@ -1,0 +1,130 @@
+hpp{{
+#include <boost/math/distributions/binomial.hpp>
+}}
+
+/**
+ * Binomial distribution.
+ */
+final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
+    BoundedDiscreteDistribution {
+  /**
+   * Number of trials.
+   */
+  n:Arg1 <- n;
+
+  /**
+   * Success probability.
+   */
+  ρ:Arg2 <- ρ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer! {
+    return simulate_binomial(value(n), value(ρ));
+  }
+  
+  override function simulateLazy() -> Integer!? {
+    return simulate_binomial(eval(n), eval(ρ));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return logpdf_binomial(x, value(n), value(ρ));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_binomial(x, eval(n), eval(ρ));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_binomial(this.getVariate(), n, ρ));
+  }
+
+  override function cdf(x:Integer!) -> Real!? {
+    return cdf_binomial(x, value(n), value(ρ));
+  }
+
+  override function quantile(P:Real!) -> Integer!? {
+    return quantile_binomial(P, value(n), value(ρ));
+  }
+
+  override function lower() -> Integer!? {
+    return 0;
+  }
+  
+  override function upper() -> Integer!? {
+    return value(n);
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(n);
+    global.constant(ρ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Binomial");
+    buffer.set("n", value(n));
+    buffer.set("ρ", value(ρ));
+  }
+}
+
+/**
+ * Create binomial distribution.
+ */
+function Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> Distribution<Integer> {
+  return wrap_binomial(n, ρ);
+}
+function wrap_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return make_binomial(wrap(n), wrap(ρ));
+}
+function make_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return construct<BinomialDistribution<Arg1,Arg2>>(n, ρ);
+}
+
+hpp{{
+using numbirch::simulate_binomial;
+}}
+
+/*
+ * Observe a binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Returns: the log probability mass.
+ */
+function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
+  return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
+}
+
+/*
+ * CDF of a binomial variate.
+ *
+ * - x: The variate.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
+  return ibeta(n - x, x + 1, 1.0 - ρ);
+}
+
+/*
+ * Quantile of a binomial distribution.
+ *
+ * - P: The cumulative probability.
+ * - n: Number of trials.
+ * - ρ: Probability of a true result.
+ *
+ * Return: the quantile.
+ */
+function quantile_binomial<Arg1,Arg2,Arg3>(P:Arg1, n:Arg2, ρ:Arg3) -> {
+  cpp{{
+  return boost::math::quantile(boost::math::binomial_distribution<Real>(
+      wait(n), wait(ρ)), wait(P));
+  }}
+}

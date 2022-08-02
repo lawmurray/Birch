@@ -14,4 +14,4 @@ manifest:
     - mkdocs.yml
 require:
   package:
-    - Standard
+    - Birch.Standard

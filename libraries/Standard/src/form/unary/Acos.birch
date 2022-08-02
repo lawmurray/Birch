@@ -1,33 +1,25 @@
-struct AcosFunction {
-function compute<Value>(m:Value) -> {
-    return acos(m);
-  }
+struct Acos<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return -d/sqrt(1.0 - pow(m, 2.0));
-  }
-}
-struct Acos<Middle> = Unary<AcosFunction,Middle>;
-
-/**
- * Arc cosine.
- */
-function acos<Middle>(m:Middle) -> {
-  return construct<Acos<Middle>>(m);
-}
-
-/**
- * Arc cosine.
- */
-function acos(m:Integer) -> Real {
-  return acos(scalar<Real>(m));
-}
-
-/**
- * Arc cosine.
- */
-function acos(m:Real) -> Real {
-  cpp {{
-  return std::acos(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(acos, acos_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::acos;
+using numbirch::acos_grad;
+
+/**
+ * Arc cosine.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Acos<Middle> acos(const Middle& m) {
+  return construct<Acos<Middle>>(m);
+}
+}
+}}

@@ -20,12 +20,20 @@ public:
   Driver(int argc, char** argv);
 
   /**
-   * Run user program.
-   *
-   * @param prog Name of the program.
-   * @param xargs Extra arguments.
+   * Remaining number of command-line options after processing those
+   * recognized.
    */
-  void run(const std::string& prog, const std::vector<char*>& xargs = {});
+  int argc();
+
+  /**
+   * Determine name of the shared library for this package.
+   */
+  std::string library();
+
+  /**
+   * Remaining command-line options after processing those recognized.
+   */
+  char** argv();
 
   /**
    * Bootstrap package.
@@ -148,9 +156,9 @@ private:
   std::string unit;
 
   /**
-   * Run mode ("debug", "test", or "release").
+   * Floating point precision run mode ("single" or "double").
    */
-  std::string mode;
+  std::string precision;
 
   /**
    * Number of jobs for parallel build. If zero, a reasonable value is
@@ -159,54 +167,74 @@ private:
   int jobs;
 
   /**
-   * Enable test build?
+   * Enable single-precision builds?
    */
-  bool test;
+  bool enableSingle;
 
   /**
-   * Enable debug build?
+   * Enable double-precision builds?
    */
-  bool debug;
-
-  /**
-   * Enable release build?
-   */
-  bool release;
+  bool enableDouble;
 
   /**
    * Enable static library?
    */
-  bool staticLib;
+  bool enableStatic;
 
   /**
    * Enable shared library?
    */
-  bool sharedLib;
+  bool enableShared;
+
+  /**
+   * Enable standalone program build?
+   */
+  bool enableStandalone;
 
   /**
    * Enable OpenMP?
    */
-  bool openmp;
+  bool enableOpenmp;
+
+  /**
+   * Enable assertions?
+   */
+  bool enableAssert;
+
+  /**
+   * Enable optimizations?
+   */
+  bool enableOptimize;
+
+  /**
+   * Enable debug information?
+   */
+  bool enableDebug;
+
+  /**
+   * Enable coverage information?
+   */
+  bool enableCoverage;
 
   /**
    * Enable compiler warnings?
    */
-  bool warnings;
+  bool enableWarnings;
 
   /**
    * Enable compiler notes?
    */
-  bool notes;
+  bool enableNotes;
 
   /**
-   * Enable translation of C++ compiler messages?
+   * Enable translation of compiler messages from C++ to Birch?
    */
-  bool translate;
+  bool enableTranslate;
 
   /**
    * Enable verbose reporting?
    */
-  bool verbose;
+  bool enableVerbose;
 
   /**
    * Is the bootstrap file new?

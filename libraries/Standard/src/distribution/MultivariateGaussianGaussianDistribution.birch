@@ -1,0 +1,123 @@
+/**
+ * Gaussian distribution with linear transformation of multivariate Gaussian
+ * prior.
+ */
+final class MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
+    Arg5>(a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, ω2:Arg5) <
+    GaussianDistribution<Expression<Real>,Expression<Real>>(
+    box(dot(a, μ) + c), box(dot(a, Σ*a) + ω2)) {
+  /**
+   * Scale.
+   */
+  a:Arg1 <- a;
+    
+  /**
+   * Prior mean.
+   */
+  μ:Arg2 <- μ;
+
+  /**
+   * Prior covariance.
+   */
+  Σ:Arg3 <- Σ;
+
+  /**
+   * Offset.
+   */
+  c:Arg4 <- c;
+  
+  /**
+   * Likelihood variance.
+   */
+  ω2:Arg5 <- ω2;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function update(x:Real!) -> Delay? {
+    return update_multivariate_gaussian_gaussian(x, value(a), value(μ),
+        value(Σ), value(c), value(ω2), value(super.μ), value(super.σ2));
+  }
+
+  override function updateLazy(x:Expression<Real>) -> Delay? {
+    return update_multivariate_gaussian_gaussian(x, a, μ, Σ, c, ω2, super.μ,
+        super.σ2);
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(a);
+    global.constant(μ);
+    global.constant(Σ);
+    global.constant(c);
+    global.constant(ω2);
+  }
+}
+
+function MultivariateGaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, Σ:Arg3, c:Arg4, ω2:Arg5) -> Distribution<Real> {
+  return wrap_multivariate_gaussian_gaussian(a, μ, Σ, c, ω2);
+}
+function wrap_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(
+    a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, ω2:Arg5) -> {
+  return make_multivariate_gaussian_gaussian(wrap(a), wrap(μ), wrap(Σ),
+      wrap(c), wrap(ω2));
+}
+function make_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(
+    a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, ω2:Arg5) -> {
+  return construct<MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,
+      Arg4,Arg5>>(a, μ, Σ, c, ω2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
+    σ2:Arg3) -> Distribution<Real> {
+  let a <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  if m.hasNext() && m.getNext().isMultivariateGaussian() {
+    m.prune();
+    let (μ1, Σ1) <- m.getNext().getMultivariateGaussian();
+    let p <- wrap_multivariate_gaussian_gaussian(a, μ1, Σ1, c, σ2);
+    m.setNext(p);
+    return p;
+  } else {
+    return wrap_gaussian(μ, σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
+    Distribution<Real> {
+  return Gaussian(μ + 0.0, σ2);
+}
+
+/*
+ * Update the parameters of a multivariate Gaussian distribution with a 
+ * linear transformation involving a dot product, and a multivariate Gaussian
+ * likelihood.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - Σ: Prior covariance.
+ * - c: Offset.
+ * - ω2: Likelihood covariance.
+ * - m: Precomputed marginal mean.
+ * - τ2: Precomputed marginal variance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ */
+function update_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
+    Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, ω2:Arg6, m:Arg7,
+    τ2:Arg8) -> {
+  let k' <- wrap(Σ*a/τ2);
+  let μ' <- μ + k'*(x - m);
+  let Σ' <- Σ - outer(k', a)*Σ;
+  return wrap_multivariate_gaussian(μ', Σ');
+}

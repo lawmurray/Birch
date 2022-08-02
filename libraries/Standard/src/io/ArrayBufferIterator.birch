@@ -4,11 +4,11 @@
  *
  * - values: Values.
  */
-final class ArrayBufferIterator(values:Buffer[_]) < Iterator<Buffer> {
+final class ArrayBufferIterator(values:Array<Buffer>) < Iterator<Buffer> {
   /**
    * Values.
    */
-  values:Buffer[_] <- values;
+  values:Array<Buffer> <- values;
   
   /**
    * Current index into the vector.
@@ -19,7 +19,7 @@ final class ArrayBufferIterator(values:Buffer[_]) < Iterator<Buffer> {
    * Is there a next element?
    */
   override function hasNext() -> Boolean {
-    return i < length(values);
+    return i < values.size();
   }
 
   /**

@@ -1,0 +1,123 @@
+/*
+ * Test a continuous distribution.
+ *
+ * - q: The distribution.
+ * - N: Number of partitions for Riemann (midpoint) estimate.
+ */
+function test_cdf(q:Distribution<Real>, N:Integer) {
+  let failed <- false;
+
+  /* lower bound on test interval */
+  let from <- q.lower();
+  if from? {
+    /* test the lower bound against the quantile */
+    let test <- q.quantile(0.0);
+    if test? && abs(from!! - test!!) > 1.0/N {
+      error("lower bound and quantile comparison failed, " + from!! + " vs " +
+          test!! + ".");
+    }
+  } else {
+    from <- q.quantile(1.0/N);
+    assert from?;
+  }
+
+  /* upper bound on test interval */
+  let to <- q.upper();
+  if to? {
+    /* test the upper bound against the quantile */
+    let test <- q.quantile(1.0);
+    if test? && abs(to! - test!) > 1.0/N {
+      error("upper bound and quantile comparison failed, " + to!! + " vs " +
+          test!! + ".");
+    }
+  } else {
+    to <- q.quantile(1.0 - 1.0/N);
+    if !to? {
+      /* search for a rough upper bound for the interval */
+      let u <- 1.0;
+      while q.pdf(u) > 1.0/N {
+        u <- 2.0*u;
+      }
+      to <- u;
+    }
+    assert to?;
+  }
+
+  /* compare sum of pdf to cdf evaluations */
+  let P <- 0.5/N;
+  for n in 1..N {
+    let x <- from!! + (n - 0.5)*(to!! - from!!)/N;
+    let C <- q.cdf(x)!!;
+    P <- P + q.pdf(x)*(to!! - from!!)/N;
+
+    let δ <- abs(C - P);
+    let ε <- 2.0/sqrt(N);
+    if 100 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
+      failed <- true;
+      warn("on step " + n + ", " + C + " vs " + P);
+    }
+  }
+  if failed {
+    error("***failed***");
+  }
+
+  /* smoke test for constant */
+  q.constant();
+}
+
+/*
+ * Test a discrete distribution.
+ *
+ * - q: The distribution.
+ */
+function test_cdf(q:Distribution<Integer>) {
+  let failed <- false;
+
+  /* lower bound on test interval */
+  let from <- q.lower();
+  if from? {
+    /* test the lower bound against the quantile */
+    let test <- q.quantile(0.0);
+    if test? && abs(from!! - test!!) > 1.0e-6 {
+      error("lower bound and quantile comparison failed, " + from!! + " vs " +
+          test!! + ".");
+    }
+  } else {
+    from <- q.quantile(1.0e-6);
+    assert from?;
+  }
+
+  /* upper bound on test interval */
+  let to <- q.upper();
+  if to? {
+    /* test the upper bound against the quantile */
+    let test <- q.quantile(1.0);
+    if test? && abs(to!! - test!!) > 1.0e-6 {
+      error("upper bound and quantile comparison failed, " + to!! + " vs " +
+          test!! + ".");
+    }
+  } else {
+    to <- q.quantile(1.0 - 1.0e-6);
+    assert to?;
+  }
+
+  /* compare sum of pdf to cdf evaluations */
+  let P <- 0.0;
+  for x in from!!..to!! {
+    let C <- q.cdf(x)!!;
+    P <- P + q.pdf(x);
+
+    let δ <- abs(C - P);
+    let ε <- 2.0e-3;
+    if !(δ <= ε) {  // careful of nans
+      failed <- true;
+      warn("on value " + x + ", " + C + " vs " + P);
+    }
+  }
+  if failed {
+    error("***failed***");
+  }
+
+  /* smoke test for constant */
+  q.constant();
+}

@@ -2,85 +2,89 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@3.4.2
+  codecov: codecov/codecov@3.2.2
 
 executors:
-  opensuse:
+  opensuse-bench:
     docker:
       - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
-      MODE_FLAGS: "--disable-debug --enable-test --enable-release"
-      SMOKE: test  # BIRCH_MODE for running smoke.sh scripts
-      TEST: release  # BIRCH_MODE for running test.sh scripts
-      MONGODB: 1  # upload test results to MongoDB atlas
-      CODECOV: 1  # upload coverage results to Codecov
-    working_directory: /root/project/opensuse
-    # ^ can't use ~/ or $HOME here, won't expand in $CIRCLE_WORKING_DIRECTORY
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O3 -march=native -flto -Wall"
+      MAKE_FLAGS: "-j8"
+      LIB_FLAGS: "--disable-assert"
+      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
+    working_directory: /root/project/opensuse-bench
+
+  opensuse-cover:
+    docker:
+      - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -g -Wall -fno-inline --coverage"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
+    working_directory: /root/project/opensuse-cover
 
   ubuntu:
     docker:
       - image: lawmurray/birch-circleci:ubuntu
+    resource_class: large
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/ubuntu
 
   debian:
     docker:
       - image: lawmurray/birch-circleci:debian
+    resource_class: large
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/debian
 
   fedora:
     docker:
       - image: lawmurray/birch-circleci:fedora
+    resource_class: large
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/fedora
 
   alpine:
     docker:
       - image: lawmurray/birch-circleci:alpine
+    resource_class: large
     environment:
-      OMP_NUM_THREADS: 2
-      MAKE_FLAGS: "-j4"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=2 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --disable-release"
-      SMOKE: debug
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/alpine
 
   mac:
     macos:
-      xcode: 12.4.0
+      xcode: 13.4.1
     environment:
       OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=4 --enable-verbose"
-      MODE_FLAGS: "--enable-debug --disable-test --enable-release"
-      LIB_FLAGS: "--disable-openmp"
-      SMOKE: debug
-      TEST: release
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /Users/distiller/project/mac
-    # ^ hard-coding different home directory for Mac, discovered with SSH
 
 commands:
 
   environment:
-    description: Preparing environment
     parameters: 
       os:
         type: string
@@ -98,7 +102,6 @@ commands:
                     HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
                     HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
                     echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-                    echo "export CPPFLAGS=\"-Xpreprocessor -fopenmp\"" >> $BASH_ENV
             - save_cache:
                 key: homebrew
                 paths:
@@ -111,46 +114,43 @@ commands:
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
 
   end_if_pull_request:
-    description: End early with success if a pull request
     steps:
-      - run:
-          name: End early with success if a pull request
-          when: always
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+      - run: 
+         name: End early if pull request
+         command: |
+            if [[ -n "$CIRCLE_PR_NUMBER" ]]
+            then
               circleci step halt
             fi
 
+  codecov:
+    parameters: 
+      os:
+        type: string
+    steps:
+      - when:
+          condition:
+            matches:
+              pattern: "^.+-cover$"
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Produce coverage report
+                command: lcov --directory . --no-external --capture -o cov.info
+            - codecov/upload:
+                file: cov.info
+
   slack:
-    description: Send Slack message on failure
     steps:
       - slack/status:
           fail_only: true
 
-  codecov:
-    description: Upload test coverage to Codecov
-    steps:
-      - run:
-          name: Upload test coverage to Codecov
-          when: on_success
-          command: |
-            if [[ -n "$CODECOV" ]]
-            then
-              curl -s https://codecov.io/bash > codecov
-              VERSION=$(grep 'VERSION=\"[0-9\.]*\"' codecov | cut -d'"' -f2);
-              for i in 1 256 512
-              do
-                curl -s https://raw.githubusercontent.com/codecov/codecov-bash/${VERSION}/SHA${i}SUM | grep codecov | shasum -a $i -c
-              done
-              bash codecov
-            fi
-
   driver:
-    description: Build driver
     steps:
       - run:
           name: Build driver
@@ -158,16 +158,16 @@ commands:
               cd driver
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
+              ./configure --prefix="$PREFIX" $DRIVER_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
       - run:
           name: Smoke test driver
           command: |
-            if [[ -n "$SMOKE" ]]
+            cd driver
+            if [[ -e smoke.sh ]]
             then
-              cd driver
-              env BIRCH_MODE=$SMOKE ./smoke.sh
+              ./smoke.sh
             fi
 
   build_library:
@@ -183,13 +183,15 @@ commands:
               cd << parameters.package >>
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $MODE_FLAGS $LIB_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $LIB_FLAGS || cat config.log
               make $MAKE_FLAGS
               make install
 
   build_package:
     description: Build a Birch package
     parameters:
+      os:
+        type: string
       dir:
         description: Directory containing the package (e.g. libraries)
         type: string
@@ -206,64 +208,61 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $MODE_FLAGS $BIRCH_FLAGS << parameters.extra >>
-          no_output_timeout: 20m
-      - run:
-          name: Smoke test << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              if [[ -n "$SMOKE" && -e smoke.sh ]]
-              then
-                env BIRCH_MODE=$SMOKE ./smoke.sh
-              fi
-      - run:
-          name: Document << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              birch docs
-
-  test_package:
-    description: Test a Birch package
-    parameters:
-      dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-      package:
-        description: Name of package (e.g. Standard)
-        type: string
-    steps:
-      - run:
-          name: Unit test << parameters.package >> package
-          command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              if [[ -n "$TEST" && -e test.sh ]]
-              then
-                env BIRCH_MODE=$TEST time --format="$FORMAT" --output=/tmp/time.txt ./test.sh
-                # ^ env time to use GNU time, not Bash built-in time
-              fi
-      - run:
-          name: Upload  << parameters.package >> results to MongoDB Atlas
-          command: |
-              if [[ -n "$MONGODB" && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
-              then
-                cd << parameters.dir >>/<< parameters.package >>
-                if [[ -e output/test.json ]]
-                then
-                  echo '{ "output": ' > /tmp/mongodb.json
-                  cat output/test.json >> /tmp/mongodb.json
-                  if [[ -e /tmp/time.txt ]]
-                  then
-                    cat /tmp/time.txt >> /tmp/mongodb.json
-                  fi
-                  echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> /tmp/mongodb.json
-                  echo ", \"version\": \"$VERSION_LONG\"" >> /tmp/mongodb.json
-                  echo '}' >> /tmp/mongodb.json
-                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file /tmp/mongodb.json
-                fi
-              fi
+              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || cat config.log
+          no_output_timeout: 30m
+      - when:
+          condition:
+            not:
+              matches:
+                pattern: "^.+-bench$"
+                value: << parameters.os >>
+          steps:
+            - run:
+                name: Smoke test << parameters.package >> package
+                command: |
+                    cd << parameters.dir >>/<< parameters.package >>
+                    birch docs
+                    if [[ -e smoke.sh ]]
+                    then
+                      ./smoke.sh
+                    fi
+      - when:
+          condition:
+            matches:
+              pattern: "^.+-bench$"
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Unit test << parameters.package >> package
+                command: |
+                    cd << parameters.dir >>/<< parameters.package >>
+                    if [[ -e test.sh ]]
+                    then
+                      env time --format="$FORMAT" --output=time.txt ./test.sh
+                      # ^ env time to use GNU time, not Bash built-in time
+                    fi
+            - run:
+                name: Upload  << parameters.package >> results to MongoDB Atlas
+                command: |
+                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
+                    then
+                      cd << parameters.dir >>/<< parameters.package >>
+                      if [[ -e output/test.json ]]
+                      then
+                        echo '{ "output": ' > mongodb.json
+                        cat output/test.json >> mongodb.json
+                        if [[ -e time.txt ]]
+                        then
+                          cat time.txt >> mongodb.json
+                        fi
+                        echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
+                        echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
+                        echo '}' >> mongodb.json
+                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file mongodb.json
+                      fi
+                    fi
 
   osc_identity:
-    description: Configure OSC
     steps:
       - run:
           name: Configure OSC
@@ -279,7 +278,6 @@ commands:
               fi
 
   deploy_obs_package:
-    description: Deploy package
     parameters:
       dir:
         description: Directory containing the package (e.g. libraries)
@@ -296,11 +294,9 @@ commands:
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
                 TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" = "driver" ]]
-                then
+                if [[ "$TARNAME" = "driver" ]]; then
                   TARNAME=birch
-                elif [[ "$TARNAME" != "libbirch" ]]
-                then
+                elif [[ "$TARNAME" != "libbirch" && "$TARNAME" != "numbirch" ]]; then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 osc checkout $OSC_PROJECT $TARNAME
@@ -325,7 +321,6 @@ commands:
               fi
 
   git_identity:
-    description: Configure Git
     steps:
       - run:
           name: Configure Git
@@ -334,7 +329,6 @@ commands:
               git config --global user.email "birch-machine@indii.org"
 
   brew_checkout:
-    description: Checkout Homebrew tap
     steps:
       - run:
           name: Checkout Homebrew tap
@@ -347,7 +341,6 @@ commands:
               fi
 
   deploy_brew_package:
-    description: Deploy package
     parameters:
       dir:
         description: Directory containing the package (e.g. libraries)
@@ -364,11 +357,9 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
                 TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" = "driver" ]]
-                then
+                if [[ "$TARNAME" = "driver" ]]; then
                   TARNAME=birch
-                elif [[ "$TARNAME" != "libbirch" ]]
-                then
+                elif [[ "$TARNAME" != "libbirch" && "$TARNAME" != "numbirch" ]]; then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
@@ -385,7 +376,6 @@ commands:
               fi
 
   brew_commit:
-    description: Commit Homebrew tap
     steps:
       - git_identity
       - run:
@@ -401,7 +391,6 @@ commands:
               fi
 
   deploy_website:
-    description: Deploy website
     steps:
       - run:
           name: Deploy website
@@ -416,7 +405,7 @@ commands:
               fi
 
 jobs:
-  build:
+  base:
     parameters: 
       os:
         type: string
@@ -427,32 +416,39 @@ jobs:
           os: << parameters.os >>
       - driver
       - build_library:
+          package: numbirch
+      - build_library:
           package: libbirch
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - codecov:
+          os: << parameters.os >>
+      - end_if_pull_request
+      - slack
+
+  standard:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.os >>
       - build_package:
+          os: << parameters.os >>
           dir: libraries
           package: Standard
-      - build_package:
-          dir: libraries
-          package: StandardTest
-          extra: --jobs=1  # needed to avoid exhausting memory
-      - build_package:
-          dir: libraries
-          package: Cairo
-      - build_package:
-          dir: libraries
-          package: SQLite
-      - when:
-          condition:
-            or:
-              - equal: [ opensuse, << parameters.os >> ]
-              - equal: [ mac, << parameters.os >> ]
-          steps:
-            - persist_to_workspace:
-                root: ..
-                paths:
-                  - << parameters.os >>
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
-      - codecov
       - slack
 
   test:
@@ -465,9 +461,43 @@ jobs:
           at: ..
       - environment:
           os: << parameters.os >>
-      - test_package:
+      - build_package:
+          os: << parameters.os >>
+          dir: tests
+          package: Test
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - codecov:
+          os: << parameters.os >>
+      - end_if_pull_request
+      - slack
+
+  libraries:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.os >>
+      - build_package:
+          os: << parameters.os >>
           dir: libraries
-          package: StandardTest
+          package: Cairo
+      - build_package:
+          os: << parameters.os >>
+          dir: libraries
+          package: SQLite
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
       - slack
 
@@ -485,13 +515,12 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_package:
+          os: << parameters.os >>
           dir: examples
           package: << parameters.package >>
-      - test_package:
-          dir: examples
-          package: << parameters.package >>
+      - codecov:
+          os: << parameters.os >>
       - end_if_pull_request
-      - codecov
       - slack
 
   deploy:
@@ -510,6 +539,8 @@ jobs:
       - deploy_obs_package:
           package: driver
       - deploy_obs_package:
+          package: numbirch
+      - deploy_obs_package:
           package: libbirch
       - deploy_obs_package:
           dir: libraries
@@ -524,6 +555,8 @@ jobs:
       - deploy_brew_package:
           package: driver
       - deploy_brew_package:
+          package: numbirch
+      - deploy_brew_package:
           package: libbirch
       - deploy_brew_package:
           dir: libraries
@@ -536,41 +569,52 @@ jobs:
           package: SQLite
       - brew_commit
       - deploy_website
-      - codecov
       - slack
 
 workflows:
   version: 2
   all:
     jobs:
-      - build:
+      - base:
           matrix:
             parameters:
-              os: [opensuse,debian,fedora,alpine,mac]
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+
+      - standard:
+          matrix:
+            parameters:
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+          requires:
+            - base-<< matrix.os >>
 
       - test:
           matrix:
             parameters:
-              os: [opensuse,mac]
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
           requires:
-            - build-<< matrix.os >>
+            - standard-<< matrix.os >>
+
+      - libraries:
+          matrix:
+            parameters:
+              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+          requires:
+            - test-<< matrix.os >>
 
       - example:
           matrix:
             parameters:
-              os: [opensuse,mac]
+              os: [opensuse-bench,opensuse-cover]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
-            - test-<< matrix.os >>
+            - libraries-<< matrix.os >>
 
       - deploy:
-          os: opensuse
+          os: opensuse-bench
           filters:
             branches:
               only:
                 - master
           requires:
             - example
-            - build-debian
-            - build-fedora
-            - build-alpine
+            - libraries

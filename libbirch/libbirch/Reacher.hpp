@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
+#include "libbirch/type.hpp"
 
 namespace libbirch {
 /**
@@ -12,8 +13,6 @@ namespace libbirch {
  * 
  * Visitor for recursively flagging reachable objects for cycle collection.
  *
- * @ingroup libbirch
- * 
  * This performs the `ScanBlack()` operation of @ref Bacon2001
  * "Bacon & Rajan (2001)".
  */
@@ -23,8 +22,29 @@ public:
     //
   }
 
-  template<class Arg>
-  void visit(Arg& arg) {
+  template<class T, std::enable_if_t<
+      is_visitable<T,Reacher>::value,int> = 0>
+  void visit(T& o) {
+    o.accept_(*this);
+  }
+
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Reacher>::value &&
+      is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
+    if (!std::is_trivial<typename T::value_type>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
+  }
+
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Reacher>::value &&
+      !is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
     //
   }
 
@@ -46,47 +66,20 @@ public:
     }
   }
 
-  template<class T, class F>
-  void visit(Array<T,F>& o);
-
-  template<class T>
-  void visit(Inplace<T>& o);
-
   template<class T>
   void visit(Shared<T>& o);
 
-  void visit(Any* o);
+  void visitObject(Any* o);
 };
 }
 
-#include "libbirch/Array.hpp"
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
-#include "libbirch/Any.hpp"
-
-template<class T, class F>
-void libbirch::Reacher::visit(Array<T,F>& o) {
-  if (!std::is_trivially_copyable<T>::value) {
-    auto iter = o.begin();
-    auto last = o.end();
-    for (; iter != last; ++iter) {
-      visit(*iter);
-    }
-  }
-}
-
-template<class T>
-void libbirch::Reacher::visit(Inplace<T>& o) {
-  return o->accept_(*this);
-}
 
 template<class T>
 void libbirch::Reacher::visit(Shared<T>& o) {
-  if (!o.a && !o.b) {
-    Any* o1 = o.load();
-    if (o1) {
-      o1->incShared_();
-      visit(o1);
-    }
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge && ptr) {
+    ptr->incShared_();
+    visitObject(ptr);
   }
 }

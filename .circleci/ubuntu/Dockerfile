@@ -4,6 +4,8 @@ ENV TZ=Europe/London
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ssh \
+    gpg \
+    gpg-agent \
     tar \
     gzip \
     curl \
@@ -18,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     flex \
     bison \
     g++ \
+    lcov \
     gdb \
     libtool \
     libjemalloc-dev \

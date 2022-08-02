@@ -1,28 +1,26 @@
-struct LCholDetFunction {
-  function compute<Value>(m:Value) -> {
-    return lcholdet(m);
-  }
+struct LCholDet<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*cholinv(m);
-  }
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(lcholdet, lcholdet_grad)
+  }}
 }
-struct LCholDet<Middle> = Unary<LCholDetFunction,Middle>;
+
+hpp{{
+namespace birch {
+using numbirch::lcholdet;
+using numbirch::lcholdet_grad;
 
 /**
  * Log-determinant of a symmetric positive-definite matrix via the Cholesky
  * factorization.
  */
-function lcholdet<Middle>(m:Middle) -> {
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+LCholDet<Middle> lcholdet(const Middle& m) {
   return construct<LCholDet<Middle>>(m);
 }
-
-/**
- * Log-determinant of a matrix.
- */
-function lcholdet(S:Real[_,_]) -> Real {
-  let L <- chol(S);
-  cpp{{
-  return 2.0*L.toEigen().diagonal().array().log().sum();
-  }}
 }
+}}

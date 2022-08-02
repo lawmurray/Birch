@@ -24,6 +24,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
 
   /* gather important objects */
   Gatherer<Basic> basics;
+  Gatherer<Struct> structs;
   Gatherer<Class> classes;
   Gatherer<GlobalVariable> globals;
   Gatherer<Function> functions;
@@ -32,6 +33,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   Gatherer<UnaryOperator> unaries;
   for (auto file : o->sources) {
     file->accept(&basics);
+    file->accept(&structs);
     file->accept(&classes);
     file->accept(&globals);
     file->accept(&functions);
@@ -46,6 +48,10 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   for (auto o : classes) {
     sortedClasses.insert(o);
   }
+  poset<const Struct*,inherits> sortedStructs;
+  for (auto o : structs) {
+    sortedStructs.insert(o);
+  }
 
   if (header) {
     /* don't use #pragma once here, use a macro guard instead, as the header
@@ -53,6 +59,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     std::string name = upper(canonical(o->name));
     line("#ifndef " << name << "_HPP");
     line("#define " << name << "_HPP\n");
+    line("#include <numbirch.hpp>\n");
     line("#include <libbirch.hpp>\n");
 
     for (auto name : o->packages) {
@@ -61,40 +68,29 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       line("#include <" << include.string() << '>');
     }
 
-    /* raw C++ code */
-    for (auto file : o->sources) {
-      for (auto o : *file->root) {
-        auto raw = dynamic_cast<const Raw*>(o);
-        if (raw) {
-          *this << raw;
-        }
-      }
-    }
-
     line("namespace birch {");
 
     /* forward class type declarations */
     for (auto o : classes) {
       if (!o->isAlias()) {
-        if (o->has(STRUCT)) {
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          line("struct " << o->name << "_;");
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          start("using " << o->name << " = libbirch::Inplace<" << o->name << '_');
-          genTemplateArgs(o);
-          finish(">;");
-        } else {
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          line("class " << o->name << "_;");
-          genTemplateParams(o);
-          genSourceLine(o->loc);
-          start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
-          genTemplateArgs(o);
-          finish(">;");
-        }
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        line("class " << o->name << "_;");
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
+        genTemplateArgs(o);
+        finish(">;");
+      }
+    }
+    line("");
+
+    /* forward struct type declarations */
+    for (auto o : structs) {
+      if (!o->isAlias()) {
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        line("struct " << o->name << ';');
       }
     }
     line("");
@@ -115,6 +111,21 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     }
     line("");
 
+    /* struct type aliases */
+    for (auto o : structs) {
+      if (o->isAlias()) {
+        auto base = dynamic_cast<const NamedType*>(o->base);
+        assert(base);
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        start("using " << o->name << " = " << base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+        finish(';');
+      }
+    }
+
     /* class type aliases */
     for (auto o : classes) {
       if (o->isAlias()) {
@@ -129,6 +140,19 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         finish(';');
       }
     }
+    line('}');
+
+    /* raw C++ code */
+    for (auto file : o->sources) {
+      for (auto o : *file->root) {
+        auto raw = dynamic_cast<const Raw*>(o);
+        if (raw) {
+          *this << raw;
+        }
+      }
+    }
+
+    line("namespace birch{");
 
     /* global variables */
     for (auto o : globals) {
@@ -151,15 +175,15 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     }
 
     /* structs */
-    for (auto o : sortedClasses) {
-      if (o->has(STRUCT) && !o->isAlias()) {
+    for (auto o : sortedStructs) {
+      if (!o->isAlias()) {
         auxDeclaration << o;
       }
     }
 
     /* classes */
     for (auto o : sortedClasses) {
-      if (!o->has(STRUCT) && !o->isAlias()) {
+      if (!o->isAlias()) {
         auxDeclaration << o;
       }
     }
@@ -169,7 +193,47 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* generic class type definitions, generic member definitions */
+    /* generic struct definitions */
+    for (auto o : structs) {
+      if (o->isGeneric() && !o->isAlias()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic function and operator definitions; those with deduced return
+     * types first to reduce occurrences of use before deduction */
+    for (auto o : functions) {
+      if (o->isGeneric() && o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : binaries) {
+      if (o->isGeneric() && o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : unaries) {
+      if (o->isGeneric() && o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : functions) {
+      if (o->isGeneric() && !o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : binaries) {
+      if (o->isGeneric() && !o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+    for (auto o : unaries) {
+      if (o->isGeneric() && !o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic class definitions, generic member definitions */
     for (auto o : classes) {
       if (o->isGeneric() && !o->isAlias()) {
         /* whole class (which may include generic members) */
@@ -189,22 +253,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
 
-    /* generic function and operator definitions */
-    for (auto o : functions) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-    for (auto o : binaries) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
-    for (auto o : unaries) {
-      if (o->isGeneric()) {
-        auxDefinition << o;
-      }
-    }
     line("}\n");  // close namespace
     line("#endif");
   }

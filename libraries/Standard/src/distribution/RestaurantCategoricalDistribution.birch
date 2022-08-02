@@ -1,0 +1,138 @@
+/**
+ * Restaurant-categorical distribution.
+ */
+final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
+    n:Arg3) < Distribution<Integer> {
+  /**
+   * Concentration.
+   */
+  α:Arg1 <- α;
+  
+  /**
+   * Strength.
+   */
+  θ:Arg2 <- θ;
+
+  /**
+   * Number of samples drawn in each component.
+   */
+  n:Arg3 <- n;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer! {
+    return simulate_restaurant_categorical(value(α), value(θ), value(n));
+  }
+
+  override function simulateLazy() -> Integer!? {
+    return simulate_restaurant_categorical(eval(α), eval(θ), eval(n));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return logpdf_restaurant_categorical(x, value(α), value(θ), value(n));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_restaurant_categorical(x, eval(α), eval(θ), eval(n));
+  }
+
+  override function update(x:Integer!) -> Delay? {
+    return update_restaurant_categorical(x, value(α), value(θ), value(n));
+  }
+
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_restaurant_categorical(x, α, θ, n);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_restaurant_categorical(this.getVariate(), α, θ, n));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(α);
+    global.constant(θ);
+    global.constant(n);
+  }
+}
+
+function RestaurantCategorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->
+    Distribution<Integer> {
+  return wrap_restaurant_categorical(α, θ, n);
+}
+function wrap_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
+    n:Arg3) -> {
+  return make_restaurant_categorical(wrap(α), wrap(θ), wrap(n));
+}
+function make_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
+    n:Arg3) -> {
+  return construct<RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>>(α, θ,
+      n);
+}
+
+/*
+ * Simulate a categorical distribution with Chinese restaurant process
+ * prior.
+ *
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Vector of number of draws of each element.
+ */
+function simulate_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
+    n:Arg3) -> {
+  let k <- 0;
+  let α1 <- wait(α);
+  let θ1 <- wait(θ);
+  let K <- wait(count(n));
+  let N <- wait(sum(n));
+  if N == 0 {
+    /* first component */
+    k <- 1;
+  } else {
+    let u <- simulate_uniform(0.0, N + θ1);
+    let U <- K*α1 + θ1;
+    if u < U {
+      /* new component */
+      k <- K + 1;
+    } else {
+      /* existing component */
+      while k < K && u > U {
+        k <- k + 1;
+        U <- U + n[k] - α1;
+      }
+    }
+  }
+  return k;
+}
+
+/*
+ * Observe a categorical variate with Chinese restaurant process
+ * prior.
+ *
+ * - x: The variate.
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Vector of number of draws of each element.
+ */
+function logpdf_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
+    θ:Arg3, n:Arg4) -> {
+  return log(where(element(n, x) == 0, count(n)*α + θ,
+      element(n, x) - α)) - log(sum(n) + θ);
+}
+
+/*
+ * Update the parameters of a Chinese restaurant process with a categorical
+ * likelihood.
+ *
+ * - x: The variate.
+ * - α: Concentration.
+ * - θ: Discount.
+ * - n: Vector of number of draws of each element.
+ */
+function update_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
+    θ:Arg3, n:Arg4) -> {
+  let n' <- n + single(1, x, length(n));
+  return wrap_restaurant(α, θ, n');
+}

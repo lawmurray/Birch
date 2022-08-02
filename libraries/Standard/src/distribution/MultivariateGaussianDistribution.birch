@@ -1,0 +1,104 @@
+/**
+ * Multivariate Gaussian distribution.
+ */
+class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
+    Distribution<Real[_]> {
+  /**
+   * Mean.
+   */
+  μ:Arg1 <- μ;
+  
+  /**
+   * Covariance.
+   */
+  Σ:Arg2 <- Σ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_] {
+    return simulate_multivariate_gaussian(value(μ), value(Σ));
+  }
+
+  override function simulateLazy() -> Real[_]? {
+    return simulate_multivariate_gaussian(eval(μ), eval(Σ));
+  }
+  
+  override function logpdf(x:Real[_]) -> Real! {
+    return logpdf_multivariate_gaussian(x, value(μ), value(Σ));
+  }
+
+  override function logpdfLazy(x:Real[_]) -> Real!? {
+    return logpdf_multivariate_gaussian(x, eval(μ), eval(Σ));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_multivariate_gaussian(this.getVariate(), μ, Σ));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(μ);
+    global.constant(Σ);
+  }
+
+  override function isMultivariateGaussian() -> Boolean {
+    return true;
+  }
+
+  override function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>) {
+    return box(μ, Σ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "MultivariateGaussian");
+    buffer.set("μ", value(μ));
+    buffer.set("Σ", value(Σ));
+  }
+}
+
+/**
+ * Create multivariate Gaussian distribution.
+ */
+function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) ->
+    Distribution<Real[_]> {
+  return wrap_multivariate_gaussian(μ, Σ);
+}
+function wrap_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
+  return make_multivariate_gaussian(wrap(μ), wrap(Σ));
+}
+function make_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
+  return construct<MultivariateGaussianDistribution<Arg1,Arg2>>(μ, Σ);
+}
+
+/*
+ * Simulate a multivariate Gaussian distribution.
+ *
+ * - μ: Mean.
+ * - Σ: Covariance.
+ */
+function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
+  assert length(μ) == rows(Σ);
+  assert length(μ) == columns(Σ);
+  let n <- length(μ);
+  let z <- standard_gaussian(n);
+  return μ + trimul(chol(Σ), z);
+}
+
+/*
+ * Observe a multivariate Gaussian variate.
+ *
+ * - x: The variate.
+ * - μ: Mean.
+ * - Σ: Covariance.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
+   Σ:Arg3) -> {
+  let n <- length(x);
+  let L <- wrap(chol(Σ));
+  return -0.5*(dot(trisolve(L, x - μ)) + n*log(2.0*π)) - ltridet(L);
+}

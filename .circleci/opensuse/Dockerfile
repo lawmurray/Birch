@@ -18,6 +18,7 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     flex \
     bison \
     gcc-c++ \
+    lcov \
     gdb \
     libtool \
     jemalloc-devel \

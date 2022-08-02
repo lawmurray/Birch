@@ -1,0 +1,151 @@
+/**
+ * Inverse-gamma-gamma distribution.
+ */
+final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) <
+    Distribution<Real> {
+  /**
+   * Shape.
+   */
+  k:Arg1 <- k;
+
+  /**
+   * Prior shape of scale.
+   */
+  α:Arg2 <- α;
+
+  /**
+   * Prior scale of scale.
+   */
+  β:Arg3 <- β;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real! {
+    return simulate_inverse_gamma_gamma(value(k), value(α), value(β));
+  }
+
+  override function simulateLazy() -> Real!? {
+    return simulate_inverse_gamma_gamma(eval(k), eval(α), eval(β));
+  }
+
+  override function logpdf(x:Real!) -> Real! {
+    return logpdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
+  }
+
+  override function logpdfLazy(x:Real!) -> Real!? {
+    return logpdf_inverse_gamma_gamma(x, eval(k), eval(α), eval(β));
+  }
+
+  override function update(x:Real!) -> Delay? {
+    return update_inverse_gamma_gamma(x, value(k), value(α), value(β));
+  }
+
+  override function updateLazy(x:Expression<Real>) -> Delay? {
+    return update_inverse_gamma_gamma(x, k, α, β);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_inverse_gamma_gamma(this.getVariate(), k, α, β));
+  }
+
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
+  }
+
+  override function lower() -> Real!? {
+    return 0.0;
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(α);
+    global.constant(β);
+  }
+}
+
+function InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) ->
+    Distribution<Real> {
+  return wrap_inverse_gamma_gamma(k, α, β);
+}
+function wrap_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
+  return make_inverse_gamma_gamma(wrap(k), wrap(α), wrap(β));
+}
+function make_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
+  return construct<InverseGammaGammaDistribution<Arg1,Arg2,Arg3>>(k, α, β);
+}
+
+/**
+ * Create gamma distribution.
+ */
+function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
+  if θ.hasNext() && θ.getNext().isInverseGamma() {
+    θ.prune();
+    let (α, β) <- θ.getNext().getInverseGamma();
+    let p <- wrap_inverse_gamma_gamma(k, α, β);
+    θ.setNext(p);
+    return p;
+  } else {
+    return wrap_gamma(k, θ);
+  }
+}
+
+/*
+ * Simulate a compound-gamma distribution.
+ *
+ * - k: Shape.
+ * - α: Shape.
+ * - β: Scale.
+ */
+function simulate_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
+  return simulate_gamma(k, simulate_inverse_gamma(α, β));
+}
+
+/*
+ * Observe a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - α: Prior shape.
+ * - β: Prior scale.
+ *
+ * Return: the log probability density.
+ */
+function logpdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
+    α:Arg3, β:Arg4) -> {
+  return (k - 1)*log(x) + α*log(β) - (α + k)*log(β + x) - lbeta(α, k);
+}
+
+/*
+ * Update the parameters of an inverse-gamma distribution with a
+ * gamma likelihood.
+ *
+ * - x: The variate.
+ * - k: Shape of the gamma.
+ * - α: Prior shape of the inverse-gamma.
+ * - β: Prior scale of the inverse-gamma.
+ *
+ * Returns: the posterior hyperparameters `α'` and `β'`.
+ */
+function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
+    α:Arg3, β:Arg4) -> {
+  return wrap_inverse_gamma(α + k, β + x);
+}
+
+/*
+ * CDF of a compound-gamma variate.
+ *
+ * - x: The variate.
+ * - k: The shape.
+ * - α: The prior shape.
+ * - β: The prior scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, α:Arg3,
+    β:Arg4) -> {
+  return ibeta(k, α, x/(β + x));
+}

@@ -1,26 +1,25 @@
-struct LDetFunction {
-function compute<Value>(m:Value) -> {
-    return ldet(m);
-  }
+struct LDet<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*inv(transpose(m));
-  }
-}
-struct LDet<Middle> = Unary<LDetFunction,Middle>;
-
-/**
- * Log-determinant of a matrix.
- */
-function ldet<Middle>(m:Middle) -> {
-  return construct<LDet<Middle>>(m);
-}
-
-/**
- * Log-determinant of a matrix.
- */
-function ldet(X:Real[_,_]) -> Real {
-  cpp{{
-  return X.toEigen().householderQr().logAbsDeterminant();
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(ldet, ldet_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::ldet;
+using numbirch::ldet_grad;
+
+/**
+ * Log-determinant of a matrix.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+LDet<Middle> ldet(const Middle& m) {
+  return construct<LDet<Middle>>(m);
+}
+}
+}}

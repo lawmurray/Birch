@@ -7,11 +7,11 @@ namespace libbirch {
 class Any;
 
 /**
+ * @internal
+ * 
  * Memo for copying graphs of known size, such as for biconnected components,
  * implemented as an array indexed by the sequential ranks assigned to
  * vertices during bridge finding.
- *
- * @ingroup libbirch
  */
 class BiconnectedMemo {
 public:

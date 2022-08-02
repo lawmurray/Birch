@@ -152,26 +152,25 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     --depth;
   }
 
-  /* classes & structs */
-  Gatherer<Class> classes(docsNotEmpty, false);
-  o->accept(&classes);
-  std::stable_sort(classes.begin(), classes.end(), sortByName);
-
-  genHead("Classes");
+  /* structs */
+  Gatherer<Struct> structs(docsNotEmpty, false);
+  o->accept(&structs);
+  std::stable_sort(structs.begin(), structs.end(), sortByName);
+  genHead("Structs");
   ++depth;
-  for (auto o : classes) {
-    if (!o->has(STRUCT)) {
-      *this << o;
-    }
+  for (auto o : structs) {
+    *this << o;
   }
   --depth;
 
-  genHead("Structs");
+  /* classes */
+  Gatherer<Class> classes(docsNotEmpty, false);
+  o->accept(&classes);
+  std::stable_sort(classes.begin(), classes.end(), sortByName);
+  genHead("Classes");
   ++depth;
   for (auto o : classes) {
-    if (o->has(STRUCT)) {
-      *this << o;
-    }
+    *this << o;
   }
   --depth;
 }
@@ -290,6 +289,59 @@ void birch::MarkdownGenerator::visit(const Basic* o) {
   }
 }
 
+void birch::MarkdownGenerator::visit(const Struct* o) {
+  /* lambdas */
+  auto docsNotEmpty = [](const Located* o) {
+    return !o->loc->doc.empty();
+  };
+  auto sortByName = [](const Named* o1, const Named* o2) {
+    return o1->name->str() < o2->name->str();
+  };
+
+  /* anchor for internal links */
+  genHead(o->name->str());
+  line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+  start("**struct " << o->name);
+  if (o->isGeneric()) {
+    middle("&lt;" << o->typeParams << "&gt;");
+  }
+  if (!o->isAlias() && !o->params->isEmpty()) {
+    middle('(' << o->params << ')');
+  }
+  if (!o->base->isEmpty()) {
+    if (o->isAlias()) {
+      middle(" = ");
+    } else {
+      middle(" < ");
+    }
+    middle(o->base);
+    if (!o->args->isEmpty()) {
+      middle('(' << o->args << ')');
+    }
+  }
+  finish("**\n\n");
+  line(detailed(o->loc->doc) << "\n");
+
+  ++depth;
+
+  /* member variables */
+  Gatherer<MemberVariable> variables(docsNotEmpty);
+  o->accept(&variables);
+  if (variables.size() > 0) {
+    genHead("Member Variables");
+    line("| Name | Description |");
+    line("| --- | --- |");
+    ++depth;
+    for (auto o : variables) {
+      line("| " << o << " | " << one_line(o->loc->doc) << " |");
+    }
+    line("");
+    --depth;
+  }
+
+  --depth;
+}
+
 void birch::MarkdownGenerator::visit(const Class* o) {
   /* lambdas */
   auto docsNotEmpty = [](const Located* o) {
@@ -308,15 +360,10 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   }
   if (o->has(ACYCLIC)) {
     middle("acyclic ");
-  } else if (o->has(FINAL) && !o->has(STRUCT)) {
+  } else if (o->has(FINAL)) {
     middle("final ");
   }
-  if (o->has(STRUCT)) {
-    middle("struct ");
-  } else {
-    middle("class ");
-  }
-  middle(o->name);
+  middle("class " << o->name);
   if (o->isGeneric()) {
     middle("&lt;" << o->typeParams << "&gt;");
   }
@@ -487,6 +534,10 @@ void birch::MarkdownGenerator::visit(const TupleType* o) {
 
 void birch::MarkdownGenerator::visit(const OptionalType* o) {
   middle(o->single << '?');
+}
+
+void birch::MarkdownGenerator::visit(const FutureType* o) {
+  middle(o->single << '!');
 }
 
 void birch::MarkdownGenerator::visit(const DeducedType* o) {

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * Includes all external headers.
+ * Includes of external headers.
  */
 #pragma once
 
@@ -12,14 +12,13 @@
 #include <tuple>
 #include <optional>
 #include <memory>
-#include <initializer_list>
+#include <type_traits>
 
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
 #include <cstddef>
-
-#include <eigen3/Eigen/Dense>
+#include <cstring>
 
 #ifdef HAVE_OMP_H
 #include <omp.h>

@@ -1,75 +1,25 @@
-struct SumFunction {
-  function compute<Value>(m:Value) -> {
-    return sum(m);
-  }
+struct Sum<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d;
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value[_]) -> {
-    return vector(d, length(m));
-  }
-
-  function grad<Gradient,Value>(d:Gradient, m:Value[_,_]) -> {
-    return vector(d, rows(m), columns(m));
-  }
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(sum, sum_grad)
+  }}
 }
-struct Sum<Middle> = Unary<SumFunction,Middle>;
+
+hpp{{
+namespace birch {
+using numbirch::sum;
+using numbirch::sum_grad;
 
 /**
- * Sum.
+ * Sum of elements.
  */
-function sum<Middle>(m:Middle) -> {
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Sum<Middle> sum(const Middle& m) {
   return construct<Sum<Middle>>(m);
 }
-
-/**
- * Sum scalar.
- */
-function sum(m:Integer) -> Integer {
-  return m;
 }
-
-/**
- * Sum scalar.
- */
-function sum(m:Real) -> Real {
-  return m;
-}
-
-/**
- * Sum vector.
- */
-function sum(m:Integer[_]) -> Integer {
-  cpp{{
-  return m.toEigen().sum();
-  }}
-}
-
-/**
- * Sum vector.
- */
-function sum(m:Real[_]) -> Real {
-  cpp{{
-  return m.toEigen().sum();
-  }}
-}
-
-/**
- * Sum matrix.
- */
-function sum(m:Integer[_,_]) -> Integer {
-  cpp{{
-  return m.toEigen().sum();
-  }}
-}
-
-/**
- * Sum matrix.
- */
-function sum(m:Real[_,_]) -> Real {
-  cpp{{
-  return m.toEigen().sum();
-  }}
-}
+}}

@@ -13,4 +13,4 @@ manifest:
     - test.sh
 require: 
   package: 
-    - Standard
+    - Birch.Standard

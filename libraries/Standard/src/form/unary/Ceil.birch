@@ -1,26 +1,25 @@
-struct CeilFunction {
-  function compute<Value>(m:Value) -> {
-    return ceil(m);
-  }
+struct Ceil<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return 0.0;
-  }
-}
-struct Ceil<Middle> = Unary<CeilFunction,Middle>;
-
-/**
- * Round to smallest integer value not less than argument.
- */
-function ceil<Middle>(m:Middle) -> {
-  return construct<Ceil<Middle>>(m);
-}
-
-/**
- * Round to smallest integer value not less than argument.
- */
-function ceil(x:Real) -> Real {
-  cpp {{
-  return std::ceil(x);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(ceil, ceil_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::ceil;
+using numbirch::ceil_grad;
+
+/**
+ * Round to smallest integer value not less than argument.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Ceil<Middle> ceil(const Middle& m) {
+  return construct<Ceil<Middle>>(m);
+}
+}
+}}

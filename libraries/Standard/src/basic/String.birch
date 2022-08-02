@@ -3,19 +3,12 @@
  */
 type String;
 
-/**
- * Convert to string.
- */
-function to_string(x:Boolean) -> String {
-  if x {
-    return "true";
-  } else {
-    return "false";
-  }
-}
+hpp{{
+using String = std::string;
+}}
 
 /**
- * Convert double-precision floating point number to string.
+ * Convert to string.
  */
 function to_string(x:Real) -> String {
   cpp{{
@@ -32,6 +25,13 @@ function to_string(x:Real) -> String {
 /**
  * Convert to string.
  */
+function to_string(x:Real!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
 function to_string(x:Integer) -> String {
   cpp{{
   return std::to_string(x);
@@ -41,47 +41,32 @@ function to_string(x:Integer) -> String {
 /**
  * Convert to string.
  */
+function to_string(x:Integer!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Boolean) -> String {
+  if x {
+    return "true";
+  } else {
+    return "false";
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Boolean!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
 function to_string(x:String) -> String {
-  return x;
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:Boolean?) -> String? {
-  if x? {
-    return to_string(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:Real?) -> String? {
-  if x? {
-    return to_string(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:Integer?) -> String? {
-  if x? {
-    return to_string(x!);
-  } else {
-    return nil;
-  }
-}
-
-/**
- * Convert to string.
- */
-function to_string(x:String?) -> String? {
   return x;
 }
 
@@ -324,14 +309,5 @@ operator (x:Integer[_,_] + y:String) -> String {
 function length(x:String) -> Integer {
   cpp{{
   return x.length();
-  }}
-}
-
-/**
- * Length of an array of strings.
- */
-function length(x:String[_]) -> Integer {
-  cpp{{
-  return x.rows();
   }}
 }

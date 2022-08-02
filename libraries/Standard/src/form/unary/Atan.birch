@@ -1,33 +1,25 @@
-struct AtanFunction {
-function compute<Value>(m:Value) -> {
-    return atan(m);
-  }
+struct Atan<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d/(1.0 + pow(m, 2.0));
-  }
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(atan, atan_grad)
+  }}
 }
-struct Atan<Middle> = Unary<AtanFunction,Middle>;
+
+hpp{{
+namespace birch {
+using numbirch::atan;
+using numbirch::atan_grad;
 
 /**
  * Arc tangent.
  */
-function atan<Middle>(m:Middle) -> {
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Atan<Middle> atan(const Middle& m) {
   return construct<Atan<Middle>>(m);
 }
-
-/**
- * Arc cosine.
- */
-function atan(m:Integer) -> Real {
-  return atan(scalar<Real>(m));
 }
-
-/**
- * Arc cosine.
- */
-function atan(m:Real) -> Real {
-  cpp {{
-  return std::atan(m);
-  }}
-}
+}}

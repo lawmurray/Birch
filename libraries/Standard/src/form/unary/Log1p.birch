@@ -1,33 +1,25 @@
-struct Log1pFunction {
-function compute<Value>(m:Value) -> {
-    return log1p(m);
-  }
+struct Log1p<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d/(1.0 + m);
-  }
-}
-struct Log1p<Middle> = Unary<Log1pFunction,Middle>;
-
-/**
- * Natural logarithm of 1 plus argument.
- */
-function log1p<Middle>(m:Middle) -> {
-  return construct<Log1p<Middle>>(m);
-}
-
-/**
- * Natural logarithm of 1 plus argument.
- */
-function log1p(m:Integer) -> Real {
-  return log1p(scalar<Real>(m));
-}
-
-/**
- * Natural logarithm of 1 plus argument.
- */
-function log1p(m:Real) -> Real {
-  cpp {{
-  return std::log1p(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(log1p, log1p_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::log1p;
+using numbirch::log1p_grad;
+
+/**
+ * Logarithm of one plus argument.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Log1p<Middle> log1p(const Middle& m) {
+  return construct<Log1p<Middle>>(m);
+}
+}
+}}

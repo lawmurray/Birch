@@ -1,33 +1,25 @@
-struct TanFunction {
-function compute<Value>(m:Value) -> {
-    return tan(m);
-  }
+struct Tan<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*(1.0 + pow(tan(m), 2.0));
-  }
-}
-struct Tan<Middle> = Unary<TanFunction,Middle>;
-
-/**
- * Tangent.
- */
-function tan<Middle>(m:Middle) -> {
-  return construct<Tan<Middle>>(m);
-}
-
-/**
- * Tangent.
- */
-function tan(m:Integer) -> Real {
-  return tan(scalar<Real>(m));
-}
-
-/**
- * Tangent.
- */
-function tan(m:Real) -> Real {
-  cpp {{
-  return std::tan(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(tan, tan_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::tan;
+using numbirch::tan_grad;
+
+/**
+ * Tangent.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Tan<Middle> tan(const Middle& m) {
+  return construct<Tan<Middle>>(m);
+}
+}
+}}

@@ -1,0 +1,130 @@
+/**
+ * Gaussian distribution with linear transformation of Gaussian prior.
+ */
+final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, ω2:Arg5) < GaussianDistribution<Expression<Real>,
+    Expression<Real>>(box(a*μ + c), box(pow(a, 2.0)*σ2 + ω2)) {
+  /**
+   * Scale.
+   */
+  a:Arg1 <- a;
+    
+  /**
+   * Prior mean.
+   */
+  μ:Arg2 <- μ;
+
+  /**
+   * Prior variance.
+   */
+  σ2:Arg3 <- σ2;
+
+  /**
+   * Offset.
+   */
+  c:Arg4 <- c;
+
+  /**
+   * Likelihood variance.
+   */
+  ω2:Arg5 <- ω2;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function update(x:Real!) -> Delay? {
+    return update_gaussian_gaussian(x, value(a), value(μ), value(σ2),
+        value(c), value(ω2), value(super.μ), value(super.σ2));
+  }
+
+  override function updateLazy(x:Expression<Real>) -> Delay? {
+    return update_gaussian_gaussian(x, a, μ, σ2, c, ω2, super.μ, super.σ2);
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(a);
+    global.constant(μ);
+    global.constant(σ2);
+    global.constant(c);
+    global.constant(ω2);
+  }
+}
+
+function GaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2, σ2:Arg3,
+    c:Arg4, ω2:Arg5) -> Distribution<Real> {
+  return wrap_gaussian_gaussian(a, μ, σ2, c, ω2);
+}
+function wrap_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
+    μ:Arg2, σ2:Arg3, c:Arg4, ω2:Arg5) -> {
+  return make_gaussian_gaussian(wrap(a), wrap(μ), wrap(σ2), wrap(c),
+      wrap(ω2));
+}
+function make_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
+    σ2:Arg3, c:Arg4, ω2:Arg5) -> {
+  return construct<GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>>(a,
+      μ, σ2, c, ω2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
+    σ2:Arg3) -> Distribution<Real> {
+  let a <- μ.l.l;
+  let m <- μ.l.r;
+  let c <- μ.r;
+  if m.hasNext() && m.getNext().isGaussian() {
+    m.prune();
+    let (m1, ω2) <- m.getNext().getGaussian();
+    let p <- wrap_gaussian_gaussian(a, m1, ω2, c, σ2);
+    m.setNext(p);
+    return p;
+  } else {
+    return wrap_gaussian(μ, σ2);
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:Mul<Arg1,Random<Real>>, σ2:Arg2) ->
+    Distribution<Real> {
+  return Gaussian(μ + 0.0, σ2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:Add<Random<Real>,Arg1>, σ2:Arg2) ->
+    Distribution<Real> {
+  return Gaussian(1.0*μ.l + μ.r, σ2);
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
+  return Gaussian(1.0*μ + 0.0, σ2);
+}
+
+/*
+ * Update the parameters of a Gaussian distribution with linear transformation
+ * of Gaussian prior on the mean.
+ *
+ * - x: The variate.
+ * - a: Scale.
+ * - μ: Prior mean.
+ * - σ2: Prior variance.
+ * - c: Offset.
+ * - ω2: Likelihood variance.
+ *
+ * Returns: the posterior hyperparameters `μ'` and `σ2'`.
+ */
+function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(
+    x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, ω2:Arg6, m:Arg7, τ2:Arg8) -> {
+  let σ2' <- 1.0/(1.0/σ2 + a*a/ω2);
+  let μ' <- σ2'*(μ/σ2 + a*(x - c)/ω2);
+  return wrap_gaussian(μ', σ2');
+}

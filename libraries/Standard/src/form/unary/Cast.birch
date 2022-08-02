@@ -1,0 +1,26 @@
+struct Cast<To,Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(cast<To>, cast_grad<To>)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::cast;
+using numbirch::cast_grad;
+
+/**
+ * Cast.
+ */
+template<class To, class Middle, std::enable_if_t<
+    is_delay_v<Middle>,int> = 0>
+Cast<To,Middle> cast(const Middle& m) {
+  return construct<Cast<To,Middle>>(m);
+}
+}
+}}

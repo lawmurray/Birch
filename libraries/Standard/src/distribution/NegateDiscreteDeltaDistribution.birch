@@ -1,0 +1,92 @@
+/**
+ * Delta distribution convolved with a bounded discrete distribution, with
+ * negation.
+ *
+ * - p: Bounded discrete distribution.
+ */
+final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
+    BoundedDiscreteDistribution {
+  /**
+   * Distribution.
+   */
+  p:BoundedDiscreteDistribution <- p;
+
+  override function supportsLazy() -> Boolean {
+    return p.supportsLazy();
+  }
+
+  override function simulate() -> Integer! {
+    return -p.simulate();
+  }
+
+  override function simulateLazy() -> Integer!? {
+    return -p.simulateLazy()!;
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return p.logpdf(-x);
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return p.logpdfLazy(-x);
+  }
+
+  override function update(x:Integer!) -> Delay? {
+    return Delta(-x);
+  }
+
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return Delta(-x);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return p.hoist();
+  }
+
+  override function lower() -> Integer!? {
+    let l <- p.upper();
+		if l? {
+			return -l!;
+		} else {
+			return nil;
+		}
+  }
+  
+  override function upper() -> Integer!? {
+    let l <- p.lower();
+		if l? {
+			return -l!;
+		} else {
+			return nil;
+		}
+  }
+
+  override function constant() {
+    super.constant();
+    p.constant();
+  }
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
+  let m <- μ.m;
+	if m.hasNext() && m.getNext().isBoundedDiscrete() {
+  	m.prune();
+    let p <- construct<NegateDiscreteDeltaDistribution>(
+        m.getNext().getBoundedDiscrete());
+    m.setNext(p);
+    return p;
+	} else {
+		return wrap_delta(μ);
+	}
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Arg>(μ:Neg<Arg>) -> Distribution<Integer> {
+  let m ~ Delta(μ.m);
+  return Delta(-m);
+}

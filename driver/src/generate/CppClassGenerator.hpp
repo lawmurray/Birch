@@ -7,7 +7,7 @@
 
 namespace birch {
 /**
- * C++ code generator for types.
+ * C++ code generator for classes.
  *
  * @ingroup io
  */
@@ -36,9 +36,8 @@ protected:
    * Generate code for the base type of a class.
    * 
    * @param o The class.
-   * @param includeTypename Should the typename be included (if determined
-   * necessary)?
-   * 
+   * @param includeTypename Should the typename keyword be included (if
+   * determined necessary)?
    */
   void genBase(const Class* o, const bool includeTypename);
 };

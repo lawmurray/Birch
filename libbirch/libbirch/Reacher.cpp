@@ -3,7 +3,9 @@
  */
 #include "libbirch/Reacher.hpp"
 
-void libbirch::Reacher::visit(Any* o) {
+#include "libbirch/Any.hpp"
+
+void libbirch::Reacher::visitObject(Any* o) {
   if (!(o->f_.exchangeOr(SCANNED) & SCANNED)) {
     o->f_.maskAnd(~MARKED);  // unset for next time
   }

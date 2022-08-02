@@ -42,7 +42,7 @@
  *
  * While, if the leaf node is of type Random, it has a backward link to its
  * associated Distribution, note that all other nodes of type Random only have
- * a forward link to the distribution associated with their child node on the
+ * a forward link to the distribution associated with their next node on the
  * $M$-path.
  *
  * User code maintains external references to the Random objects, but
@@ -96,66 +96,149 @@
  */
 abstract class Delay {
   /**
-   * Child node on the $M$-path.
+   * Next node on the $M$-path.
    */
-  child:Delay?;
+  next:Delay?;
 
   /**
-   * Co-parent node on the $M$-path. This is used only for peculiar cases to
+   * Side node on the $M$-path. This is used only for peculiar cases to
    * establish joint distributions over two or more Randoms, such as for the
    * normal-inverse-gamma distribution.
    */
-  coparent:Delay?;
+  side:Delay?;
 
   /**
-   * If a co-parent, the number of this among those co-parents.
+   * Is there a next node on the $M$-path?
    */
-  n:Integer <- 1;
-
-  /**
-   * Extend the $M$-path below this.
-   *
-   * - node: Node to become the child of this.
-   */
-  function graft(node:Delay) {
-    assert !child?;
-    this.child <- node;
+  final function hasNext() -> Boolean {
+    return next?;
   }
 
   /**
-   * Extend the $M$-path below this.
+   * Set the next node on the $M$-path.
    *
-   * - node: Node to become the child of this.
-   * - n: Where `node` is grafted to multiple parents, the number of this
-   *   among those parents.
+   * - node: Next node.
    */
-  function graft(node:Delay, n:Integer) {
-    assert !child?;
-    this.n <- n;
-    this.child <- node;
+  final function setNext(node:Delay?) {
+    this.next <- node;
   }
 
   /**
-   * Replace an existing $M$-path below this.
-   *
-   * - node: Node to become the child of this.
+   * Get the next node on the $M$-path.
    */
-  function graftReplace(node:Delay) {
-    assert child?;
-    this.child <- node;
+  final function getNext() -> Delay {
+    assert next?;
+    return next!;
   }
 
   /**
-   * Replace an existing $M$-path below this.
-   *
-   * - node: Node to become the child of this.
-   * - n: Where `node` is grafted to multiple parents, the number of this
-   *   among those parents.
+   * Set the next node on the $M$-path to nil and return its previous value.
    */
-  function graftReplace(node:Delay, n:Integer) {
-    assert child?;
-    this.n <- n;
-    this.child <- node;
+  final function takeNext() -> Delay? {
+    let r <- next;
+    next <- nil;
+    return r;
+  }
+  
+  /**
+   * Get a proceeding node on the $M$-path.
+   *
+   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   *  the node after that, etc. Must be greater than zero.
+   *
+   * Return: The proceeding node on the $M$-path that is `n` steps from this.
+   * If there is no such node, returns nil. If there is a loop at the end of
+   * the $M$-path, will iterate through that loop as many times as given and
+   * return non-nil.
+   */
+  final function getNext(n:Integer) -> Delay? {
+    assert n > 0;
+    if n == 1 {
+      return next;
+    } else if next? {
+      return next!.getNext(n - 1);
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Is there a side node on the $M$-path?
+   */
+  final function hasSide() -> Boolean {
+    return side?;
+  }
+
+  /**
+   * Set the side node on the $M$-path.
+   *
+   * - node: Side node.
+   */
+  final function setSide(node:Delay?) {
+    this.side <- node;
+  }
+
+  /**
+   * Get the side node on the $M$-path.
+   */
+  final function getSide() -> Delay {
+    assert side?;
+    return side!;
+  }
+
+  /**
+   * Set the side node on the $M$-path to nil and return its previous value.
+   */
+  final function takeSide() -> Delay? {
+    let r <- side;
+    side <- nil;
+    return r;
+  }
+
+  /**
+   * Get a proceeding side node on the $M$-path.
+   *
+   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   *  the node after that, etc. Must be greater than zero.
+   *
+   * Return: The proceeding side node on the $M$-path that is `n` steps from
+   * this. If there is no such node, returns nil. If there is a loop at the
+   * end of the $M$-path, will iterate through that loop as many times as
+   * given and return non-nil.
+   */
+  final function getSide(n:Integer) -> Delay? {
+    assert n > 0;
+    if n == 1 {
+      return side;
+    } else if side? {
+      return side!.getSide(n - 1);
+    } else {
+      return nil;
+    }
+  }
+
+  /**
+   * Is this an internal node on the $M$-path? A node is internal if
+   * `hasNext()` is true, and it is not part of a loop at the end of the
+   * $M$-path.
+   */
+  final function isInternal() -> Boolean {
+    return next? && next!.next != this;
+  }
+
+  /**
+   * Is this a subordinate distribution? A subordinate distribution is aside
+   * some other distribution.
+   */
+  function isSubordinate() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Set this as a subordinate distribution.
+   */
+  function setSubordinate() {
+    assert false;
   }
 
   /**
@@ -166,38 +249,190 @@ abstract class Delay {
    * the leaf of the $M$-path.
    */
   function prune() -> Delay {
-    assert !child?;  // otherwise prune() should have been overridden
+    assert !next?;  // otherwise prune() should have been overridden
     return this;
   }
 
   /**
-   * Prune the $M$-path from below this.
-   *
-   * Return: If this is a Random node, then this. If this is a Distribution
-   * node, then the updated Distribution for the `n`th parent, which is now
-   * the leaf of the $M$-path.
+   * Construct a lazy expression for the log-pdf of this node.
    */
-  function prune(n:Integer) -> Delay {
-    assert n == 1;  // otherwise prune(Integer) should have been overridden
-    return prune();
+  function hoist() -> Expression<Real>? {
+    return nil;
   }
 
   /**
-   * Is this the grandchild of `node` on the $M$-path.
-   */  
-  function isGrandChildOf(node:Delay) -> Boolean {
-    return node.child? && node.child!.child? && node.child!.child! == this;
+   * Render the node constant.
+   */
+  function constant() {
+    //
   }
 
   /**
-   * Join this with another node to become coparents on the $M$-path.  This is
-   * used only for peculiar cases to establish joint distributions over two or
-   * more Randoms, such as for the normal-inverse-gamma distribution.
+   * Is this a random variable?
    */
-  function join(node:Delay) {
-    assert !coparent?;
-    assert !node.coparent?;
-    coparent <- node;
-    node.coparent <- this;
+  function isRandom() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Is this a distribution?
+   */
+  function isDistribution() -> Boolean {
+    return false;
+  }
+
+  function isGaussian() -> Boolean {
+    return false;
+  }
+
+  function getGaussian() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isBeta() -> Boolean {
+    return false;
+  }
+
+  function getBeta() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isGamma() -> Boolean {
+    return false;
+  }
+
+  function getGamma() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isInverseGamma() -> Boolean {
+    return false;
+  } 
+
+  function getInverseGamma() -> (Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isInverseWishart() -> Boolean {
+    return false;
+  } 
+
+  function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>) {
+    assert false;
+  } 
+
+  function isNormalInverseGamma() -> Boolean {
+    return false;
+  }
+
+  function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
+      Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isDirichlet() -> Boolean {
+    return false;
+  }
+
+  function getDirichlet() -> Expression<Real[_]> {
+    assert false;
+  }
+
+  function isRestaurant() -> Boolean {
+    return false;
+  }
+
+  function getRestaurant() -> (Expression<Real>, Expression<Real>,
+      Expression<Integer[_]>) {
+    assert false;
+  }
+
+  function isMultivariateGaussian() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>) {
+    assert false;
+  }
+
+  function isMultivariateNormalInverseGamma() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function isMultivariateNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
+      Expression<Real>, Expression<Real[_,_]>, Expression<Real>) {
+    assert false;
+  }
+
+  function isMatrixGaussian() -> Boolean {
+    return false;
+  }
+
+  function getMatrixGaussian() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>) {
+    assert false;
+  }
+
+  function isMatrixNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
+    assert false;
+  }
+
+  function isDiscrete() -> Boolean {
+    return false;
+  }
+
+  function getDiscrete() -> DiscreteDistribution {
+    assert false;
+  }
+
+  function isBoundedDiscrete() -> Boolean {
+    return false;
+  }
+
+  function getBoundedDiscrete() -> BoundedDiscreteDistribution {
+    assert false;
+  }
+
+  function getMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real[_,_]>,
+      Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real>) {
+    assert false;
+  }
+
+  function joinMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>,
+      Expression<Real[_]>, Expression<Real[_]>) {
+    assert false;
+  }
+
+  function getMatrixNormalInverseWishartMultivariateGaussian(
+      x:Expression<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real>, Expression<Real>) {
+    assert false;
+  }
+
+  function joinMatrixNormalInverseWishartMultivariateGaussian() ->
+      (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
+      Expression<Real[_,_]>) {
+    assert false;
   }
 }

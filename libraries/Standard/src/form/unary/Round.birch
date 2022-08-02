@@ -1,26 +1,25 @@
-struct RoundFunction {
-  function compute<Value>(m:Value) -> {
-    return round(m);
-  }
+struct Round<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-  function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return 0.0;
-  }
-}
-struct Round<Middle> = Unary<RoundFunction,Middle>;
-
-/**
- * Round to nearest integer value.
- */
-function round<Middle>(m:Middle) -> {
-  return construct<Round<Middle>>(m);
-}
-
-/**
- * Round to nearest integer value.
- */
-function round(x:Real) -> Real {
-  cpp {{
-  return std::round(x);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(round, round_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::round;
+using numbirch::round_grad;
+
+/**
+ * Round to nearest integer value.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Round<Middle> round(const Middle& m) {
+  return construct<Round<Middle>>(m);
+}
+}
+}}

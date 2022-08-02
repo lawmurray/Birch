@@ -56,32 +56,4 @@ struct Global {
    * Track length rate.
    */
   τ:Real;
-  
-  function read(buffer:Buffer) {
-    l <-? buffer.get<Real>("l");
-    u <-? buffer.get<Real>("u");
-    d <-? buffer.get<Real>("d");
-    M <-? buffer.get<Real[_,_]>("M");
-    A <-? buffer.get<Real[_,_]>("A");
-    Q <-? buffer.get<Real[_,_]>("Q");
-    B <-? buffer.get<Real[_,_]>("B");
-    R <-? buffer.get<Real[_,_]>("R");
-    λ <-? buffer.get<Real>("λ");
-    μ <-? buffer.get<Real>("μ");
-    τ <-? buffer.get<Real>("τ");
-  }
-  
-  function write(buffer:Buffer) {
-    buffer.set("l", l);
-    buffer.set("u", u);
-    buffer.set("d", d);
-    buffer.set("M", M);
-    buffer.set("A", A);
-    buffer.set("Q", Q);
-    buffer.set("B", B);
-    buffer.set("R", R);
-    buffer.set("λ", λ);
-    buffer.set("μ", μ);
-    buffer.set("τ", τ);
-  }
 }

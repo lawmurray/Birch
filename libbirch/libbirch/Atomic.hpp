@@ -4,6 +4,8 @@
 #pragma once
 
 /**
+ * @internal
+ * 
  * @def LIBBIRCH_ATOMIC_OPENMP
  *
  * Set to 1 for libbirch::Atomic use OpenMP, or 0 to use std::atomic.
@@ -29,6 +31,8 @@
 
 namespace libbirch {
 /**
+ * @internal
+ * 
  * Atomic value.
  *
  * @tparam Value type.
@@ -79,19 +83,6 @@ public:
   }
 
   /**
-   * Store the value, atomically, with memory order appropriate for use with a
-   * lock.
-   */
-  void storeLock(const T& value) {
-    #if LIBBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic write seq_cst
-    this->value = value;
-    #else
-    this->value.store(value, std::memory_order_seq_cst);
-    #endif
-  }
-
-  /**
    * Exchange the value with another, atomically.
    *
    * @param value New value.
@@ -113,32 +104,10 @@ public:
   }
 
   /**
-   * Exchange the value with another, with memory order appropriate for use
-   * with a lock.
-   *
-   * @param value New value.
-   *
-   * @return Old value.
-   */
-  T exchangeLock(const T& value) {
-    #if LIBBIRCH_ATOMIC_OPENMP
-    T old;
-    #pragma omp atomic capture seq_cst
-    {
-      old = this->value;
-      this->value = value;
-    }
-    return old;
-    #else
-    return this->value.exchange(value, std::memory_order_seq_cst);
-    #endif
-  }
-
-  /**
    * Apply a mask, with bitwise `and`, and return the previous value,
    * atomically.
    *
-   * @param m Mask.
+   * @param value Mask.
    *
    * @return Previous value.
    */
@@ -160,7 +129,7 @@ public:
    * Apply a mask, with bitwise `or`, and return the previous value,
    * atomically.
    *
-   * @param m Mask.
+   * @param value Mask.
    *
    * @return Previous value.
    */
@@ -181,7 +150,7 @@ public:
   /**
    * Apply a mask, with bitwise `and`, atomically.
    *
-   * @param m Mask.
+   * @param value Mask.
    */
   void maskAnd(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP
@@ -195,7 +164,7 @@ public:
   /**
    * Apply a mask, with bitwise `or`, atomically.
    *
-   * @param m Mask.
+   * @param value Mask.
    */
   void maskOr(const T& value) {
     #if LIBBIRCH_ATOMIC_OPENMP

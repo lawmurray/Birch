@@ -18,9 +18,29 @@ libbirch::Any::Any(const Any& o) : Any() {
   //  
 }
 
+libbirch::Any::~Any() {
+  assert(r_.load() == 0);
+}
+
+libbirch::Any& libbirch::Any::operator=(const Any&) {
+  return *this;
+}
+
 void libbirch::Any::destroy_() {
   Destroyer v;
   this->accept_(v);
+}
+
+void libbirch::Any::deallocate_() {
+  delete this;
+}
+
+int libbirch::Any::numShared_() const {
+  return r_.load();
+}
+
+void libbirch::Any::incShared_() {
+  r_.increment();
 }
 
 void libbirch::Any::decShared_() {
@@ -45,6 +65,11 @@ void libbirch::Any::decShared_() {
   }
 }
 
+void libbirch::Any::decSharedReachable_() {
+  assert(numShared_() > 0);
+  r_.decrement();
+}
+
 void libbirch::Any::decSharedBiconnected_() {
   assert(numShared_() > 0);
 
@@ -54,7 +79,7 @@ void libbirch::Any::decSharedBiconnected_() {
 
     auto old = f_.load();
     if (old & BUFFERED) {
-      /* current registered; could attempt to deregister here, but this is
+      /* currently registered; could attempt to deregister here, but this is
        * only successful for recently-registered objects, which is highly
        * unlikely in this scenario, so don't bother trying */
       //deregister_possible_root(this);
@@ -91,7 +116,7 @@ void libbirch::Any::decSharedBridge_() {
      * as such */
     auto old = f_.load();
     if (old & BUFFERED) {
-      /* current registered; could attempt to deregister here, but this is
+      /* currently registered; could attempt to deregister here, but this is
        * only successful for recently-registered objects, which is highly
        * unlikely in this scenario, so don't bother trying */
       //deregister_possible_root(this);
@@ -102,16 +127,18 @@ void libbirch::Any::decSharedBridge_() {
   }
 }
 
-void libbirch::Any::decSharedAcyclic_() {
-  assert(numShared_() > 0);
-  assert(isAcyclic_());
+bool libbirch::Any::isUnique_() const {
+  return numShared_() == 1;
+}
 
-  auto r = --r_;
-  if (r == 0) {
-    destroy_();
+bool libbirch::Any::isUniqueHead_() const {
+  return numShared_() == a_;
+}
 
-    /* acyclic objects are so for life, and are never registered as possible
-     * roots; can deallocate immediately */
-    deallocate_();
-  }
+bool libbirch::Any::isPossibleRoot_() const {
+  return f_.load() & POSSIBLE_ROOT;
+}
+
+void libbirch::Any::unbuffer_() {
+  f_.maskAnd(~(BUFFERED|POSSIBLE_ROOT));
 }

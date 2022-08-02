@@ -1,42 +1,25 @@
-struct TanhFunction {
-function compute<Value>(m:Value) -> {
-    return tanh(m);
-  }
+struct Tanh<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return transform(d, m, \(d:Real, m:Real) -> Real {
-          return d*(1.0 + pow(tanh(m), 2.0));
-        });
-  }
-}
-struct Tanh<Middle> = Unary<TanhFunction,Middle>;
-
-/**
- * Tanh.
- */
-function tanh<Middle>(m:Middle) -> {
-  return construct<Tanh<Middle>>(m);
-}
-
-/**
- * Tanh scalar.
- */
-function tanh(m:Real) -> Real {
-  cpp{{
-  return std::tanh(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(tanh, tanh_grad)
   }}
 }
 
-/**
- * Tanh vector.
- */
-function tanh(m:Real[_]) -> Real[_] {
-  return transform(m, \(x:Real) -> Real { return tanh(x); });
-}
+hpp{{
+namespace birch {
+using numbirch::tanh;
+using numbirch::tanh_grad;
 
 /**
- * Tanh matrix.
+ * Hyperbolic tangent.
  */
-function tanh(m:Real[_,_]) -> Real[_,_] {
-  return transform(m, \(x:Real) -> Real { return tanh(x); });
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Tanh<Middle> tanh(const Middle& m) {
+  return construct<Tanh<Middle>>(m);
 }
+}
+}}

@@ -1,0 +1,127 @@
+hpp{{
+#include <boost/math/distributions/weibull.hpp>
+}}
+
+/**
+ * Weibull distribution.
+ */
+final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
+    Distribution<Real> {
+  /**
+   * Shape.
+   */
+  k:Arg1 <- k;
+
+  /**
+   * Scale.
+   */
+  λ:Arg2 <- λ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real! {
+    return simulate_weibull(value(k), value(λ));
+  }
+
+  override function simulateLazy() -> Real!? {
+    return simulate_weibull(eval(k), eval(λ));
+  }
+  
+  override function logpdf(x:Real!) -> Real! {
+    return logpdf_weibull(x, value(k), value(λ));
+  }
+
+  override function logpdfLazy(x:Real!) -> Real!? {
+    return logpdf_weibull(x, eval(k), eval(λ));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_weibull(this.getVariate(), k, λ));
+  }
+
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_weibull(x, value(k), value(λ));
+  }
+
+  override function quantile(P:Real!) -> Real!? {
+    return quantile_weibull(P, value(k), value(λ));
+  }
+
+  override function lower() -> Real!? {
+    return 0.0;
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(λ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Weibull");
+    buffer.set("k", value(k));
+    buffer.set("λ", value(λ));
+  }
+}
+
+/**
+ * Create Weibull distribution.
+ */
+function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> Distribution<Real> {
+  return wrap_weibull(k, λ);
+}
+function wrap_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
+  return make_weibull(wrap(k), wrap(λ));
+}
+function make_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
+  return construct<WeibullDistribution<Arg1,Arg2>>(k, λ);
+}
+
+hpp{{
+using numbirch::simulate_weibull;
+}}
+
+/*
+ * Observe a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
+  return where(0.0 < x, log(k) + (k - 1.0)*log(x) - k*log(λ) -
+      pow(x/λ, k), -inf);
+}
+
+/*
+ * CDF of a Weibull variate.
+ *
+ * - x: The variate.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Return: the cumulative probability.
+ */
+function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
+  return where(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
+}
+
+/*
+ * Quantile of a Weibull distribution.
+ *
+ * - P: The cumulative probability.
+ * - k: Shape.
+ * - λ: Scale.
+ *
+ * Return: the quantile.
+ */
+function quantile_weibull<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, λ:Arg3) -> {
+  cpp{{
+  return boost::math::quantile(boost::math::weibull_distribution<Real>(
+      wait(k), wait(λ)), wait(P));
+  }}
+}

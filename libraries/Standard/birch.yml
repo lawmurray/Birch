@@ -1,4 +1,4 @@
-name: Standard
+name: Birch.Standard
 manifest:
   source:
     - src/*.birch
@@ -13,9 +13,7 @@ manifest:
     - mkdocs.yml
 require:
   header:
-    - eigen3/Eigen/Dense
     - boost/math/distributions.hpp
-    - boost/math/special_functions.hpp
     - yaml.h
     - dlfcn.h
     - getopt.h

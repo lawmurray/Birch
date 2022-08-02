@@ -8,8 +8,6 @@
 namespace libbirch {
 /**
  * Get the maximum number of threads.
- *
- * @ingroup libbirch
  */
 inline int get_max_threads() {
 #ifdef _OPENMP
@@ -21,8 +19,6 @@ inline int get_max_threads() {
 
 /**
  * Get the current thread's number.
- *
- * @ingroup libbirch
  */
 inline int get_thread_num() {
 #ifdef _OPENMP

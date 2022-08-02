@@ -1,0 +1,112 @@
+/**
+ * Matrix $t$-distribution.
+ */
+class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
+    Ψ:Arg4) < Distribution<Real[_,_]> {
+  /**
+   * Degrees of freedom.
+   */
+  k:Arg1 <- k;
+
+  /**
+   * Mean.
+   */
+  M:Arg2 <- M;
+
+  /**
+   * Among-row covariance.
+   */
+  Σ:Arg3 <- Σ;
+  
+  /**
+   * Among-column covariance.
+   */
+  Ψ:Arg4 <- Ψ;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_t(value(k), value(M), value(Σ), value(Ψ));
+  }
+
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_t(eval(k), eval(M), eval(Σ), eval(Ψ));
+  }
+  
+  override function logpdf(X:Real[_,_]) -> Real! {
+    return logpdf_matrix_t(X, value(k), value(M), value(Σ), value(Ψ));
+  }
+
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+    return logpdf_matrix_t(X, eval(k), eval(M), eval(Σ), eval(Ψ));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_matrix_t(this.getVariate(), k, M, Σ, Ψ));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(k);
+    global.constant(M);
+    global.constant(Σ);
+    global.constant(Ψ);
+  }
+}
+
+function MatrixT<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) ->
+    Distribution<Real[_,_]> {
+  return wrap_matrix_t(k, M, Σ, Ψ);
+}
+function wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) -> {
+  return make_matrix_t(wrap(k), wrap(M), wrap(Σ), wrap(Ψ));
+}
+function make_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
+    Ψ:Arg4) -> {
+  return construct<MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>>(k, M, Σ, Ψ);
+}
+
+/*
+ * Simulate a matrix $t$-distribution variate.
+ *
+ * - k: Degrees of freedom.
+ * - M: Mean.
+ * - Σ: Among-row spread.
+ * - Ψ: Among-column spread.
+ */
+function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
+    Ψ:Arg4) -> {
+  let m <- rows(M);
+  let n <- columns(M);
+  let Y <- standard_wishart(k, n);
+  let Z <- standard_gaussian(m, n);
+  return M + trimul(chol(Σ), Z)*trisolve(Y, transpose(chol(Ψ)));
+}
+
+/*
+ * Observe a matrix $t$-distribution variate with location and scale.
+ *
+ * - X: The variate.
+ * - k: Degrees of freedom.
+ * - M: Mean.
+ * - Σ: Among-row spread.
+ * - Ψ: Among-column spread.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2, M:Arg3,
+    Σ:Arg4, Ψ:Arg5) -> {
+  let n <- rows(X);
+  let p <- columns(X);
+  let a <- 0.5*k + 0.5*(p + n - 1);
+  let b <- 0.5*k + 0.5*(p - 1);
+  let Z <- wrap(X - M);
+  let L <- wrap(chol(Σ));
+  let J <- wrap(chol(Ψ));
+  return lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - p*ltridet(L) -
+      n*ltridet(J) - a*ldet(diagonal(1.0, n) +
+      cholsolve(L, Z)*cholsolve(J, transpose(Z)));
+}

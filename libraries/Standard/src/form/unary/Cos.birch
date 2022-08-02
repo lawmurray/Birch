@@ -1,34 +1,25 @@
-struct CosFunction {
-function compute<Value>(m:Value) -> {
-    return cos(m);
-  }
+struct Cos<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return -d*sin(m);
-  }
-}
-struct Cos<Middle> = Unary<CosFunction,Middle>;
-
-
-/**
- * Cosine.
- */
-function cos<Middle>(m:Middle) -> {
-  return construct<Cos<Middle>>(m);
-}
-
-/**
- * Cosine.
- */
-function cos(m:Integer) -> Real {
-  return cos(scalar<Real>(m));
-}
-
-/**
- * Cosine.
- */
-function cos(m:Real) -> Real {
-  cpp {{
-  return std::cos(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(cos, cos_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::cos;
+using numbirch::cos_grad;
+
+/**
+ * Cosine.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Cos<Middle> cos(const Middle& m) {
+  return construct<Cos<Middle>>(m);
+}
+}
+}}

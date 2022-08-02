@@ -18,26 +18,24 @@ void birch::CppClassGenerator::visit(const Class* o) {
   if (!o->isAlias() && !o->braces->isEmpty()) {
     Gatherer<MemberFunction> memberFunctions;
     Gatherer<MemberVariable> memberVariables;
+    Gatherer<MemberPhantom> memberPhantoms;
     o->accept(&memberFunctions);
     o->accept(&memberVariables);
+    o->accept(&memberPhantoms);
 
     if (header) {
       genDoc(o->loc);
       genTemplateParams(o);
       genSourceLine(o->loc);
-      if (o->has(STRUCT)) {
-        start("struct ");
-      } else {
-        start("class ");
-      }
-      start(o->name << '_');
+      start("class ");
+      start(o->name);
+      middle('_');
+      // ^ suffix class name with _, typedef actual name to Shared<Name_>
       if (o->has(FINAL)) {
         middle(" final");
       }
-      if (!o->has(STRUCT)) {
-        middle(" : public ");
-        genBase(o, false);
-      }
+      middle(" : public ");
+      genBase(o, false);
       finish(" {");
       line("public:");
       in();
@@ -50,62 +48,55 @@ void birch::CppClassGenerator::visit(const Class* o) {
 
       /* boilerplate */
       genSourceLine(o->loc);
-      if (o->has(STRUCT)) {
-        start("LIBBIRCH_STRUCT");
-      } else if (o->has(ABSTRACT)) {
-        start("LIBBIRCH_ABSTRACT_CLASS");
-      } else if (o->has(ACYCLIC)) {
-        start("LIBBIRCH_ACYCLIC_CLASS");
+      start("LIBBIRCH_CLASS(" << o->name << "_, ");
+      if (o->name->str() == "Object") {
+        middle("libbirch::Any");
+      } else if (o->base->isEmpty()) {
+        middle("Object_");
       } else {
-        start("LIBBIRCH_CLASS");
-      }
-      middle('(' << o->name << '_');
-      if (!o->has(STRUCT)) {
-        middle(", ");
         genBase(o, true);
       }
       finish(')');
+      
       genSourceLine(o->loc);
-      if (memberVariables.size() > 0) {
-        if (o->has(STRUCT)) {
-          start("LIBBIRCH_STRUCT_MEMBERS(");
-        } else {
-          start("LIBBIRCH_CLASS_MEMBERS(");
-        }
-        for (auto iter = memberVariables.begin(); iter != memberVariables.end();
-            ++iter) {
-          if (iter != memberVariables.begin()) {
+      start("LIBBIRCH_CLASS_MEMBERS(");
+      if (memberVariables.size() + memberPhantoms.size() > 0) {
+        bool first = true;
+        for (auto o : memberVariables) {
+          if (!first) {
             middle(", ");
           }
-          middle((*iter)->name);
+          first = false;
+          middle(o->name);
         }
-        finish(")");
-      } else {
-        if (o->has(STRUCT)) {
-          line("LIBBIRCH_STRUCT_NO_MEMBERS()");
-        } else {
-          line("LIBBIRCH_CLASS_NO_MEMBERS()");
-        }
-      }
-
-      if (!o->has(STRUCT)) {
-        /* using declarations for member functions in base classes that are
-        * overridden */
-        std::set<std::string> names;
-        for (auto f : memberFunctions) {
-          if (f->has(OVERRIDE)) {
-            names.insert(f->name->str());
+        for (auto o : memberPhantoms) {
+          if (!first) {
+            middle(", ");
           }
+          first = false;
+          middle(o->name);
         }
-
-        genSourceLine(o->loc);
-        line("using base_type_::operator=;");
-        for (auto name : names) {
-          genSourceLine(o->loc);
-          line("using base_type_::" << sanitize(name) << ';');
-        }
-        line("");
+      } else {
+        middle("LIBBIRCH_NO_MEMBERS");
       }
+      finish(')');
+  
+      /* using declarations for member functions in base classes that are
+      * overridden */
+      std::set<std::string> names;
+      for (auto f : memberFunctions) {
+        if (f->has(OVERRIDE)) {
+          names.insert(f->name->str());
+        }
+      }
+
+      genSourceLine(o->loc);
+      line("using base_type_::operator=;");
+      for (auto name : names) {
+        genSourceLine(o->loc);
+        line("using base_type_::" << sanitize(name) << ';');
+      }
+      line("");
     }
 
     /* constructor */
@@ -119,28 +110,27 @@ void birch::CppClassGenerator::visit(const Class* o) {
       genSourceLine(o->loc);
       start("");
     }
-    middle(o->name << "_(" << o->params << ')');
+    middle(o->name << '_');
+    middle('(' << o->params << ')');
     if (header) {
       finish(";\n");
     } else {
-      bool first = o->has(STRUCT);
-      if (!o->has(STRUCT)) {
-        finish(" :");
-        in();
-        in();
-        genSourceLine(o->loc);
-        start("base_type_(" << o->args << ')');
-      }
+      finish(" :");
+      in();
+      in();
+      genSourceLine(o->loc);
+      start("base_type_(" << o->args << ')');
       ++inConstructor;
+      bool first = false;
       for (auto o : memberVariables) {
         if (first) {
           finish(" :");
           in();
           in();
+          first = false;
         } else {
           finish(',');
         }
-        first = false;
         genSourceLine(o->loc);
         start(o->name << '(');
         genInit(o);
@@ -167,20 +157,26 @@ void birch::CppClassGenerator::visit(const Class* o) {
       line("};\n");
     }
 
-    /* C linkage function */
-    if (!o->has(STRUCT) && !o->has(ABSTRACT) && !o->isGeneric() &&
-        o->params->isEmpty()) {
+    /* factory function if default constructible */
+    if (!o->has(ABSTRACT) && !o->isGeneric() && o->params->isEmpty()) {
       genSourceLine(o->loc);
+      start("Object_* make_" << o->name << "_()");
       if (header) {
-        line("extern \"C\" " << o->name << "_* make_" << o->name << "_();");
+        line(';');
       } else {
-        line(o->name << "_* make_" << o->name << "_() {");
+        line(" {");
         in();
         genSourceLine(o->loc);
         line("return new " << o->name << "_();");
         genSourceLine(o->loc);
         out();
         line("}");
+
+        if (!o->braces->isEmpty()) {
+          start("static int register_factory_" << o->name);
+          middle("_ = ::register_factory(");
+          finish("\"" << o->name << "\", make_" << o->name << "_);");
+        }
       }
       line("");
     }

@@ -33,6 +33,10 @@ bool birch::Type::isOptional() const {
   return false;
 }
 
+bool birch::Type::isFuture() const {
+  return false;
+}
+
 bool birch::Type::isDeduced() const {
   return false;
 }
@@ -54,14 +58,6 @@ birch::Type* birch::Type::unwrap() {
 }
 
 const birch::Type* birch::Type::unwrap() const {
-  return this;
-}
-
-birch::Type* birch::Type::element() {
-  return this;
-}
-
-const birch::Type* birch::Type::element() const {
   return this;
 }
 

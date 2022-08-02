@@ -1,61 +1,25 @@
-struct RectifyFunction {
-function compute<Value>(m:Value) -> {
-    return rectify(m);
-  }
+struct Rectify<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return transform(d, m, \(d:Real, m:Real) -> Real {
-          return if_then_else(m > 0.0, d, 0.0);
-        });
-  }
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(rectify, rectify_grad)
+  }}
 }
-struct Rectify<Middle> = Unary<RectifyFunction,Middle>;
+
+hpp{{
+namespace birch {
+using numbirch::rectify;
+using numbirch::rectify_grad;
 
 /**
- * Rectify.
+ * Rectification.
  */
-function rectify<Middle>(m:Middle) -> {
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Rectify<Middle> rectify(const Middle& m) {
   return construct<Rectify<Middle>>(m);
 }
-
-/**
- * Rectify scalar.
- */
-function rectify(m:Integer) -> Integer {
-  return max(0, m);
 }
-
-/**
- * Rectify scalar.
- */
-function rectify(m:Real) -> Real {
-  return max(0.0, m);
-}
-
-/**
- * Rectify vector.
- */
-function rectify(m:Integer[_]) -> Integer[_] {
-  return transform(m, \(x:Integer) -> Integer { return rectify(x); });
-}
-
-/**
- * Rectify vector.
- */
-function rectify(m:Real[_]) -> Real[_] {
-  return transform(m, \(x:Real) -> Real { return rectify(x); });
-}
-
-/**
- * Rectify matrix.
- */
-function rectify(m:Integer[_,_]) -> Integer[_,_] {
-  return transform(m, \(x:Integer) -> Integer { return rectify(x); });
-}
-
-/**
- * Rectify matrix.
- */
-function rectify(m:Real[_,_]) -> Real[_,_] {
-  return transform(m, \(x:Real) -> Real { return rectify(x); });
-}
+}}

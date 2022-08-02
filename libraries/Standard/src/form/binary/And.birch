@@ -1,23 +1,27 @@
-struct AndFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return l && r;
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (0.0, 0.0);
-  }
+struct And<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(operator&&, and_grad)
+  }}
 }
-struct And<Left,Right> = Binary<AndFunction,Left,Right>;
+
+hpp{{
+namespace birch {
+using numbirch::operator&&;
+using numbirch::and_grad1;
+using numbirch::and_grad2;
 
 /**
  * Logical `and`.
  */
-operator<Left,Right> (l:Left && r:Right) -> {
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+And<Left,Right> operator&&(const Left& l, const Right& r) {
   return construct<And<Left,Right>>(l, r);
 }
-
-/**
- * Logical `and`.
- */
-operator (l:Boolean && r:Boolean) -> Boolean;
+}
+}}

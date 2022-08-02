@@ -5,6 +5,7 @@
 
 #include "libbirch/external.hpp"
 #include "libbirch/internal.hpp"
+#include "libbirch/type.hpp"
 #include "libbirch/Memo.hpp"
 
 namespace libbirch {
@@ -12,8 +13,6 @@ namespace libbirch {
  * @internal
  * 
  * Copy a graph of unknown size.
- *
- * @ingroup libbirch
  */
 class Copier {
 public:
@@ -21,8 +20,29 @@ public:
     //
   }
 
-  template<class Arg>
-  void visit(Arg& arg) {
+  template<class T, std::enable_if_t<
+      is_visitable<T,Copier>::value,int> = 0>
+  void visit(T& o) {
+    o.accept_(*this);
+  }
+
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Copier>::value &&
+      is_iterable<T>::value,int> = 0>
+  void visit(T& o) {
+    if (!std::is_trivial<typename T::value_type>::value) {
+      auto iter = o.begin();
+      auto last = o.end();
+      for (; iter != last; ++iter) {
+        visit(*iter);
+      }
+    }
+  }
+
+  template<class T, std::enable_if_t<
+      !is_visitable<T,Copier>::value && 
+      !is_iterable<T>::value,int> = 0>
+  void visit(T& arg) {
     //
   }
 
@@ -44,16 +64,10 @@ public:
     }
   }
 
-  template<class T, class F>
-  void visit(Array<T,F>& o);
-
-  template<class T>
-  void visit(Inplace<T>& o);
-
   template<class T>
   void visit(Shared<T>& o);
 
-  Any* visit(Any* o);
+  Any* visitObject(Any* o);
 
 private:
   /**
@@ -63,33 +77,14 @@ private:
 };
 }
 
-#include "libbirch/Array.hpp"
-#include "libbirch/Inplace.hpp"
 #include "libbirch/Shared.hpp"
-#include "libbirch/Any.hpp"
-
-template<class T, class F>
-void libbirch::Copier::visit(Array<T,F>& o) {
-  if (!std::is_trivially_copyable<T>::value) {
-    auto iter = o.begin();
-    auto last = o.end();
-    for (; iter != last; ++iter) {
-      visit(*iter);
-    }
-  }
-}
-
-template<class T>
-void libbirch::Copier::visit(Inplace<T>& o) {
-  return o->accept_(*this);
-}
 
 template<class T>
 void libbirch::Copier::visit(Shared<T>& o) {
-  if (!o.b) {
-    Any* u = o.load();
-    T* v = static_cast<T*>(visit(u));
-    v->incShared_();
-    o.store(v);
+  auto [ptr, bridge] = o.unpack();
+  if (!bridge && ptr) {
+    ptr = static_cast<T*>(visitObject(ptr));
+    ptr->incShared_();
+    o.store(ptr);
   }
 }

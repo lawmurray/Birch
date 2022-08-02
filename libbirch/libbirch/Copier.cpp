@@ -5,9 +5,11 @@
 
 #include "libbirch/Any.hpp"
 
-libbirch::Any* libbirch::Copier::visit(Any* o) {
+libbirch::Any* libbirch::Copier::visitObject(Any* o) {
   auto& value = m.get(o);
-  if (!value) {
+  if (value) {
+    return value;
+  } else {
     value = o->copy_();
 
     /* copy the value into a non-reference, as the reference may be
@@ -15,7 +17,5 @@ libbirch::Any* libbirch::Copier::visit(Any* o) {
     Any* result = value;
     result->accept_(*this);
     return result;
-  } else {
-    return value;
   }
 }

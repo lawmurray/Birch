@@ -29,45 +29,6 @@ function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
 }
 
 /**
- * Vectorize a matrix by stacking its columns. This is the inverse operation
- * of `mat()`.
- *
- * - X: The matrix.
- */
-function vec<Type>(X:Type[_,_]) -> Type[_] {
-  let R <- rows(X);
-  let C <- columns(X);
-  return vector_lambda(\(i:Integer) -> Type {
-        return X[mod(i - 1, R) + 1, (i - 1)/R + 1];
-      }, R*C);
-}
-
-/**
- * Matrixize a vector by unstacking it into columns. This is the inverse
- * operation of `vec()`.
- *
- * - x: The vector.
- * - columns: The number of columns. Must be a factor of the length of `x`.
- */
-function mat<Type>(x:Type[_], columns:Integer) -> Type[_,_] {
-  assert mod(length(x), columns) == 0;
-  let R <- length(x)/columns;
-  let C <- columns;
-  return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-        return x[(j - 1)*R + i];
-      }, R, C);
-}
-
-/**
- * Create identity matrix.
- *
- * - length: Number of rows/columns.
- */
-function identity(length:Integer) -> Real[_,_] {
-  return diagonal(1.0, length);
-}
-
-/**
  * Create a matrix filled by a lambda function.
  *
  * - λ: Lambda function.
@@ -82,10 +43,13 @@ function identity(length:Integer) -> Real[_,_] {
  */
 function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
-  /* wrap λ in another lambda function to translate 0-based serial (row-wise)
-   * indices into 1-based row/column indices */
-  return libbirch::make_array_from_lambda(libbirch::make_shape(rows,
-      columns), [&](int64_t i) { return λ(i/columns + 1, i%columns + 1); });
+  using T = decltype(wait(λ(1,1)));
+  return numbirch::Array<T,2>(numbirch::make_shape(rows, columns),
+      [&](const int64_t s) {
+        int j = (s - 1)/rows + 1;
+        int i = (s - 1)%rows + 1;
+        return λ(i, j);
+      });
   }}
 }
 
@@ -96,65 +60,8 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
  * - rows: Number of rows.
  * - columns: Number of columns.
  */
-function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
+function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> {
   cpp{{
-  return libbirch::make_array_from_value<Type>(libbirch::make_shape(rows,
-      columns), x);
+  return numbirch::Array(numbirch::make_shape(rows, columns), x);
   }}
-}
-
-function rows<Type>(x:Type[_,_]) -> Integer {
-  cpp{{
-  return x.rows();
-  }}
-}
-
-function columns<Type>(x:Type[_,_]) -> Integer {
-  cpp{{
-  return x.cols();
-  }}
-}
-
-function length<Type>(x:Type[_,_]) -> Integer {
-  return rows(x);
-}
-
-function size<Type>(x:Type[_,_]) -> Integer {
-  return rows(x)*columns(x);
-}
-
-function value<Type>(x:Type[_,_]) -> Type[_,_] {
-  return x;
-}
-
-function peek<Type>(x:Type[_,_]) -> Type[_,_] {
-  return x;
-}
-
-function eval<Type>(x:Type[_,_]) -> Type[_,_] {
-  return x;
-}
-
-function reval<Type>(x:Type[_,_]) -> Type[_,_] {
-  return x;
-}
-
-function grad<Type,Gradient>(x:Type[_,_], d:Gradient) {
-  //
-}
-
-function grad<Type,Gradient>(x:Type[_,_], d:Gradient, i:Integer, j:Integer) {
-  //
-}
-
-function label<Type>(x:Type[_,_], gen:Integer) {
-  //
-}
-
-function constant<Type>(x:Type[_,_], gen:Integer) {
-  //
-}
-
-function constant<Type>(x:Type[_,_]) {
-  //
 }

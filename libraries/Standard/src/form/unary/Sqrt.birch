@@ -1,33 +1,25 @@
-struct SqrtFunction {
-function compute<Value>(m:Value) -> {
-    return sqrt(m);
-  }
+struct Sqrt<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*0.5/sqrt(m);
-  }
-}
-struct Sqrt<Middle> = Unary<SqrtFunction,Middle>;
-
-/**
- * Square root.
- */
-function sqrt<Middle>(m:Middle) -> {
-  return construct<Sqrt<Middle>>(m);
-}
-
-/**
- * Square root.
- */
-function sqrt(m:Integer) -> Real {
-  return sqrt(scalar<Real>(m));
-}
-
-/**
- * Square root.
- */
-function sqrt(x:Real) -> Real {
-  cpp {{
-  return std::sqrt(x);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(sqrt, sqrt_grad)
   }}
 }
+
+hpp{{
+namespace birch {
+using numbirch::sqrt;
+using numbirch::sqrt_grad;
+
+/**
+ * Square root.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Sqrt<Middle> sqrt(const Middle& m) {
+  return construct<Sqrt<Middle>>(m);
+}
+}
+}}

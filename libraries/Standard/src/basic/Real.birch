@@ -1,24 +1,21 @@
 /**
- * 64-bit (double precision) floating point.
+ * Real value. By default this represented by a 64-bit double-precision
+ * floating-point value. If `--enable-single` is used when building the
+ * package, and `--precision=single` used when calling `birch`, this is
+ * instead represented by a 32-bit single-precision floating-point value.
  */
 type Real;
 
-/*
- * Operators
- */
-operator (+x:Real) -> Real;
-operator (x:Real > y:Real) -> Boolean;
-operator (x:Real >= y:Real) -> Boolean;
-operator (x:Real <= y:Real) -> Boolean;
-operator (x:Real == y:Real) -> Boolean;
-operator (x:Real != y:Real) -> Boolean;
+hpp{{
+using Real = numbirch::real;
+}}
 
 /**
  * Modulus.
  */
 function mod(x:Real, y:Real) -> Real {
   cpp {{
-  return ::fmod(x, y);
+  return std::fmod(x, y);
   }}
 }
 
@@ -56,61 +53,4 @@ function isnan(x:Real) -> Boolean {
   cpp{{
   return std::isnan(x);
   }}
-}
-
-/**
- * Is the value finite (i.e. not `inf` or `nan`)?
- */
-function isfinite(x:Real) -> Boolean {
-  cpp{{
-  return std::isfinite(x);
-  }}
-}
-
-function rows(x:Real) -> Integer {
-  return 1;
-}
-
-function columns(x:Real) -> Integer {
-  return 1;
-}
-
-function length(x:Real) -> Integer {
-  return 1;
-}
-
-function size(x:Real) -> Integer {
-  return 1;
-}
-
-function value(x:Real) -> Real {
-  return x;
-}
-
-function peek(x:Real) -> Real {
-  return x;
-}
-
-function eval(x:Real) -> Real {
-  return x;
-}
-
-function reval(x:Real) -> Real {
-  return x;
-}
-
-function grad<Gradient>(x:Real, d:Gradient) {
-  //
-}
-
-function label(x:Real, gen:Integer) {
-  //
-}
-
-function constant(x:Real, gen:Integer) {
-  //
-}
-
-function constant(x:Real) {
-  //
 }

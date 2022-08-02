@@ -1,34 +1,25 @@
-struct Expm1Function {
-function compute<Value>(m:Value) -> {
-    return expm1(m);
-  }
+struct Expm1<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return d*exp(m);
-  }
-}
-struct Expm1<Middle> = Unary<Expm1Function,Middle>;
-
-/**
- * Exponential minus one.
- */
-function expm1<Middle>(m:Middle) -> {
-  return construct<Expm1<Middle>>(m);
-}
-
-/**
- * Exponential minus one.
- */
-function expm1(m:Integer) -> Real {
-  return expm1(scalar<Real>(m));
-}
-
-/**
- * Exponential minus one.
- */
-function expm1(m:Real) -> Real {
-  cpp {{
-  return std::expm1(m);
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(expm1, expm1_grad)
   }}
 }
 
+hpp{{
+namespace birch {
+using numbirch::expm1;
+using numbirch::expm1_grad;
+
+/**
+ * Exponential minus one.
+ */
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Expm1<Middle> expm1(const Middle& m) {
+  return construct<Expm1<Middle>>(m);
+}
+}
+}}

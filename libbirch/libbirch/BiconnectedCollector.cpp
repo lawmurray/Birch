@@ -3,7 +3,9 @@
  */
 #include "libbirch/BiconnectedCollector.hpp"
 
-void libbirch::BiconnectedCollector::visit(Any* o) {
+#include "libbirch/Any.hpp"
+
+void libbirch::BiconnectedCollector::visitObject(Any* o) {
   auto old = o->f_.exchangeOr(COLLECTED);
   if (!(old & COLLECTED)) {
     o->accept_(*this);

@@ -1,48 +1,27 @@
-struct CopySignFunction {  
-  function compute<LeftValue,RightValue>(l:LeftValue, r:RightValue) -> {
-    return copysign(l, r);
-  }
-  
-  function grad<Gradient,LeftValue,RightValue>(d:Gradient, l:LeftValue,
-      r:RightValue) -> {
-    return (if_then_else(copysign(l, r) == l, d, -d), 0.0);
-  }
-}
-struct CopySign<Left,Right> = Binary<CopySignFunction,Left,Right>;
+struct CopySign<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-/**
- * Copy sign of a number.
- */
-function copysign<Left,Right>(l:Left, r:Right) -> {
-  return construct<CopySign<Left,Right>>(l, r);
-}
-
-/**
- * Copy sign of a number.
- */
-function copysign(l:Integer, r:Integer) -> Integer {
-  return if_then_else(r >= 0, abs(l), -abs(l));
-}
-
-/**
- * Copy sign of a number.
- */
-function copysign(l:Real, r:Real) -> Real {
-  cpp {{
-  return std::copysign(l, r);
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(copysign, copysign_grad)
   }}
 }
 
-/**
- * Copy sign of a number.
- */
-function copysign(l:Integer, r:Real) -> Real {
-  return copysign(scalar<Real>(l), r);
-}
+hpp{{
+namespace birch {
+using numbirch::copysign;
+using numbirch::copysign_grad1;
+using numbirch::copysign_grad2;
 
 /**
  * Copy sign of a number.
  */
-function copysign(l:Real, r:Integer) -> Real {
-  return copysign(l, scalar<Real>(r));
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+CopySign<Left,Right> copysign(const Left& l, const Right& r) {
+  return construct<CopySign<Left,Right>>(l, r);
 }
+}
+}}

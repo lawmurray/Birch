@@ -1,0 +1,22 @@
+struct InnerSelf<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(inner, inner_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::inner;
+using numbirch::inner_grad;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+InnerSelf<Middle> inner(const Middle& m) {
+  return construct<InnerSelf<Middle>>(m);
+}
+}
+}}

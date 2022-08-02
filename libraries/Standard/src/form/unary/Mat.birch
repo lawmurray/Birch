@@ -1,0 +1,27 @@
+struct Mat<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  /**
+   * Number of columns.
+   */
+  n:Integer <- n;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(mat, mat_grad, n)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::mat;
+using numbirch::mat_grad;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Mat<Middle> mat(const Middle& m, const int n) {
+  return construct<Mat<Middle>>(m, n);
+}
+}
+}}

@@ -1,0 +1,194 @@
+/**
+ * Matrix normal-inverse-Wishart distribution.
+ *
+ * !!! note
+ *     This class does not inherit from MatrixTDistribution, as it is
+ *     typically used for a random variable that is marginalized out.
+ */
+final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
+    N:Arg1, Λ:Arg2, Γ:Arg3, k:Arg4) < Distribution<Real[_,_]> {
+  /**
+   * Among-row concentration times mean.
+   */
+  N:Arg1 <- N;
+
+  /**
+   * Among-row concentration.
+   */
+  Λ:Arg2 <- Λ;
+  
+  /**
+   * Accumulator for among-column spread.
+   */
+  Γ:Arg3 <- Γ;
+  
+  /**
+   * Among-column degrees of freedom.
+   */
+  k:Arg4 <- k;
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Real[_,_] {
+    return simulate_matrix_normal_inverse_wishart(value(N), value(Λ),
+        value(Γ), value(k));
+  }
+
+  override function simulateLazy() -> Real[_,_]? {
+    return simulate_matrix_normal_inverse_wishart(eval(N), eval(Λ), eval(Γ),
+        eval(k));
+  }
+  
+  override function logpdf(X:Real[_,_]) -> Real! {   
+    return logpdf_matrix_normal_inverse_wishart(X, value(N), value(Λ),
+        value(Γ), value(k));
+  }
+
+  override function logpdfLazy(X:Real[_,_]) -> Real!? {   
+    return logpdf_matrix_normal_inverse_wishart(X, eval(N), eval(Λ),
+        eval(Γ), eval(k));
+  }
+
+  override function update(X:Real[_,_]) -> Delay? {
+    return update_matrix_normal_inverse_wishart(X, value(N), value(Λ),
+        value(Γ), value(k));
+  }
+
+  override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
+    return update_matrix_normal_inverse_wishart(X, N, Λ, Γ, k);
+  }
+
+  override function hoist() -> Expression<Real>? {   
+    return box(logpdf_matrix_normal_inverse_wishart(this.getVariate(), N, Λ,
+        Γ, k));
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(N);
+    global.constant(Λ);
+    global.constant(Γ);
+    global.constant(k);
+  }
+
+  override function isMatrixNormalInverseWishart() -> Boolean {
+    return true;
+  }
+
+  override function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
+    return box(N, Λ, Γ, k);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "MatrixNormalInverseWishart");
+    buffer.set("N", value(N));
+    buffer.set("Λ", value(Λ));
+    buffer.set("Γ", value(Γ));
+    buffer.set("k", value(k));
+  }
+}
+
+function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1, Σ:Arg2,
+    Ψ:Arg3, k:Arg4) -> Distribution<Real[_,_]> {
+  let L <- wrap(chol(Σ));
+  let O <- wrap(trisolve(L, M));
+  let N <- triinnersolve(L, O);
+  let Λ <- cholinv(L);
+  let Γ <- Ψ + inner(O);
+  return wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
+}
+function wrap_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
+    Λ:Arg2, Γ:Arg3, k:Arg4) -> {
+  return make_matrix_normal_inverse_wishart(wrap(N), wrap(Λ), wrap(Γ),
+      wrap(k));
+}
+function make_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
+    Λ:Arg2, Γ:Arg3, k:Arg4) -> {
+  return construct<MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,
+      Arg4>>(N, Λ, Γ, k);
+}
+
+/**
+ * Create matrix Gaussian distribution.
+ */
+function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
+    Distribution<Real[_,_]> {
+  if V.hasNext() && V.getNext().isInverseWishart() {
+    V.prune();
+    let (Ψ, k) <- V.getNext().getInverseWishart();
+    let L <- wrap(chol(U));
+    let O <- trisolve(L, M);
+    let N <- triinnersolve(L, O);
+    let Λ <- cholinv(L);
+    let Γ <- Ψ + inner(O);
+    let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
+    V.setNext(p);
+    return p;
+  } else {
+    return wrap_matrix_gaussian(M, U, V);
+  }
+}
+
+/*
+ * Simulate a matrix normal-inverse-Wishart distribution.
+ *
+ * - N: Among-row concentration times mean.
+ * - Λ: Among-row concentration.
+ * - Γ: Accumulator for among-column spread.
+ * - k: Degrees of freedom.
+ */
+function simulate_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
+    Λ:Arg2, Γ:Arg3, k:Arg4) -> {
+  let L <- wrap(chol(Λ));
+  let O <- wrap(trisolve(L, N));
+  let M <- wrap(triinnersolve(L, O));
+  let Σ <- cholinv(L);
+  let Ψ <- Γ - inner(O);
+  return simulate_matrix_t(k, M, Σ, Ψ);
+}
+
+/*
+ * Observe a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Among-row concentration times mean.
+ * - Λ: Among-row concentration.
+ * - Γ: Accumulator for among-column spread.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the log probability density.
+ */
+function logpdf_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
+    X:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5) -> {
+  let L <- wrap(chol(Λ));
+  let O <- wrap(trisolve(L, N));
+  let M <- wrap(triinnersolve(L, O));
+  let Σ <- cholinv(L);
+  let Ψ <- Γ - inner(O);
+  return logpdf_matrix_t(X, k, M, Σ, Ψ);
+}
+
+/*
+ * Update the parameters of a matrix normal-inverse-Wishart variate.
+ *
+ * - X: The variate.
+ * - N: Among-row concentration times mean.
+ * - Λ: Among-row concentration.
+ * - Γ: Accumulator for among-column spread.
+ * - k: Prior degrees of freedom.
+ *
+ * Returns: the posterior hyperparameters `Ψ'` and `k'`.
+ */
+function update_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
+    X:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5) -> {
+  let n <- rows(X);
+  let L <- wrap(chol(Λ));
+  let O <- wrap(trisolve(L, N));
+  let M <- wrap(triinnersolve(L, O));
+  let Ψ' <- Γ - inner(O) + inner(triinner(L, X - M));
+  let k' <- k + n;
+  return wrap_inverse_wishart(Ψ', k');
+}

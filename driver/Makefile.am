@@ -69,6 +69,7 @@ birch_SOURCES = \
   src/generate/CppClassGenerator.cpp \
   src/generate/CppGenerator.cpp \
   src/generate/CppPackageGenerator.cpp \
+  src/generate/CppStructGenerator.cpp \
   src/generate/IndentableGenerator.cpp \
   src/generate/MarkdownGenerator.cpp \
   src/primitive/string.cpp \
@@ -92,6 +93,7 @@ birch_SOURCES = \
   src/statement/If.cpp \
   src/statement/LocalVariable.cpp \
   src/statement/MemberFunction.cpp \
+  src/statement/MemberPhantom.cpp \
   src/statement/MemberVariable.cpp \
   src/statement/Package.cpp \
   src/statement/Parallel.cpp \
@@ -102,6 +104,7 @@ birch_SOURCES = \
   src/statement/Statement.cpp \
   src/statement/StatementIterator.cpp \
   src/statement/StatementList.cpp \
+  src/statement/Struct.cpp \
   src/statement/TupleVariable.cpp \
   src/statement/UnaryOperator.cpp \
   src/statement/While.cpp \
@@ -109,6 +112,7 @@ birch_SOURCES = \
   src/type/ArrayType.cpp \
   src/type/DeducedType.cpp \
   src/type/EmptyType.cpp \
+  src/type/FutureType.cpp \
   src/type/MemberType.cpp \
   src/type/NamedType.cpp \
   src/type/OptionalType.cpp \
@@ -184,6 +188,7 @@ noinst_HEADERS = \
   src/generate/CppClassGenerator.hpp \
   src/generate/CppGenerator.hpp \
   src/generate/CppPackageGenerator.hpp \
+  src/generate/CppStructGenerator.hpp \
   src/generate/IndentableGenerator.hpp \
   src/generate/MarkdownGenerator.hpp \
   src/primitive/inherits.hpp \
@@ -210,6 +215,7 @@ noinst_HEADERS = \
   src/statement/If.hpp \
   src/statement/LocalVariable.hpp \
   src/statement/MemberFunction.hpp \
+  src/statement/MemberPhantom.hpp \
   src/statement/MemberVariable.hpp \
   src/statement/Package.hpp \
   src/statement/Parallel.hpp \
@@ -220,6 +226,7 @@ noinst_HEADERS = \
   src/statement/Statement.hpp \
   src/statement/StatementIterator.hpp \
   src/statement/StatementList.hpp \
+  src/statement/Struct.hpp \
   src/statement/TupleVariable.hpp \
   src/statement/UnaryOperator.hpp \
   src/statement/While.hpp \
@@ -228,6 +235,7 @@ noinst_HEADERS = \
   src/type/ArrayType.hpp \
   src/type/DeducedType.hpp \
   src/type/EmptyType.hpp \
+  src/type/FutureType.hpp \
   src/type/MemberType.hpp \
   src/type/NamedType.hpp \
   src/type/OptionalType.hpp \
@@ -256,7 +264,8 @@ dist_pkgdata_DATA = \
   share/LICENSE \
   share/Makefile.am \
 	share/mkdocs.yml  \
-  share/README.md
+  share/README.md \
+  share/standalone.cpp
 
 dist_noinst_DATA = \
   Doxyfile \

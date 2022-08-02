@@ -203,7 +203,11 @@ program sample(
       outputBuffer.set("ess", theFilter!.ess);
       outputBuffer.set("lnormalize", theFilter!.lnormalize);
       outputBuffer.set("npropagations", theFilter!.npropagations);
-      outputBuffer.set("raccepts", theFilter!.raccepts);
+      if theFilter!.raccepts? {
+        outputBuffer.set("raccepts", theFilter!.raccepts!);
+      } else {
+        outputBuffer.setNil("raccepts");
+      }
     }
 
     /* progress bar */
@@ -229,7 +233,11 @@ program sample(
         outputBuffer.push("ess", theFilter!.ess);
         outputBuffer.push("lnormalize", theFilter!.lnormalize);
         outputBuffer.push("npropagations", theFilter!.npropagations);
-        outputBuffer.push("raccepts", theFilter!.raccepts);
+        if theFilter!.raccepts? {
+          outputBuffer.push("raccepts", theFilter!.raccepts!);
+        } else {
+          outputBuffer.pushNil("raccepts");
+        }
       }
 
       /* progress bar */
@@ -266,7 +274,7 @@ program sample(
 
     /* progress bar */
     if !quiet {
-      bar.update(scalar<Real>(n)/nsamples!);
+      bar.update(cast<Real>(n)/nsamples!);
     }
   }
 

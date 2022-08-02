@@ -1,0 +1,12 @@
+/**
+ * Bounded discrete distribution.
+ */
+abstract class BoundedDiscreteDistribution < DiscreteDistribution {
+  override function isBoundedDiscrete() -> Boolean {
+    return true;
+  }
+
+  override function getBoundedDiscrete() -> BoundedDiscreteDistribution {
+    return this;
+  }
+}

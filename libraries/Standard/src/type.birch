@@ -1,0 +1,1006 @@
+hpp{{
+namespace birch {
+/**
+ * Is `T` an array type?
+ */
+template<class T>
+struct is_array {
+  static constexpr bool value = false;
+};
+template<class T, int D>
+struct is_array<numbirch::Array<T,D>> {
+  static constexpr bool value = true;
+};
+template<class T>
+inline constexpr bool is_array_v = is_array<std::decay_t<T>>::value;
+
+/**
+ * Is `T` a future type?
+ */
+template<class T>
+struct is_future {
+  static constexpr bool value = false;
+};
+template<class T>
+struct is_future<numbirch::Scalar<T>> {
+  static constexpr bool value = true;
+};
+template<class T>
+inline constexpr bool is_future_v = is_future<std::decay_t<T>>::value;
+
+/**
+ * Is `T` a form type?
+ */
+template<class T>
+struct is_form {
+  static constexpr bool value = std::is_base_of_v<Form,T>;
+};
+template<class T>
+inline constexpr bool is_form_v = is_form<std::decay_t<T>>::value;
+
+/**
+ * Is `T` an expression type?
+ */
+template<class T>
+struct is_expression {
+private:
+  template<class U>
+  static constexpr bool test(
+        typename std::decay_t<U>::value_type::Value_*) {
+    return std::is_base_of_v<
+        Expression_<typename std::decay_t<U>::value_type::Value_>,
+        typename std::decay_t<U>::value_type>;
+  }
+  template<class>
+  static constexpr bool test(...) {
+    return false;
+  }
+
+public:
+  static constexpr bool value = test<T>(0);
+};
+template<class T>
+inline constexpr bool is_expression_v = is_expression<std::decay_t<T>>::value;
+
+/**
+ * Is `T` either of arithmetic, array, form, or expression type?
+ */
+template<class T>
+struct is_numerical {
+  static constexpr bool value = numbirch::is_numeric_v<T> || is_form_v<T> ||
+      is_expression_v<T>;
+};
+template<class T>
+inline constexpr bool is_numerical_v = is_numerical<std::decay_t<T>>::value;
+
+/**
+ * Are all of the given types either of arithmetic, array, Form, or Expression
+ * type?
+ */
+template<class Arg, class... Args>
+struct all_numerical {
+  static constexpr bool value = is_numerical_v<Arg> &&
+      all_numerical<Args...>::value;
+};
+template<class Arg>
+struct all_numerical<Arg> {
+  static constexpr bool value = is_numerical_v<Arg>;
+};
+template<class... Args>
+inline constexpr bool all_numerical_v = all_numerical<Args...>::value;
+
+/**
+ * Are any of the given types of a form or expression type?
+ */
+template<class Arg, class... Args>
+struct any_form_or_expression {
+  static constexpr bool value = is_form_v<Arg> || is_expression_v<Arg> ||
+      any_form_or_expression<Args...>::value;
+};
+template<class Arg>
+struct any_form_or_expression<Arg> {
+  static constexpr bool value = is_form_v<Arg> || is_expression_v<Arg>;
+};
+template<class... Args>
+inline constexpr bool any_form_or_expression_v =
+    any_form_or_expression<Args...>::value;
+
+/**
+ * Are the given types compatible as operands in a delayed expression?
+ */
+template<class... Args>
+struct is_delay {
+  static constexpr bool value = all_numerical_v<Args...> &&
+      any_form_or_expression_v<Args...>;
+};
+template<class... Args>
+inline constexpr bool is_delay_v = is_delay<Args...>::value;
+
+/**
+ * Construct an object.
+ *
+ * - Type: The class type.
+ * - Args: Argument types.
+ *
+ * Returns: The object.
+ */
+template<class Type, class... Args>
+Type construct(Args&&... args) {
+  return Type(std::in_place, std::forward<Args>(args)...);
+}
+
+/**
+ * Make a shared object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<
+    libbirch::is_pointer<T>::value &&
+    std::is_constructible_v<typename T::value_type,Args...>,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return T(std::forward<Args>(args)...);
+}
+
+/**
+ * Make a shared object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<
+    libbirch::is_pointer<T>::value &&
+    !std::is_constructible_v<typename T::value_type,Args...>,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return std::nullopt;
+}
+
+/**
+ * Make a value or object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<
+    !libbirch::is_pointer<T>::value &&
+    std::is_constructible_v<T,Args...>,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return T(std::forward<Args>(args)...);
+}
+
+/**
+ * Make a value or object.
+ *
+ * @tparam T Type.
+ * @tparam Args Argument types.
+ * 
+ * @param args Arguments.
+ *
+ * @return If the type is constructible with the given arguments, then an
+ * optional with a so-constructed value, otherwise an optional with no value.
+ */
+template<class T, class... Args, std::enable_if_t<
+    !libbirch::is_pointer<T>::value &&
+    !std::is_constructible_v<T,Args...>,int> = 0>
+std::optional<T> make_optional(Args&&... args) {
+  return std::nullopt;
+}
+
+/**
+ * Cast of anything to itelf.
+ */
+template<class To, class From,
+    std::enable_if_t<std::is_same_v<To,From>,int> = 0>
+std::optional<To> optional_cast(const From& from) {
+  return from;
+}
+}
+}}
+
+/**
+ * Make an object, with the type given as an argument.
+ *
+ *   - Type: The type.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * The make will not succeed if the type is a class with initialization
+ * parameters, or a compound type that includes such a class.
+ */
+function make<Type>() -> Type? {
+  return make_optional<Type>();
+}
+
+/**
+ * Make an object, with the class given as a string.
+ *
+ *   - Type: Base type, which may be Object.
+ *   - name: Name of the class.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(name:String) -> Type? {
+  result:Object?;
+  cpp{{
+  auto f = retrieve_factory(name);
+  if (f) {
+    result = Object(f());
+  }
+  }}
+  return Type?(result);
+}
+
+/**
+ * Make an object, with the class given in a buffer.
+ *
+ *   - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make(buffer:Buffer) -> Object? {
+  result:Object?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Object>(className!);
+  }
+  if result? {
+    result!.read(buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer.
+ *
+ *   - t: Step number.
+ *   - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make(t:Integer, buffer:Buffer) -> Object? {
+  result:Object?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Object>(className!);
+  }
+  if result? {
+    result!.read(t, buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer, otherwise by a generic
+ * type.
+ *
+ * - Type: Class if not given in buffer.
+ *
+ * - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. Otherwise, an object of class `Type` is constructed, if
+ * possible. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(buffer:Buffer) -> Type? {
+  result:Type?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Type>(className!);
+  } else {
+    result <- make<Type>();
+  }
+  if result? {
+    result!.read(buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer, otherwise by a generic
+ * type.
+ *
+ * - Type: Class if not given in buffer.
+ *
+ * - t: Step number.
+ * - buffer: The buffer.
+ *
+ * Returns: An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. Otherwise, an object of class `Type` is constructed, if
+ * possible. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(t:Integer, buffer:Buffer) -> Type? {
+  result:Type?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Type>(className!);
+  } else {
+    result <- make<Type>();
+  }
+  if result? {
+    result!.read(t, buffer);
+  }
+  return result;
+}
+
+hpp{{
+namespace birch {
+/**
+ * Cast of a pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same_v<To,From> &&
+    libbirch::is_pointer<To>::value && libbirch::is_pointer<From>::value,int> = 0>
+std::optional<To> optional_cast(const From& from) {
+  auto ptr = dynamic_cast<typename To::value_type*>(from.get());
+  if (ptr) {
+    return To(ptr);
+  } else {
+    return std::nullopt;
+  }
+}
+
+/**
+ * Cast of a non-pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same_v<To,From> &&
+    std::is_constructible_v<To,From> &&
+    (!libbirch::is_pointer<To>::value ||
+    !libbirch::is_pointer<From>::value),int> = 0>
+std::optional<To> optional_cast(const From& from) {
+  return To(from);
+}
+
+/**
+ * Non-identity cast of a non-pointer.
+ */
+template<class To, class From,
+    std::enable_if_t<!std::is_same_v<To,From> &&
+    !std::is_constructible_v<To,From> &&
+    (!libbirch::is_pointer<To>::value ||
+    !libbirch::is_pointer<From>::value),int> = 0>
+std::optional<To> optional_cast(const From& from) {
+  return std::nullopt;
+}
+
+/**
+ * Cast of an optional of anything.
+ */
+template<class To, class From>
+std::optional<To> optional_cast(const std::optional<From>& from) {
+  if (from.has_value()) {
+    return optional_cast<To>(from.value());
+  } else {
+    return std::nullopt;
+  }
+}
+}
+}}
+
+/**
+ * Find bridges in the reachable graph.
+ */
+function bridge<Type>(o:Type) {
+  cpp{{
+  o.bridge();
+  }}
+}
+
+/**
+ * Deep copy. May be preceded by bridge() for a lazy copy, otherwise will
+ * perform an eager copy.
+ */
+function copy<Type>(o:Type) -> Type {
+  cpp{{
+  return o.copy();
+  }}
+}
+
+/**
+ * Deep copy multiple times to construct an array. May be preceded by bridge()
+ * for lazy copies, otherwise will perform eager copies.
+ *
+ * - o: Source object.
+ * - length: Length of vector.
+ */
+function copy<Type>(o:Type, length:Integer) -> Type[_] {
+  return vector_lambda(\(i:Integer) -> { return copy(o); }, length);
+}
+
+/**
+ * Wait on a future and return the result. When applied to futures, this is
+ * equivalent to the postfix `!` operator, while when applied to non-futures,
+ * it is equivalent to the identity function.
+ *
+ * !!! tip
+ *     `wait()` is useful for generic types, which may or may not be futures.
+ */
+function wait<Type>(x:Type!) -> Type;
+
+hpp{{
+namespace birch {
+template<class T, std::enable_if_t<is_future_v<T>,int> = 0>
+auto wait(const T& x) {
+  return x.value();
+}
+
+template<class T, std::enable_if_t<!is_future_v<T>,int> = 0>
+auto wait(const T& x) {
+  return x;
+}
+}
+}}
+
+/**
+ * Box a value. The `box()` series of functions boxes basic values into
+ * [Expression](../../classes/Expression) objects, using the following
+ * conversions:
+ *
+ * | From                | To                        | Detail                                                                         |
+ * | ------------------- | ------------------------- | ---------------------------------------------------- |
+ * | `Value`             | `Expression<Value>`       | where `Value` is a basic or array type.              |
+ * | `Value!`            | `Expression<Value>`       | where `Value` is a basic type.                       |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
+ * | `Expression<Value>` | `Expression<Value>`       |                                                                                |
+ *
+ * See also: [wrap](../../functions/wrap)
+ */
+function box<Type>(x:Type) -> ;
+
+hpp{{
+namespace birch {
+template<class T, std::enable_if_t<numbirch::is_arithmetic_v<T>,int> = 0>
+Expression<T> box(const T& x) {
+  return Expression<T>(construct<BoxedValue<T>>(x));
+}
+
+template<class T, std::enable_if_t<is_array_v<T> &&
+    !is_future_v<T>,int> = 0>
+Expression<T> box(const T& x) {
+  return Expression<T>(construct<BoxedValue<T>>(x));
+}
+
+template<class T, std::enable_if_t<is_future_v<T>,int> = 0>
+Expression<typename T::value_type> box(const T& x) {
+  using U = typename T::value_type;
+  return Expression<U>(construct<BoxedValue<U>>(x));
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto box(const T& x) {
+  auto y = eval(x);
+  using U = typename std::decay_t<decltype(wait(y))>;
+  return Expression<U>(construct<BoxedForm<U,T>>(y, x));
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto box(const T& x) {
+  return x;
+}
+}
+}}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2>(x:(Value1,Value2)) -> {
+  let (x1, x2) <- x;
+  return (box(x1), box(x2));
+}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) -> {
+  let (x1, x2, x3) <- x;
+  return (box(x1), box(x2), box(x3));
+}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) -> {
+  let (x1, x2, x3, x4) <- x;
+  return (box(x1), box(x2), box(x3), box(x4));
+}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) -> {
+  let (x1, x2, x3, x4, x5) <- x;
+  return (box(x1), box(x2), box(x3), box(x4), box(x5));
+}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) -> {
+  let (x1, x2, x3, x4, x5, x6) <- x;
+  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6));
+}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) -> {
+  let (x1, x2, x3, x4, x5, x6, x7) <- x;
+  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7));
+}
+
+/**
+ * Box the elements of a tuple.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) -> {
+  let (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
+  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7), box(x8));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2>(x1:Value1, x2:Value2) -> {
+  return (box(x1), box(x2));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2,Value3>(x1:Value1, x2:Value2, x3:Value3) -> {
+  return (box(x1), box(x2), box(x3));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2,Value3,Value4>(x1:Value1, x2:Value2, x3:Value3, x4:Value4) -> {
+  return (box(x1), box(x2), box(x3), box(x4));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2,Value3,Value4,Value5>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5) -> {
+  return (box(x1), box(x2), box(x3), box(x4), box(x5));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6) -> {
+  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7) -> {
+  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7));
+}
+
+/**
+ * Box multiple arguments.
+ */
+function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7, x8:Value8) -> {
+  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7), box(x8));
+}
+
+/**
+ * Wrap a value. The `wrap()` series of functions preserves basic values,
+ * while boxing expression forms into [Expression](../../classes/Expression)
+ * objects, using the following conversions:
+ *
+ * | From                | To                        | Detail                                                                         |
+ * | ------------------- | ------------------------- | ---------------------------------------------------- |
+ * | `Value`             | `Value`                   | where `Value` is a basic or array type.              |
+ * | `Value!`            | `Value!`                  | where `Value` is a basic type.                       |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
+ * | `Expression<Value>` | `Expression<Value>`       |                                                      |
+ *
+ * See also: [box](../../functions/box)
+ */
+function wrap<Type>(x:Type) -> ;
+
+hpp{{
+namespace birch {
+template<class T, std::enable_if_t<numbirch::is_arithmetic_v<T>,int> = 0>
+auto wrap(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_array_v<T>,int> = 0>
+auto wrap(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto wrap(const T& x) {
+  return box(x);
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto wrap(const T& x) {
+  return x;
+}
+}
+}}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2>(x:(Value1,Value2)) -> {
+  let (x1, x2) <- x;
+  return (wrap(x1), wrap(x2));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) -> {
+  let (x1, x2, x3) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) -> {
+  let (x1, x2, x3, x4) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) -> {
+  let (x1, x2, x3, x4, x5) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) -> {
+  let (x1, x2, x3, x4, x5, x6) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) -> {
+  let (x1, x2, x3, x4, x5, x6, x7) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7));
+}
+
+/**
+ * Wrap the elements of a tuple.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) -> {
+  let (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2>(x1:Value1, x2:Value2) -> {
+  return (wrap(x1), wrap(x2));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3>(x1:Value1, x2:Value2, x3:Value3) -> {
+  return (wrap(x1), wrap(x2), wrap(x3));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4>(x1:Value1, x2:Value2, x3:Value3, x4:Value4) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7));
+}
+
+/**
+ * Wrap multiple arguments.
+ */
+function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7, x8:Value8) -> {
+  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
+}
+
+hpp{{
+namespace birch {
+using numbirch::rows;
+using numbirch::columns;
+using numbirch::length;
+using numbirch::size;
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto rows(const T& x) {
+  return x.rows();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto rows(const T& x) {
+  return x->rows();
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto columns(const T& x) {
+  return x.columns();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto columns(const T& x) {
+  return x->columns();
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto length(const T& x) {
+  return x.length();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto length(const T& x) {
+  return x->length();
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto size(const T& x) {
+  return x.size();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto size(const T& x) {
+  return x->size();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+auto value(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto value(const T& x) {
+  return x.value();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto value(const T& x) {
+  return x->value();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+auto eval(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto eval(const T& x) {
+  return x.eval();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto eval(const T& x) {
+  return x->eval();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+auto peek(const T& x) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto peek(const T& x) {
+  return x.peek();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto peek(const T& x) {
+  return x->peek();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+auto move(const T& x, const MoveVisitor& visitor) {
+  return x;
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+auto move(const T& x, const MoveVisitor& visitor) {
+  return x.move(visitor);
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+auto move(const T& x, const MoveVisitor& visitor) {
+  return x->move(visitor);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void args(const T& x, const ArgsVisitor& visitor) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+void args(const T& x, const ArgsVisitor& visitor) {
+  x.args(visitor);
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+void args(const T& x, const ArgsVisitor& visitor) {
+  x->args(visitor);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void reset(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+void reset(T& x) {
+  x.reset();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+void reset(const T& x) {
+  x->reset();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void relink(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+void relink(T& x) {
+  x.relink();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+void relink(const T& x) {
+  x->relink();
+}
+
+template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void grad(const T& x, const G& g) {
+  //
+}
+
+template<class T, class G, std::enable_if_t<is_form_v<T>,int> = 0>
+void grad(T& x, const G& g) {
+  x.grad(g);
+}
+
+template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
+void grad(const T& x, const G& g) {
+  x->grad(g);
+}
+
+template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void shallow_grad(const T& x, const G& g) {
+  //
+}
+
+template<class T, class G, std::enable_if_t<is_form_v<T>,int> = 0>
+void shallow_grad(T& x, const G& g) {
+  x.shallowGrad(g);
+}
+
+template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
+void shallow_grad(const T& x, const G& g) {
+  x->shallowGrad(g);
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void deep_grad(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+void deep_grad(T& x) {
+  x.deepGrad();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+void deep_grad(const T& x) {
+  x->deepGrad();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+void constant(const T& x) {
+  //
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+void constant(T& x) {
+  x.constant();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+void constant(const T& x) {
+  x->constant();
+}
+
+template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+bool is_constant(const T& x) {
+  return true;
+}
+
+template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
+bool is_constant(T& x) {
+  return x.isConstant();
+}
+
+template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
+bool is_constant(const T& x) {
+  return x->isConstant();
+}
+
+}
+}}

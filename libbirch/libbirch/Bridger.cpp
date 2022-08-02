@@ -3,8 +3,10 @@
  */
 #include "libbirch/Bridger.hpp"
 
-std::tuple<int,int,int,int> libbirch::Bridger::visit(const int j, const int k,
-    Any* o) {
+#include "libbirch/Any.hpp"
+
+std::tuple<int,int,int,int> libbirch::Bridger::visitObject(const int j,
+    const int k, Any* o) {
   if (o->p_ == get_thread_num()) {
     int l, h, m, n, l1, h1, m1, n1;
     o->p_ = -1;

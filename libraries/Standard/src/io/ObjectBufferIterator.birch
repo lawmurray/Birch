@@ -5,17 +5,17 @@
  * - keys: Keys.
  * - values: Values.
  */
-final class ObjectBufferIterator(keys:String[_], values:Buffer[_]) <
+final class ObjectBufferIterator(keys:Array<String>, values:Array<Buffer>) <
     Iterator<Buffer> {
   /**
    * Keys.
    */
-  keys:String[_]? <- keys;
+  keys:Array<String>? <- keys;
 
   /**
    * Values.
    */
-  values:Buffer[_]? <- values;
+  values:Array<Buffer>? <- values;
 
   /**
    * Is there a next element?

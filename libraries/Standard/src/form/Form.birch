@@ -1,0 +1,6 @@
+/*
+ * Base struct for function forms.
+ */
+struct Form {
+  //
+}

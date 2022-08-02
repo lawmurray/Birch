@@ -41,12 +41,7 @@ enum Annotation {
   /**
    * `acyclic` annotation on a class.
    */
-  ACYCLIC = 32,
-
-  /**
-   * Struct, rather than class (implies FINAL).
-   */
-  STRUCT = 64|16
+  ACYCLIC = 32
 };
 
 /**

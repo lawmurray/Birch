@@ -37,9 +37,13 @@ class ParticleSampler {
   }
 
   /**
-   * Finalize a sample.
+   * Draw a sample from the particle filter.
    */
   function draw(filter:ParticleFilter) -> (Model, Real) {
-    return (filter.x[filter.b].m, filter.lnormalize);
+    let b <- ancestor(filter.w);
+    if b == 0 {
+      error("particle filter degenerated");
+    }
+    return (filter.x[b], filter.lnormalize);
   }
 }

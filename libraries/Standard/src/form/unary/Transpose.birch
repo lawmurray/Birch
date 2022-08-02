@@ -1,92 +1,25 @@
-struct TransposeFunction {
-function compute<Value>(m:Value) -> {
-    return transpose(m);
-  }
+struct Transpose<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
 
-function grad<Gradient,Value>(d:Gradient, m:Value) -> {
-    return transpose(d);
-  }
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(transpose, transpose_grad)
+  }}
 }
-struct Transpose<Middle> = Unary<TransposeFunction,Middle>;
+
+hpp{{
+namespace birch {
+using numbirch::transpose;
+using numbirch::transpose_grad;
 
 /**
  * Matrix transpose.
  */
-function transpose<Middle>(m:Middle) -> {
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Transpose<Middle> transpose(const Middle& m) {
   return construct<Transpose<Middle>>(m);
 }
-
-/**
- * Transpose of a scalar (identity operation).
- */
-function transpose(m:Boolean) -> Boolean {
-  return m;
 }
-
-/**
- * Transpose of a scalar (identity operation).
- */
-function transpose(m:Integer) -> Integer {
-  return m;
-}
-
-/**
- * Transpose of a scalar (identity operation).
- */
-function transpose(m:Real) -> Real {
-  return m;
-}
-
-/**
- * Transpose of a vector into a matrix.
- */
-function transpose(x:Boolean[_]) -> Boolean[_,_] {
-  cpp{{
-  return x.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a vector into a matrix.
- */
-function transpose(x:Integer[_]) -> Integer[_,_] {
-  cpp{{
-  return x.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a vector into a matrix.
- */
-function transpose(x:Real[_]) -> Real[_,_] {
-  cpp{{
-  return x.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a matrix.
- */
-function transpose(X:Boolean[_,_]) -> Boolean[_,_] {
-  cpp{{
-  return X.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a matrix.
- */
-function transpose(X:Integer[_,_]) -> Integer[_,_] {
-  cpp{{
-  return X.toEigen().transpose();
-  }}
-}
-
-/**
- * Transpose of a matrix.
- */
-function transpose(X:Real[_,_]) -> Real[_,_] {
-  cpp{{
-  return X.toEigen().transpose();
-  }}
-}
+}}

@@ -12,24 +12,17 @@
  * ```
  */
 class AliveParticleFilter < ParticleFilter {
-  /**
-   * Number of propagations for each particle, along with the extra particle
-   * to be discarded.
-   */
-  p:Integer[_];
-
   override function simulate(t:Integer, input:Buffer) {
-    a <- resample_systematic(w);  // normal resample intializes first attempt
-    p <- vector(0, nparticles);
-
-    let x0 <- x;
-    let w0 <- w;
-
     /* apply bridge finding to all particles in case needed, but actual copy()
      * is performed as-needed below */
     parallel for n in 1..nparticles {
-      bridge(x0[n]);
+      bridge(x[n]);
     }
+
+    let x0 <- copy(x);
+    let w0 <- w;
+    let p <- vector(0, nparticles);  // number of propagations per particle
+    let (a, o) <- resample_systematic(w);  // initial resample
 
     /* propagate */
     parallel for n in 1..nparticles {
@@ -37,38 +30,27 @@ class AliveParticleFilter < ParticleFilter {
         x[n] <- global.copy(x0[a[n]]);
         p[n] <- p[n] + 1;
 
-        let m <- x[n].m;
-        let h <- x[n].h;
+        let m <- x[n];
+        let h <- construct<Handler>(autoconj, autodiff, autojoin);
         with h {
-          h.w <- 0.0;
-          x[n].m.read(t, input);
-          x[n].m.simulate(t);
-          w[n] <- h.w;
+          x[n].read(t, input);
+          x[n].simulate(t);
         }
+        x[n].Ξ.pushBack(h.Ξ);
+        x[n].Φ.pushBack(h.Φ);
+        w[n] <- h.w;
         if !isfinite(w[n]) {
           a[n] <- global.ancestor(w0);  // try again
         }
       } while !isfinite(w[n]);
     }
-    collect();
 
     /* discard a random particle to debias (random, rather than last, as
      * particles are not exchangeable for all resamplers) */
     w[simulate_uniform_int(1, nparticles)] <- -inf;
-  }
 
-  override function resample(t:Integer) {
-    /* proceed as though no resample, so just normalize weights, and let
-     * propagate handle the rest */
-    a <- iota(1, nparticles);
-    w <- w - vector(lsum - log(nparticles), nparticles);
-  }
-
-  override function reduce() {
-    super.reduce();
     npropagations <- sum(p);
-    if npropagations > 0 {
-      lnormalize <- lnormalize + log(nparticles) - log(npropagations-1);
-    }
+    (ess, lsum) <- resample_reduce(w);
+    lnormalize <- lnormalize + lsum - log(npropagations - 1);
   }
 }

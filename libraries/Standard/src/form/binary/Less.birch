@@ -1,0 +1,27 @@
+struct Less<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(operator<, less_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::operator<;
+using numbirch::less_grad1;
+using numbirch::less_grad2;
+
+/**
+ * Less than comparison.
+ */
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+Less<Left,Right> operator<(const Left& l, const Right& r) {
+  return construct<Less<Left,Right>>(l, r);
+}
+}
+}}
