@@ -158,7 +158,7 @@ commands:
               cd driver
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $DRIVER_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
               make $MAKE_FLAGS
               make install
       - run:
@@ -183,7 +183,7 @@ commands:
               cd << parameters.package >>
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
-              ./configure --prefix="$PREFIX" $LIB_FLAGS || cat config.log
+              ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
               make $MAKE_FLAGS
               make install
 
@@ -208,7 +208,7 @@ commands:
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || cat config.log
+              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || (cat config.log && exit 1)
           no_output_timeout: 30m
       - when:
           condition:
