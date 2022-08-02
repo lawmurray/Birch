@@ -62,27 +62,6 @@ function nan_max(w:Real[_]) -> Real {
 }
 
 /*
- * Exponentiate and sum a log weight vector.
- *
- * - w: Log weights.
- *
- * Return: the logarithm of the sum.
- *
- * !!! note
- *     NaN log weights are treated as though `-inf`.
- */
-function log_sum_exp(w:Real[_]) -> Real {
-  if length(w) > 0 {
-    let mx <- nan_max(w);
-    let r <- transform_reduce(w, 0.0, \(x:Real, y:Real) -> { return x + y; },
-        \(x:Real) -> { return nan_exp(x - mx); });
-    return mx + log(r);
-  } else {
-    return -inf;
-  }
-}
-
-/*
  * Convert a log weight vector into a normalized weight vector.
  *
  * - w: Log weights.
@@ -96,8 +75,8 @@ function norm_exp(w:Real[_]) -> Real[_] {
   if length(w) == 0 {
     return w;
   } else {
-    let W <- log_sum_exp(x);
-    return transform(x, \(x:Real) -> { return nan_exp(x - W); });
+    let W <- log_sum_exp(w);
+    return transform(w, \(x:Real) -> { return nan_exp(x - W); });
   }
 }
 
