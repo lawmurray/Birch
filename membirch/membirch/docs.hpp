@@ -1,0 +1,6 @@
+/**
+ * MemBirch.
+ */
+namespace membirch {
+  //
+}

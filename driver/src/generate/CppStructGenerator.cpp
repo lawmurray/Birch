@@ -42,16 +42,16 @@ void birch::CppStructGenerator::visit(const Struct* o) {
 
       /* boilerplate */
       genSourceLine(o->loc);
-      start("LIBBIRCH_STRUCT(" << o->name << ", ");
+      start("MEMBIRCH_STRUCT(" << o->name << ", ");
       if (o->base->isEmpty()) {
-        middle("LIBBIRCH_NO_BASE");
+        middle("MEMBIRCH_NO_BASE");
       } else {
         genBase(o);
       }
       finish(')');
 
       genSourceLine(o->loc);
-      start("LIBBIRCH_STRUCT_MEMBERS(");
+      start("MEMBIRCH_STRUCT_MEMBERS(");
       if (memberVariables.size() + memberPhantoms.size() > 0) {
         bool first = true;
         for (auto o : memberVariables) {
@@ -69,7 +69,7 @@ void birch::CppStructGenerator::visit(const Struct* o) {
           middle(o->name);
         }
       } else {
-        middle("LIBBIRCH_NO_MEMBERS");
+        middle("MEMBIRCH_NO_MEMBERS");
       }
       finish(')');
 

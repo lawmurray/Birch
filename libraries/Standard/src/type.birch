@@ -141,7 +141,7 @@ Type construct(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    libbirch::is_pointer<T>::value &&
+    membirch::is_pointer<T>::value &&
     std::is_constructible_v<typename T::value_type,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -159,7 +159,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    libbirch::is_pointer<T>::value &&
+    membirch::is_pointer<T>::value &&
     !std::is_constructible_v<typename T::value_type,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -177,7 +177,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    !libbirch::is_pointer<T>::value &&
+    !membirch::is_pointer<T>::value &&
     std::is_constructible_v<T,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -195,7 +195,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    !libbirch::is_pointer<T>::value &&
+    !membirch::is_pointer<T>::value &&
     !std::is_constructible_v<T,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -374,7 +374,7 @@ namespace birch {
  */
 template<class To, class From,
     std::enable_if_t<!std::is_same_v<To,From> &&
-    libbirch::is_pointer<To>::value && libbirch::is_pointer<From>::value,int> = 0>
+    membirch::is_pointer<To>::value && membirch::is_pointer<From>::value,int> = 0>
 std::optional<To> optional_cast(const From& from) {
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
@@ -390,8 +390,8 @@ std::optional<To> optional_cast(const From& from) {
 template<class To, class From,
     std::enable_if_t<!std::is_same_v<To,From> &&
     std::is_constructible_v<To,From> &&
-    (!libbirch::is_pointer<To>::value ||
-    !libbirch::is_pointer<From>::value),int> = 0>
+    (!membirch::is_pointer<To>::value ||
+    !membirch::is_pointer<From>::value),int> = 0>
 std::optional<To> optional_cast(const From& from) {
   return To(from);
 }
@@ -402,8 +402,8 @@ std::optional<To> optional_cast(const From& from) {
 template<class To, class From,
     std::enable_if_t<!std::is_same_v<To,From> &&
     !std::is_constructible_v<To,From> &&
-    (!libbirch::is_pointer<To>::value ||
-    !libbirch::is_pointer<From>::value),int> = 0>
+    (!membirch::is_pointer<To>::value ||
+    !membirch::is_pointer<From>::value),int> = 0>
 std::optional<To> optional_cast(const From& from) {
   return std::nullopt;
 }

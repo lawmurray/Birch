@@ -60,7 +60,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     line("#ifndef " << name << "_HPP");
     line("#define " << name << "_HPP\n");
     line("#include <numbirch.hpp>\n");
-    line("#include <libbirch.hpp>\n");
+    line("#include <membirch.hpp>\n");
 
     for (auto name : o->packages) {
       fs::path include(tar(name));
@@ -78,7 +78,7 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         line("class " << o->name << "_;");
         genTemplateParams(o);
         genSourceLine(o->loc);
-        start("using " << o->name << " = libbirch::Shared<" << o->name << '_');
+        start("using " << o->name << " = membirch::Shared<" << o->name << '_');
         genTemplateArgs(o);
         finish(">;");
       }

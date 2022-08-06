@@ -27,8 +27,8 @@ task:
     - ./configure ${MODE_FLAGS} || cat config.log
     - make -j4
     - sudo make install
-  libbirch_build_script:
-    - cd libbirch
+  membirch_build_script:
+    - cd membirch
     - ./bootstrap
     - ./configure ${MODE_FLAGS} || cat config.log
     - make -j4

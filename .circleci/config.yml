@@ -296,7 +296,7 @@ commands:
                 TARNAME=<< parameters.package >>
                 if [[ "$TARNAME" = "driver" ]]; then
                   TARNAME=birch
-                elif [[ "$TARNAME" != "libbirch" && "$TARNAME" != "numbirch" ]]; then
+                elif [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 osc checkout $OSC_PROJECT $TARNAME
@@ -359,7 +359,7 @@ commands:
                 TARNAME=<< parameters.package >>
                 if [[ "$TARNAME" = "driver" ]]; then
                   TARNAME=birch
-                elif [[ "$TARNAME" != "libbirch" && "$TARNAME" != "numbirch" ]]; then
+                elif [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
@@ -418,7 +418,7 @@ jobs:
       - build_library:
           package: numbirch
       - build_library:
-          package: libbirch
+          package: membirch
       - persist_to_workspace:
           root: ..
           paths:
@@ -541,7 +541,7 @@ jobs:
       - deploy_obs_package:
           package: numbirch
       - deploy_obs_package:
-          package: libbirch
+          package: membirch
       - deploy_obs_package:
           dir: libraries
           package: Standard
@@ -557,7 +557,7 @@ jobs:
       - deploy_brew_package:
           package: numbirch
       - deploy_brew_package:
-          package: libbirch
+          package: membirch
       - deploy_brew_package:
           dir: libraries
           package: Standard

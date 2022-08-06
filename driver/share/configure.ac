@@ -56,7 +56,7 @@ AX_CHECK_COMPILE_FLAG([-Wno-int-to-pointer-cast], [CXXFLAGS="$CXXFLAGS  -Wno-int
 AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CXXFLAGS="$CXXFLAGS -Wno-unused-parameter"], [], [-Werror])
 AX_CHECK_COMPILE_FLAG([-Wno-unknown-pragmas], [CXXFLAGS="$CXXFLAGS -Wno-unknown-pragmas"], [], [-Werror])
 
-AC_CHECK_LIB([birch], [main], [], [AC_MSG_ERROR([required library not found])])
+AC_CHECK_LIB([membirch], [main], [], [AC_MSG_ERROR([required library not found])])
 if $single; then
   AC_CHECK_LIB([numbirch-single], [main], [SINGLE_LIBS="$SINGLE_LIBS -lnumbirch-single"], [AC_MSG_ERROR([required library not found])])
 fi
@@ -74,6 +74,6 @@ AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [om
 # Checks for headers
 AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
 AC_CHECK_HEADERS([numbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([libbirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
+AC_CHECK_HEADERS([membirch.hpp], [], [AC_MSG_ERROR([required header not found])], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
 AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])

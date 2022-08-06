@@ -1,6 +1,0 @@
-/**
- * LibBirch.
- */
-namespace libbirch {
-  //
-}

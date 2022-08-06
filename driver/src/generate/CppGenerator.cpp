@@ -186,11 +186,11 @@ void birch::CppGenerator::visit(const Member* o) {
 }
 
 void birch::CppGenerator::visit(const This* o) {
-  middle("libbirch::Shared<this_type_>(this)");
+  middle("membirch::Shared<this_type_>(this)");
 }
 
 void birch::CppGenerator::visit(const Super* o) {
-  middle("libbirch::Shared<base_type_>(this)");
+  middle("membirch::Shared<base_type_>(this)");
 }
 
 void birch::CppGenerator::visit(const Global* o) {
@@ -443,7 +443,7 @@ void birch::CppGenerator::visit(const Program* o) {
       genSourceLine(o->loc);
       line("birch::term();\n");
       genSourceLine(o->loc);
-      line("libbirch::collect();");
+      line("membirch::collect();");
       genSourceLine(o->loc);
       line("numbirch::term();\n");
       genSourceLine(o->loc);

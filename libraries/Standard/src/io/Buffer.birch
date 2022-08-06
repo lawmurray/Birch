@@ -59,7 +59,7 @@ final class Buffer {
   /**
    * Map for fast lookup of keys, in lieu of proper dictionary implementation.
    * Maps string to indices into the values array, rather than directly to the
-   * Buffer elements, as otherwise LibBirch visitors will miss these pointers.
+   * Buffer elements, as otherwise MemBirch visitors will miss these pointers.
    */
   std::unordered_map<String,int> map;
   }}

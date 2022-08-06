@@ -48,9 +48,9 @@ void birch::CppClassGenerator::visit(const Class* o) {
 
       /* boilerplate */
       genSourceLine(o->loc);
-      start("LIBBIRCH_CLASS(" << o->name << "_, ");
+      start("MEMBIRCH_CLASS(" << o->name << "_, ");
       if (o->name->str() == "Object") {
-        middle("libbirch::Any");
+        middle("membirch::Any");
       } else if (o->base->isEmpty()) {
         middle("Object_");
       } else {
@@ -59,7 +59,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
       finish(')');
       
       genSourceLine(o->loc);
-      start("LIBBIRCH_CLASS_MEMBERS(");
+      start("MEMBIRCH_CLASS_MEMBERS(");
       if (memberVariables.size() + memberPhantoms.size() > 0) {
         bool first = true;
         for (auto o : memberVariables) {
@@ -77,7 +77,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
           middle(o->name);
         }
       } else {
-        middle("LIBBIRCH_NO_MEMBERS");
+        middle("MEMBIRCH_NO_MEMBERS");
       }
       finish(')');
   
@@ -354,13 +354,13 @@ void birch::CppClassGenerator::genBase(const Class* o,
     if (includeTypename) {
       middle("typename ");
     }
-    middle("libbirch::unwrap_pointer<" << base->name);
+    middle("membirch::unwrap_pointer<" << base->name);
     if (!base->typeArgs->isEmpty()) {
       middle('<' << base->typeArgs << '>');
     }
     middle(">::type");
   } else if (o->name->str() == "Object") {
-    middle("libbirch::Any");
+    middle("membirch::Any");
   } else {
     middle("Object_");
   }
