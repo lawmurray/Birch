@@ -150,21 +150,21 @@ commands:
       - slack/status:
           fail_only: true
 
-  driver:
+  birch:
     steps:
       - run:
-          name: Build driver
+          name: Build birch
           command: |
-              cd driver
+              cd birch
               cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
               make $MAKE_FLAGS
               make install
       - run:
-          name: Smoke test driver
+          name: Smoke test birch
           command: |
-            cd driver
+            cd birch
             if [[ -e smoke.sh ]]
             then
               ./smoke.sh
@@ -294,9 +294,7 @@ commands:
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
                 TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" = "driver" ]]; then
-                  TARNAME=birch
-                elif [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
+                if [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 osc checkout $OSC_PROJECT $TARNAME
@@ -357,9 +355,7 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
                 TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" = "driver" ]]; then
-                  TARNAME=birch
-                elif [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
+                if [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
                   TARNAME=birch-${TARNAME,,}
                 fi
                 cd << parameters.dir >>/<< parameters.package >>
@@ -414,7 +410,7 @@ jobs:
       - checkout
       - environment:
           os: << parameters.os >>
-      - driver
+      - birch
       - build_library:
           package: numbirch
       - build_library:
@@ -537,7 +533,7 @@ jobs:
       - git_identity
       - osc_identity
       - deploy_obs_package:
-          package: driver
+          package: birch
       - deploy_obs_package:
           package: numbirch
       - deploy_obs_package:
@@ -553,7 +549,7 @@ jobs:
           package: SQLite
       - brew_checkout
       - deploy_brew_package:
-          package: driver
+          package: birch
       - deploy_brew_package:
           package: numbirch
       - deploy_brew_package:

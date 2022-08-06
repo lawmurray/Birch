@@ -14,8 +14,8 @@ task:
     memory: 16G
   install_script:
     - pkg install -y bash m4 autoconf automake elfutils flex bison boost-libs cairo eigen libtool libyaml sqlite3
-  driver_build_script:
-    - cd driver
+  birch_build_script:
+    - cd birch
     - ./bootstrap
     - ./configure CXXFLAGS="-Wall -Wno-overloaded-virtual -g -O0 -fno-inline --coverage" || cat config.log
     - make -j4
