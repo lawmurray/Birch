@@ -1,5 +1,7 @@
 lib_LTLIBRARIES = libmembirch.la
 
+libmembirch_la_LDFLAGS = -release $(PACKAGE_VERSION)
+
 libmembirch_la_SOURCES = \
   membirch/Any.cpp \
   membirch/BiconnectedCollector.cpp \
