@@ -1,4 +1,4 @@
-site_name: 'PACKAGE_NAME'
+site_name: '{{PACKAGE_NAME}}'
 theme:
   name: material
   palette:

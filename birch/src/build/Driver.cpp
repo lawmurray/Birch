@@ -12,7 +12,7 @@
 
 birch::Driver::Driver(int argc, char** argv) :
     packageName("Untitled"),
-    packageVersion("unversioned"),
+    packageVersion("0.0.0"),
     unit("dir"),
     precision("double"),
     jobs(std::thread::hardware_concurrency()),
@@ -1114,10 +1114,10 @@ void birch::Driver::setup() {
 
   /* configure.ac */
   std::string contents = read_all(find(shareDirs, "configure.ac"));
-  contents = std::regex_replace(contents, std::regex("PACKAGE_NAME"), packageName);
-  contents = std::regex_replace(contents, std::regex("PACKAGE_VERSION"), packageVersion);
-  contents = std::regex_replace(contents, std::regex("PACKAGE_TARNAME"), tarName);
-  contents = std::regex_replace(contents, std::regex("PACKAGE_CANONICAL_NAME"), canonicalName);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_NAME\\}\\}"), packageName);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_VERSION\\}\\}"), packageVersion);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_TARNAME\\}\\}"), tarName);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_CANONICAL_NAME\\}\\}"), canonicalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
 
@@ -1165,10 +1165,10 @@ void birch::Driver::setup() {
 
   /* Makefile.am */
   contents = read_all(find(shareDirs, "Makefile.am"));
-  contents = std::regex_replace(contents, std::regex("PACKAGE_NAME"), packageName);
-  contents = std::regex_replace(contents, std::regex("PACKAGE_VERSION"), packageVersion);
-  contents = std::regex_replace(contents, std::regex("PACKAGE_TARNAME"), tarName);
-  contents = std::regex_replace(contents, std::regex("PACKAGE_CANONICAL_NAME"), canonicalName);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_NAME\\}\\}"), packageName);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_VERSION\\}\\}"), packageVersion);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_TARNAME\\}\\}"), tarName);
+  contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_CANONICAL_NAME\\}\\}"), canonicalName);
 
   std::stringstream makeStream;
   makeStream << contents << "\n\n";

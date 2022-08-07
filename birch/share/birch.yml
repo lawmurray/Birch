@@ -1,4 +1,4 @@
-name: PACKAGE_NAME
+name: {{PACKAGE_NAME}}
 description:
 manifest:
   source:
