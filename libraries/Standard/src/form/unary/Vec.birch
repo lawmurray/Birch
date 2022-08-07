@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::vec;
 using numbirch::vec_grad;
 
-/**
- * Vectorize.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Vec<Middle> vec(const Middle& m) {
   return construct<Vec<Middle>>(m);

@@ -15,18 +15,12 @@ using numbirch::add;
 using numbirch::add_grad1;
 using numbirch::add_grad2;
 
-/**
- * Addition.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Add<Left,Right> add(const Left& l, const Right& r) {
   return construct<Add<Left,Right>>(l, r);
 }
 
-/**
- * Addition.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Add<Left,Right> operator+(const Left& l, const Right& r) {

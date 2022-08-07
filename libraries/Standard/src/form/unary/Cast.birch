@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::cast;
 using numbirch::cast_grad;
 
-/**
- * Cast.
- */
 template<class To, class Middle, std::enable_if_t<
     is_delay_v<Middle>,int> = 0>
 Cast<To,Middle> cast(const Middle& m) {

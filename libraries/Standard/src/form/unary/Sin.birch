@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::sin;
 using numbirch::sin_grad;
 
-/**
- * Sine.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Sin<Middle> sin(const Middle& m) {
   return construct<Sin<Middle>>(m);

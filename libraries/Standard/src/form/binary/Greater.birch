@@ -15,9 +15,6 @@ using numbirch::operator>;
 using numbirch::greater_grad1;
 using numbirch::greater_grad2;
 
-/**
- * Greater than comparison.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Greater<Left,Right> operator>(const Left& l, const Right& r) {

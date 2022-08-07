@@ -15,10 +15,6 @@ using numbirch::stack;
 using numbirch::stack_grad1;
 using numbirch::stack_grad2;
 
-/**
- * Stack two matrices atop one another (i.e. append columns) to create a
- * new matrix.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 MatrixStack<Left,Right> stack(const Left& l, const Right& r) {

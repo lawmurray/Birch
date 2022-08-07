@@ -15,9 +15,6 @@ using numbirch::frobenius;
 using numbirch::frobenius_grad1;
 using numbirch::frobenius_grad2;
 
-/**
- * Frobenius product.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Frobenius<Left,Right> frobenius(const Left& l, const Right& r) {

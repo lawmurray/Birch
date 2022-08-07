@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::ceil;
 using numbirch::ceil_grad;
 
-/**
- * Round to smallest integer value not less than argument.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Ceil<Middle> ceil(const Middle& m) {
   return construct<Ceil<Middle>>(m);

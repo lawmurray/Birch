@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::rectify;
 using numbirch::rectify_grad;
 
-/**
- * Rectification.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Rectify<Middle> rectify(const Middle& m) {
   return construct<Rectify<Middle>>(m);

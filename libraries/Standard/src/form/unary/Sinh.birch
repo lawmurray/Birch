@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::sinh;
 using numbirch::sinh_grad;
 
-/**
- * Hyperbolic sine.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Sinh<Middle> sinh(const Middle& m) {
   return construct<Sinh<Middle>>(m);

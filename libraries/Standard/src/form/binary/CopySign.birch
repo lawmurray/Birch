@@ -15,9 +15,6 @@ using numbirch::copysign;
 using numbirch::copysign_grad1;
 using numbirch::copysign_grad2;
 
-/**
- * Copy sign of a number.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 CopySign<Left,Right> copysign(const Left& l, const Right& r) {

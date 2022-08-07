@@ -15,9 +15,6 @@ using numbirch::lchoose;
 using numbirch::lchoose_grad1;
 using numbirch::lchoose_grad2;
 
-/**
- * Logarithm of the binomial coefficient.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 LChoose<Left,Right> lchoose(const Left& l, const Right& r) {

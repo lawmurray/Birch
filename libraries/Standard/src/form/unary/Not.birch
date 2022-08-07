@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::operator!;
 using numbirch::not_grad;
 
-/**
- * Logical `not`.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Not<Middle> operator!(const Middle& m) {
   return construct<Not<Middle>>(m);
