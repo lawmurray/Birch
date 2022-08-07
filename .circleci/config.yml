@@ -109,8 +109,9 @@ commands:
       - run:
           name: Environment variables
           command: |
-              echo "export VERSION=`(git describe --long || echo) | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
+              echo "export VERSION=`echo $VERSION | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION_SAFE=`echo $VERSION | sed -E 's/\./_/g'`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
@@ -156,7 +157,7 @@ commands:
           name: Build birch
           command: |
               cd birch
-              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
+              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
               make $MAKE_FLAGS
@@ -181,7 +182,7 @@ commands:
           name: Build << parameters.package >>
           command: |
               cd << parameters.package >>
-              cat configure.ac | sed -E "s/unversioned/$VERSION/" | sponge configure.ac
+              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
               make $MAKE_FLAGS
@@ -307,12 +308,13 @@ commands:
                 for file in $TARNAME.spec $TARNAME.dsc debian.control PKGBUILD
                 do
                   cat $file |
-                    sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
-                    sed -E "s/\%\{name\}-[0-9]+\.[0-9]+/\%\{name\}-$VERSION/g" |
-                    sed -E "s/Version: [0-9]+\.[0-9]+/Version: $VERSION/g" |
-                    sed -E "s/pkgver=[0-9]+\.[0-9]+/pkgver=$VERSION/g" |
-                    sed -E "s/pkgname-[0-9]+\.[0-9]+/pkgname-$VERSION/g" |
-                    sed -E "s/>=( ?)[0-9]+\.[0-9]+/>=\\1$VERSION/g" |
+                    sed -E "s/Name: (\w+)(-[0-9.]+)?/Name: \1-$VERSION_SAFE/g" |
+                    sed -E "s/-[0-9.]+\.tar\.gz/-$VERSION.tar.gz/g" |
+                    sed -E "s/\%\{name\}-[0-9.]+/\%\{name\}-$VERSION/g" |
+                    sed -E "s/Version: [0-9.]+/Version: $VERSION/g" |
+                    sed -E "s/pkgver=[0-9.]+/pkgver=$VERSION/g" |
+                    sed -E "s/pkgname-[0-9.]+/pkgname-$VERSION/g" |
+                    sed -E "s/>=( ?)[0-9.]+/>=\\1$VERSION/g" |
                     sponge $file
                 done
                 osc commit -m "Updated to version $VERSION."
