@@ -126,7 +126,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
   if (τ2.hasNext() && τ2.getNext().isNormalInverseGamma() &&
       τ2.getNext(2) == m) || (τ2.hasSide() && τ2.getSide() == m) {
     m.prune();
-    let (ν, λ, k, γ) <- τ2.getNext().getNormalInverseGamma();
+    let (ν, λ, k, γ) <- τ2.getNext().getNormalInverseGamma()!;
     let p <- wrap_normal_inverse_gamma_gaussian(a, ν, λ, k, γ, c, ω2);
     p.setSide(τ2.getNext().takeSide());  // carry forward
     m.setNext(p);
@@ -136,13 +136,13 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
     return p;
   } else if τ2.hasNext() && τ2.getNext().isInverseGamma() {
     τ2.prune();
-    let (α, β) <- τ2.getNext().getInverseGamma();
+    let (α, β) <- τ2.getNext().getInverseGamma()!;
     let p <- NormalInverseGamma(μ, ω2, α, β);
     τ2.setNext(p);
     return p;
   } else if m.hasNext() && m.getNext().isGaussian() {
     m.prune();
-    let (m1, s2) <- m.getNext().getGaussian();
+    let (m1, s2) <- m.getNext().getGaussian()!;
     let p <- wrap_gaussian_gaussian(a, m1, s2, c, σ2);
     m.setNext(p);
     return p;

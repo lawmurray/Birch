@@ -98,8 +98,8 @@ function Delta(μ:Sub<Random<Integer>,Random<Integer>>) ->
     l.prune();
     r.prune();
     let p <- construct<SubtractDiscreteDeltaDistribution>(
-        l.getNext().getBoundedDiscrete(),
-        r.getNext().getBoundedDiscrete());
+        l.getNext().getBoundedDiscrete()!,
+        r.getNext().getBoundedDiscrete()!);
     l.setNext(p);
     r.setNext(nil);
     l.setSide(r);

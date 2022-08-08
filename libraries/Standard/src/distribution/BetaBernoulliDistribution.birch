@@ -68,7 +68,7 @@ function make_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
 function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
   if ρ.hasNext() && ρ.getNext().isBeta() {
     ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta();
+    let (α, β) <- ρ.getNext().getBeta()!;
     let p <- wrap_beta_bernoulli(α, β);
     ρ.setNext(p);
     return p;

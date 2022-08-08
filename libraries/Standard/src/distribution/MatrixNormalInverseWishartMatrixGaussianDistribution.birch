@@ -126,7 +126,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
   if (Ψ.hasNext() && Ψ.getNext().isMatrixNormalInverseWishart() &&
       Ψ.getNext(2) == M1) || (Ψ.hasSide() && Ψ.getSide() == M1) {
     M1.prune();
-    let (N2, Λ1, Γ1, k) <- Ψ.getNext().getMatrixNormalInverseWishart();
+    let (N2, Λ1, Γ1, k) <- Ψ.getNext().getMatrixNormalInverseWishart()!;
     let p <- wrap_matrix_normal_inverse_wishart_matrix_gaussian(A, N2, Λ1, Γ1,
         k, C, Σ);
     M1.setNext(p);
@@ -136,7 +136,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
     return p;
   } else if Ψ.hasNext() && Ψ.getNext().isInverseWishart() {
     Ψ.prune();
-    let (Ψ1, k) <- Ψ.getNext().getInverseWishart();
+    let (Ψ1, k) <- Ψ.getNext().getInverseWishart()!;
     let L <- wrap(chol(Σ));
     let O <- wrap(trisolve(L, M));
     let N <- triinnersolve(L, O);

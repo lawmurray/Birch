@@ -77,7 +77,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
   let c <- μ.r;
   if m.hasNext() && m.getNext().isGaussian() {
     m.prune();
-    let (m1, ω2) <- m.getNext().getGaussian();
+    let (m1, ω2) <- m.getNext().getGaussian()!;
     let p <- wrap_gaussian_gaussian(a, m1, ω2, c, σ2);
     m.setNext(p);
     return p;

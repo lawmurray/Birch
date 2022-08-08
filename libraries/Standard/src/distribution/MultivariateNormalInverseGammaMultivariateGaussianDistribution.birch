@@ -129,7 +129,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   if (ω2.hasNext() && ω2.getNext().isMultivariateNormalInverseGamma() &&
       ω2.getNext(2) == m) || (ω2.hasSide() && ω2.getSide() == m) {
     m.prune();
-    let (ν, Λ, k, γ) <- ω2.getNext().getMultivariateNormalInverseGamma();
+    let (ν, Λ, k, γ) <- ω2.getNext().getMultivariateNormalInverseGamma()!;
     let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(A,
         ν, Λ, k, γ, c, Ω);
     m.setNext(p);
@@ -139,13 +139,13 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     return p;
   } else if ω2.hasNext() && ω2.getNext().isInverseGamma() {
     ω2.prune();
-    let (α, β) <- ω2.getNext().getInverseGamma();
+    let (α, β) <- ω2.getNext().getInverseGamma()!;
     let p <- MultivariateNormalInverseGamma(μ, Ω, α, β);
     ω2.setNext(p);
     return p;
   } else if m.hasNext() && m.getNext().isMultivariateGaussian() {
     m.prune();
-    let (m1, S) <- m.getNext().getMultivariateGaussian();
+    let (m1, S) <- m.getNext().getMultivariateGaussian()!;
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, m1, S, c, Σ);
     m.setNext(p);
     return p;

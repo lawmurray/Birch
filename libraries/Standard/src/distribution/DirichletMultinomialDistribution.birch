@@ -70,7 +70,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
   if ρ.hasNext() && ρ.getNext().isDirichlet() {
     ρ.prune();
-    let α <- ρ.getNext().getDirichlet();
+    let α <- ρ.getNext().getDirichlet()!;
     let p <- wrap_dirichlet_multinomial(n, α);
     ρ.setNext(p);
     return p;

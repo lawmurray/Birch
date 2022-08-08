@@ -75,7 +75,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function getMultivariateNormalInverseWishart() ->
       (Expression<Real[_]>, Expression<Real>, Expression<Real[_,_]>,
-      Expression<Real>) {
+      Expression<Real>)? {
     return box(ν, λ, Γ, k);
   }
 
@@ -115,7 +115,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   let Ω <- Σ.r;
   if Ω.hasNext() && Ω.getNext().isInverseWishart() {
     Ω.prune();
-    let (Ψ, k) <- Ω.getNext().getInverseWishart();
+    let (Ψ, k) <- Ω.getNext().getInverseWishart()!;
     let ν <- μ/σ2;
     let λ <- 1.0/σ2;
     let Γ <- Ψ + outer(μ/sqrt(σ2));

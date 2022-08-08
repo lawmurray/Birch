@@ -83,7 +83,7 @@ function make_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
 function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
   if θ.hasNext() && θ.getNext().isInverseGamma() {
     θ.prune();
-    let (α, β) <- θ.getNext().getInverseGamma();
+    let (α, β) <- θ.getNext().getInverseGamma()!;
     let p <- wrap_inverse_gamma_gamma(k, α, β);
     θ.setNext(p);
     return p;

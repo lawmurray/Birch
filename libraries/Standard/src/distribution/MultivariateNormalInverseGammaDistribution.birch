@@ -108,8 +108,9 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
-  override function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
-      Expression<Real[_,_]>, Expression<Real>, Expression<Real>) {
+  override function getMultivariateNormalInverseGamma() -> (
+      Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real>,
+      Expression<Real>)? {
     return box(ν, Λ, k, γ);
   }
 
@@ -152,7 +153,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
   let ω2 <- Σ.r;
   if ω2.hasNext() && ω2.getNext().isInverseGamma() {
     ω2.prune();
-    let (α, β) <- ω2.getNext().getInverseGamma();
+    let (α, β) <- ω2.getNext().getInverseGamma()!;
     let p <- MultivariateNormalInverseGamma(μ, Ω, α, β);
     ω2.setNext(p);
     return p;

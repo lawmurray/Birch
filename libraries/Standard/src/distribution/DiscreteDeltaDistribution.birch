@@ -63,7 +63,7 @@ function Delta(μ:Random<Integer>) -> Distribution<Integer> {
 	if μ.hasNext() && μ.getNext().isBoundedDiscrete() {
   	μ.prune();
     let p <- construct<DiscreteDeltaDistribution>(
-        μ.getNext().getBoundedDiscrete());
+        μ.getNext().getBoundedDiscrete()!);
     μ.setNext(p);
     return p;
   } else {

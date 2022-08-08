@@ -93,7 +93,7 @@ function Exponential<Arg>(λ:Mul<Arg,Random<Real>>) -> Distribution<Real> {
   let b <- λ.r;
   b.prune();
   if b.hasNext() && b.getNext().isGamma() {
-    let (k, θ) <- b.getNext().getGamma();
+    let (k, θ) <- b.getNext().getGamma()!;
     let p <- wrap_gamma_exponential(a, k, θ);
     b.setNext(p);
     return p;

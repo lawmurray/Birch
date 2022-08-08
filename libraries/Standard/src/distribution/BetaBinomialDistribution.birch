@@ -86,7 +86,7 @@ function make_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
 function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
   if ρ.hasNext() && ρ.getNext().isBeta() {
     ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta();
+    let (α, β) <- ρ.getNext().getBeta()!;
     let p <- wrap_beta_binomial(n, α, β);
     ρ.setNext(p);
     return p;

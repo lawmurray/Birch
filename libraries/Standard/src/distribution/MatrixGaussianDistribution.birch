@@ -54,7 +54,7 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   }
 
   override function getMatrixGaussian() -> (Expression<Real[_,_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>) {
+      Expression<Real[_,_]>, Expression<Real[_,_]>)? {
     return box(M, U, V);
   }
 

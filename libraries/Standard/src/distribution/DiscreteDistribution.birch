@@ -6,7 +6,7 @@ abstract class DiscreteDistribution < Distribution<Integer> {
     return true;
   }
 
-  override function getDiscrete() -> DiscreteDistribution {
+  override function getDiscrete() -> DiscreteDistribution? {
     return this;
   }
 }

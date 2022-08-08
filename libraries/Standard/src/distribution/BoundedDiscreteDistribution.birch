@@ -6,7 +6,7 @@ abstract class BoundedDiscreteDistribution < DiscreteDistribution {
     return true;
   }
 
-  override function getBoundedDiscrete() -> BoundedDiscreteDistribution {
+  override function getBoundedDiscrete() -> BoundedDiscreteDistribution? {
     return this;
   }
 }

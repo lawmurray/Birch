@@ -124,7 +124,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
   if (Ω.hasNext() && Ω.getNext().isMultivariateNormalInverseWishart() &&
       Ω.getNext(2) == m) || (Ω.hasSide() && Ω.getSide() == m) {
     m.prune();
-    let (ν, λ, Γ, k) <- m.getNext().getMultivariateNormalInverseWishart();
+    let (ν, λ, Γ, k) <- m.getNext().getMultivariateNormalInverseWishart()!;
     let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
         ν, λ, Γ, k, c, ω2);
     m.setNext(p);
@@ -134,7 +134,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
     return p;
   } else if Ω.hasNext() && Ω.getNext().isInverseWishart() {
     Ω.prune();
-    let (Ψ, k) <- Ω.getNext().getInverseWishart();
+    let (Ψ, k) <- Ω.getNext().getInverseWishart()!;
     let ν <- μ/ω2;
     let λ <- 1.0/ω2;
     let Γ <- Ψ + outer(μ/sqrt(ω2));

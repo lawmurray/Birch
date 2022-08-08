@@ -82,7 +82,7 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
     Distribution<Integer> {
   if ρ.hasNext() && ρ.getNext().isBeta() {
     ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta();
+    let (α, β) <- ρ.getNext().getBeta()!;
     let p <- wrap_beta_negative_binomial(k, α, β);
     ρ.setNext(p);
     return p;

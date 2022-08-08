@@ -40,7 +40,7 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
     return true;
   }
 
-  override function getDirichlet() -> Expression<Real[_]> {
+  override function getDirichlet() -> Expression<Real[_]>? {
     return box(α);
   }
 

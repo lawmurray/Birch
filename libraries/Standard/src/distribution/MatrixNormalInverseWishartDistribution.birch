@@ -78,7 +78,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>) {
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>)? {
     return box(N, Λ, Γ, k);
   }
 
@@ -118,7 +118,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
     Distribution<Real[_,_]> {
   if V.hasNext() && V.getNext().isInverseWishart() {
     V.prune();
-    let (Ψ, k) <- V.getNext().getInverseWishart();
+    let (Ψ, k) <- V.getNext().getInverseWishart()!;
     let L <- wrap(chol(U));
     let O <- trisolve(L, M);
     let N <- triinnersolve(L, O);
