@@ -28,7 +28,7 @@ AC_ARG_ENABLE([standalone],
   yes) standalone=true ;;
   no)  standalone=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-standalone]) ;;
-esac],[standalone=true])
+esac],[standalone=false])
 AM_CONDITIONAL([STANDALONE], [test x$standalone = xtrue])
 
 # Programs
