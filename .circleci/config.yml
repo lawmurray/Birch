@@ -110,8 +110,8 @@ commands:
           name: Environment variables
           command: |
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
-              echo "export VERSION=`echo \$VERSION_LONG | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
-              echo "export VERSION_SAFE=`echo \$VERSION_LONG | sed -E 's/\./_/g'`" >> $BASH_ENV
+              echo "export VERSION=\`echo \$VERSION_LONG | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'\`" >> $BASH_ENV
+              echo "export VERSION_SAFE=\`echo \$VERSION_LONG | sed -E 's/\./_/g'\`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
