@@ -110,8 +110,8 @@ commands:
           name: Environment variables
           command: |
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
-              echo "export VERSION=`echo $VERSION_LONG | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
-              echo "export VERSION_SAFE=`echo $VERSION_LONG | sed -E 's/\./_/g'`" >> $BASH_ENV
+              echo "export VERSION=`echo \$VERSION_LONG | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'`" >> $BASH_ENV
+              echo "export VERSION_SAFE=`echo \$VERSION_LONG | sed -E 's/\./_/g'`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
@@ -305,10 +305,10 @@ commands:
                 cd $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
                 osc delete $TARNAME-!($VERSION).tar.gz
                 osc add $TARNAME-$VERSION.tar.gz
-                for file in $TARNAME.spec $TARNAME.dsc debian.control PKGBUILD
+                for file in PKGBUILD $TARNAME.spec $TARNAME.dsc debian.control debian.$TARNAME.install debian.$TARNAME-dev.install
                 do
                   cat $file |
-                    sed -E "s/$TARNAME-[0-9.]+\.tar\.gz/$TARNAME-$VERSION.tar.gz/g" |
+                    sed -E "s/-[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
                     sed -E "s/\%\{name\}-[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
                     sed -E "s/Version: [0-9.]+/Version: $VERSION/g" |
                     sed -E "s/pkgver=[0-9.]+/pkgver=$VERSION/g" |
