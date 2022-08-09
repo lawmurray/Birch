@@ -9,35 +9,6 @@ function nan_exp(x:Real) -> Real {
   }
 }
 
-/**
- * Exponentiate and sum a vector, return the logarithm of the sum.
- *
- * The result is computed in a numerically stable way that avoids
- * intermediate over- and underflow, using a single pass over the data.
- *
- * Reference: [Sebastian Nowozin: Streaming Log-sum-exp Computation](http://www.nowozin.net/sebastian/blog/streaming-log-sum-exp-computation.html)
- */
-function log_sum_exp(x:Real[_]) -> Real {
-  if length(x) > 0 {
-    let (mx, r) <- transform_reduce(x, (-inf, 0.0),
-        \(x:(Real, Real), y:(Real, Real)) -> {
-          let (xa, xb) <- x;
-          let (ya, yb) <- y;
-          if xa > ya {
-            return (xa, xb + (yb + 1.0)*nan_exp(ya - xa));
-          } else {
-            return (ya, yb + (xb + 1.0)*nan_exp(xa - ya));
-          }
-        },
-        \(x:Real) -> {
-          return (x, 0.0);
-        });
-    return mx + log1p(r);
-  } else {
-    return -inf;
-  }
-}
-
 /*
  * Take the maximum of two values, where NaN are treated as though `-inf`.
  */
@@ -62,11 +33,45 @@ function nan_max(w:Real[_]) -> Real {
 }
 
 /*
+ * Exponentiate and sum a log weight vector.
+ *
+ * The result is computed in a numerically stable way that avoids
+ * intermediate over- and underflow, using a single pass over the data.
+ *
+ * @param w Log weights.
+ *
+ * @return the logarithm of the sum.
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
+ */
+function log_sum_exp(w:Real[_]) -> Real {
+  if length(w) > 0 {
+    let (mx, r) <- transform_reduce(w, (-inf, 0.0),
+        \(x:(Real, Real), y:(Real, Real)) -> {
+          let (xa, xb) <- x;
+          let (ya, yb) <- y;
+          if xa > ya {
+            return (xa, xb + (yb + 1.0)*nan_exp(ya - xa));
+          } else {
+            return (ya, yb + (xb + 1.0)*nan_exp(xa - ya));
+          }
+        },
+        \(x:Real) -> {
+          return (x, 0.0);
+        });
+    return mx + log1p(r);
+  } else {
+    return -inf;
+  }
+}
+
+/*
  * Convert a log weight vector into a normalized weight vector.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: normalized weights.
+ * @return normalized weights.
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -83,9 +88,9 @@ function norm_exp(w:Real[_]) -> Real[_] {
 /*
  * Resample with systematic resampling.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: the vector of ancestor indices (permuted) and vector of offspring
+ * @return the vector of ancestor indices (permuted) and vector of offspring
  * counts.
  *
  * See also: permute_ancestors()
@@ -103,9 +108,9 @@ function resample_systematic(w:Real[_]) -> (Integer[_], Integer[_]) {
 /*
  * Resample with multinomial resampling.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: the vector of ancestor indices, in non-descending order.
+ * @return the vector of ancestor indices, in non-descending order.
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -118,9 +123,9 @@ function resample_multinomial(w:Real[_]) -> Integer[_] {
 /*
  * Sample a single ancestor for a cumulative weight vector.
  *
- * - W: Cumulative weight vector.
+ * @param W Cumulative weight vector.
  *
- * Returns: an ancestor index, or zero on failure (e.g. weights are zero).
+ * @return an ancestor index, or zero on failure (e.g. weights are zero).
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -150,9 +155,9 @@ function cumulative_ancestor(W:Real[_]) -> Integer {
 /*
  * Sample a single ancestor for a log weight vector.
  *
- * - w: Log weight vector.
+ * @param w Log weight vector.
  *
- * Returns: an ancestor index, or zero on failure (e.g. weights are zero).
+ * @return an ancestor index, or zero on failure (e.g. weights are zero).
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -262,7 +267,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  * Compute the effective sample size (ESS) and logarithm of the average
  * weight, given a log-weight vector.
  *
- * Returns: A pair, the first element of which gives the ESS, the second
+ * @return A pair, the first element of which gives the ESS, the second
  * element of which gives the logarithm of the sum of weights.
  */
 function resample_reduce(w:Real[_]) -> (Real, Real) {

@@ -1,10 +1,10 @@
 /**
  * Abstract interface for evaluating and differentiating expressions.
  *
- * - Value: Result type.
+ * @param Value Result type.
  *
- * - x: Evaluated value of the expression (optional).
- * - flagConstant: Is this a constant expression?
+ * @param x Evaluated value of the expression (optional).
+ * @param flagConstant Is this a constant expression?
  *
  * ```mermaid
  * classDiagram
@@ -44,7 +44,7 @@
  *
  * ### Simple use
  *
- * !!! tip
+ * @note
  *     Call `value()` on an `Expression` to evaluate it.
  *
  * The simplest use case of a delayed expression is to assemble it and then
@@ -191,7 +191,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Evaluate and render constant.
    *
-   * Returns: The result.
+   * @return The result.
    */
   final function value() -> Value! {
     /* need to call eval() before constant() for Random in particular; a
@@ -205,7 +205,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Evaluate.
    *
-   * Returns: The result.
+   * @return The result.
    */
   final function eval() -> Value! {
     if !x? {
@@ -222,9 +222,9 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Re-evaluate, ignoring memos. Memoizes at coarse-grain (i.e. Expression
    * objects, not forms).
    *
-   * - x: Vectorized arguments.
+   * @param x Vectorized arguments.
    *
-   * Returns: The result.
+   * @return The result.
    */
   final function move(x:Real[_]) -> Value! {
     trace();
@@ -254,7 +254,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Vectorize arguments and gradients.
    *
-   * Returns: The vectorized arguments and gradients.
+   * @return The vectorized arguments and gradients.
    */
   final function args() -> (Real[_], Real[_]) {
     trace();
@@ -281,7 +281,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Evaluate gradient with respect to arguments. Clears memos at fine-grain.
    *
-   * - g: Upstream gradient.
+   * @param g Upstream gradient.
    *
    * The expression is treated as a function, and the arguments defined
    * as those `Random` objects in the expression that are not constant.
@@ -356,7 +356,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Evaluate.
    *
-   * Returns: The result.
+   * @return The result.
    */
   final function peek() -> Value! {
     /* forms use peek() for fine-grain memoization, but this terminates at

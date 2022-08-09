@@ -11,7 +11,7 @@ PACKAGES := \
 	examples/SIR \
 	examples/VectorBorneDisease
 
-docs: $(PACKAGES) libbirch
+docs: $(PACKAGES) membirch
 	cp README.md docs/index.md
 
 .PHONY: $(PACKAGES)
@@ -20,8 +20,8 @@ $(PACKAGES):
 	cd $@ && birch docs
 	cp -R $@/docs/* docs/$@/.
 
-.PHONY: libbirch
-libbirch:
+.PHONY: membirch
+membirch:
 	mkdir -p docs/$@
 	cd $@ && doxygen
 	cp -R $@/docs/html/* docs/$@/.

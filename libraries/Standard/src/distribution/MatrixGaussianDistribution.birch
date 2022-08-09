@@ -54,7 +54,7 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   }
 
   override function getMatrixGaussian() -> (Expression<Real[_,_]>,
-      Expression<Real[_,_]>, Expression<Real[_,_]>) {
+      Expression<Real[_,_]>, Expression<Real[_,_]>)? {
     return box(M, U, V);
   }
 
@@ -83,9 +83,9 @@ function make_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
 /*
  * Simulate a matrix Gaussian distribution.
  *
- * - M: Mean.
- * - U: Among-row covariance.
- * - V: Among-column covariance.
+ * @param M Mean.
+ * @param U Among-row covariance.
+ * @param V Among-column covariance.
  */
 function simulate_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
   assert rows(M) == rows(U);
@@ -101,12 +101,12 @@ function simulate_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
 /*
  * Observe a matrix Gaussian distribution.
  *
- * - X: The variate.
- * - M: Mean.
- * - U: Among-row covariance.
- * - V: Among-column covariance.
+ * @param X The variate.
+ * @param M Mean.
+ * @param U Among-row covariance.
+ * @param V Among-column covariance.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
     V:Arg4) -> {

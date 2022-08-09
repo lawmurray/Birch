@@ -5,7 +5,7 @@ abstract class Object {
   /**
    * Read.
    *
-   * - buffer: Input buffer.
+   * @param buffer Input buffer.
    */
   function read(buffer:Buffer) {
     //
@@ -14,7 +14,7 @@ abstract class Object {
   /**
    * Write.
    *
-   * - buffer: Output buffer.
+   * @param buffer Output buffer.
    */
   function write(buffer:Buffer) {
     //
@@ -23,8 +23,8 @@ abstract class Object {
   /**
    * Sequential read.
    *
-   * - t: Step number.
-   * - buffer: Input buffer.
+   * @param t Step number.
+   * @param buffer Input buffer.
    */
   function read(t:Integer, buffer:Buffer) {
     //
@@ -33,8 +33,8 @@ abstract class Object {
   /**
    * Sequential write.
    *
-   * - t: Step number.
-   * - buffer: Output buffer.
+   * @param t Step number.
+   * @param buffer Output buffer.
    */
   function write(t:Integer, buffer:Buffer) {
     //

@@ -68,7 +68,7 @@ function make_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
 function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
   if ρ.hasNext() && ρ.getNext().isBeta() {
     ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta();
+    let (α, β) <- ρ.getNext().getBeta()!;
     let p <- wrap_beta_bernoulli(α, β);
     ρ.setNext(p);
     return p;
@@ -80,8 +80,8 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
 /*
  * Simulate a beta-bernoulli distribution.
  *
- * - α: Shape.
- * - β: Shape.
+ * @param α Shape.
+ * @param β Shape.
  */
 function simulate_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return simulate_bernoulli(α/(α + β));
@@ -90,11 +90,11 @@ function simulate_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
 /*
  * Observe a beta-bernoulli variate.
  *
- * - x: The variate.
- * - α: Shape.
- * - β: Shape.
+ * @param x The variate.
+ * @param α Shape.
+ * @param β Shape.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return where(x, log(α), log(β)) - log(α + β);
@@ -103,11 +103,11 @@ function logpdf_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
 /*
  * Update the parameters of a Beta distribution with a Bernoulli likelihood.
  *
- * - x: The variate.
- * - α: Prior first shape.
- * - β: Prior second shape.
+ * @param x The variate.
+ * @param α Prior first shape.
+ * @param β Prior second shape.
  *
- * Returns: the posterior hyperparameters `α'` and `β'`.
+ * @return the posterior hyperparameters `α'` and `β'`.
  */
 function update_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return wrap_beta(where(x, α + 1.0, α), where(x, β, β + 1.0));

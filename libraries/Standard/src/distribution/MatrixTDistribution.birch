@@ -72,10 +72,10 @@ function make_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
 /*
  * Simulate a matrix $t$-distribution variate.
  *
- * - k: Degrees of freedom.
- * - M: Mean.
- * - Σ: Among-row spread.
- * - Ψ: Among-column spread.
+ * @param k Degrees of freedom.
+ * @param M Mean.
+ * @param Σ Among-row spread.
+ * @param Ψ Among-column spread.
  */
 function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     Ψ:Arg4) -> {
@@ -89,13 +89,13 @@ function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
 /*
  * Observe a matrix $t$-distribution variate with location and scale.
  *
- * - X: The variate.
- * - k: Degrees of freedom.
- * - M: Mean.
- * - Σ: Among-row spread.
- * - Ψ: Among-column spread.
+ * @param X The variate.
+ * @param k Degrees of freedom.
+ * @param M Mean.
+ * @param Σ Among-row spread.
+ * @param Ψ Among-column spread.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_matrix_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2, M:Arg3,
     Σ:Arg4, Ψ:Arg5) -> {

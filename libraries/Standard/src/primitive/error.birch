@@ -1,7 +1,7 @@
 /**
  * Output an error message and exit.
  *
- * - msg: The message.
+ * @param msg The message.
  */
 function error(msg:String) {
   stderr.print("error: " + msg + "\n");

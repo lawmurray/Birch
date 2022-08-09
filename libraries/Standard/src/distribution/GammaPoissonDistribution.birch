@@ -94,7 +94,7 @@ function Poisson<Arg>(λ:Mul<Arg,Random<Real>>) -> Distribution<Integer> {
   let b <- λ.r;
   if b.hasNext() && b.getNext().isGamma() {
     b.prune();
-    let (k, θ) <- b.getNext().getGamma();
+    let (k, θ) <- b.getNext().getGamma()!;
     let p <- wrap_gamma_poisson(a, k, θ);
     b.setNext(p);
     return p;
@@ -126,13 +126,13 @@ function Poisson(λ:Mul<Random<Real>,Random<Real>>) ->
   let b <- λ.r;
   if a.hasNext() && a.getNext().isGamma() {
     a.prune();
-    let (k, θ) <- a.getNext().getGamma();
+    let (k, θ) <- a.getNext().getGamma()!;
     let p <- wrap_gamma_poisson(b, k, θ);
     a.setNext(p);
     return p;
   } else if b.hasNext() && b.getNext().isGamma() {
     b.prune();
-    let (k, θ) <- b.getNext().getGamma();
+    let (k, θ) <- b.getNext().getGamma()!;
     let p <- wrap_gamma_poisson(a, k, θ);
     b.setNext(p);
     return p;
@@ -144,9 +144,9 @@ function Poisson(λ:Mul<Random<Real>,Random<Real>>) ->
 /*
  * Simulate a gamma-Poisson distribution.
  *
- * - a: Scale;
- * - k: Shape.
- * - θ: Scale.
+ * @param a Scale;
+ * @param k Shape.
+ * @param θ Scale.
  */
 function simulate_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
   /* C++ std::negative_binomial_distribution only accepts integer k, so
@@ -158,12 +158,12 @@ function simulate_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
 /*
  * Observe a gamma-Poisson variate.
  *
- * - x: The variate.
- * - a: Scale;
- * - k: Shape.
- * - θ: Scale.
+ * @param x The variate.
+ * @param a Scale;
+ * @param k Shape.
+ * @param θ Scale.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {
@@ -175,12 +175,12 @@ function logpdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
  * Update the parameters of a scaled Gamma distribution with a Poisson
  * likelihood.
  *
- * - x: The variate.
- * - a: Scale.
- * - k: Prior shape.
- * - θ: Prior scale.
+ * @param x The variate.
+ * @param a Scale.
+ * @param k Prior shape.
+ * @param θ Prior scale.
  *
- * Returns: the posterior hyperparameters `k'` and `θ'`.
+ * @return the posterior hyperparameters `k'` and `θ'`.
  */
 function update_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {
@@ -190,12 +190,12 @@ function update_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
 /*
  * CDF of a gamma-Poisson variate.
  *
- * - x: The variate.
- * - a: Scale.
- * - k: Shape.
- * - θ: Scale.
+ * @param x The variate.
+ * @param a Scale.
+ * @param k Shape.
+ * @param θ Scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {
@@ -205,12 +205,12 @@ function cdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
 /*
  * Quantile of a gamma-Poisson distribution.
  *
- * - P: The cumulative probability.
- * - a: Scale.
- * - k: Shape.
- * - θ: Scale.
+ * @param P The cumulative probability.
+ * @param a Scale.
+ * @param k Shape.
+ * @param θ Scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {

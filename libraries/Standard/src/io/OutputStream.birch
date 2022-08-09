@@ -10,8 +10,8 @@ class OutputStream {
   /**
    * Open file.
    *
-   *   - path: Path.
-   *   - mode: Mode. 
+   *   @param path Path.
+   *   @param mode Mode. 
    */
   function open(path:String, mode:Integer) {
     file <- fopen(path, mode);
@@ -20,7 +20,7 @@ class OutputStream {
   /**
    * Open file with default mode.
    *
-   *   - path: Path.
+   *   @param path Path.
    */
   function open(path:String) {
     open(path, WRITE);

@@ -18,9 +18,6 @@ using numbirch::element;
 using numbirch::element_grad1;
 using numbirch::element_grad2;
 
-/**
- * Element of a vector.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 VectorElement<Left,Right> element(const Left& l, const Right& r) {

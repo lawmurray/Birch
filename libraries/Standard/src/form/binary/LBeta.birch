@@ -15,9 +15,6 @@ using numbirch::lbeta;
 using numbirch::lbeta_grad1;
 using numbirch::lbeta_grad2;
 
-/**
- * Logarithm of the beta function.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 LBeta<Left,Right> lbeta(const Left& l, const Right& r) {

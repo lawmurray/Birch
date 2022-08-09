@@ -2,8 +2,8 @@
  * Special expression for pack() on an arbitrary number of arguments with
  * pre-allocation of the final result.
  *
- * - Arg: Argument type, e.g. `Real[_]` or `Expression<Real[_]>`.
- * - Element: Result element type, e.g. `Real`.
+ * @tparam Arg Argument type, e.g. `Real[_]` or `Expression<Real[_]>`.
+ * @param Element Result element type, e.g. `Real`.
  */
 final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
   /**
@@ -14,7 +14,7 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
   /**
    * Add an argument.
    *
-   * - arg: The argument.
+   * @param arg The argument.
    */
   function push(arg:Arg) {
     m.pushBack(arg);

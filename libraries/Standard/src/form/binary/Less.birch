@@ -15,9 +15,6 @@ using numbirch::operator<;
 using numbirch::less_grad1;
 using numbirch::less_grad2;
 
-/**
- * Less than comparison.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Less<Left,Right> operator<(const Left& l, const Right& r) {

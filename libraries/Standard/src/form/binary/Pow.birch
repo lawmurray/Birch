@@ -15,9 +15,6 @@ using numbirch::pow;
 using numbirch::pow_grad1;
 using numbirch::pow_grad2;
 
-/**
- * Power.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Pow<Left,Right> pow(const Left& l, const Right& r) {

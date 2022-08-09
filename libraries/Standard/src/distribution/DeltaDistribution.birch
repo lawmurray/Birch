@@ -2,7 +2,7 @@
  * Delta distribution, representing a distribution on a discrete space with
  * all probability mass at one location.
  *
- * - μ: Location.
+ * @param μ Location.
  */
 final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
   /**

@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::asin;
 using numbirch::asin_grad;
 
-/**
- * Arc sine.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Asin<Middle> asin(const Middle& m) {
   return construct<Asin<Middle>>(m);

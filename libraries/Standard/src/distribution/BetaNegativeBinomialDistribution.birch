@@ -82,7 +82,7 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
     Distribution<Integer> {
   if ρ.hasNext() && ρ.getNext().isBeta() {
     ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta();
+    let (α, β) <- ρ.getNext().getBeta()!;
     let p <- wrap_beta_negative_binomial(k, α, β);
     ρ.setNext(p);
     return p;
@@ -94,9 +94,9 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
 /*
  * Simulate a beta-negative-binomial distribution.
  *
- * - k: Number of successes.
- * - α: Shape.
- * - β: Shape.
+ * @param k Number of successes.
+ * @param α Shape.
+ * @param β Shape.
  */
 function simulate_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
@@ -106,12 +106,12 @@ function simulate_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
 /*
  * Observe a beta-negative-binomial variate
  *
- * - x: The variate.
- * - k: Number of successes.
- * - α: Shape.
- * - β: Shape.
+ * @param x The variate.
+ * @param k Number of successes.
+ * @param α Shape.
+ * @param β Shape.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
     k:Arg2, α:Arg3, β:Arg4) -> {
@@ -121,12 +121,12 @@ function logpdf_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
 /*
  * Update the parameters of a Beta distribution with a Negative Binomial likelihood.
  *
- * - x: The variate.
- * - k: Number of successes.
- * - α: Prior first shape.
- * - β: Prior second shape.
+ * @param x The variate.
+ * @param k Number of successes.
+ * @param α Prior first shape.
+ * @param β Prior second shape.
  *
- * Returns: the posterior hyperparameters `α'` and `β'`.
+ * @return the posterior hyperparameters `α'` and `β'`.
  */
 function update_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {

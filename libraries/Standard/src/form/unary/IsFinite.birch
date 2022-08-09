@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::isfinite;
 using numbirch::isfinite_grad;
 
-/**
- * Is value finite?
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 IsFinite<Middle> isfinite(const Middle& m) {
   return construct<IsFinite<Middle>>(m);

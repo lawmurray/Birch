@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::atan;
 using numbirch::atan_grad;
 
-/**
- * Arc tangent.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Atan<Middle> atan(const Middle& m) {
   return construct<Atan<Middle>>(m);

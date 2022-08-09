@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::abs;
 using numbirch::abs_grad;
 
-/**
- * Absolute value.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Abs<Middle> abs(const Middle& m) {
   return construct<Abs<Middle>>(m);

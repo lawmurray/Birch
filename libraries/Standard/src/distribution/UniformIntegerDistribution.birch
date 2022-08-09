@@ -78,11 +78,11 @@ using numbirch::simulate_uniform_int;
 /*
  * Observe an integer uniform variate.
  *
- * - x: The variate.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
   return where(x >= l && x <= u, -log1p(u - l), -inf);
@@ -91,11 +91,11 @@ function logpdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
 /*
  * CDF of a uniform integer variate.
  *
- * - x: The variate.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
   return where(x < l, 0.0, where(x <= u, (x - l + 1.0)/
@@ -105,11 +105,11 @@ function cdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
 /*
  * Quantile of a uniform integer distribution.
  *
- * - P: The cumulative probability.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
+ * @param P The cumulative probability.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
   let P1 <- wait(P);

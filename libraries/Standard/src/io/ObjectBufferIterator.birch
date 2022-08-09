@@ -2,8 +2,8 @@
  * Iterator over the contents of a [Buffer](../Buffer) that represents an
  * object (in the JSON sense).
  *
- * - keys: Keys.
- * - values: Values.
+ * @param keys Keys.
+ * @param values Values.
  */
 final class ObjectBufferIterator(keys:Array<String>, values:Array<Buffer>) <
     Iterator<Buffer> {

@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::ldet;
 using numbirch::ldet_grad;
 
-/**
- * Log-determinant of a matrix.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 LDet<Middle> ldet(const Middle& m) {
   return construct<LDet<Middle>>(m);

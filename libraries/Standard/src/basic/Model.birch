@@ -27,7 +27,7 @@ abstract class Model {
   /**
    * Step execution.
    *
-   * - t: The step number, beginning at 1.
+   * @param t The step number, beginning at 1.
    */
   function simulate(t:Integer) {
     //

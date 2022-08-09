@@ -15,9 +15,6 @@ using numbirch::inner;
 using numbirch::inner_grad1;
 using numbirch::inner_grad2;
 
-/**
- * Inner product.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Inner<Left,Right> inner(const Left& l, const Right& r) {

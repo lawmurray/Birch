@@ -86,7 +86,7 @@ function make_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
 function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
   if ρ.hasNext() && ρ.getNext().isBeta() {
     ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta();
+    let (α, β) <- ρ.getNext().getBeta()!;
     let p <- wrap_beta_binomial(n, α, β);
     ρ.setNext(p);
     return p;
@@ -98,9 +98,9 @@ function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
 /*
  * Simulate a beta-binomial distribution.
  *
- * - n: Number of trials.
- * - α: First shape.
- * - β: Second shape.
+ * @param n Number of trials.
+ * @param α First shape.
+ * @param β Second shape.
  */
 function simulate_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
   return simulate_binomial(n, simulate_beta(α, β));
@@ -109,12 +109,12 @@ function simulate_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
 /*
  * Observe a beta-binomial variate.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - α: First shape.
- * - β: Second shape.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param α First shape.
+ * @param β Second shape.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
     β:Arg4) -> {
@@ -124,12 +124,12 @@ function logpdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
 /*
  * Update the parameters of a Beta distribution with a Binomial likelihood.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - α: Prior first shape.
- * - β: Prior second shape.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param α Prior first shape.
+ * @param β Prior second shape.
  *
- * Returns: the posterior hyperparameters `α'` and `β'`.
+ * @return the posterior hyperparameters `α'` and `β'`.
  */
 function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
     β:Arg4) -> {
@@ -139,12 +139,12 @@ function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
 /*
  * CDF of a beta-binomial variate.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - α: Shape.
- * - β: Shape.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param α Shape.
+ * @param β Shape.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
     β:Arg4) -> {

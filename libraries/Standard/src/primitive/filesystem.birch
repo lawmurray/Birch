@@ -18,7 +18,7 @@ APPEND:Integer <- 3;
 /**
  * Create a directory.
  *
- * - path: Path of the directory, or path of a file in the directory.
+ * @param path Path of the directory, or path of a file in the directory.
  */
 function mkdir(path:String) {
   cpp{{
@@ -33,9 +33,9 @@ function mkdir(path:String) {
 /**
  * Open a file for reading.
  *
- * - path : Path of the file.
+ * @param path Path of the file.
  *
- * Return: File handle.
+ * @return File handle.
  *
  * If `path` includes non-existing directory, that directory is created (if
  * possible). The file is locked for reading (if possible).
@@ -47,10 +47,10 @@ function fopen(path:String) -> File {
 /**
  * Open a file.
  *
- * - path : Path of the file.
- * - mode : The mode, either `READ`, `WRITE`, or `APPEND`.
+ * @param path Path of the file.
+ * @param mode The mode, either `READ`, `WRITE`, or `APPEND`.
  *
- * Return: File handle.
+ * @return File handle.
  *
  * If `path` includes non-existing directory, that directory is created (if
  * possible). The file is locked for reading or writing as appropriate (if

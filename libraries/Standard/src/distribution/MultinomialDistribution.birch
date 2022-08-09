@@ -67,8 +67,8 @@ function make_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
 /*
  * Simulate a multinomial distribution.
  *
- * - n: Number of trials.
- * - ρ: Category probabilities. These should sum to one.
+ * @param n Number of trials.
+ * @param ρ Category probabilities. These should sum to one.
  *
  * This uses an $\mathcal{O}(N)$ implementation based on:
  *
@@ -83,9 +83,9 @@ function simulate_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
 /*
  * Simulate a multinomial distribution.
  *
- * - n: Number of trials.
- * - ρ: Unnormalized category probabilities.
- * - Z: Sum of the unnormalized category probabilities.
+ * @param n Number of trials.
+ * @param ρ Unnormalized category probabilities.
+ * @param Z Sum of the unnormalized category probabilities.
  *
  * This uses an $\mathcal{O}(N)$ implementation based on:
  *
@@ -125,11 +125,11 @@ function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
 /*
  * Observe a multinomial variate.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - ρ: Category probabilities.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param ρ Category probabilities.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   assert length(x) == length(ρ);

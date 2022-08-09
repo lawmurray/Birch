@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::cosh;
 using numbirch::cosh_grad;
 
-/**
- * Hyperbolic cosine.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Cosh<Middle> cosh(const Middle& m) {
   return construct<Cosh<Middle>>(m);

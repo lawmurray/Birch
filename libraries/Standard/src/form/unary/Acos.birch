@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::acos;
 using numbirch::acos_grad;
 
-/**
- * Arc cosine.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Acos<Middle> acos(const Middle& m) {
   return construct<Acos<Middle>>(m);

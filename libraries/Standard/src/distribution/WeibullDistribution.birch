@@ -86,11 +86,11 @@ using numbirch::simulate_weibull;
 /*
  * Observe a Weibull variate.
  *
- * - x: The variate.
- * - k: Shape.
- * - λ: Scale.
+ * @param x The variate.
+ * @param k Shape.
+ * @param λ Scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
   return where(0.0 < x, log(k) + (k - 1.0)*log(x) - k*log(λ) -
@@ -100,11 +100,11 @@ function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
 /*
  * CDF of a Weibull variate.
  *
- * - x: The variate.
- * - k: Shape.
- * - λ: Scale.
+ * @param x The variate.
+ * @param k Shape.
+ * @param λ Scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
   return where(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
@@ -113,11 +113,11 @@ function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
 /*
  * Quantile of a Weibull distribution.
  *
- * - P: The cumulative probability.
- * - k: Shape.
- * - λ: Scale.
+ * @param P The cumulative probability.
+ * @param k Shape.
+ * @param λ Scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_weibull<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, λ:Arg3) -> {
   cpp{{

@@ -1,7 +1,7 @@
 /*
  * Iterator over a Tape.
  *
- * - head: Head node.
+ * @param head Head node.
  */
 final class TapeIterator<Type>(head:TapeNode<Type>?) < Iterator<Type> {
   /**

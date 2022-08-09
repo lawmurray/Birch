@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::lfact;
 using numbirch::lfact_grad;
 
-/**
- * Logarithm of the factorial function.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 LFact<Middle> lfact(const Middle& m) {
   return construct<LFact<Middle>>(m);

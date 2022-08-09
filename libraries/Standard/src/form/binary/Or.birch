@@ -15,9 +15,6 @@ using numbirch::operator||;
 using numbirch::or_grad1;
 using numbirch::or_grad2;
 
-/**
- * Logical `or`.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Or<Left,Right> operator||(const Left& l, const Right& r) {

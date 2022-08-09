@@ -15,9 +15,6 @@ using numbirch::hadamard;
 using numbirch::hadamard_grad1;
 using numbirch::hadamard_grad2;
 
-/**
- * Element-wise multiplication (Hadamard product).
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Hadamard<Left,Right> hadamard(const Left& l, const Right& r) {

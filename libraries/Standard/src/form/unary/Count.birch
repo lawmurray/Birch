@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::count;
 using numbirch::count_grad;
 
-/**
- * Count of nonzero elements.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Count<Middle> count(const Middle& m) {
   return construct<Count<Middle>>(m);

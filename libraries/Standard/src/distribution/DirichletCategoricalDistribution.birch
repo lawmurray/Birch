@@ -69,13 +69,13 @@ function make_dirichlet_categorical<Arg>(α:Arg) -> {
 function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
   if ρ.hasNext() && ρ.getNext().isDirichlet() {
     ρ.prune();
-    let α <- ρ.getNext().getDirichlet();
+    let α <- ρ.getNext().getDirichlet()!;
     let p <- wrap_dirichlet_categorical(α);
     ρ.setNext(p);
     return p;
   } else if ρ.hasNext() && ρ.getNext().isRestaurant() {
     ρ.prune();
-    let (α, θ, n) <- ρ.getNext().getRestaurant();
+    let (α, θ, n) <- ρ.getNext().getRestaurant()!;
     let p <- wrap_restaurant_categorical(α, θ, n);
     ρ.setNext(p);
     return p;
@@ -87,7 +87,7 @@ function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
 /*
  * Simulate a Dirichlet-categorical distribution.
  *
- * - α: Concentrations.
+ * @param α Concentrations.
  */
 function simulate_dirichlet_categorical<Arg1>(α:Arg1) -> {
   return simulate_categorical(simulate_dirichlet(α));
@@ -96,10 +96,10 @@ function simulate_dirichlet_categorical<Arg1>(α:Arg1) -> {
 /*
  * Observe a Dirichlet-categorical variate.
  *
- * - x: The variate.
- * - α: Concentrations.
+ * @param x The variate.
+ * @param α Concentrations.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
   return lfact(element(α, x)) - lgamma(element(α, x)) + lgamma(sum(α)) -
@@ -110,10 +110,10 @@ function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
  * Update the parameters of a Dirichlet distribution with a categorical
  * likelihood.
  *
- * - x: The variate.
- * - α: Prior concentrations.
+ * @param x The variate.
+ * @param α Prior concentrations.
  *
- * Returns: the posterior hyperparameters `α'`.
+ * @return the posterior hyperparameters `α'`.
  */
 function update_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
   return wrap_dirichlet(α + single(1.0, x, length(α)));

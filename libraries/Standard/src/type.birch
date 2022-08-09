@@ -119,10 +119,10 @@ inline constexpr bool is_delay_v = is_delay<Args...>::value;
 /**
  * Construct an object.
  *
- * - Type: The class type.
- * - Args: Argument types.
+ * @tparam Type The class type.
+ * @tparam Args Argument types.
  *
- * Returns: The object.
+ * @return The object.
  */
 template<class Type, class... Args>
 Type construct(Args&&... args) {
@@ -141,7 +141,7 @@ Type construct(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    libbirch::is_pointer<T>::value &&
+    membirch::is_pointer<T>::value &&
     std::is_constructible_v<typename T::value_type,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -159,7 +159,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    libbirch::is_pointer<T>::value &&
+    membirch::is_pointer<T>::value &&
     !std::is_constructible_v<typename T::value_type,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -177,7 +177,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    !libbirch::is_pointer<T>::value &&
+    !membirch::is_pointer<T>::value &&
     std::is_constructible_v<T,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return T(std::forward<Args>(args)...);
@@ -195,7 +195,7 @@ std::optional<T> make_optional(Args&&... args) {
  * optional with a so-constructed value, otherwise an optional with no value.
  */
 template<class T, class... Args, std::enable_if_t<
-    !libbirch::is_pointer<T>::value &&
+    !membirch::is_pointer<T>::value &&
     !std::is_constructible_v<T,Args...>,int> = 0>
 std::optional<T> make_optional(Args&&... args) {
   return std::nullopt;
@@ -215,9 +215,9 @@ std::optional<To> optional_cast(const From& from) {
 /**
  * Make an object, with the type given as an argument.
  *
- *   - Type: The type.
+ *   @tparam Type The type.
  *
- * Returns: An optional with a value if successful, or no value if not
+ * @return An optional with a value if successful, or no value if not
  * successful.
  *
  * The make will not succeed if the type is a class with initialization
@@ -230,10 +230,10 @@ function make<Type>() -> Type? {
 /**
  * Make an object, with the class given as a string.
  *
- *   - Type: Base type, which may be Object.
- *   - name: Name of the class.
+ *   @tparam Type Base type, which may be Object.
+ *   @param name Name of the class.
  *
- * Returns: An optional with a value if successful, or no value if not
+ * @return An optional with a value if successful, or no value if not
  * successful.
  *
  * The make will not succeed if the class has initialization parameters.
@@ -252,9 +252,9 @@ function make<Type>(name:String) -> Type? {
 /**
  * Make an object, with the class given in a buffer.
  *
- *   - buffer: The buffer.
+ *   @param buffer The buffer.
  *
- * Returns: An optional with a value if successful, or no value if not
+ * @return An optional with a value if successful, or no value if not
  * successful.
  *
  * If the buffer contains a key `class`, an object of that class is 
@@ -278,10 +278,10 @@ function make(buffer:Buffer) -> Object? {
 /**
  * Make an object, with the class given in a buffer.
  *
- *   - t: Step number.
- *   - buffer: The buffer.
+ *   @param t Step number.
+ *   @param buffer The buffer.
  *
- * Returns: An optional with a value if successful, or no value if not
+ * @return An optional with a value if successful, or no value if not
  * successful.
  *
  * If the buffer contains a key `class`, an object of that class is 
@@ -306,11 +306,11 @@ function make(t:Integer, buffer:Buffer) -> Object? {
  * Make an object, with the class given in a buffer, otherwise by a generic
  * type.
  *
- * - Type: Class if not given in buffer.
+ * @tparam Type Class if not given in buffer.
  *
- * - buffer: The buffer.
+ * @param buffer The buffer.
  *
- * Returns: An optional with a value if successful, or no value if not
+ * @return An optional with a value if successful, or no value if not
  * successful.
  *
  * If the buffer contains a key `class`, an object of that class is 
@@ -338,12 +338,12 @@ function make<Type>(buffer:Buffer) -> Type? {
  * Make an object, with the class given in a buffer, otherwise by a generic
  * type.
  *
- * - Type: Class if not given in buffer.
+ * @tparam Type Class if not given in buffer.
  *
- * - t: Step number.
- * - buffer: The buffer.
+ * @param t Step number.
+ * @param buffer The buffer.
  *
- * Returns: An optional with a value if successful, or no value if not
+ * @return An optional with a value if successful, or no value if not
  * successful.
  *
  * If the buffer contains a key `class`, an object of that class is 
@@ -374,7 +374,7 @@ namespace birch {
  */
 template<class To, class From,
     std::enable_if_t<!std::is_same_v<To,From> &&
-    libbirch::is_pointer<To>::value && libbirch::is_pointer<From>::value,int> = 0>
+    membirch::is_pointer<To>::value && membirch::is_pointer<From>::value,int> = 0>
 std::optional<To> optional_cast(const From& from) {
   auto ptr = dynamic_cast<typename To::value_type*>(from.get());
   if (ptr) {
@@ -390,8 +390,8 @@ std::optional<To> optional_cast(const From& from) {
 template<class To, class From,
     std::enable_if_t<!std::is_same_v<To,From> &&
     std::is_constructible_v<To,From> &&
-    (!libbirch::is_pointer<To>::value ||
-    !libbirch::is_pointer<From>::value),int> = 0>
+    (!membirch::is_pointer<To>::value ||
+    !membirch::is_pointer<From>::value),int> = 0>
 std::optional<To> optional_cast(const From& from) {
   return To(from);
 }
@@ -402,8 +402,8 @@ std::optional<To> optional_cast(const From& from) {
 template<class To, class From,
     std::enable_if_t<!std::is_same_v<To,From> &&
     !std::is_constructible_v<To,From> &&
-    (!libbirch::is_pointer<To>::value ||
-    !libbirch::is_pointer<From>::value),int> = 0>
+    (!membirch::is_pointer<To>::value ||
+    !membirch::is_pointer<From>::value),int> = 0>
 std::optional<To> optional_cast(const From& from) {
   return std::nullopt;
 }
@@ -445,8 +445,8 @@ function copy<Type>(o:Type) -> Type {
  * Deep copy multiple times to construct an array. May be preceded by bridge()
  * for lazy copies, otherwise will perform eager copies.
  *
- * - o: Source object.
- * - length: Length of vector.
+ * @param o Source object.
+ * @param length Length of vector.
  */
 function copy<Type>(o:Type, length:Integer) -> Type[_] {
   return vector_lambda(\(i:Integer) -> { return copy(o); }, length);
@@ -457,7 +457,7 @@ function copy<Type>(o:Type, length:Integer) -> Type[_] {
  * equivalent to the postfix `!` operator, while when applied to non-futures,
  * it is equivalent to the identity function.
  *
- * !!! tip
+ * @note
  *     `wait()` is useful for generic types, which may or may not be futures.
  */
 function wait<Type>(x:Type!) -> Type;

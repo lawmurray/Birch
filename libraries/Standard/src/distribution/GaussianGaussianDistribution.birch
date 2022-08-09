@@ -77,7 +77,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
   let c <- μ.r;
   if m.hasNext() && m.getNext().isGaussian() {
     m.prune();
-    let (m1, ω2) <- m.getNext().getGaussian();
+    let (m1, ω2) <- m.getNext().getGaussian()!;
     let p <- wrap_gaussian_gaussian(a, m1, ω2, c, σ2);
     m.setNext(p);
     return p;
@@ -113,14 +113,14 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
  * Update the parameters of a Gaussian distribution with linear transformation
  * of Gaussian prior on the mean.
  *
- * - x: The variate.
- * - a: Scale.
- * - μ: Prior mean.
- * - σ2: Prior variance.
- * - c: Offset.
- * - ω2: Likelihood variance.
+ * @param x The variate.
+ * @param a Scale.
+ * @param μ Prior mean.
+ * @param σ2 Prior variance.
+ * @param c Offset.
+ * @param ω2 Likelihood variance.
  *
- * Returns: the posterior hyperparameters `μ'` and `σ2'`.
+ * @return the posterior hyperparameters `μ'` and `σ2'`.
  */
 function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(
     x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, ω2:Arg6, m:Arg7, τ2:Arg8) -> {

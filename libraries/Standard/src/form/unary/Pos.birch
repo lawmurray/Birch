@@ -14,17 +14,11 @@ namespace birch {
 using numbirch::pos;
 using numbirch::pos_grad;
 
-/**
- * Unary plus.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Pos<Middle> pos(const Middle& m) {
   return construct<Pos<Middle>>(m);
 }
 
-/**
- * Unary plus.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Pos<Middle> operator+(const Middle& m) {
   return construct<Pos<Middle>>(m);

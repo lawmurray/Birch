@@ -82,8 +82,8 @@ class ParticleFilter {
   /**
    * Start filter.
    *
-   * - model: Model.
-   * - input: Input buffer.
+   * @param model Model.
+   * @param input Input buffer.
    */
   function filter(model:Model, input:Buffer) {
     x.clear();
@@ -103,9 +103,9 @@ class ParticleFilter {
   /**
    * Step filter.
    *
-   * - t: Step number, beginning at 1.
-   * - input: Input buffer.
-   * - κ: Markov kernel.
+   * @param t Step number, beginning at 1.
+   * @param input Input buffer.
+   * @param κ Markov kernel.
    */
   function filter(t:Integer, input:Buffer, κ:Kernel?) {
     resample(t, κ);
@@ -115,8 +115,8 @@ class ParticleFilter {
   /**
    * Step filter.
    *
-   * - t: Step number, beginning at 1.
-   * - input: Input buffer.
+   * @param t Step number, beginning at 1.
+   * @param input Input buffer.
    */
   function filter(t:Integer, input:Buffer) {
     filter(t, input, nil);
@@ -125,7 +125,7 @@ class ParticleFilter {
   /**
    * Start particles.
    *
-   * - input: Input buffer.
+   * @param input Input buffer.
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
@@ -148,8 +148,8 @@ class ParticleFilter {
   /**
    * Step particles.
    *
-   * - t: Step number.
-   * - input: Input buffer.
+   * @param t Step number.
+   * @param input Input buffer.
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
@@ -172,8 +172,8 @@ class ParticleFilter {
   /**
    * Resample particles.
    *
-   * - t: Step number.
-   * - κ: Markov kernel.
+   * @param t Step number.
+   * @param κ Markov kernel.
    */
   function resample(t:Integer, κ:Kernel?) {
     if r < t {
@@ -227,9 +227,9 @@ class ParticleFilter {
   /**
    * Reconfigure particle filter.
    *
-   * - autoconj: Should automatic marginalization and conditioning be enabled?
-   * - autodiff: Should automatic differentiation be enabled?
-   * - autojoin: Should automatic joining be enabled?
+   * @param autoconj Should automatic marginalization and conditioning be enabled?
+   * @param autodiff Should automatic differentiation be enabled?
+   * @param autojoin Should automatic joining be enabled?
    */
   function reconfigure(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
     this.autoconj <- autoconj;

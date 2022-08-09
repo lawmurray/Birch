@@ -80,7 +80,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   let c <- μ.r;
   if m.hasNext() && m.getNext().isMultivariateGaussian() {
     m.prune();
-    let (μ1, Σ1) <- m.getNext().getMultivariateGaussian();
+    let (μ1, Σ1) <- m.getNext().getMultivariateGaussian()!;
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, μ1, Σ1, c,
         Σ);
     m.setNext(p);
@@ -118,16 +118,16 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>, Σ:Arg) ->
  * Update the parameters of a multivariate Gaussian distribution with a 
  * linear transformation and multivariate Gaussian likelihood.
  *
- * - x: The variate.
- * - A: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - c: Offset.
- * - Ω: Likelihood covariance.
- * - m: Precomputed marginal mean.
- * - T: Precomputed marginal covariance.
+ * @param x The variate.
+ * @param A Scale.
+ * @param μ Prior mean.
+ * @param Σ Prior covariance.
+ * @param c Offset.
+ * @param Ω Likelihood covariance.
+ * @param m Precomputed marginal mean.
+ * @param T Precomputed marginal covariance.
  *
- * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ * @return the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, Ω:Arg6,

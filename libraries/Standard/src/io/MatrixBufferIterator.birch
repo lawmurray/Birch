@@ -2,7 +2,7 @@
  * Iterator over the rows of a matrix, that wraps each row in a
  * [Buffer](../Buffer) object.
  *
- * - values: Values.
+ * @param values Values.
  */
 final class MatrixBufferIterator<Type>(values:Type[_,_]) < Iterator<Buffer> {
   /**

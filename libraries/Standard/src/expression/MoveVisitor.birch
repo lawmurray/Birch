@@ -1,7 +1,7 @@
 /**
  * Move arguments in a delayed expression.
  *
- * - x: Vectorized arguments.
+ * @param x Vectorized arguments.
  */
 class MoveVisitor(x:Real[_]) {
   /**

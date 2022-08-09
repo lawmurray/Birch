@@ -1,8 +1,8 @@
 /**
  * Unary map.
  *
- * - x: Operand.
- * - f: Operator.
+ * @param x Operand.
+ * @param f Operator.
  *
  * Applies `f` to each element of `X`.
  */
@@ -15,8 +15,8 @@ function for_each<Type,Lambda>(x:Type[_], f:Lambda) {
 /**
  * Unary map.
  *
- * - X: Operand.
- * - f: Operator.
+ * @param X Operand.
+ * @param f Operator.
  *
  * Applies `f` to each element of `X`.
  */
@@ -31,9 +31,9 @@ function for_each<Type,Lambda>(X:Type[_,_], f:Lambda) {
 /**
  * Binary map.
  *
- * - x: First operand.
- * - y: Second operand.
- * - f: Operator.
+ * @param x First operand.
+ * @param y Second operand.
+ * @param f Operator.
  */
 function for_each<Input1,Input2,Lambda>(x:Input1[_], y:Input2[_], f:Lambda) {
   assert length(x) == length(y);
@@ -45,9 +45,9 @@ function for_each<Input1,Input2,Lambda>(x:Input1[_], y:Input2[_], f:Lambda) {
 /**
  * Binary map.
  *
- * - X: First operand.
- * - Y: Second operand.
- * - f: Operator.
+ * @param X First operand.
+ * @param Y Second operand.
+ * @param f Operator.
  */
 function for_each<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
     f:Lambda) {
@@ -63,10 +63,10 @@ function for_each<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
 /**
  * Ternary map.
  *
- * - x: First operand.
- * - y: Second operand.
- * - z: Third operand.
- * - f: Operator.
+ * @param x First operand.
+ * @param y Second operand.
+ * @param z Third operand.
+ * @param f Operator.
  */
 function for_each<Input1,Input2,Input3,Lambda>(x:Input1[_], y:Input2[_],
     z:Input3[_], f:Lambda) {
@@ -80,10 +80,10 @@ function for_each<Input1,Input2,Input3,Lambda>(x:Input1[_], y:Input2[_],
 /**
  * Ternary map.
  *
- * - X: First operand.
- * - Y: Second operand.
- * - Z: Third operand.
- * - f: Operator.
+ * @param X First operand.
+ * @param Y Second operand.
+ * @param Z Third operand.
+ * @param f Operator.
  */
 function for_each<Input1,Input2,Input3,Lambda>(X:Input1[_,_], Y:Input2[_,_],
     Z:Input3[_,_], f:Lambda) {
@@ -101,8 +101,8 @@ function for_each<Input1,Input2,Input3,Lambda>(X:Input1[_,_], Y:Input2[_,_],
 /**
  * Unary transformation.
  *
- * - x: Operand.
- * - f: Operator.
+ * @param x Operand.
+ * @param f Operator.
  */
 function transform<Input,Lambda>(x:Input[_], f:Lambda) -> {
   return vector_lambda(\(i:Integer) -> { return f(x[i]); }, length(x));
@@ -111,8 +111,8 @@ function transform<Input,Lambda>(x:Input[_], f:Lambda) -> {
 /**
  * Unary transformation.
  *
- * - X: Operand.
- * - f: Operator.
+ * @param X Operand.
+ * @param f Operator.
  */
 function transform<Input,Lambda>(X:Input[_,_], f:Lambda) -> {
   return matrix_lambda(\(i:Integer, j:Integer) -> {  return f(X[i,j]); },
@@ -122,9 +122,9 @@ function transform<Input,Lambda>(X:Input[_,_], f:Lambda) -> {
 /**
  * Binary transformation.
  *
- * - x: First operand.
- * - y: Second operand.
- * - f: Operator.
+ * @param x First operand.
+ * @param y Second operand.
+ * @param f Operator.
  */
 function transform<Input1,Input2,Lambda>(x:Input1[_], y:Input2[_],
     f:Lambda) -> {
@@ -135,9 +135,9 @@ function transform<Input1,Input2,Lambda>(x:Input1[_], y:Input2[_],
 /**
  * Binary transformation.
  *
- * - X: First operand.
- * - Y: Second operand.
- * - f: Operator.
+ * @param X First operand.
+ * @param Y Second operand.
+ * @param f Operator.
  */
 function transform<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
     f:Lambda) -> {
@@ -151,10 +151,10 @@ function transform<Input1,Input2,Lambda>(X:Input1[_,_], Y:Input2[_,_],
 /**
  * Ternary transformation.
  *
- * - x: First operand.
- * - y: Second operand.
- * - z: Third operand.
- * - f: Operator.
+ * @param x First operand.
+ * @param y Second operand.
+ * @param z Third operand.
+ * @param f Operator.
  */
 function transform<Input1,Input2,Input3,Lambda>(x:Input1[_], y:Input2[_],
     z:Input3[_], f:Lambda) -> {
@@ -167,10 +167,10 @@ function transform<Input1,Input2,Input3,Lambda>(x:Input1[_], y:Input2[_],
 /**
  * Ternary transformation.
  *
- * - X: First operand.
- * - Y: Second operand.
- * - Z: Third operand.
- * - f: Operator.
+ * @param X First operand.
+ * @param Y Second operand.
+ * @param Z Third operand.
+ * @param f Operator.
  */
 function transform<Input1,Input2,Input3,Lambda>(X:Input1[_,_],
     Y:Input2[_,_], Z:Input3[_,_], f:Lambda) -> {
@@ -186,9 +186,9 @@ function transform<Input1,Input2,Input3,Lambda>(X:Input1[_,_],
 /**
  * Reduction.
  *
- * - x: Vector.
- * - init: Initial value.
- * - op: Operator.
+ * @param x Vector.
+ * @param init Initial value.
+ * @param op Operator.
  */
 function reduce<Type,Output,Lambda>(x:Type[_], init:Output, op:Lambda) ->
     Output {
@@ -204,9 +204,9 @@ function reduce<Type,Output,Lambda>(x:Type[_], init:Output, op:Lambda) ->
 /**
  * Reduction.
  *
- * - X: Matrix.
- * - init: Initial value.
- * - op: Operator.
+ * @param X Matrix.
+ * @param init Initial value.
+ * @param op Operator.
  */
 function reduce<Type,Output,Lambda>(X:Type[_,_], init:Output, op:Lambda) ->
     Output {
@@ -222,10 +222,10 @@ function reduce<Type,Output,Lambda>(X:Type[_,_], init:Output, op:Lambda) ->
 /**
  * Unary transformation and reduction.
  *
- * - x: First operand.
- * - init: Initial value.
- * - op1: Reduction operator.
- * - op2: Transformation operator.
+ * @param x First operand.
+ * @param init Initial value.
+ * @param op1 Reduction operator.
+ * @param op2 Transformation operator.
  */
 function transform_reduce<Input,Output,Lambda1,Lambda2>(x:Input[_],
     init:Output, op1:Lambda1, op2:Lambda2) -> Output {
@@ -239,10 +239,10 @@ function transform_reduce<Input,Output,Lambda1,Lambda2>(x:Input[_],
 /**
  * Unary transformation and reduction.
  *
- * - X: First operand.
- * - init: Initial value.
- * - op1: Reduction operator.
- * - op2: Transformation operator.
+ * @param X First operand.
+ * @param init Initial value.
+ * @param op1 Reduction operator.
+ * @param op2 Transformation operator.
  */
 function transform_reduce<Input,Output,Lambda1,Lambda2>(X:Input[_,_],
     init:Output, op1:Lambda1, op2:Lambda2) -> Output {
@@ -258,11 +258,11 @@ function transform_reduce<Input,Output,Lambda1,Lambda2>(X:Input[_,_],
 /**
  * Binary transformation and reduction.
  *
- * - x: First operand.
- * - y: Second operand.
- * - init: Initial value.
- * - op1: Reduction operator.
- * - op2: Transformation operator.
+ * @param x First operand.
+ * @param y Second operand.
+ * @param init Initial value.
+ * @param op1 Reduction operator.
+ * @param op2 Transformation operator.
  */
 function transform_reduce<Input1,Input2,Output,Lambda1,Lambda2>(x:Input1[_],
     y:Input2[_], init:Output, op1:Lambda1, op2:Lambda2) -> Output {
@@ -277,11 +277,11 @@ function transform_reduce<Input1,Input2,Output,Lambda1,Lambda2>(x:Input1[_],
 /**
  * Binary transformation and reduction.
  *
- * - X: First operand.
- * - Y: Second operand.
- * - init: Initial value.
- * - op1: Reduction operator.
- * - op2: Transformation operator.
+ * @param X First operand.
+ * @param Y Second operand.
+ * @param init Initial value.
+ * @param op1 Reduction operator.
+ * @param op2 Transformation operator.
  */
 function transform_reduce<Input1,Input2,Output,Lambda1,Lambda2>(X:Input1[_,_],
     Y:Input2[_,_], init:Output, op1:Lambda1, op2:Lambda2) -> Output {
@@ -299,12 +299,12 @@ function transform_reduce<Input1,Input2,Output,Lambda1,Lambda2>(X:Input1[_,_],
 /**
  * Ternary transformation and reduction.
  *
- * - x: First operand.
- * - y: Second operand.
- * - z: Third operand.
- * - init: Initial value.
- * - op1: Reduction operator.
- * - op2: Transformation operator.
+ * @param x First operand.
+ * @param y Second operand.
+ * @param z Third operand.
+ * @param init Initial value.
+ * @param op1 Reduction operator.
+ * @param op2 Transformation operator.
  */
 function transform_reduce<Input1,Input2,Input3,Output,Lambda1,Lambda2>(
     x:Input1[_], y:Input2[_], z:Input3[_], init:Output, op1:Lambda1,
@@ -321,12 +321,12 @@ function transform_reduce<Input1,Input2,Input3,Output,Lambda1,Lambda2>(
 /**
  * Ternary transformation and reduction.
  *
- * - X: First operand.
- * - Y: Second operand.
- * - Z: Third operand.
- * - init: Initial value.
- * - op1: Reduction operator.
- * - op2: Transformation operator.
+ * @param X First operand.
+ * @param Y Second operand.
+ * @param Z Third operand.
+ * @param init Initial value.
+ * @param op1 Reduction operator.
+ * @param op2 Transformation operator.
  */
 function transform_reduce<Input1,Input2,Input3,Output,Lambda1,Lambda2>(
     X:Input1[_,_], Y:Input2[_,_], Z:Input3[_,_], init:Output, op1:Lambda1,
@@ -347,8 +347,8 @@ function transform_reduce<Input1,Input2,Input3,Output,Lambda1,Lambda2>(
 /**
  * Inclusive scan.
  *
- * - x: Vector.
- * - op: Operator.
+ * @param x Vector.
+ * @param op Operator.
  */
 function inclusive_scan<Type,Lambda>(x:Type[_], init:Type, op:Lambda) ->
     Type[_] {
@@ -380,9 +380,9 @@ function inclusive_scan<Type>(x:Type[_]) -> Type[_] {
 /**
  * Exclusive scan.
  *
- * - x: Vector.
- * - init: Initial value.
- * - op: Operator.
+ * @param x Vector.
+ * @param init Initial value.
+ * @param op Operator.
  */
 function exclusive_scan<Type,Lambda>(x:Type[_], init:Type, op:Lambda) ->
     Type[_] {
@@ -414,8 +414,8 @@ function exclusive_scan<Type>(x:Type[_]) -> Type[_] {
 /**
  * Adjacent difference.
  *
- * - x: Vector.
- * - op: Operator.
+ * @param x Vector.
+ * @param op Operator.
  */
 function adjacent_difference<Type,Lambda>(x:Type[_], op:Lambda) -> Type[_] {
   y:Type[length(x)];
@@ -437,9 +437,9 @@ function is_sorted<Type>(x:Type[_]) -> Boolean {
 /**
  * Sort a vector.
  *
- * - x: Vector.
+ * @param x Vector.
  *
- * Returns: A vector giving the elements of `x` in ascending order.
+ * @return A vector giving the elements of `x` in ascending order.
  */
 function sort<Type>(x:Type[_]) -> Type[_] {
   let y <- x;
@@ -452,9 +452,9 @@ function sort<Type>(x:Type[_]) -> Type[_] {
 /**
  * Sort a vector.
  *
- * - x: Vector.
+ * @param x Vector.
  *
- * Returns: A vector giving the indices of elements in `x` in ascending
+ * @return A vector giving the indices of elements in `x` in ascending
  * order.
  */
 function sort_index<Type>(x:Type[_]) -> Integer[_] {
@@ -470,10 +470,10 @@ function sort_index<Type>(x:Type[_]) -> Integer[_] {
 /**
  * Gather.
  *
- * - a: Indices.
- * - x: Source vector.
+ * @param a Indices.
+ * @param x Source vector.
  *
- * Returns: a vector `y` where `y[n] == x[a[n]]`.
+ * @return a vector `y` where `y[n] == x[a[n]]`.
  */
 function gather<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
   return vector_lambda(\(i:Integer) -> Type { return x[a[i]]; }, length(a));
@@ -482,10 +482,10 @@ function gather<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
 /**
  * Scatter.
  *
- * - a: Indices.
- * - x: Source vector.
+ * @param a Indices.
+ * @param x Source vector.
  *
- * Returns: a vector `y` where `y[a[n]] == x[n]`.
+ * @return a vector `y` where `y[a[n]] == x[n]`.
  *
  * If the same index appears more than once in `a`, the result is undefined.
  */
@@ -501,8 +501,8 @@ function scatter<Type>(a:Integer[_], x:Type[_]) -> Type[_] {
 /**
  * Create vector filled with a sequentially incrementing values.
  *
- * - x: Initial value.
- * - length: Length.
+ * @param x Initial value.
+ * @param length Length.
  */
 function iota<Type>(x:Type, length:Integer) -> Real[_] {
   return vector_lambda(\(i:Integer) -> Type { return x + (i - 1); }, length);

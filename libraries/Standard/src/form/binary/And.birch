@@ -15,9 +15,6 @@ using numbirch::operator&&;
 using numbirch::and_grad1;
 using numbirch::and_grad2;
 
-/**
- * Logical `and`.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 And<Left,Right> operator&&(const Left& l, const Right& r) {

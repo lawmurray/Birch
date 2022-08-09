@@ -5,7 +5,7 @@
  *
  * Accepts the same options as [build](../build).
  *
- * !!! tip
+ * @note
  *     Usually one just calls [build](../build), which calls `configure`
  *     implicitly.
  */

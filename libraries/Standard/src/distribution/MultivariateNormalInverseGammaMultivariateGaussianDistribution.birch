@@ -129,7 +129,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   if (ω2.hasNext() && ω2.getNext().isMultivariateNormalInverseGamma() &&
       ω2.getNext(2) == m) || (ω2.hasSide() && ω2.getSide() == m) {
     m.prune();
-    let (ν, Λ, k, γ) <- ω2.getNext().getMultivariateNormalInverseGamma();
+    let (ν, Λ, k, γ) <- ω2.getNext().getMultivariateNormalInverseGamma()!;
     let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(A,
         ν, Λ, k, γ, c, Ω);
     m.setNext(p);
@@ -139,13 +139,13 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     return p;
   } else if ω2.hasNext() && ω2.getNext().isInverseGamma() {
     ω2.prune();
-    let (α, β) <- ω2.getNext().getInverseGamma();
+    let (α, β) <- ω2.getNext().getInverseGamma()!;
     let p <- MultivariateNormalInverseGamma(μ, Ω, α, β);
     ω2.setNext(p);
     return p;
   } else if m.hasNext() && m.getNext().isMultivariateGaussian() {
     m.prune();
-    let (m1, S) <- m.getNext().getMultivariateGaussian();
+    let (m1, S) <- m.getNext().getMultivariateGaussian()!;
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, m1, S, c, Σ);
     m.setNext(p);
     return p;
@@ -174,15 +174,15 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
  * Simulate multivariate-normal-inverse-gamma-multivariate-Gaussian
  * distribution.
  *
- * - A: Scale.
- * - ν: Prior mean.
- * - Λ: Prior covariance.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
- * - c: Offset.
- * - Ω: Covariance scale.
+ * @param A Scale.
+ * @param ν Prior mean.
+ * @param Λ Prior covariance.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
+ * @param c Offset.
+ * @param Ω Covariance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, ν:Arg2, Λ:Arg3, k:Arg4,
@@ -200,16 +200,16 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian<
  * Observe multivariate-normal-inverse-gamma-multivariate-Gaussian
  * variate.
  *
- * - x: The variate.
- * - A: Scale.
- * - ν: Prior mean.
- * - Λ: Prior covariance.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
- * - c: Offset.
- * - Ω: Covariance scale.
+ * @param x The variate.
+ * @param A Scale.
+ * @param ν Prior mean.
+ * @param Λ Prior covariance.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
+ * @param c Offset.
+ * @param Ω Covariance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, ν:Arg3, Λ:Arg4,
@@ -227,16 +227,16 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
  * Update the parameters of a normal inverse-gamma distribution with a
  * linear transformation and multivariate Gaussian likelihood.
  *
- * - x: The variate.
- * - A: Scale.
- * - ν: Prior mean.
- * - Λ: Prior covariance.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
- * - c: Offset.
- * - Ω: Covariance scale.
+ * @param x The variate.
+ * @param A Scale.
+ * @param ν Prior mean.
+ * @param Λ Prior covariance.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
+ * @param c Offset.
+ * @param Ω Covariance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2,

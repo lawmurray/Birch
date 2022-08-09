@@ -9,7 +9,7 @@ final class ListNode<Type>(x:Type) {
   /**
    * Insert a new node just before this one in the list.
    *
-   * - node: the new node.
+   * @param node the new node.
    */
   function insert(node:ListNode<Type>) {
     assert prev?;    
@@ -34,7 +34,7 @@ final class ListNode<Type>(x:Type) {
   /**
    * Pop this node from the front of the list.
    *
-   * Return: the new front node of the list.
+   * @return the new front node of the list.
    */
   function popFront() -> ListNode<Type>? {
     let node <- this.next;
@@ -49,7 +49,7 @@ final class ListNode<Type>(x:Type) {
   /**
    * Pop this node from the back of the list.
    *
-   * Return: the new back node of the list.
+   * @return the new back node of the list.
    */
   function popBack() -> ListNode<Type>? {
     let node <- this.prev;

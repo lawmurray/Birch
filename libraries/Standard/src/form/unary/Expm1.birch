@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::expm1;
 using numbirch::expm1_grad;
 
-/**
- * Exponential minus one.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Expm1<Middle> expm1(const Middle& m) {
   return construct<Expm1<Middle>>(m);

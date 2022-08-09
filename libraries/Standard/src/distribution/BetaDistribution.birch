@@ -66,7 +66,7 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
     return true;
   }
 
-  override function getBeta() -> (Expression<Real>, Expression<Real>) {
+  override function getBeta() -> (Expression<Real>, Expression<Real>)? {
     return box(α, β);
   }
 
@@ -97,11 +97,11 @@ using numbirch::simulate_beta;
 /*
  * Observe a beta variate.
  *
- * - x: The variate.
- * - α: Shape.
- * - β: Shape.
+ * @param x The variate.
+ * @param α Shape.
+ * @param β Shape.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_beta<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return (α - 1.0)*log(x) + (β - 1.0)*log1p(-x) - lbeta(α, β);
@@ -110,11 +110,11 @@ function logpdf_beta<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
 /*
  * CDF of a beta variate.
  *
- * - x: The variate.
- * - α: Shape.
- * - β: Shape.
+ * @param x The variate.
+ * @param α Shape.
+ * @param β Shape.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_beta<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return ibeta(α, β, x);
@@ -123,11 +123,11 @@ function cdf_beta<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
 /*
  * Quantile of a beta distribution.
  *
- * - P: The cumulative probability.
- * - α: Shape.
- * - β: Shape.
+ * @param P The cumulative probability.
+ * @param α Shape.
+ * @param β Shape.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_beta<Arg1,Arg2,Arg3>(P:Arg1, α:Arg2, β:Arg3) -> {
   cpp{{

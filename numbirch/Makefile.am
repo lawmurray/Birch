@@ -86,9 +86,11 @@ endif
 endif
 
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=double
+libnumbirch_la_LDFLAGS = $(AM_LDFLAGS) -release $(PACKAGE_VERSION)
 libnumbirch_la_SOURCES = $(SOURCES)
 
 libnumbirch_single_la_CPPFLAGS = $(AM_CPPFLAGS) -DNUMBIRCH_REAL=float
+libnumbirch_single_la_LDFLAGS = $(AM_LDFLAGS) -release $(PACKAGE_VERSION)
 libnumbirch_single_la_SOURCES = $(SOURCES)
 
 include_HEADERS = numbirch/numbirch.hpp

@@ -17,9 +17,6 @@ using numbirch::where_grad1;
 using numbirch::where_grad2;
 using numbirch::where_grad3;
 
-/**
- * Conditional.
- */
 template<class Left, class Middle, class Right, std::enable_if_t<
     is_delay_v<Left,Middle,Right>,int> = 0>
 Where<Left,Middle,Right> where(const Left& l, const Middle& m,

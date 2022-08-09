@@ -14,10 +14,6 @@ namespace birch {
 using numbirch::cholinv;
 using numbirch::cholinv_grad;
 
-/**
- * Inverse of a symmetric positive-definite matrix via the Cholesky
- * factorization.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 CholInv<Middle> cholinv(const Middle& m) {
   return construct<CholInv<Middle>>(m);

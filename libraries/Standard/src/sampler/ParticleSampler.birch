@@ -5,9 +5,9 @@ class ParticleSampler {
   /**
    * Start a sample.
    *
-   * - filter: Particle filter.
-   * - model: Model.
-   * - input: Input buffer.
+   * @param filter Particle filter.
+   * @param model Model.
+   * @param input Input buffer.
    */
   function sample(filter:ParticleFilter, model:Model, input:Buffer) {
     filter.filter(model, input);
@@ -16,9 +16,9 @@ class ParticleSampler {
   /**
    * Step a sample.
    *
-   * - filter: Particle filter.
-   * - input: Input buffer.
-   * - t: The step number, beginning at 1.
+   * @param filter Particle filter.
+   * @param input Input buffer.
+   * @param t The step number, beginning at 1.
    */
   function sample(filter:ParticleFilter, t:Integer, input:Buffer) {
     filter.filter(t, input);
@@ -27,10 +27,10 @@ class ParticleSampler {
   /**
    * Step a sample.
    *
-   * - filter: Particle filter.
-   * - t: The step number, beginning at 1.
-   * - input: Input buffer.
-   * - κ: Markov kernel.
+   * @param filter Particle filter.
+   * @param t The step number, beginning at 1.
+   * @param input Input buffer.
+   * @param κ Markov kernel.
    */
   function sample(filter:ParticleFilter, t:Integer, input:Buffer, κ:Kernel) {
     filter.filter(t, input, κ);

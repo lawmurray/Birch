@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::inv;
 using numbirch::inv_grad;
 
-/**
- * Inverse of a matrix.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Inv<Middle> inv(const Middle& m) {
   return construct<Inv<Middle>>(m);

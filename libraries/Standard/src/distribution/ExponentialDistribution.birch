@@ -78,10 +78,10 @@ using numbirch::simulate_exponential;
 /*
  * Observe an exponential variate.
  *
- * - x: The variate.
- * - λ: Rate.
+ * @param x The variate.
+ * @param λ Rate.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
   return where(0.0 <= x, log(λ) - λ*x, -inf);
@@ -90,10 +90,10 @@ function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
 /*
  * CDF of an exponential variate.
  *
- * - x: The variate.
- * - λ: Rate.
+ * @param x The variate.
+ * @param λ Rate.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
   return where(0.0 < x, -expm1(-λ*x), 0.0);
@@ -102,10 +102,10 @@ function cdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
 /*
  * Quantile of an exponential distribution.
  *
- * - P: The cumulative probability.
- * - λ: Rate.
+ * @param P The cumulative probability.
+ * @param λ Rate.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_exponential<Arg1,Arg2>(P:Arg1, λ:Arg2) -> {
   cpp{{

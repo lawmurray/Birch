@@ -15,9 +15,6 @@ using numbirch::lgamma;
 using numbirch::lgamma_grad1;
 using numbirch::lgamma_grad2;
 
-/**
- * Logarithm of the multivariate gamma function.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 LGammaP<Left,Right> lgamma(const Left& l, const Right& r) {

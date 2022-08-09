@@ -15,9 +15,6 @@ using numbirch::dot;
 using numbirch::dot_grad1;
 using numbirch::dot_grad2;
 
-/**
- * Dot product.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Dot<Left,Right> dot(const Left& l, const Right& r) {

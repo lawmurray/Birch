@@ -14,17 +14,11 @@ namespace birch {
 using numbirch::neg;
 using numbirch::neg_grad;
 
-/**
- * Negation.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Neg<Middle> neg(const Middle& m) {
   return construct<Neg<Middle>>(m);
 }
 
-/**
- * Negation.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Neg<Middle> operator-(const Middle& m) {
   return construct<Neg<Middle>>(m);

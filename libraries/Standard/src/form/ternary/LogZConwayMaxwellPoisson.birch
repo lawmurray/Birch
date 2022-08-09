@@ -16,11 +16,11 @@ namespace birch {
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
  * distribution truncated on a finite interval $[0,n]$.
  *
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  *
- * Return: vector of probabilities on $[0,n]$.
+ * @return vector of probabilities on $[0,n]$.
  */
 template<class Left, class Middle, class Right, std::enable_if_t<
     is_delay_v<Left,Middle,Right>,int> = 0>

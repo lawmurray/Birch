@@ -15,18 +15,12 @@ using numbirch::sub;
 using numbirch::sub_grad1;
 using numbirch::sub_grad2;
 
-/**
- * Subtraction.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Sub<Left,Right> sub(const Left& l, const Right& r) {
   return construct<Sub<Left,Right>>(l, r);
 }
 
-/**
- * Subtraction.
- */
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
 Sub<Left,Right> operator-(const Left& l, const Right& r) {

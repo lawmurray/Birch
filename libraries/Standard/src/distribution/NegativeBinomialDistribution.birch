@@ -87,11 +87,11 @@ using numbirch::simulate_negative_binomial;
 /*
  * Observe a negative binomial variate.
  *
- * - x: The variate (number of failures).
- * - k: Number of successes before the experiment is stopped.
- * - ρ: Probability of success.
+ * @param x The variate (number of failures).
+ * @param k Number of successes before the experiment is stopped.
+ * @param ρ Probability of success.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
   return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
@@ -100,11 +100,11 @@ function logpdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
 /*
  * CDF of a negative binomial variate.
  *
- * - x: The variate (number of failures).
- * - k: Number of successes before the experiment is stopped.
- * - ρ: Probability of success.
+ * @param x The variate (number of failures).
+ * @param k Number of successes before the experiment is stopped.
+ * @param ρ Probability of success.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
   return ibeta(k, x + 1, ρ);
@@ -113,11 +113,11 @@ function cdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
 /*
  * Quantile of a negative binomial distribution.
  *
- * - P: The cumulative probability.
- * - k: Number of successes before the experiment is stopped.
- * - ρ: Probability of success.
+ * @param P The cumulative probability.
+ * @param k Number of successes before the experiment is stopped.
+ * @param ρ Probability of success.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_negative_binomial<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2,
     ρ:Arg3) -> {

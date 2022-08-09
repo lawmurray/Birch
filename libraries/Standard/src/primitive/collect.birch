@@ -3,6 +3,6 @@
  */
 function collect() {
   cpp{{
-  libbirch::collect();
+  membirch::collect();
   }}
 }

@@ -14,9 +14,6 @@ namespace birch {
 using numbirch::exp;
 using numbirch::exp_grad;
 
-/**
- * Exponential.
- */
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Exp<Middle> exp(const Middle& m) {
   return construct<Exp<Middle>>(m);

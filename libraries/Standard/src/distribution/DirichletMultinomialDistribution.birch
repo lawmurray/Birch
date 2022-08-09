@@ -70,7 +70,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
   if ρ.hasNext() && ρ.getNext().isDirichlet() {
     ρ.prune();
-    let α <- ρ.getNext().getDirichlet();
+    let α <- ρ.getNext().getDirichlet()!;
     let p <- wrap_dirichlet_multinomial(n, α);
     ρ.setNext(p);
     return p;
@@ -82,8 +82,8 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
 /*
  * Simulate a Dirichlet-multinomial distribution.
  *
- * - n: Number of trials.
- * - α: Concentrations.
+ * @param n Number of trials.
+ * @param α Concentrations.
  */
 function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
   return simulate_multinomial(n, simulate_dirichlet(α));
@@ -92,11 +92,11 @@ function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
 /*
  * Observe a Dirichlet-multinomial variate.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - α: Concentrations.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param α Concentrations.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
     α:Arg3) -> {
@@ -109,11 +109,11 @@ function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
  * Update the parameters of a Dirichlet distribution with a multinomial
  * likelihood.
  *
- * - x: The variate.
- * - n: Number of trials.
+ * @param x The variate.
+ * @param n Number of trials.
  * - α': Prior concentrations.
  *
- * Returns: the posterior hyperparameters `α'`.
+ * @return the posterior hyperparameters `α'`.
  */
 function update_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
     α:Arg3) -> {

@@ -61,14 +61,12 @@ requirements, you can install Birch from source. This requires:
 
   * GNU autoconf, automake, libtool, flex, and bison
   * [LibYAML](https://pyyaml.org/wiki/LibYAML)
-  * [Boost](https://boost.org)
   * [Eigen](https://eigen.tuxfamily.org)
 
-The following are optional, but will be linked in automatically if found (to
-improve performance):
+The following is optional but recommended for significant performance
+improvements, and will be linked in automatically if found:
 
-  * [jemalloc](http://jemalloc.net/) or
-    [tcmalloc](https://gperftools.github.io/gperftools/tcmalloc.html)
+  * [jemalloc](http://jemalloc.net/)
 
 All Birch sources are in the same repository. The main branch is considered
 stable. Clone it:
@@ -82,38 +80,36 @@ and change to the `Birch` directory:
 Then proceed as follows. Note special instructions for Mac in step 2. In
 addition, on Mac, you can typically omit `sudo` from these commands.
 
-1. Install the driver by running, from within the `driver/` directory:
+1. Install MemBirch by running, from within the `membirch/` directory:
 
        ./bootstrap
        ./configure
        make
        sudo make install
 
-2. Install LibBirch by running, from within the `libbirch/` directory:
+2. Install NumBirch by running, from within the `numbirch/` directory:
 
        ./bootstrap
        ./configure
        make
        sudo make install
 
-   On Mac, use the following `configure` line instead:
+3. Install Birch by running, from within the `birch/` directory:
 
-       ./configure --disable-openmp CPPFLAGS="-Xpreprocessor -fopenmp"
+       ./bootstrap
+       ./configure
+       make
+       sudo make install
 
-   Despite the apparently conflicting options, this will *enable*
-   multithreading with OpenMP (specifically, it disables the standard check in
-   the `configure` script, which fails on Mac, but then adds the required
-   flags).
-
-3. Install the standard library by running, from within the
+4. Install the Birch standard library by running, from within the
    `libraries/Standard/` directory:
 
        birch build
        sudo birch install
 
-This constitutes a basic install with both *debug* (unoptimized, with
-debugging information) and *release* (optimized, without debugging
-information) modes. You may also like to install other packages in the
-`libraries/` directory. It is not usual to install the packages in the
-`examples/` directory, although you may like to build and run these locally
-for testing and learning purposes.
+This constitutes a basic install. You can inspect the different components for
+advanced options, such as disabling assertions to improve performance, or even
+building the (experimental) CUDA backend for NumBirch. You may also like to
+install other packages in the `libraries/` directory. It is not usual to
+install the packages in the `examples/` directory, although you may like to
+build and run these locally for learning purposes.
