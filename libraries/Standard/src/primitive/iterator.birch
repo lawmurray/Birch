@@ -1,9 +1,9 @@
 /**
  * Reduction.
  *
- * - iter: Iterator.
- * - init: Initial value.
- * - op: Operator.
+ * @param iter Iterator.
+ * @param init Initial value.
+ * @param op Operator.
  */
 function reduce<Type,Lambda>(iter:Iterator<Type>, init:Type, op:Lambda) ->
     Type {

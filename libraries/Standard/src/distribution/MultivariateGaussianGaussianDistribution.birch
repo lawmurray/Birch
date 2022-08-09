@@ -102,16 +102,16 @@ function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
  * linear transformation involving a dot product, and a multivariate Gaussian
  * likelihood.
  *
- * - x: The variate.
- * - a: Scale.
- * - μ: Prior mean.
- * - Σ: Prior covariance.
- * - c: Offset.
- * - ω2: Likelihood covariance.
- * - m: Precomputed marginal mean.
- * - τ2: Precomputed marginal variance.
+ * @param x The variate.
+ * @param a Scale.
+ * @param μ Prior mean.
+ * @param Σ Prior covariance.
+ * @param c Offset.
+ * @param ω2 Likelihood covariance.
+ * @param m Precomputed marginal mean.
+ * @param τ2 Precomputed marginal variance.
  *
- * Returns: the posterior hyperparameters `μ'` and `Σ'`.
+ * @return the posterior hyperparameters `μ'` and `Σ'`.
  */
 function update_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
     Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, ω2:Arg6, m:Arg7,

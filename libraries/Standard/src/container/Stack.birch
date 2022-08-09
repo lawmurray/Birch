@@ -2,7 +2,7 @@
  * Last-in first-out (LIFO) stack. Provides constant-time operations at the
  * top of the stack, and linear-time operations elsewhere.
  *
- * - Type: Element type. Must be default-constructible.
+ * @tparam Type Element type. Must be default-constructible.
  *
  * The data structure is arranged as a singly-linked list:
  * ```mermaid
@@ -12,11 +12,11 @@
  * The member function `top()` is used to retrieve the top ($n$th) element,
  * which can be done in $O(1)$ time.
  *
- * !!! tip
+ * @note
  *     As a recursive and singly-linked data structure, Stack has excellent
  *     performance properties under Birch's lazy deep copy mechanism.
  *
- * !!! attention
+ * @attention
  *     Large recursive data structures can cause an execution stack overflow
  *     on destruction that usually manifests as a segmentation fault. Possible
  *     solutions include:
@@ -62,7 +62,7 @@ final class Stack<Type> {
   /**
    * Push an element onto the top.
    *
-   * - x: the element.
+   * @param x the element.
    */
   function push(x:Type) {
     node:StackNode<Type>(x);    
@@ -96,7 +96,7 @@ final class Stack<Type> {
   /**
    * Obtain an iterator.
    *
-   * Return: an iterator across elements from top to bottom.
+   * @return an iterator across elements from top to bottom.
    */
   function walk() -> Iterator<Type> {
     return construct<StackIterator<Type>>(head);

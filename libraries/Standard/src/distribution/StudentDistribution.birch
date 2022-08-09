@@ -93,9 +93,9 @@ function Student<Arg>(k:Arg) -> Distribution<Real> {
 /*
  * Simulate a Student's $t$-distribution with location and scale.
  *
- * - k: Degrees of freedom.
- * - μ: Location.
- * - σ2: Squared scale.
+ * @param k Degrees of freedom.
+ * @param μ Location.
+ * @param σ2 Squared scale.
  */
 function simulate_student_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
   let u <- simulate_chi_squared(k);
@@ -105,10 +105,10 @@ function simulate_student_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
 /*
  * Observe a Student's $t$ variate.
  *
- * - x: The variate.
- * - k: Degrees of freedom.
+ * @param x The variate.
+ * @param k Degrees of freedom.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
   let a <- 0.5*k + 0.5;
@@ -119,12 +119,12 @@ function logpdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
 /*
  * Observe a Student's $t$ variate with location and scale.
  *
- * - x: The variate.
- * - k: Degrees of freedom.
- * - μ: Location.
- * - σ2: Scale.
+ * @param x The variate.
+ * @param k Degrees of freedom.
+ * @param μ Location.
+ * @param σ2 Scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     σ2:Arg4) -> {
@@ -137,10 +137,10 @@ function logpdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
 /*
  * CDF of a Student's $t$ variate.
  *
- * - x: The variate.
- * - k: Degrees of freedom.
+ * @param x The variate.
+ * @param k Degrees of freedom.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
   return ibeta(0.5*k, 0.5*k, 0.5*x/sqrt(pow(x, 2.0) + k) + 0.5);
@@ -149,12 +149,12 @@ function cdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
 /*
  * CDF of a Student's $t$ variate with location and scale.
  *
- * - x: The variate.
- * - k: Degrees of freedom.
- * - μ: Location.
- * - σ2: Squared scale.
+ * @param x The variate.
+ * @param k Degrees of freedom.
+ * @param μ Location.
+ * @param σ2 Squared scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     σ2:Arg4) -> {
@@ -164,10 +164,10 @@ function cdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
 /*
  * Quantile of a Student's $t$ distribution.
  *
- * - P: The cumulative probability.
- * - k: Degrees of freedom.
+ * @param P The cumulative probability.
+ * @param k Degrees of freedom.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_student_t<Arg1,Arg2>(P:Arg1, k:Arg2) -> {
   cpp{{
@@ -179,12 +179,12 @@ function quantile_student_t<Arg1,Arg2>(P:Arg1, k:Arg2) -> {
 /*
  * Quantile of a Student's $t$ distribution with location and scale.
  *
- * - P: The cumulative probability.
- * - k: Degrees of freedom.
- * - μ: Location.
- * - σ2: Squared scale.
+ * @param P The cumulative probability.
+ * @param k Degrees of freedom.
+ * @param μ Location.
+ * @param σ2 Squared scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_student_t<Arg1,Arg2,Arg3,Arg4>(P:Arg1, k:Arg2, μ:Arg3,
     σ2:Arg4) -> {

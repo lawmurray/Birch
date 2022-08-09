@@ -169,15 +169,15 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, Σ:Arg,
 /*
  * Simulate matrix-normal-inverse-Wishart-matrix-Gaussian variate.
  *
- * - A: Scale.
- * - N: Among-row concentration times mean.
- * - Λ: Among-row concentration.
- * - Γ: Accumulator for among-column spread.
- * - k: Degrees of freedom.
- * - C: Offset.
- * - Φ: Additional among-row spread.
+ * @param A Scale.
+ * @param N Among-row concentration times mean.
+ * @param Λ Among-row concentration.
+ * @param Γ Accumulator for among-column spread.
+ * @param k Degrees of freedom.
+ * @param C Offset.
+ * @param Φ Additional among-row spread.
  *
- * Returns: the variate.
+ * @return the variate.
  */
 function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, C:Arg6,
@@ -193,15 +193,15 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
 /*
  * Observe matrix-normal-inverse-Wishart-matrix-Gaussian variate.
  *
- * - Y: The variate, minus offset.
- * - A: Scale.
- * - N: Among-row concentration times mean.
- * - Λ: Among-row concentration.
- * - Γ: Accumulator for among-column spread.
- * - k: Degrees of freedom.
- * - Φ: Additional among-row spread.
+ * @param Y The variate, minus offset.
+ * @param A Scale.
+ * @param N Among-row concentration times mean.
+ * @param Λ Among-row concentration.
+ * @param Γ Accumulator for among-column spread.
+ * @param k Degrees of freedom.
+ * @param Φ Additional among-row spread.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, N:Arg3, Λ:Arg4, Γ:Arg5, k:Arg6,
@@ -218,15 +218,15 @@ function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
  * Update the parameters of a Gaussian variate with linear transformation
  * of matrix-normal-inverse-Wishart prior.
  *
- * - Y: The variate, minus offset.
- * - A: Scale.
- * - N: Prior among-row concentration times mean.
- * - Λ: Prior among-row concentration.
- * - Γ: Prior accumulator for among-column spread.
- * - k: Prior degrees of freedom.
- * - Φ: Additional among-row spread.
+ * @param Y The variate, minus offset.
+ * @param A Scale.
+ * @param N Prior among-row concentration times mean.
+ * @param Λ Prior among-row concentration.
+ * @param Γ Prior accumulator for among-column spread.
+ * @param k Prior degrees of freedom.
+ * @param Φ Additional among-row spread.
  *
- * Returns: the posterior hyperparameters `N'`, `Λ'`, `Γ'` and `k'`.
+ * @return the posterior hyperparameters `N'`, `Λ'`, `Γ'` and `k'`.
  */
 function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, N:Arg3, Λ:Arg4, Γ:Arg5, k:Arg6,

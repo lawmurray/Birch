@@ -174,15 +174,15 @@ function MultivariateGaussian<Arg>(μ:Random<Real[_]>,
  * Simulate multivariate-normal-inverse-gamma-multivariate-Gaussian
  * distribution.
  *
- * - A: Scale.
- * - ν: Prior mean.
- * - Λ: Prior covariance.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
- * - c: Offset.
- * - Ω: Covariance scale.
+ * @param A Scale.
+ * @param ν Prior mean.
+ * @param Λ Prior covariance.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
+ * @param c Offset.
+ * @param Ω Covariance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, ν:Arg2, Λ:Arg3, k:Arg4,
@@ -200,16 +200,16 @@ function simulate_multivariate_normal_inverse_gamma_multivariate_gaussian<
  * Observe multivariate-normal-inverse-gamma-multivariate-Gaussian
  * variate.
  *
- * - x: The variate.
- * - A: Scale.
- * - ν: Prior mean.
- * - Λ: Prior covariance.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
- * - c: Offset.
- * - Ω: Covariance scale.
+ * @param x The variate.
+ * @param A Scale.
+ * @param ν Prior mean.
+ * @param Λ Prior covariance.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
+ * @param c Offset.
+ * @param Ω Covariance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2, ν:Arg3, Λ:Arg4,
@@ -227,16 +227,16 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
  * Update the parameters of a normal inverse-gamma distribution with a
  * linear transformation and multivariate Gaussian likelihood.
  *
- * - x: The variate.
- * - A: Scale.
- * - ν: Prior mean.
- * - Λ: Prior covariance.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
- * - c: Offset.
- * - Ω: Covariance scale.
+ * @param x The variate.
+ * @param A Scale.
+ * @param ν Prior mean.
+ * @param Λ Prior covariance.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
+ * @param c Offset.
+ * @param Ω Covariance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2,

@@ -90,8 +90,8 @@ function make_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
 /*
  * Simulate an inverse-gamma distribution.
  *
- * - α: Shape.
- * - β: Scale.
+ * @param α Shape.
+ * @param β Scale.
  */
 function simulate_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return β/simulate_gamma(α, 1.0);
@@ -100,11 +100,11 @@ function simulate_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
 /*
  * Observe an inverse-gamma variate.
  *
- * - x: The variate.
- * - α: Shape.
- * - β: Scale.
+ * @param x The variate.
+ * @param α Shape.
+ * @param β Scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return α*log(β) - (α + 1.0)*log(x) - β/x - lgamma(α);
@@ -113,11 +113,11 @@ function logpdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
 /*
  * CDF of an inverse-gamma variate.
  *
- * - x: The variate.
- * - α: Shape.
- * - β: Scale.
+ * @param x The variate.
+ * @param α Shape.
+ * @param β Scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return gamma_q(α, β/x);
@@ -126,11 +126,11 @@ function cdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
 /*
  * Quantile of an inverse-gamma distribution.
  *
- * - P: The cumulative probability.
- * - α: Shape.
- * - β: Scale.
+ * @param P The cumulative probability.
+ * @param α Shape.
+ * @param β Scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_inverse_gamma<Arg1,Arg2,Arg3>(P:Arg1, α:Arg2, β:Arg3) -> {
   if P == 0.0 {

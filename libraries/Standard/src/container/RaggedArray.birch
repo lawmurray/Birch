@@ -2,7 +2,7 @@
  * Two-dimensional array where each row has a varying length. Internally, this
  * is stored in one contiguous array for constant-time random access.
  *
- * - Type: Element type. Must be default-constructible.
+ * @tparam Type Element type. Must be default-constructible.
  */
 final class RaggedArray<Type> {
   /**
@@ -13,8 +13,8 @@ final class RaggedArray<Type> {
   /**
    * Reference to an element.
    *
-   * - i: Row.
-   * - j: Column.
+   * @param i Row.
+   * @param j Column.
    */
   operator [i:Integer, j:Integer] -> Type {
     return values[i][j];
@@ -57,7 +57,7 @@ final class RaggedArray<Type> {
   /**
    * Number of elements for a given row.
    *
-   * - i: Row.
+   * @param i Row.
    */
   function size(i:Integer) -> Integer {
     return values[i].size();
@@ -66,8 +66,8 @@ final class RaggedArray<Type> {
   /**
    * Get an element.
    *
-   * - i: Row.
-   * - j: Column.
+   * @param i Row.
+   * @param j Column.
    */
   function get(i:Integer, j:Integer) -> Type {
     return values[i][j];
@@ -76,7 +76,7 @@ final class RaggedArray<Type> {
   /**
    * Get a row.
    *
-   * - i: Row.
+   * @param i Row.
    */
   function get(i:Integer) -> Array<Type> {
     return values[i];
@@ -85,9 +85,9 @@ final class RaggedArray<Type> {
   /**
    * Set an element.
    *
-   * - i: Row.
-   * - j: Column.
-   * - x: Value.
+   * @param i Row.
+   * @param j Column.
+   * @param x Value.
    */
   function set(i:Integer, j:Integer, x:Type) {
     values[i][j] <- x;
@@ -96,8 +96,8 @@ final class RaggedArray<Type> {
   /**
    * Set a row.
    *
-   * - i: Row.
-   * - x: Values.
+   * @param i Row.
+   * @param x Values.
    */
   function set(i:Integer, x:Array<Type>) {
     values[i] <- x;
@@ -113,7 +113,7 @@ final class RaggedArray<Type> {
   /**
    * Remove the front element from a specified row.
    *
-   * - i: Row.
+   * @param i Row.
    */
   function popFront(i:Integer) {
     values[i].popFront();
@@ -129,8 +129,8 @@ final class RaggedArray<Type> {
   /**
    * Add an element to the back of a specified row.
    *
-   * - i: Row.
-   * - x: Value.
+   * @param i Row.
+   * @param x Value.
    */
   function pushBack(i:Integer, x:Type) {
     values[i].pushBack(x);
@@ -153,7 +153,7 @@ final class RaggedArray<Type> {
   /**
    * Obtain an iterator over rows.
    *
-   * Return: an iterator across entire rows from top to bottom.
+   * @return an iterator across entire rows from top to bottom.
    */
   function walk() -> Iterator<Array<Type>> {
     return values.walk();
@@ -162,9 +162,9 @@ final class RaggedArray<Type> {
   /**
    * Obtain an iterator over columns.
    *
-   * - i: Row.
+   * @param i Row.
    *
-   * Return: an iterator across the elements of the given row, from left to
+   * @return an iterator across the elements of the given row, from left to
    * right.
    */
   function walk(i:Integer) -> Iterator<Type> {

@@ -22,7 +22,7 @@ class ArgsVisitor {
   /**
    * Get arguments and gradients after visiting.
    *
-   * Return: Vectorized arguments and gradients.
+   * @return Vectorized arguments and gradients.
    */
   function args() -> (Real[_], Real[_]) {
     return (x[1..n], g[1..n]);
@@ -118,7 +118,7 @@ class ArgsVisitor {
   /**
    * Ensure that there is sufficient space, resizing if necessary.
    *
-   * - m: Required size.
+   * @param m Required size.
    */
   function reserve(m:Integer) {
     let k <- length(x);

@@ -9,10 +9,10 @@ using numbirch::simulate_chi_squared;
 /*
  * Observe a $\chi^2$ variate.
  *
- * - x: The variate.
- * - ν: Degrees of freedom.
+ * @param x The variate.
+ * @param ν Degrees of freedom.
  *
- * Return: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
   let k <- 0.5*ν;
@@ -22,10 +22,10 @@ function logpdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
 /*
  * CDF of $\chi^2$ variate.
  *
- * - x: The variate.
- * - ν: Degrees of freedom.
+ * @param x The variate.
+ * @param ν Degrees of freedom.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
   return gamma_p(0.5*ν, 0.5*x);
@@ -34,10 +34,10 @@ function cdf_chi_squared<Arg1,Arg2>(x:Arg1, ν:Arg2) -> {
 /*
  * CDF of $\chi^2$ distribution.
  *
- * - P: The cumulative probability.
- * - ν: Degrees of freedom.
+ * @param P The cumulative probability.
+ * @param ν Degrees of freedom.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_chi_squared<Arg1,Arg2>(P:Arg1, ν:Arg2) -> {
   cpp{{

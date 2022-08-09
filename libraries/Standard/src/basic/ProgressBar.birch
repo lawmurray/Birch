@@ -20,7 +20,7 @@ class ProgressBar {
   /**
    * Update the progress bar.
    *
-   * - progress: The current progress, between 0.0 (not started) to 1.0
+   * @param progress The current progress, between 0.0 (not started) to 1.0
    *   (complete).
    *
    * The progress bar is only rewritten if its discretized progress has

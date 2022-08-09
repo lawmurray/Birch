@@ -126,7 +126,7 @@ function to_string<Type>(X:Type[_,_]) -> String {
 /**
  * Convert string to numerical scalar.
  *
- * - Value: Numerical type.
+ * @param Value Numerical type.
  */
 function from_string<Value>(s:String) -> Value {
   cpp{{

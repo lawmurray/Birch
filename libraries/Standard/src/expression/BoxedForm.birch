@@ -2,8 +2,8 @@
  * Boxed form. Memoizes forward evaluation, acting as a checkpoint for
  * reverse-mode automatic differentiation.
  *
- * - Value: Result type.
- * - Form: Form form.
+ * @param Value Result type.
+ * @param Form Form form.
  */
 final class BoxedForm<Value,Form>(x:Value!, f:Form) <
     Expression<Value>(x, false) {

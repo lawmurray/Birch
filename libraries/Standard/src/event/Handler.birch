@@ -1,8 +1,8 @@
 /**
  * Event handler.
  *
- * - autoconj: Enable delayed sampling.
- * - autodiff: Enable delayed expressions.
+ * @param autoconj Enable delayed sampling.
+ * @param autodiff Enable delayed expressions.
  *
  * Events are triggered as code executes. Each event is handled via a call to
  * the currently-installed event handler, which is an object of type Handler.
@@ -84,10 +84,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle an assume event.
    *
-   * - x: Random.
-   * - p: Distribution.
+   * @param x Random.
+   * @param p Distribution.
    *
-   * Returns: `x`.
+   * @return `x`.
    */
   function handleAssume<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
@@ -104,10 +104,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a simulate event.
    *
-   * - x: Random.
-   * - p: Distribution.
+   * @param x Random.
+   * @param p Distribution.
    *
-   * Returns: `x`.
+   * @return `x`.
    */
   function handleSimulate<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
@@ -120,10 +120,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle an observe event.
    *
-   * - x: Random.
-   * - p: Distribution.
+   * @param x Random.
+   * @param p Distribution.
    *
-   * Returns: `x`.
+   * @return `x`.
    */
   function handleObserve<Value>(x:Random<Value>, p:Distribution<Value>) ->
       Random<Value> {
@@ -136,9 +136,9 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a simulate event.
    *
-   * - p: Distribution.
+   * @param p Distribution.
    *
-   * Returns: `x`.
+   * @return `x`.
    */
   function handleSimulate<Value>(p:Distribution<Value>) -> Value {
     x:Value!;
@@ -158,10 +158,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle an observe event.
    *
-   * - x: Variate.
-   * - p: Distribution.
+   * @param x Variate.
+   * @param p Distribution.
    *
-   * Returns: `x`.
+   * @return `x`.
    */
   function handleObserve<Value>(x:Value, p:Distribution<Value>) -> Value {
     if autodiff && p.supportsLazy() {
@@ -180,7 +180,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a delayed simulation event.
    *
-   * - x: Random.
+   * @param x Random.
    */
   function handleDelaySimulate<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
@@ -200,7 +200,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a delayed observation event.
    *
-   * - x: Random.
+   * @param x Random.
    */
   function handleDelayObserve<Value>(x:Random<Value>) {
     let p <- x.getDistribution();
@@ -220,10 +220,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a prune event.
    *
-   * - p: Distribution.
-   * - x: Child of `p` on $M$-path.
+   * @param p Distribution.
+   * @param x Child of `p` on $M$-path.
    *
-   * Returns: Updated distribution.
+   * @return Updated distribution.
    */
   function handleDelayPrune<Value>(p:Distribution<Value>,
       x:Expression<Value>) -> Delay {
@@ -240,7 +240,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a factor event.
    *
-   * - φ: Factor giving an incremental log-weight.
+   * @param φ Factor giving an incremental log-weight.
    *
    * A factor event is triggered by the `factor` statement.
    */
@@ -251,7 +251,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a factor event.
    *
-   * - φ: Factor giving an incremental log-weight.
+   * @param φ Factor giving an incremental log-weight.
    *
    * A factor event is triggered by the `factor` statement.
    */
@@ -262,7 +262,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
   /**
    * Handle a factor event.
    *
-   * - φ: Factor giving an incremental log-weight.
+   * @param φ Factor giving an incremental log-weight.
    *
    * A factor event is triggered by the `factor` statement.
    */

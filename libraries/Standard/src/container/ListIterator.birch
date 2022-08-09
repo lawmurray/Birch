@@ -1,7 +1,7 @@
 /*
  * Iterator over a List.
  *
- * - head: Head node.
+ * @param head Head node.
  */
 final class ListIterator<Type>(head:ListNode<Type>?) < Iterator<Type> {
   /**

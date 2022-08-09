@@ -76,9 +76,9 @@ function make_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
  * Simulate a categorical distribution with Chinese restaurant process
  * prior.
  *
- * - α: Concentration.
- * - θ: Discount.
- * - n: Vector of number of draws of each element.
+ * @param α Concentration.
+ * @param θ Discount.
+ * @param n Vector of number of draws of each element.
  */
 function simulate_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     n:Arg3) -> {
@@ -111,10 +111,10 @@ function simulate_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
  * Observe a categorical variate with Chinese restaurant process
  * prior.
  *
- * - x: The variate.
- * - α: Concentration.
- * - θ: Discount.
- * - n: Vector of number of draws of each element.
+ * @param x The variate.
+ * @param α Concentration.
+ * @param θ Discount.
+ * @param n Vector of number of draws of each element.
  */
 function logpdf_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
     θ:Arg3, n:Arg4) -> {
@@ -126,10 +126,10 @@ function logpdf_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
  * Update the parameters of a Chinese restaurant process with a categorical
  * likelihood.
  *
- * - x: The variate.
- * - α: Concentration.
- * - θ: Discount.
- * - n: Vector of number of draws of each element.
+ * @param x The variate.
+ * @param α Concentration.
+ * @param θ Discount.
+ * @param n Vector of number of draws of each element.
  */
 function update_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
     θ:Arg3, n:Arg4) -> {

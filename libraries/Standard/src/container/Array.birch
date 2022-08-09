@@ -1,7 +1,7 @@
 /**
  * Resizeable array with constant-time random access.
  *
- * - Type: Element type. Must be default-constructible.
+ * @tparam Type Element type. Must be default-constructible.
  */
 final class Array<Type> {
   phantom values;
@@ -49,7 +49,7 @@ final class Array<Type> {
   /**
    * Get an element.
    *
-   * - i: Position.
+   * @param i Position.
    */
   function get(i:Integer) -> Type {
     while size() < i {
@@ -63,8 +63,8 @@ final class Array<Type> {
   /**
    * Set an element.
    *
-   * - i: Position.
-   * - x: Value.
+   * @param i Position.
+   * @param x Value.
    */
   function set(i:Integer, x:Type) {
     while size() < i - i {
@@ -98,7 +98,7 @@ final class Array<Type> {
   /**
    * Insert an element at the front.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function pushFront(x:Type) {
     insert(1, x);
@@ -120,7 +120,7 @@ final class Array<Type> {
   /**
    * Insert an element at the back.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function pushBack(x:Type) {
     insert(size() + 1, x);
@@ -156,8 +156,8 @@ final class Array<Type> {
   /**
    * Insert a new element.
    *
-   * - i: Position.
-   * - x: Value.
+   * @param i Position.
+   * @param x Value.
    *
    * Inserts the new element immediately before the current element at
    * position `i`. To insert at the back of the container, use a position that
@@ -173,7 +173,7 @@ final class Array<Type> {
   /**
    * Erase an element.
    *
-   * - i: Position.
+   * @param i Position.
    *
    * The size decreases by one.
    */
@@ -187,8 +187,8 @@ final class Array<Type> {
   /**
    * Erase multiple elements.
    *
-   * - i: Position.
-   * - n: Number of elements.
+   * @param i Position.
+   * @param n Number of elements.
    *
    * The size decreases by `n`.
    */
@@ -203,7 +203,7 @@ final class Array<Type> {
   /**
    * Obtain an iterator.
    *
-   * Return: an iterator across elements in forward order.
+   * @return an iterator across elements in forward order.
    */
   function walk() -> Iterator<Type> {
     return construct<ArrayIterator<Type>>(this);

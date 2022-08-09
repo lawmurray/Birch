@@ -1,7 +1,7 @@
 /**
  * Random variate.
  *
- * - Value: Value type.
+ * @param Value Value type.
  *
  * Random objects, like all [Expression](../../classes/Expression/) objects,
  * are stateful. Random objects in the pilot state are considered
@@ -109,7 +109,7 @@ function make_random<Value>() -> Random<Value> {
 /**
  * Box a value in a Random.
  *
- * - x: Value to assign.
+ * @param x Value to assign.
  */
 function make_random<Value>(x:Value) -> Random<Value> {
   o:Random<Value>;
@@ -120,7 +120,7 @@ function make_random<Value>(x:Value) -> Random<Value> {
 /**
  * Box a value in a Random.
  *
- * - x: Value to assign.
+ * @param x Value to assign.
  */
 function make_random<Value>(x:Value?) -> Random<Value> {
   o:Random<Value>;
@@ -131,7 +131,7 @@ function make_random<Value>(x:Value?) -> Random<Value> {
 /**
  * Box a value in a Random.
  *
- * - x: Value to assign.
+ * @param x Value to assign.
  */
 function make_random<Value>(x:Value!) -> Random<Value> {
   o:Random<Value>;
@@ -142,7 +142,7 @@ function make_random<Value>(x:Value!) -> Random<Value> {
 /**
  * Box a value in a Random.
  *
- * - x: Optional value to assign.
+ * @param x Optional value to assign.
  */
 function make_random<Value>(x:Value!?) -> Random<Value> {
   o:Random<Value>;
@@ -155,7 +155,7 @@ function make_random<Value>(x:Value!?) -> Random<Value> {
 /**
  * Box a value in a Random (identity operation).
  *
- * - x: Existing object.
+ * @param x Existing object.
  */
 function make_random<Value>(x:Random<Value>) -> Random<Value> {
   return x;

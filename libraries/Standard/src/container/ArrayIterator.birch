@@ -1,7 +1,7 @@
 /*
  * Iterator over an Array.
  *
- * - o: Container.
+ * @param o Container.
  */
 final class ArrayIterator<Type>(o:Array<Type>) < Iterator<Type> {
   /**

@@ -165,10 +165,10 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
 /*
  * Simulate a multivariate normal inverse-gamma distribution.
  *
- * - ν: Precision times mean.
- * - Λ: Precision.
- * - k: Degrees of freedom of inverse-gamma on covariance scale.
- * - γ: Scale of inverse-gamma on covariance scale.
+ * @param ν Precision times mean.
+ * @param Λ Precision.
+ * @param k Degrees of freedom of inverse-gamma on covariance scale.
+ * @param γ Scale of inverse-gamma on covariance scale.
  */
 function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
     ν:Arg1, Λ:Arg2, k:Arg3, γ:Arg4) -> {
@@ -189,13 +189,13 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
 /*
  * Observe a multivariate normal inverse-gamma variate.
  *
- * - x: The variate.
- * - ν: Precision times mean.
- * - Λ: Precision.
- * - k: Degrees of freedom of inverse-gamma on covariance scale.
- * - γ: Scale of inverse-gamma on covariance scale.
+ * @param x The variate.
+ * @param ν Precision times mean.
+ * @param Λ Precision.
+ * @param k Degrees of freedom of inverse-gamma on covariance scale.
+ * @param γ Scale of inverse-gamma on covariance scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5) -> {
@@ -217,13 +217,13 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
  * Update the parameters of an inverse-gamma distribution with a linear
  * scaling and Gaussian likelihood.
  *
- * - x: The variate.
- * - μ: Precision times mean.
- * - Λ: Precision.
- * - k: Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
- * - γ: Prior scale of the inverse-gamma.
+ * @param x The variate.
+ * @param μ Precision times mean.
+ * @param Λ Precision.
+ * @param k Prior degrees of freedom of the inverse-gamma ($k = 2\alpha$).
+ * @param γ Prior scale of the inverse-gamma.
  *
- * Returns: the posterior hyperparameters `α'` and `γ'`.
+ * @return the posterior hyperparameters `α'` and `γ'`.
  */
 function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5) -> {

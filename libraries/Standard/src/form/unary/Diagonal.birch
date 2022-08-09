@@ -45,7 +45,7 @@ DiagonalVector<Middle> diagonal(const Middle& m) {
 /**
  * Create identity matrix.
  *
- * - n: Number of rows and columns.
+ * @param n Number of rows and columns.
  */
 function identity(n:Integer) -> Real[_,_] {
   return diagonal(1.0, n);

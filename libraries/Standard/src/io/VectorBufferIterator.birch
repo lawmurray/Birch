@@ -2,7 +2,7 @@
  * Iterator over the elements of a vector, that wraps each element in a
  * [Buffer](../Buffer) object.
  *
- * - values: Values.
+ * @param values Values.
  */
 final class VectorBufferIterator<Type>(values:Type[_]) < Iterator<Buffer> {
   /**

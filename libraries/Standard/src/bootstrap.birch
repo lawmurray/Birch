@@ -3,7 +3,7 @@
  *
  *     birch bootstrap
  *
- * !!! tip
+ * @note
  *     Usually one just calls [build](../build), which calls `bootstrap`
  *     implicitly.
  */

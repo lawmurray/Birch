@@ -162,10 +162,10 @@ function Gaussian<Arg>(μ:Arg, σ2:Random<Real>) -> Distribution<Real> {
 /*
  * Simulate a normal inverse-gamma distribution.
  *
- * - ν: Precision times mean.
- * - λ: Precision.
- * - k: Degrees of freedom.
- * - γ: Accumulator of variance scale.
+ * @param ν Precision times mean.
+ * @param λ Precision.
+ * @param k Degrees of freedom.
+ * @param γ Accumulator of variance scale.
  */
 function simulate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
     k:Arg3, γ:Arg4) -> {
@@ -176,13 +176,13 @@ function simulate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
 /*
  * Observe a normal inverse-gamma variate.
  *
- * - x: The variate.
- * - ν: Precision times mean.
- * - λ: Precision.
- * - k: Degrees of freedom.
- * - γ: Accumulator of variance scale.
+ * @param x The variate.
+ * @param ν Precision times mean.
+ * @param λ Precision.
+ * @param k Degrees of freedom.
+ * @param γ Accumulator of variance scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
     ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5) -> {
@@ -194,13 +194,13 @@ function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
  * Update the parameters of an inverse-gamma distribution that is part
  * of a normal inverse-gamma joint distribution.
  *
- * - x: The variate.
- * - ν: Prior precision times mean.
- * - λ: Prior precision.
- * - k: Prior degrees of freedom.
- * - γ: Prior accumulator of variance scale.
+ * @param x The variate.
+ * @param ν Prior precision times mean.
+ * @param λ Prior precision.
+ * @param k Prior degrees of freedom.
+ * @param γ Prior accumulator of variance scale.
  *
- * Returns: the posterior hyperparameters `α'` and `γ'`.
+ * @return the posterior hyperparameters `α'` and `γ'`.
  */
 function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
     ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5) -> {
@@ -211,13 +211,13 @@ function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
 /*
  * CDF of a normal inverse-gamma variate.
  *
- * - x: The variate.
- * - ν: Precision times mean.
- * - λ: Precision.
- * - k: Degrees of freedom.
- * - γ: Accumulator of variance scale.
+ * @param x The variate.
+ * @param ν Precision times mean.
+ * @param λ Precision.
+ * @param k Degrees of freedom.
+ * @param γ Accumulator of variance scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1, ν:Arg2,
     λ:Arg3, k:Arg4, γ:Arg5) -> {
@@ -228,13 +228,13 @@ function cdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1, ν:Arg2,
 /*
  * Quantile of a normal inverse-gamma distribution.
  *
- * - P: The cumulative probability.
- * - ν: Precision times mean.
- * - λ: Precision.
- * - k: Degrees of freedom.
- * - γ: Accumulator of variance scale.
+ * @param P The cumulative probability.
+ * @param ν Precision times mean.
+ * @param λ Precision.
+ * @param k Degrees of freedom.
+ * @param γ Accumulator of variance scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(P:Arg1,
     ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5) -> {

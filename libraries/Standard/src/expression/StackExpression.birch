@@ -2,8 +2,8 @@
  * Special expression for stack() on an arbitrary number of arguments with
  * pre-allocation of the final result.
  *
- * - Arg: Argument type, e.g. `Real` or `Expression<Real>`.
- * - Element: Result element type, e.g. `Real`.
+ * @tparam Arg Argument type, e.g. `Real` or `Expression<Real>`.
+ * @param Element Result element type, e.g. `Real`.
  */
 final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
   /**
@@ -14,7 +14,7 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
   /**
    * Add an argument.
    *
-   * - arg: The argument.
+   * @param arg The argument.
    */
   function push(arg:Arg) {
     m.pushBack(arg);

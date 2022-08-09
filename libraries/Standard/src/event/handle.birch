@@ -41,7 +41,7 @@ function get_handler() -> Handler {
 /*
  * Set the event handler.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`with`](https://www.birch.sh/language/probability/) statement, which
  *     is hard-wired to call this on exit to restore the previous handler.
@@ -55,11 +55,11 @@ function set_handler(handler:Handler) {
 /*
  * Swap the event handler with another.
  *
- * - handler: The new handler.
+ * @param handler The new handler.
  *
- * Returns: The previous handler.
+ * @return The previous handler.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`with`](https://www.birch.sh/language/probability/) statement, which
  *     is hard-wired to call this on entry to set the new handler.
@@ -76,12 +76,12 @@ function swap_handler(handler:Handler) -> Handler {
 /*
  * Handle assume event.
  *
- * - x: Random.
- * - p: Distribution.
+ * @param x Random.
+ * @param p Distribution.
  *
- * Returns: `x`.
+ * @return `x`.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`~`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
@@ -93,12 +93,12 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
 /*
  * Handle assume event.
  *
- * - p: Distribution.
+ * @param p Distribution.
  *
- * Returns: A newly construct [Random](../Random/) with value type
+ * @return A newly construct [Random](../Random/) with value type
  * the same as `p`.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`~`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally. This particular version is used
@@ -111,12 +111,12 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
 /*
  * Handle simulate event.
  *
- * - x: Random.
- * - p: Distribution.
+ * @param x Random.
+ * @param p Distribution.
  *
- * Returns: `x`.
+ * @return `x`.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
@@ -128,11 +128,11 @@ function handle_simulate<Left,Right>(x:Left, p:Right) -> Left {
 /*
  * Handle simulate event.
  *
- * - p: Distribution.
+ * @param p Distribution.
  *
- * Returns: Value simulated from the distribution.
+ * @return Value simulated from the distribution.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
@@ -144,12 +144,12 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
 /*
  * Handle observe event.
  *
- * - x: Random.
- * - p: Distribution.
+ * @param x Random.
+ * @param p Distribution.
  *
- * Returns: `x`.
+ * @return `x`.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`~>`](https://www.birch.sh/language/probability/) operator, which is
  *     hard-wired to call this internally.
@@ -161,9 +161,9 @@ function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
 /*
  * Handle factor event.
  *
- * - w: Log-weight.
+ * @param w Log-weight.
  *
- * !!! attention
+ * @attention
  *     Typically one does not call this directly, but rather uses the
  *     [`factor`](https://www.birch.sh/language/probability/) statement, which
  *     is hard-wired to call this internally.
@@ -175,7 +175,7 @@ function handle_factor<Arg>(w:Arg) {
 /*
  * Handle delayed simulate event.
  *
- * - x: Random.
+ * @param x Random.
  */
 function handle_delay_simulate<Value>(x:Random<Value>) {
   get_handler().handleDelaySimulate<Value>(x);
@@ -184,7 +184,7 @@ function handle_delay_simulate<Value>(x:Random<Value>) {
 /*
  * Handle delayed observe event.
  *
- * - x: Random.
+ * @param x Random.
  */
 function handle_delay_observe<Value>(x:Random<Value>) {
   get_handler().handleDelayObserve<Value>(x);
@@ -193,10 +193,10 @@ function handle_delay_observe<Value>(x:Random<Value>) {
 /*
  * Handle prune event.
  *
- * - p: Distribution.
- * - x: Child of `p` on $M$-path (Random or value).
+ * @param p Distribution.
+ * @param x Child of `p` on $M$-path (Random or value).
  *
- * Returns: Updated distribution.
+ * @return Updated distribution.
  */
 function handle_prune<Left,Right>(p:Left, x:Right) -> Delay {
   return get_handler().handleDelayPrune<Left.Value>(p, box(x));

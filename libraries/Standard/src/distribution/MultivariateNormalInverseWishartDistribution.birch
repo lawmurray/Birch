@@ -138,10 +138,10 @@ function MultivariateGaussian<Arg1>(μ:Arg1, Σ:Random<Real[_,_]>) ->
 /*
  * Simulate a multivariate normal-inverse-Wishart distribution.
  *
- * - ν: Concentration times mean.
- * - λ: Concentration.
- * - Γ: Accumulator of spread.
- * - k: Degrees of freedom.
+ * @param ν Concentration times mean.
+ * @param λ Concentration.
+ * @param Γ Accumulator of spread.
+ * @param k Degrees of freedom.
  */
 function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
     ν:Arg1, λ:Arg2, Γ:Arg3, k:Arg4) -> {
@@ -153,13 +153,13 @@ function simulate_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
 /*
  * Observe a multivariate normal-inverse-Wishart variate.
  *
- * - x: The variate.
- * - ν: Concentration times mean.
- * - λ: Concentration.
- * - Γ: Accumulator of spread.
- * - k: Degrees of freedom.
+ * @param x The variate.
+ * @param ν Concentration times mean.
+ * @param λ Concentration.
+ * @param Γ Accumulator of spread.
+ * @param k Degrees of freedom.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4, k:Arg5) -> {
@@ -171,13 +171,13 @@ function logpdf_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
 /*
  * Update the parameters of a multivariate normal-inverse-Wishart variate.
  *
- * - x: The variate.
- * - ν: Prior concentration times mean.
- * - λ: Prior concentration.
- * - Γ: Prior accumulator of spread.
- * - k: Prior degrees of freedom.
+ * @param x The variate.
+ * @param ν Prior concentration times mean.
+ * @param λ Prior concentration.
+ * @param Γ Prior accumulator of spread.
+ * @param k Prior degrees of freedom.
  *
- * Returns: the posterior hyperparameters `Ψ'` and `k'`.
+ * @return the posterior hyperparameters `Ψ'` and `k'`.
  */
 function update_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4, k:Arg5) -> {

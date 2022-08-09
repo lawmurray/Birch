@@ -3,7 +3,7 @@
  * along a tape, providing constant-time operations at that and the previous
  * position, but linear-time operations elsewhere (which require a seek).
  *
- * - Type: Element type. Must be default-constructible.
+ * @tparam Type Element type. Must be default-constructible.
  *
  * The data structure is arranged as two singly-linked lists about the current
  * position, one recursing backward through elements behind the current
@@ -24,11 +24,11 @@
  * member functions. It is not usually necessary to call these directly,
  * however, as the container seeks as necessary.
  *
- * !!! tip
+ * @note
  *     As a recursive and singly-linked data structure, Tape has excellent
  *     performance properties under Birch's lazy deep copy mechanism.
  *
- * !!! attention
+ * @attention
  *     Large recursive data structures can cause an execution stack overflow
  *     on destruction that usually manifests as a segmentation fault. Possible
  *     solutions include:
@@ -117,7 +117,7 @@ final class Tape<Type> {
   /**
    * Get an element.
    *
-   * - i: Position.
+   * @param i Position.
    */
   function get(i:Integer) -> Type {
     assert 0 < i;
@@ -128,8 +128,8 @@ final class Tape<Type> {
   /**
    * Set an element.
    *
-   * - i: Position.
-   * - x: Value.
+   * @param i Position.
+   * @param x Value.
    */
   function set(i:Integer, x:Type) {
     assert 0 < i;
@@ -140,7 +140,7 @@ final class Tape<Type> {
   /**
    * Insert an element at the front.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function pushFront(x:Type) {
     rewind();
@@ -164,7 +164,7 @@ final class Tape<Type> {
   /**
    * Insert an element at the back.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function pushBack(x:Type) {
     fastForward();
@@ -208,8 +208,8 @@ final class Tape<Type> {
   /**
    * Insert a new element.
    *
-   * - i: Position.
-   * - x: Value.
+   * @param i Position.
+   * @param x Value.
    *
    * Inserts the new element immediately before the current element at
    * position `i`. To insert at the back of the container, use a position that
@@ -227,7 +227,7 @@ final class Tape<Type> {
   /**
    * Erase an element.
    *
-   * - i: Position.
+   * @param i Position.
    */
   function erase(i:Integer) {
     assert 0 < i;
@@ -239,7 +239,7 @@ final class Tape<Type> {
   /**
    * Rewind and obtain an iterator.
    *
-   * Return: an iterator across elements (that are set) from front to back.
+   * @return an iterator across elements (that are set) from front to back.
    */
   function walk() -> Iterator<Type> {
     rewind();
@@ -295,7 +295,7 @@ final class Tape<Type> {
   /**
    * Seek to a new position.
    *
-   * - k: New position.
+   * @param k New position.
    *
    * Elements are default-constructed as necessary between the current
    * position and the new position.

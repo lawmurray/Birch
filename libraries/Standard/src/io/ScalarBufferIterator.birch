@@ -1,7 +1,7 @@
 /*
  * Iterator over a scalar, wrapped in a [Buffer](../Buffer) object.
  *
- * - x: Values.
+ * @param x Values.
  */
 final class ScalarBufferIterator<Type>(x:Type) < Iterator<Buffer> {
   /**

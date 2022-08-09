@@ -1,10 +1,10 @@
 /**
  * Create a vector filled by a lambda function.
  *
- * - λ: Lambda function.
- * - length: Length of the vector.
+ * @param λ Lambda function.
+ * @param length Length of the vector.
  *
- * Returns: The new vector.
+ * @return The new vector.
  *
  * The lambda function is called once for each element in the new vector,
  * receiving, as its argument, the index of that element, and returning the
@@ -20,8 +20,8 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
 /**
  * Create vector filled with a given value.
  *
- * - x: The value.
- * - length: Length.
+ * @param x The value.
+ * @param length Length.
  */
 function vector<Type>(x:Type, length:Integer) -> {
   cpp{{

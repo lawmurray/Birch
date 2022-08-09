@@ -89,11 +89,11 @@ using numbirch::simulate_uniform;
 /*
  * Observe a uniform variate.
  *
- * - x: The variate.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
   return where(l <= x && x <= u, -log(u - l), -inf);
@@ -102,11 +102,11 @@ function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
 /*
  * CDF of a uniform variate.
  *
- * - x: The variate.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
   return where(x <= l, 0.0, where(x <= u, (x - l)/(u - l), 1.0));
@@ -115,11 +115,11 @@ function cdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
 /*
  * Quantile of a uniform distribution.
  *
- * - P: The cumulative probability.
- * - l: Lower bound of interval.
- * - u: Upper bound of interval.
+ * @param P The cumulative probability.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_uniform<Arg1,Arg2,Arg3>(P:Arg1, l:Arg2, u:Arg3) -> {
   return l + P*(u - l);

@@ -206,15 +206,15 @@ function MultivariateGaussian(μ:Random<Real[_]>, Σ:Random<Real[_,_]>) ->
 /*
  * Simulate multivariate-normal-inverse-Wishart-multivariate-Gaussian variate.
  *
- * - a: Scale.
- * - ν: Concentration times mean.
- * - λ: Concentration.
- * - Γ: Accumulator for spread.
- * - k: Degrees of freedom.
- * - c: Offset.
- * - ω2: Additional spread.
+ * @param a Scale.
+ * @param ν Concentration times mean.
+ * @param λ Concentration.
+ * @param Γ Accumulator for spread.
+ * @param k Degrees of freedom.
+ * @param c Offset.
+ * @param ω2 Additional spread.
  *
- * Returns: the variate.
+ * @return the variate.
  */
 function simulate_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
@@ -227,15 +227,15 @@ function simulate_multivariate_normal_inverse_wishart_multivariate_gaussian<
 /*
  * Observe multivariate-normal-inverse-Wishart-multivariate-Gaussian variate.
  *
- * - y: The variate, minus offset.
- * - a: Scale.
- * - ν: Concentration times mean.
- * - λ: Concentration.
- * - Γ: Accumulator for spread.
- * - k: Degrees of freedom.
- * - ω2: Additional spread.
+ * @param y The variate, minus offset.
+ * @param a Scale.
+ * @param ν Concentration times mean.
+ * @param λ Concentration.
+ * @param Γ Accumulator for spread.
+ * @param k Degrees of freedom.
+ * @param ω2 Additional spread.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(y:Arg1, a:Arg2, ν:Arg3, λ:Arg4,
@@ -249,16 +249,16 @@ function logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian<
  * Update the parameters of a Gaussian variate with linear transformation
  * of multivariate-normal-inverse-Wishart prior.
  *
- * - x: The variate.
- * - a: Scale.
- * - ν: Prior concentration times mean.
- * - λ: Prior concentration.
- * - Γ: Prior accumulator of spread.
- * - k: Prior degrees of freedom.
- * - c: Offset.
- * - ω2: Among-row covariance.
+ * @param x The variate.
+ * @param a Scale.
+ * @param ν Prior concentration times mean.
+ * @param λ Prior concentration.
+ * @param Γ Prior accumulator of spread.
+ * @param k Prior degrees of freedom.
+ * @param c Offset.
+ * @param ω2 Among-row covariance.
  *
- * Returns: the posterior hyperparameters `ν'`, `λ'`, `Γ'` and `k'`.
+ * @return the posterior hyperparameters `ν'`, `λ'`, `Γ'` and `k'`.
  */
 function update_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3,

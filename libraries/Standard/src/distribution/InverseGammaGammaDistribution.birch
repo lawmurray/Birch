@@ -95,9 +95,9 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
 /*
  * Simulate a compound-gamma distribution.
  *
- * - k: Shape.
- * - α: Shape.
- * - β: Scale.
+ * @param k Shape.
+ * @param α Shape.
+ * @param β Scale.
  */
 function simulate_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
@@ -107,12 +107,12 @@ function simulate_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
 /*
  * Observe a compound-gamma variate.
  *
- * - x: The variate.
- * - k: Shape.
- * - α: Prior shape.
- * - β: Prior scale.
+ * @param x The variate.
+ * @param k Shape.
+ * @param α Prior shape.
+ * @param β Prior scale.
  *
- * Return: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {
@@ -123,12 +123,12 @@ function logpdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
  * Update the parameters of an inverse-gamma distribution with a
  * gamma likelihood.
  *
- * - x: The variate.
- * - k: Shape of the gamma.
- * - α: Prior shape of the inverse-gamma.
- * - β: Prior scale of the inverse-gamma.
+ * @param x The variate.
+ * @param k Shape of the gamma.
+ * @param α Prior shape of the inverse-gamma.
+ * @param β Prior scale of the inverse-gamma.
  *
- * Returns: the posterior hyperparameters `α'` and `β'`.
+ * @return the posterior hyperparameters `α'` and `β'`.
  */
 function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {
@@ -138,12 +138,12 @@ function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
 /*
  * CDF of a compound-gamma variate.
  *
- * - x: The variate.
- * - k: The shape.
- * - α: The prior shape.
- * - β: The prior scale.
+ * @param x The variate.
+ * @param k The shape.
+ * @param α The prior shape.
+ * @param β The prior scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, α:Arg3,
     β:Arg4) -> {

@@ -59,9 +59,9 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
 /**
  * Create Chinese restaurant process.
  *
- * - α: Concentration.
- * - θ: Strength.
- * - n: Vector of number of draws of each element, also defining, by its
+ * @param α Concentration.
+ * @param θ Strength.
+ * @param n Vector of number of draws of each element, also defining, by its
  *      length, the maximum number of components.
  */
 function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->
@@ -78,8 +78,8 @@ function make_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
 /**
  * Create Chinese restaurant process.
  *
- * - α: Concentration.
- * - θ: Strength.
+ * @param α Concentration.
+ * @param θ Strength.
  *
  * Constructs a Chinese restaurant process with a maximum of 256 components.
  */

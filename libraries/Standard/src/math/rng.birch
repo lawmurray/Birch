@@ -1,7 +1,7 @@
 /**
  * Seed the pseudorandom number generator.
  *
- * - seed: Seed value.
+ * @param seed Seed value.
  */
 function seed(s:Integer) {
   cpp{{

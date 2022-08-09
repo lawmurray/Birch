@@ -1,9 +1,9 @@
 /**
  * Conway-Maxwell-Poisson distribution.
  *
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  *
  * The distribution is always truncated on $[0,n]$ because of an intractable
  * normalizing constant that can only be expressed as an infinite series on
@@ -102,9 +102,9 @@ function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
 /*
  * Simulate a Conway-Maxwell-Poisson distribution.
  *
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  */
 function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {
@@ -115,12 +115,12 @@ function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
 /*
  * Observe a Conway-Maxwell-Poisson variate.
  *
- * - x: The variate.
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param x The variate.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
@@ -131,12 +131,12 @@ function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
 /*
  * CDF of a Conway-Maxwell-Poisson variate.
  *
- * - x: The variate.
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param x The variate.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
@@ -147,12 +147,12 @@ function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
 /*
  * Quantile of a Conway-Maxwell-Poisson distribution.
  *
- * - P: The cumulative probability.
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param P The cumulative probability.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
@@ -164,11 +164,11 @@ function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
  * Enumerated probabilities of a Conway-Maxwell-Poisson distribution truncated
  * on a finite interval $[0,n]$.
  *
- * - μ: Mode.
- * - ν: Dispersion.
- * - n: Truncation point.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
  *
- * Return: vector of probabilities on $[0,n]$.
+ * @return vector of probabilities on $[0,n]$.
  */
 function p_conway_maxwell_poisson(μ:Real, ν:Real, n:Integer) -> Real[_] {
   let log_λ <- ν*log(μ);

@@ -35,9 +35,9 @@ function nan_max(w:Real[_]) -> Real {
 /*
  * Exponentiate and sum a log weight vector.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: the logarithm of the sum.
+ * @return the logarithm of the sum.
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -56,9 +56,9 @@ function log_sum_exp(w:Real[_]) -> Real {
 /*
  * Convert a log weight vector into a normalized weight vector.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: normalized weights.
+ * @return normalized weights.
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -78,9 +78,9 @@ function norm_exp(w:Real[_]) -> Real[_] {
 /*
  * Resample with systematic resampling.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: the vector of ancestor indices (permuted) and vector of offspring
+ * @return the vector of ancestor indices (permuted) and vector of offspring
  * counts.
  *
  * See also: permute_ancestors()
@@ -98,9 +98,9 @@ function resample_systematic(w:Real[_]) -> (Integer[_], Integer[_]) {
 /*
  * Resample with multinomial resampling.
  *
- * - w: Log weights.
+ * @param w Log weights.
  *
- * Return: the vector of ancestor indices, in non-descending order.
+ * @return the vector of ancestor indices, in non-descending order.
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -113,9 +113,9 @@ function resample_multinomial(w:Real[_]) -> Integer[_] {
 /*
  * Sample a single ancestor for a cumulative weight vector.
  *
- * - W: Cumulative weight vector.
+ * @param W Cumulative weight vector.
  *
- * Returns: an ancestor index, or zero on failure (e.g. weights are zero).
+ * @return an ancestor index, or zero on failure (e.g. weights are zero).
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -145,9 +145,9 @@ function cumulative_ancestor(W:Real[_]) -> Integer {
 /*
  * Sample a single ancestor for a log weight vector.
  *
- * - w: Log weight vector.
+ * @param w Log weight vector.
  *
- * Returns: an ancestor index, or zero on failure (e.g. weights are zero).
+ * @return an ancestor index, or zero on failure (e.g. weights are zero).
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
@@ -257,7 +257,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  * Compute the effective sample size (ESS) and logarithm of the average
  * weight, given a log-weight vector.
  *
- * Returns: A pair, the first element of which gives the ESS, the second
+ * @return A pair, the first element of which gives the ESS, the second
  * element of which gives the logarithm of the sum of weights.
  */
 function resample_reduce(w:Real[_]) -> (Real, Real) {

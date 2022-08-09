@@ -1,7 +1,7 @@
 /*
  * Iterator over a Stack.
  *
- * - head: Head node.
+ * @param head Head node.
  */
 final class StackIterator<Type>(head:StackNode<Type>?) < Iterator<Type> {
   /**

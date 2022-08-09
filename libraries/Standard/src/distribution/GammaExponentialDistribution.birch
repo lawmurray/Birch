@@ -112,8 +112,8 @@ function Exponential(λ:Random<Real>) -> Distribution<Real> {
 /*
  * Simulate a Lomax distribution.
  *
- * - λ: Scale.
- * - α: Shape.
+ * @param λ Scale.
+ * @param α Shape.
  */
 function simulate_lomax<Arg1,Arg2>(λ:Arg1, α:Arg2) -> {
   let u <- simulate_uniform(0.0, 1.0);
@@ -123,11 +123,11 @@ function simulate_lomax<Arg1,Arg2>(λ:Arg1, α:Arg2) -> {
 /*
  * Observe of a Lomax variate.
  *
- * - x: The variate.
- * - λ: Scale.
- * - α: Shape.
+ * @param x The variate.
+ * @param λ Scale.
+ * @param α Shape.
  *
- * Return: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
   return where(0.0 <= x, log(α) - log(λ) - (α + 1.0)*log1p(x/λ), -inf);
@@ -137,11 +137,11 @@ function logpdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
  * Update the parameters of a Gamma distribution with an exponential
  * likelihood.
  *
- * - x: The variate.
- * - k: Prior shape.
- * - θ: Prior scale.
+ * @param x The variate.
+ * @param k Prior shape.
+ * @param θ Prior scale.
  *
- * Returns: the posterior hyperparameters `k'` and `θ'`.
+ * @return the posterior hyperparameters `k'` and `θ'`.
  */
 function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   return wrap_gamma(k + 1.0, θ/(1.0 + x*θ));
@@ -150,11 +150,11 @@ function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
 /*
  * CDF of a Lomax variate.
  *
- * - x: The variate.
- * - λ: Scale.
- * - α: Shape.
+ * @param x The variate.
+ * @param λ Scale.
+ * @param α Shape.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
   return where(0.0 < x, 1.0 - pow((1.0 + x/λ), -α), 0.0);
@@ -163,11 +163,11 @@ function cdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
 /*
  * Quantile of a Lomax distribution.
  *
- * - P: The cumulative probability.
- * - λ: Scale.
- * - α: Shape.
+ * @param P The cumulative probability.
+ * @param λ Scale.
+ * @param α Shape.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_lomax<Arg1,Arg2,Arg3>(P:Arg1, λ:Arg2, α:Arg3) -> {
   cpp{{
@@ -180,12 +180,12 @@ function quantile_lomax<Arg1,Arg2,Arg3>(P:Arg1, λ:Arg2, α:Arg3) -> {
  * Update the parameters of a scaled Gamma distribution with an exponential
  * likelihood.
  *
- * - x: The variate.
- * - a: Constant scale.
- * - k: Prior shape.
- * - θ: Prior scale.
+ * @param x The variate.
+ * @param a Constant scale.
+ * @param k Prior shape.
+ * @param θ Prior scale.
  *
- * Returns: the posterior hyperparameters `k'` and `θ'`.
+ * @return the posterior hyperparameters `k'` and `θ'`.
  */
 function update_gamma_exponential<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {

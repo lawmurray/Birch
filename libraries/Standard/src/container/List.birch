@@ -2,7 +2,7 @@
  * Doubly-linked list. Provides constant-time operations at the front and back
  * of the list, and linear-time operations elsewhere.
  *
- * - Type: Element type. Must be default-constructible.
+ * @tparam Type Element type. Must be default-constructible.
  *
  * The data structure is a doubly-linked list:
  * ```mermaid
@@ -11,14 +11,14 @@
  *    this --"back()"--> f --> e --> d --> c --> b --> a
  * ```
  *
- * !!! tip
+ * @note
  *     As a recursive data structure, List has good performance properties
  *     under Birch's lazy deep copy mechanism. It is, however, doubly-linked
  *     rather than singly-linked. Consider whether a singly-linked data
  *     structure such as [Stack](../Stack) or [Tape](../Tape) can be used
  *     instead, as this may improve performance further.
  *
- * !!! attention
+ * @attention
  *     Large recursive data structures can cause an execution stack overflow
  *     on destruction that usually manifests as a segmentation fault. Possible
  *     solutions include:
@@ -82,7 +82,7 @@ final class List<Type> {
   /**
    * Get an element.
    *
-   * - i: Position.
+   * @param i Position.
    */
   function get(i:Integer) -> Type {
     return getNode(i).x;
@@ -91,8 +91,8 @@ final class List<Type> {
   /**
    * Set an element.
    *
-   * - i: Position.
-   * - x: Value.
+   * @param i Position.
+   * @param x Value.
    */
   function set(i:Integer, x:Type) {
     getNode(i).x <- x;
@@ -101,7 +101,7 @@ final class List<Type> {
   /**
    * Insert an element at the front.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function pushFront(x:Type) {
     node:ListNode<Type>(x);
@@ -134,7 +134,7 @@ final class List<Type> {
   /**
    * Insert an element at the back.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function pushBack(x:Type) {
     node:ListNode<Type>(x);
@@ -200,8 +200,8 @@ final class List<Type> {
   /**
    * Insert a new element.
    *
-   * - i: Position.
-   * - x: Value.
+   * @param i Position.
+   * @param x Value.
    *
    * Inserts the new element immediately before the current element at
    * position `i`. To insert at the back of the container, use a position that
@@ -226,7 +226,7 @@ final class List<Type> {
   /**
    * Erase an element.
    *
-   * - i: Position.
+   * @param i Position.
    */
   function erase(i:Integer) {
     assert 1 <= i && i <= count;
@@ -247,7 +247,7 @@ final class List<Type> {
   /**
    * Obtain an iterator.
    *
-   * Return: an iterator across elements in forward order.
+   * @return an iterator across elements in forward order.
    */
   function walk() -> Iterator<Type> {
     return construct<ListIterator<Type>>(head);
@@ -256,7 +256,7 @@ final class List<Type> {
   /**
    * Get a node.
    *
-   * - i: Position.
+   * @param i Position.
    */
   function getNode(i:Integer) -> ListNode<Type> {
     assert 1 <= i && i <= count;

@@ -51,11 +51,6 @@
  *   - `--enable-static` / `--disable-static` (default disabled):
  *     Enable/disable building of a static library.
  *
- * !!! attention
- *     Building a static library is not well tested, and at any rate should only
- *     be tried for library packages, not end-user packages, which must be built
- *     into a shared library in order to be dynamically loaded by `birch`.
- *
  *   - `--arch` (default empty, valid values `native`): Target architecture
  *     for the build. If empty, then default settings are used. If `native`,
  *     additional optimizations for the current architecture can be applied

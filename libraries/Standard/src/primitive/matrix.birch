@@ -31,11 +31,11 @@ function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
 /**
  * Create a matrix filled by a lambda function.
  *
- * - λ: Lambda function.
- * - rows: Number of rows.
- * - columns: Number of columns.
+ * @param λ Lambda function.
+ * @param rows Number of rows.
+ * @param columns Number of columns.
  *
- * Returns: The new matrix.
+ * @return The new matrix.
  *
  * The lambda function is called once for each element in the new matrix,
  * receiving, as its argument, the row and column indices of that
@@ -56,9 +56,9 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
 /**
  * Create matrix filled with a given scalar value.
  *
- * - x: The value.
- * - rows: Number of rows.
- * - columns: Number of columns.
+ * @param x The value.
+ * @param rows Number of rows.
+ * @param columns Number of columns.
  */
 function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> {
   cpp{{

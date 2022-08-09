@@ -1,7 +1,7 @@
 /**
  * Delta distribution convolved with a bounded discrete distribution.
  *
- * - p: Bounded discrete distribution.
+ * @param p Bounded discrete distribution.
  */
 final class DiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
     BoundedDiscreteDistribution {

@@ -311,13 +311,13 @@ function Gaussian<Arg>(μ:Dot<Arg,Random<Real[_]>>, σ2:Random<Real>) ->
  * Simulate a Gaussian distribution with a linear transformation of a
  * multivariate linear normal inverse-gamma prior.
  *
- * - a: Scale vector.
- * - ν: Precision times mean.
- * - Λ: Precision.
- * - k: Variance degrees of freedom.
- * - γ: Variance scale.
- * - c: Offset.
- * - ω2: Likelihood variance scale.
+ * @param a Scale vector.
+ * @param ν Precision times mean.
+ * @param Λ Precision.
+ * @param k Variance degrees of freedom.
+ * @param γ Variance scale.
+ * @param c Offset.
+ * @param ω2 Likelihood variance scale.
  */
 function simulate_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5, c:Arg6,
@@ -335,16 +335,16 @@ function simulate_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
  * Observe a Gaussian variate with a multivariate linear normal inverse-gamma
  * prior with linear transformation.
  *
- * - x: The variate.
- * - a: Scale vector.
- * - ν: Precision times mean.
- * - Λ: Precision.
- * - k: Degrees of freedom.
- * - γ: Variance scale.
- * - c: Offset.
- * - ω2: Likelihood variance scale.
+ * @param x The variate.
+ * @param a Scale vector.
+ * @param ν Precision times mean.
+ * @param Λ Precision.
+ * @param k Degrees of freedom.
+ * @param γ Variance scale.
+ * @param c Offset.
+ * @param ω2 Likelihood variance scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4,
@@ -362,16 +362,16 @@ function logpdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
  * Update the parameters of a normal inverse-gamma distribution with a
  * linear transformation involving a dot product, and Gaussian likelihood.
  *
- * - x: The variate.
- * - a: Scale.
- * - ν: Prior Precision times mean.
- * - Λ: Prior precision.
- * - k: Prior variance degrees of freedom.
- * - γ: Prior variance scale.
- * - c: Offset.
- * - ω2: Likelihood variance scale.
+ * @param x The variate.
+ * @param a Scale.
+ * @param ν Prior Precision times mean.
+ * @param Λ Prior precision.
+ * @param k Prior variance degrees of freedom.
+ * @param γ Prior variance scale.
+ * @param c Offset.
+ * @param ω2 Likelihood variance scale.
  *
- * Returns: the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
+ * @return the posterior hyperparameters `ν'`, `Λ'`, `k'` and `γ'`.
  */
 function update_multivariate_normal_inverse_gamma_gaussian<Arg1,
     Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4,
@@ -387,16 +387,16 @@ function update_multivariate_normal_inverse_gamma_gaussian<Arg1,
  * CDF of a Gaussian variate with a multivariate linear normal inverse-gamma
  * prior with linear transformation.
  *
- * - x: The variate.
- * - a: Scale.
- * - ν: Precision times mean.
- * - Λ: Precision.
- * - c: Offset.
- * - k: Variance degrees of freedom.
- * - γ: Variance scale.
- * - ω2: Likelihood variance scale.
+ * @param x The variate.
+ * @param a Scale.
+ * @param ν Precision times mean.
+ * @param Λ Precision.
+ * @param c Offset.
+ * @param k Variance degrees of freedom.
+ * @param γ Variance scale.
+ * @param ω2 Likelihood variance scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5, k:Arg6,
@@ -414,16 +414,16 @@ function cdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
  * Quantile of a Gaussian distribution with a multivariate linear normal
  * inverse-gamma prior with linear transformation.
  *
- * - P: The cumulative probability.
- * - a: Scale.
- * - ν: Precision times mean.
- * - Λ: Precision.
- * - c: Offset.
- * - k: Variance shape.
- * - γ: Variance scale.
- * - ω2: Likelihood variance scale.
+ * @param P The cumulative probability.
+ * @param a Scale.
+ * @param ν Precision times mean.
+ * @param Λ Precision.
+ * @param c Offset.
+ * @param k Variance shape.
+ * @param γ Variance scale.
+ * @param ω2 Likelihood variance scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,

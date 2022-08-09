@@ -53,16 +53,16 @@ abstract class Kernel {
   /**
    * Move a particle.
    *
-   * - x: Particle.
+   * @param x Particle.
    *
-   * Returns: Acceptance rate of moves on this particle.
+   * @return Acceptance rate of moves on this particle.
    */
   abstract function move(x:Model) -> Real;
 
   /**
    * Adapt the scale using a PID controller.
    *
-   * - raccepts: Acceptance rate of last move step.
+   * @param raccepts Acceptance rate of last move step.
    */
   function adapt(raccepts:Real) {
     e3 <- e2;

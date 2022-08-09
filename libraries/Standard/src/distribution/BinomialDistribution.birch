@@ -90,11 +90,11 @@ using numbirch::simulate_binomial;
 /*
  * Observe a binomial variate.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - ρ: Probability of a true result.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param ρ Probability of a true result.
  *
- * Returns: the log probability mass.
+ * @return the log probability mass.
  */
 function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   return x*log(ρ) + (n - x)*log1p(-ρ) + lchoose(n, x);
@@ -103,11 +103,11 @@ function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
 /*
  * CDF of a binomial variate.
  *
- * - x: The variate.
- * - n: Number of trials.
- * - ρ: Probability of a true result.
+ * @param x The variate.
+ * @param n Number of trials.
+ * @param ρ Probability of a true result.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   return ibeta(n - x, x + 1, 1.0 - ρ);
@@ -116,11 +116,11 @@ function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
 /*
  * Quantile of a binomial distribution.
  *
- * - P: The cumulative probability.
- * - n: Number of trials.
- * - ρ: Probability of a true result.
+ * @param P The cumulative probability.
+ * @param n Number of trials.
+ * @param ρ Probability of a true result.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_binomial<Arg1,Arg2,Arg3>(P:Arg1, n:Arg2, ρ:Arg3) -> {
   cpp{{

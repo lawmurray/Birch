@@ -49,7 +49,7 @@
  * typically not the Distribution objects. Delayed sampling operations are
  * triggered by the use of these references.
  *
- * !!! tip
+ * @note
  *     One advantage of this arrangement is that variable elimination
  *     naturally occurs as a result of garbage collection. Once no references
  *     remain to a Random that is the root of an $M$-path it is collected,
@@ -117,7 +117,7 @@ abstract class Delay {
   /**
    * Set the next node on the $M$-path.
    *
-   * - node: Next node.
+   * @param node Next node.
    */
   final function setNext(node:Delay?) {
     this.next <- node;
@@ -143,10 +143,10 @@ abstract class Delay {
   /**
    * Get a proceeding node on the $M$-path.
    *
-   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   * @param n Number of steps to the desired node, e.g. 1 for the next node, 2 for
    *  the node after that, etc. Must be greater than zero.
    *
-   * Return: The proceeding node on the $M$-path that is `n` steps from this.
+   * @return The proceeding node on the $M$-path that is `n` steps from this.
    * If there is no such node, returns nil. If there is a loop at the end of
    * the $M$-path, will iterate through that loop as many times as given and
    * return non-nil.
@@ -172,7 +172,7 @@ abstract class Delay {
   /**
    * Set the side node on the $M$-path.
    *
-   * - node: Side node.
+   * @param node Side node.
    */
   final function setSide(node:Delay?) {
     this.side <- node;
@@ -198,10 +198,10 @@ abstract class Delay {
   /**
    * Get a proceeding side node on the $M$-path.
    *
-   * - n: Number of steps to the desired node, e.g. 1 for the next node, 2 for
+   * @param n Number of steps to the desired node, e.g. 1 for the next node, 2 for
    *  the node after that, etc. Must be greater than zero.
    *
-   * Return: The proceeding side node on the $M$-path that is `n` steps from
+   * @return The proceeding side node on the $M$-path that is `n` steps from
    * this. If there is no such node, returns nil. If there is a loop at the
    * end of the $M$-path, will iterate through that loop as many times as
    * given and return non-nil.
@@ -244,7 +244,7 @@ abstract class Delay {
   /**
    * Prune the $M$-path from below this.
    *
-   * Return: If this is a Random node, then this. If this is a Distribution
+   * @return If this is a Random node, then this. If this is a Distribution
    * node, then the updated Distribution for the first parent, which is now
    * the leaf of the $M$-path.
    */

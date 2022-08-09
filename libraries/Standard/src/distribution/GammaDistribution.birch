@@ -93,11 +93,11 @@ using numbirch::simulate_gamma;
 /*
  * Observe a gamma variate.
  *
- * - x: The variate.
- * - k: Shape.
- * - θ: Scale.
+ * @param x The variate.
+ * @param k Shape.
+ * @param θ Scale.
  *
- * Returns: the log probability density.
+ * @return the log probability density.
  */
 function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   return where(0.0 < x, (k - 1.0)*log(x) - x/θ - lgamma(k) - k*log(θ),
@@ -107,11 +107,11 @@ function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
 /*
  * CDF of a gamma variate.
  *
- * - x: The variate.
- * - k: Shape.
- * - θ: Scale.
+ * @param x The variate.
+ * @param k Shape.
+ * @param θ Scale.
  *
- * Return: the cumulative probability.
+ * @return the cumulative probability.
  */
 function cdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   return where(0.0 < x, gamma_p(k, x/θ), 0.0);
@@ -120,11 +120,11 @@ function cdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
 /*
  * Quantile of a gamma distribution.
  *
- * - P: The cumulative probability.
- * - k: Shape.
- * - θ: Scale.
+ * @param P The cumulative probability.
+ * @param k Shape.
+ * @param θ Scale.
  *
- * Return: the quantile.
+ * @return the quantile.
  */
 function quantile_gamma<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, θ:Arg3) -> {
   cpp{{

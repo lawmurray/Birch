@@ -224,9 +224,9 @@ final class Buffer {
   /**
    * Size of an entry.
    *
-   * - key: Key of the entry.
+   * @param key Key of the entry.
    *
-   * Returns: The size. In the case that the key does not exist, returns 0.
+   * @return The size. In the case that the key does not exist, returns 0.
    */
   function size(key:String) -> Integer {
     let buffer <- get(key);
@@ -240,9 +240,9 @@ final class Buffer {
   /**
    * Get the value.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * Returns: An optional with a value if the contents of the entry can be
+   * @return An optional with a value if the contents of the entry can be
    * coerced to the desired type, otherwise with no value.
    */
   function get<Type>() -> Type? {
@@ -253,11 +253,11 @@ final class Buffer {
   /**
    * Get the value.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - t: Step number.
+   * @param t Step number.
    *
-   * Returns: An optional with a value if the contents of the entry can be
+   * @return An optional with a value if the contents of the entry can be
    * coerced to the desired type, otherwise with no value.
    */
   function get<Type>(t:Integer) -> Type? {
@@ -268,11 +268,11 @@ final class Buffer {
   /**
    * Get the value of an entry.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - key: Key of the entry.
+   * @param key Key of the entry.
    *
-   * Returns: An optional with a value if the contents of the entry can be
+   * @return An optional with a value if the contents of the entry can be
    * coerced to the desired type, otherwise with no value.
    */
   function get<Type>(key:String) -> Type? {
@@ -287,12 +287,12 @@ final class Buffer {
   /**
    * Get the value of an entry.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - key: Key of the entry.
-   * - t: Step number.
+   * @param key Key of the entry.
+   * @param t Step number.
    *
-   * Returns: An optional with a value if the contents of the entry can be
+   * @return An optional with a value if the contents of the entry can be
    * coerced to the desired type, otherwise with no value.
    */
   function get<Type>(key:String, t:Integer) -> Type? {
@@ -307,9 +307,9 @@ final class Buffer {
   /**
    * Get the value.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - o: Existing object.
+   * @param o Existing object.
    *
    * This version is used when reading objects of class type, where instead of
    * constructing a new object then calling its `read()` function, an existing
@@ -322,10 +322,10 @@ final class Buffer {
   /**
    * Get the value.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - t: Step number.
-   * - o: Existing object.
+   * @param t Step number.
+   * @param o Existing object.
    *
    * This version is used when reading objects of class type, where instead of
    * constructing a new object then calling its `read()` function, an existing
@@ -338,10 +338,10 @@ final class Buffer {
   /**
    * Get the value of an entry.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - key: Key of the entry.
-   * - o: Existing object.
+   * @param key Key of the entry.
+   * @param o Existing object.
    *
    * This version is used when reading objects of class type, where instead of
    * constructing a new object then calling its `read()` function, an existing
@@ -357,11 +357,11 @@ final class Buffer {
   /**
    * Get the value of an entry.
    *
-   * - Type: The desired type.
+   * @tparam Type The desired type.
    *
-   * - key: Key of the entry.
-   * - t: Step number.
-   * - o: Existing object.
+   * @param key Key of the entry.
+   * @param t Step number.
+   * @param o Existing object.
    *
    * This version is used when reading objects of class type, where instead of
    * constructing a new object then calling its `read()` function, an existing
@@ -377,9 +377,9 @@ final class Buffer {
   /**
    * Get the value of an entry as a buffer.
    *
-   * - key: Key of the entry.
+   * @param key Key of the entry.
    *
-   * Return: An optional with a value if the entry exists, otherwise no value.
+   * @return An optional with a value if the entry exists, otherwise no value.
    */
   function get(key:String) -> Buffer? {
     cpp{{
@@ -394,8 +394,8 @@ final class Buffer {
   /**
    * Set as an object (in the JSON sense).
    *
-   * - keys: Keys.
-   * - values: Values.
+   * @param keys Keys.
+   * @param values Values.
    */
   function set(keys:Array<String>, values:Array<Buffer>) {
     assert keys.size() == values.size();
@@ -416,7 +416,7 @@ final class Buffer {
   /**
    * Set the value.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function set<Type>(x:Type) {
     doSet(x);
@@ -425,8 +425,8 @@ final class Buffer {
   /**
    * Set the value.
    *
-   * - t: Step number.
-   * - x: Value.
+   * @param t Step number.
+   * @param x Value.
    */
   function set<Type>(t:Integer, x:Type) {
     doSet(t, x);
@@ -435,9 +435,9 @@ final class Buffer {
   /**
    * Set an entry as an object (in the JSON sense).
    *
-   * - key: Key of the entry.
-   * - keys: Keys.
-   * - values: Values.
+   * @param key Key of the entry.
+   * @param keys Keys.
+   * @param values Values.
    *
    * If the buffer value is not already an object, it is cleared before
    * setting the new entry.
@@ -449,8 +449,8 @@ final class Buffer {
   /**
    * Set the value of an entry.
    *
-   * - key: Key of the entry.
-   * - x: Value of the entry.
+   * @param key Key of the entry.
+   * @param x Value of the entry.
    *
    * If the buffer value is not already an object, it is cleared before
    * setting the new entry.
@@ -462,9 +462,9 @@ final class Buffer {
   /**
    * Set the value of an entry.
    *
-   * - key: Key of the entry.
-   * - t: Step number.
-   * - x: Value of the entry.
+   * @param key Key of the entry.
+   * @param t Step number.
+   * @param x Value of the entry.
    *
    * If the buffer value is not already an object, it is cleared before
    * setting the new entry.
@@ -476,8 +476,8 @@ final class Buffer {
   /**
    * Set the value of an entry.
    *
-   * - key: Key of the entry.
-   * - x: Value of the entry.
+   * @param key Key of the entry.
+   * @param x Value of the entry.
    *
    * If the buffer value is not already an object, it is cleared before
    * setting the new entry.
@@ -533,9 +533,9 @@ final class Buffer {
   /**
    * Obtain an iterator over an entry.
    *
-   * - key: Key of the entry.
+   * @param key Key of the entry.
    *
-   * Returns: The iterator. In the case that the key does not exist, returns
+   * @return The iterator. In the case that the key does not exist, returns
    * the empty iterator.
    */
   function walk(key:String) -> Iterator<Buffer> {
@@ -550,7 +550,7 @@ final class Buffer {
   /**
    * Push a value.
    *
-   * - x: Value.
+   * @param x Value.
    *
    * If the buffer is empty, the result is an array with the single element
    * `x`. If the buffer is a non-empty object or scalar, the result is an
@@ -564,8 +564,8 @@ final class Buffer {
   /**
    * Push a value.
    *
-   * - t: Step number.
-   * - x: Value.
+   * @param t Step number.
+   * @param x Value.
    */
   function push<Type>(t:Integer, x:Type) {
     doPush(t, x);
@@ -574,7 +574,7 @@ final class Buffer {
   /**
    * Push a value.
    *
-   * - x: Value.
+   * @param x Value.
    */
   function push(x:Buffer) {
     if isEmpty() {
@@ -591,8 +591,8 @@ final class Buffer {
   /**
    * Push a value to an entry.
    *
-   * - key: Key of the entry.
-   * - x: Value.
+   * @param key Key of the entry.
+   * @param x Value.
    *
    * If the entry does not exists then it is created, its value an array
    * containing the single element `x`.
@@ -609,9 +609,9 @@ final class Buffer {
   /**
    * Push a value to an entry.
    *
-   * - key: Key of the entry.
-   * - t: Step number.
-   * - x: Value.
+   * @param key Key of the entry.
+   * @param t Step number.
+   * @param x Value.
    */
   function push<Type>(key:String, t:Integer, x:Type) {
     let buffer <- get(key);
@@ -625,8 +625,8 @@ final class Buffer {
   /**
    * Push a value to an entry .
    *
-   * - key: Key of the entry.
-   * - x: Value.
+   * @param key Key of the entry.
+   * @param x Value.
    */
   function push(key:String, x:Buffer) {
     let buffer <- get(key);
@@ -647,7 +647,7 @@ final class Buffer {
   /**
    * Push a nil value to an entry.
    *
-   * - key: Key of the entry.
+   * @param key Key of the entry.
    */
   function pushNil(key:String) {
     push(key, make_buffer());
@@ -1275,7 +1275,7 @@ function make_buffer() -> Buffer {
 /**
  * Create a Buffer.
  *
- * - root: Root value.
+ * @param root Root value.
  */
 function make_buffer<Type>(root:Type) -> Buffer {
   o:Buffer;
@@ -1286,8 +1286,8 @@ function make_buffer<Type>(root:Type) -> Buffer {
 /**
  * Create a Buffer.
  *
- * - t: Step number.
- * - root: Root value.
+ * @param t Step number.
+ * @param root Root value.
  */
 function make_buffer<Type>(t:Integer, root:Type) -> Buffer {
   o:Buffer;
@@ -1298,8 +1298,8 @@ function make_buffer<Type>(t:Integer, root:Type) -> Buffer {
 /**
  * Create a Buffer representing an object (in the JSON sense).
  *
- * - keys: Keys.
- * - values: Values.
+ * @param keys Keys.
+ * @param values Values.
  */
 function make_buffer(keys:Array<String>, values:Array<Buffer>) -> Buffer {
   o:Buffer;
