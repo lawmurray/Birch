@@ -831,9 +831,9 @@ void birch::Driver::docs() {
       /* first level header */
       h1 = match.str(2);
 
-      /* among first-level headers, only variables and types have their own
-       * page, rather than being further split into a page per item */
-      if (h1 == "Variables" || h1 == "Types") {
+      /* among first-level headers, only variables have their own page, rather
+       * than being further split into a page per item */
+      if (h1 == "Variables") {
         std::string dir = lower(h1);
         file = fs::path(dir) / "index.md";
         if (docsStream.is_open()) {

@@ -27,22 +27,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     return o1->name->str() < o2->name->str();
   };
 
-  /* basic types */
-  Gatherer<Basic> basics(docsNotEmpty, false);
-  o->accept(&basics);
-  std::stable_sort(basics.begin(), basics.end(), sortByName);
-  if (basics.size() > 0) {
-    genHead("Types");
-    line("| Name | Description |");
-    line("| --- | --- |");
-    ++depth;
-    for (auto o : basics) {
-      line("| " << o << " | " << one_line(o->loc->doc) << " |");
-    }
-    --depth;
-    line("");
-  }
-
   /* global variables */
   Gatherer<GlobalVariable> variables(docsNotEmpty, false);
   o->accept(&variables);
@@ -151,6 +135,17 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     
     --depth;
   }
+
+  /* basic types */
+  Gatherer<Basic> basics(docsNotEmpty, false);
+  o->accept(&basics);
+  std::stable_sort(basics.begin(), basics.end(), sortByName);
+  genHead("Types");
+  ++depth;
+  for (auto o : basics) {
+    *this << o;
+  }
+  --depth;
 
   /* structs */
   Gatherer<Struct> structs(docsNotEmpty, false);
@@ -278,7 +273,13 @@ void birch::MarkdownGenerator::visit(const SliceOperator* o) {
 }
 
 void birch::MarkdownGenerator::visit(const Basic* o) {
-  middle(o->name);
+  /* anchor for internal links */
+  genHead(o->name->str());
+  line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+  start("**type " << o->name);
+  if (o->isGeneric()) {
+    middle("&lt;" << o->typeParams << "&gt;");
+  }
   if (!o->base->isEmpty()) {
     if (o->isAlias()) {
       middle(" = ");
@@ -287,6 +288,8 @@ void birch::MarkdownGenerator::visit(const Basic* o) {
     }
     middle(o->base);
   }
+  finish("**\n\n");
+  line(detailed(o->loc->doc) << "\n");
 }
 
 void birch::MarkdownGenerator::visit(const Struct* o) {
