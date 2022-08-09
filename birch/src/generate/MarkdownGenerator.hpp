@@ -45,9 +45,9 @@ public:
 
 private:
   /**
-   * Generate a heading.
+   * Process a string to a heading with the current depth.
    */
-  void genHead(const std::string& name);
+  std::string head(const std::string& name);
 
   /**
    * Process a documentation comment to detailed description.

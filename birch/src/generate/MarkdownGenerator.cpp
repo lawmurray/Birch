@@ -32,7 +32,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   o->accept(&variables);
   std::stable_sort(variables.begin(), variables.end(), sortByName);
   if (variables.size() > 0) {
-    genHead("Variables");
+    line(head("Variables"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -48,11 +48,11 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   o->accept(&programs);
   std::stable_sort(programs.begin(), programs.end(), sortByName);
   if (programs.size() > 0) {
-    genHead("Programs");
+    line(head("Programs"));
     ++depth;
     std::string desc;
     for (auto o : programs) {
-      genHead(o->name->str());
+      line(head(o->name->str()));
       line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
       desc = detailed(o->loc->doc);
       *this << o;
@@ -69,13 +69,13 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   o->accept(&functions);
   std::stable_sort(functions.begin(), functions.end(), sortByName);
   if (functions.size() > 0) {
-    genHead("Functions");
+    line(head("Functions"));
     ++depth;
     std::string name, desc;
     for (auto o : functions) {
       if (o->name->str() != name) {
         /* heading only for the first overload of this name */
-        genHead(o->name->str());
+        line(head(o->name->str()));
         line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
       }
       name = o->name->str();
@@ -99,14 +99,14 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   std::stable_sort(unaries.begin(), unaries.end(), sortByName);
 
   if (binaries.size() + unaries.size() > 0) {
-    genHead("Operators");
+    line(head("Operators"));
     ++depth;
     std::string name, desc;
 
     for (auto o : binaries) {
       if (o->name->str() != name) {
         /* heading only for the first overload of this name */
-        genHead(o->name->str());
+        line(head(o->name->str()));
         line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
       }
       name = o->name->str();
@@ -121,7 +121,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
     for (auto o : unaries) {
       if (o->name->str() != name) {
         /* heading only for the first overload of this name */
-        genHead(o->name->str());
+        line(head(o->name->str()));
         line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
       }
       name = o->name->str();
@@ -140,7 +140,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   Gatherer<Basic> basics(docsNotEmpty, false);
   o->accept(&basics);
   std::stable_sort(basics.begin(), basics.end(), sortByName);
-  genHead("Types");
+  line(head("Types"));
   ++depth;
   for (auto o : basics) {
     *this << o;
@@ -151,7 +151,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   Gatherer<Struct> structs(docsNotEmpty, false);
   o->accept(&structs);
   std::stable_sort(structs.begin(), structs.end(), sortByName);
-  genHead("Structs");
+  line(head("Structs"));
   ++depth;
   for (auto o : structs) {
     *this << o;
@@ -162,7 +162,7 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   Gatherer<Class> classes(docsNotEmpty, false);
   o->accept(&classes);
   std::stable_sort(classes.begin(), classes.end(), sortByName);
-  genHead("Classes");
+  line(head("Classes"));
   ++depth;
   for (auto o : classes) {
     *this << o;
@@ -274,7 +274,7 @@ void birch::MarkdownGenerator::visit(const SliceOperator* o) {
 
 void birch::MarkdownGenerator::visit(const Basic* o) {
   /* anchor for internal links */
-  genHead(o->name->str());
+  line(head(o->name->str()));
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
   start("**type " << o->name);
   if (o->isGeneric()) {
@@ -302,7 +302,7 @@ void birch::MarkdownGenerator::visit(const Struct* o) {
   };
 
   /* anchor for internal links */
-  genHead(o->name->str());
+  line(head(o->name->str()));
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
   start("**struct " << o->name);
   if (o->isGeneric()) {
@@ -331,7 +331,7 @@ void birch::MarkdownGenerator::visit(const Struct* o) {
   Gatherer<MemberVariable> variables(docsNotEmpty);
   o->accept(&variables);
   if (variables.size() > 0) {
-    genHead("Member Variables");
+    line(head("Member Variables"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -355,7 +355,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   };
 
   /* anchor for internal links */
-  genHead(o->name->str());
+  line(head(o->name->str()));
   line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
   start("**");
   if (o->has(ABSTRACT)) {
@@ -393,7 +393,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   Gatherer<AssignmentOperator> assignments;
   o->accept(&assignments);
   if (assignments.size() > 0) {
-    genHead("Assignments");
+    line(head("Assignments"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -408,7 +408,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   Gatherer<ConversionOperator> conversions;
   o->accept(&conversions);
   if (conversions.size() > 0) {
-    genHead("Conversions");
+    line(head("Conversions"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -423,7 +423,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   Gatherer<SliceOperator> slices(docsNotEmpty);
   o->accept(&slices);
   if (slices.size() > 0) {
-    genHead("Slices");
+    line(head("Slices"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -438,7 +438,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   Gatherer<MemberVariable> variables(docsNotEmpty);
   o->accept(&variables);
   if (variables.size() > 0) {
-    genHead("Member Variables");
+    line(head("Member Variables"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -453,7 +453,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   Gatherer<MemberFunction> functions(docsNotEmpty);
   o->accept(&functions);
   if (functions.size() > 0) {
-    genHead("Member Functions");
+    line(head("Member Functions"));
     line("| Name | Description |");
     line("| --- | --- |");
     ++depth;
@@ -470,7 +470,7 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   /* slice operator details */
   if (slices.size() > 0) {
     line("<a name=\"slice\"></a>\n");
-    genHead("Member Slice Details");
+    line(head("Member Slice Details"));
     ++depth;
     for (auto o : slices) {
       auto desc = quote(detailed(o->loc->doc), "    ");
@@ -486,13 +486,13 @@ void birch::MarkdownGenerator::visit(const Class* o) {
   /* member function details */
   std::stable_sort(functions.begin(), functions.end(), sortByName);
   if (functions.size() > 0) {
-    genHead("Member Function Details");
+    line(head("Member Function Details"));
     ++depth;
     std::string name, desc;
     for (auto o : functions) {
       if (o->name->str() != name) {
         /* heading only for the first overload of this name */
-        genHead(o->name->str());
+        line(head(o->name->str()));
         line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
       }
       name = o->name->str();
@@ -547,14 +547,14 @@ void birch::MarkdownGenerator::visit(const DeducedType* o) {
   //
 }
 
-void birch::MarkdownGenerator::genHead(const std::string& name) {
-  finish("");
+std::string birch::MarkdownGenerator::head(const std::string& name) {
+  std::stringstream buf;
+  buf << '\n';
   for (int i = 0; i < depth; ++i) {
-    middle('#');
+    buf << '#';
   }
-  middle(' ');
-  finish(name);
-  line("");
+  buf << ' ' << name << "\n\n";
+  return buf.str();
 }
 
 std::string birch::MarkdownGenerator::detailed(const std::string& str) {
@@ -566,7 +566,7 @@ std::string birch::MarkdownGenerator::detailed(const std::string& str) {
 
   std::string r = str;
   r = std::regex_replace(r, newline, "\n");
-  r = std::regex_replace(r, param, "  - `$1` ");
+  r = std::regex_replace(r, param, "  - **$1** ");
   r = std::regex_replace(r, ret, "**Returns** ");
   r = std::regex_replace(r, see, "**See also** ");
   r = std::regex_replace(r, admonition, "!!! $1");
