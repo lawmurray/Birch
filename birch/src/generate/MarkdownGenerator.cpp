@@ -558,7 +558,19 @@ void birch::MarkdownGenerator::genHead(const std::string& name) {
 }
 
 std::string birch::MarkdownGenerator::detailed(const std::string& str) {
-  return std::regex_replace(str, std::regex(" *\n *\\* ?"), "\n");
+  static const std::regex newline(" *\n *\\* ?");
+  static const std::regex param("@t?param *([αβγδεζηθικλμνξπρστυφχψωΓΔΘΛΞΠΣΥΦΨΩA-Za-z0-9_]+)");
+  static const std::regex ret("@return");
+  static const std::regex see("@see");
+  static const std::regex admonition("@(attention|bug|example|note|quote|todo|warning)");
+
+  std::string r = str;
+  r = std::regex_replace(r, newline, "\n");
+  r = std::regex_replace(r, param, "  - `$1` ");
+  r = std::regex_replace(r, ret, "**Returns** ");
+  r = std::regex_replace(r, see, "**See also** ");
+  r = std::regex_replace(r, admonition, "!!! $1");
+  return r;
 }
 
 std::string birch::MarkdownGenerator::brief(const std::string& str) {
