@@ -10,6 +10,34 @@ function nan_exp(x:Real) -> Real {
 }
 
 /*
+ * Return the minimum and maximum of two tuples with respect to their
+ * first element.
+ */
+function minmax_by_first(x:(Real, Real), y:(Real, Real)) -> ((Real, Real), (Real, Real)) {
+  let (x1, x2) <- x;
+  let (y1, y2) <- y;
+  if x1 > y1 {
+    return (y, x);
+  } else {
+    return (x, y);
+  }
+}
+
+/*
+ * Return the minimum and maximum of two tuples with respect to their
+ * first element.
+ */
+function minmax_by_first(x:(Real, Real, Real), y:(Real, Real, Real)) -> ((Real, Real, Real), (Real, Real, Real)) {
+  let (x1, x2, x3) <- x;
+  let (y1, y2, y3) <- y;
+  if x1 > y1 {
+    return (y, x);
+  } else {
+    return (x, y);
+  }
+}
+
+/*
  * Take the maximum of two values, where NaN are treated as though `-inf`.
  */
 function nan_max(x:Real, y:Real) -> Real {
@@ -49,16 +77,17 @@ function log_sum_exp(w:Real[_]) -> Real {
   if length(w) > 0 {
     let (mx, r) <- transform_reduce(w, (-inf, 0.0),
         \(x:(Real, Real), y:(Real, Real)) -> {
-          let (xa, xb) <- x;
-          let (ya, yb) <- y;
-          if xa > ya {
-            return (xa, xb + (yb + 1.0)*nan_exp(ya - xa));
-          } else {
-            return (ya, yb + (xb + 1.0)*nan_exp(xa - ya));
-          }
+          let (xymin, xymax) <- minmax_by_first(x, y);
+          let (xymin1, xymin2) <- xymin;
+          let (xymax1, xymax2) <- xymax;
+          return (xymax1, xymax2 + (xymin2 + 1.0)*nan_exp(xymin1 - xymax1));
         },
         \(x:Real) -> {
-          return (x, 0.0);
+          if isnan(x) {
+            return (-inf, 0.0);
+          } else {
+            return (x, 0.0);
+          }
         });
     return mx + log1p(r);
   } else {
@@ -269,30 +298,32 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  *
  * @return A pair, the first element of which gives the ESS, the second
  * element of which gives the logarithm of the sum of weights.
+ *
+ * !!! note
+ *     NaN log weights are treated as though `-inf`.
  */
 function resample_reduce(w:Real[_]) -> (Real, Real) {
   if length(w) == 0 {
     return (0.0, 0.0);
   } else {
-    let (mw, r, rsq) <- transform_reduce(w, (-inf, 0.0, 0.0),
+    let (mx, r, q) <- transform_reduce(w, (-inf, 0.0, 0.0),
         \(x:(Real, Real, Real), y:(Real, Real, Real)) -> {
-          let (xa, xb, xc) <- x;
-          let (ya, yb, yc) <- y;
-          v:Real;
-          if xa > ya {
-            v <- nan_exp(ya - xa);
-            return (xa, xb + (yb + 1.0)*v, xc + (yc + 1.0)*v*v);
-          } else {
-            v <- nan_exp(xa - ya);
-            return (ya, yb + (xb + 1.0)*v, yc + (xc + 1.0)*v*v);
-          }
+          let (xymin, xymax) <- minmax_by_first(x, y);
+          let (xymin1, xymin2, xymin3) <- xymin;
+          let (xymax1, xymax2, xymax3) <- xymax;
+          let v <- nan_exp(xymin1 - xymax1);
+          return (xymax1, xymax2 + (xymin2 + 1.0)*v, xymax3 + (xymin3 + 1.0)*v*v);
         },
         \(x:Real) -> {
-          return (x, 0.0, 0.0);
+          if isnan(x) {
+            return (-inf, 0.0, 0.0);
+          } else {
+            return (x, 0.0, 0.0);
+          }
         });
     let rp1 <- r + 1.0;
-    let ess <- rp1*rp1/(rsq + 1.0);
-    let log_sum_weights <- mw + log1p(r);
+    let ess <- rp1*rp1/(q + 1.0);
+    let log_sum_weights <- mx + log1p(r);
     return (ess, log_sum_weights);
   }
 }
