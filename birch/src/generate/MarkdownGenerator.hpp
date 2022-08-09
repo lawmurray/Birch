@@ -44,7 +44,35 @@ public:
   virtual void visit(const DeducedType* o);
 
 private:
+  /**
+   * Generate a heading.
+   */
   void genHead(const std::string& name);
+
+  /**
+   * Process a documentation comment to detailed description.
+   */
+  static std::string detailed(const std::string& str);
+
+  /**
+   * Process a documentation comment to brief description.
+   */
+  static std::string brief(const std::string& str);
+
+  /**
+   * Process a documentation comment to a single line.
+   */
+  static std::string one_line(const std::string& str);
+
+  /**
+   * Process a string into an anchor name for Markdown.
+   */
+  static std::string anchor(const std::string& str);
+
+  /**
+   * Quote lines in a string with the given prefix.
+   */
+  static std::string quote(const std::string& str, const std::string& indent);
 
   /**
    * Package.

@@ -27,31 +27,6 @@ std::string sanitize(const std::string& name);
 std::string escape_unicode(const std::string& str);
 
 /**
- * Process a documentation comment to detailed description.
- */
-std::string detailed(const std::string& str);
-
-/**
- * Process a documentation comment to brief description.
- */
-std::string brief(const std::string& str);
-
-/**
- * Process a documentation comment to a single line.
- */
-std::string one_line(const std::string& str);
-
-/**
- * Process a string into an anchor name for Markdown.
- */
-std::string anchor(const std::string& str);
-
-/**
- * Quote lines in a string with the given prefix.
- */
-std::string quote(const std::string& str, const std::string& indent);
-
-/**
  * Convert a string to lower case.
  */
 std::string lower(const std::string& str);

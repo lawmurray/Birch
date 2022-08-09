@@ -556,3 +556,32 @@ void birch::MarkdownGenerator::genHead(const std::string& name) {
   finish(name);
   line("");
 }
+
+std::string birch::MarkdownGenerator::detailed(const std::string& str) {
+  return std::regex_replace(str, std::regex(" *\n *\\* ?"), "\n");
+}
+
+std::string birch::MarkdownGenerator::brief(const std::string& str) {
+  std::string str1(one_line(str));
+  std::smatch match;
+  std::regex reg(".*?[\\.\\?\\!]");
+  if (std::regex_search(str1, match, reg)) {
+    return one_line(match.str());
+  } else {
+    return "";
+  }
+}
+
+std::string birch::MarkdownGenerator::one_line(const std::string& str) {
+  return std::regex_replace(detailed(str), std::regex("\\n"), " ");
+}
+
+std::string birch::MarkdownGenerator::anchor(const std::string& name) {
+  return std::regex_replace(lower(name), std::regex(" |_"), "-");
+}
+
+std::string birch::MarkdownGenerator::quote(const std::string& str,
+    const std::string& indent) {
+  return std::regex_replace(indent + str, std::regex("\\n"),
+      std::string("\n") + indent);
+}

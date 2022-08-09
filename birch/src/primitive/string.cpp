@@ -98,43 +98,6 @@ std::string birch::escape_unicode(const std::string& str) {
   return buf.str();
 }
 
-std::string birch::detailed(const std::string& str) {
-  std::regex reg(" *\n *\\* ?");
-  std::stringstream buf;
-  std::smatch match;
-  std::string str1 = str;
-  while (std::regex_search(str1, match, reg)) {
-    buf << match.prefix() << '\n';
-    str1 = match.suffix();
-  }
-  buf << str1;
-  return buf.str();
-}
-
-std::string birch::brief(const std::string& str) {
-  std::regex reg(".*?[\\.\\?\\!]");
-  std::stringstream buf;
-  std::smatch match;
-  std::string str1 = one_line(str);
-  if (std::regex_search(str1, match, reg)) {
-    return one_line(match.str());
-  } else {
-    return "";
-  }
-}
-
-std::string birch::one_line(const std::string& str) {
-  return std::regex_replace(detailed(str), std::regex("\\n"), " ");
-}
-
-std::string birch::anchor(const std::string& name) {
-  return std::regex_replace(lower(name), std::regex(" |_"), "-");
-}
-
-std::string birch::quote(const std::string& str, const std::string& indent) {
-  return std::regex_replace(indent + str, std::regex("\\n"), std::string("\n") + indent);
-}
-
 std::string birch::lower(const std::string& str) {
   auto res = str;
   transform(res.begin(), res.end(), res.begin(), ::tolower);
