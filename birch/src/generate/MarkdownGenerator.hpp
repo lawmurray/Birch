@@ -5,6 +5,8 @@
 
 #include "src/generate/BirchGenerator.hpp"
 
+#include <unordered_set>
+
 namespace birch {
 /**
  * Output stream for Markdown files.
@@ -78,6 +80,21 @@ private:
    * Package.
    */
   const Package* package;
+
+  /**
+   * Basic type names.
+   */
+  std::unordered_set<std::string> basicNames;
+
+  /**
+   * Struct names.
+   */
+  std::unordered_set<std::string> structNames;
+
+  /**
+   * Class names.
+   */
+  std::unordered_set<std::string> classNames;
 
   /**
    * Current section depth.
