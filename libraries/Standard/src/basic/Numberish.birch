@@ -1,0 +1,8 @@
+/**
+ * A number-ish type, which includes:
+ *
+ * 1. [Booleanish](../../basics/Boleanish)
+ * 2. [Integerish](../../basics/Integerish)
+ * 3. [Realish](../../basics/Realish)
+ */
+type Numberish;

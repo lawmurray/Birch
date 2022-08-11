@@ -1,8 +1,8 @@
 /**
- * Real value. By default this represented by a 64-bit double-precision
- * floating-point value. If `--enable-single` is used when building the
- * package, and `--precision=single` used when calling `birch`, this is
- * instead represented by a 32-bit single-precision floating-point value.
+ * Real. This is implemented with the C++ type `double`, a 64-bit
+ * double-precision floating-point value. If single precision is enabled, it
+ * is instead implemented with the C++ type `float`, a 32-bit single-precision
+ * floating-point value.
  */
 type Real;
 

@@ -1,5 +1,6 @@
 /**
- * Signed integer. This is represented with a 32-bit signed integer.
+ * Integer. This is implemented with the C++ type `int`, usually a 32-bit
+ * signed integer.
  */
 type Integer;
 
