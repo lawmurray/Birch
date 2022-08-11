@@ -1,5 +1,5 @@
-/*
- * Function form with two arguments.
+/**
+ * Delayed form with two arguments.
  */
 struct Binary<Left,Right>(l:Left, r:Right) < Form {
   /**

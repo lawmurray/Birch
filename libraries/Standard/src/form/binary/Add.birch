@@ -1,3 +1,8 @@
+/**
+ * Delayed form for addition. This is returned by the function
+ * [add](../../functions/add) and operator [+](../../operators/add_) with one
+ * or more form or expression arguments.
+ */
 struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   /**
    * Memoized result.
