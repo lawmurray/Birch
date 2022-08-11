@@ -50,7 +50,7 @@ function log_sum_exp(w:Real[_]) -> Real {
     let mx <- -inf; // running maximum of log weights
     let r <- 0.0; // running sum of non-maximum weights divided by maximum
     wn:Real;
-    for i in 1..length(w) {
+    for n in 1..length(w) {
       wn <- w[n];
       if wn > mx {
         if wn==inf {
@@ -284,7 +284,7 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
     let q <- 0.0; // running sum of square of non-maximum weights divided by maximum
     wn:Real;
     v:Real;
-    for i in 1..length(w) {
+    for n in 1..length(w) {
       wn <- w[n];
       if wn > mx {
         if wn==inf {
