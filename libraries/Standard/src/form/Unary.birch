@@ -1,5 +1,5 @@
-/*
- * Function form with one argument.
+/**
+ * Delayed form with one argument.
  */
 struct Unary<Middle>(m:Middle) < Form {
   /**

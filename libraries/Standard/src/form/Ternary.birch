@@ -1,5 +1,5 @@
-/*
- * Function form with three arguments.
+/**
+ * Delayed form with three arguments.
  */
 struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
   /**

@@ -1,3 +1,8 @@
+/**
+ * Delayed form for subtraction. This is returned by the function
+ * [sub](../../functions/sub) and operator [-](../../operators/sub_) with one
+ * or more form or expression arguments.
+ */
 struct Sub<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   /**
    * Memoized result.

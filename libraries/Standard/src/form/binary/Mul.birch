@@ -1,3 +1,7 @@
+/**
+ * Delayed form for multiplication. This is returned by the operator
+ * [*](../../operators/mul_) with one or more form or expression arguments.
+ */
 struct Mul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   /**
    * Memoized result.

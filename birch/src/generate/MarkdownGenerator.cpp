@@ -16,21 +16,53 @@ birch::MarkdownGenerator::MarkdownGenerator(std::ostream& base) :
 void birch::MarkdownGenerator::visit(const Package* o) {
   package = o;
 
-  /* lambdas */
-  auto all = [](const void*) {
-    return true;
-  };
-  auto docsNotEmpty = [](const Located* o) {
-    return !o->loc->doc.empty();
-  };
+  /* gather items of interest */
+  auto all = [](const void*) { return true; };
+  auto docsNotEmpty = [](const Located* o) { return !o->loc->doc.empty(); };
+
+  Gatherer<GlobalVariable> variables(docsNotEmpty, false);
+  Gatherer<Program> programs(docsNotEmpty, false);
+  Gatherer<Function> functions(docsNotEmpty, false);
+  Gatherer<BinaryOperator> binaries(all, false);
+  Gatherer<UnaryOperator> unaries(all, false);
+  Gatherer<Basic> basics(docsNotEmpty, false);
+  Gatherer<Struct> structs(docsNotEmpty, false);
+  Gatherer<Class> classes(docsNotEmpty, false);
+
+  o->accept(&variables);
+  o->accept(&programs);
+  o->accept(&functions);
+  o->accept(&binaries);
+  o->accept(&unaries);
+  o->accept(&basics);
+  o->accept(&structs);
+  o->accept(&classes);
+
+  /* alphabetical sorting of items within categories */
   auto sortByName = [](const Named* o1, const Named* o2) {
     return o1->name->str() < o2->name->str();
   };
+  std::stable_sort(variables.begin(), variables.end(), sortByName);
+  std::stable_sort(programs.begin(), programs.end(), sortByName);
+  std::stable_sort(functions.begin(), functions.end(), sortByName);
+  std::stable_sort(binaries.begin(), binaries.end(), sortByName);
+  std::stable_sort(unaries.begin(), unaries.end(), sortByName);
+  std::stable_sort(basics.begin(), basics.end(), sortByName);
+  std::stable_sort(structs.begin(), structs.end(), sortByName);
+  std::stable_sort(classes.begin(), classes.end(), sortByName);
+
+  /* load up type names, these are used for automatic linking */
+  std::for_each(basics.begin(), basics.end(), [this](const Basic* o) {
+        basicNames.insert(o->name->str());
+      });
+  std::for_each(structs.begin(), structs.end(), [this](const Struct* o) {
+        structNames.insert(o->name->str());
+      });
+  std::for_each(classes.begin(), classes.end(), [this](const Class* o) {
+        classNames.insert(o->name->str());
+      });
 
   /* global variables */
-  Gatherer<GlobalVariable> variables(docsNotEmpty, false);
-  o->accept(&variables);
-  std::stable_sort(variables.begin(), variables.end(), sortByName);
   if (variables.size() > 0) {
     line(head("Variables"));
     line("| Name | Description |");
@@ -44,9 +76,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   }
 
   /* programs */
-  Gatherer<Program> programs(docsNotEmpty, false);
-  o->accept(&programs);
-  std::stable_sort(programs.begin(), programs.end(), sortByName);
   if (programs.size() > 0) {
     line(head("Programs"));
     ++depth;
@@ -65,9 +94,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   }
 
   /* functions */
-  Gatherer<Function> functions(docsNotEmpty, false);
-  o->accept(&functions);
-  std::stable_sort(functions.begin(), functions.end(), sortByName);
   if (functions.size() > 0) {
     line(head("Functions"));
     ++depth;
@@ -90,14 +116,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   }
 
   /* operators */
-  Gatherer<BinaryOperator> binaries(all, false);
-  o->accept(&binaries);
-  std::stable_sort(binaries.begin(), binaries.end(), sortByName);
-
-  Gatherer<UnaryOperator> unaries(all, false);
-  o->accept(&unaries);
-  std::stable_sort(unaries.begin(), unaries.end(), sortByName);
-
   if (binaries.size() + unaries.size() > 0) {
     line(head("Operators"));
     ++depth;
@@ -137,9 +155,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   }
 
   /* basic types */
-  Gatherer<Basic> basics(docsNotEmpty, false);
-  o->accept(&basics);
-  std::stable_sort(basics.begin(), basics.end(), sortByName);
   line(head("Types"));
   ++depth;
   for (auto o : basics) {
@@ -148,9 +163,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   --depth;
 
   /* structs */
-  Gatherer<Struct> structs(docsNotEmpty, false);
-  o->accept(&structs);
-  std::stable_sort(structs.begin(), structs.end(), sortByName);
   line(head("Structs"));
   ++depth;
   for (auto o : structs) {
@@ -159,9 +171,6 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   --depth;
 
   /* classes */
-  Gatherer<Class> classes(docsNotEmpty, false);
-  o->accept(&classes);
-  std::stable_sort(classes.begin(), classes.end(), sortByName);
   line(head("Classes"));
   ++depth;
   for (auto o : classes) {
@@ -514,7 +523,15 @@ void birch::MarkdownGenerator::visit(const TypeList* o) {
 }
 
 void birch::MarkdownGenerator::visit(const NamedType* o) {
-  middle(o->name);
+  if (basicNames.find(o->name->str()) != basicNames.end()) {
+    middle('[' << o->name << "](../../types/" << o->name << ')');
+  } else if (structNames.find(o->name->str()) != structNames.end()) {
+    middle('[' << o->name << "](../../structs/" << o->name << ')');
+  } else if (classNames.find(o->name->str()) != classNames.end()) {
+    middle('[' << o->name << "](../../classes/" << o->name << ')');
+  } else {
+    middle(o->name);
+  }
   if (!o->typeArgs->isEmpty()) {
     middle("&lt;" << o->typeArgs << "&gt;");
   }

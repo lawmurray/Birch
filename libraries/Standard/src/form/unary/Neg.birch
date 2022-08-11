@@ -1,3 +1,8 @@
+/**
+ * Delayed form for negation. This is returned by the function
+ * [neg](../../functions/neg) and operator [-](../../operators/neg_) with a
+ * form or expression argument.
+ */
 struct Neg<Middle>(m:Middle) < Unary<Middle>(m) {
   /**
    * Memoized result.
