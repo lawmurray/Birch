@@ -53,10 +53,13 @@ function log_sum_exp(w:Real[_]) -> Real {
     for i in 1..length(w) {
       wn <- w[n];
       if wn > mx {
-        r <- (r + 1.0)*nan_exp(mx - wn);
+        if wn==inf {
+          return inf;
+        }
+        r <- (r + 1.0)*exp(mx - wn);
         mx <- wn;
-      } else {
-        r <- r + nan_exp(wn - mx);
+      } else if !(wn==-inf || isnan(wn)) {
+        r <- r + exp(wn - mx);
       }
     }
     return mx + log1p(r);
@@ -284,12 +287,15 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
     for i in 1..length(w) {
       wn <- w[n];
       if wn > mx {
-        v <- nan_exp(mx - wn);
+        if wn==inf {
+          return (1.0, inf);
+        }
+        v <- exp(mx - wn);
         r <- (r + 1.0)*v;
         q <- (q + 1.0)*v*v;
         mx <- wn;
-      } else {
-        v <- nan_exp(wn - mx);
+      } else if !(wn==-inf || isnan(wn)) {
+        v <- exp(wn - mx);
         r <- r + v;
         q <- q + v*v;
       }
