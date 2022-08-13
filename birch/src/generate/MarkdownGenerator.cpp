@@ -123,11 +123,16 @@ void birch::MarkdownGenerator::visit(const Package* o) {
 
     for (auto o : binaries) {
       if (o->name->str() != name) {
+        name = o->name->str();
+
         /* heading only for the first overload of this name */
-        line(head(o->name->str()));
-        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+        if (name == "+" || name == "-") {
+          line(head(name + " (binary)"));
+        } else {
+          line(head(name));
+        }
+        line("<a name=\"" << anchor(name) << "\"></a>\n");
       }
-      name = o->name->str();
       desc = quote(detailed(o->loc->doc), "    ");
       *this << o;
       line("");
@@ -138,11 +143,16 @@ void birch::MarkdownGenerator::visit(const Package* o) {
 
     for (auto o : unaries) {
       if (o->name->str() != name) {
+        name = o->name->str();
+
         /* heading only for the first overload of this name */
-        line(head(o->name->str()));
-        line("<a name=\"" << anchor(o->name->str()) << "\"></a>\n");
+        if (name == "+" || name == "-") {
+          line(head(name + " (unary)"));
+        } else {
+          line(head(name));
+        }
+        line("<a name=\"" << anchor(name) << "\"></a>\n");
       }
-      name = o->name->str();
       desc = quote(detailed(o->loc->doc), "    ");
       *this << o;
       line("");

@@ -38,7 +38,11 @@ std::string birch::nice(const std::string& name) {
     ops["~"] = "tilde_";
     ops[".."] = "range_";
     ops["+"] = "add_";
+    ops["+ (unary)"] = "plus_";
+    ops["+ (binary)"] = "add_";
     ops["-"] = "subtract_";
+    ops["- (unary)"] = "negate_";
+    ops["- (binary)"] = "subtract_";
     ops["*"] = "multiply_";
     ops["/"] = "divide_";
     ops["<"] = "lt_";
