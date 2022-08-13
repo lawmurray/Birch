@@ -1062,6 +1062,30 @@ real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
+template<class T, class>
+bool_t<T> isinf(const T& x) {
+  prefetch(x);
+  return transform(x, isinf_functor());
+}
+
+template<class T, class>
+real_t<T> isinf_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+  prefetch(x);
+  return transform(g, x, zero_grad_functor());
+}
+
+template<class T, class>
+bool_t<T> isnan(const T& x) {
+  prefetch(x);
+  return transform(x, isnan_functor());
+}
+
+template<class T, class>
+real_t<T> isnan_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+  prefetch(x);
+  return transform(g, x, zero_grad_functor());
+}
+
 template<class T, class U, class>
 real_t<T,U> lbeta(const T& x, const U& y) {
   prefetch(x);
