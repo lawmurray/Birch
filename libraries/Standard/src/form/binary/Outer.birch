@@ -22,3 +22,23 @@ Outer<Left,Right> outer(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Vector-vector outer product.
+ * 
+ * @param x Vector $x$.
+ * @param y Vector $y$.
+ * 
+ * @return Result $C = xy^\top$.
+ */
+function outer(x:RealVectorLike, y:RealVectorLike) -> RealMatrixLike;
+
+/**
+ * Matrix-matrix outer product.
+ * 
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Result $C = AB^\top$.
+ */
+function outer(A:RealMatrixLike, B:RealMatrixLike) -> RealMatrixLike;

@@ -24,4 +24,4 @@ Acos<Middle> acos(const Middle& m) {
 /**
  * Arc cosine.
  */
-function acos(x:Numberish) -> Realish;
+function acos(x:NumberLike) -> RealLike;

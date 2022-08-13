@@ -20,3 +20,13 @@ FrobeniusSelf<Middle> frobenius(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Matrix Frobenius product.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Result $\langle A, A \rangle_\mathrm{F} = \mathrm{Tr}(A^\top A) =
+ * \sum_{ij} A_{ij}^2$ as a scalar.
+ */
+function frobenius(A:RealMatrixLike) -> RealScalarLike;

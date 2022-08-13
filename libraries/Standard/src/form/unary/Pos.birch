@@ -5,19 +5,14 @@ struct Pos<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(pos, pos_grad)
+  BIRCH_UNARY_FUNCTION_FORM(operator+, pos_grad)
   }}
 }
 
 hpp{{
 namespace birch {
-using numbirch::pos;
+using numbirch::operator+;
 using numbirch::pos_grad;
-
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-Pos<Middle> pos(const Middle& m) {
-  return construct<Pos<Middle>>(m);
-}
 
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Pos<Middle> operator+(const Middle& m) {
@@ -26,3 +21,8 @@ Pos<Middle> operator+(const Middle& m) {
 
 }
 }}
+
+/**
+ * Unary plus.
+ */
+operator (+x:NumberLike) -> NumberLike;

@@ -20,3 +20,8 @@ Count<Middle> count(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Count non-zero elements.
+ */
+function count(x:NumberLike) -> IntegerScalarLike;

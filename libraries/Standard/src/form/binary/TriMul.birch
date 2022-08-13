@@ -22,3 +22,23 @@ TriMul<Left,Right> trimul(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Lower-triangular-matrix-vector product.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param x Vector $x$.
+ * 
+ * @return Result $y = Lx$.
+ */
+function trimul(L:RealMatrixLike, x:RealVectorLike) -> RealVectorLike;
+
+/**
+ * Lower-triangular-matrix-matrix product.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param B Matrix $B$.
+ * 
+ * @return Result $C = LB$.
+ */
+function trimul(L:RealMatrixLike, B:RealMatrixLike) -> RealMatrixLike;

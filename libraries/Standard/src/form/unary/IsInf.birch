@@ -1,0 +1,27 @@
+struct IsInf<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(isinf, isinf_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::isinf;
+using numbirch::isinf_grad;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+IsInf<Middle> isinf(const Middle& m) {
+  return construct<IsInf<Middle>>(m);
+}
+}
+}}
+
+/**
+ * Is value infinite?
+ */
+function isinf(x:NumberLike) -> BooleanLike;

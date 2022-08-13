@@ -28,3 +28,16 @@ VectorSingle<Left,Right> single(const Left& x, const Right& i, const int n) {
 }
 }
 }}
+
+/**
+ * Construct single-entry vector. A given element of the vector has a given
+ * value, all others are zero.
+ * 
+ * @param x Value of single entry.
+ * @param i Index of single entry.
+ * @param n Length of vector.
+ * 
+ * @return Single-entry vector.
+ */
+function single(x:NumberScalarLike, i:IntegerScalarLike, n:Integer) ->
+    NumberVectorLike;

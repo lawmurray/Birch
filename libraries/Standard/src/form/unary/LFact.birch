@@ -20,3 +20,8 @@ LFact<Middle> lfact(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Logarithm of the factorial function.
+ */
+function lfact(x:NumberLike) -> RealLike;

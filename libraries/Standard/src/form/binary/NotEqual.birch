@@ -22,3 +22,8 @@ NotEqual<Left,Right> operator!=(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise not equal to comparison.
+ */
+operator (x:NumberLike != y:NumberLike) -> BooleanLike;

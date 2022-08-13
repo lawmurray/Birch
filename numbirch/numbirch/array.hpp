@@ -397,7 +397,7 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
  * @return Element.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_arithmetic_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<T,0> element(const Array<T,1>& x, const U& i);
 
 /**
@@ -416,7 +416,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
  * @return Gradient with respect to @p x.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,1>& x, const U& i) {
   return single(g, i, length(x));
@@ -438,7 +438,7 @@ Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
  * @return Gradient with respect to @p i.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,1>& x, const U& i) {
   return real(0);
@@ -461,7 +461,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
 
 /**
@@ -483,7 +483,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<real,2> element_grad1(const Array<real,0>& g,
     const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j) {
   return single(g, i, j, rows(A), columns(A));
@@ -508,7 +508,7 @@ Array<real,2> element_grad1(const Array<real,0>& g,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,2>& A, const U& i, const V& j) {
   return real(0);
@@ -533,7 +533,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,2>& A, const U& i, const V& j) {
   return real(0);
@@ -555,7 +555,7 @@ real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
  * @return Single-entry vector.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 
 /**
@@ -575,7 +575,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
  * @return Gradient with respect to @p x.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<real,0> single_grad1(const Array<real,1>& g,
     const Array<value_t<T>,1>& y, const T& x, const U& i, const int n) {
   return element(g, i);
@@ -598,7 +598,7 @@ Array<real,0> single_grad1(const Array<real,1>& g,
  * @return Gradient with respect to @p i.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x, const U& i, const int n) {
   return real(0);
@@ -621,10 +621,10 @@ real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * @param n Number of columns.
  * 
  * @return Single-entry matrix.
-*/
+ */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n);
 
@@ -649,7 +649,7 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<real,0> single_grad1(const Array<real,2>& g,
     const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j,
     const int m, const int n) {
@@ -677,7 +677,7 @@ Array<real,0> single_grad1(const Array<real,2>& g,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
     const T& x, const U& i, const V& j, const int m, const int n) {
   return real(0);
@@ -704,7 +704,7 @@ real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
     const T& x, const U& i, const V& j, const int m, const int n) {
   return real(0);
@@ -1001,7 +1001,7 @@ auto stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
 }
 
 /**
- * Vectorize a matrix by stacking its columns.
+ * Vectorize.
  * 
  * @ingroup array
  * 
@@ -1009,10 +1009,9 @@ auto stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
  *
  * @param x Argument.
  * 
- * @return Result.
- * 
- * If @p x is a scalar then returns a vector with a single element. If @p x is
- * a vector then returns it as-is.
+ * @return If @p x is a scalar then returns a vector with a single element. If
+ * @p x is a vector then returns it as-is. If @p x is a matrix then forms a
+ * vector by stacking its columns atop one another.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<value_t<T>,1> vec(const T& x);
@@ -1043,7 +1042,7 @@ auto vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 }
 
 /**
- * Matrixize a vector by unstacking its columns.
+ * Matrixize.
  * 
  * @ingroup array
  * 
@@ -1051,13 +1050,13 @@ auto vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  *
  * @param x Argument.
  * @param n Number of columns into which to unstack. Must be a factor of the
- * size of `x`
+ * size of `x`.
  * 
- * @return Result.
- * 
- * If @p x is a scalar then returns a matrix with a single element. If @p x is
- * a matrix then reshapes it to the given number of columns as if calling
- * `mat(vec(x), n)`.
+ * @return If @p x is a scalar then returns a matrix with a single element. If
+ * @p x is a vector then returns a matrix formed by splitting it into @p n
+ * equal contiguous subvectors and unstacking them to form the columns of a
+ * matrix. If @p x is a matrix then reshapes it to the given number of columns
+ * as if calling `mat(vec(x), n)`.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<value_t<T>,2> mat(const T& x, const int n);

@@ -1,7 +1,6 @@
 /**
- * Delayed form for addition. This is returned by the function
- * [add](../../functions/add) and operator [+](../../operators/add_) with one
- * or more form or expression arguments.
+ * Delayed form for addition. This is returned by the operator
+ * [+](../../operators/add_) with one or more form or expression arguments.
  */
 struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   /**
@@ -10,21 +9,15 @@ struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(add, add_grad)
+  BIRCH_BINARY_FUNCTION_FORM(operator+, add_grad)
   }}
 }
 
 hpp{{
 namespace birch {
-using numbirch::add;
+using numbirch::operator+;
 using numbirch::add_grad1;
 using numbirch::add_grad2;
-
-template<class Left, class Right, std::enable_if_t<
-    is_delay_v<Left,Right>,int> = 0>
-Add<Left,Right> add(const Left& l, const Right& r) {
-  return construct<Add<Left,Right>>(l, r);
-}
 
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>
@@ -34,3 +27,8 @@ Add<Left,Right> operator+(const Left& l, const Right& r) {
 
 }
 }}
+
+/**
+ * Element-wise addition.
+ */
+operator (x:NumberLike + y:NumberLike) -> NumberLike;

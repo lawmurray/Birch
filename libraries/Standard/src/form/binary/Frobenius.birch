@@ -22,3 +22,14 @@ Frobenius<Left,Right> frobenius(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Matrix-matrix Frobenius product.
+ * 
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Result $\langle A, B \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) =
+ * \sum_{ij} A_{ij} B_{ij}$ as a scalar.
+ */
+function frobenius(A:RealMatrixLike, B:RealMatrixLike) -> RealScalarLike;

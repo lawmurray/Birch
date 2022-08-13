@@ -20,3 +20,16 @@ Vec<Middle> vec(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Vectorize.
+ *
+ * @param x Argument.
+ * 
+ * @return If @p x is a scalar then returns a vector with a single element. If
+ * @p x is a vector then returns it as-is. If @p x is a matrix then forms a
+ * vector by stacking its columns atop one another.
+ *
+ * @see [mat](../../functions/mat)
+ */
+function vec(x:NumericLike) -> NumericVectorLike;

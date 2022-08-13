@@ -632,8 +632,9 @@ function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1,
 
 /**
  * Wrap a value. The `wrap()` series of functions preserves basic values,
- * while boxing expression forms into [Expression](../../classes/Expression)
- * objects, using the following conversions:
+ * while boxing [Expression](../../classes/Expression) objects into
+ * [Expression](../../classes/Expression) objects, using the following
+ * conversions:
  *
  * | From                | To                        | Detail                                                                         |
  * | ------------------- | ------------------------- | ---------------------------------------------------- |

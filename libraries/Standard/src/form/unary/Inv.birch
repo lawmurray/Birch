@@ -20,3 +20,12 @@ Inv<Middle> inv(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Inverse of a square matrix.
+ * 
+ * @param A Square matrix $A$.
+ * 
+ * @return Result $B = A^{-1}$.
+ */
+function inv(A:RealMatrixLike) -> RealMatrixLike;

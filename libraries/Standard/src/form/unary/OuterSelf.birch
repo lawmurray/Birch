@@ -20,3 +20,21 @@ OuterSelf<Middle> outer(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Vector outer product.
+ * 
+ * @param x Vector $x$.
+ * 
+ * @return Result $B = xx^\top$.
+ */
+function outer(x:RealVectorLike) -> RealMatrixLike;
+
+/**
+ * Matrix outer product.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Result $B = AA^\top$.
+ */
+function outer(A:RealMatrixLike) -> RealMatrixLike;

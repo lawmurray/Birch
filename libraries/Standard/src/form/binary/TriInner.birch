@@ -22,3 +22,23 @@ TriInner<Left,Right> triinner(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Lower-triangular-matrix-vector inner product.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param x Vector $x$.
+ * 
+ * @return Result $y = Lx$.
+ */
+function triinner(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
+
+/**
+ * Lower-triangular-matrix-matrix inner product.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param B Matrix $B$.
+ * 
+ * @return Result $C = L^\top B$.
+ */
+function triinner(L:RealMatrixLike, B:RealMatrixLike) -> RealMatrixLike;

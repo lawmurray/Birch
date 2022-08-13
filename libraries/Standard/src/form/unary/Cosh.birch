@@ -20,3 +20,8 @@ Cosh<Middle> cosh(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Hyperbolic cosine.
+ */
+function cosh(x:NumberLike) -> RealLike;

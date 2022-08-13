@@ -22,3 +22,8 @@ LessOrEqual<Left,Right> operator<=(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise less than or equal to comparison.
+ */
+operator (x:NumberLike <= y:NumberLike) -> BooleanLike;

@@ -20,3 +20,8 @@ Cos<Middle> cos(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Cosine.
+ */
+function cos(x:NumberLike) -> RealLike;

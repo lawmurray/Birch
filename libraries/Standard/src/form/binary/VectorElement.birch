@@ -25,3 +25,13 @@ VectorElement<Left,Right> element(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element of a vector.
+ * 
+ * @param x Vector.
+ * @param i Index.
+ * 
+ * @return Element.
+ */
+function element(x:NumberVectorLike, i:IntegerScalarLike) -> NumberScalarLike;

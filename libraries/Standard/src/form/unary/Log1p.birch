@@ -20,3 +20,8 @@ Log1p<Middle> log1p(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Logarithm of one plus argument.
+ */
+function log(x:NumberLike) -> RealLike;

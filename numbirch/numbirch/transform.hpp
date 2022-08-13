@@ -40,7 +40,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
- * Logical `and`.
+ * Element-wise logical `and`.
  * 
  * @ingroup transform
  * 
@@ -97,7 +97,7 @@ real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
 /**
- * Logical `or`.
+ * Element-wise logical `or`.
  * 
  * @ingroup transform
  * 
@@ -686,7 +686,7 @@ real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @param x Argument.
  * 
- * @return Result.
+ * @return Copy of @p x, with element type @p R.
  */
 template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
    is_numeric_v<T>,int>>
@@ -741,7 +741,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
- * Copy sign of a number.
+ * Copy sign.
  * 
  * @ingroup transform
  * 
@@ -751,7 +751,7 @@ real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return Result.
+ * @return Result with the absolute values of @p x but signs of @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
@@ -980,7 +980,7 @@ real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
 }
 
 /**
- * Exponential minus one.
+ * Exponential of argument, minus one.
  * 
  * @ingroup transform
  * 
@@ -1168,7 +1168,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 bool_t<T> isfinite(const T& x);
 
 /**
- * Gradient of operator!().
+ * Gradient of isfinite().
  * 
  * @ingroup transform_grad
  * 
@@ -1184,7 +1184,67 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
- * Logarithm of beta.
+ * Is value infinite?
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+bool_t<T> isinf(const T& x);
+
+/**
+ * Gradient of isinf().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> isinf_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
+
+/**
+ * Is value NaN?
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+bool_t<T> isnan(const T& x);
+
+/**
+ * Gradient of isnan().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> isnan_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
+
+/**
+ * Logarithm of the beta function.
  * 
  * @ingroup transform
  * 
@@ -1328,7 +1388,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
- * Logarithm of gamma.
+ * Logarithm of the gamma function.
  * 
  * @ingroup transform
  * 
@@ -1358,7 +1418,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
- * Logarithm of multivariate gamma.
+ * Logarithm of the multivariate gamma function.
  * 
  * @ingroup transform
  * 

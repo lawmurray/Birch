@@ -22,3 +22,33 @@ TriSolve<Left,Right> trisolve(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Lower-triangular-matrix-scalar solve.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $LB = Iy$.
+ */
+function trisolve(L:RealMatrixLike, y:RealScalarLike) -> RealMatrixLike;
+
+/**
+ * Lower-triangular-matrix-vector solve.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param y Vector $y$.
+ * 
+ * @return Solution of $x$ in $Lx = y$.
+ */
+function trisolve(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
+
+/**
+ * Lower-triangular-matrix-matrix solve.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param C Matrix $C$.
+ * 
+ * @return Solution of $B$ in $LB = C$.
+ */
+function trisolve(L:RealMatrixLike, y:RealMatrixLike) -> RealMatrixLike;

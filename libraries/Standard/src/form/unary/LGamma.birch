@@ -20,3 +20,8 @@ LGamma<Middle> lgamma(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Logarithm of the gamma function.
+ */
+function lfact(x:NumberLike) -> RealLike;

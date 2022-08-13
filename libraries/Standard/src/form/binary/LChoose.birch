@@ -22,3 +22,8 @@ LChoose<Left,Right> lchoose(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Logarithm of the binomial coefficient.
+ */
+function lbinomial(n:NumberLike, k:NumberLike) -> RealLike;

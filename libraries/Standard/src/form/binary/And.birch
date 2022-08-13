@@ -22,3 +22,8 @@ And<Left,Right> operator&&(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise logical `and`.
+ */
+operator (x:NumberLike && y:NumberLike) -> BooleanLike;

@@ -26,3 +26,23 @@ Mul<Left,Right> operator*(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Scalar multiplication.
+ */
+operator (x:NumberScalarLike*y:NumberLike) -> NumberLike;
+
+/**
+ * Scalar multiplication.
+ */
+operator (x:NumberLike*y:NumberScalarLike) -> NumberLike;
+
+/**
+ * Matrix-vector multiplication.
+ */
+operator (A:RealMatrixLike*x:RealVectorLike) -> RealVectorLike;
+
+/**
+ * Matrix-matrix multiplication.
+ */
+operator (A:RealMatrixLike*B:RealMatrixLike) -> RealMatrixLike;

@@ -22,3 +22,8 @@ LGammaP<Left,Right> lgamma(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Logarithm of the multivariate gamma function.
+ */
+function lgamma(x:NumberLike, p:NumberLike) -> RealLike;

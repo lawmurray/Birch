@@ -239,7 +239,12 @@ public:
    * Destructor.
    */
   ~Array() {
-    release();
+    if (!isView && volume() > 0) {
+      ArrayControl* c = ctl.load();
+      if (c && c->decShared() == 0) {
+        delete c;
+      }
+    }
   }
 
   /**
@@ -772,11 +777,15 @@ private:
   void swap(Array& o) {
     assert(!isView);
     assert(!o.isView);
-    auto c = ctl.exchange(nullptr);
-    auto d = o.ctl.exchange(nullptr);
+    auto c = volume() > 0 ? ctl.exchange(nullptr) : nullptr;
+    auto d = o.volume() > 0 ? o.ctl.exchange(nullptr) : nullptr;
     std::swap(shp, o.shp);
-    ctl.store(d);
-    o.ctl.store(c);
+    if (d) {
+      ctl.store(d);
+    }
+    if (c) {
+      o.ctl.store(c);
+    }
   }
 
   /**
@@ -789,18 +798,6 @@ private:
       c = new ArrayControl(shp.volume()*sizeof(T));
     }
     ctl.store(c);
-  }
-
-  /**
-   * Release the buffer, deallocating if this is the last reference to it.
-   */
-  void release() {
-    if (volume() > 0) {
-      ArrayControl* c = ctl.exchange(nullptr);
-      if (!isView && c && c->decShared() == 0) {
-        delete c;
-      }
-    }
   }
 
   /**

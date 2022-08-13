@@ -22,3 +22,13 @@ CopySign<Left,Right> copysign(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Copy sign.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * 
+ * @return Result with the absolute values of @p x but signs of @p y.
+ */
+function copysign(x:NumberLike, y:NumberLike) -> NumberLike;

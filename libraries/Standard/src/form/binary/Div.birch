@@ -28,3 +28,8 @@ Div<Left,Right> operator/(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise division.
+ */
+operator (x:NumberLike/y:NumberLike) -> NumberLike;
