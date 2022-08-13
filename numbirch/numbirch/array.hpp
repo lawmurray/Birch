@@ -1001,7 +1001,7 @@ auto stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
 }
 
 /**
- * Vectorize a matrix by stacking its columns.
+ * Vectorize.
  * 
  * @ingroup array
  * 
@@ -1009,10 +1009,9 @@ auto stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
  *
  * @param x Argument.
  * 
- * @return Result.
- * 
- * If @p x is a scalar then returns a vector with a single element. If @p x is
- * a vector then returns it as-is.
+ * @return If @p x is a scalar then returns a vector with a single element. If
+ * @p x is a vector then returns it as-is. If @p x is a matrix then forms a
+ * vector by stacking its columns atop one another.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<value_t<T>,1> vec(const T& x);
@@ -1043,7 +1042,7 @@ auto vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 }
 
 /**
- * Matrixize a vector by unstacking its columns.
+ * Matrixize.
  * 
  * @ingroup array
  * 
@@ -1051,13 +1050,13 @@ auto vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  *
  * @param x Argument.
  * @param n Number of columns into which to unstack. Must be a factor of the
- * size of `x`
+ * size of `x`.
  * 
- * @return Result.
- * 
- * If @p x is a scalar then returns a matrix with a single element. If @p x is
- * a matrix then reshapes it to the given number of columns as if calling
- * `mat(vec(x), n)`.
+ * @return If @p x is a scalar then returns a matrix with a single element. If
+ * @p x is a vector then returns a matrix formed by splitting it into @p n
+ * equal contiguous subvectors and unstacking them to form the columns of a
+ * matrix. If @p x is a matrix then reshapes it to the given number of columns
+ * as if calling `mat(vec(x), n)`.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<value_t<T>,2> mat(const T& x, const int n);

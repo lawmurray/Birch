@@ -10,7 +10,7 @@
 
 namespace numbirch {
 /**
- * Count of non-zero elements.
+ * Count non-zero elements.
  * 
  * @ingroup reduce
  * 
@@ -43,7 +43,7 @@ real_t<T> count_grad(const Array<real,0>& g, const Array<R,0>& y,
     const T& x);
 
 /**
- * Sum of elements.
+ * Sum elements.
  * 
  * @ingroup reduce
  * 

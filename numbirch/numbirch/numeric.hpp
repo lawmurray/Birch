@@ -333,7 +333,7 @@ implicit_t<T,U> operator/(const T& x, const U& y) {
 }
 
 /**
- * Cholesky factorization of a symmetric positive definite square matrix.
+ * Cholesky factorization of a symmetric positive definite matrix.
  * 
  * @ingroup linalg
  * 
@@ -369,7 +369,7 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
 }
 
 /**
- * Inverse of a symmetric positive definite square matrix via the Cholesky
+ * Inverse of a symmetric positive definite matrix via the Cholesky
  * factorization.
  * 
  * @ingroup linalg
@@ -1445,7 +1445,7 @@ Array<T,1> triinner_grad2(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @param L Lower-triangular matrix $L$.
  * 
- * @return Result $C = L^\top L$.
+ * @return Result $S = L^\top L$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner(const Array<T,2>& L) {
@@ -1851,7 +1851,7 @@ Array<T,2> trimul_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @param L Lower-triangular matrix $L$.
  * 
- * @return Result $C = LL^\top$.
+ * @return Result $S = LL^\top$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triouter(const Array<T,2>& L) {
