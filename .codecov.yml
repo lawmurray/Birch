@@ -2,6 +2,8 @@ coverage:
   precision: 2
   round: nearest
   range: "60...90"
+  notify:
+    threshold: 0.1%
 status:
   project:
     default:
