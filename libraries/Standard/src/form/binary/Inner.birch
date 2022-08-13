@@ -22,3 +22,23 @@ Inner<Left,Right> inner(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Matrix-vector inner product.
+ * 
+ * @param A Matrix $A$.
+ * @param x Vector $x$.
+ * 
+ * @return Result $y = A^\top x$.
+ */
+function inner(A:RealMatrixLike, x:RealVectorLike) -> RealVectorLike;
+
+/**
+ * Matrix-matrix inner product.
+ * 
+ * @param A Matrix $A$.
+ * @param B Matrix $B$.
+ * 
+ * @return Result $C = A^\top B$.
+ */
+function inner(A:RealMatrixLike, x:RealMatrixLike) -> RealMatrixLike;

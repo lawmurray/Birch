@@ -22,3 +22,13 @@ Dot<Left,Right> dot(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Vector-vector dot product.
+ * 
+ * @param x Vector $x$.
+ * @param y Vector $y$.
+ * 
+ * @return Result $x^\top y$ as a scalar.
+ */
+function dot(x:RealVectorLike, y:RealVectorLike) -> RealScalarLike;

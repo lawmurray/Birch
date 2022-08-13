@@ -22,3 +22,36 @@ CholSolve<Left,Right> cholsolve(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Matrix-scalar solve via the Cholesky factorization.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $SB = LL^\top B = Iy$.
+ */
+function cholsolve(L:RealMatrixLike, y:RealScalarLike) -> RealMatrixLike;
+
+/**
+ * Matrix-vector solve via the Cholesky factorization.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Vector $y$.
+ * 
+ * @return Solution of $x$ in $Sx = LL^\top x = y$.
+ */
+function cholsolve(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
+
+/**
+ * Matrix-matrix solve via the Cholesky factorization.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param C Matrix $C$.
+ * 
+ * @return Solution of $B$ in $SB = LL^\top B = C$.
+ */
+function cholsolve(L:RealMatrixLike, y:RealMatrixLike) -> RealMatrixLike;

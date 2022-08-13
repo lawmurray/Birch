@@ -22,3 +22,8 @@ Or<Left,Right> operator||(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise logical `or`.
+ */
+operator (x:NumberLike || y:NumberLike) -> BooleanLike;

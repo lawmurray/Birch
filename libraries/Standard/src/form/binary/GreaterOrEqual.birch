@@ -23,3 +23,8 @@ GreaterOrEqual<Left,Right> operator>=(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise greater than or equal to comparison.
+ */
+operator (x:NumberLike >= y:NumberLike) -> BooleanLike;

@@ -22,3 +22,8 @@ LBeta<Left,Right> lbeta(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Logarithm of the beta function.
+ */
+function lbeta(x:NumberLike, y:NumberLike) -> RealLike;

@@ -25,3 +25,14 @@ Where<Left,Middle,Right> where(const Left& l, const Middle& m,
 }
 }
 }}
+
+/**
+ * Conditional.
+ * 
+ * @param x Argument.
+ * @param y Argument.
+ * @param z Argument.
+ * 
+ * @return Where @p x is true, elements of @p y, elsewhere elements of @p z.
+ */
+function where(x:NumericLike, y:NumericLike, z:NumericLike) -> NumericLike;

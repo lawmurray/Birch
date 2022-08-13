@@ -26,3 +26,8 @@ Sub<Left,Right> operator-(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise subtraction.
+ */
+operator (x:NumberLike - y:NumberLike) -> NumberLike;

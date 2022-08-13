@@ -22,3 +22,8 @@ Hadamard<Left,Right> hadamard(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Element-wise multiplication (Hadamard product).
+ */
+function hadamard(x:NumberLike, y:NumberLike) -> NumberLike;

@@ -22,3 +22,8 @@ Pow<Left,Right> pow(const Left& l, const Right& r) {
 }
 }
 }}
+
+/**
+ * Power.
+ */
+function pow(x:NumberLike, y:NumberLike) -> NumberLike;

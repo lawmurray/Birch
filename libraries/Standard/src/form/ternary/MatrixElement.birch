@@ -28,3 +28,15 @@ MatrixElement<Left,Middle,Right> element(const Left& l, const Middle& m,
 }
 }
 }}
+
+/**
+ * Element of a matrix.
+ * 
+ * @param A Matrix.
+ * @param i Row index.
+ * @param j Column index.
+ * 
+ * @return Element.
+ */
+function element(x:NumberMatrixLike, i:IntegerScalarLike,
+    j:IntegerScalarLike) -> NumberScalarLike;

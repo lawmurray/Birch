@@ -27,3 +27,8 @@ Add<Left,Right> operator+(const Left& l, const Right& r) {
 
 }
 }}
+
+/**
+ * Element-wise addition.
+ */
+operator (x:NumberLike + y:NumberLike) -> NumberLike;
