@@ -74,34 +74,46 @@ using real = NUMBIRCH_REAL;
 static const real PI = 3.1415926535897932384626433832795;
 
 /**
- * @var is_integral_v
+ * @var is_bool_v
  * 
- * Is `T` an integral type?
+ * Is `T` type `bool`?
  * 
  * @ingroup trait
- * 
- * An integral type is one of `int` or `bool`.
- * 
- * @see c.f. [std::is_integral]
- * (https://en.cppreference.com/w/cpp/types/is_integral)
  */
 template<class T>
-struct is_integral {
+struct is_bool {
   static constexpr bool value = false;
 };
 template<>
-struct is_integral<int> {
-  static constexpr bool value = true;
-};
-template<>
-struct is_integral<bool> {
+struct is_bool<bool> {
   static constexpr bool value = true;
 };
 template<class T>
-inline constexpr bool is_integral_v = is_integral<std::decay_t<T>>::value;
+inline constexpr bool is_bool_v = is_bool<std::decay_t<T>>::value;
 
 /**
- * @var is_floating_point_v
+ * @var is_int_v
+ * 
+ * Is `T` type `int`?
+ * 
+ * @ingroup trait
+ * 
+ * @see c.f. [std::is_integral]
+ * (https://en.cppreference.com/w/cpp/types/is_int)
+ */
+template<class T>
+struct is_int {
+  static constexpr bool value = false;
+};
+template<>
+struct is_int<int> {
+  static constexpr bool value = true;
+};
+template<class T>
+inline constexpr bool is_int_v = is_int<std::decay_t<T>>::value;
+
+/**
+ * @var is_real_v
  * 
  * Is `T` a floating point type?
  * 
@@ -114,16 +126,15 @@ inline constexpr bool is_integral_v = is_integral<std::decay_t<T>>::value;
  * (https://en.cppreference.com/w/cpp/types/is_floating_point)
  */
 template<class T>
-struct is_floating_point {
+struct is_real {
   static constexpr bool value = false;
 };
 template<>
-struct is_floating_point<real> {
+struct is_real<real> {
   static constexpr bool value = true;
 };
 template<class T>
-inline constexpr bool is_floating_point_v =
-    is_floating_point<std::decay_t<T>>::value;
+inline constexpr bool is_real_v = is_real<std::decay_t<T>>::value;
 
 /**
  * @var is_arithmetic_v
@@ -132,15 +143,15 @@ inline constexpr bool is_floating_point_v =
  * 
  * @ingroup trait
  * 
- * An arithmetic type is an integral or floating point type.
+ * An arithmetic type is one of `bool`, `int`, or `real`.
  * 
- * @see is_integral, is_floating_point, c.f. [std::is_arithmetic]
+ * @see is_bool, is_int, is_real, c.f. [std::is_arithmetic]
  * (https://en.cppreference.com/w/cpp/types/is_arithmetic)
  */
 template<class T>
 struct is_arithmetic {
-  static constexpr bool value = is_integral<T>::value ||
-      is_floating_point<T>::value;
+  static constexpr bool value = is_bool<T>::value || is_int<T>::value ||
+      is_real<T>::value;
 };
 template<class T>
 inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
@@ -555,11 +566,11 @@ struct all_integral {
 };
 template<class Arg>
 struct all_integral<Arg> {
-  static const bool value = is_integral<Arg>::value;
+  static const bool value = is_int<Arg>::value;
 };
 template<class Arg, class... Args>
 struct all_integral<Arg,Args...> {
-  static const bool value = is_integral<Arg>::value &&
+  static const bool value = is_int<Arg>::value &&
       all_integral<Args...>::value;
 };
 template<class... Args>

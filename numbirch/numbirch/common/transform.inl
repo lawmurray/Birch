@@ -156,7 +156,7 @@ struct atan_grad_functor {
 struct ceil_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    if constexpr (is_integral_v<T>) {
+    if constexpr (is_int_v<T> || is_bool_v<T>) {
       return x;
     } else {
       return std::ceil(x);
@@ -239,7 +239,7 @@ struct expm1_functor {
 struct floor_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    if constexpr (is_integral_v<T>) {
+    if constexpr (is_int_v<T> || is_bool_v<T>) {
       return x;
     } else {
       return std::floor(x);
@@ -274,6 +274,20 @@ struct isfinite_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE bool operator()(const T x) const {
     return std::isfinite(x);
+  }
+};
+
+struct isinf_functor {
+  template<class T>
+  NUMBIRCH_HOST_DEVICE bool operator()(const T x) const {
+    return std::isinf(x);
+  }
+};
+
+struct isnan_functor {
+  template<class T>
+  NUMBIRCH_HOST_DEVICE bool operator()(const T x) const {
+    return std::isnan(x);
   }
 };
 
@@ -385,7 +399,7 @@ struct rectify_grad_functor {
 struct round_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
-    if constexpr (is_integral_v<T>) {
+    if constexpr (is_int_v<T> || is_bool_v<T>) {
       return x;
     } else {
       return std::round(x);
@@ -456,7 +470,7 @@ struct tanh_grad_functor {
 struct copysign_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE T operator()(const T x, const U y) const {
-    if constexpr (is_integral_v<T>) {
+    if constexpr (is_int_v<T> || is_bool_v<T>) {
       /* don't use std::copysign, as it promotes to floating point, which
        * we don't wish to do here */
       return (y >= U(0)) ? std::abs(x) : -std::abs(x);
@@ -471,7 +485,7 @@ struct copysign_grad1_functor {
   NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
       const {
     T z;
-    if constexpr (is_integral_v<T>) {
+    if constexpr (is_int_v<T> || is_bool_v<T>) {
       /* don't use std::copysign, as it promotes to floating point, which
        * we don't wish to do here */
       z = (y >= U(0)) ? std::abs(x) : -std::abs(x);

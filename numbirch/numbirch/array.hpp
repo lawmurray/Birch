@@ -397,7 +397,7 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
  * @return Element.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_arithmetic_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<T,0> element(const Array<T,1>& x, const U& i);
 
 /**
@@ -416,7 +416,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
  * @return Gradient with respect to @p x.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,1>& x, const U& i) {
   return single(g, i, length(x));
@@ -438,7 +438,7 @@ Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
  * @return Gradient with respect to @p i.
  */
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,1>& x, const U& i) {
   return real(0);
@@ -461,7 +461,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
 
 /**
@@ -483,7 +483,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<real,2> element_grad1(const Array<real,0>& g,
     const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j) {
   return single(g, i, j, rows(A), columns(A));
@@ -508,7 +508,7 @@ Array<real,2> element_grad1(const Array<real,0>& g,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,2>& A, const U& i, const V& j) {
   return real(0);
@@ -533,7 +533,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,2>& A, const U& i, const V& j) {
   return real(0);
@@ -555,7 +555,7 @@ real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
  * @return Single-entry vector.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 
 /**
@@ -575,7 +575,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
  * @return Gradient with respect to @p x.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<real,0> single_grad1(const Array<real,1>& g,
     const Array<value_t<T>,1>& y, const T& x, const U& i, const int n) {
   return element(g, i);
@@ -598,7 +598,7 @@ Array<real,0> single_grad1(const Array<real,1>& g,
  * @return Gradient with respect to @p i.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_integral_v<value_t<U>>,int>>
+    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x, const U& i, const int n) {
   return real(0);
@@ -624,7 +624,7 @@ real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n);
 
@@ -649,7 +649,7 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<real,0> single_grad1(const Array<real,2>& g,
     const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j,
     const int m, const int n) {
@@ -677,7 +677,7 @@ Array<real,0> single_grad1(const Array<real,2>& g,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
     const T& x, const U& i, const V& j, const int m, const int n) {
   return real(0);
@@ -704,7 +704,7 @@ real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_integral_v<value_t<U>> && is_integral_v<value_t<V>>,int>>
+    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
     const T& x, const U& i, const V& j, const int m, const int n) {
   return real(0);

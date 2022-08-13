@@ -207,7 +207,7 @@ real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
  * 
  * @return Result $y = Ax$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
@@ -224,7 +224,7 @@ Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> mul_grad1(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& A, const Array<T,1>& x) {
   return outer(g, x);
@@ -244,7 +244,7 @@ Array<T,2> mul_grad1(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> mul_grad2(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& A, const Array<T,1>& x) {
   return inner(A, g);
@@ -262,7 +262,7 @@ Array<T,1> mul_grad2(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Result $C = AB$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
@@ -279,7 +279,7 @@ Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> mul_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& B) {
   return outer(g, B);
@@ -299,7 +299,7 @@ Array<T,2> mul_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p B.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> mul_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& B) {
   return inner(A, g);
@@ -344,7 +344,7 @@ implicit_t<T,U> operator/(const T& x, const U& y) {
  * @return Lower-triangular Cholesky factor $L$ such that $S = LL^\top$. If
  * the factorization fails, then $L$ is filled with NaN.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> chol(const Array<T,2>& S);
 
 /**
@@ -360,7 +360,7 @@ Array<T,2> chol(const Array<T,2>& S);
  * 
  * @return Gradient with respect to @p S.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
     const Array<T,2>& S) {
   auto A = phi(triinner(L, g));
@@ -381,7 +381,7 @@ Array<T,2> chol_grad(const Array<T,2>& g, const Array<T,2>& L,
  * 
  * @return Result $S^{-1} = (LL^\top)^{-1}$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> cholinv(const Array<T,2>& L) {
   return cholsolve(L, T(1));
 }
@@ -400,7 +400,7 @@ Array<T,2> cholinv(const Array<T,2>& L) {
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
   return cholsolve_grad1(g, B, L, T(1));
@@ -421,7 +421,7 @@ Array<T,2> cholinv_grad(const Array<T,2>& g, const Array<T,2>& B,
  * @return Solution of $B$ in $SB = LL^\top B = Iy$.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,2> cholsolve(const Array<T,2>& L, const U& y);
 
 /**
@@ -441,7 +441,7 @@ Array<T,2> cholsolve(const Array<T,2>& L, const U& y);
  * @return Gradient with respect to @p L.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,2> cholsolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const U& y) {
   auto gy = cholsolve(L, g);
@@ -467,7 +467,7 @@ Array<T,2> cholsolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
  * @return Gradient with respect to  @p y.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,0> cholsolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const U& y) {
   return sum(cholsolve(L, g));
@@ -486,7 +486,7 @@ Array<T,0> cholsolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Solution of $x$ in $Sx = LL^\top x = y$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y);
 
 /**
@@ -504,7 +504,7 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> cholsolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
   auto gy = cholsolve(L, g);
@@ -528,7 +528,7 @@ Array<T,2> cholsolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
  * 
  * @return Gradient with respect to  @p y.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> cholsolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
   return cholsolve(L, g);
@@ -547,7 +547,7 @@ Array<T,1> cholsolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
  * 
  * @return Solution of $B$ in $SB = LL^\top B = C$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C);
 
 /**
@@ -565,7 +565,7 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> cholsolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
   auto gC = cholsolve(L, g);
@@ -589,7 +589,7 @@ Array<T,2> cholsolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Gradient with respect to @p C.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> cholsolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
   return cholsolve(L, g);
@@ -606,7 +606,7 @@ Array<T,2> cholsolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $x^\top x$ as a scalar.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> dot(const Array<T,1>& x) {
   return dot(x, x);
 }
@@ -624,7 +624,7 @@ Array<T,0> dot(const Array<T,1>& x) {
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> dot_grad(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,1>& x) {
   return T(2)*g*x;
@@ -642,7 +642,7 @@ Array<T,1> dot_grad(const Array<T,0>& g, const Array<T,0>& z,
  * 
  * @return Result $x^\top y$ as a scalar.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
 
 /**
@@ -659,7 +659,7 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> dot_grad1(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,1>& x, const Array<T,1>& y) {
   return g*y;
@@ -679,7 +679,7 @@ Array<T,1> dot_grad1(const Array<T,0>& g, const Array<T,0>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> dot_grad2(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,1>& x, const Array<T,1>& y) {
   return g*x;
@@ -697,7 +697,7 @@ Array<T,1> dot_grad2(const Array<T,0>& g, const Array<T,0>& z,
  * @return Result $\langle A, A \rangle_\mathrm{F} = \mathrm{Tr}(A^\top A) =
  * \sum_{ij} A_{ij}^2$ as a scalar.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> frobenius(const Array<T,2>& A) {
   return frobenius(A, A);
 }
@@ -716,7 +716,7 @@ Array<T,0> frobenius(const Array<T,2>& A) {
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> frobenius_grad(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,2>& A) {
   return T(2)*g*A;
@@ -735,7 +735,7 @@ Array<T,2> frobenius_grad(const Array<T,0>& g, const Array<T,0>& z,
  * @return Result $\langle A, B \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) =
  * \sum_{ij} A_{ij} B_{ij}$ as a scalar.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
@@ -753,7 +753,7 @@ Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> frobenius_grad1(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,2>& A, const Array<T,2>& B) {
   return g*B;
@@ -774,7 +774,7 @@ Array<T,2> frobenius_grad1(const Array<T,0>& g, const Array<T,0>& z,
  * 
  * @return Gradient with respect to @p B.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> frobenius_grad2(const Array<T,0>& g, const Array<T,0>& z,
     const Array<T,2>& A, const Array<T,2>& B) {
   return g*A;
@@ -792,7 +792,7 @@ Array<T,2> frobenius_grad2(const Array<T,0>& g, const Array<T,0>& z,
  * 
  * @return Result $y = A^\top x$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
 
 /**
@@ -809,7 +809,7 @@ Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inner_grad1(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& A, const Array<T,1>& x) {
   return outer(x, g);
@@ -829,7 +829,7 @@ Array<T,2> inner_grad1(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> inner_grad2(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& A, const Array<T,1>& x) {
   return A*g;
@@ -846,7 +846,7 @@ Array<T,1> inner_grad2(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Result $B = A^\top A$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inner(const Array<T,2>& A) {
   return inner(A, A);
 }
@@ -864,7 +864,7 @@ Array<T,2> inner(const Array<T,2>& A) {
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inner_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   return A*(g + transpose(g));
@@ -882,7 +882,7 @@ Array<T,2> inner_grad(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $C = A^\top B$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
@@ -899,7 +899,7 @@ Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inner_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& B) {
   return outer(B, g);
@@ -919,7 +919,7 @@ Array<T,2> inner_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p B.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inner_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& B) {
   return A*g;
@@ -936,7 +936,7 @@ Array<T,2> inner_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Result $B = A^{-1}$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inv(const Array<T,2>& A);
 
 /**
@@ -952,7 +952,7 @@ Array<T,2> inv(const Array<T,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   return -outer(inner(B, g), B);
@@ -972,7 +972,7 @@ Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> lcholdet(const Array<T,2>& L) {
   return T(2)*ltridet(L);
 }
@@ -991,7 +991,7 @@ Array<T,0> lcholdet(const Array<T,2>& L) {
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
     const Array<T,2>& L) {
   return ltridet_grad(T(2)*g, d, L);
@@ -1008,7 +1008,7 @@ Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
  * 
  * @return Result $\log |\det A|$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> ldet(const Array<T,2>& A);
 
 /**
@@ -1024,7 +1024,7 @@ Array<T,0> ldet(const Array<T,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,0>& d,
     const Array<T,2>& A) {
   return g*transpose(inv(A));
@@ -1042,7 +1042,7 @@ Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,0>& d,
  * 
  * @return Result $\log|\det L|$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> ltridet(const Array<T,2>& L) {
   return sum(log(L.diagonal()));
 }
@@ -1060,7 +1060,7 @@ Array<T,0> ltridet(const Array<T,2>& L) {
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> ltridet_grad(const Array<T,0>& g, const Array<T,0>& d,
     const Array<T,2>& L) {
   return diagonal(g/L.diagonal());
@@ -1077,7 +1077,7 @@ Array<T,2> ltridet_grad(const Array<T,0>& g, const Array<T,0>& d,
  * 
  * @return Result $B = xx^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer(const Array<T,1>& x) {
   return outer(x, x);
 }
@@ -1095,7 +1095,7 @@ Array<T,2> outer(const Array<T,1>& x) {
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,1>& x) {
   return (g + transpose(g))*x;
@@ -1113,7 +1113,7 @@ Array<T,1> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $C = xy^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
 
 /**
@@ -1130,7 +1130,7 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> outer_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,1>& x, const Array<T,1>& y) {
   return g*y;
@@ -1150,7 +1150,7 @@ Array<T,1> outer_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> outer_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,1>& x, const Array<T,1>& y) {
   return inner(g, x);
@@ -1167,7 +1167,7 @@ Array<T,1> outer_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Result $B = AA^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer(const Array<T,2>& A) {
   return outer(A, A);
 }
@@ -1185,7 +1185,7 @@ Array<T,2> outer(const Array<T,2>& A) {
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   return (g + transpose(g))*A;
@@ -1203,7 +1203,7 @@ Array<T,2> outer_grad(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $C = AB^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
 
 /**
@@ -1220,7 +1220,7 @@ Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& B) {
   return g*B;
@@ -1240,7 +1240,7 @@ Array<T,2> outer_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p A and @p B.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> outer_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& B) {
   return inner(g, A);
@@ -1258,7 +1258,7 @@ Array<T,2> outer_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * @return Lower triangle and half the diagonal of $A$. The upper triangle is
  * filled with zeros.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> phi(const Array<T,2>& A);
 
 /**
@@ -1274,7 +1274,7 @@ Array<T,2> phi(const Array<T,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> phi_grad(const Array<T,2>& g, const Array<T,2>& L,
     const Array<T,2>& A) {
   return phi(g);
@@ -1291,7 +1291,7 @@ Array<T,2> phi_grad(const Array<T,2>& g, const Array<T,2>& L,
  * 
  * @return Result $B = A^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> transpose(const Array<T,2>& A);
 
 /**
@@ -1307,7 +1307,7 @@ Array<T,2> transpose(const Array<T,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> transpose_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   return transpose(g);
@@ -1359,7 +1359,7 @@ real_t<T> transpose_grad(const real_t<T>& g, const T& y, const T& x) {
  * @return Lower triangle and diagonal of $A$. The upper triangle is filled
  * with zeros.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> tri(const Array<T,2>& A);
 
 /**
@@ -1375,7 +1375,7 @@ Array<T,2> tri(const Array<T,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> tri_grad(const Array<T,2>& g, const Array<T,2>& L,
     const Array<T,2>& A) {
   return tri(g);
@@ -1393,7 +1393,7 @@ Array<T,2> tri_grad(const Array<T,2>& g, const Array<T,2>& L,
  * 
  * @return Result $y = Lx$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x);
 
 /**
@@ -1410,7 +1410,7 @@ Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner_grad1(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& L, const Array<T,1>& x) {
   return tri(outer(x, g));
@@ -1430,7 +1430,7 @@ Array<T,2> triinner_grad1(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> triinner_grad2(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& L, const Array<T,1>& x) {
   return trimul(L, g);
@@ -1447,7 +1447,7 @@ Array<T,1> triinner_grad2(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Result $C = L^\top L$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner(const Array<T,2>& L) {
   return triinner(L, L);
 }
@@ -1465,7 +1465,7 @@ Array<T,2> triinner(const Array<T,2>& L) {
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner_grad(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& L) {
   return tri(trimul(L, g + transpose(g)));
@@ -1483,7 +1483,7 @@ Array<T,2> triinner_grad(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Result $C = L^\top B$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B);
 
 /**
@@ -1500,7 +1500,7 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& L, const Array<T,2>& B) {
   return tri(outer(B, g));
@@ -1520,7 +1520,7 @@ Array<T,2> triinner_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p B.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinner_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& L, const Array<T,2>& B) {
   return trimul(L, g);
@@ -1540,7 +1540,7 @@ Array<T,2> triinner_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * @return Solution of $B$ in $LB = Iy$.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,2> triinnersolve(const Array<T,2>& L, const U& y);
 
 /**
@@ -1559,7 +1559,7 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const U& y);
  * @return Gradient with respect to @p L.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const U& y) {
   return tri(outer(-B, trisolve(L, g)));
@@ -1581,7 +1581,7 @@ Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
  * @return Gradient with respect to  @p y.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,0> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const U& y) {
   return sum(trisolve(L, g));
@@ -1599,7 +1599,7 @@ Array<T,0> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Solution of $x$ in $y = L^\top x$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& x);
 
 /**
@@ -1616,7 +1616,7 @@ Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& x);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinnersolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
   return tri(outer(-x, trisolve(L, g)));
@@ -1636,7 +1636,7 @@ Array<T,2> triinnersolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> triinnersolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
   return trisolve(L, g);
@@ -1654,7 +1654,7 @@ Array<T,1> triinnersolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
  * 
  * @return Solution of $B$ in $C = L^\top B$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C);
 
 /**
@@ -1671,7 +1671,7 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
   return tri(outer(-B, trisolve(L, g)));
@@ -1691,7 +1691,7 @@ Array<T,2> triinnersolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Gradient with respect to @p C.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
   return trisolve(L, g);
@@ -1708,7 +1708,7 @@ Array<T,2> triinnersolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $L^{-1}$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinv(const Array<T,2>& L) {
   return trisolve(L, T(1));
 }
@@ -1726,7 +1726,7 @@ Array<T,2> triinv(const Array<T,2>& L) {
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L) {
   return trisolve_grad1(g, B, L, T(1));
@@ -1744,7 +1744,7 @@ Array<T,2> triinv_grad(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Result $y = Lx$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x);
 
 /**
@@ -1761,7 +1761,7 @@ Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trimul_grad1(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& L, const Array<T,1>& x) {
   return tri(outer(g, x));
@@ -1781,7 +1781,7 @@ Array<T,2> trimul_grad1(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Gradient with respect to @p L and @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> trimul_grad2(const Array<T,1>& g, const Array<T,1>& y,
     const Array<T,2>& L, const Array<T,1>& x) {
   return triinner(L, g);
@@ -1799,7 +1799,7 @@ Array<T,1> trimul_grad2(const Array<T,1>& g, const Array<T,1>& y,
  * 
  * @return Result $C = LB$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B);
 
 /**
@@ -1816,7 +1816,7 @@ Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trimul_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& L, const Array<T,2>& B) {
   return tri(outer(g, B));
@@ -1836,7 +1836,7 @@ Array<T,2> trimul_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p B.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trimul_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& L, const Array<T,2>& B) {
   return triinner(L, g);
@@ -1853,7 +1853,7 @@ Array<T,2> trimul_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Result $C = LL^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triouter(const Array<T,2>& L) {
   return triouter(L, L);
 }
@@ -1871,7 +1871,7 @@ Array<T,2> triouter(const Array<T,2>& L) {
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triouter_grad(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& L) {
   return tri((g + transpose(g))*L);
@@ -1889,7 +1889,7 @@ Array<T,2> triouter_grad(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Result $C = AL^\top$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L);
 
 /**
@@ -1906,7 +1906,7 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triouter_grad1(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& L) {
   return g*L;
@@ -1926,7 +1926,7 @@ Array<T,2> triouter_grad1(const Array<T,2>& g, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> triouter_grad2(const Array<T,2>& g, const Array<T,2>& C,
     const Array<T,2>& A, const Array<T,2>& L) {
   return tri(inner(g, A));
@@ -1946,7 +1946,7 @@ Array<T,2> triouter_grad2(const Array<T,2>& g, const Array<T,2>& C,
  * @return Solution of $B$ in $LB = Iy$.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,2> trisolve(const Array<T,2>& L, const U& y);
 
 /**
@@ -1965,7 +1965,7 @@ Array<T,2> trisolve(const Array<T,2>& L, const U& y);
  * @return Gradient with respect to @p L.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const U& y) {
   return tri(outer(triinnersolve(L, g), -B));
@@ -1987,7 +1987,7 @@ Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
  * @return Gradient with respect to  @p y.
  */
 template<class T, class U, class = std::enable_if_t<
-    is_floating_point_v<T> && is_floating_point_v<U> && is_scalar_v<U>,int>>
+    is_real_v<T> && is_real_v<U> && is_scalar_v<U>,int>>
 Array<T,0> trisolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const U& y) {
   return sum(triinnersolve(L, g));
@@ -2005,7 +2005,7 @@ Array<T,0> trisolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Solution of $x$ in $Lx = y$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y);
 
 /**
@@ -2022,7 +2022,7 @@ Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trisolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
   return tri(outer(triinnersolve(L, g), -x));
@@ -2042,7 +2042,7 @@ Array<T,2> trisolve_grad1(const Array<T,1>& g, const Array<T,1>& x,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,1> trisolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
     const Array<T,2>& L, const Array<T,1>& y) {
   return triinnersolve(L, g);
@@ -2060,7 +2060,7 @@ Array<T,1> trisolve_grad2(const Array<T,1>& g, const Array<T,1>& x,
  * 
  * @return Solution of $B$ in $LB = C$.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C);
 
 /**
@@ -2077,7 +2077,7 @@ Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
   return tri(outer(triinnersolve(L, g), -B));
@@ -2097,7 +2097,7 @@ Array<T,2> trisolve_grad1(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @return Gradient with respect to @p C.
  */
-template<class T, class = std::enable_if_t<is_floating_point_v<T>,int>>
+template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,2> trisolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
     const Array<T,2>& L, const Array<T,2>& C) {
   return triinnersolve(L, g);
