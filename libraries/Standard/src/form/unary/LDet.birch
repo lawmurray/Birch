@@ -20,3 +20,12 @@ LDet<Middle> ldet(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Logarithm of the absolute value of the determinant of a square matrix.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Result $\log |\det A|$.
+ */
+function ldet(A:RealMatrixLike) -> RealScalarLike;

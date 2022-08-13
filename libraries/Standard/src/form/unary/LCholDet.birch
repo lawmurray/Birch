@@ -20,3 +20,15 @@ LCholDet<Middle> lcholdet(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Logarithm of the determinant of a symmetric positive definite matrix via
+ * the Cholesky factorization. The determinant of a positive definite matrix
+ * is always positive, so its logarithm is defined.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * 
+ * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$.
+ */
+function lcholdet(L:RealMatrixLike) -> RealScalarLike;

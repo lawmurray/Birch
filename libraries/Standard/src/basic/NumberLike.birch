@@ -13,26 +13,44 @@
  * `NumberLike` includes the full set of base types, while various subtypes of
  * it are defined that accept only subsets, as below.
  *
- * | Type               | Real base types                | Integer base types                      | Boolean base types                      |
- * | :----------------- | :----------------------------- | :-------------------------------------- | :-------------------------------------- |
+ * | Type                | Real base types                | Integer base types                      | Boolean base types                      |
+ * | :------------------ | :----------------------------- | :-------------------------------------- | :-------------------------------------- |
  * | `NumberLike`        | `Real`, `Real[_]`, `Real[_,_]` | `Integer`, `Integer[_]`, `Integer[_,_]` | `Boolean`, `Boolean[_]`, `Boolean[_,_]` |
+ * | `NumberScalarLike`  | `Real`                         | `Integer`                               | `Boolean`                               |
+ * | `NumberVectorLike`  | `Real[_]`                      | `Integer[_]`                            | `Boolean[_]`                            |
+ * | `NumberMatrixLike`  | `Real[_,_]`                    | `Integer[_,_]`                          | `Boolean[_,_]`                          |
  * | `RealLike`          | `Real`, `Real[_]`, `Real[_,_]` |                                         |                                         |
- * | `RealScalarLike`    | `Real` only                    |                                         |                                         |
- * | `RealVectorLike`    | `Real[_]` only                 |                                         |                                         |
- * | `RealMatrixLike`    | `Real[_,_]` only               |                                         |                                         |
+ * | `RealScalarLike`    | `Real`                         |                                         |                                         |
+ * | `RealVectorLike`    | `Real[_]`                      |                                         |                                         |
+ * | `RealMatrixLike`    | `Real[_,_]`                    |                                         |                                         |
  * | `IntegerLike`       |                                | `Integer`, `Integer[_]`, `Integer[_,_]` |                                         |
- * | `IntegerScalarLike` |                                | `Integer` only                          |                                         |
- * | `IntegerVectorLike` |                                | `Integer[_]` only                       |                                         |
- * | `IntegerMatrixLike` |                                | `Integer[_,_]` only                     |                                         |
+ * | `IntegerScalarLike` |                                | `Integer`                               |                                         |
+ * | `IntegerVectorLike` |                                | `Integer[_]`                            |                                         |
+ * | `IntegerMatrixLike` |                                | `Integer[_,_]`                          |                                         |
  * | `BooleanLike`       |                                |                                         | `Boolean`, `Boolean[_]`, `Boolean[_,_]` |
- * | `BooleanScalarLike` |                                |                                         | `Boolean` only                          |
- * | `BooleanVectorLike` |                                |                                         | `Boolean[_]` only                       |
- * | `BooleanMatrixLike` |                                |                                         | `Boolean[_,_]` only                     |
+ * | `BooleanScalarLike` |                                |                                         | `Boolean`                               |
+ * | `BooleanVectorLike` |                                |                                         | `Boolean[_]`                            |
+ * | `BooleanMatrixLike` |                                |                                         | `Boolean[_,_]`                          |
  *
  * These types are typically used in the documentation for mathematical
  * functions and operators that accept both eager and lazy evaluation.
  */
 type NumberLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type NumberScalarLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type NumberVectorLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type NumberMatrixLike;
 
 /**
  * @see [NumberLike](../../types/NumberLike)

@@ -20,3 +20,13 @@ Chol<Middle> chol(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Cholesky factorization of a symmetric positive definite matrix.
+ * 
+ * @param S Symmetric positive definite matrix $S$.
+ * 
+ * @return Lower-triangular Cholesky factor $L$ such that $S = LL^\top$. If
+ * the factorization fails, then $L$ is filled with NaN.
+ */
+function chol(S:RealMatrixLike) -> RealMatrixLike;

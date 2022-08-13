@@ -20,3 +20,12 @@ OuterSelf<Middle> outer(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Matrix outer product.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Result $B = AA^\top$.
+ */
+function outer(A:RealMatrixLike) -> RealMatrixLike;

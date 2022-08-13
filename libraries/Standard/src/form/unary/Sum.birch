@@ -20,3 +20,8 @@ Sum<Middle> sum(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Sum elements.
+ */
+function sum(x:NumberLike) -> NumberScalarLike;

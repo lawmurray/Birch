@@ -43,6 +43,16 @@ DiagonalVector<Middle> diagonal(const Middle& m) {
 }}
 
 /**
+ * Construct diagonal matrix, filling the diagonal with a given scalar.
+ * 
+ * @param x Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ * 
+ * @return Diagonal matrix.
+ */
+function diagonal(x:NumberScalarLike, n:Integer) -> NumberMatrixLike;
+
+/**
  * Create identity matrix.
  *
  * @param n Number of rows and columns.

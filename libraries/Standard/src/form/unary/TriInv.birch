@@ -20,3 +20,12 @@ TriInv<Middle> triinv(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Inverse of a triangular matrix.
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * 
+ * @return Result $L^{-1}$.
+ */
+function triinv(L:RealMatrixLike) -> RealMatrixLike;

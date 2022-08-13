@@ -25,3 +25,20 @@ Mat<Middle> mat(const Middle& m, const int n) {
 }
 }
 }}
+
+/**
+ * Matrixize.
+ *
+ * @param x Argument.
+ * @param n Number of columns into which to unstack. Must be a factor of the
+ * size of `x`.
+ * 
+ * @return If @p x is a scalar then returns a matrix with a single element. If
+ * @p x is a vector then returns a matrix formed by splitting it into @p n
+ * equal contiguous subvectors and unstacking them to form the columns of a
+ * matrix. If @p x is a matrix then reshapes it to the given number of columns
+ * as if calling `mat(vec(x), n)`.
+ *
+ * @see [vec](../../functions/vec)
+ */
+function mat(x:NumericLike, n:Integer) -> NumericMatrixLike;

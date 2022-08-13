@@ -20,3 +20,12 @@ Transpose<Middle> transpose(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Matrix transpose.
+ * 
+ * @param A Matrix $A$.
+ * 
+ * @return Result $B = A^\top$.
+ */
+function transpose(A:RealMatrixLike) -> RealMatrixLike;

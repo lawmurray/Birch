@@ -20,3 +20,14 @@ CholInv<Middle> cholinv(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Inverse of a symmetric positive definite matrix via the Cholesky
+ * factorization.
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * 
+ * @return Result $S^{-1} = (LL^\top)^{-1}$.
+ */
+function cholinv(L:RealMatrixLike) -> RealMatrixLike;

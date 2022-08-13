@@ -20,3 +20,12 @@ DotSelf<Middle> dot(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Vector dot product.
+ * 
+ * @param x Vector $x$.
+ * 
+ * @return Result $x^\top x$ as a scalar.
+ */
+function dot(x:RealVectorLike) -> RealScalarLike;
