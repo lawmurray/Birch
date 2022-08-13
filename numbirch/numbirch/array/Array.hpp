@@ -777,11 +777,15 @@ private:
   void swap(Array& o) {
     assert(!isView);
     assert(!o.isView);
-    auto c = ctl.exchange(nullptr);
-    auto d = o.ctl.exchange(nullptr);
+    auto c = volume() > 0 ? ctl.exchange(nullptr) : nullptr;
+    auto d = o.volume() > 0 ? o.ctl.exchange(nullptr) : nullptr;
     std::swap(shp, o.shp);
-    ctl.store(d);
-    o.ctl.store(c);
+    if (d) {
+      ctl.store(d);
+    }
+    if (c) {
+      o.ctl.store(c);
+    }
   }
 
   /**
