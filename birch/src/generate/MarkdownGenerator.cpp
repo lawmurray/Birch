@@ -256,7 +256,7 @@ void birch::MarkdownGenerator::visit(const UnaryOperator* o) {
   if (!o->typeParams->isEmpty()) {
     middle('<' << o->typeParams << '>');
   }
-  middle(" (" << o->name << ' ' << o->single << ')');
+  middle(" (" << o->name << o->single << ')');
   if (!o->returnType->isEmpty()) {
     middle(" -> " << o->returnType);
   }
@@ -575,8 +575,10 @@ std::string birch::MarkdownGenerator::head(const std::string& name) {
 }
 
 std::string birch::MarkdownGenerator::detailed(const std::string& str) {
+  static const std::string name("\\b[αβγδεζηθικλμνξπρστυφχψωΓΔΘΛΞΠΣΥΦΨΩA-Za-z0-9_]+\\b");
   static const std::regex newline(" *\n *\\* ?");
-  static const std::regex param("@t?param *([αβγδεζηθικλμνξπρστυφχψωΓΔΘΛΞΠΣΥΦΨΩA-Za-z0-9_]+)");
+  static const std::regex param("@t?param *(" + name + ')');
+  static const std::regex p("@p *(" + name + ')');
   static const std::regex ret("@return");
   static const std::regex see("@see");
   static const std::regex admonition("@(attention|bug|example|note|quote|todo|warning)");
@@ -584,6 +586,7 @@ std::string birch::MarkdownGenerator::detailed(const std::string& str) {
   std::string r = str;
   r = std::regex_replace(r, newline, "\n");
   r = std::regex_replace(r, param, "  - **$1** ");
+  r = std::regex_replace(r, p, "**$1**");
   r = std::regex_replace(r, ret, "**Returns** ");
   r = std::regex_replace(r, see, "**See also** ");
   r = std::regex_replace(r, admonition, "!!! $1");
