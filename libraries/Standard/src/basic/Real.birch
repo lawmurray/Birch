@@ -36,21 +36,3 @@ function min(x:Real, y:Real) -> Real {
   return std::min(x, y);
   }}
 }
-
-/**
- * Is the value `inf`?
- */
-function isinf(x:Real) -> Boolean {
-  cpp{{
-  return std::isinf(x);
-  }}
-}
-
-/**
- * Is the value `nan`?
- */
-function isnan(x:Real) -> Boolean {
-  cpp{{
-  return std::isnan(x);
-  }}
-}
