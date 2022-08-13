@@ -219,9 +219,9 @@ class ParticleFilter {
       } else {
         /* normalize weights to sum to nparticles */
         w <- w - (lsum - log(nparticles));
+        collect();
       }
     }
-    collect();
   }
 
   /**
