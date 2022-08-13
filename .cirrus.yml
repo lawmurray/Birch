@@ -78,4 +78,4 @@ task:
   Ecology_build_script:
     - cd examples/Ecology
     - birch build ${BIRCH_FLAGS} || (cat config.log && exit 1)
-    - birch install --prefix="${PREFIX}" ${LIBRARY_BIRCH_FLAGS} || (cat config.log && exit 1)
+    - bash ./smoke.sh
