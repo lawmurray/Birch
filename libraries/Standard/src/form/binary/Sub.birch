@@ -1,7 +1,6 @@
 /**
- * Delayed form for subtraction. This is returned by the function
- * [sub](../../functions/sub) and operator [-](../../operators/sub_) with one
- * or more form or expression arguments.
+ * Delayed form for subtraction. This is returned by the operator
+ * [-](../../operators/sub_) with one or more form or expression arguments.
  */
 struct Sub<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   /**
@@ -10,21 +9,15 @@ struct Sub<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(sub, sub_grad)
+  BIRCH_BINARY_FUNCTION_FORM(operator-, sub_grad)
   }}
 }
 
 hpp{{
 namespace birch {
-using numbirch::sub;
+using numbirch::operator-;
 using numbirch::sub_grad1;
 using numbirch::sub_grad2;
-
-template<class Left, class Right, std::enable_if_t<
-    is_delay_v<Left,Right>,int> = 0>
-Sub<Left,Right> sub(const Left& l, const Right& r) {
-  return construct<Sub<Left,Right>>(l, r);
-}
 
 template<class Left, class Right, std::enable_if_t<
     is_delay_v<Left,Right>,int> = 0>

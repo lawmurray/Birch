@@ -20,3 +20,8 @@ Round<Middle> round(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Round to nearest integer value.
+ */
+function round(x:NumberLike) -> NumberLike;

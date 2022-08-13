@@ -20,3 +20,8 @@ Exp<Middle> exp(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Exponential.
+ */
+function exp(x:NumberLike) -> RealLike;

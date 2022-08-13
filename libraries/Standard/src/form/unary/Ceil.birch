@@ -20,3 +20,8 @@ Ceil<Middle> ceil(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Round to smallest integer value not less than argument.
+ */
+function ceil(x:NumberLike) -> NumberLike;

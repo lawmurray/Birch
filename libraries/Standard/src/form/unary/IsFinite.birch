@@ -20,3 +20,8 @@ IsFinite<Middle> isfinite(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Is value finite?
+ */
+function isfinite(x:NumberLike) -> BooleanLike;

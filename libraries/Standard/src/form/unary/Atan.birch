@@ -20,3 +20,8 @@ Atan<Middle> atan(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Arc tangent.
+ */
+function atan(x:NumberLike) -> RealLike;

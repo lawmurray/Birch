@@ -21,3 +21,14 @@ Cast<To,Middle> cast(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Cast.
+ * 
+ * @tparam To Element type `Real`, `Integer` or `Boolean`.
+ * 
+ * @param x Argument.
+ * 
+ * @return a copy of @p x with element type converted to @p To.
+ */
+function cast<To>(x:NumberLike) -> NumberLike;

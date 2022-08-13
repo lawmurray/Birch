@@ -20,3 +20,8 @@ Tan<Middle> tan(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Tangent.
+ */
+function tan(x:NumberLike) -> RealLike;

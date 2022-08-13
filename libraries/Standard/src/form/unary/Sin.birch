@@ -20,3 +20,8 @@ Sin<Middle> sin(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Sine.
+ */
+function sin(x:NumberLike) -> RealLike;

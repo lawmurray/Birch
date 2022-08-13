@@ -20,3 +20,8 @@ Not<Middle> operator!(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Logical `not`.
+ */
+operator (!x:NumberLike) -> BooleanLike;

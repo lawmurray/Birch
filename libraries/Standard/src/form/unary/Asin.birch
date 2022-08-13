@@ -20,3 +20,8 @@ Asin<Middle> asin(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Arc sine.
+ */
+function asin(x:NumberLike) -> RealLike;

@@ -20,3 +20,8 @@ Expm1<Middle> expm1(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Exponential of argument, minus one.
+ */
+function expm1(x:NumberLike) -> RealLike;

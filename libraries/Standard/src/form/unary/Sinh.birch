@@ -20,3 +20,8 @@ Sinh<Middle> sinh(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Hyperbolic sine.
+ */
+function sinh(x:NumberLike) -> RealLike;

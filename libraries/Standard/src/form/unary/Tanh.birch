@@ -20,3 +20,8 @@ Tanh<Middle> tanh(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Hyperbolic tangent.
+ */
+function tanh(x:NumberLike) -> RealLike;

@@ -20,3 +20,8 @@ Rectify<Middle> rectify(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Rectification.
+ */
+function rect(x:NumberLike) -> NumberLike;

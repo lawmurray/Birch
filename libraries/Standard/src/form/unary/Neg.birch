@@ -1,7 +1,6 @@
 /**
- * Delayed form for negation. This is returned by the function
- * [neg](../../functions/neg) and operator [-](../../operators/neg_) with a
- * form or expression argument.
+ * Delayed form for negation. This is returned by the operator
+ * [-](../../operators/neg_) with a form or expression argument.
  */
 struct Neg<Middle>(m:Middle) < Unary<Middle>(m) {
   /**
@@ -10,19 +9,14 @@ struct Neg<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(neg, neg_grad)
+  BIRCH_UNARY_FUNCTION_FORM(operator-, neg_grad)
   }}
 }
 
 hpp{{
 namespace birch {
-using numbirch::neg;
+using numbirch::operator-;
 using numbirch::neg_grad;
-
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-Neg<Middle> neg(const Middle& m) {
-  return construct<Neg<Middle>>(m);
-}
 
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
 Neg<Middle> operator-(const Middle& m) {
@@ -30,3 +24,8 @@ Neg<Middle> operator-(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Negation.
+ */
+operator (-x:NumberLike) -> NumberLike;

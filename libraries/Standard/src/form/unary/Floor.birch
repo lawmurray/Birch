@@ -20,3 +20,8 @@ Floor<Middle> floor(const Middle& m) {
 }
 }
 }}
+
+/**
+ * Round to largest integer value not greater than argument.
+ */
+function floor(x:NumberLike) -> NumberLike;

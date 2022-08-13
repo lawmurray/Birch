@@ -1,0 +1,95 @@
+/**
+ * A number-like type. Such a type is used in the documentation as a
+ * placeholder for generic parameters and return values that can take on a
+ * variety of types. Those types are defined as:
+ *
+ *   1. some base type `T` (see below),
+ *   2. a class type representing a delayed expression evaluating to `T`,
+ *      derived from [Expression](../../classes/Expression),
+ *   3. a struct type representing a delayed form evaluating to `T`,
+ *      derived from [Form](../../structs/Form), and
+ *   4. the future type `T!`.
+ *
+ * `NumberLike` includes the full set of base types, while various subtypes of
+ * it are defined that accept only subsets, as below.
+ *
+ * | Type               | Real base types                | Integer base types                      | Boolean base types                      |
+ * | :----------------- | :----------------------------- | :-------------------------------------- | :-------------------------------------- |
+ * | `NumberLike`        | `Real`, `Real[_]`, `Real[_,_]` | `Integer`, `Integer[_]`, `Integer[_,_]` | `Boolean`, `Boolean[_]`, `Boolean[_,_]` |
+ * | `RealLike`          | `Real`, `Real[_]`, `Real[_,_]` |                                         |                                         |
+ * | `RealScalarLike`    | `Real` only                    |                                         |                                         |
+ * | `RealVectorLike`    | `Real[_]` only                 |                                         |                                         |
+ * | `RealMatrixLike`    | `Real[_,_]` only               |                                         |                                         |
+ * | `IntegerLike`       |                                | `Integer`, `Integer[_]`, `Integer[_,_]` |                                         |
+ * | `IntegerScalarLike` |                                | `Integer` only                          |                                         |
+ * | `IntegerVectorLike` |                                | `Integer[_]` only                       |                                         |
+ * | `IntegerMatrixLike` |                                | `Integer[_,_]` only                     |                                         |
+ * | `BooleanLike`       |                                |                                         | `Boolean`, `Boolean[_]`, `Boolean[_,_]` |
+ * | `BooleanScalarLike` |                                |                                         | `Boolean` only                          |
+ * | `BooleanVectorLike` |                                |                                         | `Boolean[_]` only                       |
+ * | `BooleanMatrixLike` |                                |                                         | `Boolean[_,_]` only                     |
+ *
+ * These types are typically used in the documentation for mathematical
+ * functions and operators that accept both eager and lazy evaluation.
+ */
+type NumberLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type RealLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type RealScalarLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type RealVectorLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type RealMatrixLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type IntegerLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type IntegerScalarLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type IntegerVectorLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type IntegerMatrixLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type BooleanLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type BooleanScalarLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type BooleanVectorLike;
+
+/**
+ * @see [NumberLike](../../types/NumberLike)
+ */
+type BooleanMatrixLike;
