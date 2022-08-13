@@ -48,7 +48,7 @@ T operator-(const T& x) {
 }
 
 /**
- * Addition.
+ * Element-wise addition.
  * 
  * @ingroup linalg
  * 
@@ -79,7 +79,7 @@ implicit_t<T,U> operator+(const T& x, const U& y) {
 }
 
 /**
- * Subtraction.
+ * Element-wise subtraction.
  * 
  * @ingroup linalg
  * 
@@ -306,7 +306,7 @@ Array<T,2> mul_grad2(const Array<T,2>& g, const Array<T,2>& C,
 }
 
 /**
- * Division.
+ * Element-wise division.
  * 
  * @ingroup linalg
  * 

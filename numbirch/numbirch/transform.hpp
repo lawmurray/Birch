@@ -40,7 +40,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
- * Logical `and`.
+ * Element-wise logical `and`.
  * 
  * @ingroup transform
  * 
@@ -97,7 +97,7 @@ real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
 /**
- * Logical `or`.
+ * Element-wise logical `or`.
  * 
  * @ingroup transform
  * 
@@ -741,7 +741,7 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
- * Copy sign of a number.
+ * Copy sign.
  * 
  * @ingroup transform
  * 
@@ -751,7 +751,7 @@ real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
  * @param x Argument.
  * @param y Argument.
  * 
- * @return Result.
+ * @return Result with the absolute values of @p x but signs of @p y.
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>

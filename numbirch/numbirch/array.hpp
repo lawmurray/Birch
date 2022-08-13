@@ -621,7 +621,7 @@ real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * @param n Number of columns.
  * 
  * @return Single-entry matrix.
-*/
+ */
 template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
