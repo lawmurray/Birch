@@ -3,7 +3,7 @@
  * Test log-sum-exp implementations in `log_sum_exp` and
  * `resample_reduce`.
  */
-program test_logsumexp() {
+program test_basic_logsumexp() {
   // Generate random weights
   w:Real[100];
   for n in 1..100 {
