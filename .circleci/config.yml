@@ -151,23 +151,15 @@ commands:
       - slack/status:
           fail_only: true
 
-  configure_birch:
+  build_birch:
     steps:
       - run:
-          name: Configure birch
+          name: Build birch
           command: |
               cd birch
               cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
-
-  build_birch:
-    steps:
-      - configure_birch
-      - run:
-          name: Build birch
-          command: |
-              cd birch
               make $MAKE_FLAGS
               make install
       - run:
@@ -571,7 +563,7 @@ jobs:
       - osc_identity
       - brew_checkout
 
-      - configure_birch
+      - build_birch
       - configure_library:
           package: numbirch
       - configure_library:
