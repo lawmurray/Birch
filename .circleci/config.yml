@@ -151,15 +151,23 @@ commands:
       - slack/status:
           fail_only: true
 
-  birch:
+  configure_birch:
     steps:
       - run:
-          name: Build birch
+          name: Configure birch
           command: |
               cd birch
               cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
+
+  birch:
+    steps:
+      - configure_birch
+      - run:
+          name: Build birch
+          command: |
+              cd birch
               make $MAKE_FLAGS
               make install
       - run:
@@ -171,6 +179,21 @@ commands:
               ./smoke.sh
             fi
 
+  configure_library:
+    description: Configure a C++ library
+    parameters:
+      package:
+        description: Name of the library
+        type: string
+    steps:
+      - run:
+          name: Configure << parameters.package >>
+          command: |
+              cd << parameters.package >>
+              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
+              ./bootstrap
+              ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
+
   build_library:
     description: Build a C++ library
     parameters:
@@ -178,15 +201,31 @@ commands:
         description: Name of the library
         type: string
     steps:
+      - configure_library:
+          package: << parameters.package >>
       - run:
           name: Build << parameters.package >>
           command: |
               cd << parameters.package >>
-              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
-              ./bootstrap
-              ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
               make $MAKE_FLAGS
               make install
+
+  configure_package:
+    description: Configure a Birch package
+    parameters:
+      dir:
+        description: Directory containing the package (e.g. libraries)
+        type: string
+      package:
+        description: Name of package (e.g. Standard)
+        type: string
+    steps:
+      - run:
+          name: Configure << parameters.package >> package
+          command: |
+              cd << parameters.dir >>/<< parameters.package >>
+              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
+              birch configure --prefix=$PREFIX $BIRCH_FLAGS || (cat config.log && exit 1)
 
   build_package:
     description: Build a Birch package
@@ -199,17 +238,15 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      extra:
-        description: Extra build flags for birch
-        type: string
-        default: ""
     steps:
+      - configure_package:
+          dir: << parameters.dir >>
+          package: << parameters.package >>
       - run:
           name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
-              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || (cat config.log && exit 1)
+              birch install --prefix=$PREFIX $BIRCH_FLAGS || (cat config.log && exit 1)
           no_output_timeout: 30m
       - when:
           condition:
@@ -465,10 +502,6 @@ jobs:
           os: << parameters.os >>
           dir: tests
           package: Test
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
@@ -530,12 +563,28 @@ jobs:
     executor: << parameters.os >>
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: ..
       - environment:
           os: << parameters.os >>
+
       - git_identity
       - osc_identity
+      - brew_checkout
+
+      - configure_birch
+      - configure_library:
+          package: numbirch
+      - configure_library:
+          package: membirch
+      - configure_package:
+          dir: libraries
+          package: Standard
+      - configure_package:
+          dir: libraries
+          package: Cairo
+      - configure_package:
+          dir: libraries
+          package: SQLite
+
       - deploy_obs_package:
           package: birch
       - deploy_obs_package:
@@ -551,7 +600,7 @@ jobs:
       - deploy_obs_package:
           dir: libraries
           package: SQLite
-      - brew_checkout
+
       - deploy_brew_package:
           package: birch
       - deploy_brew_package:
@@ -568,6 +617,7 @@ jobs:
           dir: libraries
           package: SQLite
       - brew_commit
+
       - deploy_website
       - slack
 
