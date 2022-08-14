@@ -1,0 +1,149 @@
+
+/*
+ * Test log-sum-exp implementations in `log_sum_exp` and
+ * `resample_reduce`.
+ */
+program test_logsumexp() {
+  // Generate random weights
+  w:Real[100];
+  for n in 1..100 {
+    w[n] <- simulate_gaussian(0.0, 1.0);
+  }
+
+  // Compare with common two-pass algorithm
+  let y <- log_sum_exp_twopass(w);
+  let w2 <- transform(w, \(x:Real) -> { return 2*w; });
+  let ess <- y*y/log_sum_exp_twopass(w2);
+  if !check_ess_logsumexp(w, ess, y) {
+    exit(1);
+  }
+  
+  // Check overflow
+  let v <- transform(w, \(x:Real) -> { return x + 1000.0; });
+  let v2 <- transform(v, \(x:Real) -> { return 2*w;} );
+  y <- y + 1000.0;
+  ess <- y*y/log_sum_exp_twopass(v2);
+  if !check_ess_logsumexp(w, ess, y) {
+    exit(1);
+  }
+
+  // Check underflow
+  w <- [1e-20, log(1e-20)];
+  y <- 1e-20;
+  ess <- 1.0;
+  if !check_ess_logsumexp(w, ess, y) {
+    exit(1);
+  }
+
+  // Check empty input
+  x:Real[0];
+  if !check_ess_logsumexp(x, 0.0, -inf) {
+    exit(1);
+  }
+
+  // Special cases involving -inf, inf, and nan.
+  let cases <- [
+    ([-inf, -inf], nan, -inf),
+    ([-inf, nan], nan, -inf),
+    ([nan, -inf], nan, -inf),
+    ([-inf, 42.0], 1.0, 42.0),
+    ([nan, 42.0], 1.0, 42.0),
+    ([42.0, -inf], 1.0, 42.0),
+    ([42.0, nan], 1.0, 42.0),
+    ([-inf, inf], 1.0, inf),
+    ([nan, inf], 1.0, inf),
+    ([42.0, inf], 1.0, inf),
+    ([inf, -inf], 1.0, inf),
+    ([inf, nan], 1.0, inf),
+    ([inf, 42.0], 1.0, inf),
+    ([inf, inf], 1.0, inf),
+  ];
+  for n in 1..length(cases) {
+    (w, y, ess) <- cases[n];
+    if !check_ess_logsumexp(w, ess, y) {
+      exit(1);
+    }
+  }
+}
+
+/*
+ * Exponentiate and sum a log weight vector.
+ *
+ * @param w Log weights.
+ *
+ * @return the logarithm of the sum.
+ *
+ * !!! note
+ *     This implementation uses the common two-pass algorithm
+ *     that avoids overflow.
+ */
+function log_sum_exp_twopass(w:Real[]) -> Real {
+  if length(w) > 0 {
+    let mx <- max(w);
+    let r <- transform_reduce(x, 0.0, \(x:Real, y:Real) -> { return x + y; },
+        \(x:Real) -> { return nan_exp(x - mx); });
+    return mx + log(r);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Check output of `log_sum_exp` and `resample_reduce`.
+ *
+ * @param w Log weights.
+ * @param ess_expected Expected ESS estimate.
+ * @param y_expected Expected log sum of weights.
+ *
+ * @return Are the results approximately equal to the expected values?
+ */
+function check_ess_logsumexp(w:Real[_], ess_expected:Real, y_expected:Real) -> Boolean {
+  // Roughly half of the significant digits should be correct.
+  return check_ess_logsumexp(w, ess_expected, y_expected, 1e-8);
+}
+
+/*
+ * Check output of `log_sum_exp` and `resample_reduce`.
+ *
+ * @param w Log weights.
+ * @param ess_expected Expected ESS estimate.
+ * @param y_expected Expected log sum of weights.
+ * @param reltol Relative tolerace.
+ *
+ * @return Are the results approximately equal to the expected values?
+ */
+function check_ess_logsumexp(w:Real[_], ess_expected:Real, y_expected:Real, reltol:Real) -> Boolean {
+  let result <- true;
+
+  let y <- log_sum_exp(w);
+  if !approx_equal(y, y_expected) {
+    stderr.print("log_sum_exp(" + w + ") = " + y_expected " ≉ " + y + "(reltol = " + reltol + ")\n");
+    result <- false;
+  }
+
+  let (ess, y) <- resample_reduce(w);
+  if !approx_equal(ess, ess_expected) || !approx_equal(y, y_expected) {
+    stderr.print("resample_reduce(" + w + ") = (" + ess + ", " + y + ") ≉ (" + ess_expected + ", " + y_expected + ") (reltol = " + reltol + ")\n");
+    result <- false;
+  }
+
+  return result;
+}
+
+/*
+ * Check if two scalars are approximately equal.
+ *
+ * @param x1 First scalar.
+ * @param x2 Second scalar.
+ * @param reltol Relative tolerace.
+ *
+ * @return Are the two scalars approximately equal?
+ */
+function approx_equal(x1:Real, x2:Real, reltol:Real) -> Boolean {
+  // Handle special cases such as `inf`, `-inf` etc. not covered below.
+  if x1==x2 {
+    return true;
+  }
+
+  return abs(x1 - x2) < reltol*max(abs(x1), abs(x2));
+}
