@@ -399,7 +399,7 @@ commands:
               fi
 
 jobs:
-  base:
+  build:
     parameters: 
       os:
         type: string
@@ -413,29 +413,18 @@ jobs:
           package: numbirch
       - build_library:
           package: membirch
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
-      - codecov:
-          os: << parameters.os >>
-      - end_if_pull_request
-      - slack
-
-  standard:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
       - build_package:
           os: << parameters.os >>
           dir: libraries
           package: Standard
+      - build_package:
+          os: << parameters.os >>
+          dir: libraries
+          package: Cairo
+      - build_package:
+          os: << parameters.os >>
+          dir: libraries
+          package: SQLite
       - persist_to_workspace:
           root: ..
           paths:
@@ -459,33 +448,6 @@ jobs:
           os: << parameters.os >>
           dir: tests
           package: Test
-      - codecov:
-          os: << parameters.os >>
-      - end_if_pull_request
-      - slack
-
-  libraries:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: Cairo
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: SQLite
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
@@ -569,31 +531,17 @@ workflows:
   version: 2
   all:
     jobs:
-      - base:
+      - build:
           matrix:
             parameters:
               os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
-
-      - standard:
-          matrix:
-            parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
-          requires:
-            - base-<< matrix.os >>
 
       - test:
           matrix:
             parameters:
               os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
           requires:
-            - standard-<< matrix.os >>
-
-      - libraries:
-          matrix:
-            parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
-          requires:
-            - test-<< matrix.os >>
+            - build-<< matrix.os >>
 
       - example:
           matrix:
@@ -601,7 +549,7 @@ workflows:
               os: [opensuse-bench,opensuse-cover]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
-            - libraries-<< matrix.os >>
+            - test-<< matrix.os >>
 
       - deploy:
           os: opensuse-bench
@@ -611,4 +559,4 @@ workflows:
                 - master
           requires:
             - example
-            - libraries
+            - test
