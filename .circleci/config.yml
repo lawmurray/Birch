@@ -364,14 +364,17 @@ commands:
                 osc add $TARNAME-$VERSION.tar.gz
                 for file in PKGBUILD $TARNAME.spec $TARNAME.dsc debian.control debian.$TARNAME.install debian.$TARNAME-dev.install
                 do
-                  cat $file |
-                    sed -E "s/-[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
-                    sed -E "s/\%\{name\}-[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
-                    sed -E "s/Version: [0-9.]+/Version: $VERSION/g" |
-                    sed -E "s/pkgver=[0-9.]+/pkgver=$VERSION/g" |
-                    sed -E "s/>= *[0-9.]+/>= $VERSION/g" |
-                    sed -E "s/== *[0-9.]+/== $VERSION/g" |
-                    sponge $file
+                  if [[ -e $file ]]
+                  then
+                    cat $file |
+                      sed -E "s/-[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
+                      sed -E "s/\%\{name\}-[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
+                      sed -E "s/Version: [0-9.]+/Version: $VERSION/g" |
+                      sed -E "s/pkgver=[0-9.]+/pkgver=$VERSION/g" |
+                      sed -E "s/>= *[0-9.]+/>= $VERSION/g" |
+                      sed -E "s/== *[0-9.]+/== $VERSION/g" |
+                      sponge $file
+                  fi
                 done
               fi
 
