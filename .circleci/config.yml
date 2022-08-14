@@ -161,7 +161,7 @@ commands:
               ./bootstrap
               ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
 
-  birch:
+  build_birch:
     steps:
       - configure_birch
       - run:
@@ -451,7 +451,7 @@ jobs:
       - checkout
       - environment:
           os: << parameters.os >>
-      - birch
+      - build_birch
       - build_library:
           package: numbirch
       - build_library:
@@ -563,6 +563,7 @@ jobs:
     executor: << parameters.os >>
     steps:
       - end_if_pull_request
+      - checkout
       - environment:
           os: << parameters.os >>
 
