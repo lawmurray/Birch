@@ -257,6 +257,14 @@ commands:
                       fi
                     fi
 
+  brew_identity:
+    steps:
+      - run:
+          name: Configure Homebrew
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+
   osc_identity:
     steps:
       - run:
@@ -270,6 +278,52 @@ commands:
                 echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
                 echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
                 echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
+              fi
+
+  osc_checkout:
+    steps:
+      - run:
+          name: Checkout OBS repo
+          command: |
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
+              then
+                cd $OSC_PROJECT
+                osc checkout $OSC_PROJECT
+              fi
+
+  osc_commit:
+    steps:
+      - run:
+          name: Commit OBS repo
+          command: |
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd $OSC_PROJECT
+                osc commit -m "Updated to version $VERSION."
+              fi
+
+  brew_checkout:
+    steps:
+      - run:
+          name: Checkout Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+                cd homebrew-birch
+              fi
+
+  brew_commit:
+    steps:
+      - run:
+          name: Commit Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd homebrew-birch
+                git add -u
+                git commit -m "Updated to version $VERSION."
+                git push origin master
               fi
 
   deploy_obs_package:
@@ -288,14 +342,10 @@ commands:
               shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
-                  TARNAME=birch-${TARNAME,,}
-                fi
-                osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
+                TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
+                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
                 cd $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
                 if ls $TARNAME-!($VERSION).tar.gz > /dev/null
                 then
@@ -313,27 +363,6 @@ commands:
                     sed -E "s/== *[0-9.]+/== $VERSION/g" |
                     sponge $file
                 done
-                osc commit -m "Updated to version $VERSION."
-              fi
-
-  git_identity:
-    steps:
-      - run:
-          name: Configure Git
-          command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-
-  brew_checkout:
-    steps:
-      - run:
-          name: Checkout Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd homebrew-birch
-                git rm *.tar.gz
               fi
 
   deploy_brew_package:
@@ -352,14 +381,16 @@ commands:
               shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
-                  TARNAME=birch-${TARNAME,,}
-                fi
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
+                TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
+                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
                 cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
+                if ls $TARNAME-!($VERSION).tar.gz > /dev/null
+                then
+                  git rm $TARNAME-!($VERSION).tar.gz
+                fi
+                git add $TARNAME-$VERSION.tar.gz
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
                   sed -E "s/-[0-9.]+\.tar\.gz/-$VERSION.tar.gz/g" |
@@ -367,21 +398,6 @@ commands:
                   sed -E "s/version \"[0-9.]+\"/version \"$VERSION\"/g" |
                   sed -E "s/=> \"[0-9.]+\"/=> \"$VERSION\"/g" |
                   sponge $TARNAME.rb
-              fi
-
-  brew_commit:
-    steps:
-      - git_identity
-      - run:
-          name: Commit Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
-                cd homebrew-birch
-                git add *.tar.gz
-                git add -u
-                git commit -m "Updated to version $VERSION."
-                git push origin master
               fi
 
   deploy_website:
@@ -487,10 +503,8 @@ jobs:
       - environment:
           os: << parameters.os >>
 
-      - git_identity
       - osc_identity
-      - brew_checkout
-
+      - osc_checkout
       - deploy_obs_package:
           package: birch
       - deploy_obs_package:
@@ -506,7 +520,10 @@ jobs:
       - deploy_obs_package:
           dir: libraries
           package: SQLite
+      - osc_commit
 
+      - brew_identity
+      - brew_checkout
       - deploy_brew_package:
           package: birch
       - deploy_brew_package:
