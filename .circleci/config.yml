@@ -298,7 +298,6 @@ commands:
           command: |
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
               then
-                cd $OSC_PROJECT
                 osc checkout $OSC_PROJECT
               fi
 
