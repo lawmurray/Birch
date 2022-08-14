@@ -368,10 +368,10 @@ commands:
                 cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
-                  sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
+                  sed -E "s/-[0-9.]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
-                  sed -E "s/version \"[0-9]+\.[0-9]+\"/version \"$VERSION\"/g" |
-                  sed -E "s/=> \"[0-9]+\.[0-9]+\"/=> \"$VERSION\"/g" |
+                  sed -E "s/version \"[0-9.]+\"/version \"$VERSION\"/g" |
+                  sed -E "s/=> \"[0-9.]+\"/=> \"$VERSION\"/g" |
                   sponge $TARNAME.rb
               fi
 
