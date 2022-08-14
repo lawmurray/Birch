@@ -35,20 +35,31 @@ function nan_max(w:Real[_]) -> Real {
 /*
  * Exponentiate and sum a log weight vector.
  *
- * The result is computed in a numerically stable way that avoids
- * intermediate over- and underflow, using a single pass over the data.
- *
  * @param w Log weights.
  *
  * @return the logarithm of the sum.
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
+ *
+ * This uses a numerically stable implementation that avoids over- and
+ * underflow, using a single pass over the data.
+ * It is based on:
+ *
+ * S. Nowozin (2016). Streaming Log-sum-exp Computation.
+ * http://www.nowozin.net/sebastian/blog/streaming-log-sum-exp-computation.html
  */
 function log_sum_exp(w:Real[_]) -> Real {
   if length(w) > 0 {
-    let mx <- -inf; // running maximum of log weights
-    let r <- 0.0; // running sum of non-maximum weights divided by maximum
+    // Running maximum of log weights
+    let mx <- -inf;
+    /*
+     * Running sum of non-maximum weights divided by maximum weight.
+     * In contrast to Nowozin's implementation the maximum itself
+     * is not included in the sum.
+     * This avoids underflow for e.g. w = [1e-20, log(1e-20)].
+     */
+    let r <- 0.0;
     wn:Real;
     for n in 1..length(w) {
       wn <- w[n];
@@ -273,14 +284,29 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  *
  * !!! note
  *     NaN log weights are treated as though `-inf`.
+ *
+ * This uses a numerically stable implementation that avoids over- and
+ * underflow, using a single pass over the data.
+ * It is based on:
+ *
+ * S. Nowozin (2016). Streaming Log-sum-exp Computation.
+ * http://www.nowozin.net/sebastian/blog/streaming-log-sum-exp-computation.html
  */
 function resample_reduce(w:Real[_]) -> (Real, Real) {
   if length(w) == 0 {
-    return (0.0, 0.0);
+    return (0.0, -inf);
   } else {
-    let mx <- -inf; // running maximum of log weights
-    let r <- 0.0; // running sum of non-maximum weights divided by maximum
-    let q <- 0.0; // running sum of square of non-maximum weights divided by maximum
+    // Running maximum of log weights
+    let mx <- -inf;
+    /*
+     * Running sum of non-maximum weights divided by maximum weight (r),
+     * and their squares (q).
+     * In contrast to Nowozin's implementation the maximum itself
+     * is not included in the sum.
+     * This avoids underflow for e.g. w = [1e-20, log(1e-20)].
+     */
+    let r <- 0.0;
+    let q <- 0.0;
     wn:Real;
     v:Real;
     for n in 1..length(w) {
@@ -298,9 +324,10 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
         q <- q + v*v;
       }
     }
+    let log_sum_weights <- mx + log1p(r);
+    // The ESS is estimated as (sum w)^2 / (sum w^2)
     let rp1 <- r + 1.0;
     let ess <- rp1*rp1/(q + 1.0);
-    let log_sum_weights <- mx + log1p(r);
     return (ess, log_sum_weights);
   }
 }
