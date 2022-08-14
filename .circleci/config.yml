@@ -28,16 +28,27 @@ executors:
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/opensuse-cover
 
-  ubuntu:
+  alpine:
     docker:
-      - image: lawmurray/birch-circleci:ubuntu
+      - image: lawmurray/birch-circleci:alpine
     resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/ubuntu
+    working_directory: /root/project/alpine
+
+  archlinux:
+    docker:
+      - image: lawmurray/birch-circleci:archlinux
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
+    working_directory: /root/project/archlinux
 
   debian:
     docker:
@@ -61,16 +72,16 @@ executors:
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/fedora
 
-  alpine:
+  ubuntu:
     docker:
-      - image: lawmurray/birch-circleci:alpine
+      - image: lawmurray/birch-circleci:ubuntu
     resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/alpine
+    working_directory: /root/project/ubuntu
 
   mac:
     macos:
@@ -551,12 +562,12 @@ workflows:
       - build:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
 
       - test:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
           requires:
             - build-<< matrix.os >>
 
