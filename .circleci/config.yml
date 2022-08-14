@@ -294,7 +294,7 @@ commands:
   osc_checkout:
     steps:
       - run:
-          name: Checkout OBS repo
+          name: Checkout Open Build Service repo
           command: |
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
               then
@@ -304,7 +304,7 @@ commands:
   osc_commit:
     steps:
       - run:
-          name: Commit OBS repo
+          name: Commit Open Build Service repo
           command: |
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
