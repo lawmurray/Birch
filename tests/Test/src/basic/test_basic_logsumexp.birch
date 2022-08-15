@@ -42,9 +42,9 @@ program test_basic_logsumexp() {
   }
 
   // Special cases involving -inf, inf, and nan.
-  let cases <- [ [-inf, -inf, nan, -inf],
-                 [-inf, nan, nan, -inf],
-                 [nan, -inf, nan, -inf],
+  let cases <- [ [-inf, -inf, 0.0, -inf],
+                 [-inf, nan, 0.0, -inf],
+                 [nan, -inf, 0.0, -inf],
                  [-inf, 42.0, 1.0, 42.0],
                  [nan, 42.0, 1.0, 42.0],
                  [42.0, -inf, 1.0, 42.0],

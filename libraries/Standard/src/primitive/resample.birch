@@ -324,6 +324,12 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
         q <- q + v*v;
       }
     }
+
+    // If all weights are `-inf` or `nan`, the result is the same as for empty arrays
+    if mx==-inf {
+      return (0.0, -inf);
+    }
+
     let log_sum_weights <- mx + log1p(r);
     // The ESS is estimated as (sum w)^2 / (sum w^2)
     let rp1 <- r + 1.0;
