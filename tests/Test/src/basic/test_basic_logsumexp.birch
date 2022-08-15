@@ -42,24 +42,24 @@ program test_basic_logsumexp() {
   }
 
   // Special cases involving -inf, inf, and nan.
-  let cases <- [ [-inf, -inf, 0.0, -inf],
-                 [-inf, nan, 0.0, -inf],
-                 [nan, -inf, 0.0, -inf],
-                 [-inf, 42.0, 1.0, 42.0],
-                 [nan, 42.0, 1.0, 42.0],
-                 [42.0, -inf, 1.0, 42.0],
-                 [42.0, nan, 1.0, 42.0],
-                 [-inf, inf, 1.0, inf],
-                 [nan, inf, 1.0, inf],
-                 [42.0, inf, 1.0, inf],
-                 [inf, -inf, 1.0, inf],
-                 [inf, nan, 1.0, inf],
-                 [inf, 42.0, 1.0, inf],
-                 [inf, inf, 1.0, inf] ];
+  let cases <- [[-inf, -inf, 0.0, -inf],
+                [-inf, nan, 0.0, -inf],
+                [nan, -inf, 0.0, -inf],
+                [-inf, 42.0, 1.0, 42.0],
+                [nan, 42.0, 1.0, 42.0],
+                [42.0, -inf, 1.0, 42.0],
+                [42.0, nan, 1.0, 42.0],
+                [-inf, inf, 1.0, inf],
+                [nan, inf, 1.0, inf],
+                [42.0, inf, 1.0, inf],
+                [inf, -inf, 1.0, inf],
+                [inf, nan, 1.0, inf],
+                [inf, 42.0, 1.0, inf],
+                [inf, inf, 1.0, inf]];
   for n in 1..length(cases) {
-    w <- cases[1..2,n];
-    ess <- cases[3,n];
-    y <- cases[4,n];
+    w <- cases[n,1..2];
+    ess <- cases[n,3];
+    y <- cases[n,4];
     if !check_ess_logsumexp(w, ess, y) {
       exit(1);
     }
