@@ -12,18 +12,16 @@ program test_basic_logsumexp() {
 
   // Compare with common two-pass algorithm
   let y <- log_sum_exp_twopass(w);
-  let w2 <- transform(w, \(x:Real) -> { return 2*x; });
-  let ess <- exp(2*y - log_sum_exp_twopass(w2));
+  let ess <- exp(2*y - log_sum_exp_twopass(2*w));
   if !check_ess_logsumexp(w, ess, y) {
     exit(1);
   }
   
   // Check overflow
-  let v <- transform(w, \(x:Real) -> { return x + 1000.0; });
-  let v2 <- transform(v, \(x:Real) -> { return 2*x; } );
-  y <- y + 1000.0;
-  ess <- exp(2*y - log_sum_exp_twopass(v2));
-  if !check_ess_logsumexp(v, ess, y) {
+  w <- w + 1000.0;
+  y <- log_sum_exp_twopass(w);
+  ess <- exp(2*y - log_sum_exp_twopass(2*w));
+  if !check_ess_logsumexp(w, ess, y) {
     exit(1);
   }
 
