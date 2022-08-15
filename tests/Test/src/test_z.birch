@@ -1,30 +1,32 @@
 /*
  * Test the normalizing constant of a pdf.
  *
- * - π: The target distribution. 
- * - N: Number of importance samples.
- * - lazy: Use lazy expressions?
+ * @param π The target distribution. 
+ * @param N Number of importance samples.
+ * @param lazy Use lazy expressions?
  */
 function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {  
-  /* compute the shape for a t-distribution proposal using the iid samples */
+  /*
+  * compute the shape for a t-distribution proposal using the mean
+  * and sample variance of iid samples, calculated with Welford's online algorithm
+  */
   let k <- 3;  // degrees of freedom
-  let μ <- 0.0;
-  let σ2 <- 0.0;
+  let μ <- 0.0; // running mean
+  let S <- 0.0; // running sum of squares of differences from mean
   for n in 1..N {
     let x <- π.simulate();
-    μ <- μ + x;
-    σ2 <- σ2 + x*x;
+    let dμ <- x - μ;
+    μ <- μ + dμ/n;
+    S <- S + dμ*(x - μ);
   }
-  μ <- μ/N;              // sample mean and location for Student's t
-  σ2 <- σ2/N - μ*μ;      // sample variance
-  σ2 <- σ2/(k/(k - 2));  // spread for Student's t proposal
+  let σ2 <- (S/N)/k; // spread for Student's t proposal
 
   /* draw importance samples */
   z:Real[N];
   parallel for n in 1..N {
     let x <- simulate_student_t(k, μ, σ2);
     let q <- logpdf_student_t(x, k, μ, σ2);
-    let p <- 0.0;
+    p:Real;
     if lazy && π.supportsLazy() {
       p <- π.logpdfLazy(x)!;
     } else {
@@ -35,10 +37,10 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
   
   /* test distance between the iid and Metropolis samples */
   let (ess, lsum) <- resample_reduce(z);
-  let Z <- exp(lsum - log(N));
-  let δ <- abs(Z - 1.0);
+  let δ <- abs(expm1(lsum - log(N)));
   let ε <- 10.0/sqrt(N);
   if !(N < 10 || δ < ε) {
+    let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
     exit(1);
   }
@@ -50,36 +52,38 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
 /*
  * Test the normalizing constant of a pdf.
  *
- * - π: The target distribution. 
- * - N: Number of importance samples.
- * - lazy: Use lazy expressions?
+ * @param π The target distribution. 
+ * @param N Number of importance samples.
+ * @param lazy Use lazy expressions?
  */
 function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   let D <- rows(π.simulate());
   
-  /* compute the shape for a t-distribution proposal using iid samples */
-  let k <- 3 + D;  // degrees of freedom
-  μ:Real[D];
-  Σ:Real[D,D];
+  /* 
+   * compute the shape for a t-distribution proposal using the mean
+   * and sample variance of iid samples, calculated with Welford's online algorithm
+   */
+  let k <- 3 + D; // degrees of freedom
+  μ:Real[D]; // running mean
+  M:Real[D,D]; // running matrix of co-moments
   do {
     μ <- 0.0;
-    Σ <- 0.0;
+    M <- 0.0;
     for n in 1..N {
       let x <- π.simulate();
-      μ <- μ + x;
-      Σ <- Σ + outer(x);
+      let dμ <- x - μ;
+      μ <- μ + dμ/n;
+      M <- M + outer(dμ, x - μ);
     }
-    μ <- μ/N;             // sample mean and location for matrix-t
-    Σ <- Σ/N - outer(μ);  // sample covariance
-    Σ <- Σ*(k - 2);         // spread for multivariate t proposal
-  } while N >= 10 && sum(isfinite(chol(Σ))) == 0;
+  } while N >= 10 && sum(isfinite(chol(M))) == 0;
+  let Σ <- M/N*(k-2); // spread for multivariate t proposal
 
   /* draw importance samples */
   z:Real[N];
   parallel for n in 1..N {
     let x <- simulate_multivariate_t(k, μ, Σ);
     let q <- logpdf_multivariate_t(x, k, μ, Σ);
-    let p <- 0.0;
+    p:Real;
     if lazy && π.supportsLazy() {
       p <- π.logpdfLazy(x)!;
     } else {
@@ -90,10 +94,10 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   
   /* test distance between the iid and Metropolis samples */
   let (ess, lsum) <- resample_reduce(z);
-  let Z <- exp(lsum - log(N));
-  let δ <- abs(Z - 1.0);
+  let δ <- abs(expm1(lsum - log(N)));
   let ε <- 10.0/sqrt(N);
   if !(N < 10 || δ < ε) {
+    let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
     exit(1);
   }
@@ -105,38 +109,41 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
 /*
  * Test the normalizing constant of a pdf.
  *
- * - π: The target distribution. 
- * - N: Number of importance samples.
- * - lazy: Use lazy expressions?
+ * @param π The target distribution. 
+ * @param N Number of importance samples.
+ * @param lazy Use lazy expressions?
  */
 function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   let R <- rows(π.simulate());
   let C <- columns(π.simulate());
-  
-  /* compute the shape for a t-distribution proposal using iid samples */
-  let k <- 3 + R*C;  // degrees of freedom
-  μ:Real[R*C];
-  Σ:Real[R*C,R*C];
+  let D <- R*C;
+
+  /* 
+   * compute the shape for a t-distribution proposal using the mean
+   * and sample variance of iid samples, calculated with Welford's online algorithm
+   */
+  let k <- 3 + D; // degrees of freedom
+  μ:Real[D]; // running mean
+  M:Real[D,D]; // running matrix of co-moments
   do {
     μ <- 0.0;
-    Σ <- 0.0;
+    M <- 0.0;
     for n in 1..N {
       let x <- vec(π.simulate());
-      μ <- μ + x;
-      Σ <- Σ + outer(x);
+      let dμ <- x - μ;
+      μ <- μ + dμ/n;
+      M <- M + outer(dμ, x - μ);
     }
-    μ <- μ/N;             // sample mean and location for matrix-t
-    Σ <- Σ/N - outer(μ);  // sample covariance
-    Σ <- Σ*(k - 2);       // spread for matrix-t proposal
-  } while N >= 10 && sum(isfinite(chol(Σ))) == 0;
+  } while N >= 10 && sum(isfinite(chol(M))) == 0;
+  let Σ <- M/N*(k-2); // spread for matrix-t proposal
 
   /* draw importance samples */
   z:Real[N];
   parallel for n in 1..N {
     let x <- simulate_multivariate_t(k, μ, Σ);
     let q <- logpdf_multivariate_t(x, k, μ, Σ);
-    let p <- 0.0;
     let X <- mat(x, C);
+    p:Real;
     if lazy && π.supportsLazy() {
       p <- π.logpdfLazy(X)!;
     } else {
@@ -147,10 +154,10 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   
   /* test distance between the iid and Metropolis samples */
   let (ess, lsum) <- resample_reduce(z);
-  let Z <- exp(lsum - log(N));
-  let δ <- abs(Z - 1.0);
+  let δ <- abs(expm1(lsum - log(N)));
   let ε <- 10.0/sqrt(N);
   if !(N < 10 || δ < ε) {
+    let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
     exit(1);
   }
