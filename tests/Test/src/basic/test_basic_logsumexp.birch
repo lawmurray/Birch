@@ -29,7 +29,7 @@ program test_basic_logsumexp() {
 
   // Check underflow
   w <- [1e-20, log(1e-20)];
-  y <- 1e-20;
+  y <- 2e-20;
   ess <- 1.0;
   if !check_ess_logsumexp(w, ess, y) {
     exit(1);
