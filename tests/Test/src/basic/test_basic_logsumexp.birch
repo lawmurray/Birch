@@ -23,7 +23,7 @@ program test_basic_logsumexp() {
   let v2 <- transform(v, \(x:Real) -> { return 2*x; } );
   y <- y + 1000.0;
   ess <- exp(2*y - log_sum_exp_twopass(v2));
-  if !check_ess_logsumexp(w, ess, y) {
+  if !check_ess_logsumexp(v, ess, y) {
     exit(1);
   }
 
@@ -79,7 +79,7 @@ program test_basic_logsumexp() {
  */
 function log_sum_exp_twopass(w:Real[_]) -> Real {
   if length(w) > 0 {
-    let mx <- max(w);
+    let mx <- nan_max(w);
     let r <- transform_reduce(w, 0.0, \(x:Real, y:Real) -> { return x + y; },
         \(x:Real) -> { return nan_exp(x - mx); });
     return mx + log(r);
