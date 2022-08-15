@@ -13,7 +13,7 @@ program test_basic_logsumexp() {
   // Compare with common two-pass algorithm
   let y <- log_sum_exp_twopass(w);
   let w2 <- transform(w, \(x:Real) -> { return 2*x; });
-  let ess <- y*y/log_sum_exp_twopass(w2);
+  let ess <- exp(2*y - log_sum_exp_twopass(w2));
   if !check_ess_logsumexp(w, ess, y) {
     exit(1);
   }
@@ -22,7 +22,7 @@ program test_basic_logsumexp() {
   let v <- transform(w, \(x:Real) -> { return x + 1000.0; });
   let v2 <- transform(v, \(x:Real) -> { return 2*x; } );
   y <- y + 1000.0;
-  ess <- y*y/log_sum_exp_twopass(v2);
+  ess <- exp(2*y - log_sum_exp_twopass(v2));
   if !check_ess_logsumexp(w, ess, y) {
     exit(1);
   }
