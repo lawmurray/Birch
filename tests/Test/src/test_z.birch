@@ -26,7 +26,7 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
   parallel for n in 1..N {
     let x <- simulate_student_t(k, μ, σ2);
     let q <- logpdf_student_t(x, k, μ, σ2);
-    p:Real;
+    let p <- 0.0;
     if lazy && π.supportsLazy() {
       p <- π.logpdfLazy(x)!;
     } else {
@@ -83,7 +83,7 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   parallel for n in 1..N {
     let x <- simulate_multivariate_t(k, μ, Σ);
     let q <- logpdf_multivariate_t(x, k, μ, Σ);
-    p:Real;
+    let p <- 0.0;
     if lazy && π.supportsLazy() {
       p <- π.logpdfLazy(x)!;
     } else {
@@ -142,8 +142,8 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   parallel for n in 1..N {
     let x <- simulate_multivariate_t(k, μ, Σ);
     let q <- logpdf_multivariate_t(x, k, μ, Σ);
+    let p <- 0.0;
     let X <- mat(x, C);
-    p:Real;
     if lazy && π.supportsLazy() {
       p <- π.logpdfLazy(X)!;
     } else {
