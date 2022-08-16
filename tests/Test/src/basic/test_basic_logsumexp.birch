@@ -4,20 +4,20 @@
  * `resample_reduce`.
  */
 program test_basic_logsumexp() {
-  // Generate random weights
+  /* generate random weights */
   w:Real[100];
   for n in 1..100 {
     w[n] <- simulate_gaussian(0.0, 1.0);
   }
 
-  // Compare with common two-pass algorithm
+  /* compare with common two-pass algorithm */
   let y <- log_sum_exp_twopass(w);
   let ess <- exp(2*y - log_sum_exp_twopass(2*w));
   if !check_ess_logsumexp(w, ess, y) {
     exit(1);
   }
   
-  // Check overflow
+  /* check overflow */
   w <- w + 1000.0;
   y <- log_sum_exp_twopass(w);
   ess <- exp(2*y - log_sum_exp_twopass(2*w));
@@ -25,7 +25,7 @@ program test_basic_logsumexp() {
     exit(1);
   }
 
-  // Check underflow
+  /* check underflow */
   w <- [1e-20, log(1e-20)];
   y <- 2e-20;
   ess <- 1.0;
@@ -33,13 +33,13 @@ program test_basic_logsumexp() {
     exit(1);
   }
 
-  // Check empty input
+  /* check empty input */
   x:Real[0];
   if !check_ess_logsumexp(x, 0.0, -inf) {
     exit(1);
   }
 
-  // Special cases involving -inf, inf, and nan.
+  /* special cases involving -inf, inf, and nan */
   let cases <- [[-inf, -inf, 0.0, -inf],
                 [-inf, nan, 0.0, -inf],
                 [nan, -inf, 0.0, -inf],
@@ -71,7 +71,7 @@ program test_basic_logsumexp() {
  *
  * @return the logarithm of the sum.
  *
- * !!! note
+ * @note
  *     This implementation uses the common two-pass algorithm
  *     that avoids overflow.
  */
@@ -96,7 +96,7 @@ function log_sum_exp_twopass(w:Real[_]) -> Real {
  * @return Are the results approximately equal to the expected values?
  */
 function check_ess_logsumexp(w:Real[_], ess_expected:Real, y_expected:Real) -> Boolean {
-  // Roughly half of the significant digits should be correct.
+  /* roughly half of the significant digits should be correct */
   return check_ess_logsumexp(w, ess_expected, y_expected, 1e-8);
 }
 
@@ -140,7 +140,7 @@ function check_ess_logsumexp(w:Real[_], ess_expected:Real, y_expected:Real, relt
  */
 function approx_equal(x1:Real, x2:Real, reltol:Real) -> Boolean {
   // Handle special cases such as `inf`, `-inf` etc. not covered below.
-  if x1==x2 {
+  if x1 == x2 {
     return true;
   }
 

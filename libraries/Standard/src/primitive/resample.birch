@@ -39,7 +39,7 @@ function nan_max(w:Real[_]) -> Real {
  *
  * @return the logarithm of the sum.
  *
- * !!! note
+ * @note
  *     NaN log weights are treated as though `-inf`.
  *
  * This uses a numerically stable implementation that avoids over- and
@@ -51,8 +51,7 @@ function nan_max(w:Real[_]) -> Real {
  */
 function log_sum_exp(w:Real[_]) -> Real {
   if length(w) > 0 {
-    // Running maximum of log weights
-    let mx <- -inf;
+    let mx <- -inf; // running maximum of log weights
     /*
      * Running sum of non-maximum weights divided by maximum weight.
      * In contrast to Nowozin's implementation the maximum itself
@@ -60,9 +59,8 @@ function log_sum_exp(w:Real[_]) -> Real {
      * This avoids underflow for e.g. w = [1e-20, log(1e-20)].
      */
     let r <- 0.0;
-    wn:Real;
     for n in 1..length(w) {
-      wn <- w[n];
+      let wn <- w[n];
       if wn == inf {
         return inf;
       } else if wn > mx {
@@ -282,7 +280,7 @@ function cumulative_weights(w:Real[_]) -> Real[_] {
  * @return A pair, the first element of which gives the ESS, the second
  * element of which gives the logarithm of the sum of weights.
  *
- * !!! note
+ * @note
  *     NaN log weights are treated as though `-inf`.
  *
  * This uses a numerically stable implementation that avoids over- and
@@ -296,8 +294,7 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
   if length(w) == 0 {
     return (0.0, -inf);
   } else {
-    // Running maximum of log weights
-    let mx <- -inf;
+    let mx <- -inf; // running maximum of log weights
     /*
      * Running sum of non-maximum weights divided by maximum weight (r),
      * and their squares (q).
@@ -307,31 +304,29 @@ function resample_reduce(w:Real[_]) -> (Real, Real) {
      */
     let r <- 0.0;
     let q <- 0.0;
-    wn:Real;
-    v:Real;
     for n in 1..length(w) {
-      wn <- w[n];
+      let wn <- w[n];
       if wn == inf {
         return (1.0, inf);
       } else if wn > mx {
-        v <- exp(mx - wn);
+        let v <- exp(mx - wn);
         r <- (r + 1.0)*v;
         q <- (q + 1.0)*v*v;
         mx <- wn;
       } else if isfinite(wn) {
-        v <- exp(wn - mx);
+        let v <- exp(wn - mx);
         r <- r + v;
         q <- q + v*v;
       }
     }
 
-    // If all weights are `-inf` or `nan`, the result is the same as for empty arrays
+    /* if all weights are `-inf` or `nan`, the result is the same as for empty arrays */
     if mx==-inf {
       return (0.0, -inf);
     }
 
     let log_sum_weights <- mx + log1p(r);
-    // The ESS is estimated as (sum w)^2 / (sum w^2)
+    /* the ESS is estimated as (sum w)^2 / (sum w^2) */
     let rp1 <- r + 1.0;
     let ess <- rp1*rp1/(q + 1.0);
     return (ess, log_sum_weights);
