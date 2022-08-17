@@ -14,7 +14,8 @@ executors:
       CXXFLAGS: "-O3 -march=native -flto -Wall"
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--disable-assert"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
+      # ^ --unit here also affects source tarballs deployed to packages
     working_directory: /root/project/opensuse-bench
 
   opensuse-cover:
