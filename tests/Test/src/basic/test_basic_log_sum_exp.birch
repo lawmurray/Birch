@@ -1,0 +1,144 @@
+
+/*
+ * Test log-sum-exp implementations in `log_sum_exp` and
+ * `resample_reduce`.
+ */
+program test_basic_log_sum_exp() {
+  /* generate random weights */
+  w:Real[100];
+  for n in 1..100 {
+    w[n] <- simulate_gaussian(0.0, 1.0);
+  }
+
+  /* compare with common two-pass algorithm */
+  let y <- log_sum_exp_twopass(w);
+  let ess <- exp(2*y - log_sum_exp_twopass(2*w));
+  if !check_ess_log_sum_exp(w, ess, y) {
+    exit(1);
+  }
+  
+  /* check overflow */
+  w <- w + 1000.0;
+  y <- log_sum_exp_twopass(w);
+  ess <- exp(2*y - log_sum_exp_twopass(2*w));
+  if !check_ess_log_sum_exp(w, ess, y) {
+    exit(1);
+  }
+
+  /* check underflow */
+  w <- [1e-20, log(1e-20)];
+  y <- 2e-20;
+  ess <- 1.0;
+  if !check_ess_log_sum_exp(w, ess, y) {
+    exit(1);
+  }
+
+  /* check empty input */
+  x:Real[0];
+  if !check_ess_log_sum_exp(x, 0.0, -inf) {
+    exit(1);
+  }
+
+  /* special cases involving -inf, inf, and nan */
+  let cases <- [[-inf, -inf, 0.0, -inf],
+                [-inf, nan, 0.0, -inf],
+                [nan, -inf, 0.0, -inf],
+                [-inf, 42.0, 1.0, 42.0],
+                [nan, 42.0, 1.0, 42.0],
+                [42.0, -inf, 1.0, 42.0],
+                [42.0, nan, 1.0, 42.0],
+                [-inf, inf, 1.0, inf],
+                [nan, inf, 1.0, inf],
+                [42.0, inf, 1.0, inf],
+                [inf, -inf, 1.0, inf],
+                [inf, nan, 1.0, inf],
+                [inf, 42.0, 1.0, inf],
+                [inf, inf, 1.0, inf]];
+  for n in 1..length(cases) {
+    w <- cases[n,1..2];
+    ess <- cases[n,3];
+    y <- cases[n,4];
+    if !check_ess_log_sum_exp(w, ess, y) {
+      exit(1);
+    }
+  }
+}
+
+/*
+ * Exponentiate and sum a log weight vector.
+ *
+ * @param w Log weights.
+ *
+ * @return the logarithm of the sum.
+ *
+ * @note
+ *     This implementation uses the common two-pass algorithm
+ *     that avoids overflow.
+ */
+function log_sum_exp_twopass(w:Real[_]) -> Real {
+  if length(w) > 0 {
+    let mx <- nan_max(w);
+    let r <- transform_reduce(w, 0.0, \(x:Real, y:Real) -> { return x + y; },
+        \(x:Real) -> { return nan_exp(x - mx); });
+    return mx + log(r);
+  } else {
+    return -inf;
+  }
+}
+
+/*
+ * Check output of `log_sum_exp` and `resample_reduce`.
+ *
+ * @param w Log weights.
+ * @param ess_expected Expected ESS estimate.
+ * @param y_expected Expected log sum of weights.
+ *
+ * @return Are the results approximately equal to the expected values?
+ */
+function check_ess_log_sum_exp(w:Real[_], ess_expected:Real, y_expected:Real) -> Boolean {
+  /* roughly half of the significant digits should be correct */
+  return check_ess_log_sum_exp(w, ess_expected, y_expected, 1e-8);
+}
+
+/*
+ * Check output of `log_sum_exp` and `resample_reduce`.
+ *
+ * @param w Log weights.
+ * @param ess_expected Expected ESS estimate.
+ * @param y_expected Expected log sum of weights.
+ * @param reltol Relative tolerace.
+ *
+ * @return Are the results approximately equal to the expected values?
+ */
+function check_ess_log_sum_exp(w:Real[_], ess_expected:Real, y_expected:Real, reltol:Real) -> Boolean {
+  let result <- true;
+
+  let y <- log_sum_exp(w);
+  if !approx_equal(y, y_expected, reltol) {
+    stderr.print("log_sum_exp(" + w + ") = " + y + " ≉ " + y_expected + "(reltol = " + reltol + ")\n");
+    result <- false;
+  }
+
+  ess:Real;
+  (ess, y) <- resample_reduce(w);
+  if !approx_equal(ess, ess_expected, reltol) || !approx_equal(y, y_expected, reltol) {
+    stderr.print("resample_reduce(" + w + ") = (" + ess + ", " + y + ") ≉ (" + ess_expected + ", " + y_expected + ") (reltol = " + reltol + ")\n");
+    result <- false;
+  }
+
+  return result;
+}
+
+/*
+ * Check if two scalars are approximately equal.
+ *
+ * @param x1 First scalar.
+ * @param x2 Second scalar.
+ * @param reltol Relative tolerace.
+ *
+ * @return Are the two scalars approximately equal?
+ */
+function approx_equal(x1:Real, x2:Real, reltol:Real) -> Boolean {
+  /* check for equality handles special cases such as `inf`, `-inf` etc. */
+  return x1 == x2 || abs(x1 - x2) < reltol*max(abs(x1), abs(x2));
+}
