@@ -14,7 +14,8 @@ executors:
       CXXFLAGS: "-O3 -march=native -flto -Wall"
       MAKE_FLAGS: "-j8"
       LIB_FLAGS: "--disable-assert"
-      BIRCH_FLAGS: "--unit=unity --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
+      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
+      # ^ --unit here also affects source tarballs deployed to packages
     working_directory: /root/project/opensuse-bench
 
   opensuse-cover:
@@ -28,16 +29,27 @@ executors:
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/opensuse-cover
 
-  ubuntu:
+  alpine:
     docker:
-      - image: lawmurray/birch-circleci:ubuntu
+      - image: lawmurray/birch-circleci:alpine
     resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/ubuntu
+    working_directory: /root/project/alpine
+
+  archlinux:
+    docker:
+      - image: lawmurray/birch-circleci:archlinux
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
+    working_directory: /root/project/archlinux
 
   debian:
     docker:
@@ -61,16 +73,16 @@ executors:
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/fedora
 
-  alpine:
+  ubuntu:
     docker:
-      - image: lawmurray/birch-circleci:alpine
+      - image: lawmurray/birch-circleci:ubuntu
     resource_class: large
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/alpine
+    working_directory: /root/project/ubuntu
 
   mac:
     macos:
@@ -111,7 +123,7 @@ commands:
           command: |
               echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
               echo "export VERSION=\`echo \$VERSION_LONG | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'\`" >> $BASH_ENV
-              echo "export VERSION_SAFE=\`echo \$VERSION_LONG | sed -E 's/\./_/g'\`" >> $BASH_ENV
+              echo "export VERSION_SAFE=\`echo \$VERSION | sed -E 's/\./_/g'\`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
               echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
@@ -151,7 +163,7 @@ commands:
       - slack/status:
           fail_only: true
 
-  birch:
+  build_birch:
     steps:
       - run:
           name: Build birch
@@ -160,8 +172,7 @@ commands:
               cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
-              make $MAKE_FLAGS
-              make install
+              make install $MAKE_FLAGS
       - run:
           name: Smoke test birch
           command: |
@@ -185,8 +196,7 @@ commands:
               cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
               ./bootstrap
               ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
-              make $MAKE_FLAGS
-              make install
+              make install $MAKE_FLAGS
 
   build_package:
     description: Build a Birch package
@@ -199,17 +209,13 @@ commands:
       package:
         description: Name of package (e.g. Standard)
         type: string
-      extra:
-        description: Extra build flags for birch
-        type: string
-        default: ""
     steps:
       - run:
           name: Build << parameters.package >> package
           command: |
               cd << parameters.dir >>/<< parameters.package >>
               echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $BIRCH_FLAGS << parameters.extra >> || (cat config.log && exit 1)
+              birch install --prefix=$PREFIX $BIRCH_FLAGS || (cat config.log && exit 1)
           no_output_timeout: 30m
       - when:
           condition:
@@ -263,6 +269,14 @@ commands:
                       fi
                     fi
 
+  brew_identity:
+    steps:
+      - run:
+          name: Configure Homebrew
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+
   osc_identity:
     steps:
       - run:
@@ -276,6 +290,51 @@ commands:
                 echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
                 echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
                 echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
+              fi
+
+  osc_checkout:
+    steps:
+      - run:
+          name: Checkout Open Build Service repo
+          command: |
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
+              then
+                osc checkout $OSC_PROJECT
+              fi
+
+  osc_commit:
+    steps:
+      - run:
+          name: Commit Open Build Service repo
+          command: |
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd $OSC_PROJECT
+                osc commit -m "Updated to version $VERSION."
+              fi
+
+  brew_checkout:
+    steps:
+      - run:
+          name: Checkout Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+                cd homebrew-birch
+              fi
+
+  brew_commit:
+    steps:
+      - run:
+          name: Commit Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd homebrew-birch
+                git add -u
+                git commit -m "Updated to version $VERSION."
+                git push origin master
               fi
 
   deploy_obs_package:
@@ -294,14 +353,10 @@ commands:
               shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
-                  TARNAME=birch-${TARNAME,,}
-                fi
-                osc checkout $OSC_PROJECT $TARNAME
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
+                TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
+                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
                 cd $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
                 if ls $TARNAME-!($VERSION).tar.gz > /dev/null
                 then
@@ -310,36 +365,18 @@ commands:
                 osc add $TARNAME-$VERSION.tar.gz
                 for file in PKGBUILD $TARNAME.spec $TARNAME.dsc debian.control debian.$TARNAME.install debian.$TARNAME-dev.install
                 do
-                  cat $file |
-                    sed -E "s/-[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
-                    sed -E "s/\%\{name\}-[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
-                    sed -E "s/Version: [0-9.]+/Version: $VERSION/g" |
-                    sed -E "s/pkgver=[0-9.]+/pkgver=$VERSION/g" |
-                    sed -E "s/>= *[0-9.]+/>= $VERSION/g" |
-                    sed -E "s/== *[0-9.]+/== $VERSION/g" |
-                    sponge $file
+                  if [[ -e $file ]]
+                  then
+                    cat $file |
+                      sed -E "s/-[0-9]+\.[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
+                      sed -E "s/\%\{name\}-[0-9]+_[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
+                      sed -E "s/Version: [0-9]+\.[0-9.]+/Version: $VERSION/g" |
+                      sed -E "s/pkgver=[0-9]+\.[0-9.]+/pkgver=$VERSION/g" |
+                      sed -E "s/>= *[0-9]+\.[0-9.]+/>= $VERSION/g" |
+                      sed -E "s/== *[0-9]+\.[0-9.]+/== $VERSION/g" |
+                      sponge $file
+                  fi
                 done
-                osc commit -m "Updated to version $VERSION."
-              fi
-
-  git_identity:
-    steps:
-      - run:
-          name: Configure Git
-          command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-
-  brew_checkout:
-    steps:
-      - run:
-          name: Checkout Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd homebrew-birch
-                git rm *.tar.gz
               fi
 
   deploy_brew_package:
@@ -358,36 +395,23 @@ commands:
               shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                TARNAME=<< parameters.package >>
-                if [[ "$TARNAME" != "membirch" && "$TARNAME" != "numbirch" ]]; then
-                  TARNAME=birch-${TARNAME,,}
-                fi
                 cd << parameters.dir >>/<< parameters.package >>
                 make dist
-                cp $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
+                TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
+                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
                 cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
+                if ls $TARNAME-!($VERSION).tar.gz > /dev/null
+                then
+                  git rm $TARNAME-!($VERSION).tar.gz
+                fi
+                git add $TARNAME-$VERSION.tar.gz
                 SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
                 cat $TARNAME.rb |
-                  sed -E "s/-[0-9]+\.[0-9]+\.tar\.gz/-$VERSION.tar.gz/g" |
+                  sed -E "s/-[0-9]+\.[0-9.]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
-                  sed -E "s/version \"[0-9]+\.[0-9]+\"/version \"$VERSION\"/g" |
-                  sed -E "s/=> \"[0-9]+\.[0-9]+\"/=> \"$VERSION\"/g" |
+                  sed -E "s/version \"[0-9]+\.[0-9.]+\"/version \"$VERSION\"/g" |
+                  sed -E "s/=> \"[0-9]+\.[0-9.]+\"/=> \"$VERSION\"/g" |
                   sponge $TARNAME.rb
-              fi
-
-  brew_commit:
-    steps:
-      - git_identity
-      - run:
-          name: Commit Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
-                cd homebrew-birch
-                git add *.tar.gz
-                git add -u
-                git commit -m "Updated to version $VERSION."
-                git push origin master
               fi
 
   deploy_website:
@@ -405,7 +429,7 @@ commands:
               fi
 
 jobs:
-  base:
+  build:
     parameters: 
       os:
         type: string
@@ -414,34 +438,23 @@ jobs:
       - checkout
       - environment:
           os: << parameters.os >>
-      - birch
+      - build_birch
       - build_library:
           package: numbirch
       - build_library:
           package: membirch
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
-      - codecov:
-          os: << parameters.os >>
-      - end_if_pull_request
-      - slack
-
-  standard:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
       - build_package:
           os: << parameters.os >>
           dir: libraries
           package: Standard
+      - build_package:
+          os: << parameters.os >>
+          dir: libraries
+          package: Cairo
+      - build_package:
+          os: << parameters.os >>
+          dir: libraries
+          package: SQLite
       - persist_to_workspace:
           root: ..
           paths:
@@ -465,37 +478,6 @@ jobs:
           os: << parameters.os >>
           dir: tests
           package: Test
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
-      - codecov:
-          os: << parameters.os >>
-      - end_if_pull_request
-      - slack
-
-  libraries:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: Cairo
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: SQLite
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - << parameters.os >>
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
@@ -534,8 +516,9 @@ jobs:
           at: ..
       - environment:
           os: << parameters.os >>
-      - git_identity
+
       - osc_identity
+      - osc_checkout
       - deploy_obs_package:
           package: birch
       - deploy_obs_package:
@@ -551,6 +534,9 @@ jobs:
       - deploy_obs_package:
           dir: libraries
           package: SQLite
+      - osc_commit
+
+      - brew_identity
       - brew_checkout
       - deploy_brew_package:
           package: birch
@@ -568,6 +554,7 @@ jobs:
           dir: libraries
           package: SQLite
       - brew_commit
+
       - deploy_website
       - slack
 
@@ -575,31 +562,17 @@ workflows:
   version: 2
   all:
     jobs:
-      - base:
+      - build:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
-
-      - standard:
-          matrix:
-            parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
-          requires:
-            - base-<< matrix.os >>
+              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
 
       - test:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
+              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
           requires:
-            - standard-<< matrix.os >>
-
-      - libraries:
-          matrix:
-            parameters:
-              os: [opensuse-bench,opensuse-cover,ubuntu,debian,fedora,alpine,mac]
-          requires:
-            - test-<< matrix.os >>
+            - build-<< matrix.os >>
 
       - example:
           matrix:
@@ -607,7 +580,7 @@ workflows:
               os: [opensuse-bench,opensuse-cover]
               package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
           requires:
-            - libraries-<< matrix.os >>
+            - test-<< matrix.os >>
 
       - deploy:
           os: opensuse-bench
@@ -617,4 +590,4 @@ workflows:
                 - master
           requires:
             - example
-            - libraries
+            - test
