@@ -43,6 +43,7 @@ final class Random<Value> < Expression<Value>(nil, false) {
    */
   function getDistribution() -> Distribution<Value> {
     assert hasDistribution();
+    this.prune();
     return Distribution<Value>?(this.getNext())!;
   }
 
