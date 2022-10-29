@@ -1,4 +1,5 @@
 site_name: 'Birch Documentation'
+site_url: https://docs.birch.sh
 site_description: 'An open source probabilistic programming language that combines automatic differentiation, automatic marginalization, automatic conjugacy, and a Sequential Monte Carlo (SMC) inference engine.'
 repo_url: https://github.com/lawmurray/Birch
 repo_name: lawmurray/Birch
@@ -32,11 +33,15 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_div_format
+        - name: markdeep
+          class: markdeep
+          format: !!python/name:pymdownx.superfences.fence_div_format
 extra_css:
   - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.css'
 extra_javascript:
   - 'https://unpkg.com/mermaid@8.5.1/dist/mermaid.min.js'
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML'
+  - 'https://morgan3d.github.io/markdeep/latest/markdeep.min.js'
 extra:
   social:
     - icon: fontawesome/brands/github
