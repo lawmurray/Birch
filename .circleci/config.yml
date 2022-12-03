@@ -182,6 +182,7 @@ commands:
                 do
                   if [[ -e $file ]]
                   then
+                    echo $file
                     cat $file | sed -E "s/0\.0\.0/$VERSION/" | sponge $file
                     rename 0.0.0 $VERSION $file
                   fi
@@ -576,6 +577,8 @@ jobs:
       - end_if_pull_request
       - attach_workspace:
           at: ..
+      - environment:
+          os: << parameters.os >>
       - deploy_source:
           dir: birch
       - deploy_source:
