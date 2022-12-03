@@ -4,12 +4,6 @@ orbs:
   codecov: codecov/codecov@3.2
 
 executors:
-  default:
-    docker:
-      - image: lawmurray/birch-circleci:opensuse
-    resource_class: small
-    working_directory: /root/project/opensuse
-
   opensuse-bench:
     docker:
       - image: lawmurray/birch-circleci:opensuse
@@ -18,7 +12,7 @@ executors:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O3 -march=native -flto -Wall"
       MAKE_FLAGS: "-j8"
-      LIB_FLAGS: "--disable-assert"
+      CONFIGURE_FLAGS: "--disable-assert"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
       # ^ --unit here also affects source tarballs deployed to packages
     working_directory: /root/project/opensuse-bench
@@ -33,6 +27,17 @@ executors:
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/opensuse-cover
+
+  opensuse:
+    docker:
+      - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
+    working_directory: /root/project/opensuse
 
   alpine:
     docker:
@@ -163,58 +168,65 @@ commands:
             - codecov/upload:
                 file: cov.info
 
-  build_birch:
+  version:
+    parameters:
+      dir:
+        description: Directory in which to update version number
+        type: string
     steps:
       - run:
-          name: Build birch
+          name: Update version number
           command: |
-              cd birch
-              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
+              cd << parameters.dir >>
+              for file in birch.yml configure.ac Makefile.am *.spec debian/changelog debian/control debian/*.install PKGBUILD
+                do
+                  if [[ -e $file ]]
+                  then
+                    cat $file | sed -E "s/0\.0\.0/$VERSION/" | sponge $file
+                    rename 0.0.0 $VERSION $file
+                  fi
+                done
+
+  build_cpp:
+    description: Build a C++ package
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - version:
+          dir: << parameters.dir >>
+      - run:
+          name: Build << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
               ./bootstrap
-              ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
+              ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make install $MAKE_FLAGS
       - run:
-          name: Smoke test birch
+          name: Smoke test << parameters.dir >>
           command: |
-            cd birch
+            cd << parameters.dir >>
             if [[ -e smoke.sh ]]
             then
               ./smoke.sh
             fi
 
-  build_library:
-    description: Build a C++ library
-    parameters:
-      package:
-        description: Name of the library
-        type: string
-    steps:
-      - run:
-          name: Build << parameters.package >>
-          command: |
-              cd << parameters.package >>
-              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
-              ./bootstrap
-              ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
-              make install $MAKE_FLAGS
-
-  build_package:
+  build_birch:
     description: Build a Birch package
     parameters:
       os:
         type: string
       dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-      package:
-        description: Name of package (e.g. Standard)
+        description: Directory containing the package
         type: string
     steps:
+      - version:
+          dir: << parameters.dir >>
       - run:
-          name: Build << parameters.package >> package
+          name: Build << parameters.dir >>
           command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
+              cd << parameters.dir >>
               birch install --prefix=$PREFIX $BIRCH_FLAGS || (cat config.log && exit 1)
           no_output_timeout: 30m
       - when:
@@ -225,9 +237,9 @@ commands:
                 value: << parameters.os >>
           steps:
             - run:
-                name: Smoke test << parameters.package >> package
+                name: Smoke test << parameters.dir >>
                 command: |
-                    cd << parameters.dir >>/<< parameters.package >>
+                    cd << parameters.dir >>
                     birch docs
                     if [[ -e smoke.sh ]]
                     then
@@ -240,20 +252,20 @@ commands:
               value: << parameters.os >>
           steps:
             - run:
-                name: Unit test << parameters.package >> package
+                name: Unit test << parameters.dir >>
                 command: |
-                    cd << parameters.dir >>/<< parameters.package >>
+                    cd << parameters.dir >>
                     if [[ -e test.sh ]]
                     then
                       env time --format="$FORMAT" --output=time.txt ./test.sh
                       # ^ env time to use GNU time, not Bash built-in time
                     fi
             - run:
-                name: Upload  << parameters.package >> results to MongoDB Atlas
+                name: Upload test results of << parameters.dir >> to MongoDB Atlas
                 command: |
                     if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
                     then
-                      cd << parameters.dir >>/<< parameters.package >>
+                      cd << parameters.dir >>
                       if [[ -e output/test.json ]]
                       then
                         echo '{ "output": ' > mongodb.json
@@ -265,7 +277,7 @@ commands:
                         echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
                         echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
                         echo '}' >> mongodb.json
-                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file mongodb.json
+                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection `echo << parameters.dir >> | sed 's/^.*\///' --file mongodb.json
                       fi
                     fi
 
@@ -337,38 +349,37 @@ commands:
                 git push origin master
               fi
 
-  deploy_source_package:
+  deploy_source:
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries)
+        description: Directory containing the package
         type: string
         default: .
-      package:
-        description: Name of package (e.g. Standard)
-        type: string
     steps:
       - run:
-          name: Source package for << parameters.package >>
+          name: Source package for << parameters.dir >>
           command: |
-              echo
+              shopt -s extglob
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd << parameters.dir >>
+                make dist
+              fi
 
-  deploy_obs_package:
+  deploy_obs:
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries)
+        description: Directory containing the package
         type: string
         default: .
-      package:
-        description: Name of package (e.g. Standard)
-        type: string
     steps:
       - run:
-          name: Open Build Service package for << parameters.package >>
+          name: Open Build Service package for << parameters.dir >>
           command: |
               shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                cd << parameters.dir >>/<< parameters.package >>
+                cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
                 mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
@@ -394,23 +405,20 @@ commands:
                 done
               fi
 
-  deploy_brew_package:
+  deploy_brew:
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries)
+        description: Directory containing the package
         type: string
         default: .
-      package:
-        description: Name of package (e.g. Standard)
-        type: string
     steps:
       - run:
-          name: Homebrew package for << parameters.package >>
+          name: Homebrew package for << parameters.dir >>
           command: |
               shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                cd << parameters.dir >>/<< parameters.package >>
+                cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
                 mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
@@ -453,23 +461,21 @@ jobs:
       - checkout
       - environment:
           os: << parameters.os >>
-      - build_birch
-      - build_library:
-          package: numbirch
-      - build_library:
-          package: membirch
-      - build_package:
+      - build_cpp:
+          dir: birch
+      - build_cpp:
+          dir: numbirch
+      - build_cpp:
+          dir: membirch
+      - build_birch:
           os: << parameters.os >>
-          dir: libraries
-          package: Standard
-      - build_package:
+          dir: libraries/Standard
+      - build_birch:
           os: << parameters.os >>
-          dir: libraries
-          package: Cairo
-      - build_package:
+          dir: libraries/Cairo
+      - build_birch:
           os: << parameters.os >>
-          dir: libraries
-          package: SQLite
+          dir: libraries/SQLite
       - persist_to_workspace:
           root: ..
           paths:
@@ -488,10 +494,9 @@ jobs:
           at: ..
       - environment:
           os: << parameters.os >>
-      - build_package:
+      - build_birch:
           os: << parameters.os >>
-          dir: tests
-          package: Test
+          dir: tests/Test
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
@@ -500,8 +505,8 @@ jobs:
     parameters: 
       os:
         type: string
-      package:
-        description: Name of package (e.g. LinearRegression)
+      dir:
+        description: Directory containing the package
         type: string
     executor: << parameters.os >>
     steps:
@@ -509,10 +514,9 @@ jobs:
           at: ..
       - environment:
           os: << parameters.os >>
-      - build_package:
+      - build_birch:
           os: << parameters.os >>
-          dir: examples
-          package: << parameters.package >>
+          dir: << parameters.dir >>
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
@@ -531,63 +535,63 @@ jobs:
 
       - osc_identity
       - osc_checkout
-      - deploy_obs_package:
-          package: birch
-      - deploy_obs_package:
-          package: numbirch
-      - deploy_obs_package:
-          package: membirch
-      - deploy_obs_package:
-          dir: libraries
-          package: Standard
-      - deploy_obs_package:
-          dir: libraries
-          package: Cairo
-      - deploy_obs_package:
-          dir: libraries
-          package: SQLite
+      - deploy_obs:
+          dir: birch
+      - deploy_obs:
+          dir: numbirch
+      - deploy_obs:
+          dir: membirch
+      - deploy_obs:
+          dir: libraries/Standard
+      - deploy_obs:
+          dir: libraries/Cairo
+      - deploy_obs:
+          dir: libraries/SQLite
       - osc_commit
 
       - brew_identity
       - brew_checkout
-      - deploy_brew_package:
-          package: birch
-      - deploy_brew_package:
-          package: numbirch
-      - deploy_brew_package:
-          package: membirch
-      - deploy_brew_package:
-          dir: libraries
-          package: Standard
-      - deploy_brew_package:
-          dir: libraries
-          package: Cairo
-      - deploy_brew_package:
-          dir: libraries
-          package: SQLite
+      - deploy_brew:
+          dir: birch
+      - deploy_brew:
+          dir: numbirch
+      - deploy_brew:
+          dir: membirch
+      - deploy_brew:
+          dir: libraries/Standard
+      - deploy_brew:
+          dir: libraries/Cairo
+      - deploy_brew:
+          dir: libraries/SQLite
       - brew_commit
 
       - deploy_website
 
   source:
-    executor: default
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
     steps:
       - end_if_pull_request
-      - deploy_source_package:
-          package: birch
-      - deploy_source_package:
-          package: numbirch
-      - deploy_source_package:
-          package: membirch
-      - deploy_source_package:
-          dir: libraries
-          package: Standard
-      - deploy_source_package:
-          dir: libraries
-          package: Cairo
-      - deploy_source_package:
-          dir: libraries
-          package: SQLite
+      - attach_workspace:
+          at: ..
+      - deploy_source:
+          dir: birch
+      - deploy_source:
+          dir: numbirch
+      - deploy_source:
+          dir: membirch
+      - deploy_source:
+          dir: libraries/Standard
+      - deploy_source:
+          dir: libraries/Cairo
+      - deploy_source:
+          dir: libraries/SQLite
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - << parameters.os >>
 
   deb:
     parameters: 
@@ -743,15 +747,15 @@ workflows:
               os:
                 - opensuse-bench
                 - opensuse-cover
-              package:
-                - Ecology
-                - LinearGaussian
-                - LinearRegression
-                - MixedGaussian
-                - MultiObjectTracking
-                - PoissonGaussian
-                - SIR
-                - VectorBorneDisease
+              dir:
+                - examples/Ecology
+                - examples/LinearGaussian
+                - examples/LinearRegression
+                - examples/MixedGaussian
+                - examples/MultiObjectTracking
+                - examples/PoissonGaussian
+                - examples/SIR
+                - examples/VectorBorneDisease
           requires:
             - test-<< matrix.os >>
 
@@ -767,8 +771,12 @@ workflows:
 
   package:
     jobs:
-      - source
-
+      - build:
+          os: opensuse
+      - source:
+          os: opensuse
+          requires:
+            - build
       - deb:
           matrix:
             parameters:
@@ -777,7 +785,6 @@ workflows:
                 - debian:11
           requires:
             - source
-
       - rpm:
           matrix:
             parameters:
