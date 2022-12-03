@@ -553,7 +553,6 @@ jobs:
       - brew_commit
 
       - deploy_website
-      - slack
 
   source:
     executor: default
