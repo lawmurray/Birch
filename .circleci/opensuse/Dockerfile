@@ -1,6 +1,7 @@
 FROM opensuse/leap:latest
 RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
     && zypper --non-interactive refresh \
+    && zypper --non-interactive update \
     && zypper --non-interactive install --no-recommends \
     git \
     openssh \
@@ -18,10 +19,8 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     flex \
     bison \
     gcc-c++ \
-    lcov \
     gdb \
     libtool \
-    jemalloc-devel \
     libyaml-devel \
     boost-devel \
     eigen3-devel \
@@ -29,7 +28,10 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     sqlite3-devel \
     mongodb-database-tools \
     osc \
+    gh \
     doxygen \
-    python3-pip \
-    && pip3 install mkdocs mkdocs-material \
-    && zypper clean --all \
+    python310 \
+    python310-pip \
+    && pip3-3.10 install mkdocs mkdocs-material \
+    && zypper clean --all
+
