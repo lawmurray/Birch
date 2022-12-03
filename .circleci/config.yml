@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.12
   codecov: codecov/codecov@3.2
 
 executors:
@@ -163,11 +162,6 @@ commands:
                 command: lcov --directory . --no-external --capture -o cov.info
             - codecov/upload:
                 file: cov.info
-
-  slack:
-    steps:
-      - slack/status:
-          fail_only: true
 
   build_birch:
     steps:
@@ -468,7 +462,6 @@ jobs:
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
-      - slack
 
   test:
     parameters: 
@@ -487,7 +480,6 @@ jobs:
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
-      - slack
 
   example:
     parameters: 
@@ -509,7 +501,6 @@ jobs:
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
-      - slack
 
   deploy:
     parameters: 
@@ -564,7 +555,7 @@ jobs:
       - deploy_website
       - slack
 
-  archive:
+  source:
     executor: default
     steps:
       - end_if_pull_request
@@ -649,16 +640,22 @@ workflows:
 
   package:
     jobs:
-      - archive
+      - source
+
       - deb:
           matrix:
             parameters:
               image:
                 - ubuntu:22.04
                 - debian:11
+          requires:
+            - source
+
       - rpm:
           matrix:
             parameters:
               image:
                 - registry.opensuse.org/opensuse/leap:15.4
                 - registry.fedoraproject.org/fedora:37
+          requires:
+            - source
