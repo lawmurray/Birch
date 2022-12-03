@@ -182,9 +182,8 @@ commands:
                 do
                   if [[ -e $file ]]
                   then
-                    echo $file
                     cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
-                    rename 0.0.0 $VERSION $file
+                    rename 0.0.0 $VERSION $file || echo
                   fi
                 done
 
