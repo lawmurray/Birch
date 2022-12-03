@@ -597,6 +597,39 @@ jobs:
       - image: << parameters.image >>
     steps:
       - end_if_pull_request
+      - run:
+          name: Install dependencies
+          command: |
+              apt-get update
+              apt-get install -y --no-install-recommends \
+                git \
+                ssh \
+                gpg \
+                gpg-agent \
+                tar \
+                gzip \
+                curl \
+                ca-certificates \
+                binutils \
+                elfutils \
+                make \
+                autoconf \
+                automake \
+                flex \
+                bison \
+                g++ \
+                libtool \
+                libjemalloc-dev \
+                libeigen3-dev \
+                libyaml-dev \
+                libboost-math-dev \
+                libsqlite3-dev \
+                libcairo2-dev \
+                dpkg \
+                dpkg-dev \
+                devscripts \
+                debhelper \
+                fakeroot
 
   rpm:
     parameters: 
@@ -606,6 +639,71 @@ jobs:
       - image: << parameters.image >>
     steps:
       - end_if_pull_request
+      - when:
+          condition:
+            matches:
+              pattern: opensuse
+              value: << parameters.image >>
+          steps:
+            - run:
+                name: Install dependencies
+                command: |
+                    zypper --non-interactive update
+                    zypper --non-interactive install --no-recommends \
+                      git \
+                      openssh \
+                      tar \
+                      gzip \
+                      curl \
+                      ca-certificates \
+                      make \
+                      flex \
+                      bison \
+                      gcc-c++ \
+                      autoconf \
+                      automake \
+                      libtool \
+                      libyaml-devel \
+                      jemalloc-devel \
+                      boost-devel \
+                      eigen3-devel \
+                      cairo-devel \
+                      sqlite3-devel \
+                      rpmlint \
+                      rpm-build
+
+      - when:
+          condition:
+            matches:
+              pattern: fedora
+              value: << parameters.image >>
+          steps:
+            - run:
+                name: Install dependencies
+                command: |
+                    yum -y update
+                    yum -y install \
+                      git \
+                      openssh \
+                      tar \
+                      gzip \
+                      curl \
+                      ca-certificates \
+                      make \
+                      flex \
+                      bison \
+                      gcc-c++ \
+                      autoconf \
+                      automake \
+                      libtool \
+                      libyaml-devel \
+                      jemalloc-devel \
+                      boost-devel \
+                      eigen3-devel \
+                      cairo-devel \
+                      sqlite-devel \
+                      rpmlint \
+                      rpm-build
 
 workflows:
   all:
