@@ -21,14 +21,14 @@ BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool
 %description
 C++ library of smart pointer types for object-level copy-on-write.
 
-%package -n lib%{name}-2_0_36
+%package -n lib%{name}-0_0_0
 Summary: Shared library for MemBirch
-%description -n lib%{name}-2_0_36
+%description -n lib%{name}-0_0_0
 Shared library for MemBirch, C++ library of smart pointer types for object-level copy-on-write.
 
 %package devel
 Summary: Development files for MemBirch
-Requires: %{name} == %{version} lib%{name}-2_0_36 == %{version}
+Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
 %description devel
 Development files for MemBirch, C++ library of smart pointer types for object-level copy-on-write.
 
@@ -58,11 +58,11 @@ strip --strip-unneeded .libs/*.so
 %install
 %make_install
 
-%post -n lib%{name}-2_0_36 -p /sbin/ldconfig
+%post -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
-%postun -n lib%{name}-2_0_36 -p /sbin/ldconfig
+%postun -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
-%files -n lib%{name}-2_0_36
+%files -n lib%{name}-0_0_0
 %license LICENSE
 %{_libdir}/lib%{name}-%{version}.so
 

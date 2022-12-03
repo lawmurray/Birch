@@ -21,14 +21,14 @@ BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch-standard-de
 %description
 SQLite wrapper library for the Birch probabilistic programming language.
 
-%package -n lib%{name}-2_0_36
+%package -n lib%{name}-0_0_0
 Summary: Shared libraries for Birch SQLite wrapper
-%description -n lib%{name}-2_0_36
+%description -n lib%{name}-0_0_0
 Shared libraries for the SQLite wrapper of the Birch probabilistic programming language.
 
 %package devel
 Summary: Development files for Birch SQLite wrapper
-Requires: %{name} == %{version} lib%{name}-2_0_36 == %{version} birch-standard-devel
+Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} birch-standard-devel
 %description devel
 Development files for the SQLite wrapper of the Birch probabilistic programming language.
 
@@ -58,11 +58,11 @@ strip --strip-unneeded .libs/*.so
 %install
 %make_install
 
-%post -n lib%{name}-2_0_36 -p /sbin/ldconfig
+%post -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
-%postun -n lib%{name}-2_0_36 -p /sbin/ldconfig
+%postun -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
-%files -n lib%{name}-2_0_36
+%files -n lib%{name}-0_0_0
 %license LICENSE
 %{_libdir}/lib%{name}-single-%{version}.so
 %{_libdir}/lib%{name}-%{version}.so

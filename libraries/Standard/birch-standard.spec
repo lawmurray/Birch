@@ -25,14 +25,14 @@ BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch == %{versio
 %description
 Standard library of the Birch probabilistic programming language.
 
-%package -n lib%{name}-2_0_36
+%package -n lib%{name}-0_0_0
 Summary: Shared libraries for the Birch standard library
-%description -n lib%{name}-2_0_36
+%description -n lib%{name}-0_0_0
 Shared libraries for the standard library of the Birch probabilistic programming language.
 
 %package devel
 Summary: Development files for the Birch standard library
-Requires: %{name} == %{version} lib%{name}-2_0_36 == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel boost-devel
+Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel boost-devel
 %description devel
 Development files for the standard library of the Birch probabilistic programming language.
 
@@ -62,9 +62,9 @@ strip --strip-unneeded .libs/*.so
 %install
 %make_install
 
-%post -n lib%{name}-2_0_36 -p /sbin/ldconfig
+%post -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
-%postun -n lib%{name}-2_0_36 -p /sbin/ldconfig
+%postun -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
 %check
 export BIRCH_INCLUDE_PATH=%{buildroot}/usr/include
@@ -75,7 +75,7 @@ birch init --enable-verbose
 birch build --enable-verbose
 birch hello
 
-%files -n lib%{name}-2_0_36
+%files -n lib%{name}-0_0_0
 %license LICENSE
 %{_libdir}/lib%{name}-single-%{version}.so
 %{_libdir}/lib%{name}-%{version}.so
