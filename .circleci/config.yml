@@ -642,7 +642,7 @@ jobs:
       - when:
           condition:
             matches:
-              pattern: opensuse
+              pattern: '^.*opensuse.*$'
               value: << parameters.image >>
           steps:
             - run:
@@ -675,7 +675,7 @@ jobs:
       - when:
           condition:
             matches:
-              pattern: fedora
+              pattern: '^.*fedora.*$'
               value: << parameters.image >>
           steps:
             - run:
