@@ -337,6 +337,21 @@ commands:
                 git push origin master
               fi
 
+  deploy_source_package:
+    parameters:
+      dir:
+        description: Directory containing the package (e.g. libraries)
+        type: string
+        default: .
+      package:
+        description: Name of package (e.g. Standard)
+        type: string
+    steps:
+      - run:
+          name: Source package for << parameters.package >>
+          command: |
+              echo
+
   deploy_obs_package:
     parameters:
       dir:
@@ -558,6 +573,21 @@ jobs:
     executor: default
     steps:
       - end_if_pull_request
+      - deploy_source_package:
+          package: birch
+      - deploy_source_package:
+          package: numbirch
+      - deploy_source_package:
+          package: membirch
+      - deploy_source_package:
+          dir: libraries
+          package: Standard
+      - deploy_source_package:
+          dir: libraries
+          package: Cairo
+      - deploy_source_package:
+          dir: libraries
+          package: SQLite
 
   deb:
     parameters: 
