@@ -3,9 +3,18 @@ manifest:
   source: 
     - src/SQLite3.birch
     - src/SQLite3Statement.birch
-  other: 
+  other:
+    - debian/source/format
+    - debian/birch-sqlite-dev.install
+    - debian/changelog
+    - debian/control
+    - debian/copyright
+    - debian/libbirch-sqlite-0.0.0.install
+    - debian/rules
+    - birch-sqlite.spec
     - birch.yml
     - LICENSE
+    - PKGBUILD
     - README.md
 require: 
   package: 

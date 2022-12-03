@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-assert
+
+override_dh_auto_install:
+	dh_auto_install
+	find ./debian -type f -name '*.la' -delete
+

@@ -1,0 +1,23 @@
+# Maintainer: Lawrence Murray <lawrence@indii.org>
+
+pkgname=numbirch
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="C++ library providing numerical kernels and copy-on-write arrays"
+arch=('x86_64')
+url="https://birch.sh"
+license=('Apache-2.0')
+makedepends=('gcc' 'autoconf' 'automake' 'libtool' 'eigen' 'libcurl-compat' 'gzip')
+source=("$pkgname-$pkgver.tar.gz")
+md5sums=('SKIP')
+
+build() {
+        cd "$srcdir/$pkgname-$pkgver"
+        ./configure --prefix=/usr --disable-assert
+        make
+}
+
+package() {
+        cd "$srcdir/$pkgname-$pkgver"
+        make DESTDIR="$pkgdir/" install
+}

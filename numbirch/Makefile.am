@@ -143,6 +143,18 @@ noinst_HEADERS = \
   numbirch/oneapi/sycl.hpp
 
 dist_noinst_DATA =  \
-  Doxyfile \
+  debian/source/format \
+  debian/changelog \
+  debian/control \
+  debian/copyright \
+  debian/libnumbirch-0.0.0.install \
+  debian/numbirch-dev.install \
+  debian/rules \
   dpcpp_wrapper \
-  LICENSE
+  numbirch.spec \
+  nvcc_wrapper \
+  Doxyfile \
+  DoxygenLayout.xml \
+  LICENSE \
+  PKGBUILD \
+  README.md

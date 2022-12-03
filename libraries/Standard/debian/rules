@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+
+DEB_BUILD_OPTIONS = "parallel=2"
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-assert
+
+override_dh_auto_install:
+	dh_auto_install
+	find ./debian -type f -name '*.la' -delete
+
+override_dh_auto_test: export BIRCH_INCLUDE_PATH = $(CURDIR)
+override_dh_auto_test: export BIRCH_LIBRARY_PATH = $(CURDIR)/.libs
+override_dh_auto_test:
+	mkdir hello && cd hello && birch init --enable-verbose && birch build --enable-verbose && birch hello

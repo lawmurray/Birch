@@ -1,0 +1,35 @@
+# Maintainer: Lawrence Murray <lawrence@indii.org>
+
+pkgname=birch-standard
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="Standard library for the Birch probabilistic programming language"
+arch=('x86_64')
+url="https://birch.sh"
+license=('Apache-2.0')
+makedepends=('gcc' 'autoconf' 'automake' 'libtool' "birch>=$pkgver" "membirch>=$pkgver" "numbirch>=$pkgver" 'libyaml' 'boost' 'libcurl-compat' 'gzip')
+depends=("membirch>=$pkgver" "numbirch>=$pkgver" 'libyaml' 'boost')
+source=("$pkgname-$pkgver.tar.gz")
+md5sums=('SKIP')
+
+build() {
+        cd "$srcdir/$pkgname-$pkgver"
+        ./configure --prefix=/usr --disable-assert
+        make
+}
+
+check() {
+        export BIRCH_INCLUDE_PATH="$srcdir/$pkgname-$pkgver"
+        export BIRCH_LIBRARY_PATH="$srcdir/$pkgname-$pkgver"/.libs
+        cd "$srcdir/$pkgname-$pkgver"
+        mkdir hello
+        cd hello
+        birch init --enable-verbose
+        birch build --enable-verbose
+        birch hello
+}
+
+package() {
+        cd "$srcdir/$pkgname-$pkgver"
+        make DESTDIR="$pkgdir/" install
+}

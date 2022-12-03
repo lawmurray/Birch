@@ -268,8 +268,15 @@ dist_pkgdata_DATA = \
   share/standalone.cpp
 
 dist_noinst_DATA = \
+  debian/source/format \
+  debian/changelog \
+  debian/control \
+  debian/copyright \
+  debian/rules \
+  birch.spec \
   Doxyfile \
   LICENSE \
+  PKGBUILD \
   README.md
 
 BUILT_SOURCES = src/parser.hpp src/parser.cpp src/lexer.cpp
