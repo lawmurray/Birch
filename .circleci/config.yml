@@ -5,6 +5,12 @@ orbs:
   codecov: codecov/codecov@3.2
 
 executors:
+  default:
+    docker:
+      - image: lawmurray/birch-circleci:opensuse
+    resource_class: small
+    working_directory: /root/project/opensuse
+
   opensuse-bench:
     docker:
       - image: lawmurray/birch-circleci:opensuse
@@ -558,26 +564,76 @@ jobs:
       - deploy_website
       - slack
 
+  archive:
+    executor: default
+    steps:
+      - end_if_pull_request
+
+  deb:
+    parameters: 
+      image:
+        type: string
+    docker:
+      - image: << parameters.image >>
+    steps:
+      - end_if_pull_request
+
+  rpm:
+    parameters: 
+      image:
+        type: string
+    docker:
+      - image: << parameters.image >>
+    steps:
+      - end_if_pull_request
+
 workflows:
   all:
+    when: false
     jobs:
       - build:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
+              os:
+                - opensuse-bench
+                - opensuse-cover
+                - alpine
+                - archlinux
+                - debian
+                - fedora
+                - ubuntu
+                - mac
 
       - test:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
+              os:
+                - opensuse-bench
+                - opensuse-cover
+                - alpine
+                - archlinux
+                - debian
+                - fedora
+                - ubuntu
+                - mac
           requires:
             - build-<< matrix.os >>
 
       - example:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover]
-              package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
+              os:
+                - opensuse-bench
+                - opensuse-cover
+              package:
+                - Ecology
+                - LinearGaussian
+                - LinearRegression
+                - MixedGaussian
+                - MultiObjectTracking
+                - PoissonGaussian
+                - SIR
+                - VectorBorneDisease
           requires:
             - test-<< matrix.os >>
 
@@ -590,3 +646,19 @@ workflows:
           requires:
             - example
             - test
+
+  package:
+    jobs:
+      - archive
+      - deb:
+          matrix:
+            parameters:
+              image:
+                - ubuntu:22.04
+                - debian:11
+      - rpm:
+          matrix:
+            parameters:
+              image:
+                - registry.opensuse.org/opensuse/leap:15.4
+                - registry.fedoraproject.org/fedora:37
