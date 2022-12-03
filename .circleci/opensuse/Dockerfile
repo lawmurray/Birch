@@ -1,4 +1,4 @@
-FROM opensuse/leap:latest
+FROM registry.opensuse.org/opensuse/leap:latest
 RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
     && zypper --non-interactive refresh \
     && zypper --non-interactive update \
@@ -22,6 +22,7 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     gdb \
     libtool \
     libyaml-devel \
+    jemalloc-devel \
     boost-devel \
     eigen3-devel \
     cairo-devel \
