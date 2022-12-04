@@ -374,6 +374,40 @@ commands:
                 make dist
               fi
 
+  deploy_deb:
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+        default: .
+    steps:
+      - run:
+          name: Debian package for << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              cp /root/project/opensuse/<< parameters.dir >>/*.tar.gz .
+              export TARNAME=`ls *-$VERSION.tar.gz | sed -E "s/-$VERSION\.tar\.gz\$//"`
+              tar xzf $TARNAME-$VERSION.tar.gz
+              ln -sf $TARNAME-$VERSION.tar.gz $TARNAME\_$VERSION.orig.tar.gz
+              cd $TARNAME-$VERSION
+              debuild
+              lintian
+
+  deploy_rpm:
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+        default: .
+    steps:
+      - run:
+          name: RPM package for << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              cp /root/project/opensuse/<< parameters.dir >>/*.tar.gz .
+              export TARNAME=`ls *-$VERSION.tar.gz | sed -E "s/-$VERSION\.tar\.gz\$//"`
+              rpmbuild -ta $TARNAME\_$VERSION.tar.gz
+
   deploy_obs:
     parameters:
       dir:
@@ -611,6 +645,10 @@ jobs:
       - image: << parameters.image >>
     steps:
       - end_if_pull_request
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.image >>
       - run:
           name: Install dependencies
           command: |
@@ -645,6 +683,18 @@ jobs:
                 debhelper \
                 fakeroot \
                 reprepro
+      - deploy_deb:
+          dir: birch
+      - deploy_deb:
+          dir: numbirch
+      - deploy_deb:
+          dir: membirch
+      - deploy_deb:
+          dir: libraries/Standard
+      - deploy_deb:
+          dir: libraries/Cairo
+      - deploy_deb:
+          dir: libraries/SQLite
 
   rpm:
     parameters: 
@@ -654,6 +704,10 @@ jobs:
       - image: << parameters.image >>
     steps:
       - end_if_pull_request
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.image >>
       - when:
           condition:
             matches:
@@ -687,7 +741,6 @@ jobs:
                       rpmlint \
                       rpm-build \
                       createrepo_c
-
       - when:
           condition:
             matches:
@@ -721,6 +774,21 @@ jobs:
                       rpmlint \
                       rpm-build \
                       createrepo_c
+      - deploy_rpm:
+          dir: birch
+      - deploy_rpm:
+          dir: numbirch
+      - deploy_rpm:
+          dir: membirch
+      - deploy_rpm:
+          dir: libraries/Standard
+      - deploy_rpm:
+          dir: libraries/Cairo
+      - deploy_rpm:
+          dir: libraries/SQLite
+      - run:
+          name: RPM lint
+          command: rpmlint /root/rpmbuild
 
 workflows:
   all:
