@@ -383,7 +383,7 @@ commands:
       - run:
           name: Debian package << parameters.package >>
           command: |
-              tar /root/source/<< parameters.package >>-$VERSION.tar.gz
+              tar xzf /root/source/<< parameters.package >>-$VERSION.tar.gz
               ln -sf /root/source/<< parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
               cd $TARNAME-$VERSION
               debuild
