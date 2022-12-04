@@ -15,7 +15,7 @@ executors:
       CONFIGURE_FLAGS: "--disable-assert"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
       # ^ --unit here also affects source tarballs deployed to packages
-    working_directory: /root/project/opensuse-bench
+    working_directory: /root/opensuse-bench
 
   opensuse-cover:
     docker:
@@ -26,7 +26,7 @@ executors:
       CXXFLAGS: "-O0 -g -Wall -fno-inline --coverage"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/opensuse-cover
+    working_directory: /root/opensuse-cover
 
   alpine:
     docker:
@@ -37,7 +37,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/alpine
+    working_directory: /root/alpine
 
   archlinux:
     docker:
@@ -48,7 +48,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/archlinux
+    working_directory: /root/archlinux
 
   debian:
     docker:
@@ -59,7 +59,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/debian
+    working_directory: /root/debian
 
   fedora:
     docker:
@@ -70,7 +70,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/fedora
+    working_directory: /root/fedora
 
   ubuntu:
     docker:
@@ -81,7 +81,18 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/ubuntu
+    working_directory: /root/ubuntu
+
+  project:
+    docker:
+      - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
+    working_directory: /root/project
 
   mac:
     macos:
@@ -91,17 +102,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /Users/distiller/project/mac
-
-  default:
-    docker:
-      - image: lawmurray/birch-circleci:opensuse
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
+    working_directory: /Users/distiller/mac
 
 commands:
 
@@ -109,6 +110,7 @@ commands:
     parameters: 
       os:
         type: string
+        default: project
     steps:
       - when:
           condition:
@@ -162,6 +164,7 @@ commands:
     parameters: 
       os:
         type: string
+        default: project
     steps:
       - when:
           condition:
@@ -224,6 +227,7 @@ commands:
     parameters:
       os:
         type: string
+        default: project
       dir:
         description: Directory containing the package
         type: string
@@ -361,7 +365,6 @@ commands:
       dir:
         description: Directory containing the package
         type: string
-        default: .
     steps:
       - run:
           name: Source package for << parameters.dir >>
@@ -371,46 +374,48 @@ commands:
               then
                 cd << parameters.dir >>
                 make dist
+                mkdir -p /root/source
+                mv *-$VERSION.tar.gz /root/source/.
               fi
 
   deploy_deb:
     parameters:
-      dir:
-        description: Directory containing the package
+      package:
+        description: Name of the package
         type: string
-        default: .
     steps:
       - run:
-          name: Debian package for << parameters.dir >>
+          name: Debian package << parameters.package >>
           command: |
-              cd << parameters.dir >>
-              export TARNAME=`ls *-$VERSION.tar.gz | sed -E "s/-$VERSION\.tar\.gz\$//"`
-              tar xzf $TARNAME-$VERSION.tar.gz
-              ln -sf $TARNAME-$VERSION.tar.gz $TARNAME\_$VERSION.orig.tar.gz
+              tar /root/source/<< parameters.package >>-$VERSION.tar.gz
+              ln -sf /root/source/<< parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
               cd $TARNAME-$VERSION
               debuild
               lintian
+              cd ..
+              mkdir -p /root/deb/amd64
+              mv *.deb *.changes *.buildinfo /root/deb/amd64
+              mv *.dsc *.orig.tar.gz *.debian.tar.xz /root/deb/.
 
   deploy_rpm:
     parameters:
-      dir:
-        description: Directory containing the package
+      package:
+        description: Name of the package
         type: string
-        default: .
     steps:
       - run:
-          name: RPM package for << parameters.dir >>
+          name: RPM package << parameters.package >>
           command: |
-              cd << parameters.dir >>
-              export TARNAME=`ls *-$VERSION.tar.gz | sed -E "s/-$VERSION\.tar\.gz\$//"`
-              rpmbuild -ta $TARNAME\_$VERSION.tar.gz
+              rpmbuild -ta /root/source/<< parameters.package >>-$VERSION.tar.gz
+              mkdir -p /root/rpm
+              mv /root/rpmbuild/RPMS/x86_64 /root/rpm/x86_64
+              mv /root/rpmbuild/SRPMS /root/rpm/src
 
   deploy_obs:
     parameters:
       dir:
         description: Directory containing the package
         type: string
-        default: .
     steps:
       - run:
           name: Open Build Service package for << parameters.dir >>
@@ -449,7 +454,6 @@ commands:
       dir:
         description: Directory containing the package
         type: string
-        default: .
     steps:
       - run:
           name: Homebrew package for << parameters.dir >>
@@ -495,6 +499,7 @@ jobs:
     parameters: 
       os:
         type: string
+        default: project
     executor: << parameters.os >>
     steps:
       - checkout
@@ -527,6 +532,7 @@ jobs:
     parameters: 
       os:
         type: string
+        default: project
     executor: << parameters.os >>
     steps:
       - attach_workspace:
@@ -544,6 +550,7 @@ jobs:
     parameters: 
       os:
         type: string
+        default: project
       dir:
         description: Directory containing the package
         type: string
@@ -561,16 +568,12 @@ jobs:
       - end_if_pull_request
 
   deploy:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
+    executor: project
     steps:
       - end_if_pull_request
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.os >>
+      - environment
 
       - osc_identity
       - osc_checkout
@@ -607,16 +610,25 @@ jobs:
       - deploy_website
 
   source:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
+    executor: project
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.os >>
+      - checkout
+      - environment
+
+      - build_cpp:
+          dir: birch
+      - build_cpp:
+          dir: numbirch
+      - build_cpp:
+          dir: membirch
+      - build_birch:
+          dir: libraries/Standard
+      - build_birch:
+          dir: libraries/Cairo
+      - build_birch:
+          dir: libraries/SQLite
+
       - deploy_source:
           dir: birch
       - deploy_source:
@@ -629,10 +641,11 @@ jobs:
           dir: libraries/Cairo
       - deploy_source:
           dir: libraries/SQLite
+
       - persist_to_workspace:
           root: ..
           paths:
-            - << parameters.os >>
+            - source
 
   deb:
     parameters: 
@@ -677,21 +690,20 @@ jobs:
                 fakeroot \
                 reprepro
       - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.image >>
+          at: ..          
+      - environment
       - deploy_deb:
-          dir: birch
+          package: birch
       - deploy_deb:
-          dir: numbirch
+          package: numbirch
       - deploy_deb:
-          dir: membirch
+          package: membirch
       - deploy_deb:
-          dir: libraries/Standard
+          package: birch-standard
       - deploy_deb:
-          dir: libraries/Cairo
+          package: birch-cairo
       - deploy_deb:
-          dir: libraries/SQLite
+          package: birch-sqlite
 
   rpm:
     parameters: 
@@ -771,20 +783,19 @@ jobs:
                       createrepo_c
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.image >>
+      - environment
       - deploy_rpm:
-          dir: birch
+          package: birch
       - deploy_rpm:
-          dir: numbirch
+          package: numbirch
       - deploy_rpm:
-          dir: membirch
+          package: membirch
       - deploy_rpm:
-          dir: libraries/Standard
+          package: birch-standard
       - deploy_rpm:
-          dir: libraries/Cairo
+          package: birch-cairo
       - deploy_rpm:
-          dir: libraries/SQLite
+          package: birch-sqlite
       - run:
           name: RPM lint
           command: rpmlint /root/rpmbuild
@@ -840,7 +851,6 @@ workflows:
             - test-<< matrix.os >>
 
       - deploy:
-          os: opensuse-bench
           filters:
             branches:
               only:
@@ -851,10 +861,8 @@ workflows:
 
   package:
     jobs:
-      - build:
-          os: default
+      - build
       - source:
-          os: default
           requires:
             - build
       - deb:
