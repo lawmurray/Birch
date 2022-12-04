@@ -383,7 +383,7 @@ commands:
       - run:
           name: Debian package << parameters.package >>
           command: |
-              cp /root/source/<< parameters.package >>-*.tar.gz .
+              cp /root/source/<< parameters.package >>-[0-9]*.tar.gz .
               export VERSION=`ls *.tar.gz | sed -E 's/^<< parameters.package >>-//' | sed -E 's/.tar.gz//'`
               tar xzf << parameters.package >>-$VERSION.tar.gz
               mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
@@ -404,7 +404,7 @@ commands:
       - run:
           name: RPM package << parameters.package >>
           command: |
-              rpmbuild -ta /root/source/<< parameters.package >>-*.tar.gz
+              rpmbuild -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               mkdir -p /root/rpm
               mv /root/rpmbuild/RPMS/x86_64 /root/rpm/x86_64
               mv /root/rpmbuild/SRPMS /root/rpm/src
