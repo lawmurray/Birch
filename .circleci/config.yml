@@ -404,7 +404,7 @@ commands:
       - run:
           name: RPM package << parameters.package >>
           command: |
-              "%_smp_mflags -j6" > ~/.rpmmacros
+              echo "%_smp_mflags -j6" > ~/.rpmmacros
               rpmbuild --buildroot /root/rpmbuild -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               mkdir -p /root/rpm
               mv /root/rpmbuild/RPMS/x86_64 /root/rpm/x86_64
