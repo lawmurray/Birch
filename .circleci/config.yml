@@ -669,6 +669,7 @@ jobs:
                 libboost-math-dev \
                 libsqlite3-dev \
                 libcairo2-dev \
+                build-essential \
                 dpkg \
                 dpkg-dev \
                 devscripts \
