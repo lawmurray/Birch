@@ -391,7 +391,7 @@ commands:
               debuild -eDEB_BUILD_OPTIONS='parallel=2'
               lintian
               cd ..
-              dpkg --install *.deb  # establish dependencies as we go
+              apt install ./*.deb  # establish dependencies as we go
               mkdir -p /root/deb/amd64
               mv *.deb *.changes *.buildinfo /root/deb/amd64
               mv *.dsc *.orig.tar.gz *.debian.tar.xz /root/deb/.
