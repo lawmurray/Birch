@@ -145,6 +145,7 @@ commands:
           command: |
               echo $GPG_PUBLIC_KEY | base32 -d > public.key
               echo $GPG_SIGNING_KEY | base32 -d > signing.key
+              unset GPG_PUBLIC_KEY GPG_SIGNING_KEY
               gpg --import public.key signing.key
               rm public.key signing.key
 
