@@ -28,17 +28,6 @@ executors:
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
     working_directory: /root/project/opensuse-cover
 
-  opensuse:
-    docker:
-      - image: lawmurray/birch-circleci:opensuse
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/opensuse
-
   alpine:
     docker:
       - image: lawmurray/birch-circleci:alpine
@@ -103,6 +92,16 @@ executors:
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /Users/distiller/project/mac
+
+  default:
+    docker:
+      - image: lawmurray/birch-circleci:opensuse
+    resource_class: large
+    environment:
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: "-O0 -Wall"
+      MAKE_FLAGS: "-j8"
+      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
 
 commands:
 
@@ -385,7 +384,6 @@ commands:
           name: Debian package for << parameters.dir >>
           command: |
               cd << parameters.dir >>
-              cp /root/project/opensuse/<< parameters.dir >>/*.tar.gz .
               export TARNAME=`ls *-$VERSION.tar.gz | sed -E "s/-$VERSION\.tar\.gz\$//"`
               tar xzf $TARNAME-$VERSION.tar.gz
               ln -sf $TARNAME-$VERSION.tar.gz $TARNAME\_$VERSION.orig.tar.gz
@@ -404,7 +402,6 @@ commands:
           name: RPM package for << parameters.dir >>
           command: |
               cd << parameters.dir >>
-              cp /root/project/opensuse/<< parameters.dir >>/*.tar.gz .
               export TARNAME=`ls *-$VERSION.tar.gz | sed -E "s/-$VERSION\.tar\.gz\$//"`
               rpmbuild -ta $TARNAME\_$VERSION.tar.gz
 
@@ -854,9 +851,9 @@ workflows:
   package:
     jobs:
       - build:
-          os: opensuse
+          os: default
       - source:
-          os: opensuse
+          os: default
           requires:
             - build
       - deb:
