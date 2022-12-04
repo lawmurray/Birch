@@ -22,6 +22,7 @@ Recommends: gcc-c++ autoconf automake libtool binutils elfutils libbirch-devel =
 %description
 Birch is a programming language for expressing probabilistic models and performing Bayesian inference. It is used by statisticians, data scientists, and machine learning engineers. Its features include automatic differentiation, automatic marginalization, and automatic conditioning. These compose into advanced Monte Carlo inference algorithms. The Birch language transpiles to C++, with multithreading CPU support, GPU support, and fast copy-on-write memory management.
 
+%global debug_package %{nil}
 
 %prep
 %setup -q -n %{name}-%{version}
