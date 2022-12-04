@@ -645,10 +645,6 @@ jobs:
       - image: << parameters.image >>
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.image >>
       - run:
           name: Install dependencies
           command: |
@@ -657,7 +653,6 @@ jobs:
                 git \
                 ssh \
                 gpg \
-                gpg-agent \
                 tar \
                 gzip \
                 curl \
@@ -683,6 +678,10 @@ jobs:
                 debhelper \
                 fakeroot \
                 reprepro
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.image >>
       - deploy_deb:
           dir: birch
       - deploy_deb:
@@ -704,10 +703,6 @@ jobs:
       - image: << parameters.image >>
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: ..
-      - environment:
-          os: << parameters.image >>
       - when:
           condition:
             matches:
@@ -721,6 +716,7 @@ jobs:
                     zypper --non-interactive install --no-recommends \
                       git \
                       openssh \
+                      gpg \
                       tar \
                       gzip \
                       curl \
@@ -754,6 +750,8 @@ jobs:
                     yum -y install \
                       git \
                       openssh \
+                      gpg \
+                      gpg-agent \
                       tar \
                       gzip \
                       curl \
@@ -774,6 +772,10 @@ jobs:
                       rpmlint \
                       rpm-build \
                       createrepo_c
+      - attach_workspace:
+          at: ..
+      - environment:
+          os: << parameters.image >>
       - deploy_rpm:
           dir: birch
       - deploy_rpm:
