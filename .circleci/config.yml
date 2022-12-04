@@ -751,7 +751,6 @@ jobs:
                       git \
                       openssh \
                       gpg \
-                      gpg-agent \
                       tar \
                       gzip \
                       curl \
