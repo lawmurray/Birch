@@ -369,14 +369,10 @@ commands:
       - run:
           name: Source package for << parameters.dir >>
           command: |
-              shopt -s extglob
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
-                cd << parameters.dir >>
-                make dist
-                mkdir -p /root/source
-                mv *-$VERSION.tar.gz /root/source/.
-              fi
+              cd << parameters.dir >>
+              make dist
+              mkdir -p /root/source
+              mv *-$VERSION.tar.gz /root/source/.
 
   deploy_deb:
     parameters:

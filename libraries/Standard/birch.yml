@@ -1,4 +1,5 @@
 name: Birch.Standard
+version: 0.0.0
 manifest:
   source:
     - src/*.birch

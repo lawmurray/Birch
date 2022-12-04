@@ -1,4 +1,5 @@
 name: Birch.SQLite
+version: 0.0.0
 manifest: 
   source: 
     - src/SQLite3.birch
