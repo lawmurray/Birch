@@ -404,7 +404,7 @@ commands:
       - run:
           name: RPM package << parameters.package >>
           command: |
-              rpmbuild --define='_rpmdir /root/rpmbuild' --define='_smp_mflags -j2' -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
+              rpmbuild --define='_topdir /root/rpmbuild' --define='_smp_mflags -j2' -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               mkdir -p /root/rpm
               mv /root/rpmbuild/RPMS/x86_64 /root/rpm/x86_64
               mv /root/rpmbuild/SRPMS /root/rpm/src
