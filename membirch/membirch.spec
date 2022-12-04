@@ -38,6 +38,10 @@ Requires: %{name}-devel == %{version}
 %description devel-static
 Static libraries for MemBirch, C++ library of smart pointer types for object-level copy-on-write.
 
+%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
+%global debug_package %{nil}
+%endif
+
 %prep
 %setup -n %{name}-%{version}
 
@@ -53,7 +57,9 @@ Static libraries for MemBirch, C++ library of smart pointer types for object-lev
 %configure --disable-assert --enable-shared --enable-static
 %endif
 %make_build
+%if 0%{?suse_version}
 strip --strip-unneeded .libs/*.so
+%endif
 
 %install
 %make_install
