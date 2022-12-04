@@ -861,10 +861,7 @@ workflows:
 
   package:
     jobs:
-      - build
-      - source:
-          requires:
-            - build
+      - source
       - deb:
           matrix:
             parameters:
