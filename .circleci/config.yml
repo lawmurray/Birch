@@ -383,12 +383,18 @@ commands:
       - run:
           name: Debian package << parameters.package >>
           command: |
+              if [[ '<< parameters.package >>' = 'birch-standard' ]]
+              then
+                export JOBS=1  # high memory use in single thread
+              else
+                export JOBS=4
+              fi
               cp /root/source/<< parameters.package >>-[0-9]*.tar.gz .
               export VERSION=`ls *.tar.gz | sed -E 's/^<< parameters.package >>-//' | sed -E 's/.tar.gz//'`
               tar xzf << parameters.package >>-$VERSION.tar.gz
               mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
               cd << parameters.package >>-$VERSION
-              debuild -eDEB_BUILD_OPTIONS='parallel=2'
+              debuild -eDEB_BUILD_OPTIONS="parallel=$JOBS"
               lintian
               cd ..
               apt install ./*.deb  # establish dependencies as we go
@@ -405,7 +411,13 @@ commands:
       - run:
           name: RPM package << parameters.package >>
           command: |
-              rpmbuild --define='_topdir /root/rpmbuild' --define='_smp_mflags -j2' -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
+              if [[ '<< parameters.package >>' = 'birch-standard' ]]
+              then
+                export JOBS=1  # high memory use in single thread
+              else
+                export JOBS=4
+              fi
+              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
               mkdir -p /root/rpm/{x86_64,src}
               mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/x86_64/.
