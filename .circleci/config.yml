@@ -635,7 +635,8 @@ jobs:
                 dpkg-dev \
                 devscripts \
                 debhelper \
-                fakeroot
+                fakeroot \
+                reprepro
 
   rpm:
     parameters: 
@@ -676,7 +677,8 @@ jobs:
                       cairo-devel \
                       sqlite3-devel \
                       rpmlint \
-                      rpm-build
+                      rpm-build \
+                      createrepo
 
       - when:
           condition:
