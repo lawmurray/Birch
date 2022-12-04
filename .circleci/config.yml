@@ -411,8 +411,8 @@ commands:
           command: |
               rpmbuild -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               mkdir -p /root/rpm
-              mv /root/rpmbuild/RPMS/x86_64 /root/rpm/x86_64
-              mv /root/rpmbuild/SRPMS /root/rpm/src
+              mv /usr/src/packages/RPMS/x86_64 /root/rpm/x86_64
+              mv /usr/src/packages/SRPMS /root/rpm/src
 
   deploy_obs:
     parameters:
@@ -801,7 +801,7 @@ jobs:
           package: birch-sqlite
       - run:
           name: RPM lint
-          command: rpmlint /root/rpmbuild
+          command: rpmlint /usr/src/packages
 
 workflows:
   all:
