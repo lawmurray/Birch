@@ -383,9 +383,11 @@ commands:
       - run:
           name: Debian package << parameters.package >>
           command: |
-              tar xzf /root/source/<< parameters.package >>-$VERSION.tar.gz
-              ln -sf /root/source/<< parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
-              cd $TARNAME-$VERSION
+              cp /root/source/<< parameters.package >>-*.tar.gz .
+              export VERSION=`ls *.tar.gz | sed -E 's/^<< parameters.package >>-//' | sed -E 's/.tar.gz//'`
+              tar xzf << parameters.package >>-$VERSION.tar.gz
+              mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
+              cd << parameters.package >>-$VERSION
               debuild
               lintian
               cd ..
@@ -402,7 +404,7 @@ commands:
       - run:
           name: RPM package << parameters.package >>
           command: |
-              rpmbuild -ta /root/source/<< parameters.package >>-$VERSION.tar.gz
+              rpmbuild -ta /root/source/<< parameters.package >>-*.tar.gz
               mkdir -p /root/rpm
               mv /root/rpmbuild/RPMS/x86_64 /root/rpm/x86_64
               mv /root/rpmbuild/SRPMS /root/rpm/src
