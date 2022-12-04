@@ -92,6 +92,7 @@ executors:
       CXXFLAGS: "-O0 -Wall"
       MAKE_FLAGS: "-j8"
       BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
+      RPM_BUILD_NCPUS: 6
     working_directory: /root/project
 
   mac:
