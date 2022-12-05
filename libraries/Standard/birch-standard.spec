@@ -42,8 +42,6 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch standard library.
 
-%define _debugsource_template %{nil}
-
 %prep
 %setup -q -n %{name}-%{version}
 

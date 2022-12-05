@@ -38,8 +38,6 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for Numbirch.
 
-%define _debugsource_template %{nil}
-
 %prep
 %setup -n %{name}-%{version}
 
