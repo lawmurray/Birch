@@ -926,6 +926,7 @@ workflows:
                 - debian:11
           requires:
             - source
+            - cuda
       - rpm:
           matrix:
             parameters:
@@ -934,3 +935,4 @@ workflows:
                 - registry.fedoraproject.org/fedora:37
           requires:
             - source
+            - cuda
