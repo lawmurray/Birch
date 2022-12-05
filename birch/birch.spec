@@ -37,9 +37,9 @@ copy-on-write memory management.
 
 %build
 %if 0%{?mageia} == 7
-%configure2_5x --disable-assert --enable-shared --enable-static
+%configure2_5x --disable-assert
 %else
-%configure --disable-assert --enable-shared --enable-static
+%configure --disable-assert
 %endif
 %make_build
 
