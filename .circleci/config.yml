@@ -151,6 +151,15 @@ commands:
               gpg --import public.key signing.key
               rm public.key signing.key
 
+  install_cuda:
+    steps:
+      - run:
+          name: Install CUDA
+          command: |
+              curl https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run -o cuda.run
+              sh ./cuda.run --toolkit --installpath=/usr/local/cuda --silent --no-man-page
+              rm cuda.run
+
   end_if_pull_request:
     steps:
       - run: 
@@ -620,24 +629,6 @@ jobs:
       - brew_commit
 
       - deploy_website
-
-  cuda:
-    executor: project
-    steps:
-      - end_if_pull_request
-      - restore_cache:
-          key: cuda
-      - run:
-          name: Download CUDA
-          command: |
-              if [[ ! -e cuda.run ]]
-              then
-                curl https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run -o cuda.run
-              fi
-      - save_cache:
-          key: cuda
-          paths:
-            - cuda.run
     
   source:
     executor: project
@@ -721,11 +712,7 @@ jobs:
                 fakeroot \
                 lintian \
                 reprepro
-      - restore_cache:
-          key: cuda
-      - run:
-          name: Install CUDA
-          command: sh ./cuda.run --toolkit --installpath=/usr/local/cuda --silent --no-man-page
+      - install_cuda
       - attach_workspace:
           at: ..          
       - environment
@@ -823,11 +810,7 @@ jobs:
                       rpmlint \
                       rpm-build \
                       createrepo_c
-      - restore_cache:
-          key: cuda
-      - run:
-          name: Install CUDA
-          command: sh ./cuda.run --toolkit --installpath=/usr/local/cuda --silent --no-man-page
+      - install_cuda
       - attach_workspace:
           at: ..
       - environment
@@ -914,7 +897,6 @@ workflows:
 
   package:
     jobs:
-      - cuda
       - source
       - deb:
           matrix:
@@ -924,7 +906,6 @@ workflows:
                 - debian:11
           requires:
             - source
-            - cuda
       - rpm:
           matrix:
             parameters:
@@ -933,4 +914,3 @@ workflows:
                 - registry.fedoraproject.org/fedora:37
           requires:
             - source
-            - cuda
