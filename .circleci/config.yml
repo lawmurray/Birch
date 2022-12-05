@@ -386,7 +386,7 @@ commands:
           command: |
               if [[ '<< parameters.package >>' = 'birch-standard' ]]
               then
-                export JOBS=2  # high memory use in single thread
+                export JOBS=1  # high memory use in single thread
               else
                 export JOBS=8
               fi
@@ -414,7 +414,7 @@ commands:
           command: |
               if [[ '<< parameters.package >>' = 'birch-standard' ]]
               then
-                export JOBS=2  # high memory use in single thread
+                export JOBS=1  # high memory use in single thread
               else
                 export JOBS=8
               fi
@@ -723,9 +723,6 @@ jobs:
           name: Create repository
           command: |
               cd /root/deb
-              reprepro . /dev/null > Release
-              gpg --export --armor > Release.key
-              gpg --detach-sign --armor Release
 
   rpm:
     parameters: 
