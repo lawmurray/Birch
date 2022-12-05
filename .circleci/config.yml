@@ -775,6 +775,7 @@ jobs:
                       sqlite3-devel \
                       rpmlint \
                       rpm-build \
+                      rpm-config-SUSE \
                       createrepo_c
       - when:
           condition:
@@ -809,6 +810,7 @@ jobs:
                       sqlite-devel \
                       rpmlint \
                       rpm-build \
+                      redhat-rpm-config \
                       createrepo_c
       - install_cuda
       - attach_workspace:
