@@ -725,7 +725,7 @@ jobs:
           key: cuda
       - run:
           name: Install CUDA
-          command: sh ./cuda.run --toolkit --installpath /usr/local/cuda --silent --no-man-page
+          command: sh ./cuda.run --toolkit --installpath=/usr/local/cuda --silent --no-man-page
       - attach_workspace:
           at: ..          
       - environment
@@ -827,7 +827,7 @@ jobs:
           key: cuda
       - run:
           name: Install CUDA
-          command: sh ./cuda.run --toolkit --installpath /usr/local/cuda --silent --no-man-page
+          command: sh ./cuda.run --toolkit --installpath=/usr/local/cuda --silent --no-man-page
       - attach_workspace:
           at: ..
       - environment
