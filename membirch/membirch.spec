@@ -32,11 +32,13 @@ Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
 %description devel
 Development files for Membirch.
 
+%if 0%{?suse_version}
 %package devel-static
 Summary: Static libraries for MemBirch
 Requires: %{name}-devel == %{version}
 %description devel-static
 Static libraries for Membirch.
+%endif
 
 %if 0%{?suse_version}
 %debug_package
@@ -53,8 +55,12 @@ Static libraries for Membirch.
 
 %if 0%{?mageia} == 7
 %configure2_5x --disable-assert --enable-shared --enable-static
-%else
+%elif 0%{?suse_version}
+# successfully handles static libraries and debuginfo together
 %configure --disable-assert --enable-shared --enable-static
+%else
+# may not successfully handle static libraries and debuginfo together
+%configure --disable-assert --enable-shared --disable-static
 %endif
 %make_build
 
@@ -74,9 +80,11 @@ Static libraries for Membirch.
 %{_includedir}/%{name}*
 %{_libdir}/lib%{name}.so
 
+%if 0%{?suse_version}
 %files devel-static
 %license LICENSE
 %{_libdir}/lib%{name}.a
+%endif
 
 %exclude %{_libdir}/lib%{name}.la
 
