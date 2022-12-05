@@ -38,6 +38,8 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch SQLite wrapper.
 
+%debug_package
+
 %prep
 %setup -q -n %{name}-%{version}
 

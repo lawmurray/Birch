@@ -38,6 +38,8 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch Cairo wrapper.
 
+%debug_package
+
 %prep
 %setup -q -n %{name}-%{version}
 

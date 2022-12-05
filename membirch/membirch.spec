@@ -38,6 +38,8 @@ Requires: %{name}-devel == %{version}
 %description devel-static
 Static libraries for Membirch.
 
+%debug_package
+
 %prep
 %setup -n %{name}-%{version}
 

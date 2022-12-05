@@ -28,6 +28,8 @@ compose into advanced Monte Carlo inference algorithms. The Birch language
 transpiles to C++, with multithreading CPU support, GPU support, and fast
 copy-on-write memory management.
 
+%debug_package
+
 %prep
 %setup -q -n %{name}-%{version}
 
