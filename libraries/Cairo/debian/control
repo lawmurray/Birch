@@ -8,7 +8,7 @@ Homepage: https://birch.sh
 
 Package: libbirch-cairo-0.0.0
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, birch-standard (>= 0.0.0), libcairo2
+Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-standard-0.0.0 (>= 0.0.0), libcairo2
 Description: Cairo wrapper library of the Birch probabilistic programming language
 
 Package: birch-cairo-dev
