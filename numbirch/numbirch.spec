@@ -38,7 +38,9 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for Numbirch.
 
+%if 0%{?suse_version}
 %debug_package
+%endif
 
 %prep
 %setup -n %{name}-%{version}
