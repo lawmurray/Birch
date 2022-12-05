@@ -38,9 +38,7 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch Cairo wrapper.
 
-%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
-%global debug_package %{nil}
-%endif
+%define _debugsource_template %{nil}
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -57,9 +55,6 @@ Static libraries for the Birch Cairo wrapper.
 %configure --disable-assert --enable-shared --enable-static
 %endif
 %make_build
-%if 0%{?suse_version}
-strip --strip-unneeded .libs/*.so
-%endif
 
 %install
 %make_install
