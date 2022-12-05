@@ -157,7 +157,7 @@ commands:
           name: Install CUDA
           command: |
               curl https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run -o cuda.run
-              sh ./cuda.run --toolkit --installpath=/usr/local/cuda --silent --no-man-page
+              sh ./cuda.run --toolkit --no-man-page --installpath=/usr/local/cuda --override --silent
               rm cuda.run
 
   end_if_pull_request:
