@@ -57,7 +57,9 @@ strip --strip-unneeded birch
 %{_bindir}/%{name}
 %{_datadir}/birch
 
+# address rpmlint error
+%attr(755,-,-) %{_datadir}/birch/bootstrap
+
 %changelog
 * Fri Dec 2 2022 Lawrence Murray <lawrence@indii.org> - 1:0.0.0-1
 Initial setup.
-
