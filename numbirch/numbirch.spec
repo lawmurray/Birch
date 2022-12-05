@@ -24,19 +24,19 @@ C++ library providing numerical kernels and copy-on-write arrays.
 %package -n lib%{name}-0_0_0
 Summary: Shared libraries for NumBirch
 %description -n lib%{name}-0_0_0
-Shared libraries for NumBirch, C++ library providing numerical kernels and copy-on-write arrays.
+Shared libraries for Numbirch.
 
 %package devel
 Summary: Development files for NumBirch
 Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
 %description devel
-Development files for NumBirch, C++ library providing numerical kernels and copy-on-write arrays.
+Development files for Numbirch.
 
 %package devel-static
 Summary: Static libraries for NumBirch
 Requires: %{name}-devel
 %description devel-static
-Static libraries for NumBirch, C++ library providing numerical kernels and copy-on-write arrays.
+Static libraries for Numbirch.
 
 %if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 %global debug_package %{nil}

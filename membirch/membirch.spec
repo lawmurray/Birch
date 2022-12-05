@@ -24,19 +24,19 @@ C++ library of smart pointer types for object-level copy-on-write.
 %package -n lib%{name}-0_0_0
 Summary: Shared library for MemBirch
 %description -n lib%{name}-0_0_0
-Shared library for MemBirch, C++ library of smart pointer types for object-level copy-on-write.
+Shared library for Membirch.
 
 %package devel
 Summary: Development files for MemBirch
 Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
 %description devel
-Development files for MemBirch, C++ library of smart pointer types for object-level copy-on-write.
+Development files for Membirch.
 
 %package devel-static
 Summary: Static libraries for MemBirch
 Requires: %{name}-devel == %{version}
 %description devel-static
-Static libraries for MemBirch, C++ library of smart pointer types for object-level copy-on-write.
+Static libraries for Membirch.
 
 %if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 %global debug_package %{nil}

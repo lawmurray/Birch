@@ -28,19 +28,19 @@ Standard library of the Birch probabilistic programming language.
 %package -n lib%{name}-0_0_0
 Summary: Shared libraries for the Birch standard library
 %description -n lib%{name}-0_0_0
-Shared libraries for the standard library of the Birch probabilistic programming language.
+Shared libraries for the Birch standard library.
 
 %package devel
 Summary: Development files for the Birch standard library
 Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel boost-devel
 %description devel
-Development files for the standard library of the Birch probabilistic programming language.
+Development files for the Birch standard library.
 
 %package devel-static
 Summary: Static libraries for the Birch standard library
 Requires: %{name}-devel
 %description devel-static
-Static libraries for the standard library of the Birch probabilistic programming language.
+Static libraries for the Birch standard library.
 
 %if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 %global debug_package %{nil}
