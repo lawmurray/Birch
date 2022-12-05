@@ -52,6 +52,6 @@ strip --strip-unneeded birch
 %{_datadir}/birch
 
 %changelog
-* Fri Dec 2 2022 Lawrence Murray <lawrence@indii.org> 1-
+* Fri Dec 2 2022 Lawrence Murray <lawrence@indii.org> - 1:0.0.0-1
 Initial setup.
 
