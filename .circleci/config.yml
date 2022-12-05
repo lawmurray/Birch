@@ -665,6 +665,7 @@ jobs:
         type: string
     docker:
       - image: << parameters.image >>
+    resource_class: large
     steps:
       - end_if_pull_request
       - run:
@@ -724,6 +725,7 @@ jobs:
         type: string
     docker:
       - image: << parameters.image >>
+    resource_class: large
     steps:
       - end_if_pull_request
       - when:
