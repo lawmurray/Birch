@@ -93,12 +93,10 @@ birch hello
 %{_libdir}/lib%{name}-single.so
 %{_libdir}/lib%{name}.so
 
-%if 0%{?suse_version}
 %files devel-static
 %license LICENSE
 %{_libdir}/lib%{name}-single.a
 %{_libdir}/lib%{name}.a
-%endif
 
 %exclude %{_libdir}/lib%{name}-single.la
 %exclude %{_libdir}/lib%{name}.la
