@@ -181,9 +181,7 @@ dist_noinst_DATA =  \
   debian/libnumbirch-0.0.0.install \
   debian/numbirch-dev.install \
   debian/rules \
-  dpcpp_wrapper \
   numbirch.spec \
-  nvcc_wrapper \
   Doxyfile \
   DoxygenLayout.xml \
   LICENSE \
