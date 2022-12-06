@@ -4,9 +4,8 @@
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure -- --disable-assert --disable-shared --enable-static --disable-initial-exec-tls --disable-doc --with-jemalloc-prefix=numbirch_ --with-install-suffix=_numbirch
+	dh_auto_configure -- --disable-assert --disable-shared --enable-static
 
 override_dh_auto_install:
 	dh_auto_install
 	find $(DESTDIR) -type f -name '*.la' -delete
-	install dpcpp_wrapper nvcc_wrapper $(DESTDIR)/usr/bin 

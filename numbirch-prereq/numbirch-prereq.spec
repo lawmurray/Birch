@@ -32,9 +32,9 @@ Static libraries for for numbirch-prereq.
 %define _lto_cflags -flto -ffat-lto-objects
 
 %if 0%{?mageia} == 7
-%configure2_5x --disable-assert --disable-shared --enable-static --disable-initial-exec-tls --disable-doc --with-jemalloc-prefix=numbirch_ --with-install-suffix=_numbirch
+%configure2_5x --disable-assert --disable-shared --enable-static
 %else
-%configure --disable-assert --disable-shared --enable-static --disable-initial-exec-tls --disable-doc --with-jemalloc-prefix=numbirch_ --with-install-suffix=_numbirch
+%configure --disable-assert --disable-shared --enable-static
 %endif
 %make_build
 

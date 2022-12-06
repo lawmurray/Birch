@@ -1,0 +1,8 @@
+#!/bin/sh
+
+JEMALLOC_VERSION=5.3.0
+
+curl -LO https://github.com/jemalloc/jemalloc/releases/download/$JEMALLOC_VERSION/jemalloc-$JEMALLOC_VERSION.tar.bz2 && \
+tar xjf jemalloc-$JEMALLOC_VERSION.tar.bz2 --no-same-owner && \
+rm jemalloc-$JEMALLOC_VERSION.tar.bz2
+cd jemalloc-*.*.* && ./configure --disable-initial-exec-tls --disable-doc --with-jemalloc-prefix=numbirch_ --with-install-suffix=_numbirch $@

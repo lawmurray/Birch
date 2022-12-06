@@ -219,7 +219,10 @@ commands:
           name: Build << parameters.dir >>
           command: |
               cd << parameters.dir >>
-              ./bootstrap
+              if [[ -e bootstrap ]]
+              then
+                ./bootstrap
+              fi
               ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make install $MAKE_FLAGS
       - run:
@@ -527,6 +530,8 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_cpp:
+          dir: numbirch-prereq
+      - build_cpp:
           dir: numbirch
       - build_cpp:
           dir: membirch
@@ -637,6 +642,8 @@ jobs:
       - checkout
       - environment
 
+      - build_cpp:
+          dir: numbirch-prereq
       - build_cpp:
           dir: numbirch
       - build_cpp:

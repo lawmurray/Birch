@@ -13,12 +13,11 @@ md5sums=('SKIP')
 
 build() {
         cd "$srcdir/$pkgname-$pkgver"
-        ./configure --prefix=/usr --disable-assert --disable-shared --enable-static --disable-initial-exec-tls --disable-doc --with-jemalloc-prefix=numbirch_ --with-install-suffix=_numbirch
+        ./configure --prefix=/usr --disable-assert --disable-shared --enable-static
         make
 }
 
 package() {
         cd "$srcdir/$pkgname-$pkgver"
         make DESTDIR="$pkgdir/" install
-        install dpcpp_wrapper nvcc_wrapper $pkgdir/bin
 }
