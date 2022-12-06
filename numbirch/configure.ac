@@ -23,12 +23,13 @@ esac],[cuda=false])
 AM_CONDITIONAL([CUDA], [test x$cuda = xtrue])
 
 AC_ARG_ENABLE([eigen],
-[AS_HELP_STRING[--enable-eigen], [Use eigen]],
+[AS_HELP_STRING[--enable-eigen], [Use Eigen]],
 [case "${enableval}" in
   yes) eigen=true ;;
   no)  eigen=false ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-eigen]) ;;
 esac],[eigen=true])
+AM_CONDITIONAL([EIGEN], [test x$eigen = xtrue])
 
 AC_ARG_ENABLE([double],
 [AS_HELP_STRING[--enable-double], [Build double precision libraries]],
@@ -67,27 +68,26 @@ AC_HEADER_ASSERT
 
 # Checks for common requirements
 AC_CHECK_LIB([atomic], [main], [], [], [])
+AC_OPENMP
+CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
+AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
+AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])])
+AC_CHECK_HEADERS([eigen3/unsupported/Eigen/SpecialFunctions], [], [AC_CHECK_HEADERS([unsupported/Eigen/SpecialFunctions], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
 
 # Checks for build-specific requirements
 if $oneapi; then
   AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
-else
-  AC_OPENMP
-  CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
-  AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
-  AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])])
-  AC_CHECK_HEADERS([eigen3/unsupported/Eigen/SpecialFunctions], [], [AC_CHECK_HEADERS([unsupported/Eigen/SpecialFunctions], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
-
-  if $cuda; then
-    AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([cusolverDn.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-    AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
-  else
-    AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_CHECK_HEADERS([Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
-  fi
+fi
+if $cuda; then
+  AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([cusolverDn.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
+  AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
+  AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+fi
+if $eigen; then
+  AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_CHECK_HEADERS([Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
 fi
 
 AC_CONFIG_FILES([Makefile])
