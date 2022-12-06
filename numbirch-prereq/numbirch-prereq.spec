@@ -1,7 +1,7 @@
 Name: numbirch-prereq
 Version: 0.0.0
-Release: Prerequisites for NumBirch, including custom jemalloc build and compiler wrappers
-Summary: .
+Release: 1
+Summary: Prerequisites for NumBirch
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: BSD-2-Clause
 Group: Development/Libraries/C and C++
