@@ -36,13 +36,11 @@ Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} membirch-devel ==
 %description devel
 Development files for the Birch standard library.
 
-%if 0%{?suse_version}
 %package devel-static
 Summary: Static libraries for the Birch standard library
 Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch standard library.
-%endif
 
 %if 0%{?suse_version}
 %debug_package

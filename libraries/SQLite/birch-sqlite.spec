@@ -32,13 +32,11 @@ Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} birch-standard-de
 %description devel
 Development files for the Birch SQLite wrapper.
 
-%if 0%{?suse_version}
 %package devel-static
 Summary: Static libraries for Birch SQLite wrapper
 Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch SQLite wrapper.
-%endif
 
 %if 0%{?suse_version}
 %debug_package

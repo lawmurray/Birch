@@ -32,13 +32,11 @@ Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} birch-standard-de
 %description devel
 Development files for the Birch Cairo wrapper.
 
-%if 0%{?suse_version}
 %package devel-static
 Summary: Static libraries for Birch Cairo wrapper
 Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch Cairo wrapper.
-%endif
 
 %if 0%{?suse_version}
 %debug_package

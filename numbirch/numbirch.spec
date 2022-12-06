@@ -32,13 +32,11 @@ Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
 %description devel
 Development files for Numbirch.
 
-%if 0%{?suse_version}
 %package devel-static
 Summary: Static libraries for NumBirch
 Requires: %{name}-devel
 %description devel-static
 Static libraries for Numbirch.
-%endif
 
 %if 0%{?suse_version}
 %debug_package
