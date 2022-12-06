@@ -1,0 +1,9 @@
+Files: debian/* dpcpp_wrapper nvcc_wrapper
+Copyright: 2022 Lawrence Murray
+License: BSD-2-clause
+
+Files: *
+Copyright: Copyright 2002-present Jason Evans <jasone@canonware.com>. All rights reserved.
+Copyright 2007-2012 Mozilla Foundation. All rights reserved.
+Copyright 2009-present Facebook, Inc. All rights reserved.
+License: BSD-2-clause

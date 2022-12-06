@@ -156,9 +156,9 @@ commands:
       - run:
           name: Install CUDA
           command: |
-              curl https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run -o cuda.run
-              sh ./cuda.run --toolkit --no-man-page --installpath=/usr/local/cuda --override --silent
-              rm cuda.run
+              curl -LO https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+              sh ./cuda_*.run --toolkit --no-man-page --installpath=/usr/local/cuda --override --silent
+              rm cuda_*.run
 
   end_if_pull_request:
     steps:
@@ -197,7 +197,7 @@ commands:
           name: Update version number
           command: |
               cd << parameters.dir >>
-              for file in birch.yml configure.ac Makefile.am *.spec debian/changelog debian/control debian/*.install PKGBUILD
+              for file in birch.yml configure.ac Makefile.am Makefile *.spec debian/changelog debian/control debian/*.install PKGBUILD
                 do
                   if [[ -e $file ]]
                   then
@@ -527,11 +527,11 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_cpp:
-          dir: birch
-      - build_cpp:
           dir: numbirch
       - build_cpp:
           dir: membirch
+      - build_cpp:
+          dir: birch
       - build_birch:
           os: << parameters.os >>
           dir: libraries/Standard
@@ -599,11 +599,11 @@ jobs:
       - osc_identity
       - osc_checkout
       - deploy_obs:
-          dir: birch
-      - deploy_obs:
           dir: numbirch
       - deploy_obs:
           dir: membirch
+      - deploy_obs:
+          dir: birch
       - deploy_obs:
           dir: libraries/Standard
       - deploy_obs:
@@ -615,11 +615,11 @@ jobs:
       - brew_identity
       - brew_checkout
       - deploy_brew:
-          dir: birch
-      - deploy_brew:
           dir: numbirch
       - deploy_brew:
           dir: membirch
+      - deploy_brew:
+          dir: birch
       - deploy_brew:
           dir: libraries/Standard
       - deploy_brew:
@@ -638,11 +638,11 @@ jobs:
       - environment
 
       - build_cpp:
-          dir: birch
-      - build_cpp:
           dir: numbirch
       - build_cpp:
           dir: membirch
+      - build_cpp:
+          dir: birch
       - build_birch:
           dir: libraries/Standard
       - build_birch:
@@ -651,11 +651,13 @@ jobs:
           dir: libraries/SQLite
 
       - deploy_source:
-          dir: birch
+          dir: numbirch-prereq
       - deploy_source:
           dir: numbirch
       - deploy_source:
           dir: membirch
+      - deploy_source:
+          dir: birch
       - deploy_source:
           dir: libraries/Standard
       - deploy_source:
@@ -717,11 +719,13 @@ jobs:
           at: ..          
       - environment
       - deploy_deb:
-          package: birch
+          package: numbirch-prereq
       - deploy_deb:
           package: numbirch
       - deploy_deb:
           package: membirch
+      - deploy_deb:
+          package: birch
       - deploy_deb:
           package: birch-standard
       - deploy_deb:
@@ -817,11 +821,13 @@ jobs:
           at: ..
       - environment
       - deploy_rpm:
-          package: birch
+          package: numbirch-prereq
       - deploy_rpm:
           package: numbirch
       - deploy_rpm:
           package: membirch
+      - deploy_rpm:
+          package: birch
       - deploy_rpm:
           package: birch-standard
       - deploy_rpm:

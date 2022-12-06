@@ -1,0 +1,17 @@
+Source: numbirch-prereq
+Section: devel
+Priority: optional
+Maintainer: Lawrence Murray <lawrence@indii.org>
+Build-Depends: debhelper, debhelper-compat (= 13), autoconf, automake, libtool
+Standards-Version: 4.6.1.1
+Homepage: https://birch.sh
+
+Package: numbirch-prereq-dev
+Architecture: any
+Depends: ${misc:Depends}
+Description: Prerequisites for NumBirch, including custom jemalloc build and compiler wrappers
+
+Package: numbirch-prereq-static-dev
+Architecture: any
+Depends: ${misc:Depends}
+Description: Prerequisites for NumBirch, including custom jemalloc build and compiler wrappers
