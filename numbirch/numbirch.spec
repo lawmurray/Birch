@@ -42,6 +42,8 @@ Static libraries for Numbirch.
 
 %if 0%{?suse_version}
 %debug_package
+%else
+%global debug_package %{nil}
 %endif
 
 %prep
@@ -56,13 +58,7 @@ Static libraries for Numbirch.
 %if 0%{?mageia} == 7
 %configure2_5x --disable-assert --enable-shared --enable-static
 %else
-%if 0%{?suse_version}
-# successfully handles static libraries and debuginfo together
 %configure --disable-assert --enable-shared --enable-static
-%else
-# may not successfully handle static libraries and debuginfo together
-%configure --disable-assert --enable-shared --disable-static
-%endif
 %endif
 %make_build
 
