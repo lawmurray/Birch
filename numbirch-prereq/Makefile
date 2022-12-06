@@ -4,8 +4,7 @@ build:
 	cd jemalloc-*.*.* && make
 
 install:
-	cd jemalloc-*.*.* && make install
-	DESTDIR=`grep 'DESTDIR =' jemalloc-*.*.*/Makefile | sed -E 's/DESTDIR *= *//'`; \
+	cd jemalloc-*.*.* && make install DESTDIR=$$DESTDIR
 	BINDIR=`grep 'BINDIR :=' jemalloc-*.*.*/Makefile | sed -E 's/BINDIR *:= *[$$]\(DESTDIR\)\///'`; \
 	install dpcpp_wrapper nvcc_wrapper $$DESTDIR/$$BINDIR
 
