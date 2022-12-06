@@ -6,6 +6,8 @@ Vendor: Lawrence Murray <lawrence@indii.org>
 License: BSD-2-Clause
 Group: Development/Libraries/C and C++
 URL: https://birch.sh
+Source0: %{name}-%{version}.tar.gz
+
 BuildRequires: gcc-c++ autoconf automake libtool
 
 %description
