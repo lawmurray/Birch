@@ -7,6 +7,8 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     openssh \
     tar \
     gzip \
+    bzip2 \
+    xz \
     curl \
     moreutils \
     time \
