@@ -59,12 +59,14 @@ Static libraries for the Birch standard library.
 
 %if 0%{?mageia} == 7
 %configure2_5x --disable-assert --enable-shared --enable-static
-%elif 0%{?suse_version}
+%else
+%if 0%{?suse_version}
 # successfully handles static libraries and debuginfo together
 %configure --disable-assert --enable-shared --enable-static
 %else
 # may not successfully handle static libraries and debuginfo together
 %configure --disable-assert --enable-shared --disable-static
+%endif
 %endif
 %make_build
 
