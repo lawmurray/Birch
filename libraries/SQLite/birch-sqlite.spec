@@ -38,6 +38,7 @@ Summary: Static libraries for Birch SQLite wrapper
 Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch SQLite wrapper.
+%endif
 
 %if 0%{?suse_version}
 %debug_package
