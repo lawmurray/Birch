@@ -665,13 +665,14 @@ jobs:
 
       - run:
           name: Copy install_cuda_prereq
-          command: cp numbirch/install_cuda_prereq /root/.
+          command: cp numbirch/install_cuda_prereq numbirch/nvcc_wrapper /root/.
 
       - persist_to_workspace:
           root: /root
           paths:
             - source
             - install_cuda_prereq
+            - nvcc_wrapper
 
   deb:
     parameters: 
@@ -837,7 +838,7 @@ jobs:
           name: Create repository
           command: |
               cd /root/rpm
-              rpmlint x86_64/*.rpm
+              rpmlint x86_64/*.rpm || echo
               rpmsign --addsign x86_64/*.rpm
               createrepo .
               gpg --detach-sign --armor repodata/repomd.xml
