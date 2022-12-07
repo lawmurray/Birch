@@ -46,7 +46,7 @@ Static libraries for for numbirch-prereq.
 %files devel
 %{_includedir}/jemalloc/jemalloc_numbirch.h
 %{_bindir}/dpcpp_wrapper
-${_bindir}/nvcc_wrapper
+%{_bindir}/nvcc_wrapper
 
 %files devel-static
 %{_libdir}/libjemalloc_numbirch.a
