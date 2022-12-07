@@ -155,7 +155,7 @@ commands:
     steps:
       - run:
           name: Install prerequisites for NumBirch CUDA backend
-          command: numbirch/install_cuda_prereq
+          command: /root/install_cuda_prereq
 
   end_if_pull_request:
     steps:
@@ -663,10 +663,15 @@ jobs:
       - deploy_source:
           dir: libraries/SQLite
 
+      - run:
+          name: Copy install_cuda_prereq
+          command: cp numbirch/install_cuda_prereq /root/.
+
       - persist_to_workspace:
-          root: ..
+          root: /root
           paths:
             - source
+            - install_cuda_prereq
 
   deb:
     parameters: 
@@ -713,7 +718,7 @@ jobs:
                 lintian \
                 reprepro
       - attach_workspace:
-          at: ..          
+          at: /root
       - environment
       - install_cuda_prereq
       - deploy_deb:
@@ -813,7 +818,7 @@ jobs:
                       redhat-rpm-config \
                       createrepo_c
       - attach_workspace:
-          at: ..
+          at: /root
       - environment
       - install_cuda_prereq
       - deploy_rpm:
