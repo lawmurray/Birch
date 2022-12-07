@@ -151,14 +151,11 @@ commands:
               gpg --import public.key signing.key
               rm public.key signing.key
 
-  install_cuda:
+  install_cuda_prereq:
     steps:
       - run:
-          name: Install CUDA
-          command: |
-              curl -LO https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
-              sh ./cuda_*.run --toolkit --no-man-page --installpath=/usr/local/cuda --override --silent
-              rm cuda_*.run
+          name: Install prerequisites for NumBirch CUDA backend
+          command: numbirch/install_cuda_prereq
 
   end_if_pull_request:
     steps:
@@ -530,8 +527,6 @@ jobs:
       - environment:
           os: << parameters.os >>
       - build_cpp:
-          dir: numbirch-prereq
-      - build_cpp:
           dir: numbirch
       - build_cpp:
           dir: membirch
@@ -643,8 +638,6 @@ jobs:
       - environment
 
       - build_cpp:
-          dir: numbirch-prereq
-      - build_cpp:
           dir: numbirch
       - build_cpp:
           dir: membirch
@@ -657,8 +650,6 @@ jobs:
       - build_birch:
           dir: libraries/SQLite
 
-      - deploy_source:
-          dir: numbirch-prereq
       - deploy_source:
           dir: numbirch
       - deploy_source:
@@ -721,12 +712,10 @@ jobs:
                 fakeroot \
                 lintian \
                 reprepro
-      - install_cuda
+      - install_cuda_prereq
       - attach_workspace:
           at: ..          
       - environment
-      - deploy_deb:
-          package: numbirch-prereq
       - deploy_deb:
           package: numbirch
       - deploy_deb:
@@ -823,12 +812,10 @@ jobs:
                       rpm-build \
                       redhat-rpm-config \
                       createrepo_c
-      - install_cuda
+      - install_cuda_prereq
       - attach_workspace:
           at: ..
       - environment
-      - deploy_rpm:
-          package: numbirch-prereq
       - deploy_rpm:
           package: numbirch
       - deploy_rpm:

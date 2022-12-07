@@ -1,0 +1,29 @@
+#!/bin/sh
+
+JEMALLOC_URL=https://github.com/jemalloc/jemalloc/releases/download/5.3.0/jemalloc-5.3.0.tar.bz2
+CUDA_URL=https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+PREFIX=/usr/local
+
+# build and install jemalloc
+curl -LO $JEMALLOC_URL
+tar xjf jemalloc-*.tar.bz2 --no-same-owner
+rm jemalloc-*.tar.bz2
+cd jemalloc-*.*.*
+./configure --prefix=$PREFIX \
+    --disable-stats \
+    --disable-initial-exec-tls \
+    --disable-doc \
+    --with-jemalloc-prefix=numbirch_ \
+    --with-install-suffix=_numbirch
+make
+make install
+cd ..
+rm -rf jemalloc-*.*.*
+
+# install CUDA
+curl -LO $CUDA_URL
+sh ./cuda_*.run --toolkit --no-man-page --installpath=$PREFIX/cuda --override --silent
+rm cuda_*.run
+
+# install wrapper
+install nvcc_wrapper $PREFIX/bin
