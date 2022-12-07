@@ -58,8 +58,8 @@ Static libraries for for numbirch-prereq.
 %{_bindir}/jeprof
 %{_libdir}/pkgconfig/jemalloc.pc
 
-%attr(644, -, -) %{_libdir}/lib%{name}.a
-%attr(644, -, -) %{_libdir}/lib%{name}_pic.a
+%attr(644, -, -) %{_libdir}/libjemalloc_numbirch.a
+%attr(644, -, -) %{_libdir}/libjemalloc_numbirch_pic.a
 
 %changelog
 * Tue Dec 5 2022 Lawrence Murray <lawrence@indii.org> - 1:0.0.0-1
