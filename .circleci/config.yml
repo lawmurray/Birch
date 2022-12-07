@@ -155,7 +155,7 @@ commands:
     steps:
       - run:
           name: Install prerequisites for NumBirch CUDA backend
-          command: /root/install_cuda_prereq
+          command: cd /root && ./install_cuda_prereq
 
   end_if_pull_request:
     steps:
