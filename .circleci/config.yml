@@ -712,10 +712,10 @@ jobs:
                 fakeroot \
                 lintian \
                 reprepro
-      - install_cuda_prereq
       - attach_workspace:
           at: ..          
       - environment
+      - install_cuda_prereq
       - deploy_deb:
           package: numbirch
       - deploy_deb:
@@ -812,10 +812,10 @@ jobs:
                       rpm-build \
                       redhat-rpm-config \
                       createrepo_c
-      - install_cuda_prereq
       - attach_workspace:
           at: ..
       - environment
+      - install_cuda_prereq
       - deploy_rpm:
           package: numbirch
       - deploy_rpm:
