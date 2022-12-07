@@ -9,3 +9,7 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 	find $(DESTDIR) -type f -name '*.la' -delete
+	find $(DESTDIR) -type f -name jemalloc-config -delete
+	find $(DESTDIR) -type f -name jemalloc.sh -delete
+	find $(DESTDIR) -type f -name jeprof -delete
+	find $(DESTDIR) -type f -name jemalloc.pc -delete
