@@ -68,7 +68,11 @@ In addition to the requirements for the default backend, the CUDA backend requir
 Run, from within the `jemalloc` directory (or the source directory of a separate jemalloc source package):
 
 ```
-./configure --disable-initial-exec-tls --disable-documentation \
+./configure \
+    --enable-static \
+    --disable-shared \
+    --disable-documentation \
+    --disable-initial-exec-tls \
     --with-jemalloc-prefix=numbirch_ \
     --with-install-suffix=_numbirch
 make
@@ -77,7 +81,7 @@ make install
 
 Replace `./configure` with `./autogen.sh` if the former does not exist. If installing system wide, the last command may require `sudo`.
 
-The options `--with-jemalloc-prefix=numbirch` and `--with-install-suffix=_numbirch` are critical and no other values should be used; NumBirch and some dependencies are hard-coded to work with these values.
+The options `--with-jemalloc-prefix=numbirch_` and `--with-install-suffix=_numbirch` are critical and no other values should be used; NumBirch and some dependencies are hard-coded to work with these values.
 
 #### 2. Install the `nvcc_wrapper` script
 
