@@ -24,6 +24,12 @@ Summary: Static libraries for for numbirch-prereq
 %description devel-static
 Static libraries for for numbirch-prereq.
 
+%if 0%{?suse_version}
+%debug_package
+%else
+%global debug_package %{nil}
+%endif
+
 %prep
 %setup -n %{name}-%{version}
 
