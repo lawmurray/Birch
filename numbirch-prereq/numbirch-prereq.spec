@@ -52,11 +52,10 @@ Static libraries for for numbirch-prereq.
 %{_libdir}/libjemalloc_numbirch.a
 %{_libdir}/libjemalloc_numbirch_pic.a
 
-%ghost
-%{_bindir}/jemalloc-config
-%{_bindir}/jemalloc.sh
-%{_bindir}/jeprof
-%{_libdir}/pkgconfig/jemalloc.pc
+%exclude %{_bindir}/jemalloc-config
+%exclude %{_bindir}/jemalloc.sh
+%exclude %{_bindir}/jeprof
+%exclude %{_libdir}/pkgconfig/jemalloc.pc
 
 %attr(644, -, -) %{_libdir}/libjemalloc_numbirch.a
 %attr(644, -, -) %{_libdir}/libjemalloc_numbirch_pic.a
