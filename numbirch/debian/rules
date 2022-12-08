@@ -10,7 +10,8 @@ export LD_LIBRARY_PATH := /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/l
 export DEB_BUILD_MAINT_OPTIONS := optimize=-lto
 
 %:
-	dh $@
+	dh $@ --builddir cuda
+	dh $@ --builddir eigen
 
 override_dh_auto_clean:
 	dh_auto_clean --builddir cuda
