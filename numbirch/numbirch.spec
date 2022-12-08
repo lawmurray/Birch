@@ -63,9 +63,8 @@ Static libraries for Numbirch with CUDA backend.
 
 %build
 
-# tweaks to link-time optimization flags to avoid RPM lint errors on static
-# library builds
-%define _lto_cflags -flto -ffat-lto-objects
+# opt out of link-time optimization, which is not working with CUDA builds
+%define _lto_cflags %{nil}
 
 # redefine configure for out of source builds
 %define _configure ../configure
