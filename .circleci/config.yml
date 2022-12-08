@@ -779,7 +779,6 @@ jobs:
                       eigen3-devel \
                       cairo-devel \
                       sqlite3-devel \
-                      rpm \
                       rpmlint \
                       rpm-build \
                       rpm-config-SUSE \
