@@ -779,6 +779,7 @@ jobs:
                       eigen3-devel \
                       cairo-devel \
                       sqlite3-devel \
+                      rpm \
                       rpmlint \
                       rpm-build \
                       rpm-config-SUSE \
@@ -814,6 +815,7 @@ jobs:
                       eigen3-devel \
                       cairo-devel \
                       sqlite-devel \
+                      rpm \
                       rpmlint \
                       rpm-build \
                       redhat-rpm-config \
