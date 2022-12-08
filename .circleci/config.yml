@@ -826,6 +826,7 @@ jobs:
                       rpm \
                       rpmlint \
                       rpm-build \
+                      rpm-sign \
                       redhat-rpm-config \
                       createrepo_c
       - attach_workspace:
