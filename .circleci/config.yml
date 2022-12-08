@@ -141,6 +141,10 @@ commands:
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
               echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
+              echo "export PATH=/usr/local/cuda/bin:$PATH" >> $BASH_ENV
+              echo "export CPATH=/usr/local/cuda/include:$CPATH" >> $BASH_ENV
+              echo "export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH" >> $BASH_ENV
       - run:
           name: GPG keys
           command: |
