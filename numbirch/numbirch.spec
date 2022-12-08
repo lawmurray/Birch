@@ -76,25 +76,25 @@ export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$CPLUS_INCL
 export LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 
-mkdir -p eigen
-cd eigen
-%configure --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
-%make_build
-cd ..
-
 mkdir -p cuda
 cd cuda
 %configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
 %make_build
 cd ..
 
+mkdir -p eigen
+cd eigen
+%configure --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
+%make_build
+cd ..
+
 %install
 
-cd eigen
+cd cuda
 %make_install
 cd ..
 
-cd cuda
+cd eigen
 %make_install
 cd ..
 
