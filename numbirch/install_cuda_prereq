@@ -10,6 +10,8 @@ tar xjf jemalloc-*.tar.bz2 --no-same-owner
 rm jemalloc-*.tar.bz2
 cd jemalloc-*.*.*
 ./configure --prefix=$PREFIX \
+    --disable-shared \
+    --enable-static \
     --disable-stats \
     --disable-initial-exec-tls \
     --disable-doc \
