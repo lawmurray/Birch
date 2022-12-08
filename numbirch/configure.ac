@@ -85,7 +85,7 @@ if $checks; then
 
   # Checks for build-specific requirements
   if $oneapi; then
-    AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   fi
   if $cuda; then
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
@@ -93,7 +93,7 @@ if $checks; then
     AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   fi
   if $eigen; then
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_CHECK_HEADERS([Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
