@@ -14,9 +14,6 @@ BuildRequires: gcc-c++ autoconf automake libtool eigen3-devel
 %if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 BuildRequires: gcc-c++ autoconf automake libtool eigen3-devel
 %endif
-%if 0%{?mageia}
-BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool eigen3-devel
-%endif
 
 %description
 C++ library providing numerical kernels and copy-on-write arrays.
@@ -28,15 +25,32 @@ Shared libraries for Numbirch.
 
 %package devel
 Summary: Development files for NumBirch
-Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
+Requires: lib%{name}-0_0_0 == %{version}
 %description devel
 Development files for Numbirch.
 
 %package devel-static
 Summary: Static libraries for NumBirch
-Requires: %{name}-devel
+Requires: %{name}-devel == %{version}
 %description devel-static
 Static libraries for Numbirch.
+
+%package -n lib%{name}-cuda-0_0_0
+Summary: Shared libraries for NumBirch with CUDA backend
+%description -n lib%{name}-cuda-0_0_0
+Shared libraries for Numbirch with CUDA backend.
+
+%package cuda-devel
+Summary: Development files for NumBirch with CUDA backend
+Requires: lib%{name}-cuda-0_0_0 == %{version}
+%description cuda-devel
+Development files for Numbirch with CUDA backend.
+
+%package cuda-devel-static
+Summary: Static libraries for NumBirch with CUDA backend
+Requires: %{name}-cuda-devel == %{version}
+%description cuda-devel-static
+Static libraries for Numbirch with CUDA backend.
 
 %if 0%{?suse_version}
 %debug_package
@@ -53,18 +67,29 @@ Static libraries for Numbirch.
 # library builds
 %define _lto_cflags -flto -ffat-lto-objects
 
-%if 0%{?mageia} == 7
-%configure2_5x --disable-assert --enable-shared --enable-static
-%else
-%configure --disable-assert --enable-shared --enable-static
-%endif
+mkdir -p eigen
+cd eigen
+../configure --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
 %make_build
+cd ..
+
+mkdir -p cuda
+cd cuda
+../configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
+%make_build
+cd ..
 
 %install
+
+cd eigen
 %make_install
+cd ..
+
+cd cuda
+%make_install
+cd ..
 
 %post -n lib%{name}-0_0_0 -p /sbin/ldconfig
-
 %postun -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
 %files -n lib%{name}-0_0_0
@@ -83,8 +108,25 @@ Static libraries for Numbirch.
 %{_libdir}/lib%{name}-single.a
 %{_libdir}/lib%{name}.a
 
+%files -n lib%{name}-cuda-0_0_0
+%license LICENSE
+%{_libdir}/lib%{name}-cuda-single-%{version}.so
+%{_libdir}/lib%{name}-cuda-%{version}.so
+
+%files cuda-devel
+%license LICENSE
+%{_libdir}/lib%{name}-cuda-single.so
+%{_libdir}/lib%{name}-cuda.so
+
+%files cuda-devel-static
+%license LICENSE
+%{_libdir}/lib%{name}-cuda-single.a
+%{_libdir}/lib%{name}-cuda.a
+
 %exclude %{_libdir}/lib%{name}-single.la
 %exclude %{_libdir}/lib%{name}.la
+%exclude %{_libdir}/lib%{name}-cuda-single.la
+%exclude %{_libdir}/lib%{name}-cuda.la
 
 %changelog
 * Fri Dec 2 2022 Lawrence Murray <lawrence@indii.org> - 1:0.0.0-1
