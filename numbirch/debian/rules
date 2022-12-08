@@ -1,10 +1,10 @@
 #!/usr/bin/make -f
 
 # environment variables to find CUDA and custom jemalloc build
-export PATH=/usr/local/cuda/bin:/usr/local/bin:$PATH
-export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$CPLUS_INCLUDE_PATH
-export LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$LIBRARY_PATH
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda/bin:/usr/local/bin:$$PATH
+export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$$CPLUS_INCLUDE_PATH
+export LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$$LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$$LD_LIBRARY_PATH
 
 # disable link-time optimization, not working with CUDA builds
 export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
