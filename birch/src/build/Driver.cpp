@@ -1120,28 +1120,29 @@ void birch::Driver::setup() {
   contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_CANONICAL_NAME\\}\\}"), canonicalName);
   std::stringstream configureStream;
   configureStream << contents << "\n\n";
+  configureStream << "if $checks; then\n";
 
   /* required headers */
   for (auto value : metaContents["require.header"]) {
-    configureStream << "AC_CHECK_HEADERS([" << value << "], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])\n";
+    configureStream << "  AC_CHECK_HEADERS([" << value << "], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])\n";
   }
   for (auto value : metaContents["require.package"]) {
     auto tarName = tar(value);
-    configureStream << "AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])\n";
+    configureStream << "  AC_CHECK_HEADERS([" << tarName << ".hpp], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])\n";
   }
 
   /* required libraries */
   for (auto value : metaContents["require.library"]) {
-    configureStream << "AC_CHECK_LIB([" << value << "], [main], [], [AC_MSG_ERROR([required library not found.])])\n";
+    configureStream << "  AC_CHECK_LIB([" << value << "], [main], [], [AC_MSG_ERROR([required library not found.])])\n";
   }
   for (auto value : metaContents["require.package"]) {
     auto tarName = tar(value);
-    configureStream << "if $single; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "-single], [main], [SINGLE_LIBS=\"$SINGLE_LIBS -l" << tarName << "-single\"], [AC_MSG_ERROR([required library not found.])], [$SINGLE_LIBS])\n";
-    configureStream << "fi\n";
-    configureStream << "if $double; then\n";
-    configureStream << "  AC_CHECK_LIB([" << tarName << "], [main], [DOUBLE_LIBS=\"$DOUBLE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$DOUBLE_LIBS])\n";
-    configureStream << "fi\n";
+    configureStream << "  if $single; then\n";
+    configureStream << "    AC_CHECK_LIB([" << tarName << "-single], [main], [SINGLE_LIBS=\"$SINGLE_LIBS -l" << tarName << "-single\"], [AC_MSG_ERROR([required library not found.])], [$SINGLE_LIBS])\n";
+    configureStream << "  fi\n";
+    configureStream << "  if $double; then\n";
+    configureStream << "    AC_CHECK_LIB([" << tarName << "], [main], [DOUBLE_LIBS=\"$DOUBLE_LIBS -l" << tarName << "\"], [AC_MSG_ERROR([required library not found.])], [$DOUBLE_LIBS])\n";
+    configureStream << "  fi\n";
   }
 
   /* required programs */
@@ -1151,6 +1152,7 @@ void birch::Driver::setup() {
     configureStream << "    AC_MSG_ERROR([required program not found.])\n";
     configureStream << "  fi\n";
   }
+  configureStream << "fi\n";
 
   /* footer */
   configureStream << "AC_SUBST([DOUBLE_LIBS])\n";
