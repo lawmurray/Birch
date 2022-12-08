@@ -10,15 +10,12 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib6
 export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
 
 %:
-	dh $@
+	dh --builddir cuda $@
+	dh --builddir eigen $@
 
 override_dh_auto_configure:
 	dh_auto_configure --builddir cuda -- --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
 	dh_auto_configure --builddir eigen -- --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
-
-override_dh_auto_build:
-	dh_auto_build --builddir cuda
-	dh_auto_build --builddir eigen
 
 override_dh_auto_install:
 	dh_auto_install --builddir cuda
