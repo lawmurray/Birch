@@ -88,6 +88,7 @@ if $checks; then
     AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   fi
   if $cuda; then
+    AX_CHECK_COMPILE_FLAG([--allow-unsupported-compiler], [CXXFLAGS="$CXXFLAGS --allow-unsupported-compiler"], [], [-Werror])
     AC_CHECK_HEADERS([cublas_v2.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([cusolverDn.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
