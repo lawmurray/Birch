@@ -67,6 +67,9 @@ Static libraries for Numbirch with CUDA backend.
 # library builds
 %define _lto_cflags -flto -ffat-lto-objects
 
+# redefine configure for out of source builds
+%define _configure ../configure
+
 # environment variables to find CUDA and custom jemalloc build
 export PATH=/usr/local/cuda/bin:/usr/local/bin:$PATH
 export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$CPLUS_INCLUDE_PATH
@@ -75,13 +78,13 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib6
 
 mkdir -p eigen
 cd eigen
-../configure --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
+%configure --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
 %make_build
 cd ..
 
 mkdir -p cuda
 cd cuda
-../configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
+%configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
 %make_build
 cd ..
 
