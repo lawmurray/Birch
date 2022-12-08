@@ -304,6 +304,8 @@ commands:
         description: Directory containing the package
         type: string
     steps:
+      - version:
+          dir: << parameters.dir >>
       - run:
           name: Archive source for << parameters.dir >>
           command: |
@@ -320,6 +322,8 @@ commands:
         description: Directory containing the package
         type: string
     steps:
+      - version:
+          dir: << parameters.dir >>
       - run:
           name: Archive source for << parameters.dir >>
           command: |
