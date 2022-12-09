@@ -34,5 +34,4 @@ override_dh_shlibdeps:
 	# fix "error: no dependency information found for... check if the library
 	# actually comes from a package" that arises from installing CUDA outside
 	# package ecosystem
-	dh_shlibdeps --builddir cuda --dpkg-shlibdeps-params=--ignore-missing-info
-	dh_shlibdeps --builddir eigen
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
