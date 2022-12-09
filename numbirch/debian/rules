@@ -1,13 +1,5 @@
-#!/usr/bin/make -f
-
-# environment variables to find CUDA and custom jemalloc build
-export PATH := /usr/local/cuda/bin:/usr/local/bin:$(PATH)
-export CPLUS_INCLUDE_PATH := /usr/local/cuda/include:/usr/local/include:$(CPLUS_INCLUDE_PATH)
-export LIBRARY_PATH := /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$(LIBRARY_PATH)
-export LD_LIBRARY_PATH := /usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$(LD_LIBRARY_PATH)
-
-# disable link-time optimization, not working with CUDA builds
-export DEB_BUILD_MAINT_OPTIONS := optimize=-lto
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+TIONS := optimize=-lto
 
 %:
 	dh $@ --builddir cuda
@@ -29,3 +21,10 @@ override_dh_auto_install:
 	dh_auto_install --builddir cuda
 	dh_auto_install --builddir eigen
 	find $(DESTDIR) -type f -name '*.la' -delete
+
+override_dh_shlibdeps:
+	# fix "error: no dependency information found for... check if the library
+	# actually comes from a package" that arises from installing CUDA outside
+	# package ecosystem
+	dh_shlibdeps --builddir cuda --dpkg-shlibdeps-params=--ignore-missing-info
+	dh_shlibdeps --builddir eigen
