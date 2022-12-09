@@ -179,7 +179,9 @@ dist_noinst_DATA =  \
   debian/control \
   debian/copyright \
   debian/libnumbirch-0.0.0.install \
+  debian/libnumbirch-cuda-0.0.0.install \
   debian/numbirch-dev.install \
+  debian/numbirch-cuda-dev.install \
   debian/rules \
   numbirch.spec \
   Doxyfile \
