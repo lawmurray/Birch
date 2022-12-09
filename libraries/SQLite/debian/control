@@ -13,5 +13,5 @@ Description: SQLite wrapper library of the Birch probabilistic programming langu
 
 Package: birch-sqlite-dev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-sqlite-0.0.0 (>= 0.0.0), birch-standard-dev (>= 0.0.0), libsqlite3-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-sqlite-0.0.0 (= 0.0.0), birch-standard-dev (>= 0.0.0), libsqlite3-dev
 Description: Development files for the SQLite wrapper library of Birch

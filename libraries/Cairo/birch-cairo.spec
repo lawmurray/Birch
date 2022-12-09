@@ -28,7 +28,7 @@ Shared libraries for the Birch Cairo wrapper.
 
 %package devel
 Summary: Development files for Birch Cairo wrapper
-Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} birch-standard-devel
+Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} birch-standard-devel >= %{version}
 %description devel
 Development files for the Birch Cairo wrapper.
 

@@ -13,5 +13,5 @@ Description: Standard library of the Birch probabilistic programming language
 
 Package: birch-standard-dev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-standard-0.0.0 (>= 0.0.0), membirch-dev (>= 0.0.0), numbirch-dev (>= 0.0.0), libyaml-dev, libboost-math-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-standard-0.0.0 (= 0.0.0), membirch-dev (>= 0.0.0), numbirch-dev (>= 0.0.0), libyaml-dev, libboost-math-dev
 Description: Development files for the standard library of Birch

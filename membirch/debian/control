@@ -13,5 +13,5 @@ Description: C++ library of smart pointer types for object-level copy-on-write
 
 Package: membirch-dev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmembirch-0.0.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmembirch-0.0.0 (= 0.0.0)
 Description: Development files for MemBirch

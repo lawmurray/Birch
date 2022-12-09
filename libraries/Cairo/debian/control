@@ -13,5 +13,5 @@ Description: Cairo wrapper library of the Birch probabilistic programming langua
 
 Package: birch-cairo-dev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-cairo-0.0.0 (>= 0.0.0), birch-standard-dev (>= 0.0.0), libcairo2-dev, libfreetype6-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-cairo-0.0.0 (= 0.0.0), birch-standard-dev (>= 0.0.0), libcairo2-dev, libfreetype6-dev
 Description: Development files for the Cairo wrapper library of Birch
