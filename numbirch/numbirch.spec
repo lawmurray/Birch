@@ -72,8 +72,8 @@ Static libraries for Numbirch with CUDA backend.
 # environment variables to find CUDA and custom jemalloc build
 export PATH=/usr/local/cuda/bin:/usr/local/bin:$PATH
 export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$CPLUS_INCLUDE_PATH
-export LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$LIBRARY_PATH
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:/usr/local/lib64:/usr/local/lib:$LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 
 mkdir -p cuda
 cd cuda
