@@ -9,4 +9,3 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 	find $(DESTDIR) -type f -name '*.la' -delete
-
