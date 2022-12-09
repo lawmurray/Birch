@@ -720,6 +720,7 @@ jobs:
                 libsqlite3-dev \
                 libcairo2-dev \
                 build-essential \
+                apt-utils \
                 dpkg \
                 dpkg-dev \
                 devscripts \
