@@ -11,7 +11,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O3 -march=native -flto -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       CONFIGURE_FLAGS: "--disable-assert"
       BIRCH_FLAGS: "--unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
       # ^ --unit here also affects source tarballs deployed to packages
@@ -24,7 +24,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -g -Wall -fno-inline --coverage"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
     working_directory: /root/opensuse-cover
 
@@ -35,7 +35,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/alpine
 
@@ -46,7 +46,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/archlinux
 
@@ -57,7 +57,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/debian
 
@@ -68,7 +68,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/fedora
 
@@ -79,7 +79,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/ubuntu
 
@@ -90,7 +90,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /root/project
 
@@ -100,7 +100,7 @@ executors:
     environment:
       OMP_NUM_THREADS: 4
       CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
+      MAKEFLAGS: "-j8"
       BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
     working_directory: /Users/distiller/mac
 
@@ -218,7 +218,7 @@ commands:
               cd << parameters.dir >>
               ./bootstrap
               ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
-              make install $MAKE_FLAGS
+              make install
       - run:
           name: Smoke test << parameters.dir >>
           command: |
