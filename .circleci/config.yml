@@ -415,7 +415,7 @@ commands:
               then
                 export JOBS=2  # high memory use in single thread
               else
-                export JOBS=8
+                export JOBS=12
               fi
               cp /root/source/<< parameters.package >>-[0-9]*.tar.gz .
               export VERSION=`ls *.tar.gz | sed -E 's/^<< parameters.package >>-//' | sed -E 's/.tar.gz//'`
@@ -443,7 +443,7 @@ commands:
               then
                 export JOBS=2  # high memory use in single thread
               else
-                export JOBS=8
+                export JOBS=12
               fi
               rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
