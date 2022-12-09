@@ -422,7 +422,7 @@ commands:
               tar xzf << parameters.package >>-$VERSION.tar.gz
               mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
               cd << parameters.package >>-$VERSION
-              debuild -eDEB_BUILD_OPTIONS="parallel=$JOBS"
+              debuild -j$JOBS
               lintian
               cd ..
               apt install ./*.deb  # establish dependencies as we go
