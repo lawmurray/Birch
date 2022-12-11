@@ -42,10 +42,6 @@ Requires: %{name}-devel
 %description devel-static
 Static libraries for the Birch standard library.
 
-%if 0%{?suse_version}
-%debug_package
-%endif
-
 %prep
 %setup -q -n %{name}-%{version}
 

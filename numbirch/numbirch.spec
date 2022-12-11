@@ -52,10 +52,6 @@ Requires: %{name}-cuda-devel == %{version}
 %description cuda-devel-static
 Static libraries for Numbirch with CUDA backend.
 
-%if 0%{?suse_version}
-%debug_package
-%endif
-
 %prep
 %setup -n %{name}-%{version}
 
