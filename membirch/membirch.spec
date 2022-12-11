@@ -53,6 +53,7 @@ Static libraries for Membirch.
 %configure --disable-assert --enable-shared --enable-static
 %endif
 %make_build
+strip --strip-unneeded .libs/*.so .libs/*.a
 
 %install
 %make_install

@@ -73,12 +73,14 @@ mkdir -p cuda
 cd cuda
 %configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
 %make_build
+strip --strip-unneeded .libs/*.so .libs/*.a
 cd ..
 
 mkdir -p eigen
 cd eigen
 %configure --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
 %make_build
+strip --strip-unneeded .libs/*.so .libs/*.a
 cd ..
 
 %install

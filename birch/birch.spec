@@ -38,6 +38,7 @@ copy-on-write memory management.
 %configure --disable-assert
 %endif
 %make_build
+strip --strip-unneeded %{name}
 
 %install
 %make_install
