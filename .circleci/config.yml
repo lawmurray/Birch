@@ -937,7 +937,7 @@ workflows:
           matrix:
             parameters:
               image:
-                - ubuntu:trusty
+                - ubuntu:jammy
                 - debian:bullseye
           requires:
             - source
