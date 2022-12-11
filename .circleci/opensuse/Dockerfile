@@ -33,6 +33,15 @@ RUN zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zyp
     osc \
     gh \
     doxygen \
+    rpmlint \
+    rpm-build \
+    createrepo_c \
+    dpkg \
+    dpkg-devel \
+    devscripts \
+    debhelper \
+    fakeroot \
+    reprepro \
     python310 \
     python310-pip \
     && pip3-3.10 install mkdocs mkdocs-material \
