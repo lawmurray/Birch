@@ -190,6 +190,7 @@ commands:
                       gzip \
                       bzip2 \
                       xz \
+                      zstd \
                       curl \
                       ca-certificates \
                       make \
@@ -227,6 +228,7 @@ commands:
                       gzip \
                       bzip2 \
                       xz \
+                      zstd \
                       curl \
                       ca-certificates \
                       make \
