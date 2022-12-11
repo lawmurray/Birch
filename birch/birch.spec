@@ -48,10 +48,10 @@ copy-on-write memory management.
 %files
 %license LICENSE
 %{_bindir}/%{name}
-%{_datadir}/birch
+%{_datadir}/%{name}
 
 # address rpmlint error
-%attr(755,-,-) %{_datadir}/birch/bootstrap
+%attr(755,-,-) %{_datadir}/%{name}/bootstrap
 
 %changelog
 * Fri Dec 2 2022 Lawrence Murray <lawrence@indii.org> - 1:0.0.0-1
