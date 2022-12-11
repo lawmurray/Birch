@@ -1,4 +1,3 @@
 usr/include/membirch/*
 usr/include/membirch.hpp
-usr/lib/*/libmembirch.so
 usr/lib/*/libmembirch.a

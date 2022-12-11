@@ -1,6 +1,3 @@
 usr/include/birch-cairo.hpp
-usr/lib/*/libbirch-cairo-single.so
-usr/lib/*/libbirch-cairo.so
 usr/lib/*/libbirch-cairo-single.a
 usr/lib/*/libbirch-cairo.a
-

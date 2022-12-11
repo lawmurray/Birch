@@ -310,7 +310,7 @@ commands:
           name: Update version number
           command: |
               cd << parameters.dir >>
-              for file in birch.yml configure.ac Makefile.am Makefile *.spec debian/changelog debian/control debian/*.install PKGBUILD
+              for file in birch.yml configure.ac Makefile.am Makefile *.spec debian/changelog debian/control debian/*.install debian/*.links PKGBUILD
                 do
                   if [[ -e $file ]]
                   then
