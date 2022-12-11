@@ -54,8 +54,6 @@ Static libraries for Numbirch with CUDA backend.
 
 %if 0%{?suse_version}
 %debug_package
-%else
-%global debug_package %{nil}
 %endif
 
 %prep

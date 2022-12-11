@@ -44,8 +44,6 @@ Static libraries for the Birch standard library.
 
 %if 0%{?suse_version}
 %debug_package
-%else
-%global debug_package %{nil}
 %endif
 
 %prep

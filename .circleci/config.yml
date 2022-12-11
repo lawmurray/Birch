@@ -538,7 +538,7 @@ commands:
               tar xzf << parameters.package >>-$VERSION.tar.gz
               mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
               cd << parameters.package >>-$VERSION
-              debuild -j$JOBS
+              debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
               lintian
               cd ..
               apt install ./*.deb  # establish dependencies as we go
@@ -561,7 +561,7 @@ commands:
               else
                 export JOBS=8
               fi
-              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
+              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
               mkdir -p /root/rpm/$CODENAME/{x86_64,src}
               mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
