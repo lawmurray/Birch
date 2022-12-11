@@ -937,8 +937,8 @@ workflows:
           matrix:
             parameters:
               image:
-                - ubuntu:22.04
-                - debian:11
+                - ubuntu:trusty
+                - debian:bullseye
           requires:
             - source
       - rpm:
