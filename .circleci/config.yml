@@ -109,6 +109,7 @@ commands:
   environment:
     parameters: 
       os:
+        description: Name of the executor or docker image for which to establish the environment
         type: string
         default: project
     steps:
@@ -129,6 +130,120 @@ commands:
                 key: homebrew
                 paths:
                   - /Users/distiller/Library/Caches/Homebrew
+      - when:
+          condition:
+            matches:
+              pattern: '^.*(debian|ubuntu):.*$'
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Install dependencies
+                command: |
+                    apt-get update
+                    apt-get install -y --no-install-recommends \
+                      git \
+                      ssh \
+                      gpg \
+                      tar \
+                      gzip \
+                      curl \
+                      ca-certificates \
+                      binutils \
+                      elfutils \
+                      make \
+                      autoconf \
+                      automake \
+                      flex \
+                      bison \
+                      g++ \
+                      libtool \
+                      libjemalloc-dev \
+                      libeigen3-dev \
+                      libyaml-dev \
+                      libboost-math-dev \
+                      libsqlite3-dev \
+                      libcairo2-dev \
+                      build-essential \
+                      apt-utils \
+                      dpkg \
+                      dpkg-dev \
+                      devscripts \
+                      debhelper \
+                      fakeroot \
+                      lintian \
+                      reprepro
+      - when:
+          condition:
+            matches:
+              pattern: '^.*opensuse/.*:.*$'
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Install dependencies
+                command: |
+                    zypper --non-interactive update
+                    zypper --non-interactive install --no-recommends \
+                      git \
+                      openssh \
+                      gpg \
+                      tar \
+                      gzip \
+                      curl \
+                      ca-certificates \
+                      make \
+                      flex \
+                      bison \
+                      gcc-c++ \
+                      autoconf \
+                      automake \
+                      libtool \
+                      libyaml-devel \
+                      jemalloc-devel \
+                      boost-devel \
+                      eigen3-devel \
+                      cairo-devel \
+                      sqlite3-devel \
+                      rpmlint \
+                      rpm-build \
+                      rpm-config-SUSE \
+                      createrepo_c
+      - when:
+          condition:
+            matches:
+              pattern: '^.*fedora:.*$'
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Install dependencies
+                command: |
+                    yum -y update
+                    yum -y install \
+                      git \
+                      openssh \
+                      gpg \
+                      tar \
+                      gzip \
+                      curl \
+                      ca-certificates \
+                      make \
+                      flex \
+                      bison \
+                      gcc-c++ \
+                      autoconf \
+                      automake \
+                      libtool \
+                      libyaml-devel \
+                      jemalloc-devel \
+                      boost-devel \
+                      eigen3-devel \
+                      cairo-devel \
+                      sqlite-devel \
+                      rpm \
+                      rpmlint \
+                      rpm-build \
+                      rpm-sign \
+                      redhat-rpm-config \
+                      createrepo_c
       - run:
           name: Environment variables
           command: |
@@ -141,6 +256,7 @@ commands:
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
               echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
+              echo "export CODENAME=\`echo << parameters.os >> | sed -E 's/registry.\w+.org\///' | sed -E 's/fedora:([0-9]+)/Fedora_\1/' | sed -E 's/opensuse\/leap:([0-9]+)\.([0-9]+)/openSUSE_Leap_\1.\2/' | sed -E 's/opensuse\/tumbleweed/openSUSE_Tumbleweed/' | sed -E 's/^(debian|ubuntu)://' trusty\`"
       - run:
           name: GPG keys
           command: |
@@ -426,9 +542,9 @@ commands:
               lintian
               cd ..
               apt install ./*.deb  # establish dependencies as we go
-              mkdir -p /root/deb/amd64
-              mv *.deb *.changes *.buildinfo /root/deb/amd64
-              mv *.dsc *.orig.tar.gz *.debian.tar.xz /root/deb/.
+              mkdir -p /root/deb/$CODENAME/amd64
+              mv *.deb *.changes *.buildinfo /root/deb/$CODENAME/amd64
+              mv *.dsc *.orig.tar.gz *.debian.tar.xz /root/deb/$CODENAME/.
 
   deploy_rpm:
     parameters:
@@ -447,9 +563,9 @@ commands:
               fi
               rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
-              mkdir -p /root/rpm/{x86_64,src}
-              mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/x86_64/.
-              mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/src/.
+              mkdir -p /root/rpm/$CODENAME/{x86_64,src}
+              mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
+              mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/$CODENAME/src/.
 
   deploy_obs:
     parameters:
@@ -655,10 +771,8 @@ jobs:
       - end_if_pull_request
       - checkout
       - environment
-
       - build_cpp:
           dir: birch  # needed for source_birch
-
       - source_cpp:
           dir: numbirch
       - source_cpp:
@@ -671,11 +785,9 @@ jobs:
           dir: libraries/Cairo
       - source_birch:
           dir: libraries/SQLite
-
       - run:
           name: Copy install_cuda_prereq
           command: cp numbirch/install_cuda_prereq numbirch/nvcc_wrapper /root/.
-
       - persist_to_workspace:
           root: /root
           paths:
@@ -692,45 +804,10 @@ jobs:
     resource_class: large
     steps:
       - end_if_pull_request
-      - run:
-          name: Install dependencies
-          command: |
-              apt-get update
-              apt-get install -y --no-install-recommends \
-                git \
-                ssh \
-                gpg \
-                tar \
-                gzip \
-                curl \
-                ca-certificates \
-                binutils \
-                elfutils \
-                make \
-                autoconf \
-                automake \
-                flex \
-                bison \
-                g++ \
-                libtool \
-                libjemalloc-dev \
-                libeigen3-dev \
-                libyaml-dev \
-                libboost-math-dev \
-                libsqlite3-dev \
-                libcairo2-dev \
-                build-essential \
-                apt-utils \
-                dpkg \
-                dpkg-dev \
-                devscripts \
-                debhelper \
-                fakeroot \
-                lintian \
-                reprepro
       - attach_workspace:
           at: /root
-      - environment
+      - environment:
+          os: << parameters.image >>
       - install_cuda_prereq
       - deploy_deb:
           package: numbirch
@@ -744,10 +821,10 @@ jobs:
           package: birch-cairo
       - deploy_deb:
           package: birch-sqlite
-      - run:
-          name: Create repository
-          command: |
-              cd /root/deb
+      - persist_to_workspace:
+          root: /root
+          paths:
+            - deb
 
   rpm:
     parameters: 
@@ -758,81 +835,10 @@ jobs:
     resource_class: large
     steps:
       - end_if_pull_request
-      - when:
-          condition:
-            matches:
-              pattern: '^.*opensuse.*$'
-              value: << parameters.image >>
-          steps:
-            - run:
-                name: Install dependencies
-                command: |
-                    zypper --non-interactive update
-                    zypper --non-interactive install --no-recommends \
-                      git \
-                      openssh \
-                      gpg \
-                      tar \
-                      gzip \
-                      curl \
-                      ca-certificates \
-                      make \
-                      flex \
-                      bison \
-                      gcc-c++ \
-                      autoconf \
-                      automake \
-                      libtool \
-                      libyaml-devel \
-                      jemalloc-devel \
-                      boost-devel \
-                      eigen3-devel \
-                      cairo-devel \
-                      sqlite3-devel \
-                      rpmlint \
-                      rpm-build \
-                      rpm-config-SUSE \
-                      createrepo_c
-      - when:
-          condition:
-            matches:
-              pattern: '^.*fedora.*$'
-              value: << parameters.image >>
-          steps:
-            - run:
-                name: Install dependencies
-                command: |
-                    yum -y update
-                    yum -y install \
-                      git \
-                      openssh \
-                      gpg \
-                      tar \
-                      gzip \
-                      curl \
-                      ca-certificates \
-                      make \
-                      flex \
-                      bison \
-                      gcc-c++ \
-                      autoconf \
-                      automake \
-                      libtool \
-                      libyaml-devel \
-                      jemalloc-devel \
-                      boost-devel \
-                      eigen3-devel \
-                      cairo-devel \
-                      sqlite-devel \
-                      rpm \
-                      rpmlint \
-                      rpm-build \
-                      rpm-sign \
-                      redhat-rpm-config \
-                      createrepo_c
       - attach_workspace:
           at: /root
-      - environment
+      - environment:
+          os: << parameters.image >>
       - install_cuda_prereq
       - deploy_rpm:
           package: numbirch
@@ -846,15 +852,24 @@ jobs:
           package: birch-cairo
       - deploy_rpm:
           package: birch-sqlite
-      - run:
-          name: Create repository
-          command: |
-              cd /root/rpm
-              rpmlint x86_64/*.rpm || echo
-              rpmsign --addsign x86_64/*.rpm
-              createrepo .
-              gpg --detach-sign --armor repodata/repomd.xml
-              gpg --export --armor > repomd.xml.key
+      - persist_to_workspace:
+          root: /root
+          paths:
+            - rpm
+
+  repo:
+    executor: project
+    steps:
+      - end_if_pull_request
+      - attach_workspace:
+          at: ..
+      - environment
+      - store_artifacts:
+          path: /root/source
+      - store_artifacts:
+          path: /root/deb
+      - store_artifacts:
+          path: /root/rpm
 
 workflows:
   all:
@@ -934,3 +949,8 @@ workflows:
                 - registry.fedoraproject.org/fedora:35
           requires:
             - source
+
+      - repo:
+          requires:
+            - deb
+            - rpm
