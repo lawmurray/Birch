@@ -188,6 +188,8 @@ commands:
                       gpg \
                       tar \
                       gzip \
+                      bzip2 \
+                      xz \
                       curl \
                       ca-certificates \
                       make \
@@ -223,6 +225,8 @@ commands:
                       gpg \
                       tar \
                       gzip \
+                      bzip2 \
+                      xz \
                       curl \
                       ca-certificates \
                       make \
