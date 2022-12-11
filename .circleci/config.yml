@@ -804,10 +804,10 @@ jobs:
     resource_class: large
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: /root
       - environment:
           os: << parameters.image >>
+      - attach_workspace:
+          at: /root
       - install_cuda_prereq
       - deploy_deb:
           package: numbirch
@@ -835,10 +835,10 @@ jobs:
     resource_class: large
     steps:
       - end_if_pull_request
-      - attach_workspace:
-          at: /root
       - environment:
           os: << parameters.image >>
+      - attach_workspace:
+          at: /root
       - install_cuda_prereq
       - deploy_rpm:
           package: numbirch
