@@ -260,7 +260,8 @@ commands:
             - run:
                 name: Install dependencies
                 command: |
-                    urpmi --auto-update --force --auto --no-recommends \
+                    urpmi --auto-update
+                    urpmi --force --auto --no-recommends \
                       git \
                       openssh \
                       gnupg2 \
