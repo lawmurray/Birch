@@ -996,7 +996,6 @@ workflows:
           matrix:
             parameters:
               image:
-                - registry.opensuse.org/opensuse/leap:15.3
                 - registry.opensuse.org/opensuse/leap:15.4
                 - registry.opensuse.org/opensuse/tumbleweed
                 - registry.fedoraproject.org/fedora:35
