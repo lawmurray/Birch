@@ -27,5 +27,9 @@ curl -LO $CUDA_URL
 sh ./cuda_*.run --toolkit --no-man-page --installpath=$PREFIX/cuda --override --silent
 rm cuda_*.run
 
+# symlink math_functions.h to math_functions.hpp, expected by some older
+# versions of Eigen
+ln -sf /usr/local/cuda/include/math_functions.h /usr/local/cuda/include/math_functions.hpp
+
 # install wrapper
 install nvcc_wrapper $PREFIX/bin
