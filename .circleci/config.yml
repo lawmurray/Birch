@@ -140,10 +140,11 @@ commands:
                 name: Install dependencies
                 command: |
                     apt-get update
-                    apt-get install -y --no-install-recommends \
+                    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
                       git \
                       ssh \
                       gpg \
+                      gpg-agent \
                       tar \
                       gzip \
                       curl \
@@ -249,6 +250,47 @@ commands:
                       rpm-build \
                       rpm-sign \
                       redhat-rpm-config \
+                      createrepo_c
+      - when:
+          condition:
+            matches:
+              pattern: '^.*mageia:.*$'
+              value: << parameters.os >>
+          steps:
+            - run:
+                name: Install dependencies
+                command: |
+                    urpmi --auto-update
+                    urpmi \
+                      git \
+                      openssh \
+                      gpg \
+                      tar \
+                      gzip \
+                      bzip2 \
+                      xz \
+                      zstd \
+                      curl \
+                      ca-certificates \
+                      make \
+                      flex \
+                      bison \
+                      gcc-c++ \
+                      autoconf \
+                      automake \
+                      libtool \
+                      libyaml-devel \
+                      jemalloc-devel \
+                      boost-devel \
+                      eigen3-devel \
+                      cairo-devel \
+                      sqlite-devel \
+                      rpm \
+                      rpmlint \
+                      rpm-build \
+                      rpm-sign \
+                      rpm-mageia-setup \
+                      rpm-mageia-setup-build \
                       createrepo_c
       - run:
           name: Environment variables
@@ -958,7 +1000,7 @@ workflows:
               image:
                 - registry.opensuse.org/opensuse/leap:15.3
                 - registry.opensuse.org/opensuse/leap:15.4
-                - registry.opensuse.org/opensuse/leap:tumbleweed
+                - registry.opensuse.org/opensuse/tumbleweed
                 - registry.fedoraproject.org/fedora:35
                 - registry.fedoraproject.org/fedora:36
                 - registry.fedoraproject.org/fedora:37
