@@ -943,16 +943,29 @@ workflows:
           matrix:
             parameters:
               image:
-                - ubuntu:jammy
+                - debian:stretch
+                - debian:buster
                 - debian:bullseye
+                - ubuntu:bionic
+                - ubuntu:focal
+                - ubuntu:jammy
+                - ubuntu:kinetic
           requires:
             - source
       - rpm:
           matrix:
             parameters:
               image:
+                - registry.opensuse.org/opensuse/leap:15.3
                 - registry.opensuse.org/opensuse/leap:15.4
+                - registry.opensuse.org/opensuse/leap:tumbleweed
                 - registry.fedoraproject.org/fedora:35
+                - registry.fedoraproject.org/fedora:36
+                - registry.fedoraproject.org/fedora:37
+                - registry.fedoraproject.org/fedora:rawhide
+                - mageia:7
+                - mageia:8
+                - mageia:cauldron
           requires:
             - source
 
