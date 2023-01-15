@@ -985,7 +985,6 @@ workflows:
           matrix:
             parameters:
               image:
-                - debian:stretch
                 - debian:buster
                 - debian:bullseye
                 - ubuntu:bionic
