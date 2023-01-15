@@ -1003,7 +1003,6 @@ workflows:
                 - registry.fedoraproject.org/fedora:36
                 - registry.fedoraproject.org/fedora:37
                 - registry.fedoraproject.org/fedora:rawhide
-                - mageia:7
                 - mageia:8
           requires:
             - source
