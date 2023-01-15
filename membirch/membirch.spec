@@ -8,10 +8,7 @@ Group: Development/Libraries/C and C++
 URL: https://birch.sh
 Source0: %{name}-%{version}.tar.gz
 
-%if 0%{?suse_version}
-BuildRequires: gcc-c++ autoconf automake libtool
-%endif
-%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
+%if 0%{?suse_version} || 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 BuildRequires: gcc-c++ autoconf automake libtool
 %endif
 %if 0%{?mageia}
@@ -47,11 +44,7 @@ Static libraries for Membirch.
 # library builds
 %define _lto_cflags -flto -ffat-lto-objects
 
-%if 0%{?mageia} == 7
-%configure2_5x --disable-assert --enable-shared --enable-static
-%else
 %configure --disable-assert --enable-shared --enable-static
-%endif
 %make_build
 strip --strip-unneeded .libs/*.so .libs/*.a
 

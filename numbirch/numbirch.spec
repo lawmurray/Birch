@@ -7,13 +7,7 @@ License: Apache-2.0
 Group: Development/Libraries/C and C++
 URL: https://birch.sh
 Source0: %{name}-%{version}.tar.gz
-
-%if 0%{?suse_version}
 BuildRequires: gcc-c++ autoconf automake libtool eigen3-devel
-%endif
-%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
-BuildRequires: gcc-c++ autoconf automake libtool eigen3-devel
-%endif
 
 %description
 C++ library providing numerical kernels and copy-on-write arrays.

@@ -8,14 +8,11 @@ Group: Development/Languages/C and C++
 URL: https://birch.sh
 Source0: %{name}-%{version}.tar.gz
 
-%if 0%{?suse_version}
-BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel jemalloc-devel
-%endif
-%if 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
+%if 0%{?suse_version} || 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}
 BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel jemalloc-devel
 %endif
 %if 0%{?mageia}
-BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel libstdc++-static-devel
+BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel libjemalloc-devel libstdc++-static-devel
 %endif
 Recommends: gcc-c++ autoconf automake libtool binutils elfutils libbirch-devel == %{version} birch-standard-devel == %{version}
 
@@ -32,11 +29,7 @@ copy-on-write memory management.
 %setup -q -n %{name}-%{version}
 
 %build
-%if 0%{?mageia} == 7
-%configure2_5x --disable-assert
-%else
 %configure --disable-assert
-%endif
 %make_build
 strip --strip-unneeded %{name}
 

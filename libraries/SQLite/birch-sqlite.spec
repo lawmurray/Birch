@@ -47,11 +47,7 @@ Static libraries for the Birch SQLite wrapper.
 # library builds
 %define _lto_cflags -flto -ffat-lto-objects
 
-%if 0%{?mageia} == 7
-%configure2_5x --disable-assert --enable-shared --enable-static
-%else
 %configure --disable-assert --enable-shared --enable-static
-%endif
 %make_build
 strip --strip-unneeded .libs/*.so .libs/*.a
 
