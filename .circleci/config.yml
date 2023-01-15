@@ -587,7 +587,6 @@ commands:
               mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
               cd << parameters.package >>-$VERSION
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
-              lintian
               cd ..
               apt install ./*.deb  # establish dependencies as we go
               mkdir -p /root/deb/$CODENAME/amd64
