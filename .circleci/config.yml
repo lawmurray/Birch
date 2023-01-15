@@ -133,7 +133,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: '^.*(debian|ubuntu):.*$'
+              pattern: '^.*(debian|ubuntu).*$'
               value: << parameters.os >>
           steps:
             - run:
@@ -176,7 +176,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: '^.*opensuse/.*:.*$'
+              pattern: '^.*opensuse.*$'
               value: << parameters.os >>
           steps:
             - run:
@@ -214,7 +214,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: '^.*fedora:.*$'
+              pattern: '^.*fedora.*$'
               value: << parameters.os >>
           steps:
             - run:
@@ -254,7 +254,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: '^.*mageia:.*$'
+              pattern: '^.*mageia.*$'
               value: << parameters.os >>
           steps:
             - run:
@@ -264,7 +264,7 @@ commands:
                     urpmi \
                       git \
                       openssh \
-                      gpg \
+                      gnupg2 \
                       tar \
                       gzip \
                       bzip2 \
