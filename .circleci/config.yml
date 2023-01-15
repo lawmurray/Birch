@@ -276,15 +276,16 @@ commands:
                       flex \
                       bison \
                       gcc-c++ \
+                      libstdc++-static-devel \
                       autoconf \
                       automake \
                       libtool \
                       libyaml-devel \
-                      jemalloc-devel \
-                      boost-devel \
+                      libjemalloc-devel \
+                      libboost-devel \
                       eigen3-devel \
-                      cairo-devel \
-                      sqlite-devel \
+                      libcairo-devel \
+                      libsqlite3-devel \
                       rpm \
                       rpmlint \
                       rpm-build \
