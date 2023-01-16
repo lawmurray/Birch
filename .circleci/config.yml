@@ -284,7 +284,7 @@ commands:
                       boost-devel \
                       eigen3-devel \
                       cairo-devel \
-                      sqlite-devel \
+                      sqlite3-devel \
                       rpm \
                       rpmlint \
                       rpm-build \
