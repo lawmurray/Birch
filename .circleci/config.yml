@@ -578,6 +578,9 @@ commands:
               if [[ '<< parameters.package >>' = 'birch-standard' ]]
               then
                 export JOBS=2  # high memory use in single thread
+              elif [[ '<< parameters.package >>' = 'numbirch' ]]
+              then
+                export JOBS=6
               else
                 export JOBS=8
               fi
@@ -605,6 +608,9 @@ commands:
               if [[ '<< parameters.package >>' = 'birch-standard' ]]
               then
                 export JOBS=2  # high memory use in single thread
+              elif [[ '<< parameters.package >>' = 'numbirch' ]]
+              then
+                export JOBS=6
               else
                 export JOBS=8
               fi
