@@ -16,7 +16,7 @@ Source0: birch-standard-%{version}.tar.gz
 BuildRequires: gcc-c++ autoconf automake libtool birch == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel boost-devel
 %endif
 %if 0%{?mageia}
-BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel libboost-devel libstdc++-static-devel
+BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch == %{version} membirch-devel == %{version} numbirch-devel == %{version} yaml-devel boost-devel
 %endif
 
 %description

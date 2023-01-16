@@ -12,7 +12,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel jemalloc-devel
 %endif
 %if 0%{?mageia}
-BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel libjemalloc-devel libstdc++-static-devel
+BuildRequires: flex bison gcc-c++ autoconf automake libtool yaml-devel jemalloc-devel
 %endif
 Recommends: gcc-c++ autoconf automake libtool binutils elfutils libbirch-devel == %{version} birch-standard-devel == %{version}
 

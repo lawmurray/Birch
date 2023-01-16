@@ -15,7 +15,7 @@ BuildRequires: gcc-c++ autoconf automake libtool birch-standard-devel == %{versi
 BuildRequires: gcc-c++ autoconf automake libtool birch-standard-devel == %{version} sqlite-devel
 %endif
 %if 0%{?mageia}
-BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch-standard-devel == %{version} libsqlite3-devel
+BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch-standard-devel == %{version} sqlite3-devel
 %endif
 
 %description
