@@ -176,7 +176,7 @@ commands:
       - when:
           condition:
             matches:
-              pattern: '^.*opensuse.*:.*$'
+              pattern: '^.*opensuse/(leap:.*|tumbleweed)$'
               value: << parameters.os >>
           steps:
             - run:
