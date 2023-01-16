@@ -12,7 +12,7 @@ Source0: %{name}-%{version}.tar.gz
 BuildRequires: gcc-c++ autoconf automake libtool birch-standard-devel == %{version} cairo-devel
 %endif
 %if 0%{?mageia}
-BuildRequires: gcc-c++ gomp-devel autoconf automake libtool birch-standard-devel == %{version} cairo-devel
+BuildRequires: gcc-c++ libgomp-devel autoconf automake libtool birch-standard-devel == %{version} cairo-devel
 %endif
 
 %description
