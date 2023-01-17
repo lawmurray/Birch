@@ -316,7 +316,6 @@ commands:
               echo %_gpg_name $GPG_NAME > /root/.rpmmacros
               unset GPG_PUBLIC_KEY GPG_SIGNING_KEY GPG_NAME
               gpg --import public.key signing.key
-              rpm --import public.key
               rm public.key signing.key
 
   install_cuda_prereq:
@@ -923,6 +922,9 @@ jobs:
           name: Initialize repository
           command: |
               mkdir -p /root/rpm/$CODENAME/{x86_64,src}
+              gpg --export --armor > public.key
+              rpm --import public.key
+              rm public.key
       - deploy_rpm:
           package: numbirch
       - deploy_rpm:
