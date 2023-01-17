@@ -595,9 +595,7 @@ commands:
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
               cd ..
               apt install ./*.deb  # establish dependencies as we go
-              mkdir -p /root/deb/$CODENAME/amd64
-              mv *.deb *.changes *.buildinfo /root/deb/$CODENAME/amd64
-              mv *.dsc *.orig.tar.gz *.debian.tar.xz /root/deb/$CODENAME/.
+              reprepro -b /root/deb/$CODENAME include $CODENAME *.changes
 
   deploy_rpm:
     parameters:
@@ -866,6 +864,12 @@ jobs:
       - attach_workspace:
           at: /root
       - install_cuda_prereq
+      - run:
+          name: Initialize repository
+          command: |
+              cd /root/deb/$CODENAME
+              mkdir conf
+              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > conf/distributions
       - deploy_deb:
           package: numbirch
       - deploy_deb:
@@ -878,6 +882,11 @@ jobs:
           package: birch-cairo
       - deploy_deb:
           package: birch-sqlite
+      - run:
+          name: Finalize repository
+          command: |
+              cd /root/deb/$CODENAME
+              gpg --export --armor > dists/$CODENAME/Release.key
       - persist_to_workspace:
           root: /root
           paths:
@@ -909,6 +918,13 @@ jobs:
           package: birch-cairo
       - deploy_rpm:
           package: birch-sqlite
+      - run:
+          name: Finalize repository
+          command: |
+              cd /root/rpm/$CODENAME
+              createrepo .
+              gpg --detach-sign --armor repodata/repomd.xml
+              gpg --export --armor > repomd.xml.key
       - persist_to_workspace:
           root: /root
           paths:
