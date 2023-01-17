@@ -316,6 +316,7 @@ commands:
               echo %_gpg_name $GPG_NAME > /root/.rpmmacros
               unset GPG_PUBLIC_KEY GPG_SIGNING_KEY GPG_NAME
               gpg --import public.key signing.key
+              rpm --import public.key
               rm public.key signing.key
 
   install_cuda_prereq:
@@ -576,7 +577,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Debian package << parameters.package >>
+          name: Build Debian package << parameters.package >>
           command: |
               if [[ '<< parameters.package >>' = 'birch-standard' ]]
               then
@@ -594,7 +595,13 @@ commands:
               cd << parameters.package >>-$VERSION
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
               cd ..
-              apt install ./*.deb  # establish dependencies as we go
+      - run:
+          name: Install Debian package << parameters.package >>
+          command: |
+              apt install *.deb
+      - run:
+          name: Deploy Debian package << parameters.package >>
+          command: |
               reprepro -b /root/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
 
   deploy_rpm:
@@ -604,7 +611,7 @@ commands:
         type: string
     steps:
       - run:
-          name: RPM package << parameters.package >>
+          name: Build RPM package << parameters.package >>
           command: |
               if [[ '<< parameters.package >>' = 'birch-standard' ]]
               then
@@ -616,8 +623,17 @@ commands:
                 export JOBS=8
               fi
               rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
+      - run:
+          name: Sign RPM package << parameters.package >>
+          command: |
               rpmsign --addsign /root/rpmbuild/RPMS/x86_64/*.rpm
+      - run:
+          name: Install RPM package << parameters.package >>
+          command: |
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
+      - run:
+          name: Deploy RPM package << parameters.package >>
+          command: |
               mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
               mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/$CODENAME/src/.
 
