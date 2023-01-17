@@ -304,7 +304,7 @@ commands:
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
               echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-              echo "export CODENAME=\`echo << parameters.os >> | sed -E 's/registry.\w+.org\///' | sed -E 's/fedora:([0-9]+)/Fedora_\1/' | sed -E 's/opensuse\/leap:([0-9]+)\.([0-9]+)/openSUSE_Leap_\1.\2/' | sed -E 's/opensuse\/tumbleweed/openSUSE_Tumbleweed/' | sed -E 's/^(debian|ubuntu)://'\`" >> $BASH_ENV
+              echo "export CODENAME=\`echo << parameters.os >> | sed -E 's/registry.\w+.org\///' | sed -E 's/fedora:([0-9A_Za-z]+)/Fedora_\1/' | sed -E 's/opensuse\/leap:([0-9]+)\.([0-9]+)/openSUSE_Leap_\1.\2/' | sed -E 's/opensuse\/tumbleweed/openSUSE_Tumbleweed/' | sed -E 's/mageia:([0-9A_Za-z]+)/Mageia_\1/' | sed -E 's/^(debian|ubuntu)://'\`" >> $BASH_ENV
       - run:
           name: GPG keys
           command: |
@@ -615,6 +615,7 @@ commands:
                 export JOBS=8
               fi
               rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
+              rpmsign --addsign /root/rpmbuild/RPMS/x86_64/*.rpm
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
               mkdir -p /root/rpm/$CODENAME/{x86_64,src}
               mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
