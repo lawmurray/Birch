@@ -597,7 +597,7 @@ commands:
       - run:
           name: Install Debian package << parameters.package >>
           command: |
-              apt install *.deb
+              apt install ./*.deb  # must specify ./ to find packages
       - run:
           name: Deploy Debian package << parameters.package >>
           command: |
