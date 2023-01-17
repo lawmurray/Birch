@@ -618,7 +618,6 @@ commands:
               rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
               rpmsign --addsign /root/rpmbuild/RPMS/x86_64/*.rpm
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
-              mkdir -p /root/rpm/$CODENAME/{x86_64,src}
               mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
               mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/$CODENAME/src/.
 
@@ -867,9 +866,8 @@ jobs:
       - run:
           name: Initialize repository
           command: |
-              cd /root/deb/$CODENAME
-              mkdir conf
-              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > conf/distributions
+              mkdir -p /root/deb/$CODENAME/conf
+              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/$CODENAME/conf/distributions
       - deploy_deb:
           package: numbirch
       - deploy_deb:
@@ -885,8 +883,7 @@ jobs:
       - run:
           name: Finalize repository
           command: |
-              cd /root/deb/$CODENAME
-              gpg --export --armor > dists/$CODENAME/Release.key
+              gpg --export --armor > /root/deb/$CODENAME/dists/$CODENAME/Release.key
       - persist_to_workspace:
           root: /root
           paths:
@@ -906,6 +903,10 @@ jobs:
       - attach_workspace:
           at: /root
       - install_cuda_prereq
+      - run:
+          name: Initialize repository
+          command: |
+              mkdir -p /root/rpm/$CODENAME/{x86_64,src}
       - deploy_rpm:
           package: numbirch
       - deploy_rpm:
