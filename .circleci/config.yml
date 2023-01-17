@@ -595,7 +595,7 @@ commands:
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
               cd ..
               apt install ./*.deb  # establish dependencies as we go
-              reprepro -b /root/deb/$CODENAME include $CODENAME *.changes
+              reprepro -b /root/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
 
   deploy_rpm:
     parameters:
