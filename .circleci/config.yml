@@ -917,12 +917,10 @@ jobs:
       - attach_workspace:
           at: ..
       - environment
+      - run:
+          command: cd /root && tar cfJ repo.tar.xz source deb rpm
       - store_artifacts:
-          path: /root/source
-      - store_artifacts:
-          path: /root/deb
-      - store_artifacts:
-          path: /root/rpm
+          path: /root/repo.tar.xz
 
 workflows:
   all:
