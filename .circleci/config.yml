@@ -187,6 +187,7 @@ commands:
                       git \
                       openssh \
                       gpg \
+                      distribution-gpg-keys \
                       tar \
                       gzip \
                       bzip2 \
@@ -225,6 +226,7 @@ commands:
                       git \
                       openssh \
                       gpg \
+                      distribution-gpg-keys \
                       tar \
                       gzip \
                       bzip2 \
@@ -265,6 +267,7 @@ commands:
                       git \
                       openssh \
                       gnupg2 \
+                      distribution-gpg-keys \
                       tar \
                       gzip \
                       bzip2 \
