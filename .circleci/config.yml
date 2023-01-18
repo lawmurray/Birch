@@ -145,7 +145,7 @@ commands:
                       ssh \
                       gpg \
                       gpg-agent \
-                      rename \
+                      util-linux \
                       tar \
                       gzip \
                       curl \
