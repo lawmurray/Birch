@@ -145,7 +145,7 @@ commands:
                       ssh \
                       gpg \
                       gpg-agent \
-                      util-linux \
+                      rename \
                       tar \
                       gzip \
                       curl \
@@ -367,7 +367,6 @@ commands:
                   if [[ -e $file ]]
                   then
                     cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
-                    rename 0.0.0 $VERSION $file || echo
                   fi
                 done
 
@@ -589,7 +588,7 @@ commands:
                 export JOBS=8
               fi
               cp /root/source/<< parameters.package >>-[0-9]*.tar.gz .
-              rename .tar.gz .orig.tar.gz << parameters.package >>-*.tar.gz
+              rename s/\.tar\.gz$/.orig.tar.gz/ << parameters.package >>-*.tar.gz
               tar xzf << parameters.package >>-*.orig.tar.gz
               cd << parameters.package >>-*
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
