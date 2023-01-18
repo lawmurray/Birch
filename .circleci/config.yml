@@ -588,20 +588,23 @@ commands:
               else
                 export JOBS=8
               fi
+              mkdir << parameters.package >>
+              cd << parameters.package >>
               cp /root/source/<< parameters.package >>-[0-9]*[0-9].tar.gz .
               tar xzf << parameters.package >>-[0-9]*[0-9].tar.gz
               rename s/<< parameters.package >>-/<< parameters.package >>_/ << parameters.package >>-[0-9]*[0-9].tar.gz
               rename s/.tar.gz/.orig.tar.gz/ << parameters.package >>_[0-9]*[0-9].tar.gz
               cd << parameters.package >>-[0-9]*[0-9]
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
-              cd ..
       - run:
           name: Install Debian package << parameters.package >>
           command: |
-              apt-get install -y ./<< parameters.package >>-*.deb  # must specify ./ to find packages
+              cd << parameters.package >>
+              apt-get install -y ./*.deb  # must specify ./ to find packages
       - run:
           name: Deploy Debian package << parameters.package >>
           command: |
+              cd << parameters.package >>
               reprepro -b /root/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
 
   deploy_rpm:
