@@ -588,10 +588,10 @@ commands:
               else
                 export JOBS=8
               fi
-              cp /root/source/<< parameters.package >>-[0-9]*.tar.gz .
-              rename s/\.tar\.gz$/.orig.tar.gz/ << parameters.package >>-*.tar.gz
-              tar xzf << parameters.package >>-*.orig.tar.gz
-              cd << parameters.package >>-*
+              cp /root/source/<< parameters.package >>-[0-9]*[0-9].tar.gz .
+              rename s/\.tar\.gz$/.orig.tar.gz/ << parameters.package >>-[0-9]*[0-9].tar.gz
+              tar xzf << parameters.package >>-[0-9]*[0-9].orig.tar.gz
+              cd << parameters.package >>-[0-9]*[0-9]
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
               cd ..
       - run:
