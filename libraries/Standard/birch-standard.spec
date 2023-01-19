@@ -29,7 +29,7 @@ Shared libraries for the Birch standard library.
 
 %package devel
 Summary: Development files for the Birch standard library
-Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel boost-devel
+Requires: lib%{name}-0_0_0 == %{version} membirch-devel == %{version} numbirch-devel == %{version} libyaml-devel boost-devel
 %description devel
 Development files for the Birch standard library.
 

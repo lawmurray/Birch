@@ -14,7 +14,7 @@ BuildRequires: flex bison gcc-c++ autoconf automake libtool libyaml-devel jemall
 %if 0%{?mageia}
 BuildRequires: flex bison gcc-c++ autoconf automake libtool yaml-devel jemalloc-devel
 %endif
-Recommends: gcc-c++ autoconf automake libtool binutils elfutils libbirch-devel == %{version} birch-standard-devel == %{version}
+Recommends: gcc-c++ autoconf automake libtool binutils elfutils numbirch-devel == %{version} membirch-devel == %{version} birch-standard-devel == %{version}
 
 %description
 Birch is a programming language for expressing probabilistic models and

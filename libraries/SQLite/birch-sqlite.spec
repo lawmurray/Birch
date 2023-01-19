@@ -28,7 +28,7 @@ Shared libraries for the Birch SQLite wrapper.
 
 %package devel
 Summary: Development files for Birch SQLite wrapper
-Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version} birch-standard-devel >= %{version}
+Requires: lib%{name}-0_0_0 == %{version} birch-standard-devel >= %{version}
 %description devel
 Development files for the Birch SQLite wrapper.
 
