@@ -709,10 +709,10 @@ commands:
                   sponge $TARNAME.rb
               fi
 
-  deploy_website:
+  deploy_docs:
     steps:
       - run:
-          name: Deploy website
+          name: Deploy docs.birch.sh
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
@@ -721,6 +721,23 @@ commands:
                 cp -r mkdocs.yml docs docs.birch.sh/.
                 cd docs.birch.sh
                 mkdocs gh-deploy
+              fi
+
+  deploy_download:
+    steps:
+      - run:
+          name: Deploy download.birch.sh
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                mkdir download.birch.sh
+                cd download.birch.sh
+                git init
+                git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/download.birch.sh.git
+                mv /root/source /root/deb /root/rpm .
+                git add .
+                git commit -m "Overwrite."
+                git push origin gh-pages -f
               fi
 
 jobs:
@@ -836,7 +853,7 @@ jobs:
           dir: libraries/SQLite
       - brew_commit
 
-      - deploy_website
+      - deploy_docs
     
   source:
     executor: project
@@ -960,6 +977,7 @@ jobs:
       - attach_workspace:
           at: ..
       - environment
+      - deploy_download
       - run:
           command: cd /root && tar cfJ repo.tar.xz source deb rpm
       - store_artifacts:
