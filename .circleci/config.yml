@@ -971,10 +971,6 @@ jobs:
           at: ..
       - environment
       - deploy_download
-      - run:
-          command: cd /root && tar cfJ repo.tar.xz source deb rpm
-      - store_artifacts:
-          path: /root/repo.tar.xz
 
 workflows:
   all:
