@@ -318,6 +318,23 @@ commands:
               unset GPG_PUBLIC_KEY GPG_SIGNING_KEY GPG_NAME
               gpg --import public.key signing.key
               rm public.key signing.key
+      - run:
+          name: Git identity
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+      - run:
+          name: OSC identity
+          command: |
+              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
+              then
+                mkdir -p ~/.config/osc
+                echo [general]                          > ~/.config/osc/oscrc
+                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
+                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
+                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
+                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
+              fi
 
   install_cuda_prereq:
     steps:
@@ -501,29 +518,6 @@ commands:
               make dist
               mkdir -p /root/source
               mv *-$VERSION.tar.gz /root/source/.
-
-  brew_identity:
-    steps:
-      - run:
-          name: Configure Homebrew
-          command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-
-  osc_identity:
-    steps:
-      - run:
-          name: Configure OSC
-          command: |
-              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
-              then
-                mkdir -p ~/.config/osc
-                echo [general]                          > ~/.config/osc/oscrc
-                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
-                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
-                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
-                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
-              fi
 
   osc_checkout:
     steps:
@@ -732,11 +726,11 @@ commands:
               then
                 mkdir download.birch.sh
                 cd download.birch.sh
-                git init
-                git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/download.birch.sh.git
+                git init -b gh-pages
                 mv /root/source /root/deb /root/rpm .
                 git add .
                 git commit -m "Overwrite."
+                git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/download.birch.sh.git
                 git push origin gh-pages -f
               fi
 
@@ -821,7 +815,6 @@ jobs:
           at: ..
       - environment
 
-      - osc_identity
       - osc_checkout
       - deploy_obs:
           dir: numbirch
@@ -837,7 +830,6 @@ jobs:
           dir: libraries/SQLite
       - osc_commit
 
-      - brew_identity
       - brew_checkout
       - deploy_brew:
           dir: numbirch
