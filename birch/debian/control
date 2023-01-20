@@ -9,7 +9,7 @@ Homepage: https://birch.sh
 Package: birch
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: g++, autoconf, automake, libtool, membirch-dev, numbirch-dev, birch-standard-dev
+Recommends: g++, make, autoconf, automake, libtool, membirch-dev, numbirch-dev, birch-standard-dev
 Description: universal probabilistic programming
  Birch is a programming language for expressing probabilistic models and
  performing Bayesian inference. It is used by statisticians, data scientists,
