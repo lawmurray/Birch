@@ -25,7 +25,7 @@ Shared library for Membirch.
 
 %package devel
 Summary: Development files for MemBirch
-Requires: %{name} == %{version} lib%{name}-0_0_0 == %{version}
+Requires: lib%{name}-0_0_0 == %{version}
 %description devel
 Development files for Membirch.
 
