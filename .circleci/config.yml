@@ -911,7 +911,7 @@ jobs:
       - run:
           name: Finalize repository
           command: |
-              gpg --export --armor > /root/deb/$CODENAME/dists/$CODENAME/Release.key
+              gpg --export --armor > /root/deb/$CODENAME/Release.key
       - persist_to_workspace:
           root: /root
           paths:
