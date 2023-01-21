@@ -222,6 +222,7 @@ commands:
                   xz \
                   zstd \
                   curl \
+                  moreutils \
                   ca-certificates \
                   make \
                   flex \
@@ -254,6 +255,7 @@ commands:
                   xz \
                   zstd \
                   curl \
+                  moreutils \
                   ca-certificates \
                   make \
                   flex \
@@ -288,6 +290,7 @@ commands:
                   xz \
                   zstd \
                   curl \
+                  moreutils \
                   ca-certificates \
                   make \
                   flex \
@@ -377,6 +380,7 @@ commands:
                   tar \
                   gzip \
                   curl \
+                  moreutils \
                   ca-certificates \
                   binutils \
                   elfutils \
