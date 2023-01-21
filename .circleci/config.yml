@@ -446,7 +446,7 @@ commands:
     steps:
       - run:
           name: Install prerequisites for NumBirch CUDA backend
-          command: cd /root && ./install_cuda_prereq
+          command: cd numbirch && ./install_cuda_prereq
 
   end_if_pull_request:
     steps:
@@ -602,8 +602,6 @@ commands:
               ./bootstrap
               ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make dist
-              mkdir -p /root/src
-              mv *-$VERSION.tar.gz /root/src/.
 
   source_birch:
     parameters:
@@ -620,8 +618,6 @@ commands:
               birch bootstrap
               ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make dist
-              mkdir -p /root/src
-              mv *-$VERSION.tar.gz /root/src/.
 
   osc_checkout:
     steps:
@@ -686,13 +682,10 @@ commands:
               else
                 export JOBS=8
               fi
-              mkdir << parameters.package >>
               cd << parameters.package >>
-              cp /root/src/<< parameters.package >>-[0-9]*[0-9].tar.gz .
-              tar xzf << parameters.package >>-[0-9]*[0-9].tar.gz
-              rename s/<< parameters.package >>-/<< parameters.package >>_/ << parameters.package >>-[0-9]*[0-9].tar.gz
-              rename s/.tar.gz/.orig.tar.gz/ << parameters.package >>_[0-9]*[0-9].tar.gz
-              cd << parameters.package >>-[0-9]*[0-9]
+              tar xzf << parameters.package >>-$VERSION.tar.gz
+              mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
+              cd << parameters.package >>-$VERSION
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
       - run:
           name: Install Debian package << parameters.package >>
@@ -723,7 +716,8 @@ commands:
               else
                 export JOBS=8
               fi
-              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/src/<< parameters.package >>-[0-9]*.tar.gz
+              cd << parameters.package >>
+              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta << parameters.package >>-$VERSION.tar.gz
       - run:
           name: Sign RPM package << parameters.package >>
           command: |
@@ -831,7 +825,7 @@ commands:
                 mkdir download.birch.sh
                 cd download.birch.sh
                 git init -b gh-pages
-                mv /root/src /root/deb /root/rpm .
+                mv /root/deb /root/rpm .
                 git add .
                 git commit -m "Overwrite."
                 git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/download.birch.sh.git
@@ -936,15 +930,21 @@ jobs:
       - brew_commit
 
       - deploy_docs
-    
-  source:
-    executor: generic
+
+  deb:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
     steps:
       - end_if_pull_request
-      - checkout
       - environment
+      - checkout
+      - install_cuda_prereq
+
       - build_cpp:
           dir: birch  # needed for source_birch
+
       - source_cpp:
           dir: numbirch
       - source_cpp:
@@ -957,27 +957,7 @@ jobs:
           dir: libraries/Cairo
       - source_birch:
           dir: libraries/SQLite
-      - run:
-          name: Copy install_cuda_prereq
-          command: cp numbirch/install_cuda_prereq numbirch/nvcc_wrapper /root/.
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - src
-            - install_cuda_prereq
-            - nvcc_wrapper
 
-  deb:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - end_if_pull_request
-      - environment
-      - attach_workspace:
-          at: ..
-      - install_cuda_prereq
       - run:
           name: Initialize repository
           command: |
@@ -998,7 +978,6 @@ jobs:
       - run:
           name: Finalize repository
           command: |
-              gpg --export --armor > /root/deb/Release.key
               rm -rf /root/deb/conf /root/deb/db  # remove reprepro metadata
       - persist_to_workspace:
           root: ..
@@ -1013,9 +992,25 @@ jobs:
     steps:
       - end_if_pull_request
       - environment
-      - attach_workspace:
-          at: ..
+      - checkout
       - install_cuda_prereq
+
+      - build_cpp:
+          dir: birch  # needed for source_birch
+
+      - source_cpp:
+          dir: numbirch
+      - source_cpp:
+          dir: membirch
+      - source_cpp:
+          dir: birch
+      - source_birch:
+          dir: libraries/Standard
+      - source_birch:
+          dir: libraries/Cairo
+      - source_birch:
+          dir: libraries/SQLite
+
       - run:
           name: Initialize repository
           command: |
@@ -1055,6 +1050,10 @@ jobs:
       - environment
       - attach_workspace:
           at: ..
+      - run:
+          name: Merge Debian repositories
+          command: |
+            gpg --export --armor > /root/deb/Release.key
       - deploy_download
 
 workflows:
@@ -1110,7 +1109,6 @@ workflows:
 
   package:
     jobs:
-      - source
       - deb:
           matrix:
             parameters:
@@ -1120,8 +1118,6 @@ workflows:
                 - focal
                 - jammy
                 - kinetic
-          requires:
-            - source
       - rpm:
           matrix:
             parameters:
@@ -1132,9 +1128,6 @@ workflows:
                 - fedora-36
                 - fedora-37
                 - mageia-8
-          requires:
-            - source
-
       - repo:
           requires:
             - deb
