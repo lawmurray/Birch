@@ -46,15 +46,6 @@ nobase_include_HEADERS = \
   membirch/type.hpp
 
 dist_noinst_DATA =  \
-  debian/source/format \
-  debian/changelog \
-  debian/control \
-  debian/copyright \
-  debian/libmembirch-0.0.0.install \
-  debian/membirch-dev.install \
-  debian/rules \
-  membirch.spec \
   Doxyfile \
   LICENSE \
-  PKGBUILD \
   README.md

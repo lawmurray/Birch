@@ -8,18 +8,9 @@ manifest:
     - src/*/*/*/*.birch
     - src/*/*/*/*/*.birch
   other:
-    - debian/source/format
-    - debian/birch-standard-dev.install
-    - debian/changelog
-    - debian/control
-    - debian/copyright
-    - debian/libbirch-standard-0.0.0.install
-    - debian/rules
-    - birch-standard.spec
     - birch.yml
     - mkdocs.yml
     - LICENSE
-    - PKGBUILD
     - README.md
 require:
   header:

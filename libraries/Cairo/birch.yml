@@ -10,17 +10,8 @@ manifest:
     - src/SurfacePNG.birch
     - src/SurfaceSVG.birch
   other:
-    - debian/source/format
-    - debian/birch-cairo-dev.install
-    - debian/changelog
-    - debian/control
-    - debian/copyright
-    - debian/libbirch-cairo-0.0.0.install
-    - debian/rules
-    - birch-cairo.spec
     - birch.yml
     - LICENSE
-    - PKGBUILD
     - README.md
 require: 
   package: 
