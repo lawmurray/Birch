@@ -479,14 +479,21 @@ commands:
           name: Update version number
           command: |
               cd << parameters.dir >>
-              for file in birch.yml configure.ac Makefile.am Makefile *.spec debian/changelog debian/control debian/*.install debian/*.links PKGBUILD
-                do
-                  if [[ -e $file ]]
-                  then
-                    cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
-                    rename 0.0.0 $VERSION $file || echo
-                  fi
-                done
+              for file in birch.yml configure.ac Makefile.am Makefile *.spec PKGBUILD
+              do
+                if [[ -e $file ]]
+                then
+                  cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
+                fi
+              done
+              for file in debian/changelog debian/control debian/*.install debian/*.links
+              do
+                if [[ -e $file ]]
+                then
+                  cat $file | sed -E "s/0\.0\.0-1/$VERSION-1~$CODENAME/g" | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
+                  rename 0.0.0 $VERSION $file || echo
+                fi
+              done
 
   build_cpp:
     description: Build a C++ package
