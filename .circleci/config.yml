@@ -4,298 +4,397 @@ orbs:
   codecov: codecov/codecov@3.2
 
 executors:
-  opensuse-bench:
+  generic:
     docker:
-      - image: lawmurray/birch-circleci:opensuse
+      - image: registry.opensuse.org/opensuse/tumbleweed
     resource_class: large
     environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O3 -march=native -flto -Wall"
-      MAKEFLAGS: "-j8"
-      CONFIGURE_FLAGS: "--disable-assert"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
-      # ^ --unit here also affects source tarballs deployed to packages
-    working_directory: /root/opensuse-bench
+      CODENAME: generic
+    working_directory: /root/generic
 
-  opensuse-cover:
+  bench:
     docker:
-      - image: lawmurray/birch-circleci:opensuse
+      - image: registry.opensuse.org/opensuse/tumbleweed
     resource_class: large
     environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -g -Wall -fno-inline --coverage"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
-    working_directory: /root/opensuse-cover
+      CODENAME: bench
+    working_directory: /root/bench
+
+  cover:
+    docker:
+      - image: registry.opensuse.org/opensuse/tumbleweed
+    resource_class: large
+    environment:
+      CODENAME: cover
+    working_directory: /root/cover
 
   alpine:
     docker:
-      - image: lawmurray/birch-circleci:alpine
+      - image: alpine:latest
     resource_class: large
     environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
+      CODENAME: alpine
     working_directory: /root/alpine
 
-  archlinux:
+  arch:
     docker:
-      - image: lawmurray/birch-circleci:archlinux
+      - image: archlinux:latest
     resource_class: large
     environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/archlinux
-
-  debian:
-    docker:
-      - image: lawmurray/birch-circleci:debian
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/debian
-
-  fedora:
-    docker:
-      - image: lawmurray/birch-circleci:fedora
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/fedora
-
-  ubuntu:
-    docker:
-      - image: lawmurray/birch-circleci:ubuntu
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/ubuntu
-
-  project:
-    docker:
-      - image: lawmurray/birch-circleci:opensuse
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project
+      CODENAME: alpine
+    working_directory: /root/alpine
 
   mac:
     macos:
       xcode: 13.4.1
     environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKEFLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single"
+      CODENAME: mac
     working_directory: /Users/distiller/mac
+
+  buster:
+    docker:
+      - image: debian:buster
+    resource_class: large
+    environment:
+      CODENAME: buster
+    working_directory: /root/buster
+
+  bullseye:
+    docker:
+      - image: debian:bullseye
+    resource_class: large
+    environment:
+      CODENAME: bullseye
+    working_directory: /root/bullseye
+
+  focal:
+    docker:
+      - image: ubuntu:focal
+    resource_class: large
+    environment:
+      CODENAME: focal
+    working_directory: /root/focal
+
+  jammy:
+    docker:
+      - image: ubuntu:jammy
+    resource_class: large
+    environment:
+      CODENAME: jammy
+    working_directory: /root/jammy
+
+  kinetic:
+    docker:
+      - image: ubuntu:kinetic
+    resource_class: large
+    environment:
+      CODENAME: kinetic
+    working_directory: /root/kinetic
+
+  opensuse-leap-15-4:
+    docker:
+      - image: registry.opensuse.org/opensuse/leap:15.4
+    resource_class: large
+    environment:
+      CODENAME: opensuse/leap/15.4
+    working_directory: /root/opensuse-leap-15-4
+
+  opensuse-tumbleweed:
+    docker:
+      - image: registry.opensuse.org/opensuse/tumbleweed
+    resource_class: large
+    environment:
+      CODENAME: opensuse/tumbleweed
+    working_directory: /root/opensuse-tumbleweed
+
+  fedora-35:
+    docker:
+      - image: registry.fedoraproject.org/fedora:35
+    resource_class: large
+    environment:
+      CODENAME: fedora/35
+    working_directory: /root/fedora-35
+
+  fedora-36:
+    docker:
+      - image: registry.fedoraproject.org/fedora:36
+    resource_class: large
+    environment:
+      CODENAME: fedora/36
+    working_directory: /root/fedora-36
+
+  fedora-37:
+    docker:
+      - image: registry.fedoraproject.org/fedora:37
+    resource_class: large
+    environment:
+      CODENAME: fedora/37
+    working_directory: /root/fedora-37
+
+  mageia-8:
+    docker:
+      - image: mageia:8
+    resource_class: large
+    environment:
+      CODENAME: mageia/8
+    working_directory: /root/mageia-8
 
 commands:
 
   environment:
-    parameters: 
-      os:
-        description: Name of the executor or docker image for which to establish the environment
-        type: string
-        default: project
     steps:
-      - when:
-          condition:
-            equal: [ mac, << parameters.os >> ]
-          steps:
-            - restore_cache:
-                key: homebrew
-            - run:
-                name: Homebrew
-                command: |
-                    HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
-                    HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
-                    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
-                    echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-            - save_cache:
-                key: homebrew
-                paths:
-                  - /Users/distiller/Library/Caches/Homebrew
-      - when:
-          condition:
-            matches:
-              pattern: '^.*(debian|ubuntu).*:.*$'
-              value: << parameters.os >>
-          steps:
-            - run:
-                name: Install dependencies
-                command: |
-                    apt-get update
-                    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-                      git \
-                      ssh \
-                      gpg \
-                      gpg-agent \
-                      rename \
-                      tar \
-                      gzip \
-                      curl \
-                      ca-certificates \
-                      binutils \
-                      elfutils \
-                      make \
-                      autoconf \
-                      automake \
-                      flex \
-                      bison \
-                      g++ \
-                      libtool \
-                      libjemalloc-dev \
-                      libeigen3-dev \
-                      libyaml-dev \
-                      libboost-math-dev \
-                      libsqlite3-dev \
-                      libcairo2-dev \
-                      build-essential \
-                      apt-utils \
-                      dpkg \
-                      dpkg-dev \
-                      devscripts \
-                      debhelper \
-                      fakeroot \
-                      lintian \
-                      reprepro
-      - when:
-          condition:
-            matches:
-              pattern: '^.*opensuse/(leap:.*|tumbleweed)$'
-              value: << parameters.os >>
-          steps:
-            - run:
-                name: Install dependencies
-                command: |
-                    zypper --non-interactive update
-                    zypper --non-interactive install --no-recommends \
-                      git \
-                      openssh \
-                      gpg \
-                      distribution-gpg-keys \
-                      tar \
-                      gzip \
-                      bzip2 \
-                      xz \
-                      zstd \
-                      curl \
-                      ca-certificates \
-                      make \
-                      flex \
-                      bison \
-                      gcc-c++ \
-                      autoconf \
-                      automake \
-                      libtool \
-                      libyaml-devel \
-                      jemalloc-devel \
-                      boost-devel \
-                      eigen3-devel \
-                      cairo-devel \
-                      sqlite3-devel \
-                      rpmlint \
-                      rpm-build \
-                      rpm-config-SUSE \
-                      createrepo_c
-      - when:
-          condition:
-            matches:
-              pattern: '^.*fedora.*:.*$'
-              value: << parameters.os >>
-          steps:
-            - run:
-                name: Install dependencies
-                command: |
-                    yum -y update
-                    yum -y install \
-                      git \
-                      openssh \
-                      gpg \
-                      distribution-gpg-keys \
-                      tar \
-                      gzip \
-                      bzip2 \
-                      xz \
-                      zstd \
-                      curl \
-                      ca-certificates \
-                      make \
-                      flex \
-                      bison \
-                      gcc-c++ \
-                      autoconf \
-                      automake \
-                      libtool \
-                      libyaml-devel \
-                      jemalloc-devel \
-                      boost-devel \
-                      eigen3-devel \
-                      cairo-devel \
-                      sqlite-devel \
-                      rpm \
-                      rpmlint \
-                      rpm-build \
-                      rpm-sign \
-                      redhat-rpm-config \
-                      createrepo_c
-      - when:
-          condition:
-            matches:
-              pattern: '^.*mageia.*:.*$'
-              value: << parameters.os >>
-          steps:
-            - run:
-                name: Install dependencies
-                command: |
-                    urpmi --auto-update
-                    urpmi --force --no-recommends \
-                      git \
-                      openssh \
-                      gnupg2 \
-                      distribution-gpg-keys \
-                      tar \
-                      gzip \
-                      bzip2 \
-                      xz \
-                      zstd \
-                      curl \
-                      ca-certificates \
-                      make \
-                      flex \
-                      bison \
-                      gcc-c++ \
-                      autoconf \
-                      automake \
-                      libtool \
-                      yaml-devel \
-                      jemalloc-devel \
-                      boost-devel \
-                      eigen3-devel \
-                      cairo-devel \
-                      sqlite3-devel \
-                      rpm \
-                      rpmlint \
-                      rpm-build \
-                      rpm-sign \
-                      rpm-mageia-setup \
-                      rpm-mageia-setup-build \
-                      createrepo_c
+      - run:
+          name: Install dependencies
+          command: |
+              if [[ "$CODENAME" =~ "mac" ]]; then
+                HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
+                HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
+                HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
+                echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
+              elif [[ "$CODENAME" =~ "generic" ]]; then
+                zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
+                  && zypper --non-interactive refresh \
+                  && zypper --non-interactive update \
+                  && zypper --non-interactive install --no-recommends \
+                  git \
+                  openssh \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  curl \
+                  moreutils \
+                  time \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  autoconf \
+                  automake \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  gdb \
+                  lcov \
+                  libtool \
+                  libyaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite3-devel \
+                  mongodb-database-tools \
+                  osc \
+                  gh \
+                  doxygen \
+                  rpmlint \
+                  rpm-build \
+                  createrepo_c \
+                  dpkg \
+                  dpkg-devel \
+                  devscripts \
+                  debhelper \
+                  fakeroot \
+                  reprepro \
+                  python3 \
+                  python3-pip \
+                  && pip3 install mkdocs mkdocs-material \
+                  && zypper clean --all
+              elif [[ "$CODENAME" =~ "opensuse" ]]; then
+                zypper --non-interactive update
+                zypper --non-interactive install --no-recommends \
+                  git \
+                  openssh \
+                  gpg \
+                  distribution-gpg-keys \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  zstd \
+                  curl \
+                  ca-certificates \
+                  make \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  autoconf \
+                  automake \
+                  libtool \
+                  libyaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite3-devel \
+                  rpmlint \
+                  rpm-build \
+                  rpm-config-SUSE \
+                  createrepo_c
+                rm -rf /var/lib/apt/lists/*
+              elif [[ "$CODENAME" =~ "fedora" ]]; then
+                yum -y update
+                yum -y install \
+                  git \
+                  openssh \
+                  gpg \
+                  distribution-gpg-keys \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  zstd \
+                  curl \
+                  ca-certificates \
+                  make \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  autoconf \
+                  automake \
+                  libtool \
+                  libyaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite-devel \
+                  rpm \
+                  rpmlint \
+                  rpm-build \
+                  rpm-sign \
+                  redhat-rpm-config \
+                  createrepo_c
+                yum clean all
+              elif [[ "$CODENAME" =~ "mageia" ]]; then
+                urpmi --auto-update
+                urpmi --force --no-recommends \
+                  git \
+                  openssh \
+                  gnupg2 \
+                  distribution-gpg-keys \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  zstd \
+                  curl \
+                  ca-certificates \
+                  make \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  autoconf \
+                  automake \
+                  libtool \
+                  yaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite3-devel \
+                  rpm \
+                  rpmlint \
+                  rpm-build \
+                  rpm-sign \
+                  rpm-mageia-setup \
+                  rpm-mageia-setup-build \
+                  createrepo_c
+              elif [[ "$CODENAME" =~ "alpine" ]]; then
+                apk update
+                apk add --no-cache \
+                  git \
+                  openssh \
+                  gpg \
+                  gpg-agent \
+                  gpgv \
+                  tar \
+                  gzip \
+                  curl \
+                  moreutils \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  autoconf \
+                  automake \
+                  flex \
+                  bison \
+                  g++ \
+                  gdb \
+                  libtool \
+                  eigen-dev \
+                  yaml-dev \
+                  boost-dev \
+                  sqlite-dev \
+                  cairo-dev \
+                  mongodb-tools
+              elif [[ "$CODENAME" =~ "arch" ]]; then
+                pacman -Syu --noconfirm --needed \
+                  git \
+                  openssh \
+                  tar \
+                  gzip \
+                  curl \
+                  moreutils \
+                  time \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  flex \
+                  bison \
+                  gcc \
+                  lcov \
+                  gdb \
+                  autoconf \
+                  automake \
+                  libtool \
+                  jemalloc \
+                  libyaml \
+                  boost \
+                  cairo \
+                  sqlite \
+                  eigen
+                pacman -Sc --noconfirm
+              else  # Debian variant
+                apt-get update
+                DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+                  git \
+                  ssh \
+                  gpg \
+                  gpg-agent \
+                  rename \
+                  tar \
+                  gzip \
+                  curl \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  autoconf \
+                  automake \
+                  flex \
+                  bison \
+                  g++ \
+                  libtool \
+                  libjemalloc-dev \
+                  libeigen3-dev \
+                  libyaml-dev \
+                  libboost-math-dev \
+                  libsqlite3-dev \
+                  libcairo2-dev \
+                  build-essential \
+                  apt-utils \
+                  dpkg \
+                  dpkg-dev \
+                  devscripts \
+                  debhelper \
+                  fakeroot \
+                  lintian \
+                  reprepro
+                rm -rf /var/lib/apt/lists/*
+              fi
       - run:
           name: Environment variables
           command: |
@@ -308,7 +407,23 @@ commands:
               echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
               echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
-              echo "export CODENAME=\`echo << parameters.os >> | sed -E 's/registry.\w+.org\///' | sed -E 's/fedora:([0-9A_Za-z]+)/Fedora_\1/' | sed -E 's/opensuse\/leap:([0-9]+)\.([0-9]+)/openSUSE_Leap_\1.\2/' | sed -E 's/opensuse\/tumbleweed/openSUSE_Tumbleweed/' | sed -E 's/mageia:([0-9A_Za-z]+)/Mageia_\1/' | sed -E 's/^(debian|ubuntu)://'\`" >> $BASH_ENV
+              if [[ "$CODENAME" = "bench" ]]; then
+                echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
+                echo "export CXXFLAGS='-O3 -march=native -flto -Wall'" >> $BASH_ENV
+                echo "export MAKEFLAGS='-j8'" >> $BASH_ENV
+                echo "export CONFIGURE_FLAGS='--disable-assert'" >> $BASH_ENV
+                echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single' >> $BASH_ENV
+              elif [[ "$CODENAME" = "cover" ]]; then
+                echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
+                echo "export CXXFLAGS='-O0 -g -Wall -fno-inline --coverage'" >> $BASH_ENV
+                echo "export MAKEFLAGS='-j8'" >> $BASH_ENV
+                echo "export BIRCH_FLAGS='--unit=dir --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single'" >> $BASH_ENV
+              else
+                echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
+                echo "export CXXFLAGS='-O0 -Wall'" >> $BASH_ENV
+                echo "export MAKEFLAGS='-j8'" >> $BASH_ENV
+                echo "export BIRCH_FLAGS: '--unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single'" >> BASH_ENV
+              fi
       - run:
           name: GPG keys
           command: |
@@ -326,7 +441,7 @@ commands:
       - run:
           name: OSC identity
           command: |
-              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
+              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]];
               then
                 mkdir -p ~/.config/osc
                 echo [general]                          > ~/.config/osc/oscrc
@@ -352,16 +467,10 @@ commands:
               circleci step halt
             fi
   codecov:
-    parameters: 
-      os:
-        type: string
-        default: project
     steps:
       - when:
           condition:
-            matches:
-              pattern: "^.+-cover$"
-              value: << parameters.os >>
+            equal: [ $CODENAME, cover ]
           steps:
             - run:
                 name: Produce coverage report
@@ -416,9 +525,6 @@ commands:
   build_birch:
     description: Build a Birch package
     parameters:
-      os:
-        type: string
-        default: project
       dir:
         description: Directory containing the package
         type: string
@@ -434,9 +540,7 @@ commands:
       - when:
           condition:
             not:
-              matches:
-                pattern: "^.+-bench$"
-                value: << parameters.os >>
+              equal: [ $CODENAME, bench ]
           steps:
             - run:
                 name: Smoke test << parameters.dir >>
@@ -449,9 +553,7 @@ commands:
                     fi
       - when:
           condition:
-            matches:
-              pattern: "^.+-bench$"
-              value: << parameters.os >>
+            equal: [ $CODENAME, bench ]
           steps:
             - run:
                 name: Unit test << parameters.dir >>
@@ -739,12 +841,10 @@ jobs:
     parameters: 
       os:
         type: string
-        default: project
     executor: << parameters.os >>
     steps:
       - checkout
-      - environment:
-          os: << parameters.os >>
+      - environment
       - build_cpp:
           dir: numbirch
       - build_cpp:
@@ -752,45 +852,36 @@ jobs:
       - build_cpp:
           dir: birch
       - build_birch:
-          os: << parameters.os >>
           dir: libraries/Standard
       - build_birch:
-          os: << parameters.os >>
           dir: libraries/Cairo
       - build_birch:
-          os: << parameters.os >>
           dir: libraries/SQLite
       - persist_to_workspace:
           root: ..
           paths:
             - << parameters.os >>
-      - codecov:
-          os: << parameters.os >>
+      - codecov
       - end_if_pull_request
 
   test:
     parameters: 
       os:
         type: string
-        default: project
     executor: << parameters.os >>
     steps:
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.os >>
+      - environment
       - build_birch:
-          os: << parameters.os >>
           dir: tests/Test
-      - codecov:
-          os: << parameters.os >>
+      - codecov
       - end_if_pull_request
 
   example:
     parameters: 
       os:
         type: string
-        default: project
       dir:
         description: Directory containing the package
         type: string
@@ -798,17 +889,14 @@ jobs:
     steps:
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.os >>
+      - environment
       - build_birch:
-          os: << parameters.os >>
           dir: << parameters.dir >>
-      - codecov:
-          os: << parameters.os >>
+      - codecov
       - end_if_pull_request
 
   deploy:
-    executor: project
+    executor: generic
     steps:
       - end_if_pull_request
       - attach_workspace:
@@ -848,7 +936,7 @@ jobs:
       - deploy_docs
     
   source:
-    executor: project
+    executor: generic
     steps:
       - end_if_pull_request
       - checkout
@@ -879,15 +967,12 @@ jobs:
 
   deb:
     parameters: 
-      image:
+      os:
         type: string
-    docker:
-      - image: << parameters.image >>
-    resource_class: large
+    executor: << parameters.os >>
     steps:
       - end_if_pull_request
-      - environment:
-          os: << parameters.image >>
+      - environment
       - attach_workspace:
           at: /root
       - install_cuda_prereq
@@ -919,15 +1004,12 @@ jobs:
 
   rpm:
     parameters: 
-      image:
+      os:
         type: string
-    docker:
-      - image: << parameters.image >>
-    resource_class: large
+    executor: << parameters.os >>
     steps:
       - end_if_pull_request
-      - environment:
-          os: << parameters.image >>
+      - environment
       - attach_workspace:
           at: /root
       - install_cuda_prereq
@@ -964,7 +1046,7 @@ jobs:
             - rpm
 
   repo:
-    executor: project
+    executor: generic
     steps:
       - end_if_pull_request
       - attach_workspace:
@@ -980,26 +1062,18 @@ workflows:
           matrix:
             parameters:
               os:
-                - opensuse-bench
-                - opensuse-cover
+                - bench
+                - cover
                 - alpine
-                - archlinux
-                - debian
-                - fedora
-                - ubuntu
                 - mac
 
       - test:
           matrix:
             parameters:
               os:
-                - opensuse-bench
-                - opensuse-cover
+                - bench
+                - cover
                 - alpine
-                - archlinux
-                - debian
-                - fedora
-                - ubuntu
                 - mac
           requires:
             - build-<< matrix.os >>
@@ -1008,8 +1082,8 @@ workflows:
           matrix:
             parameters:
               os:
-                - opensuse-bench
-                - opensuse-cover
+                - bench
+                - cover
               dir:
                 - examples/Ecology
                 - examples/LinearGaussian
@@ -1037,24 +1111,24 @@ workflows:
       - deb:
           matrix:
             parameters:
-              image:
-                - debian:buster
-                - debian:bullseye
-                - ubuntu:focal
-                - ubuntu:jammy
-                - ubuntu:kinetic
+              os:
+                - buster
+                - bullseye
+                - focal
+                - jammy
+                - kinetic
           requires:
             - source
       - rpm:
           matrix:
             parameters:
-              image:
-                - registry.opensuse.org/opensuse/leap:15.4
-                - registry.opensuse.org/opensuse/tumbleweed
-                - registry.fedoraproject.org/fedora:35
-                - registry.fedoraproject.org/fedora:36
-                - registry.fedoraproject.org/fedora:37
-                - mageia:8
+              os:
+                - opensuse-leap-15-4
+                - opensuse-tumbleweed
+                - fedora-35
+                - fedora-36
+                - fedora-37
+                - mageia-8
           requires:
             - source
 
