@@ -157,8 +157,7 @@ commands:
           command: |
               if [[ "$CODENAME" =~ "mac" ]]; then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
-                HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
-                HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
+                HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils gnu-time libtool flex boost eigen libomp cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
               elif [[ "$CODENAME" =~ "generic" ]]; then
                 zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
@@ -172,7 +171,6 @@ commands:
                   bzip2 \
                   xz \
                   curl \
-                  moreutils \
                   time \
                   ca-certificates \
                   binutils \
@@ -222,7 +220,6 @@ commands:
                   xz \
                   zstd \
                   curl \
-                  moreutils \
                   ca-certificates \
                   make \
                   flex \
@@ -255,7 +252,6 @@ commands:
                   xz \
                   zstd \
                   curl \
-                  moreutils \
                   ca-certificates \
                   make \
                   flex \
@@ -290,7 +286,6 @@ commands:
                   xz \
                   zstd \
                   curl \
-                  moreutils \
                   ca-certificates \
                   make \
                   flex \
@@ -323,7 +318,6 @@ commands:
                   tar \
                   gzip \
                   curl \
-                  moreutils \
                   ca-certificates \
                   binutils \
                   elfutils \
@@ -348,7 +342,6 @@ commands:
                   tar \
                   gzip \
                   curl \
-                  moreutils \
                   time \
                   ca-certificates \
                   binutils \
@@ -379,7 +372,6 @@ commands:
                   tar \
                   gzip \
                   curl \
-                  moreutils \
                   ca-certificates \
                   binutils \
                   elfutils \
