@@ -412,7 +412,7 @@ commands:
                 echo "export CXXFLAGS='-O3 -march=native -flto -Wall'" >> $BASH_ENV
                 echo "export MAKEFLAGS='-j8'" >> $BASH_ENV
                 echo "export CONFIGURE_FLAGS='--disable-assert'" >> $BASH_ENV
-                echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single' >> $BASH_ENV
+                echo "export BIRCH_FLAGS='--unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single'" >> $BASH_ENV
               elif [[ "$CODENAME" = "cover" ]]; then
                 echo "export OMP_NUM_THREADS=4" >> $BASH_ENV
                 echo "export CXXFLAGS='-O0 -g -Wall -fno-inline --coverage'" >> $BASH_ENV
