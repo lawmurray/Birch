@@ -961,9 +961,9 @@ jobs:
           name: Copy install_cuda_prereq
           command: cp numbirch/install_cuda_prereq numbirch/nvcc_wrapper /root/.
       - persist_to_workspace:
-          root: /root
+          root: ..
           paths:
-            - source
+            - src
             - install_cuda_prereq
             - nvcc_wrapper
 
@@ -1001,7 +1001,7 @@ jobs:
               gpg --export --armor > /root/deb/Release.key
               rm -rf /root/deb/conf /root/deb/db  # remove reprepro metadata
       - persist_to_workspace:
-          root: /root
+          root: ..
           paths:
             - deb
 
@@ -1044,7 +1044,7 @@ jobs:
               gpg --export --armor > repodata/repomd.xml.key
               printf "[birch]\nname=Birch\ntype=rpm-md\nbaseurl=https://download.birch.sh/rpm/$CODENAME\ngpgcheck=1\ngpgkey=https://download.birch.sh/rpm/$CODENAME/repodata/repomd.xml.key\nenabled=1\nautorefresh=1\n" > birch.repo
       - persist_to_workspace:
-          root: /root
+          root: ..
           paths:
             - rpm
 
