@@ -667,68 +667,70 @@ commands:
 
   deploy_deb:
     parameters:
-      package:
-        description: Name of the package
+      dir:
+        description: Directory containing the package
         type: string
     steps:
       - run:
-          name: Build Debian package << parameters.package >>
+          name: Build Debian package << parameters.dir >>
           command: |
-              if [[ '<< parameters.package >>' = 'birch-standard' ]]
+              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]
               then
                 export JOBS=2  # high memory use in single thread
-              elif [[ '<< parameters.package >>' = 'numbirch' ]]
+              elif [[ '<< parameters.dir >>' = 'numbirch' ]]
               then
                 export JOBS=6
               else
                 export JOBS=8
               fi
-              cd << parameters.package >>
-              tar xzf << parameters.package >>-$VERSION.tar.gz
-              mv << parameters.package >>-$VERSION.tar.gz << parameters.package >>_$VERSION.orig.tar.gz
-              cd << parameters.package >>-$VERSION
+              cd << parameters.dir >>
+              TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
+              tar xzf $TARNAME-$VERSION.tar.gz
+              mv $TARNAME-$VERSION.tar.gz ${TARNAME}_$VERSION.orig.tar.gz
+              cd $TARNAME-$VERSION
               debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
       - run:
-          name: Install Debian package << parameters.package >>
+          name: Install Debian package << parameters.dir >>
           command: |
-              cd << parameters.package >>
+              cd << parameters.dir >>
               apt-get install -y ./*.deb  # must specify ./ to find packages
       - run:
-          name: Deploy Debian package << parameters.package >>
+          name: Deploy Debian package << parameters.dir >>
           command: |
-              cd << parameters.package >>
+              cd << parameters.dir >>
               reprepro -b /root/deb --ignore=wrongdistribution include $CODENAME *.changes
 
   deploy_rpm:
     parameters:
-      package:
-        description: Name of the package
+      dir:
+        description: Directory containing the package
         type: string
     steps:
       - run:
-          name: Build RPM package << parameters.package >>
+          name: Build RPM package << parameters.dir >>
           command: |
-              if [[ '<< parameters.package >>' = 'birch-standard' ]]
+              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]
               then
                 export JOBS=2  # high memory use in single thread
-              elif [[ '<< parameters.package >>' = 'numbirch' ]]
+              elif [[ '<< parameters.dir >>' = 'numbirch' ]]
               then
                 export JOBS=6
               else
                 export JOBS=8
               fi
-              cd << parameters.package >>
-              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta << parameters.package >>-$VERSION.tar.gz
+              cd << parameters.dir >>
+              TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
+              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta $TARNAME-$VERSION.tar.gz
       - run:
-          name: Sign RPM package << parameters.package >>
+          name: Sign RPM package << parameters.dir >>
           command: |
               rpmsign --addsign /root/rpmbuild/RPMS/x86_64/*.rpm
       - run:
-          name: Install RPM package << parameters.package >>
+          name: Install RPM package << parameters.dir >>
           command: |
               rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
       - run:
-          name: Deploy RPM package << parameters.package >>
+          name: Deploy RPM package << parameters.dir >>
           command: |
               mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
               mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/$CODENAME/src/.
@@ -967,17 +969,17 @@ jobs:
               mkdir -p /root/deb/conf
               printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/conf/distributions
       - deploy_deb:
-          package: numbirch
+          dir: numbirch
       - deploy_deb:
-          package: membirch
+          dir: membirch
       - deploy_deb:
-          package: birch
+          dir: birch
       - deploy_deb:
-          package: birch-standard
+          dir: libraries/Standard
       - deploy_deb:
-          package: birch-cairo
+          dir: libraries/Cairo
       - deploy_deb:
-          package: birch-sqlite
+          dir: libraries/SQLite
       - run:
           name: Finalize repository
           command: |
@@ -1022,17 +1024,17 @@ jobs:
               rpm --import public.key
               rm public.key
       - deploy_rpm:
-          package: numbirch
+          dir: numbirch
       - deploy_rpm:
-          package: membirch
+          dir: membirch
       - deploy_rpm:
-          package: birch
+          dir: birch
       - deploy_rpm:
-          package: birch-standard
+          dir: libraries/Standard
       - deploy_rpm:
-          package: birch-cairo
+          dir: libraries/Cairo
       - deploy_rpm:
-          package: birch-sqlite
+          dir: libraries/SQLite
       - run:
           name: Finalize repository
           command: |
