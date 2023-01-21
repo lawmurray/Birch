@@ -1,4 +1,4 @@
-birch-cairo (0.0.0-1) unstable; urgency=medium
+birch-cairo (0.0.0-1) main; urgency=medium
 
   * Initial release.
 
