@@ -513,14 +513,18 @@ commands:
               ./bootstrap
               ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make install
-      - run:
-          name: Smoke test << parameters.dir >>
-          command: |
-            cd << parameters.dir >>
-            if [[ -e smoke.sh ]]
-            then
-              ./smoke.sh
-            fi
+      - when:
+          condition:
+            equal: [ $CODENAME, cover ]
+          steps:
+            - run:
+                name: Smoke test << parameters.dir >>
+                command: |
+                  cd << parameters.dir >>
+                  if [[ -e smoke.sh ]]
+                  then
+                    ./smoke.sh
+                  fi
 
   build_birch:
     description: Build a Birch package
@@ -539,8 +543,7 @@ commands:
           no_output_timeout: 30m
       - when:
           condition:
-            not:
-              equal: [ $CODENAME, bench ]
+            equal: [ $CODENAME, cover ]
           steps:
             - run:
                 name: Smoke test << parameters.dir >>
