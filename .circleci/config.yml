@@ -602,8 +602,8 @@ commands:
               ./bootstrap
               ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make dist
-              mkdir -p /root/source
-              mv *-$VERSION.tar.gz /root/source/.
+              mkdir -p /root/src
+              mv *-$VERSION.tar.gz /root/src/.
 
   source_birch:
     parameters:
@@ -620,8 +620,8 @@ commands:
               birch bootstrap
               ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make dist
-              mkdir -p /root/source
-              mv *-$VERSION.tar.gz /root/source/.
+              mkdir -p /root/src
+              mv *-$VERSION.tar.gz /root/src/.
 
   osc_checkout:
     steps:
@@ -688,7 +688,7 @@ commands:
               fi
               mkdir << parameters.package >>
               cd << parameters.package >>
-              cp /root/source/<< parameters.package >>-[0-9]*[0-9].tar.gz .
+              cp /root/src/<< parameters.package >>-[0-9]*[0-9].tar.gz .
               tar xzf << parameters.package >>-[0-9]*[0-9].tar.gz
               rename s/<< parameters.package >>-/<< parameters.package >>_/ << parameters.package >>-[0-9]*[0-9].tar.gz
               rename s/.tar.gz/.orig.tar.gz/ << parameters.package >>_[0-9]*[0-9].tar.gz
@@ -723,7 +723,7 @@ commands:
               else
                 export JOBS=8
               fi
-              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/source/<< parameters.package >>-[0-9]*.tar.gz
+              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ta /root/src/<< parameters.package >>-[0-9]*.tar.gz
       - run:
           name: Sign RPM package << parameters.package >>
           command: |
@@ -831,7 +831,7 @@ commands:
                 mkdir download.birch.sh
                 cd download.birch.sh
                 git init -b gh-pages
-                mv /root/source /root/deb /root/rpm .
+                mv /root/src /root/deb /root/rpm .
                 git add .
                 git commit -m "Overwrite."
                 git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/download.birch.sh.git
