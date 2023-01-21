@@ -486,14 +486,16 @@ commands:
               do
                 if [[ -e $file ]]
                 then
-                  cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
+                  cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
+                  mv $file.sponge $file
                 fi
               done
               for file in debian/changelog debian/control debian/*.install debian/*.links
               do
                 if [[ -e $file ]]
                 then
-                  cat $file | sed -E "s/0\.0\.0-1/$VERSION-1~$CODENAME/g" | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" | sponge $file
+                  cat $file | sed -E "s/0\.0\.0-1/$VERSION-1~$CODENAME/g" | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
+                  mv $file.sponge $file
                   NEWNAME=`echo $file | sed -E "s/0\.0\.0/$VERSION/g"`
                   if [[ "$NEWNAME" != "$file" ]]
                   then
@@ -771,8 +773,9 @@ commands:
                       sed -E "s/Version: [0-9]+\.[0-9.]+/Version: $VERSION/g" |
                       sed -E "s/pkgver=[0-9]+\.[0-9.]+/pkgver=$VERSION/g" |
                       sed -E "s/>= *[0-9]+\.[0-9.]+/>= $VERSION/g" |
-                      sed -E "s/== *[0-9]+\.[0-9.]+/== $VERSION/g" |
-                      sponge $file
+                      sed -E "s/== *[0-9]+\.[0-9.]+/== $VERSION/g" >
+                      $file.sponge
+                      mv $file.sponge $file
                   fi
                 done
               fi
@@ -804,8 +807,9 @@ commands:
                   sed -E "s/-[0-9]+\.[0-9.]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
                   sed -E "s/version \"[0-9]+\.[0-9.]+\"/version \"$VERSION\"/g" |
-                  sed -E "s/=> \"[0-9]+\.[0-9.]+\"/=> \"$VERSION\"/g" |
-                  sponge $TARNAME.rb
+                  sed -E "s/=> \"[0-9]+\.[0-9.]+\"/=> \"$VERSION\"/g" >
+                  $TARNAME.rb.sponge
+                  mv $TARNAME.rb.sponge $TARNAME.rb
               fi
 
   deploy_docs:
