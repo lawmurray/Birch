@@ -703,7 +703,7 @@ commands:
           name: Deploy Debian package << parameters.package >>
           command: |
               cd << parameters.package >>
-              reprepro -b /root/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
+              reprepro -b /root/deb --ignore=wrongdistribution include $CODENAME *.changes
 
   deploy_rpm:
     parameters:
@@ -981,8 +981,8 @@ jobs:
       - run:
           name: Initialize repository
           command: |
-              mkdir -p /root/deb/$CODENAME/conf
-              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/$CODENAME/conf/distributions
+              mkdir -p /root/deb/conf
+              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/conf/distributions
       - deploy_deb:
           package: numbirch
       - deploy_deb:
@@ -998,7 +998,8 @@ jobs:
       - run:
           name: Finalize repository
           command: |
-              gpg --export --armor > /root/deb/$CODENAME/Release.key
+              gpg --export --armor > /root/deb/Release.key
+              rm -rf /root/deb/conf /root/deb/db  # remove reprepro metadata
       - persist_to_workspace:
           root: /root
           paths:
