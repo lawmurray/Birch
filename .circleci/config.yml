@@ -1076,7 +1076,7 @@ jobs:
       # want clean slate to test installation, so do not run environment here
       - end_if_pull_request
       - run:
-          name: Test repository
+          name: Test install
           command: |
               if [[ "$CODENAME" =~ "opensuse" ]]; then
                 zypper --gpg-auto-import-keys addrepo https://stage.birch.sh/rpm/$CODENAME/birch.repo
@@ -1095,11 +1095,14 @@ jobs:
                 apt update --assume-yes
                 apt install --assume-yes --install-recommends birch
               fi
-              mkdir hello
-              cd hello
-              birch init
-              birch build
-              birch hello
+      - run:
+          name: Test run
+          command: |
+            mkdir hello
+            cd hello
+            birch init
+            birch build
+            birch hello
 
   publish_repo:
     executor: generic
