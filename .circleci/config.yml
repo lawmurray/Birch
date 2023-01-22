@@ -676,6 +676,7 @@ commands:
               fi
               cd << parameters.dir >>
               TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
+              mkdir -p /root/rpmbuild/SOURCES
               mv $TARNAME-$VERSION.tar.gz /root/rpmbuild/SOURCES/.
               rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ba $TARNAME.spec
       - run:
