@@ -1074,16 +1074,19 @@ jobs:
                 zypper addrepo https://stage.birch.sh/rpm/$CODENAME/birch.repo
                 zypper install --recommends birch
               elif [[ "$CODENAME" =~ "fedora" ]]; then
+                dnf install dnf-plugins-core
                 dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
                 dnf install --recommends birch
               elif [[ $CODENAME =~ "mageia" ]]; then
+                dnf install dnf-plugins-core
                 dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
                 dnf install --recommends birch
               else
-                echo 'deb https://stage.birch.sh/deb $CODENAME main' | sudo tee /etc/apt/sources.list.d/birch.list
-                cat https://stage.birch.sh/deb/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
-                sudo apt update
-                sudo apt install --install-recommends birch
+                apt in gnupg curl
+                echo 'deb https://stage.birch.sh/deb $CODENAME main' | tee /etc/apt/sources.list.d/birch.list
+                curl -fsSL https://stage.birch.sh/deb/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
+                apt update
+                apt install --install-recommends birch
               fi
               mkdir hello
               cd hello
