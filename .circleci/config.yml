@@ -1068,7 +1068,7 @@ jobs:
       # want clean slate to test installation, so do not run environment here
       - end_if_pull_request
       - run:
-          name: Test RPM repository
+          name: Test repository
           command: |
               if [[ "$CODENAME" =~ "opensuse" ]]; then
                 zypper addrepo https://stage.birch.sh/rpm/$CODENAME/birch.repo
