@@ -1080,21 +1080,19 @@ jobs:
           command: |
               if [[ "$CODENAME" =~ "opensuse" ]]; then
                 zypper addrepo https://stage.birch.sh/rpm/$CODENAME/birch.repo
-                zypper install --recommends birch
-              elif [[ "$CODENAME" =~ "fedora" ]]; then
-                dnf install dnf-plugins-core
+                zypper update --no-confirm
+                zypper install --no-confirm --recommends birch
+              elif [[ "$CODENAME" =~ "fedora" || $CODENAME =~ "mageia" ]]; then
+                dnf install --assumeyes dnf-plugins-core
                 dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
-                dnf install --recommends birch
-              elif [[ $CODENAME =~ "mageia" ]]; then
-                dnf install dnf-plugins-core
-                dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
-                dnf install --recommends birch
+                dnf update --assumeyes
+                dnf install --assumeyes --recommends birch
               else
-                apt in gnupg curl
+                apt install gnupg curl
                 echo 'deb https://stage.birch.sh/deb $CODENAME main' | tee /etc/apt/sources.list.d/birch.list
                 curl -fsSL https://stage.birch.sh/deb/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
-                apt update
-                apt install --install-recommends birch
+                apt update --assume-yes
+                apt install --assume-yes --install-recommends birch
               fi
               mkdir hello
               cd hello
