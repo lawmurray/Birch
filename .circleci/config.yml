@@ -780,7 +780,16 @@ commands:
                 git init -b gh-pages
                 mkdir rpm && cp -r /root/rpm/* rpm/.
                 mkdir deb && cp -r /root/deb/*/* deb/.  # merge repos
+
+                # finalize apt repo (add key)
                 gpg --export --armor > deb/Release.key
+
+                # finalize rpm repos (add .repo file to each)
+                for CODENAME in `ls rpm/*/*/repodata/repomd.xml rpm/*/*/*/repodata/repomd.xml | sed -E 's|^rpm/||' | sed -E 's|/repodata/repomd.xml$||'`
+                do
+                  printf "[birch]\nname=Birch\ntype=rpm-md\nbaseurl=https://<< parameters.subdomain >>/rpm/$CODENAME\ngpgcheck=1\ngpgkey=https://<< parameters.subdomain >>/rpm/$CODENAME/repodata/repomd.xml.key\nenabled=1\nautorefresh=1\n" > rpm/$CODENAME/birch.repo
+                done
+
                 git add .
                 git commit -m "Overwrite."
                 git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.subdomain >>.git
@@ -1040,7 +1049,6 @@ jobs:
               createrepo .
               gpg --detach-sign --armor repodata/repomd.xml
               gpg --export --armor > repodata/repomd.xml.key
-              printf "[birch]\nname=Birch\ntype=rpm-md\nbaseurl=https://download.birch.sh/rpm/$CODENAME\ngpgcheck=1\ngpgkey=https://download.birch.sh/rpm/$CODENAME/repodata/repomd.xml.key\nenabled=1\nautorefresh=1\n" > birch.repo
       - persist_to_workspace:
           root: ..
           paths:
