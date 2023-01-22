@@ -1067,8 +1067,6 @@ jobs:
     steps:
       # want clean slate to test installation, so do not run environment here
       - end_if_pull_request
-      - attach_workspace:  # won't work without tar
-          at: ..
       - run:
           name: Test RPM repository
           command: |
