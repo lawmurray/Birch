@@ -1082,7 +1082,7 @@ jobs:
                 zypper --gpg-auto-import-keys addrepo https://stage.birch.sh/rpm/$CODENAME/birch.repo
                 zypper --gpg-auto-import-keys update --no-confirm
                 zypper install --no-confirm --recommends birch
-              elif [[ "$CODENAME" =~ "fedora" || $CODENAME =~ "mageia" ]]; then
+              elif [[ "$CODENAME" =~ "fedora" || "$CODENAME" =~ "mageia" ]]; then
                 dnf install --assumeyes dnf-plugins-core
                 dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
                 dnf update --assumeyes
@@ -1090,7 +1090,7 @@ jobs:
               else
                 apt update --assume-yes
                 apt install --assume-yes curl gpg
-                echo 'deb https://stage.birch.sh/deb $CODENAME main' | tee /etc/apt/sources.list.d/birch.list
+                echo "deb https://stage.birch.sh/deb $CODENAME main" | tee /etc/apt/sources.list.d/birch.list
                 curl -fsSL https://stage.birch.sh/deb/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
                 apt update --assume-yes
                 apt install --assume-yes --install-recommends birch
