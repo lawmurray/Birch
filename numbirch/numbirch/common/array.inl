@@ -69,7 +69,7 @@ struct reshape_functor {
 
 template<class T, class>
 Array<value_t<T>,2> diagonal(const T& x, const int n) {
-  return for_each(n, n, diagonal_functor(data(sliced(x))));
+  return for_each(n, n, diagonal_functor(sliced(x)));
 }
 
 template<class T, class U, class>
@@ -84,24 +84,24 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j) {
 
 template<class T, class U, class>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n) {
-  return for_each(n, single_functor(data(sliced(x)), 1, data(sliced(i))));
+  return for_each(n, single_functor(sliced(x), 1, sliced(i)));
 }
 
 template<class T, class U, class V, class>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n) {
-  return for_each(m, n, single_functor(data(sliced(x)), data(sliced(i)), data(sliced(j))));
+  return for_each(m, n, single_functor(sliced(x), sliced(i), sliced(j)));
 }
 
 template<class T, class>
 Array<value_t<T>,1> vec(const T& x) {
-  return for_each(size(x), reshape_functor(width(x), 1, data(sliced(x)), stride(x)));
+  return for_each(size(x), reshape_functor(width(x), 1, sliced(x), stride(x)));
 }
 
 template<class T, class>
 Array<value_t<T>,2> mat(const T& x, const int n) {
   assert(size(x) % n == 0);
-  return for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, data(sliced(x)),
+  return for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, sliced(x),
       stride(x)));
 }
 

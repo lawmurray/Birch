@@ -100,11 +100,12 @@ nobase_include_HEADERS = \
   numbirch/array/ArrayControl.hpp \
   numbirch/array/ArrayIterator.hpp \
   numbirch/array/ArrayShape.hpp \
-  numbirch/array/Recorder.hpp \
   numbirch/array/Atomic.hpp \
+  numbirch/array/Diced.hpp \
   numbirch/array/Future.hpp \
   numbirch/array/Matrix.hpp \
   numbirch/array/Scalar.hpp \
+  numbirch/array/Sliced.hpp \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
   numbirch/memory.hpp \

@@ -21,7 +21,7 @@ static auto make_eigen(Array<T,0>& x) {
   using EigenVector = Eigen::Matrix<T,1,1,Eigen::ColMajor,1,1>;
   using EigenVectorMap = Eigen::Map<EigenVector,Eigen::DontAlign,
       EigenVectorStride>;
-  return EigenVectorMap(data(sliced(x)), 1, 1, EigenVectorStride(1, 1));
+  return EigenVectorMap(sliced(x), 1, 1, EigenVectorStride(1, 1));
 }
 
 template<class T>
@@ -30,7 +30,7 @@ static auto make_eigen(const Array<T,0>& x) {
   using EigenVector = const Eigen::Matrix<T,1,1,Eigen::ColMajor,1,1>;
   using EigenVectorMap = Eigen::Map<EigenVector,Eigen::DontAlign,
       EigenVectorStride>;
-  return EigenVectorMap(data(sliced(x)), 1, 1, EigenVectorStride(1, 1));
+  return EigenVectorMap(sliced(x), 1, 1, EigenVectorStride(1, 1));
 }
 
 template<class T>
@@ -40,7 +40,7 @@ static auto make_eigen(Array<T,1>& x) {
       1,Eigen::ColMajor,Eigen::Dynamic,1>;
   using EigenVectorMap = Eigen::Map<EigenVector,Eigen::DontAlign,
       EigenVectorStride>;
-  return EigenVectorMap(data(sliced(x)), length(x), 1,
+  return EigenVectorMap(sliced(x), length(x), 1,
       EigenVectorStride(1, stride(x)));
 }
 
@@ -51,7 +51,7 @@ static auto make_eigen(const Array<T,1>& x) {
       1,Eigen::ColMajor,Eigen::Dynamic,1>;
   using EigenVectorMap = Eigen::Map<EigenVector,Eigen::DontAlign,
       EigenVectorStride>;
-  return EigenVectorMap(data(sliced(x)), length(x), 1,
+  return EigenVectorMap(sliced(x), length(x), 1,
       EigenVectorStride(1, stride(x)));
 }
 
@@ -62,7 +62,7 @@ static auto make_eigen(Array<T,2>& x) {
       Eigen::Dynamic,Eigen::ColMajor,Eigen::Dynamic,Eigen::Dynamic>;
   using EigenMatrixMap = Eigen::Map<EigenMatrix,Eigen::DontAlign,
       EigenMatrixStride>;
-  return EigenMatrixMap(data(sliced(x)), rows(x), columns(x),
+  return EigenMatrixMap(sliced(x), rows(x), columns(x),
       EigenMatrixStride(stride(x), 1));
 }
 
@@ -73,7 +73,7 @@ static auto make_eigen(const Array<T,2>& x) {
       Eigen::Dynamic,Eigen::ColMajor,Eigen::Dynamic,Eigen::Dynamic>;
   using EigenMatrixMap = Eigen::Map<EigenMatrix,Eigen::DontAlign,
       EigenMatrixStride>;
-  return EigenMatrixMap(data(sliced(x)), rows(x), columns(x),
+  return EigenMatrixMap(sliced(x), rows(x), columns(x),
       EigenMatrixStride(stride(x), 1));
 }
 

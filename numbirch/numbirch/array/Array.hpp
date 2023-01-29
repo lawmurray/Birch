@@ -8,6 +8,8 @@
 #include "numbirch/array/ArrayShape.hpp"
 #include "numbirch/array/ArrayIterator.hpp"
 #include "numbirch/array/ArrayControl.hpp"
+#include "numbirch/array/Sliced.hpp"
+#include "numbirch/array/Diced.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -628,7 +630,7 @@ public:
         d->realloc(newsize);
       }
     }
-    memset(data(d->template sliced<T>(volume())), stride(), value, 1, 1);
+    memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
     shp.extend(1);
     ctl.store(d);  // also unlocks
   }
@@ -636,44 +638,44 @@ public:
   /**
    * Get underlying buffer for use in a slice operation.
    */
-  Recorder<T> sliced() {
+  Sliced<T> sliced() {
     if (volume() > 0) {
-      return control()->template sliced<T>(offset());
+      return Sliced<T>(control(), offset(), true);
     } else {
-      return Recorder<T>();
+      return Sliced<T>(nullptr, 0, true);
     }
   }
 
   /**
    * @copydoc sliced()
    */
-  Recorder<const T> sliced() const {
+  const Sliced<T> sliced() const {
     if (volume() > 0) {
-      return control()->template sliced<const T>(offset());
+      return Sliced<T>(control(), offset(), false);
     } else {
-      return Recorder<const T>();
+      return Sliced<T>(nullptr, 0, false);
     }
   }
 
   /**
    * Get underlying buffer for use in a dice operation.
    */
-  T* diced() {
+  Diced<T> diced() {
     if (volume() > 0) {
-      return control()->template diced<T>(offset());
+      return Diced<T>(control(), offset());
     } else {
-      return nullptr;
+      return Diced<T>(nullptr, 0);
     }
   }
 
   /**
    * @copydoc diced()
    */
-  const T* diced() const {
+  const Diced<T> diced() const {
     if (volume() > 0) {
-      return control()->template diced<const T>(offset());
+      return Diced<T>(control(), offset());
     } else {
-      return nullptr;
+      return Diced<T>(nullptr, 0);
     }
   }
 
@@ -740,7 +742,7 @@ private:
    */
   void fill(const T value) {
     if (volume() > 0) {
-      memset(data(sliced()), stride(), value, width(), height());
+      memset(sliced().data(), stride(), value, width(), height());
     }
   }
 
@@ -752,7 +754,7 @@ private:
   template<class U>
   void fill(const Array<U,0>& value) {
     if (volume() > 0) {
-      memcpy(data(sliced()), stride(), data(value.sliced()), value.stride(),
+      memcpy(sliced().data(), stride(), value.sliced().data(), value.stride(),
           width(), height());
     }
   }
@@ -766,8 +768,8 @@ private:
   void copy(const Array<U,D>& o) {
     assert(conforms(o) && "array sizes are different");
     if (volume() > 0) {
-      memcpy(data(sliced()), stride(), data(o.sliced()), o.stride(), width(),
-          height());
+      memcpy(sliced().data(), stride(), o.sliced().data(), o.stride(),
+          width(), height());
     }
   }
 

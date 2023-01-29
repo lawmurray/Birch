@@ -45,17 +45,17 @@ struct matrix_element_functor {
 
 template<class T>
 static auto make_cub(Array<T,0>& x) {
-  return data(sliced(x));
+  return sliced(x);
 }
 
 template<class T>
 static auto make_cub(const Array<T,0>& x) {
-  return data(sliced(x));
+  return sliced(x);
 }
 
 template<class T>
 static auto make_cub(Array<T,1>& x) {
-  auto elem = vector_element_functor<T>(data(sliced(x)), stride(x));
+  auto elem = vector_element_functor<T>(sliced(x), stride(x));
   auto count = cub::CountingInputIterator<int>(0);
   return cub::TransformInputIterator<T,decltype(elem),decltype(count)>(
       count, elem);
@@ -63,7 +63,7 @@ static auto make_cub(Array<T,1>& x) {
 
 template<class T>
 static auto make_cub(const Array<T,1>& x) {
-  auto elem = vector_element_functor<const T>(data(sliced(x)), stride(x));
+  auto elem = vector_element_functor<const T>(sliced(x), stride(x));
   auto count = cub::CountingInputIterator<int>(0);
   return cub::TransformInputIterator<const T,decltype(elem),decltype(count)>(
       count, elem);
@@ -71,7 +71,7 @@ static auto make_cub(const Array<T,1>& x) {
 
 template<class T>
 static auto make_cub(Array<T,2>& A) {
-  auto elem = matrix_element_functor<T>(data(sliced(A)), rows(A), stride(A));
+  auto elem = matrix_element_functor<T>(sliced(A), rows(A), stride(A));
   auto count = cub::CountingInputIterator<int>(0);
   return cub::TransformInputIterator<T,decltype(elem),decltype(count)>(
         count, elem);
@@ -79,7 +79,7 @@ static auto make_cub(Array<T,2>& A) {
 
 template<class T>
 static auto make_cub(const Array<T,2>& A) {
-  auto elem = matrix_element_functor<const T>(data(sliced(A)), rows(A), stride(A));
+  auto elem = matrix_element_functor<const T>(sliced(A), rows(A), stride(A));
   auto count = cub::CountingInputIterator<int>(0);
   return cub::TransformInputIterator<const T,decltype(elem),decltype(count)>(
         count, elem);

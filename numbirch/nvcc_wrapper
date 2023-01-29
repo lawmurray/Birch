@@ -1,4 +1,4 @@
-eval nvcc -forward-unknown-to-host-compiler `echo "$@" | sed -E '\
+eval nvcc -allow-unsupported-compiler -forward-unknown-to-host-compiler `echo "$@" | sed -E '\
     s/(-[fD]PIC)/-Xcompiler="\1"/g; \
     s/(-fopenmp)/-Xcompiler="\1"/g; \
     s/(-nostdlib)/-Xlinker="\1"/g; \

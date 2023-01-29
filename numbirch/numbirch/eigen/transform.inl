@@ -33,13 +33,13 @@ void kernel_for_each(const int m, const int n, T* A, const int ldA,
 template<class Functor>
 auto for_each(const int n, Functor f) {
   auto x = Array<decltype(f(0,0)),1>(make_shape(n));
-  kernel_for_each(1, n, data(sliced(x)), stride(x), f);
+  kernel_for_each(1, n, sliced(x), stride(x), f);
   return x;
 }
 template<class Functor>
 auto for_each(const int m, const int n, Functor f) {
   auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
-  kernel_for_each(m, n, data(sliced(A)), stride(A), f);
+  kernel_for_each(m, n, sliced(A), stride(A), f);
   return A;
 }
 
@@ -65,7 +65,7 @@ auto transform(const T& x, Functor f) {
     auto m = width(x);
     auto n = height(x);
     auto y = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, data(sliced(x)), stride(x), data(sliced(y)), stride(y), f);
+    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y), f);
     return y;
   }
 }
@@ -92,7 +92,7 @@ auto transform(const T& x, const U& y, Functor f) {
     auto m = width(x, y);
     auto n = height(x, y);
     auto z = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, data(sliced(x)), stride(x), data(sliced(y)), stride(y), data(sliced(z)),
+    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y), sliced(z),
         stride(z), f);
     return z;
   }
@@ -123,8 +123,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     auto m = width(x, y, z);
     auto n = height(x, y, z);
     auto a = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, data(sliced(x)), stride(x), data(sliced(y)), stride(y), data(sliced(z)),
-        stride(z), data(sliced(a)), stride(a), f);
+    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y), sliced(z),
+        stride(z), sliced(a), stride(a), f);
     return a;
   }
 }
@@ -147,7 +147,7 @@ auto gather(const T& x, const U& i) {
   auto m = width(i);
   auto n = height(i);
   auto z = Array<value_t<T>,D>(make_shape<D>(m, n));
-  kernel_gather(m, n, data(sliced(x)), stride(x), data(sliced(i)), stride(i), data(sliced(z)),
+  kernel_gather(m, n, sliced(x), stride(x), sliced(i), stride(i), sliced(z),
       stride(z));
   return z;
 }
@@ -171,8 +171,8 @@ auto gather(const T& x, const U& i, const V& j) {
   auto m = width(i, j);
   auto n = height(i, j);
   auto z = Array<value_t<T>,D>(make_shape<D>(m, n));
-  kernel_gather(m, n, data(sliced(x)), stride(x), data(sliced(i)), stride(i), data(sliced(j)),
-      stride(j), data(sliced(z)), stride(z));
+  kernel_gather(m, n, sliced(x), stride(x), sliced(i), stride(i), sliced(j),
+      stride(j), sliced(z), stride(z));
   return z;
 }
 

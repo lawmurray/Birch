@@ -4,10 +4,10 @@
 #pragma once
 
 #include "numbirch/array/Atomic.hpp"
-#include "numbirch/array/Recorder.hpp"
 
 #include <cassert>
 #include <cstdint>
+#include <cstddef>
 
 namespace numbirch {
 /**
@@ -97,47 +97,6 @@ public:
    */
   void realloc(const size_t bytes);
 
-  /**
-   * Get underlying buffer for use in a slice operation.
-   * 
-   * @param k Offset into underlying buffer.
-   * 
-   * @return Recorder wrapper around the raw pointers. Pass to data() to
-   * return the raw pointer while injecting event recording code via its
-   * destructor.
-   * 
-   * @see Recorder for details.
-   */
-  template<class T>
-  Recorder<T> sliced(const int64_t k) {
-    void* evt = nullptr;
-    event_join(writeEvt);
-    if constexpr (!std::is_const_v<T>) {
-      event_join(readEvt);
-      evt = writeEvt;
-    } else {
-      evt = readEvt;
-    }
-    return Recorder<T>(static_cast<T*>(buf) + k, evt);
-  }
-
-  /**
-   * Get underlying buffer for use in a dice operation.
-   * 
-   * @param k Offset into underlying buffer.
-   * 
-   * @return Raw pointer.
-   */
-  template<class T>
-  T* diced(const int64_t k) {
-    event_wait(writeEvt);
-    if (!std::is_const_v<T>) {
-      event_wait(readEvt);
-    }
-    return static_cast<T*>(buf) + k;
-  }
-
-private:
   /**
    * Buffer.
    */

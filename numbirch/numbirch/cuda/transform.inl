@@ -17,8 +17,8 @@ void prefetch(const Array<T,D>& x) {
    * prefetching the whole array may not make sense, nor prefetching small
    * sections with multiple calls; to keep it simple, only the full array is
    * prefetched, and only if the view contains at least half the elements */
-  // if (x.data() && x.size() >= x.volume()/2) {
-  //   CUDA_CHECK(cudaMemPrefetchAsync(x.data(), x.volume()*sizeof(T), device,
+  // if (volume(x) > 0 && size(x) >= volume(x)/2) {
+  //   CUDA_CHECK(cudaMemPrefetchAsync(sliced(x), volume(x)*sizeof(T), device,
   //       stream));
   // }
 }
@@ -50,7 +50,7 @@ auto for_each(const int n, Functor f) {
   auto x = Array<decltype(f(0,0)),1>(make_shape(n));
   auto grid = make_grid(1, n);
   auto block = make_block(1, n);
-  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, data(sliced(x)),
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, sliced(x),
       stride(x), f));
   return x;
 }
@@ -59,7 +59,7 @@ auto for_each(const int m, const int n, Functor f) {
   auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, data(sliced(A)),
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, sliced(A),
       stride(A), f));
   return A;
 }
@@ -91,8 +91,8 @@ auto transform(const T& x, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
-          stride(x), data(sliced(y)), stride(y), f));
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, sliced(x),
+          stride(x), sliced(y), stride(y), f));
     }
     return y;
   }
@@ -126,8 +126,8 @@ auto transform(const T& x, const U& y, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
-          stride(x), data(sliced(y)), stride(y), data(sliced(z)), stride(z), f));
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, sliced(x),
+          stride(x), sliced(y), stride(y), sliced(z), stride(z), f));
     }
     return z;
   }
@@ -163,8 +163,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
-          stride(x), data(sliced(y)), stride(y), data(sliced(z)), stride(z), data(sliced(a)),
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, sliced(x),
+          stride(x), sliced(y), stride(y), sliced(z), stride(z), sliced(a),
           stride(a), f));
     }
     return a;
@@ -194,8 +194,8 @@ auto gather(const T& x, const U& i) {
   if (m > 0 && n > 0) {
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
-        stride(x), data(sliced(i)), stride(i), data(sliced(z)), stride(z)));
+    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, sliced(x),
+        stride(x), sliced(i), stride(i), sliced(z), stride(z)));
   }
   return z;
 }
@@ -229,8 +229,8 @@ auto gather(const T& x, const U& i, const V& j) {
   if (m > 0 && n > 0) {
     auto grid = make_grid(m, n);
     auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, data(sliced(x)),
-        stride(x), data(sliced(i)), stride(i), data(sliced(j)), stride(j), data(sliced(z)),
+    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, sliced(x),
+        stride(x), sliced(i), stride(i), sliced(j), stride(j), sliced(z),
         stride(z)));
   }
   return z;

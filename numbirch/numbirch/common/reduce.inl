@@ -52,7 +52,7 @@ template<class R, class T, class>
 real_t<T> sum_grad(const Array<real,0>& g, const Array<R,0>& y,
     const T& x) {
   prefetch(x);
-  return transform(x, sum_grad_functor(data(sliced(g))));
+  return transform(x, sum_grad_functor(sliced(g)));
 }
 
 }

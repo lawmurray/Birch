@@ -8,6 +8,8 @@
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
 #include "numbirch/array/Future.hpp"
+#include "numbirch/array/Sliced.hpp"
+#include "numbirch/array/Diced.hpp"
 #include "numbirch/reduce.hpp"
 
 namespace numbirch {
@@ -218,9 +220,8 @@ ArrayShape<0> shape(const T& x) {
  * 
  * @ingroup array
  */
-template<class T, int D>
-Recorder<T> sliced(Array<T,D>& x) {
-  return x.sliced();
+inline bool* sliced(Sliced<bool>&& x) {
+  return x;
 }
 
 /**
@@ -228,9 +229,17 @@ Recorder<T> sliced(Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, int D>
-Recorder<const T> sliced(const Array<T,D>& x) {
-  return x.sliced();
+inline int* sliced(Sliced<int>&& x) {
+  return x;
+}
+
+/**
+ * Buffer of an array for a slice operation.
+ * 
+ * @ingroup array
+ */
+inline real* sliced(Sliced<real>&& x) {
+  return x;
 }
 
 /**
@@ -238,28 +247,45 @@ Recorder<const T> sliced(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T>
-auto sliced(const T& x) {
+template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
+T sliced(const T x) {
   return x;
 }
 
 /**
- * Force Recorder object to raw pointer.
+ * Buffer of an array for a dice operation.
  * 
  * @ingroup array
  */
-template<class T>
-T* data(const Recorder<T>& x) {
-  return x.data();
+inline bool* diced(Diced<bool>&& x) {
+  return x;
 }
 
 /**
- * Force non-Recorder object to raw pointer---just the object itself.
+ * Buffer of an array for a dice operation.
  * 
  * @ingroup array
  */
-template<class T>
-auto data(const T& x) {
+inline int* diced(Diced<int>&& x) {
+  return x;
+}
+
+/**
+ * Buffer of an array for a dice operation.
+ * 
+ * @ingroup array
+ */
+inline real* diced(Diced<real>&& x) {
+  return x;
+}
+
+/**
+ * Buffer of a scalar for a dice operation---just the scalar itself.
+ * 
+ * @ingroup array
+ */
+template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
+T diced(const T x) {
   return x;
 }
 
