@@ -556,18 +556,14 @@ commands:
               ./bootstrap
               ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make install
-      - when:
-          condition:
-            equal: [ $CODENAME, cover ]
-          steps:
-            - run:
-                name: Smoke test << parameters.dir >>
-                command: |
-                  cd << parameters.dir >>
-                  if [[ -e smoke.sh ]]
-                  then
-                    ./smoke.sh
-                  fi
+      - run:
+          name: Smoke test << parameters.dir >>
+          command: |
+            cd << parameters.dir >>
+            if [[ -e smoke.sh ]]
+            then
+              ./smoke.sh
+            fi
 
   build_birch:
     description: Build a Birch package
@@ -584,53 +580,42 @@ commands:
               cd << parameters.dir >>
               birch install --prefix="$PREFIX" $BIRCH_FLAGS || (cat config.log && exit 1)
           no_output_timeout: 30m
-      - when:
-          condition:
-            equal: [ $CODENAME, cover ]
-          steps:
-            - run:
-                name: Smoke test << parameters.dir >>
-                command: |
-                    cd << parameters.dir >>
-                    birch docs
-                    if [[ -e smoke.sh ]]
+      - run:
+          name: Smoke test << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              birch docs
+              if [[ -e smoke.sh ]]
+              then
+                ./smoke.sh
+              fi
+      - run:
+          name: Unit test << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              if [[ -e test.sh && "$CODENAME" =~ "bench" ]]
+              then
+                env time --format="$FORMAT" --output=time.txt ./test.sh  # env time to use GNU time, not Bash built-in time
+                if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
+                then
+                  # upload results to MongoDB Atlas
+                  VERSION_LONG=`git describe --long || echo`
+                  cd << parameters.dir >>
+                  if [[ -e output/test.json ]]
+                  then
+                    echo '{ "output": ' > mongodb.json
+                    cat output/test.json >> mongodb.json
+                    if [[ -e time.txt ]]
                     then
-                      ./smoke.sh
+                      cat time.txt >> mongodb.json
                     fi
-      - when:
-          condition:
-            equal: [ $CODENAME, bench ]
-          steps:
-            - run:
-                name: Unit test << parameters.dir >>
-                command: |
-                    cd << parameters.dir >>
-                    if [[ -e test.sh ]]
-                    then
-                      env time --format="$FORMAT" --output=time.txt ./test.sh
-                      # ^ env time to use GNU time, not Bash built-in time
-                    fi
-            - run:
-                name: Upload test results of << parameters.dir >> to MongoDB Atlas
-                command: |
-                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
-                    then
-                      VERSION_LONG=`git describe --long || echo`
-                      cd << parameters.dir >>
-                      if [[ -e output/test.json ]]
-                      then
-                        echo '{ "output": ' > mongodb.json
-                        cat output/test.json >> mongodb.json
-                        if [[ -e time.txt ]]
-                        then
-                          cat time.txt >> mongodb.json
-                        fi
-                        echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
-                        echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
-                        echo '}' >> mongodb.json
-                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection `echo << parameters.dir >> | sed 's/^.*\///' --file mongodb.json
-                      fi
-                    fi
+                    echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
+                    echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
+                    echo '}' >> mongodb.json
+                    mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection `echo << parameters.dir >> | sed 's/^.*\///' --file mongodb.json
+                  fi
+                fi
+              fi
 
   package_deb:
     parameters:
