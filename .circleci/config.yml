@@ -159,7 +159,7 @@ commands:
                 HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils gnu-time libtool flex boost eigen libomp cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-              elif [[ "$CODENAME" =~ "generic" ]]; then
+              elif [[ "$CODENAME" =~ "generic|bench|cover" ]]; then
                 zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
                   && zypper --non-interactive refresh \
                   && zypper --non-interactive update \
