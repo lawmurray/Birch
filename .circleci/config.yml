@@ -4,13 +4,13 @@ orbs:
   codecov: codecov/codecov@3.2
 
 executors:
-  generic:
+  default:
     docker:
       - image: registry.opensuse.org/opensuse/tumbleweed
     resource_class: large
     environment:
-      CODENAME: generic
-    working_directory: /root/generic
+      CODENAME: default
+    working_directory: /root/default
 
   bench:
     docker:
@@ -159,7 +159,7 @@ commands:
                 HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils gnu-time libtool flex boost eigen libomp cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-              elif [[ "$CODENAME" =~ "generic|bench|cover" ]]; then
+              elif [[ "$CODENAME" =~ "default" || "$CODENAME" =~ "bench" || "$CODENAME" =~ "cover" ]]; then
                 zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
                   && zypper --non-interactive refresh \
                   && zypper --non-interactive update \
@@ -933,7 +933,7 @@ jobs:
       - end_if_pull_request
 
   deploy:
-    executor: generic
+    executor: default
     steps:
       - end_if_pull_request
       - environment
@@ -1055,7 +1055,7 @@ jobs:
             - rpm
 
   stage_repo:
-    executor: generic
+    executor: default
     steps:
       - end_if_pull_request
       - environment
@@ -1105,7 +1105,7 @@ jobs:
             birch hello
 
   publish_repo:
-    executor: generic
+    executor: default
     steps:
       - end_if_pull_request
       - environment
