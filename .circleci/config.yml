@@ -315,6 +315,7 @@ commands:
                   gpg \
                   gpg-agent \
                   gpgv \
+                  coreutils \
                   tar \
                   gzip \
                   curl \
@@ -333,8 +334,7 @@ commands:
                   yaml-dev \
                   boost-dev \
                   sqlite-dev \
-                  cairo-dev \
-                  mongodb-tools
+                  cairo-dev
               elif [[ "$CODENAME" =~ "arch" ]]; then
                 pacman -Syu --noconfirm --needed \
                   git \
