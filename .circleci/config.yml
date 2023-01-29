@@ -415,7 +415,7 @@ commands:
           command: |
               echo $GPG_PUBLIC_KEY | base32 -d > public.key
               echo $GPG_SIGNING_KEY | base32 -d > signing.key
-              echo %_gpg_name $GPG_NAME > /root/.rpmmacros
+              echo %_gpg_name $GPG_NAME > ~/.rpmmacros
               unset GPG_PUBLIC_KEY GPG_SIGNING_KEY GPG_NAME
               gpg --import public.key signing.key
               rm public.key signing.key
