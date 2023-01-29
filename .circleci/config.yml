@@ -41,6 +41,7 @@ executors:
     docker:
       - image: alpine:latest
     resource_class: large
+    shell: /bin/bash -eo pipefail   # Alpine defaults to ash, CircleCi requires bash for $BASH_ENV
     environment:
       CODENAME: alpine
       OMP_NUM_THREADS: 4
@@ -319,6 +320,7 @@ commands:
               elif [[ "$CODENAME" =~ "alpine" ]]; then
                 apk update
                 apk add --no-cache \
+                  bash \
                   git \
                   openssh \
                   gpg \
@@ -888,9 +890,6 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - checkout
       - environment
@@ -918,9 +917,6 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - environment
       - attach_workspace:
@@ -938,9 +934,6 @@ jobs:
         description: Directory containing the package
         type: string
     executor: << parameters.os >>
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - environment
       - attach_workspace:
@@ -952,9 +945,6 @@ jobs:
 
   deploy:
     executor: default
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -969,9 +959,6 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -1025,9 +1012,6 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -1083,9 +1067,6 @@ jobs:
 
   stage_repo:
     executor: default
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -1102,9 +1083,6 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       # want clean slate to test installation, so do not run environment here
       - end_if_pull_request
@@ -1139,9 +1117,6 @@ jobs:
 
   publish_repo:
     executor: default
-    shell: /bin/sh -leo pipefail
-    environment:
-      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
