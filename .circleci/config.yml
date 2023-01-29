@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@3.4.2
   codecov: codecov/codecov@3.2.2
 
 executors:
@@ -157,11 +156,6 @@ commands:
                 command: lcov --directory . --no-external --capture -o cov.info
             - codecov/upload:
                 file: cov.info
-
-  slack:
-    steps:
-      - slack/status:
-          fail_only: true
 
   build_birch:
     steps:
@@ -462,7 +456,6 @@ jobs:
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
-      - slack
 
   test:
     parameters: 
@@ -481,7 +474,6 @@ jobs:
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
-      - slack
 
   example:
     parameters: 
@@ -503,7 +495,6 @@ jobs:
       - codecov:
           os: << parameters.os >>
       - end_if_pull_request
-      - slack
 
   deploy:
     parameters: 
@@ -556,7 +547,6 @@ jobs:
       - brew_commit
 
       - deploy_website
-      - slack
 
 workflows:
   version: 2
