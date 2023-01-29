@@ -1161,6 +1161,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
           matrix:
             parameters:
               os:
@@ -1174,6 +1176,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
           matrix:
             parameters:
               os:
@@ -1188,6 +1192,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
           requires:
             - deb-buster
             - deb-bullseye
@@ -1205,6 +1211,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
           matrix:
             parameters:
               os:
@@ -1227,6 +1235,8 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+            branches:
+              ignore: /.*/
           requires:
             - example
             - test_repo
