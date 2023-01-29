@@ -1149,11 +1149,9 @@ workflows:
                 - mac
               dir:
                 - examples/Ecology
-                - examples/LinearGaussian
                 - examples/LinearRegression
                 - examples/MixedGaussian
                 - examples/MultiObjectTracking
-                - examples/PoissonGaussian
                 - examples/SIR
                 - examples/VectorBorneDisease
           requires:
