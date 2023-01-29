@@ -888,6 +888,9 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - checkout
       - environment
@@ -915,6 +918,9 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - environment
       - attach_workspace:
@@ -932,6 +938,9 @@ jobs:
         description: Directory containing the package
         type: string
     executor: << parameters.os >>
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - environment
       - attach_workspace:
@@ -943,6 +952,9 @@ jobs:
 
   deploy:
     executor: default
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -957,6 +969,9 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -1010,6 +1025,9 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -1065,6 +1083,9 @@ jobs:
 
   stage_repo:
     executor: default
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
@@ -1081,6 +1102,9 @@ jobs:
       os:
         type: string
     executor: << parameters.os >>
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       # want clean slate to test installation, so do not run environment here
       - end_if_pull_request
@@ -1115,6 +1139,9 @@ jobs:
 
   publish_repo:
     executor: default
+    shell: /bin/sh -leo pipefail
+    environment:
+      BASH_ENV: /etc/profile
     steps:
       - end_if_pull_request
       - environment
