@@ -155,7 +155,7 @@ commands:
     steps:
       - run:
           name: Install dependencies
-          shell: /bin/sh -eo pipefail  # use default shell, preferred may not have been installed yet (e.g. on Alpine, ash to bash)
+          shell: /bin/sh  # use default shell, preferred may not have been installed yet (e.g. on Alpine, ash to bash)
           command: |
               if [[ "$CODENAME" =~ "mac" ]]; then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
