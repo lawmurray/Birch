@@ -414,7 +414,11 @@ commands:
       - run:
           name: Environment variables
           command: |
-              echo "export VERSION=2.1.0" >> $BASH_ENV
+              if [[ "$CIRCLE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                echo "export VERSION=\`echo \$CIRCLE_TAG | sed -E 's/^v//'\`" >> $BASH_ENV
+              else
+                echo "export VERSION=0.0.0" >> $BASH_ENV
+              fi
               echo "export VERSION_SAFE=\`echo \$VERSION | sed -E 's/\./_/g'\`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
               echo "export PATH=\$PREFIX/bin:/usr/local/cuda/bin:\$PATH" >> $BASH_ENV
@@ -744,8 +748,8 @@ commands:
                 cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
-                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
-                cd $CIRCLE_WORKING_DIRECTORY/homebrew-birch
+                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew/.
+                cd $CIRCLE_WORKING_DIRECTORY/homebrew
                 if ls $TARNAME-!($VERSION).tar.gz > /dev/null
                 then
                   git rm $TARNAME-!($VERSION).tar.gz
@@ -824,14 +828,17 @@ commands:
               fi
 
   deploy_brew:
+    parameters:
+      repo:
+        description: GitHub repo of repository, e.g. homebrew-birch
+        type: string
     steps:
       - run:
           name: Checkout Homebrew tap
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd homebrew-birch
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.repo >>.git homebrew
               fi
       - package_brew:
           dir: numbirch
@@ -850,7 +857,7 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                cd homebrew-birch
+                cd homebrew
                 git add -u
                 git commit -m "Updated to version $VERSION."
                 git push origin master
@@ -928,17 +935,6 @@ jobs:
           dir: << parameters.dir >>
       - codecov
       - end_if_pull_request
-
-  deploy:
-    executor: default
-    steps:
-      - end_if_pull_request
-      - environment
-      - attach_workspace:
-          at: ..
-      - deploy_obs
-      - deploy_brew
-      - deploy_docs
 
   deb:
     parameters: 
@@ -1060,6 +1056,8 @@ jobs:
           at: ..
       - deploy_repo:
           subdomain: stage.birch.sh
+      - deploy_brew:
+          repo: homebrew-stage
       - run:
           name: Wait a little while for stage.birch.sh to be published
           command: sleep 120
@@ -1091,6 +1089,9 @@ jobs:
                 curl -fsSL https://stage.birch.sh/deb/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
                 apt update --assume-yes
                 apt install --assume-yes --install-recommends birch
+              elif [[ "$CODENAME" =~ "mac" ]]; then
+                brew tap $GITHUB_USERNAME/homebrew-stage
+                brew install birch
               fi
       - run:
           name: Test run
@@ -1101,7 +1102,7 @@ jobs:
             birch build
             birch hello
 
-  publish_repo:
+  deploy:
     executor: default
     steps:
       - end_if_pull_request
@@ -1110,9 +1111,13 @@ jobs:
           at: ..
       - deploy_repo:
           subdomain: download.birch.sh
+      - deploy_brew:
+          repo: homebrew-birch
+      - deploy_docs
+      - deploy_obs
 
 workflows:
-  test:
+  all:
     jobs:
       - build:
           matrix:
@@ -1140,6 +1145,8 @@ workflows:
               os:
                 - bench
                 - cover
+                - alpine
+                - mac
               dir:
                 - examples/Ecology
                 - examples/LinearGaussian
@@ -1152,19 +1159,10 @@ workflows:
           requires:
             - test-<< matrix.os >>
 
-      - deploy:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - example
-            - test
-
-  package:
-    when: false
-    jobs:
       - deb:
+          filters:
+            tags:
+              only: /^v.*/
           matrix:
             parameters:
               os:
@@ -1173,7 +1171,11 @@ workflows:
                 - focal
                 - jammy
                 - kinetic
+
       - rpm:
+          filters:
+            tags:
+              only: /^v.*/
           matrix:
             parameters:
               os:
@@ -1183,7 +1185,11 @@ workflows:
                 - fedora-36
                 - fedora-37
                 - mageia-8
+
       - stage_repo:
+          filters:
+            tags:
+              only: /^v.*/
           requires:
             - deb-buster
             - deb-bullseye
@@ -1196,7 +1202,11 @@ workflows:
             - rpm-fedora-36
             - rpm-fedora-37
             - rpm-mageia-8
+
       - test_repo:
+          filters:
+            tags:
+              only: /^v.*/
           matrix:
             parameters:
               os:
@@ -1211,8 +1221,14 @@ workflows:
                 - fedora-36
                 - fedora-37
                 - mageia-8
+                - mac
           requires:
             - stage_repo
-      - publish_repo:
+
+      - deploy:
+          filters:
+            tags:
+              only: /^v.*/
           requires:
+            - example
             - test_repo
