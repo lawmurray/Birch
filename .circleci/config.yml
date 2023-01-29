@@ -1,134 +1,447 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3.2.2
+  codecov: codecov/codecov@3.2
 
 executors:
-  opensuse-bench:
+  generic:
     docker:
-      - image: lawmurray/birch-circleci:opensuse
+      - image: registry.opensuse.org/opensuse/tumbleweed
     resource_class: large
     environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O3 -march=native -flto -Wall"
-      MAKE_FLAGS: "-j8"
-      LIB_FLAGS: "--disable-assert"
-      BIRCH_FLAGS: "--unit=dir --arch=native --jobs=6 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single"
-      # ^ --unit here also affects source tarballs deployed to packages
-    working_directory: /root/project/opensuse-bench
+      CODENAME: generic
+    working_directory: /root/generic
 
-  opensuse-cover:
+  bench:
     docker:
-      - image: lawmurray/birch-circleci:opensuse
+      - image: registry.opensuse.org/opensuse/tumbleweed
     resource_class: large
     environment:
+      CODENAME: bench
       OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -g -Wall -fno-inline --coverage"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/opensuse-cover
+      CXXFLAGS: -O3 -march=native -flto -Wall
+      MAKEFLAGS: -j8
+      CONFIGURE_FLAGS: --disable-assert
+      BIRCH_FLAGS: --unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
+    working_directory: /root/bench
+
+  cover:
+    docker:
+      - image: registry.opensuse.org/opensuse/tumbleweed
+    resource_class: large
+    environment:
+      CODENAME: cover
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: -O0 -g -Wall -fno-inline --coverage
+      MAKEFLAGS: -j8
+      BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single
+    working_directory: /root/cover
 
   alpine:
     docker:
-      - image: lawmurray/birch-circleci:alpine
+      - image: alpine:latest
     resource_class: large
     environment:
+      CODENAME: alpine
       OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/alpine
-
-  archlinux:
-    docker:
-      - image: lawmurray/birch-circleci:archlinux
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/archlinux
-
-  debian:
-    docker:
-      - image: lawmurray/birch-circleci:debian
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/debian
-
-  fedora:
-    docker:
-      - image: lawmurray/birch-circleci:fedora
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/fedora
-
-  ubuntu:
-    docker:
-      - image: lawmurray/birch-circleci:ubuntu
-    resource_class: large
-    environment:
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /root/project/ubuntu
+      CXXFLAGS: -O0 -Wall
+      MAKEFLAGS: -j8
+      BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single
+    working_directory: /root/alpine
 
   mac:
     macos:
       xcode: 13.4.1
     environment:
+      CODENAME: mac
       OMP_NUM_THREADS: 4
-      CXXFLAGS: "-O0 -Wall"
-      MAKE_FLAGS: "-j8"
-      BIRCH_FLAGS: "--unit=unity --jobs=6 --enable-verbose --disable-optimize --disable-static --disable-single"
-    working_directory: /Users/distiller/project/mac
+      CXXFLAGS: -O0 -Wall
+      MAKEFLAGS: -j8
+      BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single
+    working_directory: /Users/distiller/mac
+
+  buster:
+    docker:
+      - image: debian:buster
+    resource_class: large
+    environment:
+      CODENAME: buster
+    working_directory: /root/buster
+
+  bullseye:
+    docker:
+      - image: debian:bullseye
+    resource_class: large
+    environment:
+      CODENAME: bullseye
+    working_directory: /root/bullseye
+
+  focal:
+    docker:
+      - image: ubuntu:focal
+    resource_class: large
+    environment:
+      CODENAME: focal
+    working_directory: /root/focal
+
+  jammy:
+    docker:
+      - image: ubuntu:jammy
+    resource_class: large
+    environment:
+      CODENAME: jammy
+    working_directory: /root/jammy
+
+  kinetic:
+    docker:
+      - image: ubuntu:kinetic
+    resource_class: large
+    environment:
+      CODENAME: kinetic
+    working_directory: /root/kinetic
+
+  opensuse-leap-15-4:
+    docker:
+      - image: registry.opensuse.org/opensuse/leap:15.4
+    resource_class: large
+    environment:
+      CODENAME: opensuse/leap/15.4
+    working_directory: /root/opensuse-leap-15-4
+
+  opensuse-tumbleweed:
+    docker:
+      - image: registry.opensuse.org/opensuse/tumbleweed
+    resource_class: large
+    environment:
+      CODENAME: opensuse/tumbleweed
+    working_directory: /root/opensuse-tumbleweed
+
+  fedora-35:
+    docker:
+      - image: registry.fedoraproject.org/fedora:35
+    resource_class: large
+    environment:
+      CODENAME: fedora/35
+    working_directory: /root/fedora-35
+
+  fedora-36:
+    docker:
+      - image: registry.fedoraproject.org/fedora:36
+    resource_class: large
+    environment:
+      CODENAME: fedora/36
+    working_directory: /root/fedora-36
+
+  fedora-37:
+    docker:
+      - image: registry.fedoraproject.org/fedora:37
+    resource_class: large
+    environment:
+      CODENAME: fedora/37
+    working_directory: /root/fedora-37
+
+  mageia-8:
+    docker:
+      - image: mageia:8
+    resource_class: large
+    environment:
+      CODENAME: mageia/8
+    working_directory: /root/mageia-8
 
 commands:
 
   environment:
-    parameters: 
-      os:
-        type: string
     steps:
-      - when:
-          condition:
-            equal: [ mac, << parameters.os >> ]
-          steps:
-            - restore_cache:
-                key: homebrew
-            - run:
-                name: Homebrew
-                command: |
-                    HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
-                    HOMEBREW_NO_AUTO_UPDATE=1 brew unlink parallel  # conflicts with moreutils
-                    HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils moreutils gnu-time libtool flex boost eigen libomp cairo
-                    echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-            - save_cache:
-                key: homebrew
-                paths:
-                  - /Users/distiller/Library/Caches/Homebrew
+      - run:
+          name: Install dependencies
+          command: |
+              if [[ "$CODENAME" =~ "mac" ]]; then
+                HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
+                HOMEBREW_NO_AUTO_UPDATE=1 brew install coreutils gnu-time libtool flex boost eigen libomp cairo
+                echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
+              elif [[ "$CODENAME" =~ "generic" ]]; then
+                zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
+                  && zypper --non-interactive refresh \
+                  && zypper --non-interactive update \
+                  && zypper --non-interactive install --no-recommends \
+                  git \
+                  openssh \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  curl \
+                  time \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  autoconf \
+                  automake \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  gdb \
+                  lcov \
+                  libtool \
+                  libyaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite3-devel \
+                  mongodb-database-tools \
+                  osc \
+                  gh \
+                  doxygen \
+                  rpmlint \
+                  rpm-build \
+                  createrepo_c \
+                  dpkg \
+                  dpkg-devel \
+                  devscripts \
+                  debhelper \
+                  fakeroot \
+                  reprepro \
+                  python3 \
+                  python3-pip \
+                  && pip3 install mkdocs mkdocs-material \
+                  && zypper clean --all
+              elif [[ "$CODENAME" =~ "opensuse" ]]; then
+                zypper --non-interactive update
+                zypper --non-interactive install --no-recommends \
+                  git \
+                  openssh \
+                  gpg \
+                  distribution-gpg-keys \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  zstd \
+                  curl \
+                  ca-certificates \
+                  make \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  autoconf \
+                  automake \
+                  libtool \
+                  libyaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite3-devel \
+                  rpmlint \
+                  rpm-build \
+                  rpm-config-SUSE \
+                  createrepo_c
+                rm -rf /var/lib/apt/lists/*
+              elif [[ "$CODENAME" =~ "fedora" ]]; then
+                yum -y update
+                yum -y install \
+                  git \
+                  openssh \
+                  gpg \
+                  distribution-gpg-keys \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  zstd \
+                  curl \
+                  ca-certificates \
+                  make \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  autoconf \
+                  automake \
+                  libtool \
+                  libyaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite-devel \
+                  rpm \
+                  rpmlint \
+                  rpm-build \
+                  rpm-sign \
+                  redhat-rpm-config \
+                  createrepo_c
+                yum clean all
+              elif [[ "$CODENAME" =~ "mageia" ]]; then
+                urpmi --auto-update
+                urpmi --force --no-recommends \
+                  git \
+                  openssh \
+                  gnupg2 \
+                  distribution-gpg-keys \
+                  tar \
+                  gzip \
+                  bzip2 \
+                  xz \
+                  zstd \
+                  curl \
+                  ca-certificates \
+                  make \
+                  flex \
+                  bison \
+                  gcc-c++ \
+                  autoconf \
+                  automake \
+                  libtool \
+                  yaml-devel \
+                  jemalloc-devel \
+                  boost-devel \
+                  eigen3-devel \
+                  cairo-devel \
+                  sqlite3-devel \
+                  rpm \
+                  rpmlint \
+                  rpm-build \
+                  rpm-sign \
+                  rpm-mageia-setup \
+                  rpm-mageia-setup-build \
+                  createrepo_c
+              elif [[ "$CODENAME" =~ "alpine" ]]; then
+                apk update
+                apk add --no-cache \
+                  git \
+                  openssh \
+                  gpg \
+                  gpg-agent \
+                  gpgv \
+                  tar \
+                  gzip \
+                  curl \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  autoconf \
+                  automake \
+                  flex \
+                  bison \
+                  g++ \
+                  gdb \
+                  libtool \
+                  eigen-dev \
+                  yaml-dev \
+                  boost-dev \
+                  sqlite-dev \
+                  cairo-dev \
+                  mongodb-tools
+              elif [[ "$CODENAME" =~ "arch" ]]; then
+                pacman -Syu --noconfirm --needed \
+                  git \
+                  openssh \
+                  tar \
+                  gzip \
+                  curl \
+                  time \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  flex \
+                  bison \
+                  gcc \
+                  lcov \
+                  gdb \
+                  autoconf \
+                  automake \
+                  libtool \
+                  jemalloc \
+                  libyaml \
+                  boost \
+                  cairo \
+                  sqlite \
+                  eigen
+                pacman -Sc --noconfirm
+              else  # Debian variant
+                apt-get update
+                DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+                  git \
+                  ssh \
+                  gpg \
+                  gpg-agent \
+                  tar \
+                  gzip \
+                  curl \
+                  ca-certificates \
+                  binutils \
+                  elfutils \
+                  make \
+                  autoconf \
+                  automake \
+                  flex \
+                  bison \
+                  g++ \
+                  libtool \
+                  libjemalloc-dev \
+                  libeigen3-dev \
+                  libyaml-dev \
+                  libboost-math-dev \
+                  libsqlite3-dev \
+                  libcairo2-dev \
+                  build-essential \
+                  apt-utils \
+                  dpkg \
+                  dpkg-dev \
+                  devscripts \
+                  debhelper \
+                  fakeroot \
+                  lintian \
+                  reprepro
+                rm -rf /var/lib/apt/lists/*
+              fi
       - run:
           name: Environment variables
           command: |
-              echo "export VERSION_LONG=`git describe --long || echo`" >> $BASH_ENV
-              echo "export VERSION=\`echo \$VERSION_LONG | sed -E 's/v([0-9.]+)-([0-9]+)-g[0-9a-f]+/\1.\2/'\`" >> $BASH_ENV
+              echo "export VERSION=2.1.0" >> $BASH_ENV
               echo "export VERSION_SAFE=\`echo \$VERSION | sed -E 's/\./_/g'\`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
-              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LIBRARY_PATH" >> $BASH_ENV
+              echo "export PATH=\$PREFIX/bin:/usr/local/cuda/bin:\$PATH" >> $BASH_ENV
+              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:/usr/local/cuda/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
+      - run:
+          name: GPG keys
+          command: |
+              echo $GPG_PUBLIC_KEY | base32 -d > public.key
+              echo $GPG_SIGNING_KEY | base32 -d > signing.key
+              echo %_gpg_name $GPG_NAME > /root/.rpmmacros
+              unset GPG_PUBLIC_KEY GPG_SIGNING_KEY GPG_NAME
+              gpg --import public.key signing.key
+              rm public.key signing.key
+      - run:
+          name: Git identity
+          command: |
+              git config --global user.name "Birch Machine"
+              git config --global user.email "birch-machine@indii.org"
+      - run:
+          name: OSC identity
+          command: |
+              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]];
+              then
+                mkdir -p ~/.config/osc
+                echo [general]                          > ~/.config/osc/oscrc
+                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
+                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
+                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
+                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
+              fi
+
+  install_cuda_prereq:
+    steps:
+      - run:
+          name: Install prerequisites for NumBirch CUDA backend
+          command: cd numbirch && ./install_cuda_prereq
 
   end_if_pull_request:
     steps:
@@ -139,17 +452,11 @@ commands:
             then
               circleci step halt
             fi
-
   codecov:
-    parameters: 
-      os:
-        type: string
     steps:
       - when:
           condition:
-            matches:
-              pattern: "^.+-cover$"
-              value: << parameters.os >>
+            equal: [ $CODENAME, cover ]
           steps:
             - run:
                 name: Produce coverage report
@@ -157,71 +464,122 @@ commands:
             - codecov/upload:
                 file: cov.info
 
-  build_birch:
-    steps:
-      - run:
-          name: Build birch
-          command: |
-              cd birch
-              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
-              ./bootstrap
-              ./configure --prefix="$PREFIX" $DRIVER_FLAGS || (cat config.log && exit 1)
-              make install $MAKE_FLAGS
-      - run:
-          name: Smoke test birch
-          command: |
-            cd birch
-            if [[ -e smoke.sh ]]
-            then
-              ./smoke.sh
-            fi
-
-  build_library:
-    description: Build a C++ library
+  version:
     parameters:
-      package:
-        description: Name of the library
+      dir:
+        description: Directory in which to update version number
         type: string
     steps:
       - run:
-          name: Build << parameters.package >>
+          name: Update version number
           command: |
-              cd << parameters.package >>
-              cat configure.ac | sed -E "s/0\.0\.0/$VERSION/" | sponge configure.ac
-              ./bootstrap
-              ./configure --prefix="$PREFIX" $LIB_FLAGS || (cat config.log && exit 1)
-              make install $MAKE_FLAGS
+              cd << parameters.dir >>
+              for file in birch.yml configure.ac Makefile.am Makefile *.spec PKGBUILD
+              do
+                if [[ -e $file ]]
+                then
+                  cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
+                  mv $file.sponge $file
+                fi
+              done
+              for file in debian/changelog debian/control debian/*.install debian/*.links
+              do
+                if [[ -e $file ]]
+                then
+                  cat $file | sed -E "s|0\.0\.0-1|$VERSION-1~$CODENAME|g" | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
+                  mv $file.sponge $file
+                  NEWNAME=`echo $file | sed -E "s/0\.0\.0/$VERSION/g"`
+                  if [[ "$NEWNAME" != "$file" ]]
+                  then
+                    mv $file $NEWNAME
+                  fi
+                fi
+              done
 
-  build_package:
+  source_cpp:
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - version:
+          dir: << parameters.dir >>
+      - run:
+          name: Archive source for << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              ./bootstrap
+              ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
+              make dist
+
+  source_birch:
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - version:
+          dir: << parameters.dir >>
+      - run:
+          name: Archive source for << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              birch bootstrap
+              ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
+              make dist
+
+  build_cpp:
+    description: Build a C++ package
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - version:
+          dir: << parameters.dir >>
+      - run:
+          name: Build << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              ./bootstrap
+              ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
+              make install
+      - when:
+          condition:
+            equal: [ $CODENAME, cover ]
+          steps:
+            - run:
+                name: Smoke test << parameters.dir >>
+                command: |
+                  cd << parameters.dir >>
+                  if [[ -e smoke.sh ]]
+                  then
+                    ./smoke.sh
+                  fi
+
+  build_birch:
     description: Build a Birch package
     parameters:
-      os:
-        type: string
       dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-      package:
-        description: Name of package (e.g. Standard)
+        description: Directory containing the package
         type: string
     steps:
+      - version:
+          dir: << parameters.dir >>
       - run:
-          name: Build << parameters.package >> package
+          name: Build << parameters.dir >>
           command: |
-              cd << parameters.dir >>/<< parameters.package >>
-              echo "version: $VERSION" | cat - birch.yml | sponge birch.yml
-              birch install --prefix=$PREFIX $BIRCH_FLAGS || (cat config.log && exit 1)
+              cd << parameters.dir >>
+              birch install --prefix="$PREFIX" $BIRCH_FLAGS || (cat config.log && exit 1)
           no_output_timeout: 30m
       - when:
           condition:
-            not:
-              matches:
-                pattern: "^.+-bench$"
-                value: << parameters.os >>
+            equal: [ $CODENAME, cover ]
           steps:
             - run:
-                name: Smoke test << parameters.package >> package
+                name: Smoke test << parameters.dir >>
                 command: |
-                    cd << parameters.dir >>/<< parameters.package >>
+                    cd << parameters.dir >>
                     birch docs
                     if [[ -e smoke.sh ]]
                     then
@@ -229,25 +587,24 @@ commands:
                     fi
       - when:
           condition:
-            matches:
-              pattern: "^.+-bench$"
-              value: << parameters.os >>
+            equal: [ $CODENAME, bench ]
           steps:
             - run:
-                name: Unit test << parameters.package >> package
+                name: Unit test << parameters.dir >>
                 command: |
-                    cd << parameters.dir >>/<< parameters.package >>
+                    cd << parameters.dir >>
                     if [[ -e test.sh ]]
                     then
                       env time --format="$FORMAT" --output=time.txt ./test.sh
                       # ^ env time to use GNU time, not Bash built-in time
                     fi
             - run:
-                name: Upload  << parameters.package >> results to MongoDB Atlas
+                name: Upload test results of << parameters.dir >> to MongoDB Atlas
                 command: |
-                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" && -n "$VERSION_LONG" ]]
+                    if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
                     then
-                      cd << parameters.dir >>/<< parameters.package >>
+                      VERSION_LONG=`git describe --long || echo`
+                      cd << parameters.dir >>
                       if [[ -e output/test.json ]]
                       then
                         echo '{ "output": ' > mongodb.json
@@ -259,95 +616,96 @@ commands:
                         echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
                         echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
                         echo '}' >> mongodb.json
-                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.package >> --file mongodb.json
+                        mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection `echo << parameters.dir >> | sed 's/^.*\///' --file mongodb.json
                       fi
                     fi
 
-  brew_identity:
-    steps:
-      - run:
-          name: Configure Homebrew
-          command: |
-              git config --global user.name "Birch Machine"
-              git config --global user.email "birch-machine@indii.org"
-
-  osc_identity:
-    steps:
-      - run:
-          name: Configure OSC
-          command: |
-              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
-              then
-                mkdir -p ~/.config/osc
-                echo [general]                          > ~/.config/osc/oscrc
-                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
-                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
-                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
-                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
-              fi
-
-  osc_checkout:
-    steps:
-      - run:
-          name: Checkout Open Build Service repo
-          command: |
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
-              then
-                osc checkout $OSC_PROJECT
-              fi
-
-  osc_commit:
-    steps:
-      - run:
-          name: Commit Open Build Service repo
-          command: |
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
-              then
-                cd $OSC_PROJECT
-                osc commit -m "Updated to version $VERSION."
-              fi
-
-  brew_checkout:
-    steps:
-      - run:
-          name: Checkout Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
-                cd homebrew-birch
-              fi
-
-  brew_commit:
-    steps:
-      - run:
-          name: Commit Homebrew tap
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
-                cd homebrew-birch
-                git add -u
-                git commit -m "Updated to version $VERSION."
-                git push origin master
-              fi
-
-  deploy_obs_package:
+  package_deb:
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-        default: .
-      package:
-        description: Name of package (e.g. Standard)
+        description: Directory containing the package
         type: string
     steps:
       - run:
-          name: Open Build Service package for << parameters.package >>
+          name: Build Debian package << parameters.dir >>
+          command: |
+              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]
+              then
+                export JOBS=2  # high memory use in single thread
+              elif [[ '<< parameters.dir >>' = 'numbirch' ]]
+              then
+                export JOBS=6
+              else
+                export JOBS=8
+              fi
+              cd << parameters.dir >>
+              TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
+              mv $TARNAME-$VERSION.tar.gz ${TARNAME}_$VERSION.orig.tar.gz
+              tar xzf ${TARNAME}_$VERSION.orig.tar.gz
+              cp -r debian $TARNAME-$VERSION/.
+              cd $TARNAME-$VERSION
+              debuild -eDEB_BUILD_OPTIONS=noddebs -j$JOBS
+      - run:
+          name: Install Debian package << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              apt-get install -y ./*.deb  # must specify ./ to find packages
+      - run:
+          name: Deploy Debian package << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              reprepro -b /root/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
+
+  package_rpm:
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - run:
+          name: Build RPM package << parameters.dir >>
+          command: |
+              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]
+              then
+                export JOBS=2  # high memory use in single thread
+              elif [[ '<< parameters.dir >>' = 'numbirch' ]]
+              then
+                export JOBS=6
+              else
+                export JOBS=8
+              fi
+              cd << parameters.dir >>
+              TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
+              mkdir -p /root/rpmbuild/SOURCES
+              mv $TARNAME-$VERSION.tar.gz /root/rpmbuild/SOURCES/.
+              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ba $TARNAME.spec
+      - run:
+          name: Sign RPM package << parameters.dir >>
+          command: |
+              rpmsign --addsign /root/rpmbuild/RPMS/x86_64/*.rpm
+      - run:
+          name: Install RPM package << parameters.dir >>
+          command: |
+              rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
+      - run:
+          name: Deploy RPM package << parameters.dir >>
+          command: |
+              mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
+              mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/$CODENAME/src/.
+
+  package_obs:
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - run:
+          name: Open Build Service package for << parameters.dir >>
           command: |
               shopt -s extglob
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
               then
-                cd << parameters.dir >>/<< parameters.package >>
+                cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
                 mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
@@ -367,29 +725,26 @@ commands:
                       sed -E "s/Version: [0-9]+\.[0-9.]+/Version: $VERSION/g" |
                       sed -E "s/pkgver=[0-9]+\.[0-9.]+/pkgver=$VERSION/g" |
                       sed -E "s/>= *[0-9]+\.[0-9.]+/>= $VERSION/g" |
-                      sed -E "s/== *[0-9]+\.[0-9.]+/== $VERSION/g" |
-                      sponge $file
+                      sed -E "s/== *[0-9]+\.[0-9.]+/== $VERSION/g" >
+                      $file.sponge
+                      mv $file.sponge $file
                   fi
                 done
               fi
 
-  deploy_brew_package:
+  package_brew:
     parameters:
       dir:
-        description: Directory containing the package (e.g. libraries)
-        type: string
-        default: .
-      package:
-        description: Name of package (e.g. Standard)
+        description: Directory containing the package
         type: string
     steps:
       - run:
-          name: Homebrew package for << parameters.package >>
+          name: Homebrew package for << parameters.dir >>
           command: |
               shopt -s extglob
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
               then
-                cd << parameters.dir >>/<< parameters.package >>
+                cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
                 mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew-birch/.
@@ -404,14 +759,110 @@ commands:
                   sed -E "s/-[0-9]+\.[0-9.]+\.tar\.gz/-$VERSION.tar.gz/g" |
                   sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" |
                   sed -E "s/version \"[0-9]+\.[0-9.]+\"/version \"$VERSION\"/g" |
-                  sed -E "s/=> \"[0-9]+\.[0-9.]+\"/=> \"$VERSION\"/g" |
-                  sponge $TARNAME.rb
+                  sed -E "s/=> \"[0-9]+\.[0-9.]+\"/=> \"$VERSION\"/g" >
+                  $TARNAME.rb.sponge
+                  mv $TARNAME.rb.sponge $TARNAME.rb
               fi
 
-  deploy_website:
+  deploy_repo:
+    parameters:
+      subdomain:
+        description: Subdomain of repository, e.g. download.birch.sh
+        type: string
     steps:
       - run:
-          name: Deploy website
+          name: Deploy << parameters.subdomain >>
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                mkdir << parameters.subdomain >>
+                cd << parameters.subdomain >>
+                git init -b gh-pages
+                mkdir rpm && cp -r /root/rpm/* rpm/.
+                mkdir deb && cp -r /root/deb/*/* deb/.  # merge repos
+
+                # finalize apt repo (add key)
+                gpg --export --armor > deb/Release.key
+
+                # finalize rpm repos (add .repo file to each)
+                for CODENAME in `ls rpm/*/*/repodata/repomd.xml rpm/*/*/*/repodata/repomd.xml | sed -E 's|^rpm/||' | sed -E 's|/repodata/repomd.xml$||'`
+                do
+                  printf "[birch]\nname=Birch\ntype=rpm-md\nbaseurl=https://<< parameters.subdomain >>/rpm/$CODENAME\ngpgcheck=1\ngpgkey=https://<< parameters.subdomain >>/rpm/$CODENAME/repodata/repomd.xml.key\nenabled=1\nautorefresh=1\n" > rpm/$CODENAME/birch.repo
+                done
+
+                git add .
+                git commit -m "Overwrite."
+                git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.subdomain >>.git
+                git push origin gh-pages -f
+              fi
+
+  deploy_obs:
+    steps:
+      - run:
+          name: Checkout Open Build Service repo
+          command: |
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
+              then
+                osc checkout $OSC_PROJECT
+              fi
+      - package_obs:
+          dir: numbirch
+      - package_obs:
+          dir: membirch
+      - package_obs:
+          dir: birch
+      - package_obs:
+          dir: libraries/Standard
+      - package_obs:
+          dir: libraries/Cairo
+      - package_obs:
+          dir: libraries/SQLite
+      - run:
+          name: Commit Open Build Service repo
+          command: |
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd $OSC_PROJECT
+                osc commit -m "Updated to version $VERSION."
+              fi
+
+  deploy_brew:
+    steps:
+      - run:
+          name: Checkout Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
+              then
+                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/homebrew-birch.git
+                cd homebrew-birch
+              fi
+      - package_brew:
+          dir: numbirch
+      - package_brew:
+          dir: membirch
+      - package_brew:
+          dir: birch
+      - package_brew:
+          dir: libraries/Standard
+      - package_brew:
+          dir: libraries/Cairo
+      - package_brew:
+          dir: libraries/SQLite
+      - run:
+          name: Commit Homebrew tap
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
+              then
+                cd homebrew-birch
+                git add -u
+                git commit -m "Updated to version $VERSION."
+                git push origin master
+              fi
+
+  deploy_docs:
+    steps:
+      - run:
+          name: Deploy docs.birch.sh
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
               then
@@ -430,31 +881,24 @@ jobs:
     executor: << parameters.os >>
     steps:
       - checkout
-      - environment:
-          os: << parameters.os >>
-      - build_birch
-      - build_library:
-          package: numbirch
-      - build_library:
-          package: membirch
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: Standard
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: Cairo
-      - build_package:
-          os: << parameters.os >>
-          dir: libraries
-          package: SQLite
+      - environment
+      - build_cpp:
+          dir: numbirch
+      - build_cpp:
+          dir: membirch
+      - build_cpp:
+          dir: birch
+      - build_birch:
+          dir: libraries/Standard
+      - build_birch:
+          dir: libraries/Cairo
+      - build_birch:
+          dir: libraries/SQLite
       - persist_to_workspace:
           root: ..
           paths:
             - << parameters.os >>
-      - codecov:
-          os: << parameters.os >>
+      - codecov
       - end_if_pull_request
 
   test:
@@ -463,117 +907,256 @@ jobs:
         type: string
     executor: << parameters.os >>
     steps:
+      - environment
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.os >>
-      - build_package:
-          os: << parameters.os >>
-          dir: tests
-          package: Test
-      - codecov:
-          os: << parameters.os >>
+      - build_birch:
+          dir: tests/Test
+      - codecov
       - end_if_pull_request
 
   example:
     parameters: 
       os:
         type: string
-      package:
-        description: Name of package (e.g. LinearRegression)
+      dir:
+        description: Directory containing the package
         type: string
     executor: << parameters.os >>
     steps:
+      - environment
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.os >>
-      - build_package:
-          os: << parameters.os >>
-          dir: examples
-          package: << parameters.package >>
-      - codecov:
-          os: << parameters.os >>
+      - build_birch:
+          dir: << parameters.dir >>
+      - codecov
       - end_if_pull_request
 
   deploy:
+    executor: generic
+    steps:
+      - end_if_pull_request
+      - environment
+      - attach_workspace:
+          at: ..
+      - deploy_obs
+      - deploy_brew
+      - deploy_docs
+
+  deb:
     parameters: 
       os:
         type: string
     executor: << parameters.os >>
     steps:
       - end_if_pull_request
+      - environment
+      - checkout
+      - install_cuda_prereq
+
+      - build_cpp:
+          dir: birch  # needed for source_birch
+
+      - source_cpp:
+          dir: numbirch
+      - source_cpp:
+          dir: membirch
+      - source_cpp:
+          dir: birch
+      - source_birch:
+          dir: libraries/Standard
+      - source_birch:
+          dir: libraries/Cairo
+      - source_birch:
+          dir: libraries/SQLite
+
+      - run:
+          name: Initialize repository
+          command: |
+              mkdir -p /root/deb/$CODENAME/conf
+              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/$CODENAME/conf/distributions
+      - package_deb:
+          dir: numbirch
+      - package_deb:
+          dir: membirch
+      - package_deb:
+          dir: birch
+      - package_deb:
+          dir: libraries/Standard
+      - package_deb:
+          dir: libraries/Cairo
+      - package_deb:
+          dir: libraries/SQLite
+      - run:
+          name: Remove unnecessary files
+          command: |
+              rm -rf /root/deb/$CODENAME/{conf,db}
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - deb
+
+  rpm:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - end_if_pull_request
+      - environment
+      - checkout
+      - install_cuda_prereq
+
+      - build_cpp:
+          dir: birch  # needed for source_birch
+
+      - source_cpp:
+          dir: numbirch
+      - source_cpp:
+          dir: membirch
+      - source_cpp:
+          dir: birch
+      - source_birch:
+          dir: libraries/Standard
+      - source_birch:
+          dir: libraries/Cairo
+      - source_birch:
+          dir: libraries/SQLite
+
+      - run:
+          name: Initialize repository
+          command: |
+              mkdir -p /root/rpm/$CODENAME/{x86_64,src}
+              gpg --export --armor > public.key
+              rpm --import public.key
+              rm public.key
+      - package_rpm:
+          dir: numbirch
+      - package_rpm:
+          dir: membirch
+      - package_rpm:
+          dir: birch
+      - package_rpm:
+          dir: libraries/Standard
+      - package_rpm:
+          dir: libraries/Cairo
+      - package_rpm:
+          dir: libraries/SQLite
+      - run:
+          name: Finalize repository
+          command: |
+              cd /root/rpm/$CODENAME
+              createrepo .
+              gpg --detach-sign --armor repodata/repomd.xml
+              gpg --export --armor > repodata/repomd.xml.key
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - rpm
+
+  stage_repo:
+    executor: generic
+    steps:
+      - end_if_pull_request
+      - environment
       - attach_workspace:
           at: ..
-      - environment:
-          os: << parameters.os >>
+      - deploy_repo:
+          subdomain: stage.birch.sh
+      - run:
+          name: Wait a little while for stage.birch.sh to be published
+          command: sleep 120
 
-      - osc_identity
-      - osc_checkout
-      - deploy_obs_package:
-          package: birch
-      - deploy_obs_package:
-          package: numbirch
-      - deploy_obs_package:
-          package: membirch
-      - deploy_obs_package:
-          dir: libraries
-          package: Standard
-      - deploy_obs_package:
-          dir: libraries
-          package: Cairo
-      - deploy_obs_package:
-          dir: libraries
-          package: SQLite
-      - osc_commit
+  test_repo:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      # want clean slate to test installation, so do not run environment here
+      - end_if_pull_request
+      - run:
+          name: Test install
+          command: |
+              if [[ "$CODENAME" =~ "opensuse" ]]; then
+                zypper --gpg-auto-import-keys addrepo https://stage.birch.sh/rpm/$CODENAME/birch.repo
+                zypper --gpg-auto-import-keys update --no-confirm
+                zypper install --no-confirm --recommends birch
+              elif [[ "$CODENAME" =~ "fedora" || "$CODENAME" =~ "mageia" ]]; then
+                dnf install --assumeyes dnf-plugins-core
+                dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
+                dnf update --assumeyes
+                dnf install --assumeyes birch
+              else
+                apt update --assume-yes
+                apt install --assume-yes curl gpg
+                echo "deb https://stage.birch.sh/deb $CODENAME main" | tee /etc/apt/sources.list.d/birch.list
+                curl -fsSL https://stage.birch.sh/deb/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
+                apt update --assume-yes
+                apt install --assume-yes --install-recommends birch
+              fi
+      - run:
+          name: Test run
+          command: |
+            mkdir hello
+            cd hello
+            birch init
+            birch build
+            birch hello
 
-      - brew_identity
-      - brew_checkout
-      - deploy_brew_package:
-          package: birch
-      - deploy_brew_package:
-          package: numbirch
-      - deploy_brew_package:
-          package: membirch
-      - deploy_brew_package:
-          dir: libraries
-          package: Standard
-      - deploy_brew_package:
-          dir: libraries
-          package: Cairo
-      - deploy_brew_package:
-          dir: libraries
-          package: SQLite
-      - brew_commit
-
-      - deploy_website
+  publish_repo:
+    executor: generic
+    steps:
+      - end_if_pull_request
+      - environment
+      - attach_workspace:
+          at: ..
+      - deploy_repo:
+          subdomain: download.birch.sh
 
 workflows:
-  version: 2
   all:
+    when: false
     jobs:
       - build:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
+              os:
+                - bench
+                - cover
+                - alpine
+                - mac
 
       - test:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover,alpine,archlinux,debian,fedora,ubuntu,mac]
+              os:
+                - bench
+                - cover
+                - alpine
+                - mac
           requires:
             - build-<< matrix.os >>
 
       - example:
           matrix:
             parameters:
-              os: [opensuse-bench,opensuse-cover]
-              package: [Ecology,LinearGaussian,LinearRegression,MixedGaussian,MultiObjectTracking,PoissonGaussian,SIR,VectorBorneDisease]
+              os:
+                - bench
+                - cover
+              dir:
+                - examples/Ecology
+                - examples/LinearGaussian
+                - examples/LinearRegression
+                - examples/MixedGaussian
+                - examples/MultiObjectTracking
+                - examples/PoissonGaussian
+                - examples/SIR
+                - examples/VectorBorneDisease
           requires:
             - test-<< matrix.os >>
 
       - deploy:
-          os: opensuse-bench
           filters:
             branches:
               only:
@@ -581,3 +1164,58 @@ workflows:
           requires:
             - example
             - test
+
+  package:
+    jobs:
+      - deb:
+          matrix:
+            parameters:
+              os:
+                - buster
+                - bullseye
+                - focal
+                - jammy
+                - kinetic
+      - rpm:
+          matrix:
+            parameters:
+              os:
+                - opensuse-leap-15-4
+                - opensuse-tumbleweed
+                - fedora-35
+                - fedora-36
+                - fedora-37
+                - mageia-8
+      - stage_repo:
+          requires:
+            - deb-buster
+            - deb-bullseye
+            - deb-focal
+            - deb-jammy
+            - deb-kinetic
+            - rpm-opensuse-leap-15-4
+            - rpm-opensuse-tumbleweed
+            - rpm-fedora-35
+            - rpm-fedora-36
+            - rpm-fedora-37
+            - rpm-mageia-8
+      - test_repo:
+          matrix:
+            parameters:
+              os:
+                - buster
+                - bullseye
+                - focal
+                - jammy
+                - kinetic
+                - opensuse-leap-15-4
+                - opensuse-tumbleweed
+                - fedora-35
+                - fedora-36
+                - fedora-37
+                - mageia-8
+          requires:
+            - stage_repo
+      - publish_repo:
+          requires:
+            - test_repo

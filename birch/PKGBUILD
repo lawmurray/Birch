@@ -1,0 +1,29 @@
+# Maintainer: Lawrence Murray <lawrence@indii.org>
+
+pkgname=birch
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="A universal probabilistic programming language"
+arch=('x86_64')
+url="https://birch.sh"
+license=('Apache-2.0')
+depends=('libyaml' 'jemalloc')
+makedepends=('flex' 'bison' 'gcc' 'autoconf' 'automake' 'libtool' 'libyaml' 'libcurl-compat' 'gzip')
+source=("$pkgname-$pkgver.tar.gz")
+md5sums=('SKIP')
+
+build() {
+        cd "$srcdir/$pkgname-$pkgver"
+        ./configure --prefix=/usr
+        make
+}
+
+check() {
+        cd "$srcdir/$pkgname-$pkgver"
+        ./birch help
+}
+
+package() {
+        cd "$srcdir/$pkgname-$pkgver"
+        make DESTDIR="$pkgdir/" install
+}

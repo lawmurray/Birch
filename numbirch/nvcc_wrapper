@@ -1,7 +1,8 @@
-eval nvcc -allow-unsupported-compiler -forward-unknown-to-host-compiler `echo "$@" | sed -E '\
+eval nvcc -forward-unknown-to-host-compiler -allow-unsupported-compiler `echo "$@" | sed -E '\
     s/(-[fD]PIC)/-Xcompiler="\1"/g; \
     s/(-fopenmp)/-Xcompiler="\1"/g; \
     s/(-nostdlib)/-Xlinker="\1"/g; \
     s/-Wc,([^[:space:]]+)/-Xcompiler="\1"/g; \
-    s/-Wl,([^[:space:]]+)/-Xlinker="\1"/g;
+    s/-Wl,([^[:space:]]+)/-Xlinker="\1"/g; \
+    s/(-Werror=format-security)/-Xcompiler="\1"/g;
     '`

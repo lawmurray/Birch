@@ -47,4 +47,5 @@ nobase_include_HEADERS = \
 
 dist_noinst_DATA =  \
   Doxyfile \
-  LICENSE
+  LICENSE \
+  README.md

@@ -1,0 +1,5 @@
+usr/include/birch-sqlite.hpp
+usr/lib/*/libbirch-sqlite-single.so
+usr/lib/*/libbirch-sqlite.so
+usr/lib/*/libbirch-sqlite-single.a
+usr/lib/*/libbirch-sqlite.a

@@ -1,4 +1,5 @@
 name: Birch.Standard
+version: 0.0.0
 manifest:
   source:
     - src/*.birch
@@ -7,10 +8,10 @@ manifest:
     - src/*/*/*/*.birch
     - src/*/*/*/*/*.birch
   other:
-    - LICENSE
-    - README.md
     - birch.yml
     - mkdocs.yml
+    - LICENSE
+    - README.md
 require:
   header:
     - boost/math/distributions.hpp

@@ -1,0 +1,23 @@
+# Maintainer: Lawrence Murray <lawrence@indii.org>
+
+pkgname=membirch
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="C++ library for fast dynamic memory management with object copy-on-write, used by the Birch probabilistic programming language"
+arch=('x86_64')
+url="https://birch.sh"
+license=('Apache-2.0')
+makedepends=('gcc' 'autoconf' 'automake' 'libtool' 'libcurl-compat' 'gzip')
+source=("$pkgname-$pkgver.tar.gz")
+md5sums=('SKIP')
+
+build() {
+        cd "$srcdir/$pkgname-$pkgver"
+        ./configure --prefix=/usr --disable-assert
+        make
+}
+
+package() {
+        cd "$srcdir/$pkgname-$pkgver"
+        make DESTDIR="$pkgdir/" install
+}

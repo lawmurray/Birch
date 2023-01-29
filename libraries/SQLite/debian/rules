@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- --disable-assert --enable-shared --enable-static
+	
+override_dh_auto_install:
+	dh_auto_install
+	find $(DESTDIR) -type f -name '*.la' -delete

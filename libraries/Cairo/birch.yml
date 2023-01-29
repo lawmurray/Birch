@@ -1,5 +1,6 @@
 
 name: Birch.Cairo
+version: 0.0.0
 manifest: 
   source: 
     - src/Context.birch
@@ -8,7 +9,7 @@ manifest:
     - src/SurfacePDF.birch
     - src/SurfacePNG.birch
     - src/SurfaceSVG.birch
-  other: 
+  other:
     - birch.yml
     - LICENSE
     - README.md

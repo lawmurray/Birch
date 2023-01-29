@@ -1,9 +1,10 @@
 name: Birch.SQLite
+version: 0.0.0
 manifest: 
   source: 
     - src/SQLite3.birch
     - src/SQLite3Statement.birch
-  other: 
+  other:
     - birch.yml
     - LICENSE
     - README.md

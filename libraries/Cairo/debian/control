@@ -1,0 +1,17 @@
+Source: birch-cairo
+Section: devel
+Priority: optional
+Maintainer: Lawrence Murray <lawrence@indii.org>
+Build-Depends: debhelper, debhelper-compat (= 11), autoconf, automake, libtool, birch-standard-dev (>= 0.0.0), libcairo2-dev, libfreetype6-dev
+Standards-Version: 4.6.1.1
+Homepage: https://birch.sh
+
+Package: libbirch-cairo-0.0.0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-standard-0.0.0 (>= 0.0.0), libcairo2
+Description: Cairo wrapper library of the Birch probabilistic programming language
+
+Package: birch-cairo-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libbirch-cairo-0.0.0 (= 0.0.0-1), birch-standard-dev (>= 0.0.0), libcairo2-dev, libfreetype6-dev
+Description: Development files for the Cairo wrapper library of Birch

@@ -1,0 +1,21 @@
+Source: birch
+Section: devel
+Priority: optional
+Maintainer: Lawrence Murray <lawrence@indii.org>
+Build-Depends: debhelper, debhelper-compat (= 11), flex, bison, autoconf, automake, libtool, libyaml-dev, libjemalloc-dev
+Standards-Version: 4.6.1.1
+Homepage: https://birch.sh
+
+Package: birch
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: g++, make, autoconf, automake, libtool, membirch-dev, numbirch-dev, birch-standard-dev
+Description: universal probabilistic programming
+ Birch is a programming language for expressing probabilistic models and
+ performing Bayesian inference. It is used by statisticians, data scientists,
+ and machine learning engineers. Its features include automatic differentiation,
+ automatic marginalization, and automatic conditioning. These compose into
+ advanced Monte Carlo inference algorithms. The Birch language transpiles to
+ C++, with multithreading CPU support, GPU support, and fast copy-on-write
+ memory management.
+

@@ -4,6 +4,14 @@ AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign])
 AC_CONFIG_MACRO_DIR([m4])
 
+AC_ARG_ENABLE([checks],
+[AS_HELP_STRING[--enable-checks], [Enable header and library checks, can disable if just running make dist]],
+[case "${enableval}" in
+  yes) checks=true ;;
+  no)  checks=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-checks]) ;;
+esac],[checks=true])
+
 # Checks for programs
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -21,19 +29,21 @@ fi
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 AC_HEADER_ASSERT
 
-# Checks for headers
-AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([execinfo.h], [], [], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
-AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])
+if $checks; then
+  # Checks for headers
+  AC_CHECK_HEADERS([yaml.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([glob.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([execinfo.h], [], [], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([filesystem], [], [], [AC_INCLUDES_DEFAULT])
+  AC_CHECK_HEADERS([experimental/filesystem], [], [], [AC_INCLUDES_DEFAULT])
 
-# Checks for libraries
-AC_CHECK_LIB([jemalloc], [malloc], [], [])
-AC_SEARCH_LIBS([dlopen], [dl], [], [])
-AC_SEARCH_LIBS([backtrace], [execinfo], [], [])
-AC_CHECK_LIB([stdc++fs], [main], [], [])
-AC_CHECK_LIB([yaml], [main], [], [AC_MSG_ERROR([required library not found.])])
+  # Checks for libraries
+  AC_CHECK_LIB([jemalloc], [malloc], [], [])
+  AC_SEARCH_LIBS([dlopen], [dl], [], [])
+  AC_SEARCH_LIBS([backtrace], [execinfo], [], [])
+  AC_CHECK_LIB([stdc++fs], [main], [], [])
+  AC_CHECK_LIB([yaml], [main], [], [AC_MSG_ERROR([required library not found.])])
+fi
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

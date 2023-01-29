@@ -1,0 +1,5 @@
+usr/include/birch-standard.hpp
+usr/lib/*/libbirch-standard-single.so
+usr/lib/*/libbirch-standard.so
+usr/lib/*/libbirch-standard-single.a
+usr/lib/*/libbirch-standard.a
