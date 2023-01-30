@@ -443,8 +443,7 @@ commands:
       - run:
           name: OSC identity
           command: |
-              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]];
-              then
+              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]; then
                 mkdir -p ~/.config/osc
                 echo [general]                          > ~/.config/osc/oscrc
                 echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
@@ -464,8 +463,7 @@ commands:
       - run: 
          name: End early if pull request
          command: |
-            if [[ -n "$CIRCLE_PR_NUMBER" ]]
-            then
+            if [[ -n "$CIRCLE_PR_NUMBER" ]]; then
               circleci step halt
             fi
   codecov:
@@ -490,23 +488,18 @@ commands:
           name: Update version number
           command: |
               cd << parameters.dir >>
-              for file in birch.yml configure.ac Makefile.am Makefile *.spec PKGBUILD
-              do
-                if [[ -e $file ]]
-                then
+              for file in birch.yml configure.ac Makefile.am Makefile *.spec PKGBUILD; do
+                if [[ -e $file ]];l then
                   cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
                   mv $file.sponge $file
                 fi
               done
-              for file in debian/changelog debian/control debian/*.install debian/*.links
-              do
-                if [[ -e $file ]]
-                then
+              for file in debian/changelog debian/control debian/*.install debian/*.links; do
+                if [[ -e $file ]]; then
                   cat $file | sed -E "s|0\.0\.0-1|$VERSION-1~$CODENAME|g" | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
                   mv $file.sponge $file
                   NEWNAME=`echo $file | sed -E "s/0\.0\.0/$VERSION/g"`
-                  if [[ "$NEWNAME" != "$file" ]]
-                  then
+                  if [[ "$NEWNAME" != "$file" ]]; then
                     mv $file $NEWNAME
                   fi
                 fi
@@ -564,8 +557,7 @@ commands:
           name: Smoke test << parameters.dir >>
           command: |
             cd << parameters.dir >>
-            if [[ -e smoke.sh ]]
-            then
+            if [[ -e smoke.sh ]]; then
               ./smoke.sh
             fi
 
@@ -589,25 +581,21 @@ commands:
           command: |
               cd << parameters.dir >>
               birch docs
-              if [[ -e smoke.sh ]]
-              then
+              if [[ -e smoke.sh ]]; then
                 ./smoke.sh
               fi
       - run:
           name: Unit test << parameters.dir >>
           command: |
               cd << parameters.dir >>
-              if [[ -e test.sh && "$CODENAME" =~ "bench" ]]
-              then
+              if [[ -e test.sh && "$CODENAME" =~ "bench" ]]; then
                 env time --format="$FORMAT" --output=time.txt ./test.sh  # env time to use GNU time, not Bash built-in time
-                if [[ -e output/test.json && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
-                then
+                if [[ -e output/test.json && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]; then
                   # upload results to MongoDB Atlas
                   VERSION_LONG=`git describe --long || echo`
                   echo '{ "output": ' > mongodb.json
                   cat output/test.json >> mongodb.json
-                  if [[ -e time.txt ]]
-                  then
+                  if [[ -e time.txt ]]; then
                     cat time.txt >> mongodb.json
                   fi
                   echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
@@ -626,11 +614,9 @@ commands:
       - run:
           name: Build Debian package << parameters.dir >>
           command: |
-              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]
-              then
+              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]; then
                 export JOBS=2  # high memory use in single thread
-              elif [[ '<< parameters.dir >>' = 'numbirch' ]]
-              then
+              elif [[ '<< parameters.dir >>' = 'numbirch' ]]; then
                 export JOBS=6
               else
                 export JOBS=8
@@ -662,11 +648,9 @@ commands:
       - run:
           name: Build RPM package << parameters.dir >>
           command: |
-              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]
-              then
+              if [[ '<< parameters.dir >>' = 'libraries/Standard' ]]; then
                 export JOBS=2  # high memory use in single thread
-              elif [[ '<< parameters.dir >>' = 'numbirch' ]]
-              then
+              elif [[ '<< parameters.dir >>' = 'numbirch' ]]; then
                 export JOBS=6
               else
                 export JOBS=8
@@ -700,8 +684,7 @@ commands:
           name: Open Build Service package for << parameters.dir >>
           command: |
               shopt -s extglob
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
-              then
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]; then
                 cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
@@ -712,10 +695,8 @@ commands:
                   osc delete $TARNAME-!($VERSION).tar.gz
                 fi
                 osc add $TARNAME-$VERSION.tar.gz
-                for file in PKGBUILD $TARNAME.spec $TARNAME.dsc debian.control debian.$TARNAME.install debian.$TARNAME-dev.install
-                do
-                  if [[ -e $file ]]
-                  then
+                for file in PKGBUILD $TARNAME.spec $TARNAME.dsc debian.control debian.$TARNAME.install debian.$TARNAME-dev.install; do
+                  if [[ -e $file ]]; then
                     cat $file |
                       sed -E "s/-[0-9]+\.[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
                       sed -E "s/\%\{name\}-[0-9]+_[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
@@ -739,15 +720,13 @@ commands:
           name: Homebrew package for << parameters.dir >>
           command: |
               shopt -s extglob
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]; then
                 cd << parameters.dir >>
                 make dist
                 TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
                 mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/homebrew/.
                 cd $CIRCLE_WORKING_DIRECTORY/homebrew
-                if ls $TARNAME-!($VERSION).tar.gz > /dev/null
-                then
+                if ls $TARNAME-!($VERSION).tar.gz > /dev/null; then
                   git rm $TARNAME-!($VERSION).tar.gz
                 fi
                 git add $TARNAME-$VERSION.tar.gz
@@ -770,8 +749,7 @@ commands:
       - run:
           name: Deploy << parameters.subdomain >>
           command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
                 mkdir << parameters.subdomain >>
                 cd << parameters.subdomain >>
                 git init -b gh-pages
@@ -782,8 +760,7 @@ commands:
                 gpg --export --armor > deb/Release.key
 
                 # finalize rpm repos (add .repo file to each)
-                for CODENAME in `ls rpm/*/*/repodata/repomd.xml rpm/*/*/*/repodata/repomd.xml | sed -E 's|^rpm/||' | sed -E 's|/repodata/repomd.xml$||'`
-                do
+                for CODENAME in `ls rpm/*/*/repodata/repomd.xml rpm/*/*/*/repodata/repomd.xml | sed -E 's|^rpm/||' | sed -E 's|/repodata/repomd.xml$||'`; do
                   printf "[birch]\nname=Birch\ntype=rpm-md\nbaseurl=https://<< parameters.subdomain >>/rpm/$CODENAME\ngpgcheck=1\ngpgkey=https://<< parameters.subdomain >>/rpm/$CODENAME/repodata/repomd.xml.key\nenabled=1\nautorefresh=1\n" > rpm/$CODENAME/birch.repo
                 done
 
@@ -798,8 +775,7 @@ commands:
       - run:
           name: Checkout Open Build Service repo
           command: |
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]
-              then
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]; then
                 osc checkout $OSC_PROJECT
               fi
       - package_obs:
@@ -817,8 +793,7 @@ commands:
       - run:
           name: Commit Open Build Service repo
           command: |
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]
-              then
+              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]; then
                 cd $OSC_PROJECT
                 osc commit -m "Updated to version $VERSION."
               fi
@@ -832,8 +807,7 @@ commands:
       - run:
           name: Checkout Homebrew tap
           command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
                 git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.repo >>.git homebrew
               fi
       - package_brew:
@@ -851,8 +825,7 @@ commands:
       - run:
           name: Commit Homebrew tap
           command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]
-              then
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]; then
                 cd homebrew
                 git add -u
                 git commit -m "Updated to version $VERSION."
@@ -864,8 +837,7 @@ commands:
       - run:
           name: Deploy docs.birch.sh
           command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]
-              then
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
                 git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/docs.birch.sh.git
                 make -f mkdocs.makefile
                 cp -r mkdocs.yml docs docs.birch.sh/.
