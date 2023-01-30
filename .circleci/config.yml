@@ -489,7 +489,7 @@ commands:
           command: |
               cd << parameters.dir >>
               for file in birch.yml configure.ac Makefile.am Makefile *.spec PKGBUILD; do
-                if [[ -e $file ]];l then
+                if [[ -e $file ]]; then
                   cat $file | sed -E "s/0\.0\.0/$VERSION/g" | sed -E "s/0_0_0/$VERSION_SAFE/g" > $file.sponge
                   mv $file.sponge $file
                 fi
