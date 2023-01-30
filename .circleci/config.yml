@@ -600,24 +600,20 @@ commands:
               if [[ -e test.sh && "$CODENAME" =~ "bench" ]]
               then
                 env time --format="$FORMAT" --output=time.txt ./test.sh  # env time to use GNU time, not Bash built-in time
-                if [[ -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
+                if [[ -e output/test.json && -n "$MONGODB_HOST" && -n "$MONGODB_USERNAME" && -n "$MONGODB_PASSWORD" ]]
                 then
                   # upload results to MongoDB Atlas
                   VERSION_LONG=`git describe --long || echo`
-                  cd << parameters.dir >>
-                  if [[ -e output/test.json ]]
+                  echo '{ "output": ' > mongodb.json
+                  cat output/test.json >> mongodb.json
+                  if [[ -e time.txt ]]
                   then
-                    echo '{ "output": ' > mongodb.json
-                    cat output/test.json >> mongodb.json
-                    if [[ -e time.txt ]]
-                    then
-                      cat time.txt >> mongodb.json
-                    fi
-                    echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
-                    echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
-                    echo '}' >> mongodb.json
-                    mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.dir >> --file mongodb.json
+                    cat time.txt >> mongodb.json
                   fi
+                  echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
+                  echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
+                  echo '}' >> mongodb.json
+                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.dir >> --file mongodb.json
                 fi
               fi
 
