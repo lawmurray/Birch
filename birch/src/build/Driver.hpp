@@ -26,6 +26,11 @@ public:
   int argc();
 
   /**
+   * Determine name of the shared library for the NumBirch backend required.
+   */
+  std::string numbirch();
+
+  /**
    * Determine name of the shared library for this package.
    */
   std::string library();
@@ -159,6 +164,11 @@ private:
    * Floating point precision run mode ("single" or "double").
    */
   std::string precision;
+
+  /**
+   * NumBirch backend ("eigen" or "cuda").
+   */
+  std::string backend;
 
   /**
    * Number of jobs for parallel build. If zero, a reasonable value is

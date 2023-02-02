@@ -154,10 +154,17 @@ int main(int argc, char** argv) {
     } else if (prog.compare("abort") == 0) {
       abort(0);
     } else {
+      void* handle;
+
+      /* dynamically load the NumBirch backend */
+      handle = dlopen(driver.numbirch().c_str(), RTLD_NOW|RTLD_GLOBAL);
+      if (!handle) {
+        std::cerr << dlerror() << std::endl;
+      }
+
       /* dynamically load the shared library for the package, which will
        * populate programs, then try to find the named program */
-      auto lib = driver.library();
-      void* handle = dlopen(lib.c_str(), RTLD_NOW|RTLD_GLOBAL);
+      handle = dlopen(driver.library().c_str(), RTLD_NOW|RTLD_GLOBAL);
       if (handle) {
         void* sym = dlsym(handle, "retrieve_program");
         if (sym) {
