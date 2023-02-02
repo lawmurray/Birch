@@ -15,6 +15,7 @@ birch::Driver::Driver(int argc, char** argv) :
     packageVersion("0.0.0"),
     unit("dir"),
     precision("double"),
+    backend("eigen"),
     jobs(std::thread::hardware_concurrency()),
     enableSingle(true),
     enableDouble(true),
@@ -36,6 +37,7 @@ birch::Driver::Driver(int argc, char** argv) :
   /* environment */
   char* BIRCH_UNIT = getenv("BIRCH_UNIT");
   char* BIRCH_PRECISION = getenv("BIRCH_PRECISION");
+  char* BIRCH_BACKEND = getenv("BIRCH_BACKEND");
   char* BIRCH_PREFIX = getenv("BIRCH_PREFIX");
   char* BIRCH_SHARE_PATH = getenv("BIRCH_SHARE_PATH");
   char* BIRCH_INCLUDE_PATH = getenv("BIRCH_INCLUDE_PATH");
@@ -47,6 +49,9 @@ birch::Driver::Driver(int argc, char** argv) :
   }
   if (BIRCH_PRECISION) {
     precision = BIRCH_PRECISION;
+  }
+  if (BIRCH_BACKEND) {
+    backend = BIRCH_BACKEND;
   }
   #ifdef PREFIX
   prefix = STRINGIFY(PREFIX);
@@ -135,6 +140,7 @@ birch::Driver::Driver(int argc, char** argv) :
     UNIT_ARG,
     MODE_ARG,
     PRECISION_ARG,
+    BACKEND_ARG,
     JOBS_ARG,
     ENABLE_TEST_ARG,
     DISABLE_TEST_ARG,
@@ -178,6 +184,7 @@ birch::Driver::Driver(int argc, char** argv) :
       { "unit", required_argument, 0, UNIT_ARG },
       { "mode", required_argument, 0, MODE_ARG },
       { "precision", required_argument, 0, PRECISION_ARG },
+      { "backend", required_argument, 0, BACKEND_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
       { "enable-test", no_argument, 0, ENABLE_TEST_ARG },
       { "disable-test", no_argument, 0, DISABLE_TEST_ARG },
@@ -239,6 +246,9 @@ birch::Driver::Driver(int argc, char** argv) :
       break;
     case PRECISION_ARG:
       precision = optarg;
+      break;
+    case BACKEND_ARG:
+      backend = optarg;
       break;
     case JOBS_ARG:
       jobs = atoi(optarg);
@@ -368,6 +378,26 @@ birch::Driver::Driver(int argc, char** argv) :
   if (precision != "single" && precision != "double") {
     throw DriverException("--precision must be single or double.");
   }
+  if (backend != "eigen" && backend != "cuda") {
+    throw DriverException("--backend must be eigen or cuda.");
+  }
+}
+
+std::string birch::Driver::numbirch() {
+  std::string name = "libnumbirch";
+  if (backend.compare("eigen") != 0) {
+    name += "-" + backend;
+  }
+  if (precision.compare("single") == 0) {
+    name += "-single";
+  }
+  fs::path lib = name;
+  #ifdef __APPLE__
+  lib.replace_extension(".dylib");
+  #else
+  lib.replace_extension(".so");
+  #endif
+  return find(libDirs, lib);
 }
 
 std::string birch::Driver::library() {
@@ -382,7 +412,7 @@ std::string birch::Driver::library() {
   }
 
   /* name of the shared library file we expect to find */
-  auto name = "lib" + tar(packageName);
+  std::string name = "lib" + tar(packageName);
   if (precision.compare("single") == 0) {
     name += "-single";
   }
@@ -956,6 +986,9 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "  --precision (default `double`, valid values `single`, `double`):" << std::endl;
       std::cout << "  Set the floating point precision of the build to run." << std::endl;
+      std::cout << std::endl;
+      std::cout << "  --backend (default `eigen`, valid values `eigen`, `cuda`):" << std::endl;
+      std::cout << "  Set the NumBirch backend to run." << std::endl;
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
