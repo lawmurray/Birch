@@ -71,6 +71,9 @@
  *  - `--prefix` (default imputed): Installation prefix. Defaults to the same
  *     prefix used when installing the `birch` driver program.
  *
+ *  - `--precision` (default `double`, valid values `single`, `double`): Set
+ *    the floating point precision of the build to run. 
+ *
  *  - `--jobs` (default imputed): Number of parallel jobs when building.
  *    Defaults to twice the number of hardware threads.
  *
@@ -80,8 +83,11 @@
  *
  * - `$BIRCH_MODE` (valid values `debug`, `test`, `release`): Overrides the
  *   default run mode as set by the command-line option `--mode`.
- * - `$BIRCH_PREFIX` (valid values `file`, `dir`, `unity`): Overrides the
+ * - `$BIRCH_UNIT` (valid values `file`, `dir`, `unity`): Overrides the
  *   default build unit as set by the command-line option `--unit`.
+ * - `$BIRCH_PRECISION` (valid values `single`, `double`): Overrides the
+ *   default floating point precision as set by the command-line option
+ *   `--precision`.
  * - `$BIRCH_PREFIX`: Overrides the default installation prefix as set by the
  *   command-line option `--unit`.
  * - `$BIRCH_SHARE_PATH`:
