@@ -66,14 +66,6 @@ void event_destroy(void* evt) {
   //
 }
 
-void event_record_read(void* evt) {
-  //
-}
-
-void event_record_write(void* evt) {
-  //
-}
-
 bool event_test(void* evt) {
   return true;
 }
@@ -82,7 +74,19 @@ void event_wait(void* evt) {
   //
 }
 
-void event_join(void* evt) {
+void before_read(const ArrayControl* ctl) {
+  //
+}
+
+void before_write(const ArrayControl* ctl) {
+  //
+}
+
+void after_read(const ArrayControl* ctl) {
+  //
+}
+
+void after_write(const ArrayControl* ctl) {
   //
 }
 
