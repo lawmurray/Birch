@@ -16,7 +16,7 @@ esac],[checks=true])
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-LT_INIT([dlopen,disable-static])
+LT_INIT([dlopen disable-static])
 
 # Checks for basic things
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])

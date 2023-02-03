@@ -68,7 +68,7 @@ fi
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-LT_INIT([dlopen,disable-static])
+LT_INIT([dlopen disable-static])
 
 if $checks; then
   # Checks for basic things
