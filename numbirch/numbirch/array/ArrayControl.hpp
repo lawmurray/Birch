@@ -103,20 +103,12 @@ public:
   void* buf;
 
   /**
-   * Read event.
+   * Event.
    */
-  void* readEvt;
-
-  /**
-   * Write event.
-   */
-  void* writeEvt;
+  void* evt;
 
   /**
    * Size of buffer.
-   * 
-   * @todo As optional, only needed to optimize free(), could pack into an int
-   * so that the whole object packs into 32 bytes, rather than 36 at present.
    */
   size_t bytes;
 

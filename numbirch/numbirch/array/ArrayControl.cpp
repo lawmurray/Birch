@@ -11,55 +11,51 @@ namespace numbirch {
 
 ArrayControl::ArrayControl(const size_t bytes) :
     buf(malloc(bytes)),
-    readEvt(event_create()),
-    writeEvt(event_create()),
+    evt(event_create()),
     bytes(bytes),
     r(1) {
-  event_record_write(writeEvt);
+  after_write(this);
 }
 
 ArrayControl::ArrayControl(const ArrayControl& o) :
     buf(malloc(o.bytes)),
-    readEvt(event_create()),
-    writeEvt(event_create()),
+    evt(event_create()),
     bytes(o.bytes),
     r(1) {
-  event_join(o.writeEvt);
+  before_read(&o);
+  before_write(this);
   memcpy(buf, o.buf, o.bytes);
-  event_record_read(o.readEvt);
-  event_record_write(writeEvt);
+  after_write(this);
+  after_read(&o);
 }
 
 ArrayControl::ArrayControl(const ArrayControl& o, const size_t bytes) :
     buf(malloc(bytes)),
-    readEvt(event_create()),
-    writeEvt(event_create()),
+    evt(event_create()),
     bytes(bytes),
     r(1) {
-  event_join(o.writeEvt);
+  before_read(&o);
+  before_write(this);
   memcpy(buf, o.buf, std::min(bytes, o.bytes));
-  event_record_read(o.readEvt);
-  event_record_write(writeEvt);
+  after_write(this);
+  after_read(&o);
 }
 
 ArrayControl::~ArrayControl() {
-  event_join(readEvt);
-  event_join(writeEvt);
+  before_write(this);
   free(buf, bytes);
-  event_destroy(readEvt);
-  event_destroy(writeEvt);
+  event_destroy(evt);
 }
 
 bool ArrayControl::test() {
-  return event_test(readEvt) && event_test(writeEvt);
+  return event_test(evt);
 }
 
 void ArrayControl::realloc(const size_t bytes) {
-  event_join(readEvt);
-  event_join(writeEvt);
+  before_write(this);
   buf = numbirch::realloc(buf, this->bytes, bytes);
   this->bytes = bytes;
-  event_record_write(writeEvt);
+  after_write(this);
 }
 
 }

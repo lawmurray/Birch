@@ -7,6 +7,8 @@
 #include <type_traits>
 
 namespace numbirch {
+class ArrayControl;
+
 /**
  * Initialize NumBirch. This should be called once at the start of the
  * program. It initializes, for example, thread-local variables necessary for
@@ -160,22 +162,13 @@ void* event_create();
 void event_destroy(void* evt);
 
 /**
- * Record a read event.
+ * Wait on an event.
  * 
  * @ingroup memory
  * 
  * @param evt A type-erased event handle.
  */
-void event_record_read(void* evt);
-
-/**
- * Record a write event.
- * 
- * @ingroup memory
- * 
- * @param evt A type-erased event handle.
- */
-void event_record_write(void* evt);
+void event_wait(void* evt);
 
 /**
  * Test an event.
@@ -191,26 +184,40 @@ void event_record_write(void* evt);
 bool event_test(void* evt);
 
 /**
- * Wait on an event.
+ * Start a read.
  * 
  * @ingroup memory
  * 
- * @param evt A type-erased event handle.
- * 
- * Blocks the host thread until the event occurs.
+ * @param ctl Control block.
  */
-void event_wait(void* evt);
+void before_read(const ArrayControl* ctl);
 
 /**
- * Join on an event.
+ * Start a write.
  * 
  * @ingroup memory
  * 
- * @param evt A type-erased event handle.
- * 
- * Non-blocking for the host thread, but enqueues a wait on its device stream
- * so that, when reached, the device stream will block until the event occurs.
+ * @param ctl Control block.
  */
-void event_join(void* evt);
+void before_write(const ArrayControl* ctl);
+
+
+/**
+ * Finish a read.
+ * 
+ * @ingroup memory
+ * 
+ * @param ctl Control block.
+ */
+void after_read(const ArrayControl* ctl);
+
+/**
+ * Finish a write.
+ * 
+ * @ingroup memory
+ * 
+ * @param ctl Control block.
+ */
+void after_write(const ArrayControl* ctl);
 
 }

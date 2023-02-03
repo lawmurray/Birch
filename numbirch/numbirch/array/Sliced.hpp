@@ -77,9 +77,9 @@ public:
   ~Sliced() {
     if (ctl) {
       if (write) {
-        event_record_write(ctl->writeEvt);
+        after_write(ctl);
       } else {
-        event_record_read(ctl->readEvt);
+        after_read(ctl);
       }
     }
   }
@@ -89,8 +89,11 @@ public:
    */
   T* data() const {
     if (ctl) {
-      event_join(ctl->writeEvt);
-      event_join(ctl->readEvt);
+      if (write) {
+        before_write(ctl);
+      } else {
+        before_read(ctl);
+      }
       return static_cast<T*>(ctl->buf) + offset;
     } else {
       return nullptr;

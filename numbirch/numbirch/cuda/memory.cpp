@@ -8,8 +8,7 @@
 #include "numbirch/cuda/cusolver.hpp"
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
-
-#include <iostream>
+#include "numbirch/array/ArrayControl.hpp"
 
 /*
  * Disable retention of extents by jemalloc. This is critical as the custom
@@ -221,67 +220,47 @@ void event_destroy(void* evt) {
   return event_free(evt, sizeof(Event));
 }
 
-void event_record_read(void* evt) {
-  assert(evt != 0);
+void event_wait(void* evt) {
+  assert(evt);
   Event* e = static_cast<Event*>(evt);
-  if (e->stream == stream || e->stream == 0) {
-    /* just update the record in this stream */
-    CUDA_CHECK(cudaEventRecord(e->event, stream));
-    e->stream = stream;
-  } else {
-    /* concurrent reads are permitted; evt should be such that waiting or
-     * joining on it ensures that *all* reads are finished; this is
-     * accomplished with the auxiliary streams; first, join this thread's
-     * auxiliary stream with the existing read event (which may be on a
-     * different stream), blocking the auxiliary stream on all previous reads
-     */
-    if (e->stream != aux_stream) {
-      CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e->event));
-    }
-
-    /* record a new event to indicate when the new read finishes */
-    CUDA_CHECK(cudaEventRecord(e->event, stream));
-    
-    /* join the auxiliary stream to that new event, so that it is now blocked
-     * on all previous reads and the new read */
-    CUDA_CHECK(cudaStreamWaitEvent(aux_stream, e->event));
-
-    /* record a new event in the auxiliary stream to indicate when all
-     * previous reads and the new read are complete */
-    CUDA_CHECK(cudaEventRecord(e->event, aux_stream));
-    e->stream = aux_stream;
-  }
-}
-
-void event_record_write(void* evt) {
-  assert(evt != 0);
-  Event* e = static_cast<Event*>(evt);
-  CUDA_CHECK(cudaEventRecord(e->event, stream));
-  e->stream = stream;
+  CUDA_CHECK(cudaEventSynchronize(e->event));
 }
 
 bool event_test(void* evt) {
-  assert(evt != 0);
+  assert(evt);
   Event* e = static_cast<Event*>(evt);
   cudaError_t err = cudaEventQuery(e->event);
   return err == cudaSuccess;
 }
 
-void event_wait(void* evt) {
-  assert(evt != 0);
-  Event* e = static_cast<Event*>(evt);
-  CUDA_CHECK(cudaEventSynchronize(e->event));
+void before_read(const ArrayControl* ctl) {
+  assert(ctl);
+  auto evt = static_cast<Event*>(ctl->evt);
+  if (evt->stream != stream) {
+    CUDA_CHECK(cudaStreamWaitEvent(stream, evt->event));
+  }
 }
 
-void event_join(void* evt) {
-  assert(evt != 0);
-  Event* e = static_cast<Event*>(evt);
-
-  /* if the event is already in the current stream then no need to join as
-   * operations will follow it anyway; avoid the CUDA API call */
-  if (e->stream != stream) {
-    CUDA_CHECK(cudaStreamWaitEvent(stream, e->event));
+void before_write(const ArrayControl* ctl) {
+  assert(ctl);
+  auto evt = static_cast<Event*>(ctl->evt);
+  if (evt->stream != stream) {
+    CUDA_CHECK(cudaStreamWaitEvent(stream, evt->event));
   }
+}
+
+void after_read(const ArrayControl* ctl) {
+  assert(ctl);
+  auto evt = static_cast<Event*>(ctl->evt);
+  CUDA_CHECK(cudaEventRecord(evt->event, stream));
+  evt->stream = stream;
+}
+
+void after_write(const ArrayControl* ctl) {
+  assert(ctl);
+  auto evt = static_cast<Event*>(ctl->evt);
+  CUDA_CHECK(cudaEventRecord(evt->event, stream));
+  evt->stream = stream;
 }
 
 }
