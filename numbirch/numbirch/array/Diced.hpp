@@ -64,7 +64,7 @@ public:
    */
   T* data() const {
     if (ctl) {
-      event_wait(ctl->evt);
+      array_wait(ctl);
       return static_cast<T*>(ctl->buf) + offset;
     } else {
       return nullptr;

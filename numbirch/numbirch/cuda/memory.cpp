@@ -19,34 +19,6 @@ const char* numbirch_malloc_conf = "retain:false";
 
 namespace numbirch {
 
-/**
- * @internal
- * 
- * Event. Pointers to objects of this type are type-erased to `void*` for use
- * by the various event management functions.
- */
-struct Event {
-  /**
-   * Event.
-   */
-  cudaEvent_t event;
-
-  /**
-   * Stream on which the event is recorded.
-   */
-  cudaStream_t stream;
-
-  Event() :
-      event(0),
-      stream(0) {
-    CUDA_CHECK(cudaEventCreateWithFlags(&event, cudaEventDisableTiming));
-  }
-
-  ~Event() {
-    CUDA_CHECK(cudaEventDestroy(event));
-  }
-};
-
 void init() {
   cuda_init();
   cublas_init();
@@ -139,72 +111,19 @@ void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
   CUDA_CHECK(cudaFreeHost(addr));
 }
 
-void* event_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
-    size_t size, size_t alignment, bool *zero, bool *commit,
-    unsigned arena_ind) {
-  if (!new_addr) {
-    CUDA_CHECK(cudaMallocHost(&new_addr, size));
-    *commit = true;
-  }
-  Event* evts = static_cast<Event*>(new_addr);
-  for (size_t i = 0; i < size/sizeof(Event); ++i) {
-    new (evts + i) Event();
-  }
-  return new_addr;
-}
-
-bool event_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
-    size_t size, bool committed, unsigned arena_ind) {
-  Event* evts = static_cast<Event*>(addr);
-  for (size_t i = 0; i < size/sizeof(Event); ++i) {
-    evts[i].~Event();
-  }
-  CUDA_CHECK(cudaFreeHost(addr));
-  return false;
-}
-
-void event_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
-    size_t size, bool committed, unsigned arena_ind) {
-  Event* evts = static_cast<Event*>(addr);
-  for (size_t i = 0; i < size/sizeof(Event); ++i) {
-    evts[i].~Event();
-  }
-  CUDA_CHECK(cudaFreeHost(addr));
-}
-
 void* malloc(const size_t size) {
   return shared_malloc(size);
 }
 
 void free(void* ptr) {
   if (ptr) {
-    if (shared_owns(ptr)) {
-      /* as the allocation is from the shared arena of this thread, it can be
-       * returned to the pool immediately and safely returned by malloc()
-       * again, even before preceding asynchronous operations that use it have
-       * completed; threads provide consistent ordering internally, and this
-       * allows allocations and deallocations of the same block to be streamed
-       * and so minimize overall memory use */
-      shared_free(ptr);
-    } else {
-      /* as the allocation is from the shared arena of a different thread, its
-       * return to the pool should be inserted into the stream, to ensure that
-       * all asynchronous operations associated with this thread have finished
-       * with it before it is return by malloc() again on that other thread;
-       * this ensures consistent ordering across threads */
-      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free_async, ptr));
-    }
+    shared_free(ptr);
   }
 }
 
 void free(void* ptr, const size_t size) {
-  /* see free() above for comments, this version merely inserts size */
   if (ptr) {
-    if (shared_owns(ptr)) {
-      shared_free(ptr, size);
-    } else {
-      CUDA_CHECK(cudaLaunchHostFunc(stream, &shared_free_async, ptr));
-    }
+    shared_free(ptr, size);
   }
 }
 
@@ -212,55 +131,107 @@ void memcpy(void* dst, const void* src, size_t n) {
   CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
 }
 
-void* event_create() {
-  return event_malloc(sizeof(Event));
-}
-
-void event_destroy(void* evt) {
-  return event_free(evt, sizeof(Event));
-}
-
-void event_wait(void* evt) {
-  assert(evt);
-  Event* e = static_cast<Event*>(evt);
-  CUDA_CHECK(cudaEventSynchronize(e->event));
-}
-
-bool event_test(void* evt) {
-  assert(evt);
-  Event* e = static_cast<Event*>(evt);
-  cudaError_t err = cudaEventQuery(e->event);
-  return err == cudaSuccess;
-}
-
-void before_read(const ArrayControl* ctl) {
+void array_init(ArrayControl* ctl, const size_t size) {
   assert(ctl);
-  auto evt = static_cast<Event*>(ctl->evt);
-  if (evt->stream != stream) {
-    CUDA_CHECK(cudaStreamWaitEvent(stream, evt->event));
+  ctl->buf = numbirch::malloc(size);
+  ctl->size = size;
+  ctl->streamAlloc = stream;
+  ctl->streamWrite = stream;
+}
+
+void array_term(ArrayControl* ctl) {
+  assert(ctl);
+  if (ctl->buf) {
+    auto streamAlloc = static_cast<cudaStream_t>(ctl->streamAlloc);
+    auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
+    if (streamWrite != streamAlloc) {
+      /* this is the general case; enqueue the free onto streamWrite to ensure
+       * that it (and any subsequent reads) complete before the buffer is
+       * returned to the pool from which streamAlloc can reallocate */
+      CUDA_CHECK(cudaLaunchHostFunc(streamWrite, &shared_free, ctl->buf));
+    } else {
+      /* this is the special case but also the more common; free the buffer
+       * immediately to allow recycling (sequences of allocation, deallocation
+       * and reallocation enqueued to the same stream) */
+      numbirch::free(ctl->buf, ctl->size);
+    }
   }
 }
 
-void before_write(const ArrayControl* ctl) {
+void array_resize(ArrayControl* ctl, const size_t size) {
+  ctl->buf = numbirch::realloc(ctl->buf, ctl->size, size);
+  ctl->size = size;
+}
+
+void array_copy(ArrayControl* dst, const ArrayControl* src) {
+  auto src1 = const_cast<ArrayControl*>(src);
+  before_read(src1);
+  before_write(dst);
+  memcpy(dst->buf, src1->buf, std::min(dst->size, src1->size));
+  after_write(dst);
+  after_read(src1);
+}
+
+void array_wait(ArrayControl* ctl) {
   assert(ctl);
-  auto evt = static_cast<Event*>(ctl->evt);
-  if (evt->stream != stream) {
-    CUDA_CHECK(cudaStreamWaitEvent(stream, evt->event));
+  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
+  cudaEvent_t evt;
+  CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
+  CUDA_CHECK(cudaEventRecord(evt, streamWrite));
+  CUDA_CHECK(cudaEventSynchronize(evt));
+  CUDA_CHECK(cudaEventDestroy(evt));
+}
+
+bool array_test(ArrayControl* ctl) {
+  assert(ctl);
+  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
+  return cudaStreamQuery(streamWrite) == cudaSuccess;
+}
+
+void before_read(ArrayControl* ctl) {
+  assert(ctl);
+  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
+  if (streamWrite != stream) {
+    /* ensure that the most recent write completes before reading */
+    cudaEvent_t evt;
+    CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
+    CUDA_CHECK(cudaEventRecord(evt, streamWrite));
+    CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
+    CUDA_CHECK(cudaEventDestroy(evt));
+    ctl->incShared();
   }
 }
 
-void after_read(const ArrayControl* ctl) {
+void before_write(ArrayControl* ctl) {
   assert(ctl);
-  auto evt = static_cast<Event*>(ctl->evt);
-  CUDA_CHECK(cudaEventRecord(evt->event, stream));
-  evt->stream = stream;
+  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
+  if (streamWrite != stream) {
+    /* ensure that the most recent write completes before writing */
+    cudaEvent_t evt;
+    CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
+    CUDA_CHECK(cudaEventRecord(evt, streamWrite));
+    CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
+    CUDA_CHECK(cudaEventDestroy(evt));
+    ctl->streamWrite = stream;
+  }
 }
 
-void after_write(const ArrayControl* ctl) {
+void after_read(ArrayControl* ctl) {
   assert(ctl);
-  auto evt = static_cast<Event*>(ctl->evt);
-  CUDA_CHECK(cudaEventRecord(evt->event, stream));
-  evt->stream = stream;
+  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
+  if (streamWrite != stream) {
+    CUDA_CHECK(cudaLaunchHostFunc(stream,
+        [](void* ptr) {
+          auto ctl = static_cast<ArrayControl*>(ptr);
+          if (ctl && ctl->decShared() == 0) {
+            delete ctl;
+          }
+        }, ctl));
+  }
+}
+
+void after_write(ArrayControl* ctl) {
+  //
 }
 
 }

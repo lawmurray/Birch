@@ -24,11 +24,6 @@ void jemalloc_init();
 void jemalloc_term();
 
 /*
- * Does an allocation belong to the shared arena for the current thread?
- */
-bool shared_owns(void* ptr);
-
-/*
  * Allocate for the shared arena.
  */
 void* shared_malloc(const size_t size);
@@ -80,21 +75,6 @@ void host_free(void* ptr);
  * Free for the host arena.
  */
 void host_free(void* ptr, const size_t size);
-
-/*
- * Allocate for the event arena.
- */
-void* event_malloc(const size_t size);
-
-/*
- * Free for the event arena.
- */
-void event_free(void* ptr);
-
-/*
- * Free for the event arena.
- */
-void event_free(void* ptr, const size_t size);
 
 /*
  * Custom alloc() extent hook. This is implemented by the specific backend.
@@ -152,22 +132,4 @@ bool host_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
 void host_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
     size_t size, bool committed, unsigned arena_ind);
 
-/*
- * Custom alloc() extent hook.
- */
-void* event_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
-    size_t size, size_t alignment, bool *zero, bool *commit,
-    unsigned arena_ind);
-
-/*
- * Custom dalloc() extent hook.
- */
-bool event_extent_dalloc(extent_hooks_t *extent_hooks, void *addr,
-    size_t size, bool committed, unsigned arena_ind);
-
-/*
- * Custom destroy() extent hook.
- */
-void event_extent_destroy(extent_hooks_t *extent_hooks, void *addr,
-    size_t size, bool committed, unsigned arena_ind);
 }

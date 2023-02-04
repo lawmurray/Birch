@@ -141,47 +141,61 @@ void memset(T* dst, const int dpitch, const T value, const int width,
     const int height);
 
 /**
- * Create an event.
+ * Allocate and initialize an array.
  * 
  * @ingroup memory
  * 
- * @return A type-erased event handle.
+ * @param ctl Control block.
+ * @param size Size, in bytes.
  */
-void* event_create();
+void array_init(ArrayControl* ctl, const size_t size);
 
 /**
- * Destroy an event.
+ * Deallocate an array.
  * 
  * @ingroup memory
  * 
- * @param evt A type-erased event handle.
- * 
- * Non-blocking for the host thread, even if the event is yet to occur (it can
- * still be destroyed in this case).
+ * @param ctl Control block.
  */
-void event_destroy(void* evt);
+void array_term(ArrayControl* ctl);
 
 /**
- * Wait on an event.
+ * Resize an array.
  * 
  * @ingroup memory
  * 
- * @param evt A type-erased event handle.
+ * @param ctl Control block.
+ * @param size New sizse, in bytes.
  */
-void event_wait(void* evt);
+void array_resize(ArrayControl* ctl, const size_t size);
 
 /**
- * Test an event.
+ * Copy between arrays.
  * 
  * @ingroup memory
  * 
- * @param evt A type-erased event handle.
- * 
- * @return Has the event occurred yet?
- * 
- * Non-blocking for the host thread.
+ * @param dst Destination.
+ * @param src Source.
  */
-bool event_test(void* evt);
+void array_copy(ArrayControl* dst, const ArrayControl* src);
+
+/**
+ * Wait for completion of reads and writes of an array.
+ * 
+ * @ingroup memory
+ * 
+ * @param ctl Control block.
+ */
+void array_wait(ArrayControl* ctl);
+
+/**
+ * Test for completion of reads and writes of an array.
+ * 
+ * @ingroup memory
+ * 
+ * @param ctl Control block.
+ */
+bool array_test(ArrayControl* ctl);
 
 /**
  * Start a read.
@@ -190,7 +204,7 @@ bool event_test(void* evt);
  * 
  * @param ctl Control block.
  */
-void before_read(const ArrayControl* ctl);
+void before_read(ArrayControl* ctl);
 
 /**
  * Start a write.
@@ -199,7 +213,7 @@ void before_read(const ArrayControl* ctl);
  * 
  * @param ctl Control block.
  */
-void before_write(const ArrayControl* ctl);
+void before_write(ArrayControl* ctl);
 
 
 /**
@@ -209,7 +223,7 @@ void before_write(const ArrayControl* ctl);
  * 
  * @param ctl Control block.
  */
-void after_read(const ArrayControl* ctl);
+void after_read(ArrayControl* ctl);
 
 /**
  * Finish a write.
@@ -218,6 +232,6 @@ void after_read(const ArrayControl* ctl);
  * 
  * @param ctl Control block.
  */
-void after_write(const ArrayControl* ctl);
+void after_write(ArrayControl* ctl);
 
 }

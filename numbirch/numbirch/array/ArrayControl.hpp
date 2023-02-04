@@ -23,12 +23,12 @@ public:
   /**
    * Constructor.
    *
-   * @param bytes Buffer size.
+   * @param size Buffer size.
    * 
    * The object is initialized with a reference count of one. The caller
    * need not (should not) call incShared().
    */
-  ArrayControl(const size_t bytes);
+  ArrayControl(const size_t size);
 
   /**
    * Copy constructor.
@@ -44,15 +44,15 @@ public:
    * Copy constructor with resized allocation.
    * 
    * @param o Source object.
-   * @param bytes Number of bytes to re-allocate. This may be less than or
-   * greater than the number of bytes in @p o.
+   * @param size Buffer size, in bytes. This may be less than or greater than
+   * the size of @p o.
    * 
    * The object is initialized with a reference count of one. The caller need
-   * not (should not) call incShared(). If @p bytes is greater than the number
-   * of bytes in @p o, the extra bytes are uninitialized. If @p bytes is less
-   * than the number of bytes in @p o, the extra bytes are truncated.
+   * not (should not) call incShared(). If @p size is greater than that of @p
+   * o, the extra bytes are uninitialized. If @p size is less than that of
+   * @p o, the extra bytes are truncated.
    */
-  ArrayControl(const ArrayControl& o, const size_t bytes);
+  ArrayControl(const ArrayControl& o, const size_t size);
 
   /**
    * Destructor.
@@ -88,14 +88,11 @@ public:
   bool test();
 
   /**
-   * Extend the buffer.
+   * Reallocate the buffer.
    * 
-   * @param extra Extra number of bytes to allocate.
-   * 
-   * Uses realloc() internally to attempt to extend the allocation,
-   * if necessary.
+   * @param size New size, in bytes.
    */
-  void realloc(const size_t bytes);
+  void realloc(const size_t size);
 
   /**
    * Buffer.
@@ -103,14 +100,19 @@ public:
   void* buf;
 
   /**
-   * Event.
+   * Stream of allocation.
    */
-  void* evt;
+  void* streamAlloc;
 
   /**
-   * Size of buffer.
+   * Stream of last write.
    */
-  size_t bytes;
+  void* streamWrite;
+
+  /**
+   * Size of buffer, in bytes.
+   */
+  size_t size;
 
   /**
    * Reference count.

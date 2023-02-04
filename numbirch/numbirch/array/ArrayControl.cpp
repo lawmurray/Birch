@@ -9,53 +9,33 @@
 
 namespace numbirch {
 
-ArrayControl::ArrayControl(const size_t bytes) :
-    buf(malloc(bytes)),
-    evt(event_create()),
-    bytes(bytes),
+ArrayControl::ArrayControl(const size_t size) :
     r(1) {
-  after_write(this);
+  array_init(this, size);
 }
 
 ArrayControl::ArrayControl(const ArrayControl& o) :
-    buf(malloc(o.bytes)),
-    evt(event_create()),
-    bytes(o.bytes),
     r(1) {
-  before_read(&o);
-  before_write(this);
-  memcpy(buf, o.buf, o.bytes);
-  after_write(this);
-  after_read(&o);
+  array_init(this, o.size);
+  array_copy(this, &o);
 }
 
-ArrayControl::ArrayControl(const ArrayControl& o, const size_t bytes) :
-    buf(malloc(bytes)),
-    evt(event_create()),
-    bytes(bytes),
+ArrayControl::ArrayControl(const ArrayControl& o, const size_t size) :
     r(1) {
-  before_read(&o);
-  before_write(this);
-  memcpy(buf, o.buf, std::min(bytes, o.bytes));
-  after_write(this);
-  after_read(&o);
+  array_init(this, size);
+  array_copy(this, &o);
 }
 
 ArrayControl::~ArrayControl() {
-  before_write(this);
-  free(buf, bytes);
-  event_destroy(evt);
+  array_term(this);
 }
 
 bool ArrayControl::test() {
-  return event_test(evt);
+  return array_test(this);
 }
 
-void ArrayControl::realloc(const size_t bytes) {
-  before_write(this);
-  buf = numbirch::realloc(buf, this->bytes, bytes);
-  this->bytes = bytes;
-  after_write(this);
+void ArrayControl::realloc(const size_t size) {
+  array_resize(this, size);
 }
 
 }

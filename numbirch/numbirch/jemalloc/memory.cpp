@@ -38,14 +38,6 @@ static thread_local unsigned host_tcache = 0;
 static thread_local int host_flags = 0;
 
 /*
- * Event arena and thread cache. For the CUDA backend, events seem to consume
- * significant memory, so a global arena is shared between threads.
- */
-static unsigned event_arena = 0;
-static thread_local unsigned event_tcache = 0;
-static thread_local int event_flags = 0;
-
-/*
  * MIB for "arenas.lookup" to avoid repeated name lookups.
  */
 static size_t mib[2] = {0, 0};
@@ -95,21 +87,6 @@ static extent_hooks_t host_hooks = {
   nullptr
 };
 
-/**
- * Custom extent hooks for event arena.
- */
-static extent_hooks_t event_hooks = {
-  event_extent_alloc,
-  nullptr,
-  event_extent_destroy,
-  nullptr,
-  nullptr,
-  nullptr,
-  nullptr,
-  nullptr,
-  nullptr
-};
-
 static unsigned make_arena(extent_hooks_t* hooks) {
   [[maybe_unused]] int ret;
   unsigned arena = 0;
@@ -136,9 +113,6 @@ void jemalloc_init() {
   ret = numbirch_mallctlnametomib("arenas.lookup", mib, &miblen);
   assert(ret == 0);
 
-  /* event arena setup */
-  event_arena = make_arena(&event_hooks);
-
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     /* shared arena and thread cache setup */
@@ -155,31 +129,11 @@ void jemalloc_init() {
     host_arena = make_arena(&host_hooks);
     host_tcache = make_tcache();
     host_flags = MALLOCX_ARENA(host_arena)|MALLOCX_TCACHE(host_tcache);
-
-    /* event thread cache setup */
-    event_tcache = make_tcache();
-    event_flags = MALLOCX_ARENA(event_arena)|MALLOCX_TCACHE(event_tcache);
   }
 }
 
 void jemalloc_term() {
   ///@todo
-}
-
-bool shared_owns(void* ptr) {
-  assert(shared_arena > 0);
-  [[maybe_unused]] int ret;
-  unsigned arena = 0;
-  size_t size = sizeof(arena);
-
-  /* rather than using the name "arenas.lookup" repeatedly, jemalloc_init()
-   * establishes mib to look up by index */
-  //ret = numbirch_mallctl("arenas.lookup", &arena, &size, &ptr, sizeof(ptr));
-  ret = numbirch_mallctlbymib(mib, 2, &arena, &size, &ptr, sizeof(ptr));  
-  assert(ret == 0);
-  assert(arena > 0);
-
-  return arena == shared_arena;
 }
 
 void* shared_malloc(const size_t size) {
@@ -244,25 +198,6 @@ void host_free(void* ptr, const size_t size) {
   assert(host_arena > 0);
   if (ptr) {
     numbirch_sdallocx(ptr, size, host_flags);
-  }
-}
-
-void* event_malloc(const size_t size) {
-  assert(event_arena > 0);
-  return size == 0 ? nullptr : numbirch_mallocx(size, event_flags);
-}
-
-void event_free(void* ptr) {
-  assert(event_arena > 0);
-  if (ptr) {
-    numbirch_dallocx(ptr, event_flags);
-  }
-}
-
-void event_free(void* ptr, const size_t size) {
-  assert(event_arena > 0);
-  if (ptr) {
-    numbirch_sdallocx(ptr, size, event_flags);
   }
 }
 
