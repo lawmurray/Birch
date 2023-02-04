@@ -103,10 +103,6 @@ birch::Driver::Driver(int argc, char** argv) :
   includeDirs.push_back(fs::path("/") / "usr" / "include");
 
   /* lib dirs */
-  fs::path local = fs::path(".libs");
-  if (fs::exists(local)) {
-    libDirs.push_back(local);
-  }
   if (BIRCH_LIBRARY_PATH) {
     std::stringstream birch_library_path(BIRCH_LIBRARY_PATH);
     while (std::getline(birch_library_path, input, ':')) {
@@ -192,6 +188,8 @@ birch::Driver::Driver(int argc, char** argv) :
       { "disable-release", no_argument, 0, DISABLE_RELEASE_ARG },
       { "enable-single", no_argument, 0, ENABLE_SINGLE_ARG },
       { "disable-single", no_argument, 0, DISABLE_SINGLE_ARG },
+      { "enable-double", no_argument, 0, ENABLE_DOUBLE_ARG },
+      { "disable-double", no_argument, 0, DISABLE_DOUBLE_ARG },
       { "enable-static", no_argument, 0, ENABLE_STATIC_ARG },
       { "disable-static", no_argument, 0, DISABLE_STATIC_ARG },
       { "enable-shared", no_argument, 0, ENABLE_SHARED_ARG },
@@ -406,6 +404,10 @@ std::string birch::Driver::library() {
     /* load the package meta information, if indeed there is any, otherwise
      * this will throw an exception which is caught below */
     meta();
+
+    /* also in this case, search the .libs directory first for a local build
+     * of the package shared library */
+    libDirs.push_front(".libs");
   } catch (DriverException) {
     // probably not running in a package directory, but can use installed
     // libraries instead
