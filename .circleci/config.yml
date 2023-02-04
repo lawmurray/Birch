@@ -375,8 +375,8 @@ commands:
                   eigen
                 pacman -Sc --noconfirm
               else  # Debian variant
-                apt-get update
-                DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+                apt update
+                DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
                   git \
                   ssh \
                   gpg \
