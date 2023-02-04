@@ -76,53 +76,59 @@ lib_LTLIBRARIES =
 if ONEAPI
 if SINGLE
 lib_LTLIBRARIES += libnumbirch-oneapi-single.la
-libnumbirch_oneapi_la_CPPFLAGS = $(AM_CPPFLAGS) $(ONEAPI_CPPFLAGS) -DNUMBIRCH_REAL=double
-libnumbirch_oneapi_la_CXXFLAGS = $(AM_CXXFLAGS) $(ONEAPI_CXXFLAGS)
-libnumbirch_oneapi_la_LDFLAGS = $(AM_LDFLAGS) $(ONEAPI_LDFLAGS)
-libnumbirch_oneapi_la_SOURCES = $(SOURCES) $(ONEAPI_SOURCES)
 endif
 if DOUBLE
 lib_LTLIBRARIES += libnumbirch-oneapi.la
-libnumbirch_oneapi_single_la_CPPFLAGS = $(AM_CPPFLAGS) $(ONEAPI_CPPFLAGS) -DNUMBIRCH_REAL=float
-libnumbirch_oneapi_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(ONEAPI_CXXFLAGS)
-libnumbirch_oneapi_single_la_LDFLAGS = $(AM_LDFLAGS) $(ONEAPI_LDFLAGS)
-libnumbirch_oneapi_single_la_SOURCES = $(SOURCES) $(ONEAPI_SOURCES)
 endif
 endif
 
 if CUDA
 if SINGLE
 lib_LTLIBRARIES += libnumbirch-cuda-single.la
-libnumbirch_cuda_la_CPPFLAGS = $(AM_CPPFLAGS) $(CUDA_CPPFLAGS) -DNUMBIRCH_REAL=double
-libnumbirch_cuda_la_CXXFLAGS = $(AM_CXXFLAGS) $(CUDA_CXXFLAGS)
-libnumbirch_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS)
-libnumbirch_cuda_la_SOURCES = $(SOURCES) $(CUDA_SOURCES)
 endif
 if DOUBLE
 lib_LTLIBRARIES += libnumbirch-cuda.la
-libnumbirch_cuda_single_la_CPPFLAGS = $(AM_CPPFLAGS) $(CUDA_CPPFLAGS) -DNUMBIRCH_REAL=float
-libnumbirch_cuda_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(CUDA_CXXFLAGS)
-libnumbirch_cuda_single_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS)
-libnumbirch_cuda_single_la_SOURCES = $(SOURCES) $(CUDA_SOURCES)
 endif
 endif
 
 if EIGEN
 if SINGLE
 lib_LTLIBRARIES += libnumbirch-single.la
+endif
+if DOUBLE
+lib_LTLIBRARIES += libnumbirch.la
+endif
+endif
+
+libnumbirch_oneapi_la_CPPFLAGS = $(AM_CPPFLAGS) $(ONEAPI_CPPFLAGS) -DNUMBIRCH_REAL=double
+libnumbirch_oneapi_la_CXXFLAGS = $(AM_CXXFLAGS) $(ONEAPI_CXXFLAGS)
+libnumbirch_oneapi_la_LDFLAGS = $(AM_LDFLAGS) $(ONEAPI_LDFLAGS)
+libnumbirch_oneapi_la_SOURCES = $(SOURCES) $(ONEAPI_SOURCES)
+
+libnumbirch_oneapi_single_la_CPPFLAGS = $(AM_CPPFLAGS) $(ONEAPI_CPPFLAGS) -DNUMBIRCH_REAL=float
+libnumbirch_oneapi_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(ONEAPI_CXXFLAGS)
+libnumbirch_oneapi_single_la_LDFLAGS = $(AM_LDFLAGS) $(ONEAPI_LDFLAGS)
+libnumbirch_oneapi_single_la_SOURCES = $(SOURCES) $(ONEAPI_SOURCES)
+
+libnumbirch_cuda_la_CPPFLAGS = $(AM_CPPFLAGS) $(CUDA_CPPFLAGS) -DNUMBIRCH_REAL=double
+libnumbirch_cuda_la_CXXFLAGS = $(AM_CXXFLAGS) $(CUDA_CXXFLAGS)
+libnumbirch_cuda_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS)
+libnumbirch_cuda_la_SOURCES = $(SOURCES) $(CUDA_SOURCES)
+
+libnumbirch_cuda_single_la_CPPFLAGS = $(AM_CPPFLAGS) $(CUDA_CPPFLAGS) -DNUMBIRCH_REAL=float
+libnumbirch_cuda_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(CUDA_CXXFLAGS)
+libnumbirch_cuda_single_la_LDFLAGS = $(AM_LDFLAGS) $(CUDA_LDFLAGS)
+libnumbirch_cuda_single_la_SOURCES = $(SOURCES) $(CUDA_SOURCES)
+
 libnumbirch_la_CPPFLAGS = $(AM_CPPFLAGS) $(EIGEN_CPPFLAGS) -DNUMBIRCH_REAL=double
 libnumbirch_la_CXXFLAGS = $(AM_CXXFLAGS) $(EIGEN_CXXFLAGS)
 libnumbirch_la_LDFLAGS = $(AM_LDFLAGS) $(EIGEN_LDFLAGS)
 libnumbirch_la_SOURCES = $(SOURCES) $(EIGEN_SOURCES)
-endif
-if DOUBLE
-lib_LTLIBRARIES += libnumbirch.la
+
 libnumbirch_single_la_CPPFLAGS = $(AM_CPPFLAGS) $(EIGEN_CPPFLAGS) -DNUMBIRCH_REAL=float
 libnumbirch_single_la_CXXFLAGS = $(AM_CXXFLAGS) $(EIGEN_CXXFLAGS)
 libnumbirch_single_la_LDFLAGS = $(AM_LDFLAGS) $(EIGEN_LDFLAGS)
 libnumbirch_single_la_SOURCES = $(SOURCES) $(EIGEN_SOURCES)
-endif
-endif
 
 include_HEADERS = numbirch/numbirch.hpp
 
