@@ -52,6 +52,7 @@ CUDA_CXXFLAGS = -x cu \
     -arch=sm_70 \
     -Xcompiler="-Wno-unused-result" \
     -Xcompiler="-Wno-unknown-pragmas" \
+    -Xcompiler="-Wno-cpp" \
     -Xcompiler="-Wno-deprecated-declarations"
 CUDA_SOURCES = \
     numbirch/cuda/cublas.cpp \
