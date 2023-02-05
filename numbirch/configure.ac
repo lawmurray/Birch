@@ -59,7 +59,7 @@ fi
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
-LT_INIT([dlopen,disable-static])
+LT_INIT([dlopen disable-static])
 
 # Checks for basic things
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
@@ -70,7 +70,7 @@ AC_CHECK_LIB([atomic], [main], [], [], [])
 
 # Checks for build-specific requirements
 if $oneapi; then
-  AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+  AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
 else
   AC_OPENMP
   CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
@@ -84,7 +84,7 @@ else
     AC_CHECK_HEADERS([jemalloc/jemalloc_numbirch.h], [], [AC_MSG_ERROR([required header not found.])], [AC_INCLUDES_DEFAULT])
     AC_CHECK_LIB([cublas], [main], [], [AC_MSG_ERROR([required library not found.])], [])
     AC_CHECK_LIB([cusolver], [main], [], [AC_MSG_ERROR([required library not found.])], [])
-    AC_CHECK_LIB([jemalloc_numbirch], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
+    AC_CHECK_LIB([jemalloc_numbirch_pic], [numbirch_malloc], [], [AC_MSG_ERROR([required library not found.])], [])
   else
     AC_CHECK_HEADERS([eigen3/Eigen/Dense], [], [AC_CHECK_HEADERS([Eigen/Dense], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
   fi
