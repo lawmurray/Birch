@@ -180,11 +180,8 @@ void array_copy(ArrayControl* dst, const ArrayControl* src) {
 void array_wait(ArrayControl* ctl) {
   assert(ctl);
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  cudaEvent_t evt;
-  CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-  CUDA_CHECK(cudaEventRecord(evt, streamWrite));
-  CUDA_CHECK(cudaEventSynchronize(evt));
-  CUDA_CHECK(cudaEventDestroy(evt));
+  CUDA_CHECK(cudaEventRecord(event, streamWrite));
+  CUDA_CHECK(cudaEventSynchronize(event));
 }
 
 bool array_test(ArrayControl* ctl) {
@@ -198,11 +195,8 @@ void before_read(ArrayControl* ctl) {
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
   if (streamWrite != stream) {
     /* ensure that the most recent write completes before reading */
-    cudaEvent_t evt;
-    CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-    CUDA_CHECK(cudaEventRecord(evt, streamWrite));
-    CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
-    CUDA_CHECK(cudaEventDestroy(evt));
+    CUDA_CHECK(cudaEventRecord(event, streamWrite));
+    CUDA_CHECK(cudaStreamWaitEvent(stream, event));
   }
 }
 
@@ -211,18 +205,27 @@ void before_write(ArrayControl* ctl) {
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
   if (streamWrite != stream) {
     /* ensure that the most recent write completes before writing */
-    cudaEvent_t evt;
-    CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-    CUDA_CHECK(cudaEventRecord(evt, streamWrite));
-    CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
-    CUDA_CHECK(cudaEventDestroy(evt));
-    ctl->streamWrite = stream;
+    CUDA_CHECK(cudaEventRecord(event, streamWrite));
+    CUDA_CHECK(cudaStreamWaitEvent(stream, event));
   }
 }
 
 static void after_read_async(void* ptr) {
   auto ctl = static_cast<ArrayControl*>(ptr);
   if (ctl && ctl->decShared() == 0) {
+    /* the destructor of ArrayControl may call CUDA Runtime API functions,
+     * which we cannot allow here as this function is enqueued with
+     * cudaLaunchHostFunc(); perform the destruction of the buffer inline
+     * instead, which we can do as we know there are no outstanding writes
+     * (proof: any writes after the offstream read was enqueued will have
+     * copied, as the refcount is >1) */
+    numbirch::free(ctl->buf, ctl->size);
+    ctl->buf = nullptr;
+    ctl->size = 0;
+    ctl->streamAlloc = nullptr;
+    ctl->streamWrite = nullptr;
+
+    /* the destructor can be safely called now, as the buffer is nullptr */
     delete ctl;
   }
 }
@@ -237,7 +240,7 @@ void after_read(ArrayControl* ctl) {
 }
 
 void after_write(ArrayControl* ctl) {
-  //
+  ctl->streamWrite = stream;
 }
 
 }

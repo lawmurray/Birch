@@ -80,9 +80,16 @@ extern thread_local int device;
 /**
  * @internal
  * 
- * Device stream used by each host thread.
+ * Stream used by each host thread.
  */
 extern thread_local cudaStream_t stream;
+
+/**
+ * @internal
+ * 
+ * Event used by each host thread.
+ */
+extern thread_local cudaEvent_t event;
 
 /**
  * @internal
