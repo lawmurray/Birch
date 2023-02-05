@@ -139,27 +139,17 @@ void array_init(ArrayControl* ctl, const size_t size) {
   ctl->streamWrite = stream;
 }
 
-static void free_async(void* buf) {
-  numbirch::free(buf);
-}
-
 void array_term(ArrayControl* ctl) {
   assert(ctl);
   if (ctl->buf) {
     auto streamAlloc = static_cast<cudaStream_t>(ctl->streamAlloc);
     auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
     if (streamWrite != streamAlloc) {
-      /* this is the general case; enqueue the free onto streamWrite to ensure
-       * that it (and any subsequent reads) complete before the buffer is
-       * returned to the pool from which streamAlloc can reallocate; note the
-       * ArrayControl object will have been deleted by that point */
-      CUDA_CHECK(cudaLaunchHostFunc(streamWrite, free_async, ctl->buf));
-    } else {
-      /* this is the special case but also the more common; free the buffer
-       * immediately to allow recycling (sequences of allocation, deallocation
-       * and reallocation enqueued to the same stream) */
-      numbirch::free(ctl->buf, ctl->size);
+      /* ensure that the most recent write completes before reuse */
+      CUDA_CHECK(cudaEventRecord(event, streamWrite));
+      CUDA_CHECK(cudaStreamWaitEvent(streamAlloc, event));
     }
+    numbirch::free(ctl->buf, ctl->size);
   }
 }
 
@@ -180,8 +170,7 @@ void array_copy(ArrayControl* dst, const ArrayControl* src) {
 void array_wait(ArrayControl* ctl) {
   assert(ctl);
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  CUDA_CHECK(cudaEventRecord(event, streamWrite));
-  CUDA_CHECK(cudaEventSynchronize(event));
+  CUDA_CHECK(cudaStreamSynchronize(streamWrite));
 }
 
 bool array_test(ArrayControl* ctl) {
@@ -210,36 +199,13 @@ void before_write(ArrayControl* ctl) {
   }
 }
 
-static void after_read_async(void* ptr) {
-  auto ctl = static_cast<ArrayControl*>(ptr);
-  if (ctl && ctl->decShared() == 0) {
-    /* the destructor of ArrayControl may call CUDA Runtime API functions,
-     * which we cannot allow here as this function is enqueued with
-     * cudaLaunchHostFunc(); perform the destruction of the buffer inline
-     * instead, which we can do as we know there are no outstanding writes
-     * (proof: any writes after the offstream read was enqueued will have
-     * copied, as the refcount is >1) */
-    numbirch::free(ctl->buf, ctl->size);
-    ctl->buf = nullptr;
-    ctl->size = 0;
-    ctl->streamAlloc = nullptr;
-    ctl->streamWrite = nullptr;
-
-    /* the destructor can be safely called now, as the buffer is nullptr */
-    delete ctl;
-  }
-}
-
 void after_read(ArrayControl* ctl) {
   assert(ctl);
-  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  if (streamWrite != stream) {
-    ctl->incShared();
-    CUDA_CHECK(cudaLaunchHostFunc(stream, &after_read_async, ctl));
-  }
+  ctl->streamWrite = stream;
 }
 
 void after_write(ArrayControl* ctl) {
+  assert(ctl);
   ctl->streamWrite = stream;
 }
 
