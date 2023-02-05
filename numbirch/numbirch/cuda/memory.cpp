@@ -139,6 +139,10 @@ void array_init(ArrayControl* ctl, const size_t size) {
   ctl->streamWrite = stream;
 }
 
+static void free_async(void* buf) {
+  numbirch::free(buf);
+}
+
 void array_term(ArrayControl* ctl) {
   assert(ctl);
   if (ctl->buf) {
@@ -147,8 +151,9 @@ void array_term(ArrayControl* ctl) {
     if (streamWrite != streamAlloc) {
       /* this is the general case; enqueue the free onto streamWrite to ensure
        * that it (and any subsequent reads) complete before the buffer is
-       * returned to the pool from which streamAlloc can reallocate */
-      CUDA_CHECK(cudaLaunchHostFunc(streamWrite, &shared_free, ctl->buf));
+       * returned to the pool from which streamAlloc can reallocate; note the
+       * ArrayControl object will have been deleted by that point */
+      CUDA_CHECK(cudaLaunchHostFunc(streamWrite, free_async, ctl->buf));
     } else {
       /* this is the special case but also the more common; free the buffer
        * immediately to allow recycling (sequences of allocation, deallocation
@@ -198,7 +203,6 @@ void before_read(ArrayControl* ctl) {
     CUDA_CHECK(cudaEventRecord(evt, streamWrite));
     CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
     CUDA_CHECK(cudaEventDestroy(evt));
-    ctl->incShared();
   }
 }
 
@@ -216,17 +220,19 @@ void before_write(ArrayControl* ctl) {
   }
 }
 
+static void after_read_async(void* ptr) {
+  auto ctl = static_cast<ArrayControl*>(ptr);
+  if (ctl && ctl->decShared() == 0) {
+    delete ctl;
+  }
+}
+
 void after_read(ArrayControl* ctl) {
   assert(ctl);
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
   if (streamWrite != stream) {
-    CUDA_CHECK(cudaLaunchHostFunc(stream,
-        [](void* ptr) {
-          auto ctl = static_cast<ArrayControl*>(ptr);
-          if (ctl && ctl->decShared() == 0) {
-            delete ctl;
-          }
-        }, ctl));
+    ctl->incShared();
+    CUDA_CHECK(cudaLaunchHostFunc(stream, &after_read_async, ctl));
   }
 }
 

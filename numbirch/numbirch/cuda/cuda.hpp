@@ -87,13 +87,6 @@ extern thread_local cudaStream_t stream;
 /**
  * @internal
  * 
- * Auxiliary device stream used by each host thread.
- */
-extern thread_local cudaStream_t aux_stream;
-
-/**
- * @internal
- * 
  * Maximum (and preferred) number of blocks for a kernel launch configuration.
  * Threads are able to perform multiple units of work, so this does not limit
  * the task size, but a maximum is required in order to initialize a
