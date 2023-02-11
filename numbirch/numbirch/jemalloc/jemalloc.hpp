@@ -39,14 +39,6 @@ void shared_free(void* ptr);
 void shared_free(void* ptr, const size_t size);
 
 /*
- * Free for the shared arena, for use by external threads only. One use case
- * is to insert calls of this into CUDA streams with cudaLaunchHostFunc(). A
- * thread of the CUDA runtime will then call it to execute the free, but that
- * thread will not have its own jemalloc arena or thread cache to use.
- */
-void shared_free_async(void* ptr);
-
-/*
  * Allocate for the device arena.
  */
 void* device_malloc(const size_t size);

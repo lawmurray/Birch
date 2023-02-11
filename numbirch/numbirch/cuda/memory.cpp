@@ -145,16 +145,11 @@ void array_term(ArrayControl* ctl) {
     auto streamAlloc = static_cast<cudaStream_t>(ctl->streamAlloc);
     auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
     if (streamWrite != streamAlloc) {
-      /* this is the general case; enqueue the free onto streamWrite to ensure
-       * that it (and any subsequent reads) complete before the buffer is
-       * returned to the pool from which streamAlloc can reallocate */
-      CUDA_CHECK(cudaLaunchHostFunc(streamWrite, &shared_free, ctl->buf));
-    } else {
-      /* this is the special case but also the more common; free the buffer
-       * immediately to allow recycling (sequences of allocation, deallocation
-       * and reallocation enqueued to the same stream) */
-      numbirch::free(ctl->buf, ctl->size);
+      /* ensure that the most recent write completes before reuse */
+      CUDA_CHECK(cudaEventRecord(event, streamWrite));
+      CUDA_CHECK(cudaStreamWaitEvent(streamAlloc, event));
     }
+    numbirch::free(ctl->buf, ctl->size);
   }
 }
 
@@ -175,11 +170,7 @@ void array_copy(ArrayControl* dst, const ArrayControl* src) {
 void array_wait(ArrayControl* ctl) {
   assert(ctl);
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  cudaEvent_t evt;
-  CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-  CUDA_CHECK(cudaEventRecord(evt, streamWrite));
-  CUDA_CHECK(cudaEventSynchronize(evt));
-  CUDA_CHECK(cudaEventDestroy(evt));
+  CUDA_CHECK(cudaStreamSynchronize(streamWrite));
 }
 
 bool array_test(ArrayControl* ctl) {
@@ -193,12 +184,8 @@ void before_read(ArrayControl* ctl) {
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
   if (streamWrite != stream) {
     /* ensure that the most recent write completes before reading */
-    cudaEvent_t evt;
-    CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-    CUDA_CHECK(cudaEventRecord(evt, streamWrite));
-    CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
-    CUDA_CHECK(cudaEventDestroy(evt));
-    ctl->incShared();
+    CUDA_CHECK(cudaEventRecord(event, streamWrite));
+    CUDA_CHECK(cudaStreamWaitEvent(stream, event));
   }
 }
 
@@ -207,31 +194,19 @@ void before_write(ArrayControl* ctl) {
   auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
   if (streamWrite != stream) {
     /* ensure that the most recent write completes before writing */
-    cudaEvent_t evt;
-    CUDA_CHECK(cudaEventCreateWithFlags(&evt, cudaEventDisableTiming));
-    CUDA_CHECK(cudaEventRecord(evt, streamWrite));
-    CUDA_CHECK(cudaStreamWaitEvent(stream, evt));
-    CUDA_CHECK(cudaEventDestroy(evt));
-    ctl->streamWrite = stream;
+    CUDA_CHECK(cudaEventRecord(event, streamWrite));
+    CUDA_CHECK(cudaStreamWaitEvent(stream, event));
   }
 }
 
 void after_read(ArrayControl* ctl) {
   assert(ctl);
-  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  if (streamWrite != stream) {
-    CUDA_CHECK(cudaLaunchHostFunc(stream,
-        [](void* ptr) {
-          auto ctl = static_cast<ArrayControl*>(ptr);
-          if (ctl && ctl->decShared() == 0) {
-            delete ctl;
-          }
-        }, ctl));
-  }
+  ctl->streamWrite = stream;
 }
 
 void after_write(ArrayControl* ctl) {
-  //
+  assert(ctl);
+  ctl->streamWrite = stream;
 }
 
 }

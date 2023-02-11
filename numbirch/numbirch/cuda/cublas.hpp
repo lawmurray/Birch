@@ -16,9 +16,15 @@
 #define CUBLAS_CHECK(call) \
     { \
       cublasStatus_t err = call; \
+      if (err != CUBLAS_STATUS_SUCCESS) { \
+        std::cerr << cublasGetStatusString(err) << std::endl; \
+      } \
       assert(err == CUBLAS_STATUS_SUCCESS); \
       if (CUDA_SYNC) { \
         cudaError_t err = cudaStreamSynchronize(stream); \
+        if (err != cudaSuccess) { \
+          std::cerr << cudaGetErrorString(err) << std::endl; \
+        } \
         assert(err == cudaSuccess); \
       } \
     }

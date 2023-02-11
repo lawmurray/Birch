@@ -11,7 +11,7 @@ namespace numbirch {
 
 thread_local int device = 0;
 thread_local cudaStream_t stream = 0;
-thread_local cudaStream_t aux_stream = 0;
+thread_local cudaEvent_t event = 0;
 thread_local unsigned max_blocks = 64;
 
 void cuda_init() {
@@ -35,7 +35,7 @@ void cuda_init() {
 
     CUDA_CHECK(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
-    CUDA_CHECK(cudaStreamCreateWithFlags(&aux_stream, cudaStreamNonBlocking));
+    CUDA_CHECK(cudaEventCreateWithFlags(&event, cudaEventDisableTiming));
 
     /* use blocking sync when synchronizing streams, i.e. when wait() called;
      * calls to wait() ought to be infrequent for good performance anyway, and
@@ -46,8 +46,6 @@ void cuda_init() {
     val.syncPolicy = cudaSyncPolicyBlockingSync;
     CUDA_CHECK(cudaStreamSetAttribute(stream,
         cudaStreamAttributeSynchronizationPolicy, &val));
-    CUDA_CHECK(cudaStreamSetAttribute(aux_stream,
-        cudaStreamAttributeSynchronizationPolicy, &val));
   }
 }
 
@@ -55,15 +53,13 @@ void cuda_term() {
   #pragma omp parallel num_threads(omp_get_max_threads())
   {
     CUDA_CHECK(cudaStreamSynchronize(stream));
-    CUDA_CHECK(cudaStreamSynchronize(aux_stream));
     #pragma omp barrier
+
+    CUDA_CHECK(cudaEventDestroy(event));
 
     /* don't use CUDA_CHECK here, because it tries to use stream after
      * destruction when CUDA_SYNC is true */
-    [[maybe_unused]] cudaError_t err;
-    err = cudaStreamDestroy(stream);
-    assert(err == cudaSuccess);
-    err = cudaStreamDestroy(aux_stream);
+    [[maybe_unused]] cudaError_t err = cudaStreamDestroy(stream);
     assert(err == cudaSuccess);
   }
 }

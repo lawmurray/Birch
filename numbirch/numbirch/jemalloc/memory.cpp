@@ -142,26 +142,34 @@ void* shared_malloc(const size_t size) {
 }
 
 void shared_free(void* ptr) {
-  assert(shared_arena > 0);
   if (ptr) {
-    numbirch_dallocx(ptr, shared_flags);
+    if (shared_arena > 0) {
+      numbirch_dallocx(ptr, shared_flags);
+    } else {
+      /* this occurs when memory is freed by external threads, such as calls
+       * from the CUDA runtime resulting from use of cudaLaunchHostFunc();
+       * such external threads do not have their own jemalloc arena or thread
+       * cache to use; we should deallocate while skipping the thread cache,
+       * as such a thread will never malloc() */
+      numbirch_dallocx(ptr, MALLOCX_TCACHE_NONE);
+    }
   }
 }
 
 void shared_free(void* ptr, const size_t size) {
-  assert(shared_arena > 0);
   if (ptr) {
-    numbirch_sdallocx(ptr, size, shared_flags);
+    if (shared_arena > 0) {
+      numbirch_sdallocx(ptr, size, shared_flags);
+    } else {
+      /* this occurs when memory is freed by external threads, such as calls
+       * from the CUDA runtime resulting from use of cudaLaunchHostFunc();
+       * such external threads do not have their own jemalloc arena or thread
+       * cache to use; we should deallocate while skipping the thread cache,
+       * as such a thread will never malloc() */
+      numbirch_sdallocx(ptr, size, MALLOCX_TCACHE_NONE);
+    }
   }
 }
-
-void shared_free_async(void* ptr) {
-  assert(shared_arena == 0 && shared_flags == 0);
-  // ^ should be called by an external thread (e.g. of the CUDA runtime)
-  numbirch_dallocx(ptr, MALLOCX_TCACHE_NONE);
-  // ^ skip the thread cache, as an external thread will never malloc()
-}
-
 
 void* device_malloc(const size_t size) {
   assert(device_arena > 0);
