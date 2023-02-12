@@ -10,8 +10,6 @@ To make a contribution, create a pull request on the [GitHub repository](https:/
 
 We take code quality seriously, and are happy to help you improve yours. We will review your pull request and provide constructive feedback. We only ask that you're receptive to that. We're kind, really.
 
-All contributors should familiarize themselves with the [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
-
 ## Code style
 
 A consistent code style is important for readability and maintainability. A good rule of thumb is that it should not be obvious to another developer that you wrote the code. Follow the lead: there is plenty of code in the standard library to follow by example. If you're not sure what to look for, here are some notes.

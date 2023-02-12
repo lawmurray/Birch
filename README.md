@@ -8,7 +8,7 @@ transpiles to C++.
 See [https://birch.sh](https://birch.sh) for a gentle introduction, and
 [https://docs.birch.sh](https://docs.birch.sh) for reference documentation.
 
-[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](https://github.com/lawmurray/Birch/blob/master/CODE_OF_CONDUCT.md) 
+[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch)
 
 
 ## License
