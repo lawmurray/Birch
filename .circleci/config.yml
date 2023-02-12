@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3.2
+  codecov: codecov/codecov@3.2.4
 
 executors:
   default:
@@ -468,15 +468,11 @@ commands:
             fi
   codecov:
     steps:
-      - when:
-          condition:
-            equal: [ $CODENAME, cover ]
-          steps:
-            - run:
-                name: Produce coverage report
-                command: lcov --directory . --no-external --capture -o cov.info
-            - codecov/upload:
-                file: cov.info
+      - run:
+          name: Produce coverage report
+          command: lcov --directory . --no-external --capture -o cov.info
+      - codecov/upload:
+          file: cov.info
 
   version:
     parameters:
