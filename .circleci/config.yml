@@ -768,7 +768,7 @@ commands:
           name: Deploy << parameters.repo >>
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]; then
-                cd /root/brew
+                cd $CIRCLE_WORKING_DIRECTORY/brew || cd /root/brew  # may be run by mac or linux executor
                 git init
                 git add .
                 git commit -m "Overwrite."
