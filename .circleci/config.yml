@@ -1071,8 +1071,9 @@ jobs:
                 dnf update --assumeyes
                 dnf install --assumeyes birch
               elif [[ "$CODENAME" =~ "mac" ]]; then
-                brew tap $GITHUB_USERNAME/homebrew-stage
-                brew install birch
+                brew update
+                brew upgrade
+                brew install $GITHUB_USERNAME/stage/birch
               else
                 apt update --assume-yes
                 apt install --assume-yes curl gpg
