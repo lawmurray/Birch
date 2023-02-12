@@ -2,7 +2,7 @@
 
 JEMALLOC_URL=https://github.com/jemalloc/jemalloc/releases/download/5.3.0/jemalloc-5.3.0.tar.bz2
 CUDA_URL=https://developer.download.nvidia.com/compute/cuda/12.0.0/local_installers/cuda_12.0.0_525.60.13_linux.run
-PREFIX=$HOME/.local
+PREFIX=/usr/local
 
 # build and install jemalloc
 curl -LO $JEMALLOC_URL
@@ -20,20 +20,16 @@ cd jemalloc-*.*.*
 make
 make install
 cd ..
+rm -rf jemalloc-*.*.*
 
 # install CUDA
-#curl -LO $CUDA_URL
-#sh ./cuda_*.run --toolkit --no-man-page --installpath=$PREFIX/cuda --override --silent
-#rm cuda_*.run
+curl -LO $CUDA_URL
+sh ./cuda_*.run --toolkit --no-man-page --installpath=$PREFIX/cuda --override --silent
+rm cuda_*.run
 
 # symlink math_functions.h to math_functions.hpp, expected by some older
 # versions of Eigen
-#ln -sf /usr/local/cuda/include/math_functions.h /usr/local/cuda/include/math_functions.hpp
+ln -sf /usr/local/cuda/include/math_functions.h /usr/local/cuda/include/math_functions.hpp
 
 # install wrapper
 install nvcc_wrapper $PREFIX/bin
-
-export PATH=/usr/local/cuda/bin:$PATH
-export CPATH=/usr/local/cuda/include:$CPATH
-export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
