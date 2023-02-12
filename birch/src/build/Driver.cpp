@@ -395,7 +395,11 @@ std::string birch::Driver::numbirch() {
   #else
   lib.replace_extension(".so");
   #endif
-  return find(libDirs, lib);
+  try {
+    return find(libDirs, lib);
+  } catch (const FileNotFoundException& e) {
+    return lib;  // let dlopen() search standard paths
+  }
 }
 
 std::string birch::Driver::library() {
@@ -424,7 +428,11 @@ std::string birch::Driver::library() {
   #else
   lib.replace_extension(".so");
   #endif
+  try {
   return find(libDirs, lib);
+  } catch (const FileNotFoundException& e) {
+    return lib;  // let dlopen() search standard paths
+  }
 }
 
 int birch::Driver::argc() {
