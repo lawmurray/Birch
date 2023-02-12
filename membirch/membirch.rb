@@ -1,7 +1,7 @@
 class Membirch < Formula
   desc "C++ library of smart pointer types for object-level copy-on-write"
   homepage "https://birch.sh"
-  url "membirch-0.0.0.tar.gz"
+  url "https://raw.githubusercontent.com/lawmurray/homebrew-birch/master/membirch-0.0.0.tar.gz"
   version "0.0.0"
   sha256 "0dbeff83d906b31160486c9571eaa9e311f6e30ee1d637f6a2f33bb6013a03d8"
   license "Apache-2.0"

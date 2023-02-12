@@ -769,6 +769,10 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]; then
                 cd $CIRCLE_WORKING_DIRECTORY/brew || cd /root/brew  # may be run by mac or linux executor
+                for file in *.rb; do
+                  cat $file | sed -E "s/homebrew-[A-Z0-9a-z]+/<< parameters.repo >>/g" > $file.sponge
+                  mv $file.sponge $file
+                done
                 git init
                 git add .
                 git commit -m "Overwrite."
