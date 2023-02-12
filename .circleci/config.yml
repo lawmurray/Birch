@@ -1030,6 +1030,10 @@ jobs:
           dir: libraries/Cairo
       - package_brew:
           dir: libraries/SQLite
+
+      - deploy_brew:
+          repo: homebrew-stage
+
       - persist_to_workspace:
           root: .
           paths:
@@ -1044,8 +1048,6 @@ jobs:
           at: ..
       - deploy_repo:
           subdomain: stage.birch.sh
-      - deploy_brew:
-          repo: homebrew-stage
       - run:
           name: Wait a little while for stage.birch.sh to be published
           command: sleep 120
@@ -1146,6 +1148,8 @@ workflows:
           requires:
             - test-<< matrix.os >>
 
+      # Linux repositories host binary packages, which are built first (slow)
+      # then tested (fast)
       - deb:
           filters:
             tags:
@@ -1176,17 +1180,6 @@ workflows:
                 - fedora-36
                 - fedora-37
 
-      - brew:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          matrix:
-            parameters:
-              os:
-                - mac
-
       - stage_repo:
           filters:
             tags:
@@ -1204,7 +1197,6 @@ workflows:
             - rpm-fedora-35
             - rpm-fedora-36
             - rpm-fedora-37
-            - brew-mac
 
       - test_repo:
           filters:
@@ -1225,9 +1217,33 @@ workflows:
                 - fedora-35
                 - fedora-36
                 - fedora-37
-                - mac
           requires:
             - stage_repo
+
+      # Mac Homebrew repositories host source packages, which are staged first
+      # (fast) then tested (slow, build required)
+      - brew:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          matrix:
+            parameters:
+              os:
+                - mac
+      - test_repo:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          matrix:
+            parameters:
+              os:
+                - mac
+          requires:
+            - brew-mac
 
       - deploy:
           filters:
@@ -1236,5 +1252,14 @@ workflows:
             branches:
               ignore: /.*/
           requires:
-            - example
-            - test_repo
+            - test_repo-buster
+            - test_repo-bullseye
+            - test_repo-focal
+            - test_repo-jammy
+            - test_repo-kinetic
+            - test_repo-opensuse-leap-15-4
+            - test_repo-opensuse-tumbleweed
+            - test_repo-fedora-35
+            - test_repo-fedora-36
+            - test_repo-fedora-37
+            - test_repo-mac
