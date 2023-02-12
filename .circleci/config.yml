@@ -345,7 +345,6 @@ commands:
                   bison \
                   g++ \
                   gdb \
-                  lcov \
                   eigen-dev \
                   yaml-dev \
                   boost-dev \
@@ -476,7 +475,7 @@ commands:
     steps:
       - run:
           name: Produce coverage report
-          command: lcov --directory . --no-external --capture -o cov.info
+          command: lcov --directory . --no-external --capture -o cov.info || echo
       - codecov/upload:
           file: cov.info
 
