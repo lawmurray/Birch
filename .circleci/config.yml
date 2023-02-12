@@ -163,6 +163,7 @@ commands:
                     gnupg \
                     coreutils \
                     gnu-time \
+                    lcov \
                     libtool \
                     flex \
                     boost \
@@ -189,12 +190,12 @@ commands:
                   make \
                   autoconf \
                   automake \
+                  libtool \
                   flex \
                   bison \
                   gcc-c++ \
                   gdb \
                   lcov \
-                  libtool \
                   libyaml-devel \
                   jemalloc-devel \
                   boost-devel \
@@ -216,7 +217,6 @@ commands:
                   reprepro \
                   python3 \
                   python3-pip \
-                  && pip3 install mkdocs mkdocs-material \
                   && zypper clean --all
               elif [[ "$CODENAME" =~ "opensuse" ]]; then
                 zypper --non-interactive update
@@ -236,6 +236,7 @@ commands:
                   flex \
                   bison \
                   gcc-c++ \
+                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -268,6 +269,7 @@ commands:
                   flex \
                   bison \
                   gcc-c++ \
+                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -302,6 +304,7 @@ commands:
                   flex \
                   bison \
                   gcc-c++ \
+                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -337,11 +340,12 @@ commands:
                   make \
                   autoconf \
                   automake \
+                  libtool \
                   flex \
                   bison \
                   g++ \
                   gdb \
-                  libtool \
+                  lcov \
                   eigen-dev \
                   yaml-dev \
                   boost-dev \
@@ -362,8 +366,8 @@ commands:
                   flex \
                   bison \
                   gcc \
-                  lcov \
                   gdb \
+                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -390,10 +394,12 @@ commands:
                   make \
                   autoconf \
                   automake \
+                  libtool \
                   flex \
                   bison \
                   g++ \
-                  libtool \
+                  gdb \
+                  lcov \
                   libjemalloc-dev \
                   libeigen3-dev \
                   libyaml-dev \
@@ -809,6 +815,7 @@ commands:
                 make -f mkdocs.makefile
                 cp -r mkdocs.yml docs docs.birch.sh/.
                 cd docs.birch.sh
+                pip3 install mkdocs mkdocs-material
                 mkdocs gh-deploy
               fi
 
