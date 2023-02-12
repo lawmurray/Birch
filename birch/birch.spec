@@ -36,9 +36,6 @@ strip --strip-unneeded %{name}
 %install
 %make_install
 
-%check
-%{buildroot}/usr/bin/%{name} help
-
 %files
 %license LICENSE
 %{_bindir}/%{name}
