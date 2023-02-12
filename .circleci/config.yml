@@ -1070,6 +1070,9 @@ jobs:
                 dnf config-manager --add-repo https://stage.birch.sh/rpm/$CODENAME/birch.repo
                 dnf update --assumeyes
                 dnf install --assumeyes birch
+              elif [[ "$CODENAME" =~ "mac" ]]; then
+                brew tap $GITHUB_USERNAME/homebrew-stage
+                brew install birch
               else
                 apt update --assume-yes
                 apt install --assume-yes curl gpg
@@ -1077,9 +1080,6 @@ jobs:
                 curl -fsSL https://stage.birch.sh/deb/Release.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/birch.gpg > /dev/null
                 apt update --assume-yes
                 apt install --assume-yes --install-recommends birch
-              elif [[ "$CODENAME" =~ "mac" ]]; then
-                brew tap $GITHUB_USERNAME/homebrew-stage
-                brew install birch
               fi
       - run:
           name: Test run
