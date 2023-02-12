@@ -686,10 +686,8 @@ commands:
               cd << parameters.dir >>
               TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
               SHA256=($(sha256sum $TARNAME-$VERSION.tar.gz))
-              cat $TARNAME.rb |
-                sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" >
-                $TARNAME.rb.sponge
-                mv $TARNAME.rb.sponge $TARNAME.rb
+              cat $TARNAME.rb | sed -E "s/sha256 \"[0-9a-f]+\"/sha256 \"$SHA256\"/g" > $TARNAME.rb.sponge
+              mv $TARNAME.rb.sponge $TARNAME.rb
               mv $TARNAME-$VERSION.tar.gz $TARNAME.rb $CIRCLE_WORKING_DIRECTORY/brew/.
 
   package_obs:
