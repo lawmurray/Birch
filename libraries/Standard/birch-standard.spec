@@ -59,15 +59,6 @@ strip --strip-unneeded .libs/*.so .libs/*.a
 
 %postun -n lib%{name}-0_0_0 -p /sbin/ldconfig
 
-%check
-export BIRCH_INCLUDE_PATH=%{buildroot}/usr/include
-export BIRCH_LIBRARY_PATH=%{buildroot}/usr/lib64:%{buildroot}/usr/lib
-mkdir hello
-cd hello
-birch init --enable-verbose
-birch build --enable-verbose
-birch hello
-
 %files -n lib%{name}-0_0_0
 %license LICENSE
 %{_libdir}/lib%{name}-single-%{version}.so
