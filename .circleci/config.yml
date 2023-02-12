@@ -1174,7 +1174,6 @@ workflows:
                 - fedora-35
                 - fedora-36
                 - fedora-37
-                - mageia-8
 
       - brew:
           filters:
@@ -1204,7 +1203,6 @@ workflows:
             - rpm-fedora-35
             - rpm-fedora-36
             - rpm-fedora-37
-            - rpm-mageia-8
             - brew-mac
 
       - test_repo:
@@ -1226,7 +1224,6 @@ workflows:
                 - fedora-35
                 - fedora-36
                 - fedora-37
-                - mageia-8
                 - mac
           requires:
             - stage_repo
