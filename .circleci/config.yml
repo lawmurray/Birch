@@ -908,7 +908,7 @@ jobs:
           name: Initialize repository
           command: |
               mkdir -p /root/deb/$CODENAME/conf
-              printf "Codename: $CODENAME\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/$CODENAME/conf/distributions
+              printf "Codename: $CODENAME\nSuite: stable\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/$CODENAME/conf/distributions
       - package_deb:
           dir: numbirch
       - package_deb:
