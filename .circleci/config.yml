@@ -1073,7 +1073,7 @@ jobs:
               elif [[ "$CODENAME" =~ "mac" ]]; then
                 brew update
                 brew upgrade
-                brew install $GITHUB_USERNAME/stage/birch
+                brew install lawmurray/stage/birch
               else
                 apt update --assume-yes
                 apt install --assume-yes curl gpg
