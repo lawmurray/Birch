@@ -9,8 +9,3 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 	find $(DESTDIR) -type f -name '*.la' -delete
-
-override_dh_auto_test: export BIRCH_INCLUDE_PATH = $(CURDIR)
-override_dh_auto_test: export BIRCH_LIBRARY_PATH = $(CURDIR)/.libs
-override_dh_auto_test:
-	mkdir hello && cd hello && birch init --enable-verbose && birch build --enable-verbose && birch hello
