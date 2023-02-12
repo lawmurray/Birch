@@ -601,7 +601,8 @@ commands:
                   echo ", \"branch\": \"$CIRCLE_BRANCH\"" >> mongodb.json
                   echo ", \"version\": \"$VERSION_LONG\"" >> mongodb.json
                   echo '}' >> mongodb.json
-                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection << parameters.dir >> --file mongodb.json
+                  COLLECTION=`echo << parameters.dir >> | sed -E 's/^[A-Z0-9a-z]+\///'`
+                  mongoimport --uri mongodb+srv://$MONGODB_USERNAME:$MONGODB_PASSWORD@$MONGODB_HOST/test --collection $COLLECTION --file mongodb.json
                 fi
               fi
 
