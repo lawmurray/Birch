@@ -768,7 +768,10 @@ commands:
           name: Deploy << parameters.repo >>
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]; then
+                mkdir $CIRCLE_WORKING_DIRECTORY/<< parameters.repo >>
                 cd $CIRCLE_WORKING_DIRECTORY/brew || cd /root/brew  # may be run by mac or linux executor
+                cp *.rb *.tar.gz $CIRCLE_WORKING_DIRECTORY/<< parameters.repo >>/.
+                cd $CIRCLE_WORKING_DIRECTORY/<< parameters.repo >>
                 for file in *.rb; do
                   cat $file | sed -E "s/homebrew-[A-Z0-9a-z]+/<< parameters.repo >>/g" > $file.sponge
                   mv $file.sponge $file
