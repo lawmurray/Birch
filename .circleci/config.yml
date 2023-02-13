@@ -1176,6 +1176,7 @@ workflows:
                 - fedora-35
                 - fedora-36
                 - fedora-37
+                - mageia-8
 
       - stage_repo:
           filters:
@@ -1194,6 +1195,7 @@ workflows:
             - rpm-fedora-35
             - rpm-fedora-36
             - rpm-fedora-37
+            - rpm-mageia-8
 
       - test_repo:
           filters:
@@ -1214,6 +1216,7 @@ workflows:
                 - fedora-35
                 - fedora-36
                 - fedora-37
+                - mageia-8
           requires:
             - stage_repo
 
@@ -1266,5 +1269,6 @@ workflows:
             - test_repo-fedora-35
             - test_repo-fedora-36
             - test_repo-fedora-37
+            - test_repo-mageia-8
             - test_repo-mac
             - docs
