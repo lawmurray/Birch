@@ -607,6 +607,23 @@ commands:
                 fi
               fi
 
+  docs_birch:
+    description: Document Birch package
+    parameters:
+      dir:
+        description: Directory containing the package
+        type: string
+    steps:
+      - version:
+          dir: << parameters.dir >>
+      - run:
+          name: Document << parameters.dir >>
+          command: |
+              cd << parameters.dir >>
+              birch docs
+              mkdir -p /root/docs/<< parameters.dir >>
+              cp -r docs/* /root/docs/<< parameters.dir >>/.
+
   package_deb:
     parameters:
       dir:
@@ -740,7 +757,6 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
                 mkdir << parameters.subdomain >>
                 cd << parameters.subdomain >>
-                git init -b gh-pages
                 mkdir rpm && cp -r /root/rpm/* rpm/.
                 mkdir deb && cp -r /root/deb/*/* deb/.  # merge repos
 
@@ -752,6 +768,7 @@ commands:
                   printf "[birch]\nname=Birch\ntype=rpm-md\nbaseurl=https://<< parameters.subdomain >>/rpm/$CODENAME\ngpgcheck=1\ngpgkey=https://<< parameters.subdomain >>/rpm/$CODENAME/repodata/repomd.xml.key\nenabled=1\nautorefresh=1\n" > rpm/$CODENAME/birch.repo
                 done
 
+                git init -b gh-pages
                 git add .
                 git commit -m "Overwrite."
                 git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.subdomain >>.git
@@ -783,6 +800,27 @@ commands:
                 git push origin master -f
               fi
 
+  deploy_docs:
+    parameters:
+      subdomain:
+        description: Subdomain of repository, e.g. docs.birch.sh
+        type: string
+    steps:
+      - run:
+          name: Deploy << parameters.subdomain >>
+          command: |
+              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
+                pip3 install mkdocs mkdocs-material
+                cd /root/docs
+                mkdocs build
+                cd site
+                git init -b gh-pages
+                git add .
+                git commit -m "Overwrite."
+                git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.subdomain >>.git
+                git push origin gh-pages -f
+              fi
+
   deploy_obs:
     steps:
       - run:
@@ -809,20 +847,6 @@ commands:
               if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]; then
                 cd $OSC_PROJECT
                 osc commit -m "Updated to version $VERSION."
-              fi
-
-  deploy_docs:
-    steps:
-      - run:
-          name: Deploy docs.birch.sh
-          command: |
-              if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
-                git clone https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/docs.birch.sh.git
-                make -f mkdocs.makefile
-                cp -r mkdocs.yml docs docs.birch.sh/.
-                cd docs.birch.sh
-                pip3 install mkdocs mkdocs-material
-                mkdocs gh-deploy
               fi
 
 jobs:
@@ -1046,6 +1070,39 @@ jobs:
           paths:
             - brew
 
+  docs:
+    parameters: 
+      os:
+        type: string
+    executor: << parameters.os >>
+    steps:
+      - end_if_pull_request
+      - environment
+      - checkout
+
+      - build_cpp:
+          dir: birch  # needed for birch docs
+
+      - run:
+          name: Initialize docs
+          command: |
+              mkdir -p /root/docs
+      - docs_birch:
+          dir: libraries/Standard
+      - docs_birch:
+          dir: libraries/Cairo
+      - docs_birch:
+          dir: libraries/SQLite
+      - run:
+          name: Finalize docs
+          command: |
+              cp mkdocs.yml /root/docs/.
+              cp README.md /root/docs/index.md
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - docs
+
   stage_repo:
     executor: default
     steps:
@@ -1104,6 +1161,7 @@ jobs:
     executor: default
     steps:
       - end_if_pull_request
+      - checkout
       - environment
       - attach_workspace:
           at: ..
@@ -1111,7 +1169,8 @@ jobs:
           subdomain: download.birch.sh
       - deploy_brew:
           repo: homebrew-birch
-      - deploy_docs
+      - deploy_docs:
+          subdomain: docs.birch.sh
       - deploy_obs
 
 workflows:
