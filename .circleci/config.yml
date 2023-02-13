@@ -1070,39 +1070,6 @@ jobs:
           paths:
             - brew
 
-  docs:
-    parameters: 
-      os:
-        type: string
-    executor: << parameters.os >>
-    steps:
-      - end_if_pull_request
-      - environment
-      - checkout
-
-      - build_cpp:
-          dir: birch  # needed for birch docs
-
-      - run:
-          name: Initialize docs
-          command: |
-              mkdir -p /root/docs
-      - docs_birch:
-          dir: libraries/Standard
-      - docs_birch:
-          dir: libraries/Cairo
-      - docs_birch:
-          dir: libraries/SQLite
-      - run:
-          name: Finalize docs
-          command: |
-              cp mkdocs.yml /root/docs/.
-              cp README.md /root/docs/index.md
-      - persist_to_workspace:
-          root: ..
-          paths:
-            - docs
-
   stage_repo:
     executor: default
     steps:
@@ -1157,11 +1124,40 @@ jobs:
             birch build
             birch hello
 
+  docs:
+    executor: default
+    steps:
+      - end_if_pull_request
+      - environment
+      - checkout
+
+      - build_cpp:
+          dir: birch  # needed for birch docs
+
+      - run:
+          name: Initialize docs
+          command: |
+              mkdir -p /root/docs
+      - docs_birch:
+          dir: libraries/Standard
+      - docs_birch:
+          dir: libraries/Cairo
+      - docs_birch:
+          dir: libraries/SQLite
+      - run:
+          name: Finalize docs
+          command: |
+              cp mkdocs.yml /root/docs/.
+              cp README.md /root/docs/index.md
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - docs
+
   deploy:
     executor: default
     steps:
       - end_if_pull_request
-      - checkout
       - environment
       - attach_workspace:
           at: ..
@@ -1311,6 +1307,13 @@ workflows:
           requires:
             - brew-mac
 
+      - docs:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+
       - deploy:
           filters:
             tags:
@@ -1329,3 +1332,4 @@ workflows:
             - test_repo-fedora-36
             - test_repo-fedora-37
             - test_repo-mac
+            - docs
