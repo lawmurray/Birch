@@ -621,8 +621,8 @@ commands:
           command: |
               cd << parameters.dir >>
               birch docs
-              mkdir -p /root/docs/<< parameters.dir >>
-              cp -r docs/* /root/docs/<< parameters.dir >>/.
+              mkdir -p /root/docs/docs/<< parameters.dir >>
+              cp -r docs/* /root/docs/docs/<< parameters.dir >>/.
 
   package_deb:
     parameters:
@@ -1073,7 +1073,7 @@ jobs:
       - run:
           name: Initialize docs
           command: |
-              mkdir -p /root/docs
+              mkdir -p /root/docs/docs
       - docs_birch:
           dir: libraries/Standard
       - docs_birch:
@@ -1084,7 +1084,7 @@ jobs:
           name: Finalize docs
           command: |
               cp mkdocs.yml /root/docs/.
-              cp README.md /root/docs/index.md
+              cp README.md /root/docs/docs/index.md
       - persist_to_workspace:
           root: ..
           paths:
