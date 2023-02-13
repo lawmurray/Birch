@@ -38,7 +38,7 @@ Requirements are:
 
 Proceed as follows:
 
-```
+```bash
 ./bootstrap
 ./configure
 make
@@ -61,7 +61,7 @@ build of [jemalloc](http://jemalloc.net/), instructions for which are below.
 
 Download the latest [jemalloc source](https://github.com/jemalloc/jemalloc)
 and extract it. From within its main directory run:
-```
+```bash
 ./configure \
     --disable-shared \
     --enable-static \
@@ -94,17 +94,18 @@ the NumBirch source directory to work correctly. It is, however, only required
 for building NumBirch; developers who expect to rebuild NumBirch frequently
 may like to install it to a permanent location, users who expect to rebuild
 infrequently may like to install to a temporary location instead:
-
-    mkdir $HOME/tmpbin
-    export OLDPATH=$PATH
-    export PATH=$HOME/tmpbin:$OLDPATH
-    cp nvcc_wrapper $HOME/tmpbin/.
+```bash
+mkdir $HOME/tmpbin
+export OLDPATH=$PATH
+export PATH=$HOME/tmpbin:$OLDPATH
+cp nvcc_wrapper $HOME/tmpbin/.
+```
 
 #### 3. Install NumBirch
 
 Finally, in the root directory of the NumBirch sources, build NumBirch with
 the CUDA backend:
-```
+```bash
 ./bootstrap
 ./configure --enable-cuda
 make
@@ -116,10 +117,11 @@ If installing system wide, the last command may require `sudo`.
 #### 4. Clean up
 
 If you installed `nvcc_wrapper` to a temporary location, you may now clean up:
-
-    rm $HOME/tmpbin/nvcc_wrapper
-    rmdir $HOME/tmpbin
-    export PATH=$OLDPATH
+```bash
+rm $HOME/tmpbin/nvcc_wrapper
+rmdir $HOME/tmpbin
+export PATH=$OLDPATH
+```
 
 ### From source: oneAPI backend
 
@@ -128,34 +130,28 @@ If you installed `nvcc_wrapper` to a temporary location, you may now clean up:
 The oneAPI requires the [Intel oneAPI Base
 Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#gs.g8tsv3).
 Once installed, run
-
-```
+```bash
 . /opt/intel/oneapi/setvars.sh
 ```
-
-to set up your environment to use it.
-
-Then, to build with the oneAPI backend:
-
-```
+to set up your environment to use it. Then, to build with the oneAPI backend:
+```bash
 ./bootstrap
 ./configure --enable-oneapi
 make
 make install
 ```
-
 To run using the oneAPI backend you will need an Intel GPU, such as the
 integrated graphics on an Intel CPU.
 
 ## Getting started
 
 To use NumBirch in your own code, include the header file:
-```
+```cpp
 #include <numbirch.hpp>
 ```
 By default, this sets the type `real` to `double`. To instead set it to
 `float`, use:
-```
+```cpp
 #define NUMBIRCH_REAL float
 #include <numbirch.hpp>
 ```
@@ -169,7 +165,7 @@ or define `-DNUMBIRCH_REAL=float` when compiling. Also add (at least)
 
 A simple "Hello world" program is as follows. In `hello.cpp`:
 
-```
+```cpp
 #include <numbirch.hpp>
 #include <iostream>
 
@@ -182,11 +178,11 @@ int main() {
 }
 ```
 Compile and link:
-```
+```bash
 g++ -std=c++17 -lnumbirch -o hello hello.cpp
 ```
 and run:
-```
+```bash
 ./hello
 ```
 
@@ -205,30 +201,30 @@ backends. Much simpler.
 While the interface of NumBirch may look a little complicated with its
 template code, it works with few surprises. You can declare matrices and
 vectors:
-```
+```cpp
 Matrix<real> A;
 Vector<real> x;
 ```
 and e.g. multiply them together:
-```
+```cpp
 auto y = A*x;
 ```
 to get, in this case, `y` of type `Vector<real>`. There are numerous
 *transformations* for standard math functions that you can batch across
 arrays, e.g.:
-```
+```cpp
 auto z = sin(y);
 ```
 to get, again, `z` of type `Vector<real>`. When scalars are required you can
 use primitive scalar types:
-```
+```cpp
 auto a = 2.0;
 z = 2.0*z;
 ```
 In fact, `Matrix<T>` is just an alias for `Array<T,2>`, `Vector<T>` for
 `Array<T,1>`, and `Scalar<T>` for `Array<T,0>`. The latter can work like a
 primitive scalar:
-```
+```cpp
 Scalar<real> b = 2.0;
 z = b*z;
 ```
@@ -241,7 +237,7 @@ Most functions are defined with generic parameter types. The C++ idiom of
 accepted types according to *type traits*. Consider, for example, the addition
 operator. Its full signature is:
 
-```
+```cpp
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> operator+(const T& x, const U& y);
