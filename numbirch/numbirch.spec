@@ -17,34 +17,22 @@ Summary: Shared libraries for NumBirch
 %description -n lib%{name}-0_0_0
 Shared libraries for Numbirch.
 
-%package devel
-Summary: Development files for NumBirch
-Requires: lib%{name}-0_0_0 == %{version}
-%description devel
-Development files for Numbirch.
-
-%package devel-static
-Summary: Static libraries for NumBirch
-Requires: %{name}-devel == %{version}
-%description devel-static
-Static libraries for Numbirch.
-
 %package -n lib%{name}-cuda-0_0_0
 Summary: Shared libraries for NumBirch with CUDA backend
 %description -n lib%{name}-cuda-0_0_0
 Shared libraries for Numbirch with CUDA backend.
 
-%package cuda-devel
-Summary: Development files for NumBirch with CUDA backend
-Requires: lib%{name}-cuda-0_0_0 == %{version}
-%description cuda-devel
-Development files for Numbirch with CUDA backend.
+%package devel
+Summary: Development files for NumBirch
+Requires: lib%{name}-0_0_0 == %{version} lib%{name}-cuda-0_0_0 == %{version}
+%description devel
+Development files for Numbirch.
 
-%package cuda-devel-static
-Summary: Static libraries for NumBirch with CUDA backend
-Requires: %{name}-cuda-devel == %{version}
-%description cuda-devel-static
-Static libraries for Numbirch with CUDA backend.
+%package devel-static
+Summary: Static libraries for NumBirch
+Requires: %{name}-devel == %{version} %{name}-cuda-devel == %{version}
+%description devel-static
+Static libraries for Numbirch.
 
 %prep
 %setup -n %{name}-%{version}
@@ -95,29 +83,23 @@ cd ..
 %{_libdir}/lib%{name}-single-%{version}.so
 %{_libdir}/lib%{name}-%{version}.so
 
-%files devel
-%license LICENSE
-%{_includedir}/%{name}*
-%{_libdir}/lib%{name}-single.so
-%{_libdir}/lib%{name}.so
-
-%files devel-static
-%license LICENSE
-%{_libdir}/lib%{name}-single.a
-%{_libdir}/lib%{name}.a
-
 %files -n lib%{name}-cuda-0_0_0
 %license LICENSE
 %{_libdir}/lib%{name}-cuda-single-%{version}.so
 %{_libdir}/lib%{name}-cuda-%{version}.so
 
-%files cuda-devel
+%files devel
 %license LICENSE
+%{_includedir}/%{name}*
+%{_libdir}/lib%{name}-single.so
+%{_libdir}/lib%{name}.so
 %{_libdir}/lib%{name}-cuda-single.so
 %{_libdir}/lib%{name}-cuda.so
 
-%files cuda-devel-static
+%files devel-static
 %license LICENSE
+%{_libdir}/lib%{name}-single.a
+%{_libdir}/lib%{name}.a
 %{_libdir}/lib%{name}-cuda-single.a
 %{_libdir}/lib%{name}-cuda.a
 
