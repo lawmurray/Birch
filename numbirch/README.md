@@ -18,8 +18,7 @@ NumBirch supports two different backends based on the following libraries, as we
 | CUDA    | GPU    | unified, jemalloc | cuBLAS, cuSOLVER | Eigen                  | CUB        |
 | oneAPI  | GPU    | unified, jemalloc | MKL              | Eigen                  | DPL        |
 
-!!! attention
-    The oneAPI backend that is neither complete nor working at the moment.
+> The oneAPI backend that is neither complete nor working at the moment.
 
 ## License
 
@@ -124,8 +123,7 @@ If you installed `nvcc_wrapper` to a temporary location, you may now clean up:
 
 ### From source: oneAPI backend
 
-!!! attention
-    The oneAPI backend is neither complete nor working at the moment.
+> The oneAPI backend is neither complete nor working at the moment.
 
 The oneAPI requires the [Intel oneAPI Base
 Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html#gs.g8tsv3).
