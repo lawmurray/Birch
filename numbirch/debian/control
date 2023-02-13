@@ -13,10 +13,15 @@ Description: Numerical kernels and copy-on-write arrays
 
 Package: numbirch-dev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libnumbirch-0.0.0 (= 0.0.0-1), libnumbirch-cuda-0.0.0 (= 0.0.0-1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libnumbirch-0.0.0 (= 0.0.0-1)
 Description: Development files for NumBirch
 
 Package: libnumbirch-cuda-0.0.0
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Numerical kernels and copy-on-write arrays with CUDA backend
+
+Package: numbirch-cuda-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libnumbirch-cuda-0.0.0 (= 0.0.0-1)
+Description: Development files for NumBirch with CUDA backend
