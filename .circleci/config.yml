@@ -709,42 +709,6 @@ commands:
               mv $TARNAME.rb.sponge $TARNAME.rb
               mv $TARNAME-$VERSION.tar.gz $TARNAME.rb $CIRCLE_WORKING_DIRECTORY/brew/.
 
-  package_obs:
-    parameters:
-      dir:
-        description: Directory containing the package
-        type: string
-    steps:
-      - run:
-          name: Open Build Service package for << parameters.dir >>
-          command: |
-              shopt -s extglob
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]; then
-                cd << parameters.dir >>
-                make dist
-                TARNAME=`ls *.tar.gz | sed -E s/-$VERSION\.tar\.gz$//`
-                mv $TARNAME-$VERSION.tar.gz $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME/.
-                cd $CIRCLE_WORKING_DIRECTORY/$OSC_PROJECT/$TARNAME
-                if ls $TARNAME-!($VERSION).tar.gz > /dev/null
-                then
-                  osc delete $TARNAME-!($VERSION).tar.gz
-                fi
-                osc add $TARNAME-$VERSION.tar.gz
-                for file in PKGBUILD $TARNAME.spec $TARNAME.dsc debian.control debian.$TARNAME.install debian.$TARNAME-dev.install; do
-                  if [[ -e $file ]]; then
-                    cat $file |
-                      sed -E "s/-[0-9]+\.[0-9.]+?(\.tar\.gz|\.so)/-$VERSION\1/g" |
-                      sed -E "s/\%\{name\}-[0-9]+_[0-9_]+/\%\{name\}-$VERSION_SAFE/g" |
-                      sed -E "s/Version: [0-9]+\.[0-9.]+/Version: $VERSION/g" |
-                      sed -E "s/pkgver=[0-9]+\.[0-9.]+/pkgver=$VERSION/g" |
-                      sed -E "s/>= *[0-9]+\.[0-9.]+/>= $VERSION/g" |
-                      sed -E "s/== *[0-9]+\.[0-9.]+/== $VERSION/g" >
-                      $file.sponge
-                      mv $file.sponge $file
-                  fi
-                done
-              fi
-
   deploy_repo:
     parameters:
       subdomain:
@@ -819,34 +783,6 @@ commands:
                 git commit -m "Overwrite."
                 git remote add origin https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/lawmurray/<< parameters.subdomain >>.git
                 git push origin gh-pages -f
-              fi
-
-  deploy_obs:
-    steps:
-      - run:
-          name: Checkout Open Build Service repo
-          command: |
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]; then
-                osc checkout $OSC_PROJECT
-              fi
-      - package_obs:
-          dir: numbirch
-      - package_obs:
-          dir: membirch
-      - package_obs:
-          dir: birch
-      - package_obs:
-          dir: libraries/Standard
-      - package_obs:
-          dir: libraries/Cairo
-      - package_obs:
-          dir: libraries/SQLite
-      - run:
-          name: Commit Open Build Service repo
-          command: |
-              if [[ -n "$OSC_PROJECT" && -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" && -n "$VERSION" ]]; then
-                cd $OSC_PROJECT
-                osc commit -m "Updated to version $VERSION."
               fi
 
 jobs:
@@ -1167,7 +1103,6 @@ jobs:
           repo: homebrew-birch
       - deploy_docs:
           subdomain: docs.birch.sh
-      - deploy_obs
 
 workflows:
   all:
