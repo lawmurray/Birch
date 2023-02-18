@@ -74,7 +74,7 @@ program test_conjugacy_fan_normal_inverse_gamma_gaussian(N:Integer <- 10000,
 }
 
 program test_pdf_fan_normal_inverse_gamma_gaussian(N:Integer <- 10000,
-    B:Integer <- 1000, S:Integer <- 20, lazy:Boolean <- false) {
+    S:Integer <- 20, lazy:Boolean <- false) {
   m:TestFanNormalInverseGammaGaussian;
   with construct<Handler>(true, lazy, true) {
     m.initialize();

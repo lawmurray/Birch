@@ -53,7 +53,7 @@ program test_conjugacy_multivariate_normal_inverse_gamma(N:Integer <- 10000,
 }
 
 program test_pdf_multivariate_normal_inverse_gamma(N:Integer <- 10000,
-    B:Integer <- 10000, S:Integer <- 20, lazy:Boolean <- false) {
+    S:Integer <- 20, lazy:Boolean <- false) {
   m:TestMultivariateNormalInverseGamma;
   with construct<Handler>(true, lazy, true) {
     m.initialize();
