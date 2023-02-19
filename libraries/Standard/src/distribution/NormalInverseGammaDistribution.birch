@@ -80,7 +80,7 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_normal_inverse_gamma(this.getVariate(), ν, λ, k, γ));
+    return box(logpdf_normal_inverse_gamma(wrap_dist(this), ν, λ, k, γ));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -141,11 +141,12 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Mul<Arg2,Random<Real>>) ->
     Distribution<Real> {
   let ω2 <- σ2.l;
   let τ2 <- σ2.r;
-  if τ2.hasNext() && τ2.getNext().isInverseGamma() {
-    τ2.prune();
-    let (α, β) <- τ2.getNext().getInverseGamma()!;
-    let p <- NormalInverseGamma(μ, ω2, α, β);
-    τ2.setNext(p);
+  if τ2.isInverseGamma() {
+    let p_τ2 <- τ2.graft();
+    let (α, β) <- p_τ2.getInverseGamma()!;
+    let γ <- 2.0*β + pow(μ, 2.0)/ω2;
+    let p <- wrap_normal_inverse_gamma(μ/ω2, 1.0/ω2, 2.0*α, γ);
+    p_τ2.next <- p;
     return p;
   } else {
     return wrap_gaussian(μ, σ2);

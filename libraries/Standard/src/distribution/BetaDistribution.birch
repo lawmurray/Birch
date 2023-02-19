@@ -37,7 +37,7 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_beta(this.getVariate(), α, β));
+    return box(logpdf_beta(wrap_dist(this), α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {

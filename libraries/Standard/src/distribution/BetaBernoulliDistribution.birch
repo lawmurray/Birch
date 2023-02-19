@@ -42,7 +42,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_beta_bernoulli(this.getVariate(), α, β));
+    return box(logpdf_beta_bernoulli(wrap_dist(this), α, β));
   }
 
   override function constant() {
@@ -66,11 +66,11 @@ function make_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
  * Create Bernoulli distribution.
  */
 function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
-  if ρ.hasNext() && ρ.getNext().isBeta() {
-    ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta()!;
+  if ρ.isBeta() {
+    let p_ρ <- ρ.graft();
+    let (α, β) <- p_ρ.getBeta()!;
     let p <- wrap_beta_bernoulli(α, β);
-    ρ.setNext(p);
+    p_ρ.next <- p;
     return p;
   } else {
     return wrap_bernoulli(ρ);

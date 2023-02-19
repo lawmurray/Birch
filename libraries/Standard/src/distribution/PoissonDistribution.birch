@@ -32,7 +32,7 @@ final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_poisson(this.getVariate(), λ));
+    return box(logpdf_poisson(wrap_dist(this), λ));
   }
 
   override function cdf(x:Integer!) -> Real!? {

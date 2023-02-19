@@ -95,22 +95,17 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     Distribution<Integer> {
   let l <- μ.l;
   let r <- μ.r;
-  if l.hasNext() && l.getNext().isBoundedDiscrete() &&
-      r.hasNext() && r.getNext().isBoundedDiscrete() {
-    l.prune();
-    r.prune();
-    let p <- construct<AddDiscreteDeltaDistribution>(
-        l.getNext().getBoundedDiscrete()!,
-        r.getNext().getBoundedDiscrete()!);
-    l.setNext(p);
-    r.setNext(nil);
-    l.setSide(r);
-    r.setSide(l);
+  if l.isBoundedDiscrete() && r.isBoundedDiscrete() {
+    let p_l <- l.graft().getBoundedDiscrete()!;
+    let p_r <- r.graft().getBoundedDiscrete()!;
+    let p <- construct<AddDiscreteDeltaDistribution>(p_l, p_r);
+    p_l.next <- p_r;
+    p_r.next <- p;
     return p;
-	} else if l.hasNext() && l.getNext().isBoundedDiscrete() {
+	} else if l.isBoundedDiscrete() {
     let x ~ Delta(r);
     return Delta(l + x);
-  } else if r.hasNext() && r.getNext().isBoundedDiscrete() {
+  } else if r.isBoundedDiscrete() {
     let x ~ Delta(l);
     return Delta(x + r);
   } else {

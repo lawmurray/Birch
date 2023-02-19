@@ -28,7 +28,7 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_dirichlet(this.getVariate(), value(α)));
+    return box(logpdf_dirichlet(wrap_dist(this), value(α)));
   }
 
   override function constant() {

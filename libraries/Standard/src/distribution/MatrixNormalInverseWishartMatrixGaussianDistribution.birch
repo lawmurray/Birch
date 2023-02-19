@@ -76,7 +76,7 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
 
   override function hoist() -> Expression<Real>? {
     return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
-        box(this.getVariate() - C), A, N, Λ, Γ, k, Φ));
+        box(wrap_dist(this) - C), A, N, Λ, Γ, k, Φ));
   }
 
   override function constant() {
@@ -123,27 +123,24 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
   let A <- M.l.l;
   let M1 <- M.l.r;
   let C <- M.r;
-  if (Ψ.hasNext() && Ψ.getNext().isMatrixNormalInverseWishart() &&
-      Ψ.getNext(2) == M1) || (Ψ.hasSide() && Ψ.getSide() == M1) {
-    M1.prune();
-    let (N2, Λ1, Γ1, k) <- Ψ.getNext().getMatrixNormalInverseWishart()!;
+  if Ψ.isInverseWishart() && M1.isMatrixNormalInverseWishart() &&
+      Ψ.getDistribution().next == M1.getDistribution() {
+    let p_M1 <- M1.graft();
+    let (N2, Λ1, Γ1, k) <- p_M1.getMatrixNormalInverseWishart()!;
     let p <- wrap_matrix_normal_inverse_wishart_matrix_gaussian(A, N2, Λ1, Γ1,
         k, C, Σ);
-    M1.setNext(p);
-    Ψ.setNext(nil);
-    M1.setSide(Ψ);
-    Ψ.setSide(M1);
+    p_M1.next <- p;
     return p;
-  } else if Ψ.hasNext() && Ψ.getNext().isInverseWishart() {
-    Ψ.prune();
-    let (Ψ1, k) <- Ψ.getNext().getInverseWishart()!;
+  } else if Ψ.isInverseWishart() {
+    let p_Ψ <- Ψ.graft();
+    let (Ψ1, k) <- p_Ψ.getInverseWishart()!;
     let L <- wrap(chol(Σ));
     let O <- wrap(trisolve(L, M));
     let N <- triinnersolve(L, O);
     let Λ <- cholinv(L);
     let Γ <- Ψ1 + inner(O);
     let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
-    Ψ.setNext(p);
+    p_Ψ.next <- p;
     return p;
   } else {
     return wrap_matrix_gaussian(M, Σ, Ψ);

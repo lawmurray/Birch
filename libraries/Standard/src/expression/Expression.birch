@@ -99,7 +99,7 @@
  * by calling `peek()`. These memoized intermediate results are cleared again
  * as `grad()` progresses.
  */
-abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
+abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   /**
    * Memoized result.
    */
@@ -129,13 +129,6 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Is this a constant expression?
    */
   flagConstant:Boolean <- flagConstant;
-
-  /**
-   * Is this a Random expression?
-   */
-  override function isRandom() -> Boolean {
-    return false;
-  }
   
   /**
    * Is this a constant expression?
@@ -402,7 +395,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Render the entire expression constant.
    */
-  final override function constant() {
+  final function constant() {
     if !flagConstant {
       g <- nil;
       linkCount <- 1;

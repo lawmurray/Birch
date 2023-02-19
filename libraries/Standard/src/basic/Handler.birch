@@ -1,0 +1,310 @@
+/**
+ * Event handler.
+ *
+ * @param autoconj Enable automatic conjugacy (marginalization, conditioning,
+ * enumeration)?
+ * @param autodiff Enable automatic differentiation?
+ * @param autojoin Enable automatic joins? Requires automatic differentiation
+ * also.
+ *
+ * Events are triggered as code executes. Each event is handled via a call to
+ * the currently-installed event handler, which is an object of type Handler.
+ */
+final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
+  /**
+   * Distribution and Random objects for move.
+   */
+  Ξ:Array<Delay>;
+
+  /**
+   * Factors for move.
+   */
+  Φ:Array<Expression<Real>>;
+
+  /**
+   * Accumulated eager weight.
+   */
+  w:Real! <- 0.0;
+
+  /**
+   * Enable automatic conjugacy (marginalization, conditioning, enumeration)?
+   */
+  autoconj:Boolean <- autoconj;
+
+  /**
+   * Enable automatic differentiation?
+   */
+  autodiff:Boolean <- autodiff;
+
+  /**
+   * Enable automatic joins? Requires automatic differentiation also.
+   */
+  autojoin:Boolean <- autojoin && autodiff;
+
+  function hoist() -> Expression<Real>? {
+    π:Expression<Real>?;
+    for i in 1..Ξ.size() {
+      let ξ <- Ξ[i].hoist();
+      if ξ? {
+        if π? {
+          π <- box(π! + ξ!);
+        } else {
+          π <- ξ!;
+        }
+      }
+    }
+    for i in 1..Φ.size() {
+      let φ <- Φ[i];
+      if π? {
+        π <- box(π! + φ);
+      } else {
+        π <- φ;
+      }
+    }
+    return π;
+  }
+
+  /**
+   * Simulate a variate from a distribution.
+   *
+   * @param p Distribution.
+   *
+   * @return Variate.
+   */
+  function simulate<Value>(p:Distribution<Value>) -> Value! {
+    if autodiff && p.supportsLazy() {
+      Ξ.pushBack(p);
+      return p.simulateLazy()!;
+    } else {
+      return p.simulate();
+    }
+  }
+
+  /**
+   * Observe a variate from a distribution.
+   *
+   * @param p Distribution.
+   * @param x Variate.
+   */
+  function observe<Value>(p:Distribution<Value>, x:Value!) {
+    if autodiff && p.supportsLazy() {
+      Ξ.pushBack(p);
+      w <- w + p.logpdfLazy(x)!;
+    } else {
+      w <- w + p.logpdf(x);
+    }
+  }
+
+  /**
+   * Condition a distribution.
+   *
+   * @param p Marginal distribution.
+   *
+   * @return Conditional distribution over the marginalized variable.
+   */
+  function update<Value>(p:Distribution<Value>) -> Delay {
+    if autojoin && p.supportsJoin() {
+      return p.updateJoin()!;
+    } else if autodiff && p.supportsLazy() {
+      return p.updateLazy()!;
+    } else {
+      return p.update()!;
+    }
+  }
+
+  /**
+   * Weight.
+   *
+   * @param φ Factor giving an incremental log-weight.
+   *
+   * A factor event is triggered by the `factor` statement.
+   */
+  function weight(φ:Real) {
+    w <- w + φ;
+  }
+
+  /**
+   * Weight.
+   *
+   * @param φ Factor giving an incremental log-weight.
+   *
+   * A factor event is triggered by the `factor` statement.
+   */
+  function weight(φ:Real!) {
+    w <- w + φ;
+  }
+
+  /**
+   * Weight.
+   *
+   * @param φ Factor giving an incremental log-weight.
+   *
+   * A factor event is triggered by the `factor` statement.
+   */
+  function weight<Arg>(φ:Arg) {
+    if autodiff {
+      Φ.pushBack(box(φ));
+      w <- w + eval(φ);
+    } else {
+      w <- w + value(φ);
+    }
+  }
+}
+
+cpp{{
+/*
+ * Event handler for each thread.
+ */
+static thread_local birch::Handler handler(nullptr);
+}}
+
+/**
+ * Initialize.
+ */
+function init() {
+  cpp{{
+  #pragma omp parallel
+  {
+    handler = birch::Handler(std::in_place, true, false, false);
+  }
+  }}
+}
+
+/**
+ * Terminate.
+ */
+function term() {
+  cpp{{
+  #pragma omp parallel
+  {
+    handler.release();
+  }
+  }}
+}
+
+/*
+ * Get the event handler.
+ */
+function get_handler() -> Handler {
+  cpp{{
+  return ::handler;
+  }}
+}
+
+/*
+ * Set the event handler.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`with`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this on exit to restore the previous handler.
+ */
+function set_handler(handler:Handler) {
+  cpp{{
+  ::handler = handler;
+  }}
+}
+
+/*
+ * Swap the event handler with another.
+ *
+ * @param handler The new handler.
+ *
+ * @return The previous handler.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`with`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this on entry to set the new handler.
+ */
+function swap_handler(handler:Handler) -> Handler {
+  cpp{{
+  auto& current = ::handler;
+  auto previous = handler;
+  std::swap(current, previous);
+  return previous;
+  }}
+}
+
+/*
+ * Handle assume event.
+ *
+ * @param x Random.
+ * @param p Distribution.
+ *
+ * @return `x`.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
+ */
+function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
+  x.setDistribution(p);
+  return x;
+}
+
+/*
+ * Handle assume event.
+ *
+ * @param p Distribution.
+ *
+ * @return A newly construct [Random](../Random/) with value type
+ * the same as `p`.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally. This particular version is used
+ *     when a newly declared variable is initialized with the `~` operator.
+ */
+function handle_assume<Right>(p:Right) -> Random<Right.Value> {
+  return wrap_dist(p);
+}
+
+/*
+ * Handle simulate event.
+ *
+ * @param p Distribution.
+ *
+ * @return Value simulated from the distribution.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
+ */
+function handle_simulate<Right>(p:Right) -> {
+  return get_handler().simulate(p);
+}
+
+/*
+ * Handle observe event.
+ *
+ * @param x Random.
+ * @param p Distribution.
+ *
+ * @return `x`.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`~>`](https://www.birch.sh/language/probability/) operator, which is
+ *     hard-wired to call this internally.
+ */
+function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
+  return get_handler().observe<Right.Value>(p, x);
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor<Arg>(w:Arg) {
+  get_handler().weight<Arg>(w);
+}

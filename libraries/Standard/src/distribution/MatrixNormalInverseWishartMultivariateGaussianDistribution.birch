@@ -49,13 +49,13 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function simulate() -> Real[_] {
-    if !this.hasSide() {
+    if !this.side? {
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
           value(a), value(N), value(Λ), value(Γ), value(k), value(c),
           value(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
-          this.getSide().joinMatrixNormalInverseWishartMultivariateGaussian()!;
+          this.side!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
           value(Y), value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
@@ -65,12 +65,12 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function simulateLazy() -> Real[_]? {
-    if !this.hasSide() {
+    if !this.side? {
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
           eval(a), eval(N), eval(Λ), eval(Γ), eval(k), eval(c), eval(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
-          this.getSide().joinMatrixNormalInverseWishartMultivariateGaussian()!;
+          this.side!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
           eval(Y), eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
@@ -80,13 +80,13 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function logpdf(x:Real[_]) -> Real! {
-    if !this.hasSide() {
+    if !this.side? {
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(x,
           value(a), value(N), value(Λ), value(Γ), value(k), value(c),
           value(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
-          this.getSide().joinMatrixNormalInverseWishartMultivariateGaussian()!;
+          this.side!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
           value(Y), value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
@@ -96,12 +96,12 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function logpdfLazy(x:Real[_]) -> Real!? {
-    if !this.hasSide() {
+    if !this.side? {
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(x,
           eval(a), eval(N), eval(Λ), eval(Γ), eval(k), eval(c), eval(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
-          this.getSide().joinMatrixNormalInverseWishartMultivariateGaussian()!;
+          this.side!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
           eval(Y), eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
@@ -111,7 +111,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function update(x:Real[_]) -> Delay? {
-    if !this.hasSide() {
+    if !this.side? {
       return update_matrix_normal_inverse_wishart_multivariate_gaussian(
           x, value(a), value(N), value(Λ), value(Γ), value(k), value(c),
           value(φ2));
@@ -125,7 +125,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
-    if !this.hasSide() {
+    if !this.side? {
       return update_matrix_normal_inverse_wishart_multivariate_gaussian(
           x, a, N, Λ, Γ, k, c, φ2);
     } else {
@@ -138,7 +138,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
 
   override function updateJoin(x':Expression<Real[_]>) -> Delay? {
     let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
-    p.setSide(this);
+    p.side <- this;
     return p;
   }
 
@@ -159,7 +159,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     global.constant(c);
     global.constant(φ2);
 
-    if this.hasSide() {
+    if this.side? {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.takeSide()!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
@@ -186,16 +186,16 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     Y:PackExpression<Expression<Real[_]>,Real>;
     A:PackExpression<Expression<Real[_]>,Real>;
     φ2:StackExpression<Expression<Real>,Real>;
-    p:Delay <- this;
+    p:Distribution<Real[_]> <- this;
     while true {
-      let x' <- Expression<Real[_]>?(p.getNext())!;
+      let x' <- wrap_dist(p);
       let (y', a', N', Λ', Γ', k', φ2') <-
           p.getMatrixNormalInverseWishartMultivariateGaussian(x')!;
       Y.push(y');
       A.push(a');
       φ2.push(φ2');
-      if p.hasSide() && p.getSide().isSubordinate() {
-        p <- p.getSide();
+      if p.side? && p.side!.subordinate {
+        p <- Distribution<Real[_]>?(p.side)!;
       } else {
         return (box(transpose(Y)), box(transpose(A)), N', Λ', Γ', k',
             box(diagonal(φ2)));
@@ -238,23 +238,23 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Inner<Random<Real[_,_]>,
   let c <- μ.r;
   let ω2 <- Σ.l;
   let Ω <- Σ.r;
-  if (Ω.hasNext() && Ω.getNext().isMatrixNormalInverseWishart() &&
-      Ω.getNext(2) == m) || (Ω.hasSide() && Ω.getSide() == m) {
-    m.prune();
-    let (N, Λ1, Γ, k) <- Ω.getNext().getMatrixNormalInverseWishart()!;
+  if Ω.isInverseWishart() && m.isMatrixNormalInverseWishart() &&
+      Ω.getDistribution().next == m.getDistribution() {
+    let p_m <- m.graft();
+    let (N, Λ1, Γ, k) <- p_m.getMatrixNormalInverseWishart()!;
     let p <- wrap_matrix_normal_inverse_wishart_multivariate_gaussian(A, N,
         Λ1, Γ, k, c, ω2);
-    p.setSide(Ω.getNext().takeSide());  // carry forward
-    m.setNext(p);
-    Ω.setNext(nil);
-    m.setSide(Ω);
-    Ω.setSide(m);
+    p.setSide(p_m.takeSide());  // carry forward
+    p_m.next <- p;
     return p;
-  } else if Ω.hasNext() && Ω.getNext().isInverseWishart() {
-    Ω.prune();
-    let (Ψ, k) <- Ω.getNext().getInverseWishart()!;
-    let p <- wrap_multivariate_normal_inverse_wishart(μ, ω2, Ψ, k);
-    Ω.setNext(p);
+  } else if Ω.isInverseWishart() {
+    let p_Ω <- Ω.graft();
+    let (Ψ, k) <- p_Ω.getInverseWishart()!;
+    let ν <- μ/ω2;
+    let λ <- 1.0/ω2;
+    let Γ <- Ψ + outer(μ/sqrt(ω2));
+    let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
+    p_Ω.next <- p;
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

@@ -121,25 +121,22 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
   let c <- μ.r;
   let ω2 <- Σ.l;
   let Ω <- Σ.r;
-  if (Ω.hasNext() && Ω.getNext().isMultivariateNormalInverseWishart() &&
-      Ω.getNext(2) == m) || (Ω.hasSide() && Ω.getSide() == m) {
-    m.prune();
-    let (ν, λ, Γ, k) <- m.getNext().getMultivariateNormalInverseWishart()!;
+  if Ω.isInverseWishart() && m.isMultivariateNormalInverseWishart() &&
+      Ω.getDistribution().next == m.getDistribution() {
+    let p_m <- m.graft();
+    let (ν, λ, Γ, k) <- p_m.getMultivariateNormalInverseWishart()!;
     let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
         ν, λ, Γ, k, c, ω2);
-    m.setNext(p);
-    Ω.setNext(nil);
-    m.setSide(Ω);
-    Ω.setSide(m);
+    p_m.next <- p;
     return p;
-  } else if Ω.hasNext() && Ω.getNext().isInverseWishart() {
-    Ω.prune();
-    let (Ψ, k) <- Ω.getNext().getInverseWishart()!;
+  } else if Ω.isInverseWishart() {
+    let p_Ω <- Ω.graft();
+    let (Ψ, k) <- p_Ω.getInverseWishart()!;
     let ν <- μ/ω2;
     let λ <- 1.0/ω2;
     let Γ <- Ψ + outer(μ/sqrt(ω2));
     let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
-    Ω.setNext(p);
+    p_Ω.next <- p;
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

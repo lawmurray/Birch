@@ -60,11 +60,10 @@ final class DiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
  * Create delta distribution.
  */
 function Delta(μ:Random<Integer>) -> Distribution<Integer> {
-	if μ.hasNext() && μ.getNext().isBoundedDiscrete() {
-  	μ.prune();
-    let p <- construct<DiscreteDeltaDistribution>(
-        μ.getNext().getBoundedDiscrete()!);
-    μ.setNext(p);
+	if μ.isBoundedDiscrete() {
+  	let p_μ <- μ.graft().getBoundedDiscrete()!;
+    let p <- construct<DiscreteDeltaDistribution>(p_μ);
+    p_μ.next <- p;
     return p;
   } else {
   	return wrap_delta(μ);

@@ -108,6 +108,16 @@ abstract class Delay {
   side:Delay?;
 
   /**
+   * Updated distribution.
+   */
+  updated:Delay?;
+
+  /**
+   * Is this a subordinate in a joint distribution?
+   */
+  subordinate:Boolean <- false;
+
+  /**
    * Is there a next node on the $M$-path?
    */
   final function hasNext() -> Boolean {
@@ -138,28 +148,6 @@ abstract class Delay {
     let r <- next;
     next <- nil;
     return r;
-  }
-  
-  /**
-   * Get a proceeding node on the $M$-path.
-   *
-   * @param n Number of steps to the desired node, e.g. 1 for the next node, 2 for
-   *  the node after that, etc. Must be greater than zero.
-   *
-   * @return The proceeding node on the $M$-path that is `n` steps from this.
-   * If there is no such node, returns nil. If there is a loop at the end of
-   * the $M$-path, will iterate through that loop as many times as given and
-   * return non-nil.
-   */
-  final function getNext(n:Integer) -> Delay? {
-    assert n > 0;
-    if n == 1 {
-      return next;
-    } else if next? {
-      return next!.getNext(n - 1);
-    } else {
-      return nil;
-    }
   }
 
   /**
@@ -196,60 +184,28 @@ abstract class Delay {
   }
 
   /**
-   * Get a proceeding side node on the $M$-path.
+   * Prune the $M$-path.
    *
-   * @param n Number of steps to the desired node, e.g. 1 for the next node, 2 for
-   *  the node after that, etc. Must be greater than zero.
+   * @return Updated distribution for the parent node.
    *
-   * @return The proceeding side node on the $M$-path that is `n` steps from
-   * this. If there is no such node, returns nil. If there is a loop at the
-   * end of the $M$-path, will iterate through that loop as many times as
-   * given and return non-nil.
-   */
-  final function getSide(n:Integer) -> Delay? {
-    assert n > 0;
-    if n == 1 {
-      return side;
-    } else if side? {
-      return side!.getSide(n - 1);
-    } else {
-      return nil;
-    }
-  }
-
-  /**
-   * Is this an internal node on the $M$-path? A node is internal if
-   * `hasNext()` is true, and it is not part of a loop at the end of the
-   * $M$-path.
-   */
-  final function isInternal() -> Boolean {
-    return next? && next!.next != this;
-  }
-
-  /**
-   * Is this a subordinate distribution? A subordinate distribution is aside
-   * some other distribution.
-   */
-  function isSubordinate() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Set this as a subordinate distribution.
-   */
-  function setSubordinate() {
-    assert false;
-  }
-
-  /**
-   * Prune the $M$-path from below this.
-   *
-   * @return If this is a Random node, then this. If this is a Distribution
-   * node, then the updated Distribution for the first parent, which is now
-   * the leaf of the $M$-path.
+   * If there is a next node, it is pruned, proceeding recursively. Then a
+   * value for this node is realized, conditioning on this value to return an
+   * updated distribution for the parent node.
    */
   function prune() -> Delay {
-    assert !next?;  // otherwise prune() should have been overridden
+    return this;
+  }
+
+  /**
+   * Graft a new $M$-path from the node.
+   *
+   * @return Updated distribution for the child node to marginalize over.
+   *
+   * If there is a next node, it is pruned, proceeding recursively. Then the
+   * updated distribution for this node is returned for the new child node to
+   * marginalize over.
+   */
+  function graft() -> Delay {
     return this;
   }
 
@@ -264,21 +220,13 @@ abstract class Delay {
    * Render the node constant.
    */
   function constant() {
-    //
-  }
-
-  /**
-   * Is this a random variable?
-   */
-  function isRandom() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Is this a distribution?
-   */
-  function isDistribution() -> Boolean {
-    return false;
+    if this.side? {
+      this.side!.constant();
+      this.side <- nil;
+    }
+    if this.updated? {
+      this.updated!.constant();
+    }
   }
 
   function isGaussian() -> Boolean {

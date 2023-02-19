@@ -43,7 +43,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_student_t(this.getVariate(), k, μ, σ2));
+    return box(logpdf_student_t(wrap_dist(this), k, μ, σ2));
   }
 
   override function cdf(x:Real!) -> Real!? {

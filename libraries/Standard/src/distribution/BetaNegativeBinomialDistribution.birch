@@ -47,7 +47,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_beta_negative_binomial(this.getVariate(), k, α, β));
+    return box(logpdf_beta_negative_binomial(wrap_dist(this), k, α, β));
   }
 
   override function lower() -> Integer!? {
@@ -80,11 +80,11 @@ function make_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
  */
 function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
     Distribution<Integer> {
-  if ρ.hasNext() && ρ.getNext().isBeta() {
-    ρ.prune();
-    let (α, β) <- ρ.getNext().getBeta()!;
+  if ρ.isBeta() {
+    let p_ρ <- ρ.graft();
+    let (α, β) <- p_ρ.getBeta()!;
     let p <- wrap_beta_negative_binomial(k, α, β);
-    ρ.setNext(p);
+    p_ρ.next <- p;
     return p;
   } else {
     return wrap_negative_binomial(k, ρ);

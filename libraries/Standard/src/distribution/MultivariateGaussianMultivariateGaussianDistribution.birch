@@ -78,12 +78,12 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   let A <- μ.l.l;
   let m <- μ.l.r;
   let c <- μ.r;
-  if m.hasNext() && m.getNext().isMultivariateGaussian() {
-    m.prune();
-    let (μ1, Σ1) <- m.getNext().getMultivariateGaussian()!;
+  if m.isMultivariateGaussian() {
+    let p_m <- m.graft();
+    let (μ1, Σ1) <- p_m.getMultivariateGaussian()!;
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, μ1, Σ1, c,
         Σ);
-    m.setNext(p);
+    p_m.next <- p;
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

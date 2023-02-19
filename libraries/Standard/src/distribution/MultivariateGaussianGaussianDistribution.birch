@@ -78,11 +78,11 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   let a <- μ.l.l;
   let m <- μ.l.r;
   let c <- μ.r;
-  if m.hasNext() && m.getNext().isMultivariateGaussian() {
-    m.prune();
-    let (μ1, Σ1) <- m.getNext().getMultivariateGaussian()!;
+  if m.isMultivariateGaussian() {
+    let p_m <- m.graft();
+    let (μ1, Σ1) <- p_m.getMultivariateGaussian()!;
     let p <- wrap_multivariate_gaussian_gaussian(a, μ1, Σ1, c, σ2);
-    m.setNext(p);
+    p_m.next <- p;
     return p;
   } else {
     return wrap_gaussian(μ, σ2);

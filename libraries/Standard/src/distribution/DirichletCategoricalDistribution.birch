@@ -36,7 +36,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_dirichlet_categorical(this.getVariate(), α));
+    return box(logpdf_dirichlet_categorical(wrap_dist(this), α));
   }
 
   override function lower() -> Integer!? {
@@ -67,17 +67,17 @@ function make_dirichlet_categorical<Arg>(α:Arg) -> {
  * Create categorical distribution.
  */
 function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
-  if ρ.hasNext() && ρ.getNext().isDirichlet() {
-    ρ.prune();
-    let α <- ρ.getNext().getDirichlet()!;
+  if ρ.isDirichlet() {
+    let p_ρ <- ρ.graft();
+    let α <- p_ρ.getDirichlet()!;
     let p <- wrap_dirichlet_categorical(α);
-    ρ.setNext(p);
+    p_ρ.next <- p;
     return p;
-  } else if ρ.hasNext() && ρ.getNext().isRestaurant() {
-    ρ.prune();
-    let (α, θ, n) <- ρ.getNext().getRestaurant()!;
+  } else if ρ.isRestaurant() {
+    let p_ρ <- ρ.graft();
+    let (α, θ, n) <- p_ρ.getRestaurant()!;
     let p <- wrap_restaurant_categorical(α, θ, n);
-    ρ.setNext(p);
+    p_ρ.next <- p;
     return p;
   } else {
     return wrap_categorical(ρ);

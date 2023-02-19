@@ -72,11 +72,10 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
  */
 function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
   let m <- μ.m;
-	if m.hasNext() && m.getNext().isBoundedDiscrete() {
-  	m.prune();
-    let p <- construct<NegateDiscreteDeltaDistribution>(
-        m.getNext().getBoundedDiscrete()!);
-    m.setNext(p);
+	if m.isBoundedDiscrete() {
+  	let p_m <- m.graft().getBoundedDiscrete()!;
+    let p <- construct<NegateDiscreteDeltaDistribution>(p_m);
+    p_m.next <- p;
     return p;
 	} else {
 		return wrap_delta(μ);

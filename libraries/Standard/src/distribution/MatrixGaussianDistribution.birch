@@ -39,7 +39,7 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_matrix_gaussian(this.getVariate(), M, U, V));
+    return box(logpdf_matrix_gaussian(wrap_dist(this), M, U, V));
   }
 
   override function constant() {

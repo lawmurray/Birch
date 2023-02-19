@@ -32,7 +32,7 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_exponential(this.getVariate(), λ));
+    return box(logpdf_exponential(wrap_dist(this), λ));
   }
 
   override function cdf(x:Real!) -> Real!? {

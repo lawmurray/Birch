@@ -10,14 +10,19 @@
  * to update their value. Random objects in the value state are considered
  * *constants*.
  */
-final class Random<Value> < Expression<Value>(nil, false) {  
+class Random<Value> < Expression<Value>(nil, false) {
+  /**
+   * Distribution associated with the random variate.
+   */
+  p:Distribution<Value>?;
+
   /**
    * Value assignment.
    */
   operator <- x:Value! {
     this.set(x);
     if this.hasDistribution() {
-      handle_delay_observe(this);
+      this.p!.assign(x);
     }
     this.constant();
   }
@@ -35,26 +40,98 @@ final class Random<Value> < Expression<Value>(nil, false) {
    * Does this have a distribution?
    */
   function hasDistribution() -> Boolean {
-    return this.hasNext() && Distribution<Value>?(this.getNext())?;
+    return p?;
   }
 
   /**
    * Get the distribution.
    */
   function getDistribution() -> Distribution<Value> {
-    assert hasDistribution();
-    this.prune();
-    return Distribution<Value>?(this.getNext())!;
+    assert p?;
+    return p!;
   }
 
-  override function isRandom() -> Boolean {
-    return true;
+  /**
+   * Set the distribution.
+   */
+  function setDistribution(p:Distribution<Value>) {
+    assert !this.p?;
+    this.p <- p;
+  }
+
+  /**
+   * Graft.
+   */
+  function graft() -> Delay {
+    assert p?;
+    return p!.graft();
+  }
+
+  function isGaussian() -> Boolean {
+    return hasDistribution() && getDistribution().isGaussian();
+  }
+
+  function isBeta() -> Boolean {
+    return hasDistribution() && getDistribution().isBeta();
+  }
+
+  function isGamma() -> Boolean {
+    return hasDistribution() && getDistribution().isGamma();
+  }
+
+  function isInverseGamma() -> Boolean {
+    return hasDistribution() && getDistribution().isInverseGamma();
+  } 
+
+  function isInverseWishart() -> Boolean {
+    return hasDistribution() && getDistribution().isInverseWishart();
+  } 
+
+  function isNormalInverseGamma() -> Boolean {
+    return hasDistribution() && getDistribution().isNormalInverseGamma();
+  }
+
+  function isDirichlet() -> Boolean {
+    return hasDistribution() && getDistribution().isDirichlet();
+  }
+
+  function isRestaurant() -> Boolean {
+    return hasDistribution() && getDistribution().isRestaurant();
+  }
+
+  function isMultivariateGaussian() -> Boolean {
+    return hasDistribution() && getDistribution().isMultivariateGaussian();
+  }
+
+  function isMultivariateNormalInverseGamma() -> Boolean {
+    return hasDistribution() && getDistribution().isMultivariateNormalInverseGamma();
+  }
+
+  function isMultivariateNormalInverseWishart() -> Boolean {
+    return hasDistribution() && getDistribution().isMultivariateNormalInverseWishart();
+  }
+
+  function isMatrixGaussian() -> Boolean {
+    return hasDistribution() && getDistribution().isMatrixGaussian();
+  }
+
+  function isMatrixNormalInverseWishart() -> Boolean {
+    return hasDistribution() && getDistribution().isMatrixNormalInverseWishart();
+  }
+
+  function isDiscrete() -> Boolean {
+    return hasDistribution() && getDistribution().isDiscrete();
+  }
+
+  function isBoundedDiscrete() -> Boolean {
+    return hasDistribution() && getDistribution().isBoundedDiscrete();
   }
 
   override function doEval() {
     assert !this.x?;
-    this.prune();
-    handle_delay_simulate(this);
+    assert this.p?;
+    this.p!.realize();
+    this.x <- this.p!.x;
     assert this.x?;
   }
 
@@ -65,25 +142,6 @@ final class Random<Value> < Expression<Value>(nil, false) {
 
   override function doArgs(visitor:ArgsVisitor) {
     visitor.visit(this);
-  }
-
-  override function prune() -> Delay {
-    if this.hasSide() && !this.hasNext() {
-      /* first defer to partner to restore $M$-path */
-      this.getSide().prune();
-    }
-    if this.isInternal() {
-      let p <- this.getNext().prune();
-      this.setNext(p);
-      p.setNext(this);
-      if this.hasSide() {
-        /* restore the $M$-path between this and the partner */
-        this.getSide().setNext(p);
-        this.getSide().setSide(nil);
-        this.setSide(nil);
-      }
-    }
-    return this;
   }
 
   override function read(buffer:Buffer) {

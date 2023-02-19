@@ -42,7 +42,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_dirichlet_multinomial(this.getVariate(), n, α));
+    return box(logpdf_dirichlet_multinomial(wrap_dist(this), n, α));
   }
 
   override function constant() {
@@ -68,11 +68,11 @@ function make_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
  */
 function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
     Distribution<Integer[_]> {
-  if ρ.hasNext() && ρ.getNext().isDirichlet() {
-    ρ.prune();
-    let α <- ρ.getNext().getDirichlet()!;
+  if ρ.isDirichlet() {
+    let p_ρ <- ρ.graft();
+    let α <- p_ρ.getDirichlet()!;
     let p <- wrap_dirichlet_multinomial(n, α);
-    ρ.setNext(p);
+    p_ρ.next <- p;
     return p;
   } else {
     return wrap_multinomial(n, ρ);

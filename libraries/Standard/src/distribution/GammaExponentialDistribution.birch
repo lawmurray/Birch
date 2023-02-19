@@ -51,7 +51,7 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_lomax(this.getVariate(), 1.0/(a*θ), k));
+    return box(logpdf_lomax(wrap_dist(this), 1.0/(a*θ), k));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -91,11 +91,11 @@ function make_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
 function Exponential<Arg>(λ:Mul<Arg,Random<Real>>) -> Distribution<Real> {
   let a <- λ.l;
   let b <- λ.r;
-  b.prune();
-  if b.hasNext() && b.getNext().isGamma() {
-    let (k, θ) <- b.getNext().getGamma()!;
+  if b.isGamma() {
+    let p_b <- b.graft();
+    let (k, θ) <- p_b.getGamma()!;
     let p <- wrap_gamma_exponential(a, k, θ);
-    b.setNext(p);
+    p_b.next <- p;
     return p;
   } else {
     return wrap_exponential(λ);

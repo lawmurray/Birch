@@ -37,7 +37,7 @@ abstract class Model {
     π <- nil;
     for i in 1..Ξ.size() {
       for j in 1..Ξ[i].size() {
-        if !Ξ[i][j].isSubordinate() {
+        if !Ξ[i][j].subordinate {
           let ξ <- Ξ[i][j].hoist();
           if ξ? {
             if π? {

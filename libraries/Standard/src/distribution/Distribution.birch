@@ -5,18 +5,9 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
-   * Is this a subordinate in a joint distribution?
+   * Variate.
    */
-  subordinate:Boolean <- false;
-
-  /**
-   * Get the variate associated with this distribution.
-   */
-  final function getVariate() -> Expression<Value> {
-    let x <- Expression<Value>?(this.getNext());
-    assert x?;
-    return x!;
-  }
+  x:Value!?;
 
   /**
    * Are lazy operations supported?
@@ -70,7 +61,16 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Update the parent node on the $M$-path given the value of this node.
+   * Evaluate an update for the parent node on the $M$-path given the value
+   * of this node.
+   */
+  final function update() -> Delay? {
+    assert x?;
+    return update(x!);
+  }
+
+  /**
+   * Evaluate an update for the parent node on the $M$-path given a value.
    *
    * @param x The value.
    */
@@ -79,7 +79,16 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Update the parent node on the $M$-path given the value of this node,
+   * Evaluate an update for the parent node on the $M$-path given the value
+   * of this node, using lazy expressions.
+   */
+  final function updateLazy() -> Delay? {
+    assert x?;
+    return updateLazy(wrap_dist(this));
+  }
+
+  /**
+   * Evaluate an update for the parent node on the $M$-path given a value,
    * using lazy expressions.
    *
    * @param x The value.
@@ -89,7 +98,15 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Update the parent node on the $M$-path given the value of this node,
+   * Evaluate an update for the parent node on the $M$-path given the value of
+   * this node, using lazy expressions and joins.
+   */
+  final function updateJoin() -> Delay? {
+    return updateJoin(wrap_dist(this));
+  }
+
+  /**
+   * Evaluate an update for the parent node on the $M$-path given a value,
    * using lazy expressions and joins.
    *
    * @param x The value.
@@ -145,32 +162,216 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
-  override function constant() {
-    if this.hasSide() {
-      this.getSide().constant();
-      this.setSide(nil);
+  function realize() {
+    this.x <- get_handler().simulate(this);
+    if side? {
+      side!.subordinate <- true;
     }
   }
 
-  final override function prune() -> Delay {
-    if this.hasNext() {
-      let x <- Expression<Value>?(this.getNext().prune());
-      assert x?;
-      return handle_prune(this, x!);
-    } else {
-      return this;
+  function assign(x:Value!) {
+    this.x <- x;
+    get_handler().observe(this, x);
+    if side? {
+      side!.subordinate <- true;
     }
   }
 
-  final override function isDistribution() -> Boolean {
-    return true;
+  function prune() -> Delay {
+    let q <- this;
+    if q.updated? {
+      q <- Distribution<Value>?(q.updated!)!;
+    }
+    if q.next? {
+      q <- Distribution<Value>?(q.next!.prune())!;
+    }
+    this.x <- get_handler().simulate(q);
+    return get_handler().update(this);
+    // @todo condition q rather than this when joint update required
   }
 
-  final override function isSubordinate() -> Boolean {
-    return subordinate;
+  function graft() -> Delay {
+    let q <- this;
+    if q.updated? {
+      q <- Distribution<Value>?(q.updated!)!;
+    }
+    if q.next? {
+      q <- Distribution<Value>?(q.next!.prune())!;
+    }
+    if q != this {
+      updated <- q;
+    }
+    return q;
   }
 
-  final override function setSubordinate() {
-    subordinate <- true;
+  /**
+   * Construct a lazy expression for the log-pdf of this node.
+   */
+  function hoist() -> Expression<Real>? {
+    return nil;
   }
+
+  function isGaussian() -> Boolean {
+    return false;
+  }
+
+  function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isBeta() -> Boolean {
+    return false;
+  }
+
+  function getBeta() -> (Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isGamma() -> Boolean {
+    return false;
+  }
+
+  function getGamma() -> (Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isInverseGamma() -> Boolean {
+    return false;
+  } 
+
+  function getInverseGamma() -> (Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isInverseWishart() -> Boolean {
+    return false;
+  } 
+
+  function getInverseWishart() -> (Expression<Real[_,_]>, Expression<Real>)? {
+    return nil;
+  } 
+
+  function isNormalInverseGamma() -> Boolean {
+    return false;
+  }
+
+  function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
+      Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isDirichlet() -> Boolean {
+    return false;
+  }
+
+  function getDirichlet() -> Expression<Real[_]>? {
+    return nil;
+  }
+
+  function isRestaurant() -> Boolean {
+    return false;
+  }
+
+  function getRestaurant() -> (Expression<Real>, Expression<Real>,
+      Expression<Integer[_]>)? {
+    return nil;
+  }
+
+  function isMultivariateGaussian() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateGaussian() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>)? {
+    return nil;
+  }
+
+  function isMultivariateNormalInverseGamma() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseGamma() -> (Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isMultivariateNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMultivariateNormalInverseWishart() -> (Expression<Real[_]>,
+      Expression<Real>, Expression<Real[_,_]>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isMatrixGaussian() -> Boolean {
+    return false;
+  }
+
+  function getMatrixGaussian() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>)? {
+    return nil;
+  }
+
+  function isMatrixNormalInverseWishart() -> Boolean {
+    return false;
+  }
+
+  function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>)? {
+    return nil;
+  }
+
+  function isDiscrete() -> Boolean {
+    return false;
+  }
+
+  function getDiscrete() -> DiscreteDistribution? {
+    return nil;
+  }
+
+  function isBoundedDiscrete() -> Boolean {
+    return false;
+  }
+
+  function getBoundedDiscrete() -> BoundedDiscreteDistribution? {
+    return nil;
+  }
+
+  function getMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_]>, Expression<Real[_,_]>,
+      Expression<Real>, Expression<Real>, Expression<Real>,
+      Expression<Real>)? {
+    return nil;
+  }
+
+  function joinMultivariateNormalInverseGammaGaussian() ->
+      (Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real>, Expression<Real>,
+      Expression<Real[_]>, Expression<Real[_]>)? {
+    return nil;
+  }
+
+  function getMatrixNormalInverseWishartMultivariateGaussian(
+      x:Expression<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real>, Expression<Real>)? {
+    return nil;
+  }
+
+  function joinMatrixNormalInverseWishartMultivariateGaussian() ->
+      (Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
+      Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>,
+      Expression<Real[_,_]>)? {
+    return nil;
+  }
+}
+
+/**
+ * Create a Random from a Distribution.
+ */
+function wrap_dist<T>(p:T) -> Random<T.Value> {
+  o:Random<T.Value>;
+  o ~ p;
+  return o;
 }
