@@ -237,8 +237,10 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Inner<Random<Real[_,_]>,
     let (N, Λ1, Γ, k) <- p_m.getMatrixNormalInverseWishart()!;
     let p <- wrap_matrix_normal_inverse_wishart_multivariate_gaussian(A, N,
         Λ1, Γ, k, c, ω2);
-    p.setJoined(p_m.getJoined());  // carry forward
-    p_m.setJoined(nil);
+    if p_m.hasJoined() {
+      p.setJoined(p_m.getJoined());  // carry forward
+      p_m.setJoined(nil);
+    }
     p_m.setMarginalized(p);
     return p;
   } else if Ω.isInverseWishart() {

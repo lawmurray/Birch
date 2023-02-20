@@ -170,7 +170,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
 
     if hasJoined() {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
-          this.getJoined().joinMultivariateNormalInverseGammaGaussian()!;
+          getJoined().joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
           value(x), transpose(value(A)), value(ν), value(Λ), value(k),
           value(γ), value(c), diagonal(value(ω2)));
@@ -253,8 +253,10 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;
     let p <- wrap_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, k, γ,
         c, ω2);
-    p.setJoined(p_m.getJoined());  // carry forward
-    p_m.setJoined(nil);
+    if p_m.hasJoined() {
+      p.setJoined(p_m.getJoined());  // carry forward
+      p_m.setJoined(nil);
+    }
     p_m.setMarginalized(p);
     return p;
   } else if τ2.isInverseGamma() {

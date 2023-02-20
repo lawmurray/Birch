@@ -127,8 +127,10 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
     let p_m <- m.graft();
     let (ν, λ, k, γ) <- p_m.getNormalInverseGamma()!;
     let p <- wrap_normal_inverse_gamma_gaussian(a, ν, λ, k, γ, c, ω2);
-    p.setJoined(p_m.getJoined());  // carry forward
-    p_m.setJoined(nil);
+    if p_m.hasJoined() {
+      p.setJoined(p_m.getJoined());  // carry forward
+      p_m.setJoined(nil);
+    }
     p_m.setMarginalized(p);
     return p;
   } else if τ2.isInverseGamma() {
