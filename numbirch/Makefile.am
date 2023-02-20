@@ -1,3 +1,7 @@
+AM_LDFLAGS = -release $(PACKAGE_VERSION)
+AM_CXXFLAGS = -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
+# ^ BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS set to avoid valgrind issues
+
 SOURCES =  \
     numbirch/array/ArrayControl.cpp \
     numbirch/common/random.cpp \
@@ -69,8 +73,6 @@ EIGEN_CPPFLAGS = -DBACKEND_EIGEN \
 EIGEN_SOURCES = \
     numbirch/eigen/memory.cpp \
     numbirch/eigen/random.cpp
-
-AM_LDFLAGS = -release $(PACKAGE_VERSION)
 
 lib_LTLIBRARIES =
 
