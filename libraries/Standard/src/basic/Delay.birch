@@ -96,16 +96,9 @@
  */
 abstract class Delay {
   /**
-   * Next node on the $M$-path.
+   * Marginalized distribution.
    */
-  next:Delay?;
-
-  /**
-   * Side node on the $M$-path. This is used only for peculiar cases to
-   * establish joint distributions over two or more Randoms, such as for the
-   * normal-inverse-gamma distribution.
-   */
-  side:Delay?;
+  marginalized:Delay?;
 
   /**
    * Updated distribution.
@@ -113,120 +106,182 @@ abstract class Delay {
   updated:Delay?;
 
   /**
+   * Joined distribution.
+   */
+  joined:Delay?;
+
+  /**
    * Is this a subordinate in a joint distribution?
    */
   subordinate:Boolean <- false;
 
   /**
-   * Is there a next node on the $M$-path?
+   * Is there a marginalized distribution?
    */
-  final function hasNext() -> Boolean {
-    return next?;
+  final function hasMarginalized() -> Boolean {
+    return marginalized?;
   }
 
   /**
-   * Set the next node on the $M$-path.
+   * Get the marginalized distribution.
+   */
+  final function getMarginalized() -> Delay {
+    assert marginalized?;
+    return marginalized!;
+  }
+
+  /**
+   * Set the marginalized distribution.
+   */
+  final function setMarginalized(marginalized:Delay?) {
+    this.marginalized <- marginalized;
+  }
+
+  /**
+   * Is there an updated distribution?
+   */
+  final function hasUpdated() -> Boolean {
+    return updated?;
+  }
+
+  /**
+   * Get the updated distribution. If there is no updated distribution,
+   * returns this.
+   */
+  final function getUpdated() -> Delay {
+    if updated? {
+      return updated!;
+    } else {
+      return this;
+    }
+  }
+
+  /**
+   * Set the updated distribution.
+   */
+  final function setUpdated(updated:Delay?) {
+    this.updated <- updated;
+  }
+
+  /**
+   * Is there a joined distribution?
+   */
+  final function hasJoined() -> Boolean {
+    return joined?;
+  }
+
+  /**
+   * Get the joined distribution.
+   */
+  final function getJoined() -> Delay {
+    assert joined?;
+    return joined!;
+  }
+
+  /**
+   * Set the joined distribution.
+   */
+  final function setJoined(joined:Delay?) {
+    this.joined <- joined;
+  }
+
+  /**
+   * Is this a subordinate in a joint distribution?
+   */
+  final function isSubordinate() -> Boolean {
+    return subordinate;
+  }
+
+  /**
+   * Set the subordinate flag.
+   */
+  final function setSubordinate(subordinate:Boolean) {
+    this.subordinate <- subordinate;
+  }
+
+  /**
+   * Prepare the node for stateful operations
    *
-   * @param node Next node.
+   * @return Updated distribution.
    */
-  final function setNext(node:Delay?) {
-    this.next <- node;
+  final function graft() -> Delay {
+    let p <- this;
+    let p' <- this.getUpdated();
+    if p.hasMarginalized() {
+      let q <- p.getMarginalized();
+      let q' <- q.getUpdated();
+      let h <- get_handler();
+
+      q'.realize();
+      setMarginalized(nil);
+
+      if h.autojoin && q.supportsJoin() {
+        setJoined(q');
+      } else if q.isSecondOrder() {
+        /* in this case, q' is a joint distribution over the random variable
+         * associated with this distribution and the parent distribution,
+         * condition it to update the parent distribution */  
+        setUpdated(q'.condition());
+      } else {
+        /* in this case, q' is just over the random variable associated with
+         * this distribution, condition the original distribution to update
+         * the parent distribution */
+        setUpdated(q.condition());
+      }
+    }
+    return getUpdated();
   }
 
   /**
-   * Get the next node on the $M$-path.
+   * Realize a value for this node.
    */
-  final function getNext() -> Delay {
-    assert next?;
-    return next!;
-  }
+  abstract function realize();
 
   /**
-   * Set the next node on the $M$-path to nil and return its previous value.
+   * Condition the parent node on the $M$-path.
    */
-  final function takeNext() -> Delay? {
-    let r <- next;
-    next <- nil;
-    return r;
-  }
-
-  /**
-   * Is there a side node on the $M$-path?
-   */
-  final function hasSide() -> Boolean {
-    return side?;
-  }
-
-  /**
-   * Set the side node on the $M$-path.
-   *
-   * @param node Side node.
-   */
-  final function setSide(node:Delay?) {
-    this.side <- node;
-  }
-
-  /**
-   * Get the side node on the $M$-path.
-   */
-  final function getSide() -> Delay {
-    assert side?;
-    return side!;
-  }
-
-  /**
-   * Set the side node on the $M$-path to nil and return its previous value.
-   */
-  final function takeSide() -> Delay? {
-    let r <- side;
-    side <- nil;
-    return r;
-  }
-
-  /**
-   * Prune the $M$-path.
-   *
-   * @return Updated distribution for the parent node.
-   *
-   * If there is a next node, it is pruned, proceeding recursively. Then a
-   * value for this node is realized, conditioning on this value to return an
-   * updated distribution for the parent node.
-   */
-  function prune() -> Delay {
-    return this;
-  }
-
-  /**
-   * Graft a new $M$-path from the node.
-   *
-   * @return Updated distribution for the child node to marginalize over.
-   *
-   * If there is a next node, it is pruned, proceeding recursively. Then the
-   * updated distribution for this node is returned for the new child node to
-   * marginalize over.
-   */
-  function graft() -> Delay {
-    return this;
-  }
-
-  /**
-   * Construct a lazy expression for the log-pdf of this node.
-   */
-  function hoist() -> Expression<Real>? {
-    return nil;
-  }
+  abstract function condition() -> Delay?;
 
   /**
    * Render the node constant.
    */
-  function constant() {
-    if this.side? {
-      this.side!.constant();
-      this.side <- nil;
-    }
-    if this.updated? {
-      this.updated!.constant();
-    }
+  abstract function constant();
+
+  /**
+   * Construct a lazy expression for the log-pdf of this node.
+   */
+  abstract function hoist() -> Expression<Real>?;
+
+  /**
+   * Are lazy operations supported?
+   */
+  function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Are join operations supported?
+   */
+  function supportsJoin() -> Boolean {
+    return false;
+  }
+
+  /**
+   * Are any updates on this distribution joint with its parent?
+   *
+   * Usually a joint distribution of random variables $x$, $y$, and $z$ that
+   * are adjacent on the $M$-path have a joint distribution that can be
+   * decomposed as
+   * $$p(\mathrm{d}x, \mathrm{d}y, \mathrm{d}z) = p(\mathrm{d}x)
+   * p(\mathrm{d}y | x) p(\mathrm{d}z | y).$$
+   * When isSecondOrder() is true for $y$, the decomposition is instead
+   * $$p(\mathrm{d}x, \mathrm{d}y, \mathrm{d}z) = p(\mathrm{d}x)
+   * p(\mathrm{d}y | x) p(\mathrm{d}z | x, y).$$
+   * The conditional update on $y$ would usually encode $p(\mathrm{d}y | z)$,
+   * but instead encodes $p(\mathrm{d}x, \mathrm{d}y | z)$ in this case.
+   */
+  function isSecondOrder() -> Boolean {
+    return false;
   }
 
   function isGaussian() -> Boolean {

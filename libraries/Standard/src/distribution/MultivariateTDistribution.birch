@@ -39,7 +39,7 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_multivariate_t(wrap_dist(this), k, μ, Σ));
+    return box(logpdf_multivariate_t(this.random(), k, μ, Σ));
   }
 
   override function constant() {

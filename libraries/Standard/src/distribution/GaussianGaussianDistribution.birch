@@ -79,7 +79,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
     let p_m <- m.graft();
     let (m1, ω2) <- p_m.getGaussian()!;
     let p <- wrap_gaussian_gaussian(a, m1, ω2, c, σ2);
-    p_m.next <- p;
+    p_m.setMarginalized(p);
     return p;
   } else {
     return wrap_gaussian(μ, σ2);

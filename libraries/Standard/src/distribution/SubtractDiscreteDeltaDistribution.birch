@@ -97,8 +97,8 @@ function Delta(μ:Sub<Random<Integer>,Random<Integer>>) ->
     let p_l <- l.graft().getBoundedDiscrete()!;
     let p_r <- r.graft().getBoundedDiscrete()!;
     let p <- construct<SubtractDiscreteDeltaDistribution>(p_l, p_r);
-    p_l.next <- p_r;
-    p_r.next <- p;
+    p_l.setMarginalized(p_r);
+    p_r.setMarginalized(p);
     return p;
 	} else if l.isBoundedDiscrete() {
     let x ~ Delta(r);

@@ -28,7 +28,7 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_bernoulli(wrap_dist(this), ρ));
+    return box(logpdf_bernoulli(this.random(), ρ));
   }
 
   override function constant() {

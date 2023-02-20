@@ -62,6 +62,10 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
+  override function isSecondOrder() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma(value(ν), value(Λ),
         value(k), value(γ));
@@ -92,7 +96,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_multivariate_normal_inverse_gamma(wrap_dist(this), ν,
+    return box(logpdf_multivariate_normal_inverse_gamma(this.random(), ν,
         Λ, k, γ));
   }
 
@@ -102,6 +106,15 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
     global.constant(Λ);
     global.constant(k);
     global.constant(γ);
+
+    if hasJoined() {
+      let (x, A, ν, Λ, k, γ, c, ω2) <-
+          getJoined().joinMultivariateNormalInverseGammaGaussian()!;
+      setUpdated(update_multivariate_normal_inverse_gamma_multivariate_gaussian(
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k),
+          value(γ), value(c), diagonal(value(ω2))));
+      setJoined(nil);
+    }
   }
 
   override function isMultivariateNormalInverseGamma() -> Boolean {
@@ -161,7 +174,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     let k <- 2.0*α;
     let γ <- 2.0*β + dot(o);
     let p <- wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
-    p_ω2.next <- p;
+    p_ω2.setMarginalized(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

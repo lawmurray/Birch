@@ -47,7 +47,7 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_beta_binomial(wrap_dist(this), n, α, β));
+    return box(logpdf_beta_binomial(this.random(), n, α, β));
   }
 
   override function cdf(x:Integer!) -> Real!? {
@@ -88,7 +88,7 @@ function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
     let p_ρ <- ρ.graft();
     let (α, β) <- p_ρ.getBeta()!;
     let p <- wrap_beta_binomial(n, α, β);
-    p_ρ.next <- p;
+    p_ρ.setMarginalized(p);
     return p;
   } else {
     return wrap_binomial(n, ρ);

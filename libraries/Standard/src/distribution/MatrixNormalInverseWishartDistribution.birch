@@ -31,6 +31,10 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
+  override function isSecondOrder() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_wishart(value(N), value(Λ),
         value(Γ), value(k));
@@ -61,7 +65,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real>? {   
-    return box(logpdf_matrix_normal_inverse_wishart(wrap_dist(this), N, Λ,
+    return box(logpdf_matrix_normal_inverse_wishart(this.random(), N, Λ,
         Γ, k));
   }
 
@@ -71,6 +75,15 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     global.constant(Λ);
     global.constant(Γ);
     global.constant(k);
+
+    if hasJoined() {
+      let (Y, A, N, Λ, Γ, k, Φ) <-
+          getJoined().joinMatrixNormalInverseWishartMultivariateGaussian()!;
+      setUpdated(update_matrix_normal_inverse_wishart_matrix_gaussian(
+          value(Y), value(A), value(N), value(Λ), value(Γ), value(k),
+          value(Φ)));
+      setJoined(nil);
+    }
   }
 
   override function isMatrixNormalInverseWishart() -> Boolean {
@@ -125,7 +138,7 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
     let Λ <- cholinv(L);
     let Γ <- Ψ + inner(O);
     let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
-    p_V.next <- p;
+    p_V.setMarginalized(p);
     return p;
   } else {
     return wrap_matrix_gaussian(M, U, V);

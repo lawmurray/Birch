@@ -47,7 +47,7 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_inverse_gamma_gamma(wrap_dist(this), k, α, β));
+    return box(logpdf_inverse_gamma_gamma(this.random(), k, α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -85,7 +85,7 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
     let p_θ <- θ.graft();
     let (α, β) <- p_θ.getInverseGamma()!;
     let p <- wrap_inverse_gamma_gamma(k, α, β);
-    p_θ.next <- p;
+    p_θ.setMarginalized(p);
     return p;
   } else {
     return wrap_gamma(k, θ);

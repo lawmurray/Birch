@@ -71,7 +71,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
   override function hoist() -> Expression<Real>? {
     return box(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        wrap_dist(this), A, ν, Λ, k, γ, c, Ω));
+        this.random(), A, ν, Λ, k, γ, c, Ω));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
@@ -127,12 +127,12 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   let Ω <- Σ.l;
   let ω2 <- Σ.r;
   if ω2.isInverseGamma() && m.isMultivariateNormalInverseGamma() &&
-      ω2.getDistribution().next == m.getDistribution() {
+      ω2.hasMarginalized() && ω2.getMarginalized() == m.getDistribution() {
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;
     let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(A,
         ν, Λ, k, γ, c, Ω);
-    p_m.next <- p;
+    p_m.setMarginalized(p);
     return p;
   } else if ω2.isInverseGamma() {
     let p_ω2 <- ω2.graft();
@@ -144,13 +144,13 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     let k <- 2.0*α;
     let γ <- 2.0*β + dot(o);
     let p <- wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
-    p_ω2.next <- p;
+    p_ω2.setMarginalized(p);
     return p;
   } else if m.isMultivariateGaussian() {
     let p_m <- m.graft();
     let (m1, S) <- p_m.getMultivariateGaussian()!;
     let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, m1, S, c, Σ);
-    p_m.next <- p;
+    p_m.setMarginalized(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

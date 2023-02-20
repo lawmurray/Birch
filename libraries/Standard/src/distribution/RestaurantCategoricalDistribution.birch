@@ -47,7 +47,7 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_restaurant_categorical(wrap_dist(this), α, θ, n));
+    return box(logpdf_restaurant_categorical(this.random(), α, θ, n));
   }
 
   override function constant() {

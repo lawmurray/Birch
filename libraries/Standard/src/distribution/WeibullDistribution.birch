@@ -38,7 +38,7 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
   }
 
   override function hoist() -> Expression<Real>? {
-    return box(logpdf_weibull(wrap_dist(this), k, λ));
+    return box(logpdf_weibull(this.random(), k, λ));
   }
 
   override function cdf(x:Real!) -> Real!? {

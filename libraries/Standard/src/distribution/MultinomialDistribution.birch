@@ -35,7 +35,7 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
 
   override function hoist() ->
       Expression<Real>? {
-    return box(logpdf_multinomial(wrap_dist(this), n, ρ));
+    return box(logpdf_multinomial(this.random(), n, ρ));
   }
 
   override function constant() {

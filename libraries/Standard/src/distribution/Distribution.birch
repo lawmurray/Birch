@@ -5,54 +5,41 @@
  */
 abstract class Distribution<Value> < Delay {
   /**
-   * Variate.
+   * Stateful variate.
    */
   x:Value!?;
 
   /**
-   * Are lazy operations supported?
-   */
-  function supportsLazy() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Are join operations supported?
-   */
-  function supportsJoin() -> Boolean {
-    return false;
-  }
-  
-  /**
-   * Simulate a value.
+   * Simulate a variate.
    *
-   * @return the value.
+   * @return the variate.
    */
   abstract function simulate() -> Value!;
 
   /**
-   * Simulate a value using lazy expressions.
+   * Simulate a variate using lazy expressions.
    *
-   * @return the value, if supported.
+   * @return the variate, if supported.
    */
   function simulateLazy() -> Value!? {
     return nil;
   }
 
   /**
-   * Evaluate the log probability density (or mass) function.
+   * Evaluate the log probability density (or mass) function at a given
+   * position.
    *
-   * @param x The value.
+   * @param x The position.
    *
    * @return the log probability density (or mass).
    */
   abstract function logpdf(x:Value!) -> Real!;
 
   /**
-   * Evaluate the log probability density (or mass) function using lazy
-   * expressions.
+   * Evaluate the log probability density (or mass) function at a given
+   * position, using lazy expressions.
    *
-   * @param x The value.
+   * @param x The variate.
    *
    * @return the log probability density (or mass), if supported.
    */
@@ -61,64 +48,29 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Evaluate an update for the parent node on the $M$-path given the value
-   * of this node.
-   */
-  final function update() -> Delay? {
-    assert x?;
-    return update(x!);
-  }
-
-  /**
-   * Evaluate an update for the parent node on the $M$-path given a value.
+   * For a compound distribution, evaluate the conditional distribution given
+   * an observation.
    *
-   * @param x The value.
+   * @param x The observation.
    */
   function update(x:Value!) -> Delay? {
     return nil;
   }
 
   /**
-   * Evaluate an update for the parent node on the $M$-path given the value
-   * of this node, using lazy expressions.
-   */
-  final function updateLazy() -> Delay? {
-    assert x?;
-    return updateLazy(wrap_dist(this));
-  }
-
-  /**
-   * Evaluate an update for the parent node on the $M$-path given a value,
-   * using lazy expressions.
+   * For a compound distribution, evaluate the conditional distribution given
+   * an observation, using lazy expressions.
    *
-   * @param x The value.
+   * @param x The observation.
    */
   function updateLazy(x:Expression<Value>) -> Delay? {
     return nil;
   }
 
   /**
-   * Evaluate an update for the parent node on the $M$-path given the value of
-   * this node, using lazy expressions and joins.
-   */
-  final function updateJoin() -> Delay? {
-    return updateJoin(wrap_dist(this));
-  }
-
-  /**
-   * Evaluate an update for the parent node on the $M$-path given a value,
-   * using lazy expressions and joins.
+   * Evaluate the probability density (or mass) function at a given position.
    *
-   * @param x The value.
-   */
-  function updateJoin(x:Expression<Value>) -> Delay? {
-    return nil;
-  }
-
-  /**
-   * Evaluate the probability density (or mass) function.
-   *
-   * @param x The value.
+   * @param x The position.
    *
    * @return the probability density (or mass).
    */
@@ -127,9 +79,9 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
-   * Evaluate the cumulative distribution function at a value.
+   * Evaluate the cumulative distribution function at a given position.
    *
-   * @param x The value.
+   * @param x The position.
    *
    * @return the cumulative probability, if supported.
    */
@@ -149,66 +101,100 @@ abstract class Distribution<Value> < Delay {
   }
   
   /**
-   * Finite lower bound of the support of this node, if any.
+   * Finite lower bound of the support, if any.
    */
   function lower() -> Value!? {
     return nil;
   }
   
   /**
-   * Finite upper bound of the support of this node, if any.
+   * Finite upper bound of the support, if any.
    */
   function upper() -> Value!? {
     return nil;
   }
 
-  function realize() {
-    this.x <- get_handler().simulate(this);
-    if side? {
-      side!.subordinate <- true;
-    }
-  }
-
-  function assign(x:Value!) {
-    this.x <- x;
-    get_handler().observe(this, x);
-    if side? {
-      side!.subordinate <- true;
-    }
-  }
-
-  function prune() -> Delay {
-    let q <- this;
-    if q.updated? {
-      q <- Distribution<Value>?(q.updated!)!;
-    }
-    if q.next? {
-      q <- Distribution<Value>?(q.next!.prune())!;
-    }
-    this.x <- get_handler().simulate(q);
-    return get_handler().update(this);
-    // @todo condition q rather than this when joint update required
-  }
-
-  function graft() -> Delay {
-    let q <- this;
-    if q.updated? {
-      q <- Distribution<Value>?(q.updated!)!;
-    }
-    if q.next? {
-      q <- Distribution<Value>?(q.next!.prune())!;
-    }
-    if q != this {
-      updated <- q;
-    }
-    return q;
+  /**
+   * Get the stateful variate.
+   */
+  function variate() -> Value! {
+    assert x?;
+    constant();
+    return Distribution<Value>?(getUpdated())!.x!;
   }
 
   /**
-   * Construct a lazy expression for the log-pdf of this node.
+   * Get the stateful variate, boxed as a Random.
    */
-  function hoist() -> Expression<Real>? {
+  function random() -> Random<Value> {
+    assert x?;
+    o:Random<Value>;
+    o.setDistribution(Distribution<Value>?(getUpdated())!);
+    return o;
+  }
+
+  /**
+   * Assign the stateful variate.
+   */
+  function assign(x:Value!) {
+    assert !this.x?;
+    let h <- get_handler();
+    if h.autodiff && supportsLazy() {
+      h.Ξ.pushBack(this);
+      h.w <- h.w + logpdfLazy(x)!;
+    } else {
+      h.w <- h.w + logpdf(x);
+    }
+    if hasJoined() {
+      getJoined().setSubordinate(true);
+    }
+    this.x <- x;
+  }
+
+  override function realize() {
+    if !x? {
+      let h <- get_handler();
+      if h.autodiff && supportsLazy() {
+        h.Ξ.pushBack(this);
+        x <- simulateLazy()!;
+      } else {
+        x <- simulate();
+      }
+      if hasJoined() {
+        getJoined().setSubordinate(true);
+      }
+    }
+  }
+
+  override function condition() -> Delay? {
+    let h <- get_handler();
+    if h.autodiff && supportsLazy() {
+      return updateLazy(random());
+    } else {
+      return update(variate());
+    }
+  }
+
+  override function constant() {
+    if hasUpdated() {
+      getUpdated().constant();
+    }
+  }
+
+  override function hoist() -> Expression<Real>? {
     return nil;
+  }
+
+  override function supportsLazy() -> Boolean {
+    return false;
+  }
+
+  override function supportsJoin() -> Boolean {
+    return false;
+  }
+
+  override function isSecondOrder() -> Boolean {
+    return false;
   }
 
   function isGaussian() -> Boolean {
@@ -365,13 +351,4 @@ abstract class Distribution<Value> < Delay {
       Expression<Real[_,_]>)? {
     return nil;
   }
-}
-
-/**
- * Create a Random from a Distribution.
- */
-function wrap_dist<T>(p:T) -> Random<T.Value> {
-  o:Random<T.Value>;
-  o ~ p;
-  return o;
 }

@@ -27,6 +27,10 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
+  override function isSecondOrder() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
         value(Γ), value(k));
@@ -57,7 +61,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real>? {   
-    return box(logpdf_multivariate_normal_inverse_wishart(wrap_dist(this),
+    return box(logpdf_multivariate_normal_inverse_wishart(this.random(),
         ν, λ, Γ, k));
   }
 
@@ -120,7 +124,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     let λ <- 1.0/σ2;
     let Γ <- Ψ + outer(μ/sqrt(σ2));
     let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
-    p_Ω.next <- p;
+    p_Ω.setMarginalized(p);
     return p;
   } else {
     return wrap_multivariate_gaussian(μ, Σ);

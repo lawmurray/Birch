@@ -63,7 +63,7 @@ function Delta(μ:Random<Integer>) -> Distribution<Integer> {
 	if μ.isBoundedDiscrete() {
   	let p_μ <- μ.graft().getBoundedDiscrete()!;
     let p <- construct<DiscreteDeltaDistribution>(p_μ);
-    p_μ.next <- p;
+    p_μ.setMarginalized(p);
     return p;
   } else {
   	return wrap_delta(μ);

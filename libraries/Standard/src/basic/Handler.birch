@@ -63,92 +63,6 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
     }
     return π;
   }
-
-  /**
-   * Simulate a variate from a distribution.
-   *
-   * @param p Distribution.
-   *
-   * @return Variate.
-   */
-  function simulate<Value>(p:Distribution<Value>) -> Value! {
-    if autodiff && p.supportsLazy() {
-      Ξ.pushBack(p);
-      return p.simulateLazy()!;
-    } else {
-      return p.simulate();
-    }
-  }
-
-  /**
-   * Observe a variate from a distribution.
-   *
-   * @param p Distribution.
-   * @param x Variate.
-   */
-  function observe<Value>(p:Distribution<Value>, x:Value!) {
-    if autodiff && p.supportsLazy() {
-      Ξ.pushBack(p);
-      w <- w + p.logpdfLazy(x)!;
-    } else {
-      w <- w + p.logpdf(x);
-    }
-  }
-
-  /**
-   * Condition a distribution.
-   *
-   * @param p Marginal distribution.
-   *
-   * @return Conditional distribution over the marginalized variable.
-   */
-  function update<Value>(p:Distribution<Value>) -> Delay {
-    if autojoin && p.supportsJoin() {
-      return p.updateJoin()!;
-    } else if autodiff && p.supportsLazy() {
-      return p.updateLazy()!;
-    } else {
-      return p.update()!;
-    }
-  }
-
-  /**
-   * Weight.
-   *
-   * @param φ Factor giving an incremental log-weight.
-   *
-   * A factor event is triggered by the `factor` statement.
-   */
-  function weight(φ:Real) {
-    w <- w + φ;
-  }
-
-  /**
-   * Weight.
-   *
-   * @param φ Factor giving an incremental log-weight.
-   *
-   * A factor event is triggered by the `factor` statement.
-   */
-  function weight(φ:Real!) {
-    w <- w + φ;
-  }
-
-  /**
-   * Weight.
-   *
-   * @param φ Factor giving an incremental log-weight.
-   *
-   * A factor event is triggered by the `factor` statement.
-   */
-  function weight<Arg>(φ:Arg) {
-    if autodiff {
-      Φ.pushBack(box(φ));
-      w <- w + eval(φ);
-    } else {
-      w <- w + value(φ);
-    }
-  }
 }
 
 cpp{{
@@ -259,7 +173,7 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
  *     when a newly declared variable is initialized with the `~` operator.
  */
 function handle_assume<Right>(p:Right) -> Random<Right.Value> {
-  return wrap_dist(p);
+  return p.random();
 }
 
 /*
@@ -275,7 +189,8 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
  *     hard-wired to call this internally.
  */
 function handle_simulate<Right>(p:Right) -> {
-  return get_handler().simulate(p);
+  p.realize();
+  return p.get();
 }
 
 /*
@@ -292,7 +207,38 @@ function handle_simulate<Right>(p:Right) -> {
  *     hard-wired to call this internally.
  */
 function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
-  return get_handler().observe<Right.Value>(p, x);
+  p.set(x);
+  return x;
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor(w:Real) {
+  let h <- get_handler();
+  h.w <- h.w + w;
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor(w:Real!) {
+  let h <- get_handler();
+  h.w <- h.w + w;
 }
 
 /*
@@ -306,5 +252,11 @@ function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
  *     is hard-wired to call this internally.
  */
 function handle_factor<Arg>(w:Arg) {
-  get_handler().weight<Arg>(w);
+  let h <- get_handler();
+  if h.autodiff {
+    h.Φ.pushBack(box(w));
+    h.w <- h.w + eval(w);
+  } else {
+    h.w <- h.w + value(w);
+  }
 }

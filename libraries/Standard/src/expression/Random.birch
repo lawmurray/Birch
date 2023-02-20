@@ -48,7 +48,7 @@ class Random<Value> < Expression<Value>(nil, false) {
    */
   function getDistribution() -> Distribution<Value> {
     assert p?;
-    return p!;
+    return Distribution<Value>?(p!.getUpdated())!;
   }
 
   /**
@@ -57,6 +57,20 @@ class Random<Value> < Expression<Value>(nil, false) {
   function setDistribution(p:Distribution<Value>) {
     assert !this.p?;
     this.p <- p;
+  }
+
+  /**
+   * Does this have a marginalized distribution?
+   */
+  function hasMarginalized() -> Boolean {
+    return hasDistribution() && p!.getUpdated().hasMarginalized();
+  }
+
+  /**
+   * Get the marginalized distribution.
+   */
+  function getMarginalized() -> Delay {
+    return p!.getUpdated().getMarginalized().getUpdated();
   }
 
   /**
@@ -131,7 +145,7 @@ class Random<Value> < Expression<Value>(nil, false) {
     assert !this.x?;
     assert this.p?;
     this.p!.realize();
-    this.x <- this.p!.x;
+    this.x <- this.p!.x!;
     assert this.x?;
   }
 
