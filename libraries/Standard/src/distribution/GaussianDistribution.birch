@@ -55,10 +55,11 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
   }
 
   override function isGaussian() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    assert isGaussian();
     return box(μ, σ2);
   }
 

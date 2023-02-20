@@ -2,15 +2,12 @@
  * Bounded discrete distribution.
  */
 abstract class BoundedDiscreteDistribution < DiscreteDistribution {
-  override function isSecondOrder() -> Boolean {
-    return true;
-  }
-
   override function isBoundedDiscrete() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getBoundedDiscrete() -> BoundedDiscreteDistribution? {
+    assert isBoundedDiscrete();
     return this;
   }
 }

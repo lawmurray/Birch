@@ -59,10 +59,11 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
   }
 
   override function isGamma() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getGamma() -> (Expression<Real>, Expression<Real>)? {
+    assert isGamma();
     return box(k, θ);
   }
 

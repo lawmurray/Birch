@@ -40,11 +40,12 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
   }
 
   override function isRestaurant() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getRestaurant() -> (Expression<Real>, Expression<Real>,
       Expression<Integer[_]>)? {
+    assert isRestaurant();
     return box(α, θ, n);
   }
 

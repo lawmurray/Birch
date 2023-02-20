@@ -87,11 +87,12 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function isMatrixNormalInverseWishart() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getMatrixNormalInverseWishart() -> (Expression<Real[_,_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real>)? {
+    assert isMatrixNormalInverseWishart();
     return box(N, Λ, Γ, k);
   }
 

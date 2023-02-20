@@ -142,10 +142,8 @@ class Random<Value> < Expression<Value>(nil, false) {
   }
 
   override function doEval() {
-    assert !this.x?;
-    assert this.p?;
-    this.p!.realize();
-    this.x <- this.p!.x!;
+    assert hasDistribution();
+    this.x <- getDistribution().variateLazy();
     assert this.x?;
   }
 

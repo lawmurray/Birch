@@ -115,58 +115,77 @@ abstract class Distribution<Value> < Delay {
   }
 
   /**
+   * Does this have a stateful variate assigned?
+   */
+  final function hasVariate() -> Boolean {
+    let p <- Distribution<Value>?(graft())!;
+    return p.x?;
+  }
+
+  /**
    * Get the stateful variate.
    */
-  function variate() -> Value! {
-    assert x?;
-    constant();
-    return Distribution<Value>?(getUpdated())!.x!;
+  final function variate() -> Value! {
+    let p <- Distribution<Value>?(graft())!;
+    p.realize();
+    p.constant();
+    return p.x!;
+  }
+
+  /**
+   * Get the stateful variate, with lazy evaluation.
+   */
+  final function variateLazy() -> Value! {
+    let p <- Distribution<Value>?(graft())!;
+    p.realize();
+    return p.x!;
   }
 
   /**
    * Get the stateful variate, boxed as a Random.
    */
-  function random() -> Random<Value> {
-    assert x?;
+  final function random() -> Random<Value> {
+    let p <- Distribution<Value>?(graft())!;
     o:Random<Value>;
-    o.setDistribution(Distribution<Value>?(getUpdated())!);
+    o.setDistribution(p);
     return o;
   }
 
   /**
    * Assign the stateful variate.
    */
-  function assign(x:Value!) {
-    assert !this.x?;
+  final function assign(x:Value!) {
+    let p <- Distribution<Value>?(graft())!;
     let h <- get_handler();
-    if h.autodiff && supportsLazy() {
-      h.Ξ.pushBack(this);
-      h.w <- h.w + logpdfLazy(x)!;
+    if h.autodiff && p.supportsLazy() {
+      h.Ξ.pushBack(p);
+      h.w <- h.w + p.logpdfLazy(x)!;
     } else {
-      h.w <- h.w + logpdf(x);
+      h.w <- h.w + p.logpdf(x);
     }
-    if hasJoined() {
-      getJoined().setSubordinate(true);
+    if p.hasJoined() {
+      p.getJoined().setSubordinate(true);
     }
-    this.x <- x;
+    p.x <- x;
   }
 
-  override function realize() {
-    if !x? {
+  final override function realize() {
+    let p <- Distribution<Value>?(graft())!;
+    if !p.x? {
       let h <- get_handler();
-      if h.autodiff && supportsLazy() {
-        h.Ξ.pushBack(this);
-        x <- simulateLazy()!;
+      if h.autodiff && p.supportsLazy() {
+        h.Ξ.pushBack(p);
+        p.x <- p.simulateLazy()!;
       } else {
-        x <- simulate();
+        p.x <- p.simulate();
       }
-      if hasJoined() {
-        getJoined().setSubordinate(true);
+      if p.hasJoined() {
+        p.getJoined().setSubordinate(true);
       }
     }
   }
 
-  override function condition() -> Delay? {
+  final override function condition() -> Delay? {
     let h <- get_handler();
     if h.autodiff && supportsLazy() {
       return updateLazy(random());

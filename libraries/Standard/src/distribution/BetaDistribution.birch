@@ -63,10 +63,11 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
   }
 
   override function isBeta() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getBeta() -> (Expression<Real>, Expression<Real>)? {
+    assert isBeta();
     return box(α, β);
   }
 

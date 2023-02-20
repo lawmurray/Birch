@@ -70,11 +70,12 @@ final class InverseWishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) <
   }
 
   override function isInverseWishart() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getInverseWishart() -> (Expression<Real[_,_]>,
       Expression<Real>)? {
+    assert isInverseWishart();
     return box(Ψ, k);
   }
 

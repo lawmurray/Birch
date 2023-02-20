@@ -59,11 +59,12 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
   }
 
   override function isInverseGamma() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getInverseGamma() -> (Expression<Real>,
       Expression<Real>)? {
+    assert isInverseGamma();
     return box(α, β);
   }
 

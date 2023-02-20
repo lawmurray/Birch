@@ -74,12 +74,13 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function isMultivariateNormalInverseWishart() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getMultivariateNormalInverseWishart() ->
       (Expression<Real[_]>, Expression<Real>, Expression<Real[_,_]>,
       Expression<Real>)? {
+    assert isMultivariateNormalInverseWishart();
     return box(ν, λ, Γ, k);
   }
 

@@ -21,6 +21,10 @@ final class AddDiscreteConstrainedDistribution(p:Real[_], l:Integer,
    */
   y:Integer <- y;
   
+  override function isSecondOrder() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Integer! {
     return simulate_categorical(p) + l - 1;
   }

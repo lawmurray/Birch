@@ -118,12 +118,13 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function isMultivariateNormalInverseGamma() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getMultivariateNormalInverseGamma() -> (
       Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real>,
       Expression<Real>)? {
+    assert isMultivariateNormalInverseGamma();
     return box(ν, Λ, k, γ);
   }
 

@@ -44,11 +44,12 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
   }
 
   override function isMultivariateGaussian() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getMultivariateGaussian() -> (Expression<Real[_]>,
       Expression<Real[_,_]>)? {
+    assert isMultivariateGaussian();
     return box(μ, Σ);
   }
 

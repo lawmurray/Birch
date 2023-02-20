@@ -189,8 +189,7 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
  *     hard-wired to call this internally.
  */
 function handle_simulate<Right>(p:Right) -> {
-  p.realize();
-  return p.get();
+  return p.variate();
 }
 
 /*
@@ -207,7 +206,7 @@ function handle_simulate<Right>(p:Right) -> {
  *     hard-wired to call this internally.
  */
 function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
-  p.set(x);
+  p.assign(x);
   return x;
 }
 

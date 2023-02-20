@@ -106,11 +106,12 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   }
 
   override function isNormalInverseGamma() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getNormalInverseGamma() -> (Expression<Real>, Expression<Real>,
       Expression<Real>, Expression<Real>)? {
+    assert isNormalInverseGamma();
     return box(ν, λ, k, γ);
   }
 

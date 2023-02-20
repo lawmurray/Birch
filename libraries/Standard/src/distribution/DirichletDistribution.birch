@@ -37,10 +37,11 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   }
 
   override function isDirichlet() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getDirichlet() -> Expression<Real[_]>? {
+    assert isDirichlet();
     return box(α);
   }
 

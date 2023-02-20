@@ -3,10 +3,11 @@
  */
 abstract class DiscreteDistribution < Distribution<Integer> {
   override function isDiscrete() -> Boolean {
-    return true;
+    return !x?;
   }
 
   override function getDiscrete() -> DiscreteDistribution? {
+    assert isDiscrete();
     return this;
   }
 }

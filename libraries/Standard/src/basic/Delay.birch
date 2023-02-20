@@ -207,29 +207,30 @@ abstract class Delay {
   final function graft() -> Delay {
     let p <- this;
     let p' <- this.getUpdated();
-    if p.hasMarginalized() {
-      let q <- p.getMarginalized();
-      let q' <- q.getUpdated();
-      let h <- get_handler();
-
+    if p'.hasMarginalized() {
+      let q <- p'.getMarginalized();
+      p'.setMarginalized(nil);
+      let q' <- q.graft();
       q'.realize();
-      setMarginalized(nil);
 
+      let h <- get_handler();
       if h.autojoin && q.supportsJoin() {
-        setJoined(q');
-      } else if q.isSecondOrder() {
+        /* in this case, preserve the current updated distribution for this,
+         * but join the marginalized distribution to it */
+        p'.setJoined(q');
+      } else if q'.isSecondOrder() {
         /* in this case, q' is a joint distribution over the random variable
          * associated with this distribution and the parent distribution,
          * condition it to update the parent distribution */  
-        setUpdated(q'.condition());
+        p.setUpdated(q'.condition());
       } else {
         /* in this case, q' is just over the random variable associated with
          * this distribution, condition the original distribution to update
          * the parent distribution */
-        setUpdated(q.condition());
+        p.setUpdated(q.condition());
       }
     }
-    return getUpdated();
+    return p.getUpdated();
   }
 
   /**
