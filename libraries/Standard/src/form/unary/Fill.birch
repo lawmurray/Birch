@@ -1,0 +1,38 @@
+struct Fill<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  /**
+   * Length.
+   */
+  n:Integer <- n;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(fill, fill_grad, n)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::fill;
+using numbirch::fill_grad;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+Fill<Middle> fill(const Middle& m, const int n) {
+  return construct<Fill<Middle>>(m, n);
+}
+
+}
+}}
+
+/**
+ * Construct a vector filled with a given value.
+ * 
+ * @param x Value.
+ * @param n Length.
+ * 
+ * @return Vector.
+ */
+function fill(x:NumberScalarLike, n:Integer) -> NumberVectorLike;

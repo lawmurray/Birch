@@ -8,6 +8,7 @@ SOURCES =  \
     numbirch/instantiate/array/diagonal.cpp \
     numbirch/instantiate/array/element_matrix.cpp \
     numbirch/instantiate/array/element_vector.cpp \
+    numbirch/instantiate/array/fill.cpp \
     numbirch/instantiate/array/mat.cpp \
     numbirch/instantiate/array/single_matrix.cpp \
     numbirch/instantiate/array/single_vector.cpp \

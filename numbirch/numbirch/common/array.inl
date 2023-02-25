@@ -7,6 +7,30 @@
 
 namespace numbirch {
 template<class T>
+struct fill_functor {
+  const T a;
+  fill_functor(const T a) :
+      a(a) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    return get(a);
+  }
+};
+
+template<class T>
+struct iota_functor {
+  const T a;
+  iota_functor(const T a) :
+      a(a) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    return get(a) + j;
+  }
+};
+
+template<class T>
 struct diagonal_functor {
   const T a;
   diagonal_functor(const T a) :
@@ -66,6 +90,16 @@ struct reshape_functor {
     return get(A, k, l, ldA);
   }
 };
+
+template<class T, class>
+Array<value_t<T>,1> fill(const T& x, const int n) {
+  return for_each(n, fill_functor(sliced(x)));
+}
+
+template<class T, class>
+Array<value_t<T>,1> iota(const T& x, const int n) {
+  return for_each(n, iota_functor(sliced(x)));
+}
 
 template<class T, class>
 Array<value_t<T>,2> diagonal(const T& x, const int n) {

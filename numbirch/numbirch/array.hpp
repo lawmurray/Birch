@@ -338,6 +338,77 @@ constexpr bool conforms(const T& x, const U& y) {
 }
 
 /**
+ * Construct a vector filled with a given value.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param x Value.
+ * @param n Length.
+ * 
+ * @return Vector.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<value_t<T>,1> fill(const T& x, const int n);
+
+/**
+ * Gradient of fill().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Value.
+ * @param n Length.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
+    const T& x, const int n) {
+  return sum(g);
+}
+
+/**
+ * Construct a vector filled with a sequence of values increasing by one each
+ * time.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param x Starting value.
+ * @param n Length.
+ * 
+ * @return Vector.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<value_t<T>,1> iota(const T& x, const int n);
+
+/**
+ * Gradient of iota().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Starting value.
+ * @param n Length.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<real,0> iota_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
+    const T& x, const int n) {
+  return sum(g);
+}
+
+/**
  * Construct diagonal matrix, filling the diagonal with a given scalar.
  * 
  * @ingroup array
