@@ -6,7 +6,7 @@ hpp{{
  * Negative binomial distribution.
  */
 final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
-    DiscreteDistribution {
+    Distribution<Integer> {
   /**
    * Number of successes before the experiment is stopped.
    */

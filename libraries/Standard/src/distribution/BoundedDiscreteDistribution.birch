@@ -1,7 +1,7 @@
 /**
  * Bounded discrete distribution.
  */
-abstract class BoundedDiscreteDistribution < DiscreteDistribution {
+abstract class BoundedDiscreteDistribution < Distribution<Integer> {
   override function isBoundedDiscrete() -> Boolean {
     return !x?;
   }

@@ -396,14 +396,6 @@ abstract class Delay {
     return nil;
   }
 
-  function isDiscrete() -> Boolean {
-    return false;
-  }
-
-  function getDiscrete() -> DiscreteDistribution? {
-    return nil;
-  }
-
   function isBoundedDiscrete() -> Boolean {
     return false;
   }

@@ -133,10 +133,6 @@ class Random<Value> < Expression<Value>(nil, false) {
     return hasDistribution() && getDistribution().isMatrixNormalInverseWishart();
   }
 
-  function isDiscrete() -> Boolean {
-    return hasDistribution() && getDistribution().isDiscrete();
-  }
-
   function isBoundedDiscrete() -> Boolean {
     return hasDistribution() && getDistribution().isBoundedDiscrete();
   }

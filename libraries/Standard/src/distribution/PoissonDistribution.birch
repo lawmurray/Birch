@@ -5,7 +5,7 @@ hpp{{
 /**
  * Poisson distribution.
  */
-final class PoissonDistribution<Arg>(λ:Arg) < DiscreteDistribution {
+final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
   /**
    * Rate.
    */

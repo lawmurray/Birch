@@ -2,7 +2,7 @@
  * Beta-negative-binomial distribution.
  */
 final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
-    β:Arg3) < DiscreteDistribution {
+    β:Arg3) < Distribution<Integer> {
   /**
    * Number of successes before the experiment is stopped.
    */
