@@ -245,36 +245,46 @@ struct simulate_weibull_functor {
   }
 };
 
+template<class T>
 struct standard_gaussian_functor {
+  T A;
+  const int ldA;
   curandState_t* rngs;
-  standard_gaussian_functor() : rngs(numbirch::rngs) {
+  standard_gaussian_functor(T A, const int ldA) :
+      A(A), ldA(ldA), rngs(numbirch::rngs) {
     //
   }
-  NUMBIRCH_HOST_DEVICE real operator()(const int i, const int j) {
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) {
+    real& a = get(A, i, j, ldA);
     #ifndef __CUDA_ARCH__
-    return std::normal_distribution<real>()(stl<real>::rng());
+    a = std::normal_distribution<real>()(stl<real>::rng());
     #else
     if constexpr (std::is_same_v<real,double>) {
-      return curand_normal_double(curand_rng(rngs));
+      a = curand_normal_double(curand_rng(rngs));
     } else {
-      return curand_normal(curand_rng(rngs));
+      a = curand_normal(curand_rng(rngs));
     }
     #endif
   }
 };
 
-template<class T>
+template<class T, class U>
 struct standard_wishart_functor {
   T k;
-  int n;
+  const int n;
+  U S;
+  const int ldS;
   curandState_t* rngs;
-  standard_wishart_functor(const T& k, const int n) :
+  standard_wishart_functor(const T k, const int n, U S, const int ldS) :
       k(k),
       n(n),
+      S(S),
+      ldS(ldS),
       rngs(numbirch::rngs) {
     //
   }
-  NUMBIRCH_HOST_DEVICE real operator()(const int i, const int j) {
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) {
+    real& s = get(S, i, j, ldS);
     if (i == j) {
       /* on diagonal */
       real nu = get(k) + (n - 1 - i); // i is 0-based here
@@ -288,21 +298,21 @@ struct standard_wishart_functor {
         x = real(2.0)*curand_gamma(curand_rng(rngs), real(0.5)*nu);
       }
       #endif
-      return std::sqrt(x);
+      s = std::sqrt(x);
     } else if (i > j) {
       /* in lower triangle */
       #ifndef __CUDA_ARCH__
-      return std::normal_distribution<real>()(stl<real>::rng());
+      s = std::normal_distribution<real>()(stl<real>::rng());
       #else
       if constexpr (std::is_same_v<real,double>) {
-        return curand_normal_double(curand_rng(rngs));
+        s = curand_normal_double(curand_rng(rngs));
       } else {
-        return curand_normal(curand_rng(rngs));
+        s = curand_normal(curand_rng(rngs));
       }
       #endif
     } else {
       /* in upper triangle */
-      return real(0.0);
+      s = real(0.0);
     }
   }
 };

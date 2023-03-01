@@ -13,10 +13,14 @@
 
 namespace numbirch {
 Array<real,1> standard_gaussian(const int n) {
-  return for_each(n, standard_gaussian_functor());
+  Array<real,1> x(make_shape(n));
+  for_each(n, standard_gaussian_functor(sliced(x), stride(x)));
+  return x;
 }
 
 Array<real,2> standard_gaussian(const int m, const int n) {
-  return for_each(m, n, standard_gaussian_functor());
+  Array<real,2> X(make_shape(m, n));
+  for_each(m, n, standard_gaussian_functor(sliced(X), stride(X)));
+  return X;
 }
 }

@@ -21,26 +21,21 @@ void prefetch(const T& x) {
 /*
  * For-each.
  */
-template<class T, class Functor>
-void kernel_for_each(const int m, const int n, T* A, const int ldA,
-    Functor f) {
+template<class Functor>
+void kernel_for_each(const int m, const int n, Functor f) {
   for (int j = 0; j < n; ++j) {
     for (int i = 0; i < m; ++i) {
-      get(A, i, j, ldA) = f(i, j);
+      f(i, j);
     }
   }
 }
 template<class Functor>
-auto for_each(const int n, Functor f) {
-  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
-  kernel_for_each(1, n, sliced(x), stride(x), f);
-  return x;
+void for_each(const int n, Functor f) {
+  kernel_for_each(1, n, f);
 }
 template<class Functor>
-auto for_each(const int m, const int n, Functor f) {
-  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
-  kernel_for_each(m, n, sliced(A), stride(A), f);
-  return A;
+void for_each(const int m, const int n, Functor f) {
+  kernel_for_each(m, n, f);
 }
 
 /*
@@ -127,53 +122,6 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
         stride(z), sliced(a), stride(a), f);
     return a;
   }
-}
-
-/*
- * Unary gather.
- */
-template<class T, class U, class R>
-void kernel_gather(const int m, const int n, const T A, const int ldA,
-    const U I, const int ldI, R C, const int ldC) {
-  for (int j = 0; j < n; ++j) {
-    for (int i = 0; i < m; ++i) {
-      get(C, i, j, ldC) = get(A, get(I, i, j, ldI) - 1, 0, ldA);
-    }
-  }
-}
-template<class T, class U>
-auto gather(const T& x, const U& i) {
-  constexpr int D = dimension_v<U>;
-  auto m = width(i);
-  auto n = height(i);
-  auto z = Array<value_t<T>,D>(make_shape<D>(m, n));
-  kernel_gather(m, n, sliced(x), stride(x), sliced(i), stride(i), sliced(z),
-      stride(z));
-  return z;
-}
-
-/*
- * Binary gather.
- */
-template<class T, class U, class V, class R>
-void kernel_gather(const int m, const int n, const T A, const int ldA,
-    const U I, const int ldI, const V J, const int ldJ, R D, const int ldD) {
-  for (int j = 0; j < n; ++j) {
-    for (int i = 0; i < m; ++i) {
-      get(D, i, j, ldD) = get(A, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1,
-          ldA);
-    }
-  }
-}
-template<class T, class U, class V>
-auto gather(const T& x, const U& i, const V& j) {
-  constexpr int D = dimension_v<implicit_t<U,V>>;
-  auto m = width(i, j);
-  auto n = height(i, j);
-  auto z = Array<value_t<T>,D>(make_shape<D>(m, n));
-  kernel_gather(m, n, sliced(x), stride(x), sliced(i), stride(i), sliced(j),
-      stride(j), sliced(z), stride(z));
-  return z;
 }
 
 }

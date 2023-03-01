@@ -89,7 +89,10 @@ real_t<T,U> simulate_weibull(const T& k, const U& lambda) {
 
 template<class T, class>
 Array<real,2> standard_wishart(const T& nu, const int n) {
-  return for_each(n, n, standard_wishart_functor(sliced(nu), n));
+  Array<real,2> S(make_shape(n, n));
+  for_each(n, n, standard_wishart_functor(sliced(nu), n, sliced(S),
+      stride(S)));
+  return S;
 }
 
 }

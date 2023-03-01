@@ -30,6 +30,11 @@ class Diced {
 public:
   static_assert(!std::is_const_v<T>, "Diced cannot have const value type");
 
+  Diced(const Diced&) = delete;
+  Diced(Diced&&) = delete;
+  Diced& operator=(const Diced&) = delete;
+  Diced& operator=(Diced&&) = delete;
+
   /**
    * Constructor.
    */

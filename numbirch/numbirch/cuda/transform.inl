@@ -34,34 +34,27 @@ void prefetch(const T& x) {
 /*
  * For-each.
  */
-template<class T, class Functor>
-__global__ void kernel_for_each(const int m, const int n, T* A, const int ldA,
-    Functor f) {
+template<class Functor>
+__global__ void kernel_for_each(const int m, const int n, Functor f) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
         i += gridDim.x*blockDim.x) {
-      get(A, i, j, ldA) = f(i, j);
+      f(i, j);
     }
   }
 }
 template<class Functor>
-auto for_each(const int n, Functor f) {
-  auto x = Array<decltype(f(0,0)),1>(make_shape(n));
+void for_each(const int n, Functor f) {
   auto grid = make_grid(1, n);
   auto block = make_block(1, n);
-  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, sliced(x),
-      stride(x), f));
-  return x;
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(1, n, f));
 }
 template<class Functor>
-auto for_each(const int m, const int n, Functor f) {
-  auto A = Array<decltype(f(0,0)),2>(make_shape(m, n));
+void for_each(const int m, const int n, Functor f) {
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
-  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, sliced(A),
-      stride(A), f));
-  return A;
+  CUDA_LAUNCH(kernel_for_each<<<grid,block,0,stream>>>(m, n, f));
 }
 
 /*
@@ -169,71 +162,6 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     }
     return a;
   }
-}
-
-/*
- * Unary gather.
- */
-template<class T, class U, class V>
-__global__ void kernel_gather(const int m, const int n, const T A,
-    const int ldA, const U I, const int ldI, V C, const int ldC) {
-  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
-      j += gridDim.y*blockDim.y) {
-    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
-        i += gridDim.x*blockDim.x) {
-      get(C, i, j, ldC) = get(A, 0, get(I, i, j, ldI) - 1, ldA);
-    }
-  }
-}
-template<class T, class U>
-auto gather(const T& x, const U& i) {
-  constexpr int D = dimension_v<U>;
-  auto z = Array<value_t<T>,D>(shape(i));
-  auto m = width(i);
-  auto n = height(i);
-  if (m > 0 && n > 0) {
-    auto grid = make_grid(m, n);
-    auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, sliced(x),
-        stride(x), sliced(i), stride(i), sliced(z), stride(z)));
-  }
-  return z;
-}
-
-/*
- * Binary gather.
- */
-template<class T, class U, class V, class W>
-__global__ void kernel_gather(const int m, const int n, const T A,
-    const int ldA, const U I, const int ldI, const V J, const int ldJ,
-    W D, const int ldD) {
-  for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < n;
-      j += gridDim.y*blockDim.y) {
-    for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < m;
-        i += gridDim.x*blockDim.x) {
-      get(D, i, j, ldD) = get(A, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1,
-          ldA);
-    }
-  }
-}
-template<class T, class U, class V>
-auto gather(const T& x, const U& i, const V& j) {
-  static_assert(dimension_v<U> == dimension_v<V>);
-  assert(width(i) == width(j));
-  assert(height(i) == height(j));
-
-  constexpr int D = dimension_v<U>;
-  auto z = Array<value_t<T>,D>(shape(i));
-  auto m = width(i);
-  auto n = height(i);
-  if (m > 0 && n > 0) {
-    auto grid = make_grid(m, n);
-    auto block = make_block(m, n);
-    CUDA_LAUNCH(kernel_gather<<<grid,block,0,stream>>>(m, n, sliced(x),
-        stride(x), sliced(i), stride(i), sliced(j), stride(j), sliced(z),
-        stride(z)));
-  }
-  return z;
 }
 
 }

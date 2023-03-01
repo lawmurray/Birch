@@ -39,6 +39,11 @@ class Sliced {
 public:
   static_assert(!std::is_const_v<T>, "Sliced cannot have const value type");
 
+  Sliced(const Sliced&) = delete;
+  Sliced(Sliced&&) = delete;
+  Sliced& operator=(const Sliced&) = delete;
+  Sliced& operator=(Sliced&&) = delete;
+
   /**
    * Constructor.
    */

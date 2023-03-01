@@ -373,6 +373,43 @@ Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 }
 
 /**
+ * Construct a matrix filled with a given value.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param x Value.
+ * @param n Number of rows.
+ * @param m Number of columns.
+ * 
+ * @return Matrix.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<value_t<T>,2> fill(const T& x, const int m, const int n);
+
+/**
+ * Gradient of fill().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param C Result.
+ * @param x Value.
+ * @param n Number of rows.
+ * @param m Number of columns.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<real,0> fill_grad(const Array<real,2>& g, const Array<value_t<T>,2>& C,
+    const T& x, const int m, const int n) {
+  return sum(g);
+}
+
+/**
  * Construct a vector filled with a sequence of values increasing by one each
  * time.
  * 
@@ -1182,6 +1219,313 @@ auto mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
   } else {
     return mat(g, columns(x));
   }
+}
+
+/**
+ * Vector gather.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Source.
+ * @param y Indices.
+ * 
+ * @return Result `z`, where `z[i] = x[y[i]]`.
+ * 
+ * @see scatter
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
+
+/**
+ * Gradient of gather().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Source.
+ * @param y Indices.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
+    const Array<T,1>& x, const Array<int,1>& y) {
+  return scatter(g, y, length(x));
+}
+
+/**
+ * Gradient of gather().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Source.
+ * @param y Indices.
+ * 
+ * @return Gradient with respect to @p y.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
+    const Array<T,1>& x, const Array<int,1>& y) {
+  return fill(real(0.0), length(y));
+}
+
+/**
+ * Matrix gather.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * 
+ * @return Result `C`, where `C[i,j] = A[I[i,j], J[i,j]]`.
+ * 
+ * @see scatter, gather
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
+    const Array<int,2>& J);
+
+/**
+ * Gradient of gather().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param C Result.
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
+  return scatter(G, C, A, I, J, rows(A), columns(A));
+}
+
+/**
+ * Gradient of gather().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param C Result.
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * 
+ * @return Gradient with respect to @p I.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
+  return fill(real(0.0), rows(I), columns(I));
+}
+
+/**
+ * Gradient of gather().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param C Result.
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * 
+ * @return Gradient with respect to @p J.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& C,
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
+  return fill(real(0.0), rows(J), columns(J));
+}
+
+/**
+ * Vector scatter.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param x Source.
+ * @param y Indices.
+ * @param n Length of result.
+ * 
+ * @return Result `z`, where `z[y[i]] = x[i]`.
+ * 
+ * In the case of collisions, e.g. `y[i] == y[j]` for some `i != j`, the
+ * values are summed into the result such that `z[y[i]] == x[i] + x[j]` (c.f.
+ * other libraries where the result one value or the other,
+ * non-deterministically). This extends to collisions of more than two
+ * elements. In the case of absence of `i` in `y`, the result is `z[i] == 0`.
+ * 
+ * If @p T is `bool` then the sum on collision is replaced with logical `or`
+ * and the zero on absence is replaced with `false`.
+ * 
+ * This behavior is defined in order that the gradient of `gather` with
+ * respect to its first argument is `scatter`, and conversely the gradient of
+ * `scatter` with respect to its first argument is `gather`.
+ * 
+ * @see gather
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
+
+/**
+ * Gradient of scatter().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Source.
+ * @param y Indices.
+ * @param n Length of result.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
+    const Array<T,1>& x, const Array<int,1>& y, const int n) {
+  return gather(g, y);
+}
+
+/**
+ * Gradient of scatter().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param z Result.
+ * @param x Source.
+ * @param y Indices.
+ * @param n Length of result.
+ * 
+ * @return Gradient with respect to @p y.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
+    const Array<T,1>& x, const Array<int,1>& y, const int n) {
+  return Array<real,1>(0, shape(y));
+}
+
+/**
+ * Matrix scatter.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * @param m Number of rows in result.
+ * @param n Number of columns in result.
+ * 
+ * @return Result `C`, where `C[I[i,j], J[i,j]] = A[i,j]`. In the case of
+ * collisions, values are summed into the result element. In the case of
+ * absence, the result element is zero.
+ * 
+ * @see gather, scatter
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
+    const Array<int,2>& J, const int m, const int n);
+
+/**
+ * Gradient of scatter().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param C Result.
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * @param m Number of rows in result.
+ * @param n Number of columns in result.
+ * 
+ * @return Gradient with respect to @p A.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& C,
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
+    const int m, const int n) {
+  return gather(G, C, A, I, J);
+}
+
+/**
+ * Gradient of scatter().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param C Result.
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * @param m Number of rows in result.
+ * @param n Number of columns in result.
+ * 
+ * @return Gradient with respect to @p I.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
+    const int m, const int n) {
+  return fill(real(0.0), rows(I), columns(I));
+}
+
+/**
+ * Gradient of scatter().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Arithmetic type.
+ * 
+ * @param G Gradient with respect to result.
+ * @param C Result.
+ * @param A Source.
+ * @param I Row indices.
+ * @param J Column indices.
+ * @param m Number of rows in result.
+ * @param n Number of columns in result.
+ * 
+ * @return Gradient with respect to @p J.
+ */
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& C,
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
+    const int m, const int n) {
+  return fill(real(0.0), rows(J), columns(J));
 }
 
 }

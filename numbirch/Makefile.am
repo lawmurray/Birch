@@ -9,7 +9,11 @@ SOURCES =  \
     numbirch/instantiate/array/element_matrix.cpp \
     numbirch/instantiate/array/element_vector.cpp \
     numbirch/instantiate/array/fill.cpp \
+    numbirch/instantiate/array/gather_matrix.cpp \
+    numbirch/instantiate/array/gather_vector.cpp \
     numbirch/instantiate/array/mat.cpp \
+    numbirch/instantiate/array/scatter_matrix.cpp \
+    numbirch/instantiate/array/scatter_vector.cpp \
     numbirch/instantiate/array/single_matrix.cpp \
     numbirch/instantiate/array/single_vector.cpp \
     numbirch/instantiate/array/vec.cpp \
