@@ -149,7 +149,7 @@ Array<value_t<T>,1> fill(const T& x, const int n) {
 }
 
 template<class T, class>
-Array<value_t<T>,1> fill(const T& x, const int m, const int n) {
+Array<value_t<T>,2> fill(const T& x, const int m, const int n) {
   Array<value_t<T>,2> C(make_shape(m, n));
   for_each(m, n, fill_functor(sliced(x), sliced(C), stride(C)));
   return C;
