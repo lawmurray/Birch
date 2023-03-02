@@ -56,7 +56,7 @@ struct single_functor {
       x(x), k(k), l(l), A(A), ldA(ldA) {
     //
   }
-  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     get(A, i, j, ldA) = (i == get(k) - 1 && j == get(l) - 1) ? get(x) : 0;
   }
 };
@@ -82,7 +82,7 @@ struct reshape_functor {
       const int ldC) : m1(m1), m2(m2), A(A), ldA(ldA), C(C), ldC(ldC) {
     //
   }
-  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     // (i,j) is the element in the destination, (k,l) in the source
     auto s = i + j*m2;  // serial index
     auto k = s % m1;
@@ -122,7 +122,7 @@ struct scatter_functor {
       J(J), ldJ(ldJ), C(C), ldC(ldC) {
     //
   }
-  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     auto& c = get(C, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1, ldC);
     auto a = get(A, i, j, ldA);
     #ifdef __CUDA_ARCH__

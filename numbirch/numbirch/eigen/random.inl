@@ -93,8 +93,8 @@ struct standard_gaussian_functor {
       A(A), ldA(ldA) {
     //
   }
-  real operator()(const int i, const int j) const {
-    return std::normal_distribution<real>()(stl<real>::rng());
+  void operator()(const int i, const int j) const {
+    get(A, i, j, ldA) = std::normal_distribution<real>()(stl<real>::rng());
   }
 };
 
@@ -108,19 +108,20 @@ struct standard_wishart_functor {
       k(k), n(n), S(S), ldS(ldS) {
     //
   }
-  real operator()(const int i, const int j) {
+  void operator()(const int i, const int j) {
     auto& rng = stl<real>::rng();
+    real& s = get(S, i, j, ldS);
     if (i == j) {
       /* on diagonal */
       real nu = get(k) + (n - 1 - i); // i is 0-based here
       real x = std::chi_squared_distribution<real>(nu)(rng);
-      return std::sqrt(x);
+      s = std::sqrt(x);
     } else if (i > j) {
       /* in lower triangle */
-      return std::normal_distribution<real>()(rng);
+      s = std::normal_distribution<real>()(rng);
     } else {
       /* in upper triangle */
-      return real(0.0);
+      s = real(0.0);
     }
   }
 };
