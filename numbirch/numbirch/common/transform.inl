@@ -1391,4 +1391,22 @@ implicit_t<T,U,V> where(const T& x, const U& y, const V& z) {
   return transform(x, y, z, where_functor());
 }
 
+template<class T, class U, class V, class>
+real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
+    const T& x, const U& y, const V& z) {
+  return Array(shape(x), real(0));
+}
+
+template<class T, class U, class V, class>
+real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
+    const T& x, const U& y, const V& z) {
+  return aggregate<dimension_v<U>>(where(x, g, real(0)));
+}
+
+template<class T, class U, class V, class>
+real_t<V> where_grad3(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
+    const T& x, const U& y, const V& z) {
+  return aggregate<dimension_v<V>>(where(x, real(0), g));
+}
+
 }

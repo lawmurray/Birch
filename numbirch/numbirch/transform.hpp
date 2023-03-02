@@ -1965,10 +1965,8 @@ implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
-real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<U,V>& r,
-    const T& x, const U& y, const V& z) {
-  return Array(shape(x), real(0));
-}
+real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
+    const T& x, const U& y, const V& z);
 
 /**
  * Gradient of where().
@@ -1989,10 +1987,8 @@ real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<U,V>& r,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
-real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<U,V>& r,
-    const T& x, const U& y, const V& z) {
-  return where(x, g, real(0));
-}
+real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
+    const T& x, const U& y, const V& z);
 
 /**
  * Gradient of where().
@@ -2013,9 +2009,7 @@ real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<U,V>& r,
  */
 template<class T, class U, class V, class = std::enable_if_t<
     is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
-real_t<V> where_grad3(const real_t<U,V>& g, const implicit_t<U,V>& r,
-    const T& x, const U& y, const V& z) {
-  return where(x, real(0), g);
-}
+real_t<V> where_grad3(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
+    const T& x, const U& y, const V& z);
 
 }
