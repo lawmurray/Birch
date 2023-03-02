@@ -1,4 +1,4 @@
-struct Fill<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
+struct VectorFill<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   /**
    * Memoized result.
    */
@@ -20,8 +20,8 @@ using numbirch::fill;
 using numbirch::fill_grad;
 
 template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-Fill<Middle> fill(const Middle& m, const int n) {
-  return construct<Fill<Middle>>(m, n);
+VectorFill<Middle> fill(const Middle& m, const int n) {
+  return construct<VectorFill<Middle>>(m, n);
 }
 
 }

@@ -1,0 +1,44 @@
+struct MatrixScatter<Left,Middle,Right>(A:Left, I:Middle, J:Right, m:Integer,
+    n:Integer) < Ternary<Left,Middle,Right>(A, I, J) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  /**
+   * Number of rows of result.
+   */
+  k:Integer <- m;
+
+  /**
+   * Number of columns of result.
+   */
+  l:Integer <- n;
+
+  hpp{{
+  BIRCH_TERNARY_FUNCTION_FORM(scatter, scatter_grad, k, l)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::scatter;
+using numbirch::scatter_grad1;
+using numbirch::scatter_grad2;
+using numbirch::scatter_grad3;
+
+template<class Left, class Middle, class Right, std::enable_if_t<
+    is_delay_v<Left,Middle,Right>,int> = 0>
+MatrixScatter<Left,Middle,Right> scatter(const Left& A, const Middle& I,
+    const Right& J, const int m, const int n) {
+  return construct<MatrixScatter<Left,Middle,Right>>(A, I, J, m, n);
+}
+
+}
+}}
+
+/**
+ * Matrix scatter.
+ */
+function scatter(A:NumberMatrixLike, I:IntegerMatrixLike,
+    J:IntegerMatrixLike, m:Integer, n:Integer) -> NumberMatrixLike;
