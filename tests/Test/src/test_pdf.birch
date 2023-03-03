@@ -1,9 +1,41 @@
 /*
+ * Test the pdf of a model.
+ *
+ * @param m The model.
+ * @param N Number of samples.
+ * @param lazy Use lazy version?
+ */
+function test_pdf<TestModelType>(m:TestModelType, N:Integer, lazy:Boolean) {
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
+  test_pdf(m.marginal(), N, lazy);
+}
+
+/*
+ * Test the pdf of a model.
+ *
+ * @param m The model.
+ * @param N Number of samples.
+ * @param S Number of steps in each chain.
+ * @param lazy Use lazy version?
+ */
+function test_pdf<TestModelType>(m:TestModelType, N:Integer, S:Integer,
+    lazy:Boolean) {
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
+  test_pdf(m.marginal(), N, S, lazy);
+}
+
+/*
  * Test the pmf of a univariate Boolean distribution.
  *
- * - π: The target distribution. 
- * - N: Number of samples.
- * - lazy: Use lazy version?
+ * @param π The target distribution. 
+ * @param N Number of samples.
+ * @param lazy Use lazy version?
  */
 function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   /* simulate, counting the occurrence of each value */
@@ -50,9 +82,9 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
 /*
  * Test the pmf of a univariate discrete distribution.
  *
- * - π: The target distribution. 
- * - N: Number of samples.
- * - lazy: Use lazy version?
+ * @param π The target distribution. 
+ * @param N Number of samples.
+ * @param lazy Use lazy version?
  */
 function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {  
   /* lower bound on interval */
@@ -124,9 +156,9 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
 /*
  * Test a pdf.
  *
- * - π: The target distribution. 
- * - N: Number of (short) chains.
- * - S: Number of steps in each chain.
+ * @param π The target distribution. 
+ * @param N Number of (short) chains.
+ * @param S Number of steps in each chain.
  */
 function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {  
   /* iid samples */
@@ -221,9 +253,9 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
 /*
  * Test a multivariate pdf.
  *
- * - π: The target distribution. 
- * - N: Number of (short) chains.
- * - S: Number of steps in each chain.
+ * @param π The target distribution. 
+ * @param N Number of (short) chains.
+ * @param S Number of steps in each chain.
  */
 function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     lazy:Boolean) {  
@@ -329,10 +361,10 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
 /*
  * Test a matrix pdf.
  *
- * - π: The target distribution. 
- * - N: Number of (short) chains.
- * - S: Number of steps in each chain.
- * - lazy: Use lazy version?
+ * @param π The target distribution. 
+ * @param N Number of (short) chains.
+ * @param S Number of steps in each chain.
+ * @param lazy Use lazy version?
  */
 function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     lazy:Boolean) {

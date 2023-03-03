@@ -32,27 +32,17 @@ class TestGamma < TestModel {
 program test_pdf_gamma(N:Integer <- 10000, S:Integer <- 20,
     lazy:Boolean <- false) {
   m:TestGamma;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, S, lazy);
+  test_pdf(m, N, S, lazy);
 }
 
 program test_z_gamma(N:Integer <- 10000, lazy:Boolean <- false) {
   m:TestGamma;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_z(m.marginal(), N, lazy);
+  test_z(m, N, lazy);
 }
 
 program test_cdf_gamma(N:Integer <- 10000) {
   m:TestGamma;
-  m.initialize();
-  m.simulate();
-  test_cdf(m.marginal(), N);
+  test_cdf(m, N);
 }
 
 program test_grad_gamma(N:Integer <- 1000, backward:Boolean <- false) {

@@ -1,4 +1,19 @@
 /*
+ * Test the normalizing constant of a model.
+ *
+ * @param m The model.
+ * @param N Number of importance samples.
+ * @param lazy Use lazy expressions?
+ */
+function test_z<TestModelType>(m:TestModelType, N:Integer, lazy:Boolean) {
+  with construct<Handler>(true, lazy, true) {
+    m.initialize();
+    m.simulate();
+  }
+  test_z(m.marginal(), N, lazy);
+}
+
+/*
  * Test the normalizing constant of a pdf.
  *
  * @param π The target distribution. 
@@ -6,10 +21,9 @@
  * @param lazy Use lazy expressions?
  */
 function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {  
-  /*
-  * compute the shape for a t-distribution proposal using the mean
-  * and sample variance of iid samples, calculated with Welford's online algorithm
-  */
+  /* compute the shape for a t-distribution proposal using the mean
+   * and sample variance of iid samples, calculated with Welford's online
+   * algorithm */
   let k <- 3;  // degrees of freedom
   let μ <- 0.0; // running mean
   let S <- 0.0; // running sum of squares of differences from mean
@@ -59,10 +73,9 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
 function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   let D <- rows(π.simulate());
   
-  /* 
-   * compute the shape for a t-distribution proposal using the mean
-   * and sample variance of iid samples, calculated with Welford's online algorithm
-   */
+  /* compute the shape for a t-distribution proposal using the mean and
+   * sample variance of iid samples, calculated with Welford's online
+   * algorithm */
   let k <- 3 + D; // degrees of freedom
   μ:Real[D]; // running mean
   M:Real[D,D]; // running matrix of co-moments
@@ -118,10 +131,9 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   let C <- columns(π.simulate());
   let D <- R*C;
 
-  /* 
-   * compute the shape for a t-distribution proposal using the mean
-   * and sample variance of iid samples, calculated with Welford's online algorithm
-   */
+  /* compute the shape for a t-distribution proposal using the mean and
+   * sample variance of iid samples, calculated with Welford's online
+   * algorithm */
   let k <- 3 + D; // degrees of freedom
   μ:Real[D]; // running mean
   M:Real[D,D]; // running matrix of co-moments

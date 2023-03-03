@@ -1,8 +1,31 @@
 /*
+ * Test the cdf of a model
+ *
+ * @param m The model.
+ */
+function test_cdf<TestModelType>(m:TestModelType) {
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal());
+}
+
+/*
+ * Test the cdf of a model
+ *
+ * @param m The model.
+ * @param N Number of partitions for Riemann (midpoint) estimate.
+ */
+function test_cdf<TestModelType>(m:TestModelType, N:Integer) {
+  m.initialize();
+  m.simulate();
+  test_cdf(m.marginal(), N);
+}
+
+/*
  * Test a continuous distribution.
  *
- * - q: The distribution.
- * - N: Number of partitions for Riemann (midpoint) estimate.
+ * @param q The distribution.
+ * @param N Number of partitions for Riemann (midpoint) estimate.
  */
 function test_cdf(q:Distribution<Real>, N:Integer) {
   let failed <- false;
@@ -68,7 +91,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
 /*
  * Test a discrete distribution.
  *
- * - q: The distribution.
+ * @param q The distribution.
  */
 function test_cdf(q:Distribution<Integer>) {
   let failed <- false;

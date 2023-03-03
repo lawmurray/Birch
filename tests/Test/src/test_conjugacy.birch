@@ -1,9 +1,9 @@
 /*
  * Test a particular conjugacy.
  *
- * - m: Model.
- * - N: Number of samples.
- * - lazy: Use lazy version?
+ * @param m Model.
+ * @param N Number of samples.
+ * @param lazy Use lazy version?
  */
 function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {  
   let D <- m.size();  

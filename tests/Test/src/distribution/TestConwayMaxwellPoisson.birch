@@ -35,18 +35,12 @@ class TestConwayMaxwellPoisson < TestModel {
 program test_pdf_conway_maxwell_poisson(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestConwayMaxwellPoisson;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, lazy);
+  test_pdf(m, N, lazy);
 }
 
 program test_cdf_conway_maxwell_poisson() {
   m:TestConwayMaxwellPoisson;
-  m.initialize();
-  m.simulate();
-  test_cdf(m.marginal());
+  test_cdf(m);
 }
 
 program test_grad_conway_maxwell_poisson(N:Integer <- 1000,

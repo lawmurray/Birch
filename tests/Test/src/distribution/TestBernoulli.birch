@@ -31,11 +31,7 @@ class TestBernoulli < TestModel {
 program test_pdf_bernoulli(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBernoulli;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, lazy);
+  test_pdf(m, N, lazy);
 }
 
 program test_grad_bernoulli(N:Integer <- 1000, backward:Boolean <- false) {

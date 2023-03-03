@@ -54,28 +54,18 @@ program test_conjugacy_gaussian_gaussian(N:Integer <- 10000,
 program test_pdf_gaussian_gaussian(N:Integer <- 10000,
     S:Integer <- 20, lazy:Boolean <- false) {
   m:TestLinearGaussianGaussian;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, S, lazy);
+  test_pdf(m, N, S, lazy);
 }
 
 program test_z_gaussian_gaussian(N:Integer <- 10000,
     lazy:Boolean <- false) {
   m:TestLinearGaussianGaussian;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_z(m.marginal(), N, lazy);
+  test_z(m, N, lazy);
 }
 
 program test_cdf_gaussian_gaussian(N:Integer <- 10000) {
   m:TestLinearGaussianGaussian;
-  m.initialize();
-  m.simulate();
-  test_cdf(m.marginal(), N);
+  test_cdf(m, N);
 }
 
 program test_grad_gaussian_gaussian(N:Integer <- 1000,

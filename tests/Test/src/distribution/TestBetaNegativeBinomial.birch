@@ -49,11 +49,7 @@ program test_conjugacy_beta_negative_binomial(N:Integer <- 10000, lazy:Boolean <
 program test_pdf_beta_negative_binomial(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBetaNegativeBinomial;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, lazy);
+  test_pdf(m, N, lazy);
 }
 
 program test_grad_beta_negative_binomial(N:Integer <- 1000,

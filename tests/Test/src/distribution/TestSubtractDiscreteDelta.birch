@@ -49,9 +49,5 @@ program test_conjugacy_subtract_discrete_delta(N:Integer <- 10000,
 program test_pdf_subtract_discrete_delta(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestSubtractDiscreteDelta;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, lazy);
+  test_pdf(m, N, lazy);
 }

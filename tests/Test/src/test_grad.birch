@@ -1,10 +1,10 @@
 /*
  * Test the gradients of a model.
  *
- * - m: Model. 
- * - N: Number of samples.
- * - backward: Test joint distributions in backward mode? (Otherwise forward
- *   mode.)
+ * @param m Model. 
+ * @param N Number of samples.
+ * @param backward Test joint distributions in backward mode? (Otherwise
+ * forward mode.)
  */
 function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   let failed <- vector(0.0, N);  // failure rate in each test

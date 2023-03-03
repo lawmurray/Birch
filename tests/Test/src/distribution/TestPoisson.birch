@@ -30,18 +30,12 @@ class TestPoisson < TestModel {
 program test_pdf_poisson(N:Integer <- 10000, S:Integer <- 0,
     lazy:Boolean <- false) {
   m:TestPoisson;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, lazy);
+  test_pdf(m, N, lazy);
 }
 
 program test_cdf_poisson() {
   m:TestPoisson;
-  m.initialize();
-  m.simulate();
-  test_cdf(m.marginal());
+  test_cdf(m);
 }
 
 program test_grad_poisson(N:Integer <- 1000, backward:Boolean <- false) {

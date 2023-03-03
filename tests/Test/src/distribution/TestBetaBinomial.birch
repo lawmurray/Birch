@@ -49,18 +49,12 @@ program test_conjugacy_beta_binomial(N:Integer <- 10000, lazy:Boolean <- false) 
 program test_pdf_beta_binomial(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestBetaBinomial;
-  with construct<Handler>(true, lazy, true) {
-    m.initialize();
-    m.simulate();
-  }
-  test_pdf(m.marginal(), N, lazy);
+  test_pdf(m, N, lazy);
 }
 
 program test_cdf_beta_binomial() {
   m:TestBetaBinomial;
-  m.initialize();
-  m.simulate();
-  test_cdf(m.marginal());
+  test_cdf(m);
 }
 
 program test_grad_beta_binomial(N:Integer <- 1000,
