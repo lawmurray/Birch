@@ -180,126 +180,14 @@ operator (x:String + y:String) -> String;
 /**
  * String concatenation.
  */
-operator (x:String + y:Boolean) -> String {
+operator<Type> (x:String + y:Type) -> String {
   return x + to_string(y);
 }
 
 /**
  * String concatenation.
  */
-operator (x:String + y:Real) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Integer) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Boolean[_]) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Real[_]) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Integer[_]) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Boolean[_,_]) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Real[_,_]) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:String + y:Integer[_,_]) -> String {
-  return x + to_string(y);
-}
-
-/**
- * String concatenation.
- */
-operator (x:Boolean + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Real + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Integer + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Boolean[_] + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Real[_] + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Integer[_] + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Boolean[_,_] + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Real[_,_] + y:String) -> String {
-  return to_string(x) + y;
-}
-
-/**
- * String concatenation.
- */
-operator (x:Integer[_,_] + y:String) -> String {
+operator<Type> (x:Type + y:String) -> String {
   return to_string(x) + y;
 }
 

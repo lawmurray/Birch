@@ -75,7 +75,7 @@ function fopen(path:String, mode:Integer) -> File {
   cpp{{
   auto f = ::fopen(path.c_str(), s.c_str());
   if (!f) {
-    error("could not open file " + path + ".");
+    error(String("could not open file ") + path + String("."));
   }
   lockf(fileno(f), F_LOCK, 0);
   return f;
