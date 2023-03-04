@@ -62,10 +62,6 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
-  override function isSecondOrder() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma(value(ν), value(Λ),
         value(k), value(γ));

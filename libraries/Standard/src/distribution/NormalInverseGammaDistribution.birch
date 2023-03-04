@@ -51,10 +51,6 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     return true;
   }
 
-  override function isSecondOrder() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_normal_inverse_gamma(value(ν), value(λ), value(k),
         value(γ));

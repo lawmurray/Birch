@@ -211,8 +211,4 @@ abstract class Distribution<Value> < Delay {
   override function supportsJoin() -> Boolean {
     return false;
   }
-
-  override function isSecondOrder() -> Boolean {
-    return false;
-  }
 }

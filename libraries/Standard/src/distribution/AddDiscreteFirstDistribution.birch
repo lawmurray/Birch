@@ -21,10 +21,6 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
    */
   b:Integer! <- b;
   
-  override function isSecondOrder() -> Boolean {
-    return true;
-  }
-
   override function supportsLazy() -> Boolean {
     return true;
   }

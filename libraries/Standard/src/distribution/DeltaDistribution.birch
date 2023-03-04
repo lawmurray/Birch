@@ -30,6 +30,10 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
     return where(x == eval(μ), 0.0, -inf);
   }
 
+  override function hoist() -> Expression<Real>? {
+    return box(where(this.random() == μ, 0.0, -inf));
+  }
+
   override function lower() -> Integer!? {
     return value(μ);
   }
@@ -49,7 +53,7 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    return (box([1.0]), value(μ));
+    return (box(vector(1.0, 1)), value(μ));
   }
 
   override function write(buffer:Buffer) {

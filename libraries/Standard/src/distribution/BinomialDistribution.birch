@@ -75,7 +75,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    let p <- exp(logpdf_binomial(iota(0, value(n)), n, ρ));
+    let p <- exp(logpdf_binomial(iota(0, wait(value(n)) + 1), n, ρ));
     return (box(p/sum(p)), 0);
     // ^ numerical errors can accumulate, so renormalize
   }

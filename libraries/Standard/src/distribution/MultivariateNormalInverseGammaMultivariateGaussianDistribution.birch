@@ -128,10 +128,12 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   let ω2 <- Σ.r;
   if ω2.isInverseGamma() && m.isMultivariateNormalInverseGamma() &&
       ω2.hasMarginalized() && ω2.getMarginalized() == m.getDistribution() {
+    let p_ω2 <- ω2.getDistribution();
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;
     let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(A,
         ν, Λ, k, γ, c, Ω);
+    p_ω2.setSecondOrder(true);
     p_m.setMarginalized(p);
     return p;
   } else if ω2.isInverseGamma() {

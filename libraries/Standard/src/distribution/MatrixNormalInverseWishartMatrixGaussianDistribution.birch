@@ -125,10 +125,12 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
   let C <- M.r;
   if Ψ.isInverseWishart() && M1.isMatrixNormalInverseWishart() &&
       Ψ.hasMarginalized() && Ψ.getMarginalized() == M1.getDistribution() {
+    let p_Ψ <- Ψ.getDistribution();
     let p_M1 <- M1.graft();
     let (N2, Λ1, Γ1, k) <- p_M1.getMatrixNormalInverseWishart()!;
     let p <- wrap_matrix_normal_inverse_wishart_matrix_gaussian(A, N2, Λ1, Γ1,
         k, C, Σ);
+    p_Ψ.setSecondOrder(true);
     p_M1.setMarginalized(p);
     return p;
   } else if Ψ.isInverseWishart() {

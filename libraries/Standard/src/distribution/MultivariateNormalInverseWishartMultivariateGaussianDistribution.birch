@@ -123,10 +123,12 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
   let Ω <- Σ.r;
   if Ω.isInverseWishart() && m.isMultivariateNormalInverseWishart() &&
       Ω.hasMarginalized() && Ω.getMarginalized() == m.getDistribution() {
+    let p_Ω <- Ω.getDistribution();
     let p_m <- m.graft();
     let (ν, λ, Γ, k) <- p_m.getMultivariateNormalInverseWishart()!;
     let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
         ν, λ, Γ, k, c, ω2);
+    p_Ω.setSecondOrder(true);
     p_m.setMarginalized(p);
     return p;
   } else if Ω.isInverseWishart() {

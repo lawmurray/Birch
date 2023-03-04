@@ -116,6 +116,11 @@ abstract class Delay {
   subordinate:Boolean <- false;
 
   /**
+   * Does this expect a second-order update?
+   */
+  second:Boolean <- false;
+
+  /**
    * Is there a marginalized distribution?
    */
   final function hasMarginalized() -> Boolean {
@@ -200,6 +205,35 @@ abstract class Delay {
   }
 
   /**
+   * Does this expect a second-order update?
+   *
+   * Usually a joint distribution of random variables $x$, $y$, and $z$ that
+   * are adjacent on the $M$-path have a joint distribution that can be
+   * decomposed as
+   * $$p(\mathrm{d}x, \mathrm{d}y, \mathrm{d}z) = p(\mathrm{d}x)
+   * p(\mathrm{d}y | x) p(\mathrm{d}z | y).$$
+   * When isSecondOrder() is true for $x$, the decomposition is instead
+   * $$p(\mathrm{d}x, \mathrm{d}y, \mathrm{d}z) = p(\mathrm{d}x)
+   * p(\mathrm{d}y | x) p(\mathrm{d}z | x, y).$$
+   * The conditional update on $x$ would usually encode $p(\mathrm{d}x | y)$,
+   * but instead encodes $p(\mathrm{d}x | y, z)$ in this case.
+   *
+   * Examples of such updates include sums of discrete random variables, and
+   * conjugacies involving normal-inverse-gamma and (multivariate or matrix)
+   * normal-inverse-Wishart distributions.
+   */
+  final function isSecondOrder() -> Boolean {
+    return second;
+  }
+
+  /**
+   * Set the second-order flag.
+   */
+  final function setSecondOrder(second:Boolean) {
+    this.second <- second;
+  }
+
+  /**
    * Prepare the node for stateful operations
    *
    * @return Updated distribution.
@@ -218,7 +252,7 @@ abstract class Delay {
         /* in this case, preserve the current updated distribution for this,
          * but join the marginalized distribution to it */
         p'.setJoined(q');
-      } else if q'.isSecondOrder() {
+      } else if p.isSecondOrder() {
         /* in this case, q' is a joint distribution over the random variable
          * associated with this distribution and the parent distribution,
          * condition it to update the parent distribution */  
@@ -264,24 +298,6 @@ abstract class Delay {
    * Are join operations supported?
    */
   function supportsJoin() -> Boolean {
-    return false;
-  }
-
-  /**
-   * Are any updates on this distribution joint with its parent?
-   *
-   * Usually a joint distribution of random variables $x$, $y$, and $z$ that
-   * are adjacent on the $M$-path have a joint distribution that can be
-   * decomposed as
-   * $$p(\mathrm{d}x, \mathrm{d}y, \mathrm{d}z) = p(\mathrm{d}x)
-   * p(\mathrm{d}y | x) p(\mathrm{d}z | y).$$
-   * When isSecondOrder() is true for $y$, the decomposition is instead
-   * $$p(\mathrm{d}x, \mathrm{d}y, \mathrm{d}z) = p(\mathrm{d}x)
-   * p(\mathrm{d}y | x) p(\mathrm{d}z | x, y).$$
-   * The conditional update on $y$ would usually encode $p(\mathrm{d}y | z)$,
-   * but instead encodes $p(\mathrm{d}x, \mathrm{d}y | z)$ in this case.
-   */
-  function isSecondOrder() -> Boolean {
     return false;
   }
 

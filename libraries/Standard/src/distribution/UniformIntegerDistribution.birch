@@ -69,8 +69,9 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    let p <- vector(1.0/(u - l + 1), u - l + 1);
-    return (box(p), value(u));
+    let n <- wait(value(u - l + 1));
+    let p <- vector(1.0/n, n);
+    return (box(p), value(l));
   }
 
   override function write(buffer:Buffer) {

@@ -31,10 +31,6 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return true;
   }
 
-  override function isSecondOrder() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_wishart(value(N), value(Λ),
         value(Γ), value(k));

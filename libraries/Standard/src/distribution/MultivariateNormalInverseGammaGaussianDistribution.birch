@@ -249,6 +249,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   let τ2 <- σ2.r;
   if τ2.isInverseGamma() && m.isMultivariateNormalInverseGamma() &&
       τ2.hasMarginalized() && τ2.getMarginalized() == m.getDistribution() {
+    let p_τ2 <- τ2.getDistribution();
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;
     let p <- wrap_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, k, γ,
@@ -257,6 +258,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
       p.setJoined(p_m.getJoined());  // carry forward
       p_m.setJoined(nil);
     }
+    p_τ2.setSecondOrder(true);
     p_m.setMarginalized(p);
     return p;
   } else if τ2.isInverseGamma() {
