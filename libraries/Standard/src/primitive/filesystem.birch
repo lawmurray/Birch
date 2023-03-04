@@ -77,7 +77,7 @@ function fopen(path:String, mode:Integer) -> File {
   if (!f) {
     error(String("could not open file ") + path + String("."));
   }
-  lockf(fileno(f), F_LOCK, 0);
+  [[maybe_unused]] int err = lockf(fileno(f), F_LOCK, 0);
   return f;
   }}
 }
