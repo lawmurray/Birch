@@ -1,70 +1,86 @@
 /**
  * Delta distribution convolved with a bounded discrete distribution, with
  * negation.
- *
- * @param p Bounded discrete distribution.
  */
-final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
-    BoundedDiscreteDistribution {
+final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
+    Distribution<Integer> {
   /**
    * Distribution.
    */
-  p:BoundedDiscreteDistribution <- p;
+  p:Arg1 <- p;
+
+  /**
+   * Inclusive lower bound.
+   */
+  l:Integer! <- l;
 
   override function supportsLazy() -> Boolean {
-    return p.supportsLazy();
+    return true;
   }
 
   override function simulate() -> Integer! {
-    return -p.simulate();
+    return 1 - l - simulate_categorical(value(p));
   }
 
   override function simulateLazy() -> Integer!? {
-    return -p.simulateLazy()!;
+    return 1 - l - simulate_categorical(eval(p));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return p.logpdf(-x);
+    return logpdf_categorical(1 - l - x, value(p));
   }
 
   override function logpdfLazy(x:Integer!) -> Real!? {
-    return p.logpdfLazy(-x);
+    return logpdf_categorical(1 - l - x, eval(p));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return Delta(-x);
+    return wrap_delta(-x);
   }
 
   override function updateLazy(x:Expression<Integer>) -> Delay? {
-    return Delta(-x);
+    return wrap_delta(-x);
   }
 
   override function hoist() -> Expression<Real>? {
-    return p.hoist();
+    return box(logpdf_categorical(1 - l - this.random(), p));
   }
 
   override function lower() -> Integer!? {
-    let l <- p.upper();
-		if l? {
-			return -l!;
-		} else {
-			return nil;
-		}
+    return 1 - l - length(p);
   }
   
   override function upper() -> Integer!? {
-    let l <- p.lower();
-		if l? {
-			return -l!;
-		} else {
-			return nil;
-		}
+    return -l;
+
   }
 
   override function constant() {
     super.constant();
-    p.constant();
+    global.constant(p);
+    global.constant(l);
   }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let n <- length(p);
+    return (box(gather(p, n - iota(0, n))), 1 - l - n);
+  }
+}
+
+function NegateDiscreteDelta<Arg1>(p:Arg1, l:Integer!) ->
+    Distribution<Integer> {
+  return wrap_negate_discrete_delta(p, l);
+}
+function wrap_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
+  return make_negate_discrete_delta(wrap(p), l);
+}
+function make_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
+  return construct<NegateDiscreteDeltaDistribution<Arg1>>(p, l);
 }
 
 /**
@@ -73,10 +89,11 @@ final class NegateDiscreteDeltaDistribution(p:BoundedDiscreteDistribution) <
 function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
   let m <- μ.m;
 	if m.isBoundedDiscrete() {
-  	let p_m <- m.graft().getBoundedDiscrete()!;
-    let p <- construct<NegateDiscreteDeltaDistribution>(p_m);
-    p_m.setMarginalized(p);
-    return p;
+  	let p_m <- m.graft();
+    let (p, l) <- p_m.getBoundedDiscrete()!;
+    let q <- wrap_negate_discrete_delta(p, l);
+    p_m.setMarginalized(q);
+    return q;
 	} else {
 		return wrap_delta(μ);
 	}

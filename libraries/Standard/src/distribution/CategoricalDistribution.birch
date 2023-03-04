@@ -4,7 +4,7 @@
  * @param ρ Probabilities.
  */
 final class CategoricalDistribution<Arg>(ρ:Arg) <
-    BoundedDiscreteDistribution {
+    Distribution<Integer> {
   /**
    * Category probabilities.
    */
@@ -55,6 +55,15 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     global.constant(ρ);
   }
 
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    return (box(ρ), 1);
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Categorical");
     buffer.set("ρ", value(ρ));
@@ -90,6 +99,7 @@ function simulate_categorical<Arg1>(ρ:Arg1) -> {
  * @param Z Sum of the unnormalized category probabilities.
  */
 function simulate_categorical<Arg1,Arg2>(ρ:Arg1, Z:Arg2) -> {
+  assert Z > 0.0;
   let P <- 0.0;
   let u <- simulate_uniform(0.0, Z);
   let x <- 0;
@@ -98,6 +108,7 @@ function simulate_categorical<Arg1,Arg2>(ρ:Arg1, Z:Arg2) -> {
     x <- x + 1;
     P <- P + ρ[x];
   }
+  assert 1 <= x && x <= N;
   return x;
 }
 

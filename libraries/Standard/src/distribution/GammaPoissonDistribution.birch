@@ -78,8 +78,7 @@ function GammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
     Distribution<Integer> {
   return wrap_gamma_poisson(a, k, θ);
 }
-function wrap_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
-    θ:Arg3) -> {
+function wrap_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
   return make_gamma_poisson(wrap(a), wrap(k), wrap(θ));
 }
 function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
@@ -120,8 +119,7 @@ function Poisson(λ:Random<Real>) -> Distribution<Integer> {
 /**
  * Create Poisson distribution.
  */
-function Poisson(λ:Mul<Random<Real>,Random<Real>>) ->
-    Distribution<Integer> {
+function Poisson(λ:Mul<Random<Real>,Random<Real>>) -> Distribution<Integer> {
   let a <- λ.l;
   let b <- λ.r;
   if a.isGamma() {
@@ -172,7 +170,7 @@ function logpdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
 }
 
 /*
- * Update the parameters of a scaled Gamma distribution with a Poisson
+ * Update the parameters of a scaled gamma distribution with a Poisson
  * likelihood.
  *
  * @param x The variate.

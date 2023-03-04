@@ -6,7 +6,7 @@ hpp{{
  * Uniform integer distribution.
  */
 final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
-    BoundedDiscreteDistribution {
+    Distribution<Integer> {
   /**
    * Lower bound.
    */
@@ -18,15 +18,23 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
   u:Arg2 <- u;
 
   override function supportsLazy() -> Boolean {
-    return false;
+    return true;
   }
 
   override function simulate() -> Integer! {
     return simulate_uniform_int(value(l), value(u));
   }
 
+  override function simulateLazy() -> Integer!? {
+    return simulate_uniform_int(eval(l), eval(u));
+  }
+
   override function logpdf(x:Integer!) -> Real! {
     return logpdf_uniform_int(x, value(l), value(u));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return logpdf_uniform_int(x, eval(l), eval(u));
   }
 
   override function cdf(x:Integer!) -> Real!? {
@@ -37,6 +45,10 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return quantile_uniform_int(P, value(l), value(u));
   }
   
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_uniform_int(this.random(), l, u));
+  }
+
   override function lower() -> Integer!? {
     return value(l);
   }
@@ -49,6 +61,16 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     super.constant();
     global.constant(l);
     global.constant(u);
+  }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let p <- vector(1.0/(u - l + 1), u - l + 1);
+    return (box(p), value(u));
   }
 
   override function write(buffer:Buffer) {
@@ -112,8 +134,5 @@ function cdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
  * @return the quantile.
  */
 function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
-  let P1 <- wait(P);
-  let l1 <- wait(l);
-  let u1 <- wait(u);
-  return l1 + cast<Integer>(P1*(u1 - l1));
+  return l + cast<Integer>(P*(u - l));
 }

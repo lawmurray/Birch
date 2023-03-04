@@ -4,18 +4,30 @@
  *
  * @param μ Location.
  */
-final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
+final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
   /**
    * Location.
    */
   μ:Arg <- μ;
 
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
   override function simulate() -> Integer! {
     return value(μ);
   }
 
+  override function simulateLazy() -> Integer!? {
+    return eval(μ);
+  }
+
   override function logpdf(x:Integer!) -> Real! {
     return where(x == value(μ), 0.0, -inf);
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return where(x == eval(μ), 0.0, -inf);
   }
 
   override function lower() -> Integer!? {
@@ -31,6 +43,15 @@ final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
     global.constant(μ);
   }
 
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    return (box([1.0]), value(μ));
+  }
+
   override function write(buffer:Buffer) {
     buffer.set("class", "Delta");
     buffer.set("μ", value(μ));
@@ -43,9 +64,9 @@ final class DeltaDistribution<Arg>(μ:Arg) < BoundedDiscreteDistribution {
 function Delta<Arg>(μ:Arg) -> Distribution<Integer> {
   return wrap_delta(μ);
 }
-function wrap_delta<Arg>(μ:Arg) -> Distribution<Integer> {
+function wrap_delta<Arg>(μ:Arg) -> {
   return make_delta(wrap(μ));
 }
-function make_delta<Arg>(μ:Arg) -> Distribution<Integer> {
+function make_delta<Arg>(μ:Arg) -> {
   return construct<DeltaDistribution<Arg>>(μ);
 }

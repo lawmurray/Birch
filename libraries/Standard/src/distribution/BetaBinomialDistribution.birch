@@ -2,7 +2,7 @@
  * Beta-binomial distribution.
  */
 final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
-    BoundedDiscreteDistribution {
+    Distribution<Integer> {
   /**
    * Number of trials.
    */
@@ -64,8 +64,20 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
 
   override function constant() {
     super.constant();
+    global.constant(n);
     global.constant(α);
     global.constant(β);
+  }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let p <- exp(logpdf_beta_binomial(iota(0, value(n)), n, α, β));
+    return (box(p/sum(p)), 0);
+    // ^ numerical errors can accumulate, so renormalize
   }
 }
 
@@ -148,9 +160,5 @@ function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
  */
 function cdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
     β:Arg4) -> {
-  let P <- 0.0;
-  for i in 0..x {
-    P <- P + exp(logpdf_beta_binomial(i, n, α, β));
-  }
-  return P;
+  return sum(exp(logpdf_beta_binomial(iota(0, wait(value(x)) + 1), n, α, β)));
 }

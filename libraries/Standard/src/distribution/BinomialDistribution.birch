@@ -6,7 +6,7 @@ hpp{{
  * Binomial distribution.
  */
 final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
-    BoundedDiscreteDistribution {
+    Distribution<Integer> {
   /**
    * Number of trials.
    */
@@ -67,6 +67,17 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     buffer.set("class", "Binomial");
     buffer.set("n", value(n));
     buffer.set("ρ", value(ρ));
+  }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let p <- exp(logpdf_binomial(iota(0, value(n)), n, ρ));
+    return (box(p/sum(p)), 0);
+    // ^ numerical errors can accumulate, so renormalize
   }
 }
 

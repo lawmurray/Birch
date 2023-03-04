@@ -12,7 +12,7 @@
  * that is desired---but the more expensive operations: most are $O(n)$.
  */
 class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
-    n:Arg3) < BoundedDiscreteDistribution {
+    n:Arg3) < Distribution<Integer> {
   /**
    * Mode.
    */
@@ -48,16 +48,16 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     return logpdf_conway_maxwell_poisson(x, eval(μ), eval(ν), eval(n));
   }
 
-  override function hoist() -> Expression<Real>? {
-    return box(logpdf_conway_maxwell_poisson(this.random(), μ, ν, n));
-  }
-
   override function cdf(x:Integer!) -> Real!? {
     return cdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
   }
 
   override function quantile(P:Real!) -> Integer!? {
     return quantile_conway_maxwell_poisson(P, value(μ), value(ν), value(n));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_conway_maxwell_poisson(this.random(), μ, ν, n));
   }
 
   override function lower() -> Integer!? {
@@ -73,6 +73,17 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     global.constant(μ);
     global.constant(ν);
     global.constant(n);
+  }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let p <- exp(logpdf_conway_maxwell_poisson(iota(0, n + 1), μ, ν, n));
+    return (box(p/sum(p)), 0);
+    // ^ numerical errors can accumulate, so renormalize
   }
 
   override function write(buffer:Buffer) {
@@ -108,7 +119,7 @@ function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
  */
 function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {
-  let p <- p_conway_maxwell_poisson(μ, ν, n);
+  let p <- exp(logpdf_conway_maxwell_poisson(iota(0, n + 1), μ, ν, n));
   return simulate_categorical(p, 1.0) - 1;
 }
 
@@ -140,7 +151,7 @@ function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
  */
 function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  let p <- p_conway_maxwell_poisson(μ, ν, n);
+  let p <- exp(logpdf_conway_maxwell_poisson(iota(0, n + 1), μ, ν, n));
   return cdf_categorical(x + 1, p, 1.0);
 }
 
@@ -156,27 +167,6 @@ function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
  */
 function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  let p <- p_conway_maxwell_poisson(μ, ν, n);
+  let p <- exp(logpdf_conway_maxwell_poisson(iota(0, n + 1), μ, ν, n));
   return quantile_categorical(P, p, 1.0) - 1;
-}
-
-/*
- * Enumerated probabilities of a Conway-Maxwell-Poisson distribution truncated
- * on a finite interval $[0,n]$.
- *
- * @param μ Mode.
- * @param ν Dispersion.
- * @param n Truncation point.
- *
- * @return vector of probabilities on $[0,n]$.
- */
-function p_conway_maxwell_poisson(μ:Real, ν:Real, n:Integer) -> Real[_] {
-  let log_λ <- ν*log(μ);
-  let log_xf <- 0.0;  // accumulator of log(x!)
-  z:Real[n + 1];
-  for x in 1..(n + 1) {
-    z[x] <- (x - 1)*log_λ - ν*log_xf;
-    log_xf <- log_xf + log(x);
-  }
-  return norm_exp(z);
 }

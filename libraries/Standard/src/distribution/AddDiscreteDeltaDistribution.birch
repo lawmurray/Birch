@@ -1,91 +1,102 @@
 /**
  * Delta distribution on sum of two bounded discrete random variables.
  */
-final class AddDiscreteDeltaDistribution(p:BoundedDiscreteDistribution,
-    q:BoundedDiscreteDistribution) < BoundedDiscreteDistribution {
+final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
+    a:Integer!, b:Integer!) < Distribution<Integer> {
   /**
-   * Distribution over first random variable.
+   * Probability vector of first random variable.
    */
-  p:BoundedDiscreteDistribution <- p;
+  p:Arg1 <- p;
 
   /**
-   * Distribution over second random variable.
+   * Probability vector of second random variable.
    */
-  q:BoundedDiscreteDistribution <- q;
+  q:Arg2 <- q;
 
   /**
-   * Value at which probabilities have been enumerated.
+   * Inclusive lower bound on support of first random variable.
    */
-  x:Integer?;
-  
-  /**
-   * If enumerated, then the lower bound on the support of `p`.
-   */
-  l:Integer <- 0;
+  a:Integer! <- a;
 
   /**
-   * If enumerated, then the upper bound on the support of `p`.
+   * Inclusive lower bound on support of second random variable.
    */
-  u:Integer <- 0;
+  b:Integer! <- b;
 
-  /**
-   * If enumerated, then the probabilities across the support of `p`, starting
-   * from `l`.
-   */
-  z:Real[_];
-  
-  /**
-   * If enumerated, then the sum of `z`.
-   */
-  Z:Real <- 0.0;
-  
-  function enumerate(x:Integer!) {
-    if !this.x? || this.x! != x! {
-      l <- max(p.lower()!!, x! - q.upper()!!);
-      u <- min(p.upper()!!, x! - q.lower()!!);
-      if l <= u {
-        /* distribution over possible pairs that produce the given sum */
-        z <- vector_lambda(\(i:Integer) -> {
-              let n <- l + i - 1;
-              return p.logpdf(n)! + q.logpdf(x! - n)!;
-            }, u - l + 1);
-        Z <- log_sum_exp(z);
-        z <- norm_exp(z);
-      } else {
-        Z <- -inf;
-        z <- vector(0.0, 0);
-      }
-      this.x <- x!;
-    }
+  override function supportsLazy() -> Boolean {
+    return true;
   }
 
   override function simulate() -> Integer! {
-    return p.simulate() + q.simulate();
+    return simulate_add_discrete_delta(value(p), value(q), value(a),
+        value(b));
   }
-  
+
+  override function simulateLazy() -> Integer!? {
+    return simulate_add_discrete_delta(eval(p), eval(q), eval(a), eval(b));
+  }
+
   override function logpdf(x:Integer!) -> Real! {
-    enumerate(x);
-    return Z;
+    return log(pdf_add_discrete_delta(x, value(p), value(q), value(a),
+        value(b)));
   }
-  
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return log(pdf_add_discrete_delta(x, eval(p), eval(q), eval(a), eval(b)));
+  }
+
   override function update(x:Integer!) -> Delay? {
-    enumerate(x);
-    return construct<AddDiscreteConstrainedDistribution>(z, l, x!);
+    return update_add_discrete_delta(x, value(p), value(q), value(a),
+        value(b));
   }
-  
+
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_add_discrete_delta(x, eval(p), eval(q), eval(a), eval(b));
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(log(pdf_add_discrete_delta(this.random(), p, q, a, b)));
+  }
+
   override function lower() -> Integer!? {
-    return p.lower()! + q.lower()!;
+    return value(a) + value(b);
   }
-  
+
   override function upper() -> Integer!? {
-    return p.upper()! + q.upper()!;
+    return value(a) + value(b) + (length(p) + length(q) - 2);
   }
 
   override function constant() {
     super.constant();
-    p.constant();
-    q.constant();
+    global.constant(p);
+    global.constant(q);
+    global.constant(a);
+    global.constant(b);
   }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let r <- convolve(p, q);
+    return (box(r/sum(r)), a + b);
+    // ^ numerical errors can accumulate, so renormalize
+  }
+}
+
+function AddDiscreteDelta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
+    b:Integer!) -> Distribution<Integer> {
+  return wrap_add_discrete_delta(p, q, a, b);
+}
+function wrap_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
+    b:Integer!) -> {
+  return make_add_discrete_delta(wrap(p), wrap(q), a, b);
+}
+function make_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
+    b:Integer!) -> {
+  return construct<AddDiscreteDeltaDistribution<Arg1,Arg2>>(p, q, a, b);
 }
 
 /**
@@ -96,12 +107,14 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
   let l <- μ.l;
   let r <- μ.r;
   if l.isBoundedDiscrete() && r.isBoundedDiscrete() {
-    let p_l <- l.graft().getBoundedDiscrete()!;
-    let p_r <- r.graft().getBoundedDiscrete()!;
-    let p <- construct<AddDiscreteDeltaDistribution>(p_l, p_r);
-    p_l.setMarginalized(p_r);
-    p_r.setMarginalized(p);
-    return p;
+    let p_l <- l.graft();
+    let p_r <- r.graft();
+    let (p, a) <- p_l.getBoundedDiscrete()!;
+    let (q, b) <- p_r.getBoundedDiscrete()!;
+    let r <- wrap_add_discrete_delta(p, q, a, b);
+    p_r.setMarginalized(p_l);
+    p_l.setMarginalized(r);
+    return r;
 	} else if l.isBoundedDiscrete() {
     let x ~ Delta(r);
     return Delta(l + x);
@@ -136,4 +149,141 @@ function Delta<Arg1,Arg2>(μ:Add<Arg1,Arg2>) -> Distribution<Integer> {
   let l ~ Delta(μ.l);
   let r ~ Delta(μ.r);
   return Delta(l + r);
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta(μ:Sub<Random<Integer>,Random<Integer>>) ->
+    Distribution<Integer> {
+  let r ~ Delta(-μ.r);
+  return Delta(μ.l + r);
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Arg>(μ:Sub<Random<Integer>,Arg>) -> Distribution<Integer> {
+  let r ~ Delta(-μ.r);
+  return Delta(μ.l + r);
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Arg>(μ:Sub<Arg,Random<Integer>>) -> Distribution<Integer> {
+  let l ~ Delta(μ.l);
+  let r ~ Delta(-μ.r);
+  return Delta(l + r);
+}
+
+/**
+ * Create delta distribution.
+ */
+function Delta<Arg1,Arg2>(μ:Sub<Arg1,Arg2>) -> Distribution<Integer> {
+  let l ~ Delta(μ.l);
+  let r ~ Delta(-μ.r);
+  return Delta(l + r);
+}
+
+/*
+ * Simulate the sum of discrete random variables.
+ *
+ * @param p Probability vector of first random variable.
+ * @param q Probability vector of second random variable.
+ * @param a Inclusive lower bound of first random variable.
+ * @param b Inclusive lower bound of second random variable.
+ *
+ * @return the sum.
+ */
+function simulate_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
+    b:Integer!) -> {
+  return simulate_categorical(p) + simulate_categorical(q) + a + b - 2;
+}
+
+/*
+ * Observe the sum of discrete random variables.
+ *
+ * @param x The sum.
+ * @param p Probability vector of first random variable.
+ * @param q Probability vector of second random variable.
+ * @param a Inclusive lower bound of first random variable.
+ * @param b Inclusive lower bound of second random variable.
+ *
+ * @return the probability mass.
+ */
+function pdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
+    a:Integer!, b:Integer!) -> {
+  assert length(p) > 0;
+  assert length(q) > 0;
+
+  let m <- length(p);
+  let n <- length(q);
+  let z <- wait(value(x)) - wait(a) - wait(b);  // offset to base zero
+
+  /* start of range for first random variable; the second contributes at
+   * most n - 1, so the first must contribute at least... */
+  let i <- max(0, z - (n - 1));
+
+  /* end of range for the first random variable; the second contributes at
+   * least zero, so the first must contribute at most... */
+  let j <- min(m - 1, z);
+
+  /* start of range for second random variable; the first contributes at
+   * most j, so the second must contribute at least... */
+  let k <- max(0, z - j);
+
+  /* end of range for the second random variable; the first contributes at
+   * least i, so the first must contribute at most... */
+  let l <- min(n - 1, z - i);
+
+  assert(j - i - 1 == l - k - 1);   // lengths of ranges should be equal
+  let s <- iota(i + 1, j - i + 1);      // first range, ascending order
+  let t <- l + 1 - iota(0, l - k + 1);  // second range, descending order
+
+  return dot(gather(p, s), gather(q, t));
+}
+
+/*
+ * Update the parameters of discrete random variables given their sum.
+ *
+ * @param x The sum.
+ * @param p Probability vector of first random variable.
+ * @param q Probability vector of second random variable.
+ * @param a Inclusive lower bound of first random variable.
+ * @param b Inclusive lower bound of second random variable.
+ *
+ * @return the updated distribution.
+ */
+function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
+    a:Integer!, b:Integer!) -> {
+  assert length(p) > 0;
+  assert length(q) > 0;
+
+  let m <- length(p);
+  let n <- length(q);
+  let z <- wait(value(x)) - wait(a) - wait(b);  // offset to base zero
+
+  /* start of range for first random variable; the second contributes at
+   * most n - 1, so the first must contribute at least... */
+  let i <- max(0, z - (n - 1));
+
+  /* end of range for the first random variable; the second contributes at
+   * least zero, so the first must contribute at most... */
+  let j <- min(m - 1, z);
+
+  /* start of range for second random variable; the first contributes at
+   * most j, so the second must contribute at least... */
+  let k <- max(0, z - j);
+
+  /* end of range for the second random variable; the first contributes at
+   * least i, so the first must contribute at most... */
+  let l <- min(n - 1, z - i);
+
+  assert(j - i - 1 == l - k - 1);  // lengths of ranges should be equal
+  let s <- iota(i + 1, j - i + 1);  // first range, ascending order
+  let t <- l + 1 - iota(0, l - k + 1);  // second range, descending order
+
+  let r <- hadamard(gather(p, s), gather(q, t));
+  return wrap_add_discrete_first(r/sum(r), a + i, b + k);
 }

@@ -1,0 +1,137 @@
+/*
+ * Distribution over the first of a pair of random variables given their sum.
+ * This is produced by AddDiscreteDeltaDistribution.update() once the sum is
+ * realized. In turn, AddDiscreteFirstDistribution.update() produces a Delta
+ * distribution over the second of the pair once the first is realized.
+ */
+final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
+    b:Integer!) < Distribution<Integer> {
+  /**
+   * Probability vector of the pairs.
+   */
+  p:Arg1 <- p;
+
+  /**
+   * Inclusive lower bound on the first random variable.
+   */
+  a:Integer! <- a;
+
+  /**
+   * Inclusive lower bound on the second random variable.
+   */
+  b:Integer! <- b;
+  
+  override function isSecondOrder() -> Boolean {
+    return true;
+  }
+
+  override function supportsLazy() -> Boolean {
+    return true;
+  }
+
+  override function simulate() -> Integer! {
+    return simulate_add_discrete_first(value(p), value(a), value(b));
+  }
+
+  override function simulateLazy() -> Integer!? {
+    return simulate_add_discrete_first(eval(p), eval(a), eval(b));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return log(pdf_add_discrete_first(x, value(p), value(a), value(b)));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real!? {
+    return log(pdf_add_discrete_first(x, eval(p), eval(a), eval(b)));
+  }
+
+  override function update(x:Integer!) -> Delay? {
+    return update_add_discrete_first(x, value(p), value(a), value(b));
+  }
+
+  override function updateLazy(x:Expression<Integer>) -> Delay? {
+    return update_add_discrete_first(x, p, a, b);
+  }
+
+  override function hoist() -> Expression<Real>? {
+    return box(log(pdf_add_discrete_first(this.random(), p, a, b)));
+  }
+
+  override function lower() -> Integer!? {
+    return a;
+  }
+  
+  override function upper() -> Integer!? {
+    return a + length(p) - 1;
+  }
+
+  override function constant() {
+    super.constant();
+    global.constant(p);
+    global.constant(a);
+    global.constant(b);
+  }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    return (box(p), a);
+  }
+}
+
+function AddDiscreteConstrained<Arg1>(p:Arg1, a:Integer!, b:Integer!) ->
+    Distribution<Integer> {
+  return wrap_add_discrete_first(p, a, b);
+}
+function wrap_add_discrete_first<Arg1>(p:Arg1, a:Integer!, b:Integer!) -> {
+  return make_add_discrete_first(wrap(p), a, b);
+}
+function make_add_discrete_first<Arg1>(p:Arg1, a:Integer!, b:Integer!) -> {
+  return construct<AddDiscreteFirstDistribution<Arg1>>(p, a, b);
+}
+
+/*
+ * Simulate the first of a pair of random variables of a given sum.
+ *
+ * @param p Probability vector of the pairs.
+ * @param a Inclusive lower bound of first random variable.
+ * @param b Inclusive lower bound of second random variable.
+ */
+function simulate_add_discrete_first<Arg1>(p:Arg1, a:Integer!,
+    b:Integer!) -> {
+  return simulate_categorical(p) + a - 1;
+}
+
+/*
+ * Observe the first of a pair of random variables of a given sum.
+ *
+ * @param x The variate.
+ * @param p Probability vector of the pairs.
+ * @param a Inclusive lower bound of first random variable.
+ * @param b Inclusive lower bound of second random variable.
+ *
+ * @return the probability mass.
+ */
+function pdf_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
+    b:Integer!) -> {
+  return element(p, x - a + 1);
+}
+
+/*
+ * Update the first of a pair of random variables of a given sum.
+ *
+ * @param x The variate.
+ * @param p Probability vector of the pairs.
+ * @param a Inclusive lower bound of first random variable.
+ * @param b Inclusive lower bound of second random variable.
+ *
+ * @return the updated distribution.
+ */
+function update_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
+    b:Integer!) -> {
+  let sum <- a + b + length(p) - 1;
+  return wrap_delta(sum - x);
+}
