@@ -51,8 +51,8 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     let z0 <- stack(x1, x2);
     let n <- vector(0, B);  // to record test failures
     parallel for b in 1..B {
-      let z1' <- gather(simulate_uniform_int(l, u), z0);
-      let z2' <- gather(simulate_uniform_int(l, u), z0);
+      let z1' <- gather(z0, simulate_uniform_int(l, u));
+      let z2' <- gather(z0, simulate_uniform_int(l, u));
       let δ' <- wasserstein(z1', z2');  // bootstrap sample difference
       if δ' > δ {
         n[b] <- 1;
