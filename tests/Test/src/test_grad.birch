@@ -51,6 +51,11 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let z <- x;
         y[i] <- y[i] - 0.5*Δ';
         z[i] <- z[i] + 0.5*Δ';
+
+
+        stderr.print("x[i]=" + x[i] + " y[i]=" + y[i] + " z[i]=" + z[i] + "\n");
+
+
         let q <- π.move(y)!;
         let r <- π.move(z)!;
         let fd <- (r - q)/Δ';

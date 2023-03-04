@@ -1,15 +1,16 @@
 class TestAddDiscreteDelta < TestModel {
+  ρ:Random<Real>;
   x1:Random<Integer>;
   x2:Random<Integer>;
   s:Random<Integer>;
 
   override function initialize() {
-    //
+    ρ ~ Beta(1.0, 3.0);
   }
 
   override function simulate() {
     x1 ~ UniformInteger(1, 100);
-    x2 ~ Binomial(100, 0.25);
+    x2 ~ Binomial(100, ρ);
     s ~ Delta(x1 + x2);
   }
 
@@ -50,4 +51,10 @@ program test_pdf_add_discrete_delta(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestAddDiscreteDelta;
   test_pdf(m, N, lazy);
+}
+
+program test_grad_add_discrete_delta(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestAddDiscreteDelta;
+  test_grad(m, N, backward);
 }

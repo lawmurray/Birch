@@ -1,17 +1,18 @@
 class TestLongDiscreteDelta < TestModel {
+  ρ:Array<Random<Real>>;
   x:Array<Random<Integer>>;
   s:Random<Integer>;
 
   override function initialize() {
-    //
+    for i in 1..5 {
+      ρ[i] ~ Uniform(0.1, 0.9);
+    }    
   }
 
   override function simulate() {
-    x[1] ~ Binomial(10, 0.5);
-    x[2] ~ Binomial(10, 0.5);
-    x[3] ~ Binomial(10, 0.5);
-    x[4] ~ Binomial(10, 0.5);
-    x[5] ~ Binomial(10, 0.5);
+    for i in 1..5 {
+      x[i] ~ Binomial(10, ρ[i]);
+    }
     s ~ Delta(-x[1] - (x[2] + x[3]) - (x[4] - x[5]));
   }
 
@@ -57,8 +58,15 @@ program test_conjugacy_long_discrete_delta(N:Integer <- 10000,
   test_conjugacy(m, N, lazy);
 }
 
+
 program test_pdf_long_discrete_delta(N:Integer <- 10000,
     S:Integer <- 0, lazy:Boolean <- false) {
   m:TestLongDiscreteDelta;
   test_pdf(m, N, lazy);
+}
+
+program test_grad_long_discrete_delta(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestLongDiscreteDelta;
+  test_grad(m, N, backward);
 }

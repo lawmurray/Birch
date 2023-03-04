@@ -1,15 +1,13 @@
 class TestCategorical < TestModel {
   x:Random<Integer>;
-  α:Real;
-  ρ:Real[10];
+  ρ:Random<Real[_]>;
 
   override function initialize() {
-    α <- simulate_uniform(0.5, 100.0);
-    ρ <- simulate_dirichlet(α, 10);
+    ρ ~ MultivariateGaussian(vector(0.0, 10), diagonal(4.0, 10));
   }
 
   override function simulate() {
-    x ~ Categorical(ρ);
+    x ~ Categorical(exp(ρ)/sum(exp(ρ)));
   }
 
   override function forward() -> Real[_] {
@@ -29,10 +27,15 @@ class TestCategorical < TestModel {
   }
 }
 
-program test_pdf_categorical(N:Integer <- 10000,
-    S:Integer <- 0, lazy:Boolean <- false) {
+program test_pdf_categorical(N:Integer <- 10000, S:Integer <- 0,
+    lazy:Boolean <- false) {
   m:TestCategorical;
   test_pdf(m, N, lazy);
+}
+
+program test_grad_categorical(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestCategorical;
+  test_grad(m, N, backward);
 }
 
 program test_cdf_categorical() {

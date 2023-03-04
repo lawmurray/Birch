@@ -58,3 +58,9 @@ program test_pdf_negate_discrete_delta(N:Integer <- 10000,
   m:TestNegateDiscreteDelta;
   test_pdf(m, N, lazy);
 }
+
+program test_negate_discrete_delta(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestNegateDiscreteDelta;
+  test_grad(m, N, backward);
+}
