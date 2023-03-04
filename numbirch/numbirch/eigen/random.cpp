@@ -61,7 +61,7 @@ Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
   assert(stride(g) == 1);
   int m = length(p);
   int n = length(q);
-  Array<real,1> gp(make_shape(n));
+  Array<real,1> gp(make_shape(m));
 
   auto gp1 = make_eigen(gp);
   auto B = make_eigen(sliced(g), m, n, 0);
