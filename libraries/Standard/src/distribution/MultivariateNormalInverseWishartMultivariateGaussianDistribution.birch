@@ -77,6 +77,11 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
         x, a, ν, λ, Γ, k, c, ω2);
   }
 
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
+        box(this.random() - c), a, ν, λ, Γ, k, ω2));
+  }
+
   override function constant() {
     super.constant();
     global.constant(a);

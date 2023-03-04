@@ -290,9 +290,7 @@ abstract class Delay {
   /**
    * Are lazy operations supported?
    */
-  function supportsLazy() -> Boolean {
-    return false;
-  }
+  abstract function supportsLazy() -> Boolean;
 
   /**
    * Are join operations supported?

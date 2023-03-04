@@ -83,6 +83,11 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         value(ν), value(λ), value(k), value(γ), value(c), value(s2));
   }
 
+  override function hoist() -> Expression<Real>? {
+    return box(logpdf_normal_inverse_gamma_gaussian(this.random(), a, ν, λ, k,
+        γ, c, s2));
+  }
+
   override function constant() {
     super.constant();
     global.constant(a);

@@ -21,9 +21,7 @@ abstract class Distribution<Value> < Delay {
    *
    * @return the variate, if supported.
    */
-  function simulateLazy() -> Value!? {
-    return nil;
-  }
+  abstract function simulateLazy() -> Value!?;
 
   /**
    * Evaluate the log probability density (or mass) function at a given
@@ -43,9 +41,7 @@ abstract class Distribution<Value> < Delay {
    *
    * @return the log probability density (or mass), if supported.
    */
-  function logpdfLazy(x:Value!) -> Real!? {
-    return nil;
-  }
+  abstract function logpdfLazy(x:Value!) -> Real!?;
 
   /**
    * For a compound distribution, evaluate the conditional distribution given
@@ -198,17 +194,5 @@ abstract class Distribution<Value> < Delay {
     if hasUpdated() {
       getUpdated().constant();
     }
-  }
-
-  override function hoist() -> Expression<Real>? {
-    return nil;
-  }
-
-  override function supportsLazy() -> Boolean {
-    return false;
-  }
-
-  override function supportsJoin() -> Boolean {
-    return false;
   }
 }
