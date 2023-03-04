@@ -112,15 +112,15 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     p_r.setMarginalized(p_l);
     p_l.setMarginalized(r);
     return r;
-	} else if l.isBoundedDiscrete() {
+  } else if l.isBoundedDiscrete() {
     let x ~ Delta(r);
     return Delta(l + x);
   } else if r.isBoundedDiscrete() {
     let x ~ Delta(l);
     return Delta(x + r);
   } else {
-		return wrap_delta(μ);
-	}
+    return wrap_delta(μ);
+  }
 }
 
 /**

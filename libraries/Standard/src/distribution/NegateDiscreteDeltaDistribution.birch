@@ -83,15 +83,15 @@ function make_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
  */
 function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
   let m <- μ.m;
-	if m.isBoundedDiscrete() {
-  	let p_m <- m.graft();
+  if m.isBoundedDiscrete() {
+    let p_m <- m.graft();
     let (p, l) <- p_m.getBoundedDiscrete()!;
     let q <- wrap_negate_discrete_delta(p, l);
     p_m.setMarginalized(q);
     return q;
-	} else {
-		return wrap_delta(μ);
-	}
+  } else {
+    return wrap_delta(μ);
+  }
 }
 
 /**
