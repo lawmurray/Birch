@@ -14,10 +14,6 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
    */
   l:Integer! <- l;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return 1 - l - simulate_categorical(value(p));
   }

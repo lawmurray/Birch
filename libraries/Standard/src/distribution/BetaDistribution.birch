@@ -16,10 +16,6 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
    */
   β:Arg2 <- β;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_beta(value(α), value(β));
   }

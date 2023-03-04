@@ -40,10 +40,6 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
    */
   ω2:Arg7 <- ω2;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
         value(a), value(ν), value(λ), value(Γ), value(k), value(c),

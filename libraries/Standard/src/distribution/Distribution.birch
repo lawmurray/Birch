@@ -153,7 +153,7 @@ abstract class Distribution<Value> < Delay {
   final function assign(x:Value!) {
     let p <- Distribution<Value>?(graft())!;
     let h <- get_handler();
-    if h.autodiff && p.supportsLazy() {
+    if h.autodiff {
       h.Ξ.pushBack(p);
       h.w <- h.w + p.logpdfLazy(x)!;
     } else {
@@ -169,7 +169,7 @@ abstract class Distribution<Value> < Delay {
     let p <- Distribution<Value>?(graft())!;
     if !p.x? {
       let h <- get_handler();
-      if h.autodiff && p.supportsLazy() {
+      if h.autodiff {
         h.Ξ.pushBack(p);
         p.x <- p.simulateLazy()!;
       } else {
@@ -183,7 +183,7 @@ abstract class Distribution<Value> < Delay {
 
   final override function condition() -> Delay? {
     let h <- get_handler();
-    if h.autodiff && supportsLazy() {
+    if h.autodiff {
       return updateLazy(random());
     } else {
       return update(variate());

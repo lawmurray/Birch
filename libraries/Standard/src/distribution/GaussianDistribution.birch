@@ -16,10 +16,6 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
    */
   σ2:Arg2 <- σ2;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_gaussian(value(μ), value(σ2));
   }

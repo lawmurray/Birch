@@ -18,10 +18,6 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
    */
   V:Arg3 <- V;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_,_] {
     return simulate_matrix_gaussian(value(M), value(U), value(V));
   }

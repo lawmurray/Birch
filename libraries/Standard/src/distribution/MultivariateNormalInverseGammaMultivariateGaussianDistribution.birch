@@ -40,10 +40,6 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
    */
   Ω:Arg7 <- Ω;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
       value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));

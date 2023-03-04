@@ -23,10 +23,6 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
    */
   k:Arg4 <- k;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
         value(Γ), value(k));

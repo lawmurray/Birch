@@ -16,10 +16,6 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
    */
   θ:Arg2 <- θ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_gamma(value(k), value(θ));
   }

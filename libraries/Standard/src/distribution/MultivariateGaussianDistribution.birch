@@ -13,10 +13,6 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
    */
   Σ:Arg2 <- Σ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_multivariate_gaussian(value(μ), value(Σ));
   }

@@ -13,10 +13,6 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
    */
   β:Arg2 <- β;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Boolean! {
     return simulate_beta_bernoulli(value(α), value(β));
   }

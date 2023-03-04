@@ -40,10 +40,6 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
    */
   Φ:Arg7 <- Φ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_,_] {
     return simulate_matrix_normal_inverse_wishart_matrix_gaussian(value(A),
         value(N), value(Λ), value(Γ), value(k), value(C), value(Φ));

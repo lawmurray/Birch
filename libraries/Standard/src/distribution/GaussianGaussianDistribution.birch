@@ -29,10 +29,6 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
    */
   ω2:Arg5 <- ω2;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function update(x:Real!) -> Delay? {
     return update_gaussian_gaussian(x, value(a), value(μ), value(σ2),
         value(c), value(ω2), value(super.μ), value(super.σ2));

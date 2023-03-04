@@ -23,10 +23,6 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
    */
   Ψ:Arg4 <- Ψ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_,_] {
     return simulate_matrix_t(value(k), value(M), value(Σ), value(Ψ));
   }

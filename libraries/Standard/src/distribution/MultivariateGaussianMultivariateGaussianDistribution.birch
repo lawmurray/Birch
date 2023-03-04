@@ -30,10 +30,6 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
    */
   Ω:Arg5 <- Ω;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_gaussian_multivariate_gaussian(x, value(A),
         value(μ), value(Σ), value(c), value(Ω), value(super.μ),

@@ -10,10 +10,6 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
    */
   ρ:Arg <- ρ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_categorical(value(ρ));
   }

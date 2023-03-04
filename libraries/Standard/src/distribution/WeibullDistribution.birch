@@ -17,10 +17,6 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
    */
   λ:Arg2 <- λ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_weibull(value(k), value(λ));
   }

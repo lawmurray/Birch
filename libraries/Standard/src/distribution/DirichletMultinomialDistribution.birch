@@ -13,10 +13,6 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
    */
   α:Arg2 <- α;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer[_] {
     return simulate_dirichlet_multinomial(value(n), value(α));
   }

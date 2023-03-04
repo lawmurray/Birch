@@ -288,11 +288,6 @@ abstract class Delay {
   abstract function hoist() -> Expression<Real>?;
 
   /**
-   * Are lazy operations supported?
-   */
-  abstract function supportsLazy() -> Boolean;
-
-  /**
    * Are join operations supported?
    */
   function supportsJoin() -> Boolean {

@@ -18,10 +18,6 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
    */
   n:Arg3 <- n;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_restaurant_categorical(value(α), value(θ), value(n));
   }

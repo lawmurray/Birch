@@ -16,10 +16,6 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
    */
   u:Arg2 <- u;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_uniform(value(l), value(u));
   }

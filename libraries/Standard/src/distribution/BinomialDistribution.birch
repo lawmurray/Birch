@@ -17,10 +17,6 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
    */
   ρ:Arg2 <- ρ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_binomial(value(n), value(ρ));
   }

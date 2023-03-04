@@ -7,10 +7,6 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
    */
   α:Arg <- α;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_dirichlet_categorical(value(α));
   }

@@ -28,10 +28,6 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
    */
   n:Arg3 <- n;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_conway_maxwell_poisson(value(μ), value(ν), value(n));
   }

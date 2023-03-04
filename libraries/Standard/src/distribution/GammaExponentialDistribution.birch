@@ -22,10 +22,6 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
    */
   θ:Arg3 <- θ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_lomax(1.0/(value(a)*value(θ)), value(k));
   }

@@ -10,10 +10,6 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
    */
   μ:Arg <- μ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return value(μ);
   }

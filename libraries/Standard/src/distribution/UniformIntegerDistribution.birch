@@ -17,10 +17,6 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
    */
   u:Arg2 <- u;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_uniform_int(value(l), value(u));
   }

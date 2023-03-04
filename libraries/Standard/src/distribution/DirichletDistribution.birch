@@ -7,10 +7,6 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
    */
   α:Arg <- α;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_dirichlet(value(α));
   }

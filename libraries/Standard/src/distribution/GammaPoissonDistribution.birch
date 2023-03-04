@@ -22,10 +22,6 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
    */
   θ:Arg3 <- θ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Integer! {
     return simulate_gamma_poisson(value(a), value(k), value(θ));
   }

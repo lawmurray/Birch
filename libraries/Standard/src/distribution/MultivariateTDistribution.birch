@@ -18,10 +18,6 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
    */
   Σ:Arg3 <- Σ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real[_] {
     return simulate_multivariate_t(value(k), value(μ), value(Σ));
   }

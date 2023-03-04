@@ -11,10 +11,6 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
    */
   λ:Arg1 <- λ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_exponential(value(λ));
   }

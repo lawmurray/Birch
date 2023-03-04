@@ -41,7 +41,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   /* simulate, counting the occurrence of each value */
   let k <- 0;
   for n in 1..N {
-    if lazy && π.supportsLazy() {
+    if lazy {
       k <- k + π.simulateLazy()!;
     } else {
       k <- k + π.simulate();
@@ -54,7 +54,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   
   p:Real;
   q:Real;
-  if lazy && π.supportsLazy() {
+  if lazy {
     p <- exp(π.logpdfLazy(true)!);
     q <- exp(π.logpdfLazy(false)!);
   } else {
@@ -104,7 +104,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
       let p <- 0.0;
       do {
         u <- 2*u;
-        if lazy && π.supportsLazy() {
+        if lazy {
           p <- exp(π.logpdfLazy(u)!);
         } else {
           p <- π.pdf(u);
@@ -118,7 +118,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   let count <- vector(0, to!! - from!! + 1);
   for n in 1..N {
     j:Integer;
-    if lazy && π.supportsLazy() {
+    if lazy {
       j <- π.simulateLazy()!;
     } else {
       j <- π.simulate();
@@ -133,7 +133,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   let failed <- false;
   for x in from!!..to!! {
     p:Real;
-    if lazy && π.supportsLazy() {
+    if lazy {
       p <- exp(π.logpdfLazy(x)!);
     } else {
       p <- π.pdf(x);
@@ -164,7 +164,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   /* iid samples */
   x1:Real[N];
   for n in 1..N {
-    if lazy && π.supportsLazy() {
+    if lazy {
       x1[n] <- π.simulateLazy()!;
     } else {
       x1[n] <- π.simulate();
@@ -176,7 +176,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   let σ2 <- 0.0;
   for n in 1..N*S {
     x:Real;
-    if lazy && π.supportsLazy() {
+    if lazy {
       x <- π.simulateLazy()!;
     } else {
       x <- π.simulate();
@@ -197,7 +197,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
       /* initialize n-th chain */
       x:Real;
       l:Real;
-      if lazy && π.supportsLazy() {
+      if lazy {
         x <- π.simulateLazy()!;
         l <- π.logpdfLazy(x)!;
       } else {
@@ -209,7 +209,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
       for s in 1..S {
         let x' <- simulate_gaussian(x, σ2);
         l':Real;
-        if lazy && π.supportsLazy() {
+        if lazy {
           l' <- π.logpdfLazy(x')!;
         } else {
           l' <- π.logpdf(x');
@@ -261,14 +261,14 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     lazy:Boolean) {  
   /* iid samples */
   D:Integer <- 0;
-  if lazy && π.supportsLazy() {
+  if lazy {
     D <- rows(π.simulateLazy()!);
   } else {
     D <- rows(π.simulate());
   }
   X1:Real[N,D];
   parallel for n in 1..N {
-    if lazy && π.supportsLazy() {
+    if lazy {
       X1[n,1..D] <- π.simulateLazy()!;
     } else {
       X1[n,1..D] <- π.simulate();
@@ -283,7 +283,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     Σ <- 0.0;
     for n in 1..N*S {
       x:Real[_];
-      if lazy && π.supportsLazy() {
+      if lazy {
         x <- π.simulateLazy()!;
       } else {
         x <- π.simulate();
@@ -305,7 +305,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
       /* initialize n-th chain */
       x:Real[_];
       l:Real;
-      if lazy && π.supportsLazy() {
+      if lazy {
         x <- π.simulateLazy()!;
         l <- π.logpdfLazy(x)!;
       } else {
@@ -317,7 +317,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
       for s in 1..S {
         let x' <- simulate_multivariate_gaussian(x, Σ);
         l':Real;
-        if lazy && π.supportsLazy() {
+        if lazy {
           l' <- π.logpdfLazy(x')!;
         } else {
           l' <- π.logpdf(x');
@@ -370,7 +370,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     lazy:Boolean) {
   R:Integer <- 0;
   C:Integer <- 0;
-  if lazy && π.supportsLazy() {
+  if lazy {
     R <- rows(π.simulateLazy()!);
     C <- columns(π.simulateLazy()!);
   } else {
@@ -381,7 +381,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
   /* iid samples */
   X1:Real[N,R*C];
   parallel for n in 1..N {
-    if lazy && π.supportsLazy() {
+    if lazy {
       X1[n,1..R*C] <- vec(π.simulateLazy()!);
     } else {
       X1[n,1..R*C] <- vec(π.simulate());
@@ -396,7 +396,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
     Σ <- 0.0;
     for n in 1..N*S {
       x:Real[_];
-      if lazy && π.supportsLazy() {
+      if lazy {
         x <- vec(π.simulateLazy()!);
       } else {
         x <- vec(π.simulate());
@@ -418,7 +418,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
       /* initialize n-th chain */
       x:Real[_,_];
       l:Real;
-      if lazy && π.supportsLazy() {
+      if lazy {
         x <- π.simulateLazy()!;
         l <- π.logpdfLazy(x)!;
       } else {
@@ -430,7 +430,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
       for s in 1..S {
         let x' <- mat(simulate_multivariate_gaussian(vec(x), Σ), C);
         l':Real;
-        if lazy && π.supportsLazy() {
+        if lazy {
           l' <- π.logpdfLazy(x')!;
         } else {
           l' <- π.logpdf(x');

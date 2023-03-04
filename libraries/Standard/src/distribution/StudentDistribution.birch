@@ -22,10 +22,6 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
    */
   σ2:Arg3 <- σ2;
   
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Real! {
     return simulate_student_t(value(k), value(μ), value(σ2));
   }

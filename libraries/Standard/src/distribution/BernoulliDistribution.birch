@@ -7,10 +7,6 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
    */
   ρ:Arg <- ρ;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function simulate() -> Boolean! {
     return simulate_bernoulli(value(ρ));
   }

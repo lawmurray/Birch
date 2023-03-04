@@ -40,10 +40,6 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
    */
   φ2:Arg7 <- φ2;
 
-  override function supportsLazy() -> Boolean {
-    return true;
-  }
-
   override function supportsJoin() -> Boolean {
     return true;
   }
