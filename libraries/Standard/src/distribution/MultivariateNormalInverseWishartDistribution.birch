@@ -28,7 +28,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(Γ), value(k));
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart(eval(ν), eval(λ),
         eval(Γ), eval(k));
   }
@@ -38,7 +38,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(Γ), value(k));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {   
+  override function logpdfLazy(x:Real[_]) -> Real! {   
     return logpdf_multivariate_normal_inverse_wishart(x, eval(ν), eval(λ),
         eval(Γ), eval(k));
   }
@@ -52,7 +52,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return update_multivariate_normal_inverse_wishart(x, ν, λ, Γ, k);
   }
 
-  override function hoist() -> Expression<Real>? {   
+  override function hoist() -> Expression<Real> {   
     return box(logpdf_multivariate_normal_inverse_wishart(this.random(),
         ν, λ, Γ, k));
   }

@@ -21,7 +21,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return simulate_binomial(value(n), value(ρ));
   }
   
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_binomial(eval(n), eval(ρ));
   }
 
@@ -29,11 +29,11 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return logpdf_binomial(x, value(n), value(ρ));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_binomial(x, eval(n), eval(ρ));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_binomial(this.random(), n, ρ));
   }
 

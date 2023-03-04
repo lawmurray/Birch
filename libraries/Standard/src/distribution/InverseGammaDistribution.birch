@@ -20,7 +20,7 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
     return simulate_inverse_gamma(value(α), value(β));
   }
 
-  override function simulateLazy() -> Real!? {
+  override function simulateLazy() -> Real! {
     return simulate_inverse_gamma(eval(α), eval(β));
   }
   
@@ -28,11 +28,11 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
     return logpdf_inverse_gamma(x, value(α), value(β));
   }
 
-  override function logpdfLazy(x:Real!) -> Real!? {
+  override function logpdfLazy(x:Real!) -> Real! {
     return logpdf_inverse_gamma(x, eval(α), eval(β));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_inverse_gamma(this.random(), α, β));
   }
 

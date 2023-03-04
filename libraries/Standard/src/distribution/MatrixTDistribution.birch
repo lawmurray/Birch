@@ -27,7 +27,7 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     return simulate_matrix_t(value(k), value(M), value(Σ), value(Ψ));
   }
 
-  override function simulateLazy() -> Real[_,_]? {
+  override function simulateLazy() -> Real[_,_] {
     return simulate_matrix_t(eval(k), eval(M), eval(Σ), eval(Ψ));
   }
   
@@ -35,11 +35,11 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     return logpdf_matrix_t(X, value(k), value(M), value(Σ), value(Ψ));
   }
 
-  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+  override function logpdfLazy(X:Real[_,_]) -> Real! {
     return logpdf_matrix_t(X, eval(k), eval(M), eval(Σ), eval(Ψ));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_matrix_t(this.random(), k, M, Σ, Ψ));
   }
 

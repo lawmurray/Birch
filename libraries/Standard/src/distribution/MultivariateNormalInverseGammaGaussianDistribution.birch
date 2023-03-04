@@ -61,7 +61,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
     }        
   }
 
-  override function simulateLazy() -> Real!? {
+  override function simulateLazy() -> Real! {
     if !this.joined? {
       return simulate_multivariate_normal_inverse_gamma_gaussian(
           eval(a), eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(ω2));
@@ -93,7 +93,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
     }
   }
 
-  override function logpdfLazy(x':Real!) -> Real!? {
+  override function logpdfLazy(x':Real!) -> Real! {
     if !this.joined? {
       return logpdf_multivariate_normal_inverse_gamma_gaussian(x', eval(a),
           eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(ω2));
@@ -134,7 +134,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
     }
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     let (x, A, ν, Λ, k, γ, c, ω2) <-
         this.joinMultivariateNormalInverseGammaGaussian()!;
     return box(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(

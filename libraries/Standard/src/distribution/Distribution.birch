@@ -21,7 +21,7 @@ abstract class Distribution<Value> < Delay {
    *
    * @return the variate, if supported.
    */
-  abstract function simulateLazy() -> Value!?;
+  abstract function simulateLazy() -> Value!;
 
   /**
    * Evaluate the log probability density (or mass) function at a given
@@ -41,7 +41,7 @@ abstract class Distribution<Value> < Delay {
    *
    * @return the log probability density (or mass), if supported.
    */
-  abstract function logpdfLazy(x:Value!) -> Real!?;
+  abstract function logpdfLazy(x:Value!) -> Real!;
 
   /**
    * For a compound distribution, evaluate the conditional distribution given
@@ -155,7 +155,7 @@ abstract class Distribution<Value> < Delay {
     let h <- get_handler();
     if h.autodiff {
       h.Ξ.pushBack(p);
-      h.w <- h.w + p.logpdfLazy(x)!;
+      h.w <- h.w + p.logpdfLazy(x);
     } else {
       h.w <- h.w + p.logpdf(x);
     }
@@ -171,7 +171,7 @@ abstract class Distribution<Value> < Delay {
       let h <- get_handler();
       if h.autodiff {
         h.Ξ.pushBack(p);
-        p.x <- p.simulateLazy()!;
+        p.x <- p.simulateLazy();
       } else {
         p.x <- p.simulate();
       }

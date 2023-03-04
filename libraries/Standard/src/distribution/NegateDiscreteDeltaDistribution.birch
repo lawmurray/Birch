@@ -18,7 +18,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
     return 1 - l - simulate_categorical(value(p));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return 1 - l - simulate_categorical(eval(p));
   }
 
@@ -26,7 +26,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
     return logpdf_categorical(1 - l - x, value(p));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_categorical(1 - l - x, eval(p));
   }
 
@@ -38,7 +38,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
     return wrap_delta(-x);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_categorical(1 - l - this.random(), p));
   }
 

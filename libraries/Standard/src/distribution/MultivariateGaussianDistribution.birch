@@ -17,7 +17,7 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
     return simulate_multivariate_gaussian(value(μ), value(Σ));
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_multivariate_gaussian(eval(μ), eval(Σ));
   }
   
@@ -25,11 +25,11 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
     return logpdf_multivariate_gaussian(x, value(μ), value(Σ));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_gaussian(x, eval(μ), eval(Σ));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_gaussian(this.random(), μ, Σ));
   }
 

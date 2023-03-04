@@ -22,7 +22,7 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
     return simulate_multivariate_t(value(k), value(μ), value(Σ));
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_multivariate_t(eval(k), eval(μ), eval(Σ));
   }
   
@@ -30,11 +30,11 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
     return logpdf_multivariate_t(x, value(k), value(μ), value(Σ));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_t(x, eval(k), eval(μ), eval(Σ));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_t(this.random(), k, μ, Σ));
   }
 

@@ -285,7 +285,7 @@ abstract class Delay {
   /**
    * Construct a lazy expression for the log-pdf of this node.
    */
-  abstract function hoist() -> Expression<Real>?;
+  abstract function hoist() -> Expression<Real>;
 
   /**
    * Are join operations supported?

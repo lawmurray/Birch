@@ -11,7 +11,7 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
     return simulate_dirichlet(value(α));
   }
   
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_dirichlet(eval(α));
   }
 
@@ -19,11 +19,11 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
     return logpdf_dirichlet(x, value(α));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_dirichlet(x, eval(α));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_dirichlet(this.random(), value(α)));
   }
 

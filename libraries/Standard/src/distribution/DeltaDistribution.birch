@@ -14,7 +14,7 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
     return value(μ);
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return eval(μ);
   }
 
@@ -22,11 +22,11 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
     return where(x == value(μ), 0.0, -inf);
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return where(x == eval(μ), 0.0, -inf);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(where(this.random() == μ, 0.0, -inf));
   }
 

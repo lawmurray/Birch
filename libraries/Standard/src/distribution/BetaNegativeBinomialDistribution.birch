@@ -22,7 +22,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return simulate_beta_negative_binomial(value(k), value(α), value(β));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_beta_negative_binomial(eval(k), eval(α), eval(β));
   }
 
@@ -30,7 +30,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return logpdf_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_beta_negative_binomial(x, eval(k), eval(α), eval(β));
   }
 
@@ -42,7 +42,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return update_beta_negative_binomial(x, k, α, β);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_beta_negative_binomial(this.random(), k, α, β));
   }
 

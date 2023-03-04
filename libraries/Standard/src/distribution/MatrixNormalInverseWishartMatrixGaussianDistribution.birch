@@ -45,7 +45,7 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
         value(N), value(Λ), value(Γ), value(k), value(C), value(Φ));
   }
 
-  override function simulateLazy() -> Real[_,_]? {
+  override function simulateLazy() -> Real[_,_] {
     return simulate_matrix_normal_inverse_wishart_matrix_gaussian(eval(A),
         eval(N), eval(Λ), eval(Γ), eval(k), eval(C), eval(Φ));
   }
@@ -55,7 +55,7 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
         value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
   }
 
-  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+  override function logpdfLazy(X:Real[_,_]) -> Real! {
     return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - eval(C),
         eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
   }
@@ -70,7 +70,7 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
         N, Λ, Γ, k, Φ);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
         box(this.random() - C), A, N, Λ, Γ, k, Φ));
   }

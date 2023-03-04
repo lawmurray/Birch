@@ -17,7 +17,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return simulate_dirichlet_multinomial(value(n), value(α));
   }
 
-  override function simulateLazy() -> Integer[_]? {
+  override function simulateLazy() -> Integer[_] {
     return simulate_dirichlet_multinomial(eval(n), eval(α));
   }
 
@@ -25,7 +25,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return logpdf_dirichlet_multinomial(x, value(n), value(α));
   }
 
-  override function logpdfLazy(x:Integer[_]) -> Real!? {
+  override function logpdfLazy(x:Integer[_]) -> Real! {
     return logpdf_dirichlet_multinomial(x, eval(n), eval(α));
   }
 
@@ -37,7 +37,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return update_dirichlet_multinomial(x, n, α);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_dirichlet_multinomial(this.random(), n, α));
   }
 

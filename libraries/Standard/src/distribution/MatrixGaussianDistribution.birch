@@ -22,7 +22,7 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
     return simulate_matrix_gaussian(value(M), value(U), value(V));
   }
 
-  override function simulateLazy() -> Real[_,_]? {
+  override function simulateLazy() -> Real[_,_] {
     return simulate_matrix_gaussian(eval(M), eval(U), eval(V));
   }
   
@@ -30,11 +30,11 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
     return logpdf_matrix_gaussian(X, value(M), value(U), value(V));
   }
 
-  override function logpdfLazy(X:Real[_,_]) -> Real!? {
+  override function logpdfLazy(X:Real[_,_]) -> Real! {
     return logpdf_matrix_gaussian(X, eval(M), eval(U), eval(V));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_matrix_gaussian(this.random(), M, U, V));
   }
 

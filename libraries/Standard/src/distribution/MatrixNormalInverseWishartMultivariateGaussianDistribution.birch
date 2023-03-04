@@ -60,7 +60,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     }
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     if !this.joined? {
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
           eval(a), eval(N), eval(Λ), eval(Γ), eval(k), eval(c), eval(φ2));
@@ -91,7 +91,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     }
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     if !this.joined? {
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(x,
           eval(a), eval(N), eval(Λ), eval(Γ), eval(k), eval(c), eval(φ2));
@@ -132,7 +132,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     }
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     let (Y, A, N, Λ, Γ, k, Φ) <-
         joinMatrixNormalInverseWishartMultivariateGaussian()!;
     return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(

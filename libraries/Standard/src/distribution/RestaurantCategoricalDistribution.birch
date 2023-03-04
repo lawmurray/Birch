@@ -22,7 +22,7 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     return simulate_restaurant_categorical(value(α), value(θ), value(n));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_restaurant_categorical(eval(α), eval(θ), eval(n));
   }
 
@@ -30,7 +30,7 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     return logpdf_restaurant_categorical(x, value(α), value(θ), value(n));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_restaurant_categorical(x, eval(α), eval(θ), eval(n));
   }
 
@@ -42,7 +42,7 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     return update_restaurant_categorical(x, α, θ, n);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_restaurant_categorical(this.random(), α, θ, n));
   }
 

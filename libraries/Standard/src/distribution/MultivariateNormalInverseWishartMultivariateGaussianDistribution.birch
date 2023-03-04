@@ -46,7 +46,7 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
         value(ω2));
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
         eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(c), eval(ω2));
   }
@@ -57,7 +57,7 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
         value(ω2));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
         x - eval(c), eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(ω2));
   }
@@ -73,7 +73,7 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
         x, a, ν, λ, Γ, k, c, ω2);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
         box(this.random() - c), a, ν, λ, Γ, k, ω2));
   }

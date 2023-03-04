@@ -32,7 +32,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(Γ), value(k));
   }
 
-  override function simulateLazy() -> Real[_,_]? {
+  override function simulateLazy() -> Real[_,_] {
     return simulate_matrix_normal_inverse_wishart(eval(N), eval(Λ), eval(Γ),
         eval(k));
   }
@@ -42,7 +42,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(Γ), value(k));
   }
 
-  override function logpdfLazy(X:Real[_,_]) -> Real!? {   
+  override function logpdfLazy(X:Real[_,_]) -> Real! {   
     return logpdf_matrix_normal_inverse_wishart(X, eval(N), eval(Λ),
         eval(Γ), eval(k));
   }
@@ -56,7 +56,7 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return update_matrix_normal_inverse_wishart(X, N, Λ, Γ, k);
   }
 
-  override function hoist() -> Expression<Real>? {   
+  override function hoist() -> Expression<Real> {   
     return box(logpdf_matrix_normal_inverse_wishart(this.random(), N, Λ,
         Γ, k));
   }

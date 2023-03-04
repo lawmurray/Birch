@@ -28,7 +28,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
         value(b));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_add_discrete_delta(eval(p), eval(q), eval(a), eval(b));
   }
 
@@ -37,7 +37,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
         value(b)));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return log(pdf_add_discrete_delta(x, eval(p), eval(q), eval(a), eval(b)));
   }
 
@@ -50,7 +50,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
     return update_add_discrete_delta(x, eval(p), eval(q), eval(a), eval(b));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(log(pdf_add_discrete_delta(this.random(), p, q, a, b)));
   }
 

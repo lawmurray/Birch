@@ -11,7 +11,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return simulate_dirichlet_categorical(value(α));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_dirichlet_categorical(eval(α));
   }
 
@@ -19,7 +19,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return logpdf_dirichlet_categorical(x, value(α));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_dirichlet_categorical(x, eval(α));
   }
 
@@ -31,7 +31,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return update_dirichlet_categorical(x, α);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_dirichlet_categorical(this.random(), α));
   }
 

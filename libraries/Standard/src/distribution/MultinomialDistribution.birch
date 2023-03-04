@@ -17,7 +17,7 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return simulate_multinomial(value(n), value(ρ));
   }
 
-  override function simulateLazy() -> Integer[_]? {
+  override function simulateLazy() -> Integer[_] {
     return simulate_multinomial(eval(n), eval(ρ));
   }
 
@@ -25,12 +25,11 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return logpdf_multinomial(x, value(n), value(ρ));
   }
 
-  override function logpdfLazy(x:Integer[_]) -> Real!? {
+  override function logpdfLazy(x:Integer[_]) -> Real! {
     return logpdf_multinomial(x, eval(n), eval(ρ));
   }
 
-  override function hoist() ->
-      Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_multinomial(this.random(), n, ρ));
   }
 

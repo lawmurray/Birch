@@ -21,7 +21,7 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return simulate_uniform_int(value(l), value(u));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_uniform_int(eval(l), eval(u));
   }
 
@@ -29,7 +29,7 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return logpdf_uniform_int(x, value(l), value(u));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_uniform_int(x, eval(l), eval(u));
   }
 
@@ -41,7 +41,7 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return quantile_uniform_int(P, value(l), value(u));
   }
   
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_uniform_int(this.random(), l, u));
   }
 

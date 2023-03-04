@@ -45,7 +45,7 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         value(λ), value(k), value(γ), value(c), value(s2));
   }
 
-  override function simulateLazy() -> Real!? {
+  override function simulateLazy() -> Real! {
     return simulate_normal_inverse_gamma_gaussian(eval(a), eval(ν),
         eval(λ), eval(k), eval(γ), eval(c), eval(s2));
   }
@@ -55,7 +55,7 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         value(λ), value(k), value(γ), value(c), value(s2));
   }
 
-  override function logpdfLazy(x:Real!) -> Real!? {
+  override function logpdfLazy(x:Real!) -> Real! {
     return logpdf_normal_inverse_gamma_gaussian(x, eval(a), eval(ν),
         eval(λ), eval(k), eval(γ), eval(c), eval(s2));
   }
@@ -79,7 +79,7 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         value(ν), value(λ), value(k), value(γ), value(c), value(s2));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_normal_inverse_gamma_gaussian(this.random(), a, ν, λ, k,
         γ, c, s2));
   }

@@ -63,7 +63,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(k), value(γ));
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma(eval(ν), eval(Λ),
         eval(k), eval(γ));
   }
@@ -73,7 +73,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
         value(k), value(γ));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma(x, eval(ν), eval(Λ),
         eval(k), eval(γ));
   }
@@ -87,7 +87,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
     return update_multivariate_normal_inverse_gamma(x, ν, Λ, k, γ);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_normal_inverse_gamma(this.random(), ν,
         Λ, k, γ));
   }

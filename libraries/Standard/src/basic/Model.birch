@@ -39,12 +39,10 @@ abstract class Model {
       for j in 1..Ξ[i].size() {
         if !Ξ[i][j].isSubordinate() {
           let ξ <- Ξ[i][j].hoist();
-          if ξ? {
-            if π? {
-              π <- box(π! + ξ!);
-            } else {
-              π <- ξ!;
-            }
+          if π? {
+            π <- box(π! + ξ);
+          } else {
+            π <- ξ;
           }
         }
       }

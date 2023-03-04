@@ -17,7 +17,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
     return simulate_beta_bernoulli(value(α), value(β));
   }
   
-  override function simulateLazy() -> Boolean!? {
+  override function simulateLazy() -> Boolean! {
     return simulate_beta_bernoulli(eval(α), eval(β));
   }
   
@@ -25,7 +25,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
     return logpdf_beta_bernoulli(x, value(α), value(β));
   }
 
-  override function logpdfLazy(x:Boolean!) -> Real!? {
+  override function logpdfLazy(x:Boolean!) -> Real! {
     return logpdf_beta_bernoulli(x, eval(α), eval(β));
   }
 
@@ -37,7 +37,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
     return update_beta_bernoulli(x, α, β);
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_beta_bernoulli(this.random(), α, β));
   }
 

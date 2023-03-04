@@ -45,7 +45,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
       value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));
   }
 
-  override function simulateLazy() -> Real[_]? {
+  override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
         eval(A), eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(Ω));
   }
@@ -55,7 +55,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
         value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));
   }
 
-  override function logpdfLazy(x:Real[_]) -> Real!? {
+  override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
         eval(A), eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(Ω));
   }
@@ -65,7 +65,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
         value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
         this.random(), A, ν, Λ, k, γ, c, Ω));
   }

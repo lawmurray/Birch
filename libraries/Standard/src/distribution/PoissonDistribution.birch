@@ -15,7 +15,7 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
     return simulate_poisson(value(λ));
   }
 
-  override function simulateLazy() -> Integer!? {
+  override function simulateLazy() -> Integer! {
     return simulate_poisson(eval(λ));
   }
 
@@ -23,11 +23,11 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
     return logpdf_poisson(x, value(λ));
   }
 
-  override function logpdfLazy(x:Integer!) -> Real!? {
+  override function logpdfLazy(x:Integer!) -> Real! {
     return logpdf_poisson(x, eval(λ));
   }
 
-  override function hoist() -> Expression<Real>? {
+  override function hoist() -> Expression<Real> {
     return box(logpdf_poisson(this.random(), λ));
   }
 

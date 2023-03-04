@@ -45,12 +45,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
     π:Expression<Real>?;
     for i in 1..Ξ.size() {
       let ξ <- Ξ[i].hoist();
-      if ξ? {
-        if π? {
-          π <- box(π! + ξ!);
-        } else {
-          π <- ξ!;
-        }
+      if π? {
+        π <- box(π! + ξ);
+      } else {
+        π <- ξ;
       }
     }
     for i in 1..Φ.size() {
