@@ -87,8 +87,8 @@ auto transform(const T& x, const U& y, Functor f) {
     auto m = width(x, y);
     auto n = height(x, y);
     auto z = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y), sliced(z),
-        stride(z), f);
+    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y),
+        sliced(z), stride(z), f);
     return z;
   }
 }

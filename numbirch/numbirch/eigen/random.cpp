@@ -2,6 +2,8 @@
  * @file
  */
 #include "numbirch/common/random.hpp"
+#include "numbirch/eigen/eigen.hpp"
+#include "numbirch/array.hpp"
 
 #if HAVE_OMP_H
 #include <omp.h>
@@ -34,6 +36,57 @@ void seed() {
     rng32.seed(rd());
     rng64.seed(rd());
   }
+}
+
+Array<real,1> convolve(const Array<real,1>& p, const Array<real,1>& q) {
+  assert(stride(p) == 1);
+  int m = length(p);
+  int n = length(q);
+  Array<real,1> r(make_shape(m + n - 1));
+
+  auto L = make_eigen(sliced(p), m, n, -1).
+      template triangularView<Eigen::Lower>();
+  auto U = make_eigen(sliced(p) + m, n - 1, n, - 1).
+      template triangularView<Eigen::StrictlyUpper>();
+  auto q1 = make_eigen(q);
+  auto r1 = make_eigen(r);
+
+  r1.head(m).noalias() = L*q1;
+  r1.tail(n - 1).noalias() = U*q1;
+  return r;
+}
+
+Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
+    const Array<real,1>& p, const Array<real,1>& q) {
+  assert(stride(g) == 1);
+  int m = length(p);
+  int n = length(q);
+  Array<real,1> gp(make_shape(n));
+
+  auto gp1 = make_eigen(gp);
+  auto B = make_eigen(sliced(g), m, n, 0);
+  auto q1 = make_eigen(q);
+
+  gp1.noalias() = B*q1;
+  return gp;
+}
+
+Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& r,
+    const Array<real,1>& p, const Array<real,1>& q) {
+  assert(stride(p) == 1);
+  int m = length(p);
+  int n = length(q);
+  Array<real,1> gq(make_shape(n));
+
+  auto L = make_eigen(sliced(p), m, n, -1).
+      template triangularView<Eigen::Lower>();
+  auto U = make_eigen(sliced(p) + m, n - 1, n, - 1).
+      template triangularView<Eigen::StrictlyUpper>();
+  auto gq1 = make_eigen(gq);
+  auto g1 = make_eigen(g);
+
+  gq1.noalias() = L.transpose()*g1.head(m) + U.transpose()*g1.tail(n - 1);
+  return gq;
 }
 
 }

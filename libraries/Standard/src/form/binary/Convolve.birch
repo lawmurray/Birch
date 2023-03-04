@@ -1,0 +1,30 @@
+struct Convolve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(convolve, convolve_grad)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::convolve;
+using numbirch::convolve_grad1;
+using numbirch::convolve_grad2;
+
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+Convolve<Left,Right> convolve(const Left& l, const Right& r) {
+  return construct<Convolve<Left,Right>>(l, r);
+}
+
+}
+}}
+
+/**
+ * Convolve probabilities for the sum of two discrete random variables.
+ */
+function convolve(p:RealVectorLike, q:RealVectorLike) -> RealVectorLike;

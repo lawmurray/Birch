@@ -266,4 +266,48 @@ Array<real,2> standard_gaussian(const int m, const int n);
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,2> standard_wishart(const T& nu, const int n);
 
+/**
+ * Convolve probabilities for the sum of two discrete random variables.
+ * 
+ * @ingroup random
+ * 
+ * @param p Probability vector for first random variable.
+ * @param q Probability vector for second random variable.
+ * 
+ * @return Probability vector for the sum.
+ * 
+ * @see [Sums of Discrete Random Variables as Banded Matrix Products](https://indii.org/blog/discrete-enumeration-as-matrix/)
+ */
+Array<real,1> convolve(const Array<real,1>& p, const Array<real,1>& q);
+
+/**
+ * Gradient of convolve().
+ * 
+ * @ingroup random
+ * 
+ * @param g Gradient with respect to probability vector of the sum.
+ * @param r Probability vector of the sum.
+ * @param p Probability vector for first random variable.
+ * @param q Probability vector for second random variable.
+ * 
+ * @return Gradient with respect to @p p.
+ */
+Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
+    const Array<real,1>& p, const Array<real,1>& q);
+
+/**
+ * Gradient of convolve().
+ * 
+ * @ingroup random
+ * 
+ * @param g Gradient with respect to probability vector of the sum.
+ * @param r Probability vector of the sum.
+ * @param p Probability vector for first random variable.
+ * @param q Probability vector for second random variable.
+ * 
+ * @return Gradient with respect to @p q.
+ */
+Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& r,
+    const Array<real,1>& p, const Array<real,1>& q);
+
 }

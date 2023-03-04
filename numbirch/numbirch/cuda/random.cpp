@@ -43,4 +43,8 @@ void seed() {
   seed(rd());
 }
 
+Array<real,1> convolve(const Array<real,1>& p, const Array<real,1>& q) {
+
+}
+
 }
