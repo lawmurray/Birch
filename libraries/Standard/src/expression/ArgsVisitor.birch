@@ -1,139 +1,42 @@
 /**
- * Gather arguments and gradients from a delayed expression.
+ * Collect arguments from a delayed expression.
+ *
+ * @param size Number of arguments.
  */
-class ArgsVisitor {
+class ArgsVisitor(size:Integer) {
   /**
-   * Vectorized arguments. This is over-allocated and only the prefix used,
-   * to reduce re-allocation.
+   * Vectorized arguments.
    */
-  x:Real[1024];
+  x:Real[size];
 
-  /**
-   * Vectorized gradients. This is over-allocated and only the prefix used,
-   * to reduce re-allocation.
-   */
-  g:Real[1024];
-
-  /**
-   * Current position in `x` and `g`.
-   */
-  n:Integer <- 0;
-
-  /**
-   * Get arguments and gradients after visiting.
-   *
-   * @return Vectorized arguments and gradients.
-   */
-  function args() -> (Real[_], Real[_]) {
-    return (x[1..n], g[1..n]);
-  }
-
-  /**
-   * Gather argument.
-   *
-   * v: Argument.
-   */
-  function visit(v:Random<Real>) {
-    reserve(n + 1);
-    let y <- v.x!;
+  function visit(p:Distribution<Real>) {
+    let y <- p.x!;
     cpp{{
-    x.slice(n + 1) = y;
+    x.slice(p->offset + 1) = y;
     }}
-    if v.g? {
-      let z <- v.g!;
-      cpp{{
-      g.slice(n + 1) = z;
-      }}
-    } else {
-      cpp{{
-      g.slice(n + 1) = Real(0);
-      }}
-    }
-    n <- n + 1;
   }
 
-  /**
-   * Gather argument.
-   *
-   * v: Argument.
-   */
-  function visit(v:Random<Integer>) {
-    v.g <- nil;
+  function visit(p:Distribution<Integer>) {
+    //
   }
 
-  /**
-   * Gather argument.
-   *
-   * v: Argument.
-   */
-  function visit(v:Random<Boolean>) {
-    v.g <- nil;
+  function visit(p:Distribution<Boolean>) {
+    //
   }
 
-  /**
-   * Gather argument.
-   *
-   * v: Argument
-   */
-  function visit(v:Random<Real[_]>) {
-    let m <- size(v.x!);
-    reserve(n + m);
-    x[(n + 1)..(n + m)] <- v.x!;
-    if v.g? {
-      g[(n + 1)..(n + m)] <- v.g!;
-    } else {
-      g[(n + 1)..(n + m)] <- 0.0;
-    }
-    v.g <- nil;
-    n <- n + m;
+  function visit(p:Distribution<Real[_]>) {
+    let m <- p.offset + 1;
+    let n <- m + size(p.x!) - 1;
+    x[m..n] <- p.x!;
   }
 
-  /**
-   * Gather argument.
-   *
-   * v: Argument.
-   */
-  function visit(v:Random<Integer[_]>) {
-    v.g <- nil;
+  function visit(p:Distribution<Integer[_]>) {
+    //
   }
 
-  /**
-   * Gather argument.
-   *
-   * v: Argument.
-   */
-  function visit(v:Random<Real[_,_]>) {
-    let m <- size(v.x!);
-    reserve(n + m);
-    x[(n + 1)..(n + m)] <- vec(v.x!);
-    if v.g? {
-      g[(n + 1)..(n + m)] <- vec(v.g!);
-    } else {
-      g[(n + 1)..(n + m)] <- 0.0;
-    }
-    v.g <- nil;
-    n <- n + m;
-  }
-
-  /**
-   * Ensure that there is sufficient space, resizing if necessary.
-   *
-   * @param m Required size.
-   */
-  function reserve(m:Integer) {
-    let k <- length(x);
-    while k < m {
-      k <- 2*k;
-    }
-    if k > length(x) {
-      y:Real[k];
-      h:Real[k];
-      y[1..n] <- x[1..n];
-      h[1..n] <- g[1..n];
-      x <- y;
-      g <- h;
-    }
-    assert length(x) == length(g);
-    assert length(x) >= m;
+  function visit(p:Distribution<Real[_,_]>) {
+    let m <- p.offset + 1;
+    let n <- m + size(p.x!) - 1;
+    x[m..n] <- vec(p.x!);
   }
 }

@@ -23,23 +23,23 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
   θ:Arg3 <- θ;
 
   override function simulate() -> Integer! {
-    return simulate_gamma_poisson(value(a), value(k), value(θ));
+    return simulate_gamma_poisson(global.value(a), global.value(k), global.value(θ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_gamma_poisson(eval(a), eval(k), eval(θ));
+    return simulate_gamma_poisson(global.eval(a), global.eval(k), global.eval(θ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_gamma_poisson(x, value(a), value(k), value(θ));
+    return logpdf_gamma_poisson(x, global.value(a), global.value(k), global.value(θ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_gamma_poisson(x, eval(a), eval(k), eval(θ));
+    return logpdf_gamma_poisson(x, global.eval(a), global.eval(k), global.eval(θ));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_gamma_poisson(x, value(a), value(k), value(θ));
+    return update_gamma_poisson(x, global.value(a), global.value(k), global.value(θ));
   }
 
   override function updateLazy(x:Expression<Integer>) -> Delay? {
@@ -47,22 +47,22 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_gamma_poisson(this.random(), a, k, θ));
+    return box(logpdf_gamma_poisson(this.self(), a, k, θ));
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_gamma_poisson(x, value(a), value(k), value(θ));
+    return cdf_gamma_poisson(x, global.value(a), global.value(k), global.value(θ));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_gamma_poisson(P, value(a), value(k), value(θ));
+    return quantile_gamma_poisson(P, global.value(a), global.value(k), global.value(θ));
   }
 
   override function lower() -> Integer!? {
     return 0;
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(k);

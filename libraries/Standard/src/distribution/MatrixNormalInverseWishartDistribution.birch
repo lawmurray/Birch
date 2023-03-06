@@ -28,28 +28,28 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   k:Arg4 <- k;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart(value(N), value(Λ),
-        value(Γ), value(k));
+    return simulate_matrix_normal_inverse_wishart(global.value(N), global.value(Λ),
+        global.value(Γ), global.value(k));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart(eval(N), eval(Λ), eval(Γ),
-        eval(k));
+    return simulate_matrix_normal_inverse_wishart(global.eval(N), global.eval(Λ), global.eval(Γ),
+        global.eval(k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {   
-    return logpdf_matrix_normal_inverse_wishart(X, value(N), value(Λ),
-        value(Γ), value(k));
+    return logpdf_matrix_normal_inverse_wishart(X, global.value(N), global.value(Λ),
+        global.value(Γ), global.value(k));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {   
-    return logpdf_matrix_normal_inverse_wishart(X, eval(N), eval(Λ),
-        eval(Γ), eval(k));
+    return logpdf_matrix_normal_inverse_wishart(X, global.eval(N), global.eval(Λ),
+        global.eval(Γ), global.eval(k));
   }
 
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart(X, value(N), value(Λ),
-        value(Γ), value(k));
+    return update_matrix_normal_inverse_wishart(X, global.value(N), global.value(Λ),
+        global.value(Γ), global.value(k));
   }
 
   override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
@@ -57,11 +57,11 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real> {   
-    return box(logpdf_matrix_normal_inverse_wishart(this.random(), N, Λ,
+    return box(logpdf_matrix_normal_inverse_wishart(this.self(), N, Λ,
         Γ, k));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(N);
     global.constant(Λ);
@@ -72,8 +72,8 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
       let (Y, A, N, Λ, Γ, k, Φ) <-
           getJoined().joinMatrixNormalInverseWishartMultivariateGaussian()!;
       setUpdated(update_matrix_normal_inverse_wishart_matrix_gaussian(
-          value(Y), value(A), value(N), value(Λ), value(Γ), value(k),
-          value(Φ)));
+          global.value(Y), global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k),
+          global.value(Φ)));
       setJoined(nil);
     }
   }
@@ -90,10 +90,10 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MatrixNormalInverseWishart");
-    buffer.set("N", value(N));
-    buffer.set("Λ", value(Λ));
-    buffer.set("Γ", value(Γ));
-    buffer.set("k", value(k));
+    buffer.set("N", global.value(N));
+    buffer.set("Λ", global.value(Λ));
+    buffer.set("Γ", global.value(Γ));
+    buffer.set("k", global.value(k));
   }
 }
 

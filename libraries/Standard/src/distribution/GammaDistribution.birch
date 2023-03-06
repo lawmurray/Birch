@@ -17,38 +17,38 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
   θ:Arg2 <- θ;
 
   override function simulate() -> Real! {
-    return simulate_gamma(value(k), value(θ));
+    return simulate_gamma(global.value(k), global.value(θ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_gamma(eval(k), eval(θ));
+    return simulate_gamma(global.eval(k), global.eval(θ));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_gamma(x, value(k), value(θ));
+    return logpdf_gamma(x, global.value(k), global.value(θ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_gamma(x, eval(k), eval(θ));
+    return logpdf_gamma(x, global.eval(k), global.eval(θ));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_gamma(this.random(), k, θ));
+    return box(logpdf_gamma(this.self(), k, θ));
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_gamma(x, value(k), value(θ));
+    return cdf_gamma(x, global.value(k), global.value(θ));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_gamma(P, value(k), value(θ));
+    return quantile_gamma(P, global.value(k), global.value(θ));
   }
 
   override function lower() -> Real!? {
     return 0.0;
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(θ);
@@ -65,8 +65,8 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Gamma");
-    buffer.set("k", value(k));
-    buffer.set("θ", value(θ));
+    buffer.set("k", global.value(k));
+    buffer.set("θ", global.value(θ));
   }
 }
 

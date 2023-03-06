@@ -24,21 +24,21 @@ final class BoxedForm<Value,Form>(x:Value!, f:Form) <
     global.args(f!, visitor);
   }
 
-  override function doShallowGrad() {
-    global.shallow_grad(f!, this.g!);
+  override function doShallowGrad(visitor:GradVisitor) {
+    global.shallow_grad(f!, this.g!, visitor);
     this.g <- nil;  // clear intermediate gradient to save memory
   }
 
-  override function doDeepGrad() {
-    global.deep_grad(f!);
+  override function doDeepGrad(visitor:GradVisitor) {
+    global.deep_grad(f!, visitor);
   }
 
   override function doReset() {
     global.reset(f!);
   }
 
-  override function doRelink() {
-    global.relink(f!);
+  override function doRelink(visitor:RelinkVisitor) {
+    global.relink(f!, visitor);
   }
 
   override function doConstant() {

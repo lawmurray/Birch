@@ -18,42 +18,42 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
   u:Arg2 <- u;
 
   override function simulate() -> Integer! {
-    return simulate_uniform_int(value(l), value(u));
+    return simulate_uniform_int(global.value(l), global.value(u));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_uniform_int(eval(l), eval(u));
+    return simulate_uniform_int(global.eval(l), global.eval(u));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_uniform_int(x, value(l), value(u));
+    return logpdf_uniform_int(x, global.value(l), global.value(u));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_uniform_int(x, eval(l), eval(u));
+    return logpdf_uniform_int(x, global.eval(l), global.eval(u));
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_uniform_int(x, value(l), value(u));
+    return cdf_uniform_int(x, global.value(l), global.value(u));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_uniform_int(P, value(l), value(u));
+    return quantile_uniform_int(P, global.value(l), global.value(u));
   }
   
   override function hoist() -> Expression<Real> {
-    return box(logpdf_uniform_int(this.random(), l, u));
+    return box(logpdf_uniform_int(this.self(), l, u));
   }
 
   override function lower() -> Integer!? {
-    return value(l);
+    return global.value(l);
   }
   
   override function upper() -> Integer!? {
-    return value(u);
+    return global.value(u);
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(l);
     global.constant(u);
@@ -65,15 +65,15 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    let n <- wait(value(u - l + 1));
+    let n <- wait(global.value(u - l + 1));
     let p <- vector(1.0/n, n);
-    return (box(p), value(l));
+    return (box(p), global.value(l));
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "UniformInteger");
-    buffer.set("l", value(l));
-    buffer.set("u", value(u));
+    buffer.set("l", global.value(l));
+    buffer.set("u", global.value(u));
   }
 }
 

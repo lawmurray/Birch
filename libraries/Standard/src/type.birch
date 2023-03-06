@@ -914,18 +914,18 @@ void reset(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void relink(const T& x) {
+void relink(const T& x, const RelinkVisitor& visitor) {
   //
 }
 
 template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void relink(T& x) {
-  x.relink();
+void relink(T& x, const RelinkVisitor& visitor) {
+  x.relink(visitor);
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void relink(const T& x) {
-  x->relink();
+void relink(const T& x, const RelinkVisitor& visitor) {
+  x->relink(visitor);
 }
 
 template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
@@ -944,33 +944,33 @@ void grad(const T& x, const G& g) {
 }
 
 template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void shallow_grad(const T& x, const G& g) {
+void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
   //
 }
 
 template<class T, class G, std::enable_if_t<is_form_v<T>,int> = 0>
-void shallow_grad(T& x, const G& g) {
-  x.shallowGrad(g);
+void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
+  x.shallowGrad(g, visitor);
 }
 
 template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
-void shallow_grad(const T& x, const G& g) {
-  x->shallowGrad(g);
+void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
+  x->shallowGrad(g, visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void deep_grad(const T& x) {
+void deep_grad(const T& x, const GradVisitor& visitor) {
   //
 }
 
 template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void deep_grad(T& x) {
-  x.deepGrad();
+void deep_grad(T& x, const GradVisitor& visitor) {
+  x.deepGrad(visitor);
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void deep_grad(const T& x) {
-  x->deepGrad();
+void deep_grad(const T& x, const GradVisitor& visitor) {
+  x->deepGrad(visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>

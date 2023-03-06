@@ -99,7 +99,7 @@
  * by calling `peek()`. These memoized intermediate results are cleared again
  * as `grad()` progresses.
  */
-abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
+abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
   /**
    * Memoized result.
    */
@@ -124,6 +124,11 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * graph.
    */
   visitCount:Integer <- 0;
+
+  /**
+   * Number of arguments.
+   */
+  argsCount:Integer <- 0;
 
   /**
    * Is this a constant expression?
@@ -201,30 +206,24 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * @return The result.
    */
   final function eval() -> Value! {
-    if !x? {
+    if !x? && !flagConstant {
       doEval();
-      assert x?;
     }
+    assert x?;
     return x!;
   }
-  function doEval() {
-    //
-  }
+  abstract function doEval();
 
   /**
-   * Re-evaluate, ignoring memos. Memoizes at coarse-grain (i.e. Expression
-   * objects, not forms).
-   *
-   * @param x Vectorized arguments.
+   * Re-evaluate, ignoring memoization. This is used instead of evaluate after
+   * the value of a dependency is changed.
    *
    * @return The result.
    */
   final function move(x:Real[_]) -> Value! {
-    trace();
+    assert global.length(x) == argsCount;
     visitor:MoveVisitor(x);
-    let y <- move(visitor);
-    assert visitor.isFinished();
-    return y;
+    return move(visitor);
   }
   final function move(visitor:MoveVisitor) -> Value! {
     if !flagConstant {
@@ -245,15 +244,14 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   }
 
   /**
-   * Vectorize arguments and gradients.
+   * Vectorize arguments.
    *
-   * @return The vectorized arguments and gradients.
+   * @return Vectorized arguments.
    */
-  final function args() -> (Real[_], Real[_]) {
-    trace();
-    visitor:ArgsVisitor;
+  final function args() -> Real[_] {
+    visitor:ArgsVisitor(argsCount);
     args(visitor);
-    return visitor.args();
+    return visitor.x;
   }
   final function args(visitor:ArgsVisitor) {
     if !flagConstant {
@@ -275,6 +273,8 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * Evaluate gradient with respect to arguments. Clears memos at fine-grain.
    *
    * @param g Upstream gradient.
+   *
+   * @return Vectorized gradients.
    *
    * The expression is treated as a function, and the arguments defined
    * as those `Random` objects in the expression that are not constant.
@@ -314,12 +314,20 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  final function grad<Gradient>(g:Gradient) {
-    trace();
-    shallowGrad(g);
-    deepGrad();
+  final function grad() -> Real[_] {
+    cpp{{
+    numbirch::Array g(shape(*x), Real(1.0));
+    }}
+    return grad(g);
   }
-  final function shallowGrad<Gradient>(g:Gradient) {
+  final function grad<Gradient>(g:Gradient) -> Real[_] {
+    visitor:GradVisitor(argsCount);
+    shallowGrad(g, visitor);
+    deepGrad(visitor);
+    return visitor.g;
+
+  }
+  final function shallowGrad<Gradient>(g:Gradient, visitor:GradVisitor) {
     if !flagConstant {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
@@ -331,20 +339,17 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
       }
     }
   }
-  function doShallowGrad() {
-    //
-  }
-  final function deepGrad() {
+  abstract function doShallowGrad(visitor:GradVisitor);
+
+  final function deepGrad(visitor:GradVisitor) {
     if !flagConstant && visitCount >= linkCount {
       assert visitCount == linkCount;
       visitCount <- 0;  // reset for next time
-      doShallowGrad();
-      doDeepGrad();
+      doShallowGrad(visitor);
+      doDeepGrad(visitor);
     }
   }
-  function doDeepGrad() {
-    //
-  }
+  abstract function doDeepGrad(visitor:GradVisitor);
 
   /**
    * Evaluate.
@@ -367,30 +372,30 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    */
   final function trace() {
     reset();
-    relink();
+    visitor:RelinkVisitor;
+    relink(visitor);
   }
   final function reset() {
     assert visitCount == 0;
     if !flagConstant && linkCount != 0 {
       linkCount <- 0;
+      argsCount <- 0;
       doReset();
     }
   }
-  function doReset() {
-    //
-  }
-  final function relink() {
+  abstract function doReset();
+
+  final function relink(visitor:RelinkVisitor) {
     assert visitCount == 0;
     if !flagConstant {
       linkCount <- linkCount + 1;
       if linkCount == 1 {
-        doRelink();
+        doRelink(visitor);
+        argsCount <- visitor.n;
       }
     }
   }
-  function doRelink() {
-    //
-  }
+  abstract function doRelink(visitor:RelinkVisitor);
 
   /**
    * Render the entire expression constant.
@@ -404,9 +409,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
       doConstant();
     }
   }
-  function doConstant() {
-    //
-  }
+  abstract function doConstant();
 
   override function write(buffer:Buffer) {
     buffer.set(value()!);

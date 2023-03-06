@@ -47,7 +47,7 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
     return box(0.0);
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(α);
     global.constant(θ);
@@ -66,9 +66,9 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Restaurant");
-    buffer.set("α", value(α));
-    buffer.set("θ", value(θ));
-    buffer.set("n", value(n));
+    buffer.set("α", global.value(α));
+    buffer.set("θ", global.value(θ));
+    buffer.set("n", global.value(n));
   }
 }
 

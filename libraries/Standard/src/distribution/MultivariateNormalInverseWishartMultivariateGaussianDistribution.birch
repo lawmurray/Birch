@@ -42,30 +42,30 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        value(a), value(ν), value(λ), value(Γ), value(k), value(c),
-        value(ω2));
+        global.value(a), global.value(ν), global.value(λ), global.value(Γ), global.value(k), global.value(c),
+        global.value(ω2));
   }
 
   override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(c), eval(ω2));
+        global.eval(a), global.eval(ν), global.eval(λ), global.eval(Γ), global.eval(k), global.eval(c), global.eval(ω2));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - value(c), value(a), value(ν), value(λ), value(Γ), value(k),
-        value(ω2));
+        x - global.value(c), global.value(a), global.value(ν), global.value(λ), global.value(Γ), global.value(k),
+        global.value(ω2));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - eval(c), eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(ω2));
+        x - global.eval(c), global.eval(a), global.eval(ν), global.eval(λ), global.eval(Γ), global.eval(k), global.eval(ω2));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, value(a), value(ν), value(λ), value(Γ), value(k), value(c),
-        value(ω2));
+        x, global.value(a), global.value(ν), global.value(λ), global.value(Γ), global.value(k), global.value(c),
+        global.value(ω2));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
@@ -75,10 +75,10 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 
   override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        box(this.random() - c), a, ν, λ, Γ, k, ω2));
+        box(this - c), a, ν, λ, Γ, k, ω2));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(ν);
@@ -123,7 +123,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
   let ω2 <- Σ.l;
   let Ω <- Σ.r;
   if Ω.isInverseWishart() && m.isMultivariateNormalInverseWishart() &&
-      Ω.hasMarginalized() && Ω.getMarginalized() == m.getDistribution() {
+      Ω.hasMarginalizedDistribution() && Ω.getMarginalizedDistribution() == m.getDistribution() {
     let p_Ω <- Ω.getDistribution();
     let p_m <- m.graft();
     let (ν, λ, Γ, k) <- p_m.getMultivariateNormalInverseWishart()!;

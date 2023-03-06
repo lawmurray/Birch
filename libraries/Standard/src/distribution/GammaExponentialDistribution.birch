@@ -23,23 +23,23 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   θ:Arg3 <- θ;
 
   override function simulate() -> Real! {
-    return simulate_lomax(1.0/(value(a)*value(θ)), value(k));
+    return simulate_lomax(1.0/(global.value(a)*global.value(θ)), global.value(k));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_lomax(1.0/(eval(a)*eval(θ)), eval(k));
+    return simulate_lomax(1.0/(global.eval(a)*global.eval(θ)), global.eval(k));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
+    return logpdf_lomax(x, 1.0/(global.value(a)*global.value(θ)), global.value(k));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_lomax(x, 1.0/(eval(a)*eval(θ)), eval(k));
+    return logpdf_lomax(x, 1.0/(global.eval(a)*global.eval(θ)), global.eval(k));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_gamma_exponential(x, value(a), value(k), value(θ));
+    return update_gamma_exponential(x, global.value(a), global.value(k), global.value(θ));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
@@ -47,22 +47,22 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_lomax(this.random(), 1.0/(a*θ), k));
+    return box(logpdf_lomax(this.self(), 1.0/(a*θ), k));
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
+    return cdf_lomax(x, 1.0/(global.value(a)*global.value(θ)), global.value(k));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_lomax(P, 1.0/(value(a)*value(θ)), value(k));
+    return quantile_lomax(P, 1.0/(global.value(a)*global.value(θ)), global.value(k));
   }
 
   override function lower() -> Real!? {
     return 0.0;
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(k);

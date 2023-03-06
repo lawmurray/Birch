@@ -9,52 +9,42 @@
  * ```
  */
 class LangevinKernel < Kernel {
-  override function move(y:Model) -> Real {
+  override function move(m:Model) -> Real {
     let naccepts <- 0;
-    if nmoves > 0 {
-      y.hoist();
-      if y.π? {
-        let π <- y.π!;
+    if nmoves > 0 && m.hasHoist() {
+      let π <- m.hoist();
+      let x <- π.args();
+      let p <- π.eval();
+      let g <- π.grad();
+      let μ <- x + g*scale;  // mean of proposal from initial state
+      let accept <- true;  // was most recent proposal accepted?
+      let n <- length(x);
+      for k in 1..nmoves {
+        /* proposed state */
+        let x' <- μ + standard_gaussian(n)*sqrt(2.0*scale);
+        let p' <- π.move(x');
+        let g' <- π.grad();
+        let μ' <- x' + g'*scale;
 
-        /* initialize */
-        π.grad(1.0);
-        let p <- π.eval();
-        let (x, g) <- π.args();
-        let m <- length(x);
-        let δ <- vector(scale, m);
+        /* proposal correction */
+        let q <- (pow(x - μ', 2.0) - pow(x' - μ, 2.0))/scale;
+        let r <- -0.25*sum(where(isfinite(q), q, 0.0));
 
-        /* step */
-        let μ <- x + hadamard(g, δ);  // mean of proposal from initial state
-        let accept <- true;  // was most recent particle accepted?
-        for n in 1..nmoves {
-          /* proposed state */
-          let z <- standard_gaussian(m);
-          let p' <- π.move(μ + hadamard(sqrt(2.0*δ), z));
-          π.grad(1.0);
-          let (x', g') <- π.args();
-          let μ' <- x' + hadamard(g', δ);
-
-          /* proposal correction */
-          let q <- (pow(x - μ', 2.0) - pow(x' - μ, 2.0))/δ;
-          let r <- -0.25*sum(where(isfinite(q), q, 0.0));
-
-          /* accept/reject */
-          accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + r;
-          if accept {
-            naccepts <- naccepts + 1;
-            p <- p';
-            x <- x';
-            g <- g';
-            μ <- μ';
-          }
+        /* accept/reject */
+        accept <- log(simulate_uniform(0.0, 1.0)) <= p' - p + r;
+        if accept {
+          naccepts <- naccepts + 1;
+          x <- x';
+          p <- p';
+          g <- g';
+          μ <- μ';
         }
         if !accept {
           π.move(x);  // last proposal was rejected, restore correct arguments
         }
 
         /* clean up and apply lag for next time */
-        y.π <- nil;
-        y.constant(nlags);
+        m.constant(nlags);
       }
     }
     return cast<Real>(naccepts)/nmoves;

@@ -19,23 +19,23 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
   β:Arg3 <- β;
 
   override function simulate() -> Real! {
-    return simulate_inverse_gamma_gamma(value(k), value(α), value(β));
+    return simulate_inverse_gamma_gamma(global.value(k), global.value(α), global.value(β));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_inverse_gamma_gamma(eval(k), eval(α), eval(β));
+    return simulate_inverse_gamma_gamma(global.eval(k), global.eval(α), global.eval(β));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
+    return logpdf_inverse_gamma_gamma(x, global.value(k), global.value(α), global.value(β));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_inverse_gamma_gamma(x, eval(k), eval(α), eval(β));
+    return logpdf_inverse_gamma_gamma(x, global.eval(k), global.eval(α), global.eval(β));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_inverse_gamma_gamma(x, value(k), value(α), value(β));
+    return update_inverse_gamma_gamma(x, global.value(k), global.value(α), global.value(β));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
@@ -43,18 +43,18 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_inverse_gamma_gamma(this.random(), k, α, β));
+    return box(logpdf_inverse_gamma_gamma(this.self(), k, α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
+    return cdf_inverse_gamma_gamma(x, global.value(k), global.value(α), global.value(β));
   }
 
   override function lower() -> Real!? {
     return 0.0;
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(α);

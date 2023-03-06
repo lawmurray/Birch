@@ -2,7 +2,35 @@
  * Boxed value.
  */
 final acyclic class BoxedValue<Value>(x:Value!) < Expression<Value>(x, true) {  
-  override function doShallowGrad() {
-    this.g <- nil;  // clear intermediate gradient to save memory
+  override function doEval() {
+    //
+  }
+
+  override function doMove(visitor:MoveVisitor) {
+    //
+  }
+
+  override function doArgs(visitor:ArgsVisitor) {
+    //
+  }
+
+  override function doDeepGrad(visitor:GradVisitor) {
+    //
+  }
+
+  override function doShallowGrad(visitor:GradVisitor) {
+    this.g <- nil;  // clear gradient to save memory
+  }
+
+  override function doReset() {
+    //
+  }
+
+  override function doRelink(visitor:RelinkVisitor) {
+    //
+  }
+
+  override function doConstant() {
+    //
   }
 }

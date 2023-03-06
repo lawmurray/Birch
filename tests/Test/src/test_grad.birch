@@ -35,10 +35,10 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     }
 
     /* compute gradient */
-    let π <- h.hoist()!;
+    let π <- h.hoist();
     let p <- π.eval();
-    π.grad(1.0);
-    let (x, g) <- π.args();
+    let x <- π.args();
+    let g <- π.grad();
 
     /* compare with finite difference estimates */
     for i in 1..rows(x) {

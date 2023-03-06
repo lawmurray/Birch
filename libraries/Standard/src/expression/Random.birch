@@ -62,14 +62,14 @@ class Random<Value> < Expression<Value>(nil, false) {
   /**
    * Does this have a marginalized distribution?
    */
-  function hasMarginalized() -> Boolean {
+  function hasMarginalizedDistribution() -> Boolean {
     return hasDistribution() && p!.getUpdated().hasMarginalized();
   }
 
   /**
    * Get the marginalized distribution.
    */
-  function getMarginalized() -> Delay {
+  function getMarginalizedDistribution() -> Delay {
     return p!.getUpdated().getMarginalized().getUpdated();
   }
 
@@ -139,17 +139,49 @@ class Random<Value> < Expression<Value>(nil, false) {
 
   override function doEval() {
     assert hasDistribution();
-    this.x <- getDistribution().variateLazy();
-    assert this.x?;
+    this.x <- global.eval(getDistribution());
   }
 
   override function doMove(visitor:MoveVisitor) {
-    assert this.x?;
-    visitor.visit(this);
+    if hasDistribution() {
+      this.x <- global.move(getDistribution(), visitor);
+    }
   }
 
   override function doArgs(visitor:ArgsVisitor) {
-    visitor.visit(this);
+    if hasDistribution() {
+      global.args(getDistribution(), visitor);
+    }
+  }
+
+  override function doShallowGrad(visitor:GradVisitor) {
+    if hasDistribution() {
+      global.shallow_grad(getDistribution(), this.g!, visitor);
+    }
+  }
+
+  override function doDeepGrad(visitor:GradVisitor) {
+    if hasDistribution() {
+      global.deep_grad(getDistribution(), visitor);
+    }
+  }
+
+  override function doReset() {
+    if hasDistribution() {
+      global.reset(getDistribution());
+    }
+  }
+
+  override function doRelink(visitor:RelinkVisitor) {
+    if hasDistribution() {
+      global.relink(getDistribution(), visitor);
+    }
+  }
+
+  override function doConstant() {
+    if hasDistribution() {
+      global.constant(getDistribution());
+    }
   }
 
   override function read(buffer:Buffer) {

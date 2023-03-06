@@ -29,31 +29,31 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
   n:Arg3 <- n;
 
   override function simulate() -> Integer! {
-    return simulate_conway_maxwell_poisson(value(μ), value(ν), value(n));
+    return simulate_conway_maxwell_poisson(global.value(μ), global.value(ν), global.value(n));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_conway_maxwell_poisson(eval(μ), eval(ν), eval(n));
+    return simulate_conway_maxwell_poisson(global.eval(μ), global.eval(ν), global.eval(n));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
+    return logpdf_conway_maxwell_poisson(x, global.value(μ), global.value(ν), global.value(n));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_conway_maxwell_poisson(x, eval(μ), eval(ν), eval(n));
+    return logpdf_conway_maxwell_poisson(x, global.eval(μ), global.eval(ν), global.eval(n));
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
+    return cdf_conway_maxwell_poisson(x, global.value(μ), global.value(ν), global.value(n));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_conway_maxwell_poisson(P, value(μ), value(ν), value(n));
+    return quantile_conway_maxwell_poisson(P, global.value(μ), global.value(ν), global.value(n));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_conway_maxwell_poisson(this.random(), μ, ν, n));
+    return box(logpdf_conway_maxwell_poisson(this.self(), μ, ν, n));
   }
 
   override function lower() -> Integer!? {
@@ -61,10 +61,10 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
   }
 
   override function upper() -> Integer!? {
-    return value(n);
+    return global.value(n);
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(μ);
     global.constant(ν);
@@ -84,9 +84,9 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
 
   override function write(buffer:Buffer) {
     buffer.set("class", "ConwayMaxwellPoisson");
-    buffer.set("μ", value(μ));
-    buffer.set("ν", value(ν));
-    buffer.set("n", value(n));
+    buffer.set("μ", global.value(μ));
+    buffer.set("ν", global.value(ν));
+    buffer.set("n", global.value(n));
   }
 }
 

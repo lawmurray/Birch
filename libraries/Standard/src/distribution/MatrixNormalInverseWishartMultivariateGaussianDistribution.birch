@@ -47,76 +47,76 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   override function simulate() -> Real[_] {
     if !this.joined? {
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          value(a), value(N), value(Λ), value(Γ), value(k), value(c),
-          value(φ2));
+          global.value(a), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(c),
+          global.value(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          value(Y), value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
+          global.value(Y), global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(Φ));
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          value(this.a), value(p.N), value(p.Λ), value(p.Γ), value(p.k),
-          value(this.c), value(this.φ2));
+          global.value(this.a), global.value(p.N), global.value(p.Λ), global.value(p.Γ), global.value(p.k),
+          global.value(this.c), global.value(this.φ2));
     }
   }
 
   override function simulateLazy() -> Real[_] {
     if !this.joined? {
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          eval(a), eval(N), eval(Λ), eval(Γ), eval(k), eval(c), eval(φ2));
+          global.eval(a), global.eval(N), global.eval(Λ), global.eval(Γ), global.eval(k), global.eval(c), global.eval(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          eval(Y), eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
+          global.eval(Y), global.eval(A), global.eval(N), global.eval(Λ), global.eval(Γ), global.eval(k), global.eval(Φ));
       return simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          eval(this.a), eval(p.N), eval(p.Λ), eval(p.Γ), eval(p.k),
-          eval(this.c), eval(this.φ2));
+          global.eval(this.a), global.eval(p.N), global.eval(p.Λ), global.eval(p.Γ), global.eval(p.k),
+          global.eval(this.c), global.eval(this.φ2));
     }
   }
 
   override function logpdf(x:Real[_]) -> Real! {
     if !this.joined? {
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(x,
-          value(a), value(N), value(Λ), value(Γ), value(k), value(c),
-          value(φ2));
+          global.value(a), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(c),
+          global.value(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          value(Y), value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
+          global.value(Y), global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(Φ));
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, value(this.a), value(p.N), value(p.Λ), value(p.Γ), value(p.k),
-          value(this.c), value(this.φ2));
+          x, global.value(this.a), global.value(p.N), global.value(p.Λ), global.value(p.Γ), global.value(p.k),
+          global.value(this.c), global.value(this.φ2));
     }
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     if !this.joined? {
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(x,
-          eval(a), eval(N), eval(Λ), eval(Γ), eval(k), eval(c), eval(φ2));
+          global.eval(a), global.eval(N), global.eval(Λ), global.eval(Γ), global.eval(k), global.eval(c), global.eval(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          eval(Y), eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
+          global.eval(Y), global.eval(A), global.eval(N), global.eval(Λ), global.eval(Γ), global.eval(k), global.eval(Φ));
       return logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, eval(this.a), eval(p.N), eval(p.Λ), eval(p.Γ), eval(p.k),
-          eval(this.c), eval(this.φ2));
+          x, global.eval(this.a), global.eval(p.N), global.eval(p.Λ), global.eval(p.Γ), global.eval(p.k),
+          global.eval(this.c), global.eval(this.φ2));
     }
   }
 
   override function update(x:Real[_]) -> Delay? {
     if !this.joined? {
       return update_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, value(a), value(N), value(Λ), value(Γ), value(k), value(c),
-          value(φ2));
+          x, global.value(a), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(c),
+          global.value(φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           joinMatrixNormalInverseWishartMultivariateGaussian()!;
       return update_matrix_normal_inverse_wishart_matrix_gaussian(
-          value(Y), value(A), value(N), value(Λ), value(Γ), value(k),
-          value(Φ));
+          global.value(Y), global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k),
+          global.value(Φ));
     }
   }
 
@@ -139,7 +139,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
         Y, A, N, Λ, Γ, k, Φ));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(N);
@@ -153,8 +153,8 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
       let (Y, A, N, Λ, Γ, k, Φ) <-
           getJoined().joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          value(Y), value(A), value(N), value(Λ), value(Γ), value(k),
-          value(Φ));
+          global.value(Y), global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k),
+          global.value(Φ));
       setUpdated(wrap_matrix_normal_inverse_wishart_multivariate_gaussian(
           this.a, p.N, p.Λ, p.Γ, p.k, this.c, this.φ2));
       setJoined(nil);
@@ -228,7 +228,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Inner<Random<Real[_,_]>,
   let ω2 <- Σ.l;
   let Ω <- Σ.r;
   if Ω.isInverseWishart() && m.isMatrixNormalInverseWishart() &&
-      Ω.hasMarginalized() && Ω.getMarginalized() == m.getDistribution() {
+      Ω.hasMarginalizedDistribution() && Ω.getMarginalizedDistribution() == m.getDistribution() {
     let p_Ω <- Ω.getDistribution();
     let p_m <- m.graft();
     let (N, Λ1, Γ, k) <- p_m.getMatrixNormalInverseWishart()!;

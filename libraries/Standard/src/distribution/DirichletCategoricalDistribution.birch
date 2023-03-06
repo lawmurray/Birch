@@ -8,23 +8,23 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   α:Arg <- α;
 
   override function simulate() -> Integer! {
-    return simulate_dirichlet_categorical(value(α));
+    return simulate_dirichlet_categorical(global.value(α));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_dirichlet_categorical(eval(α));
+    return simulate_dirichlet_categorical(global.eval(α));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_dirichlet_categorical(x, value(α));
+    return logpdf_dirichlet_categorical(x, global.value(α));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_dirichlet_categorical(x, eval(α));
+    return logpdf_dirichlet_categorical(x, global.eval(α));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_dirichlet_categorical(x, value(α));
+    return update_dirichlet_categorical(x, global.value(α));
   }
 
   override function updateLazy(x:Expression<Integer>) -> Delay? {
@@ -32,7 +32,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_dirichlet_categorical(this.random(), α));
+    return box(logpdf_dirichlet_categorical(this.self(), α));
   }
 
   override function lower() -> Integer!? {
@@ -40,10 +40,10 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function upper() -> Integer!? {
-    return length(value(α));
+    return global.length(global.value(α));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(α);
   }
@@ -112,5 +112,5 @@ function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
  * @return the posterior hyperparameters `α'`.
  */
 function update_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
-  return wrap_dirichlet(α + single(1.0, x, length(α)));
+  return wrap_dirichlet(α + single(1.0, x, global.length(α)));
 }

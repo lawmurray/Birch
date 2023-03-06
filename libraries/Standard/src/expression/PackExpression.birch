@@ -55,19 +55,19 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
     }
   }
 
-  override function doShallowGrad() {
+  override function doShallowGrad(visitor:GradVisitor) {
     let R <- rows(this.g!);
     let C <- columns(this.g!);
     for c in 1..C {
-      global.shallow_grad(m[c], this.g![1..R,c]);
+      global.shallow_grad(m[c], this.g![1..R,c], visitor);
     }
     this.g <- nil;  // clear intermediate gradient to save memory
   }
 
-  override function doDeepGrad() {
+  override function doDeepGrad(visitor:GradVisitor) {
     let C <- m.size();
     for c in 1..C {
-      global.deep_grad(m[c]);
+      global.deep_grad(m[c], visitor);
     }
   }
 
@@ -78,10 +78,10 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
     }
   }
 
-  override function doRelink() {
+  override function doRelink(visitor:RelinkVisitor) {
     let C <- m.size();
     for c in 1..C {
-      global.relink(m[c]);
+      global.relink(m[c], visitor);
     }
   }
 

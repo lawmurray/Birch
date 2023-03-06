@@ -23,34 +23,34 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
   σ2:Arg3 <- σ2;
   
   override function simulate() -> Real! {
-    return simulate_student_t(value(k), value(μ), value(σ2));
+    return simulate_student_t(global.value(k), global.value(μ), global.value(σ2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_student_t(eval(k), eval(μ), eval(σ2));
+    return simulate_student_t(global.eval(k), global.eval(μ), global.eval(σ2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_student_t(x, value(k), value(μ), value(σ2));
+    return logpdf_student_t(x, global.value(k), global.value(μ), global.value(σ2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_student_t(x, eval(k), eval(μ), eval(σ2));
+    return logpdf_student_t(x, global.eval(k), global.eval(μ), global.eval(σ2));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_student_t(this.random(), k, μ, σ2));
+    return box(logpdf_student_t(this.self(), k, μ, σ2));
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_student_t(x, value(k), value(μ), value(σ2));
+    return cdf_student_t(x, global.value(k), global.value(μ), global.value(σ2));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_student_t(P, value(k), value(μ), value(σ2));
+    return quantile_student_t(P, global.value(k), global.value(μ), global.value(σ2));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(μ);
@@ -59,9 +59,9 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Student");
-    buffer.set("k", value(k));
-    buffer.set("μ", value(μ));
-    buffer.set("σ2", value(σ2));
+    buffer.set("k", global.value(k));
+    buffer.set("μ", global.value(μ));
+    buffer.set("σ2", global.value(σ2));
   }
 }
 

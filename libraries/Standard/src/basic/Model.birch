@@ -13,11 +13,6 @@ abstract class Model {
   Φ:Array<Array<Expression<Real>>>;
 
   /**
-   * Factors for move, by step.
-   */
-  π:Expression<Real>?;
-
-  /**
    * Start execution.
    */
   function simulate() {
@@ -33,8 +28,12 @@ abstract class Model {
     //
   }
 
-  final function hoist() {
-    π <- nil;
+  final function hasHoist() -> Boolean {
+    return Ξ.size() + Φ.size() > 0;
+  }
+
+  final function hoist() -> Expression<Real> {
+    π:Expression<Real>? <- nil;
     for i in 1..Ξ.size() {
       for j in 1..Ξ[i].size() {
         if !Ξ[i][j].isSubordinate() {
@@ -57,10 +56,12 @@ abstract class Model {
         }
       }
     }
+    assert π?;
+    π!.trace();
+    return π!;
   }
 
   final function constant(nlags:Integer) {
-    π <- nil;
     while Ξ.size() >= nlags {
       for j in 1..Ξ.front().size() {
         Ξ.front()[j].constant();

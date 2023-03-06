@@ -3,11 +3,11 @@
  *
  * @param Value Value type.
  */
-abstract class Distribution<Value> < Delay {
+abstract class Distribution<Value> < Expression<Value>(nil, false) {
   /**
-   * Stateful variate.
+   * Offset into vectorized arguments.
    */
-  x:Value!?;
+  offset:Integer <- 0;
 
   /**
    * Simulate a variate.
@@ -114,7 +114,7 @@ abstract class Distribution<Value> < Delay {
    * Does this have a stateful variate assigned?
    */
   final function hasVariate() -> Boolean {
-    let p <- Distribution<Value>?(graft())!;
+    let p <- Distribution<Value>?(this.graft())!;
     return p.x?;
   }
 
@@ -122,7 +122,7 @@ abstract class Distribution<Value> < Delay {
    * Get the stateful variate.
    */
   final function variate() -> Value! {
-    let p <- Distribution<Value>?(graft())!;
+    let p <- Distribution<Value>?(this.graft())!;
     p.realize();
     p.constant();
     return p.x!;
@@ -132,7 +132,7 @@ abstract class Distribution<Value> < Delay {
    * Get the stateful variate, with lazy evaluation.
    */
   final function variateLazy() -> Value! {
-    let p <- Distribution<Value>?(graft())!;
+    let p <- Distribution<Value>?(this.graft())!;
     p.realize();
     return p.x!;
   }
@@ -141,17 +141,24 @@ abstract class Distribution<Value> < Delay {
    * Get the stateful variate, boxed as a Random.
    */
   final function random() -> Random<Value> {
-    let p <- Distribution<Value>?(graft())!;
+    let p <- Distribution<Value>?(this.graft())!;
     o:Random<Value>;
     o.setDistribution(p);
     return o;
   }
 
   /**
+   * Get this distribution.
+   */
+  final function self() -> Distribution<Value> {
+    return Distribution<Value>?(this.graft())!;
+  }
+
+  /**
    * Assign the stateful variate.
    */
   final function assign(x:Value!) {
-    let p <- Distribution<Value>?(graft())!;
+    let p <- Distribution<Value>?(this.graft())!;
     let h <- get_handler();
     if h.autodiff {
       h.Ξ.pushBack(p);
@@ -166,7 +173,7 @@ abstract class Distribution<Value> < Delay {
   }
 
   final override function realize() {
-    let p <- Distribution<Value>?(graft())!;
+    let p <- Distribution<Value>?(this.graft())!;
     if !p.x? {
       let h <- get_handler();
       if h.autodiff {
@@ -179,6 +186,7 @@ abstract class Distribution<Value> < Delay {
         p.getJoined().setSubordinate(true);
       }
     }
+    this.x <- p.x;   ///@todo possible that this == p
   }
 
   final override function condition() -> Delay? {
@@ -190,9 +198,41 @@ abstract class Distribution<Value> < Delay {
     }
   }
 
-  override function constant() {
-    if hasUpdated() {
-      getUpdated().constant();
-    }
+  override function doEval() {
+    realize();
+  }
+
+  override function doMove(visitor:MoveVisitor) {
+    let p <- Distribution<Value>?(this.graft())!;
+    visitor.visit(p);
+    this.x <- p.x;   ///@todo possible that this == p
+  }
+
+  override function doArgs(visitor:ArgsVisitor) {
+    let p <- Distribution<Value>?(this.graft())!;
+    visitor.visit(p);
+  }
+
+  override function doShallowGrad(visitor:GradVisitor) {
+    let p <- Distribution<Value>?(this.graft())!;
+    visitor.visit(p);
+  }
+
+  override function doDeepGrad(visitor:GradVisitor) {
+    //
+  }
+
+  override function doReset() {
+    let p <- Distribution<Value>?(this.graft())!;
+    p.offset <- 0;
+  }
+
+  override function doRelink(visitor:RelinkVisitor) {
+    let p <- Distribution<Value>?(this.graft())!;
+    visitor.visit(p);
+  }
+
+  override function doConstant() {
+    //
   }
 }

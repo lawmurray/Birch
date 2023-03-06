@@ -238,7 +238,7 @@ abstract class Delay {
    *
    * @return Updated distribution.
    */
-  final function graft() -> Delay {
+  function graft() -> Delay {
     let p <- this;
     let p' <- this.getUpdated();
     if p'.hasMarginalized() {
@@ -270,22 +270,31 @@ abstract class Delay {
   /**
    * Realize a value for this node.
    */
-  abstract function realize();
+  function realize() {
+    //
+  }
 
   /**
    * Condition the parent node on the $M$-path.
    */
-  abstract function condition() -> Delay?;
+  function condition() -> Delay? {
+    return nil;
+  }
 
   /**
    * Render the node constant.
    */
-  abstract function constant();
+  function constant() {
+    //
+  }
 
   /**
    * Construct a lazy expression for the log-pdf of this node.
    */
-  abstract function hoist() -> Expression<Real>;
+  function hoist() -> Expression<Real> {
+    assert false;
+    return box(0.0);
+  }
 
   /**
    * Are join operations supported?

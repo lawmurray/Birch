@@ -41,28 +41,28 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   s2:Arg7 <- s2;
 
   override function simulate() -> Real! {
-    return simulate_normal_inverse_gamma_gaussian(value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return simulate_normal_inverse_gamma_gaussian(global.value(a), global.value(ν),
+        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_normal_inverse_gamma_gaussian(eval(a), eval(ν),
-        eval(λ), eval(k), eval(γ), eval(c), eval(s2));
+    return simulate_normal_inverse_gamma_gaussian(global.eval(a), global.eval(ν),
+        global.eval(λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(s2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma_gaussian(x, value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return logpdf_normal_inverse_gamma_gaussian(x, global.value(a), global.value(ν),
+        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma_gaussian(x, eval(a), eval(ν),
-        eval(λ), eval(k), eval(γ), eval(c), eval(s2));
+    return logpdf_normal_inverse_gamma_gaussian(x, global.eval(a), global.eval(ν),
+        global.eval(λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(s2));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_normal_inverse_gamma_gaussian(x, value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return update_normal_inverse_gamma_gaussian(x, global.value(a), global.value(ν),
+        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
   }
 
   override function updateLazy(x:Expression<Real>) -> Delay? {
@@ -70,21 +70,21 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_normal_inverse_gamma_gaussian(x, value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return cdf_normal_inverse_gamma_gaussian(x, global.value(a), global.value(ν),
+        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma_gaussian(P, value(a),
-        value(ν), value(λ), value(k), value(γ), value(c), value(s2));
+    return quantile_normal_inverse_gamma_gaussian(P, global.value(a),
+        global.value(ν), global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_normal_inverse_gamma_gaussian(this.random(), a, ν, λ, k,
+    return box(logpdf_normal_inverse_gamma_gaussian(this.self(), a, ν, λ, k,
         γ, c, s2));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(ν);
@@ -124,7 +124,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
   let ω2 <- σ2.l;
   let τ2 <- σ2.r;
   if τ2.isInverseGamma() && m.isNormalInverseGamma() &&
-      τ2.hasMarginalized() && τ2.getMarginalized() == m.getDistribution() {
+      τ2.hasMarginalizedDistribution() && τ2.getMarginalizedDistribution() == m.getDistribution() {
     let p_τ2 <- τ2.getDistribution();
     let p_m <- m.graft();
     let (ν, λ, k, γ) <- p_m.getNormalInverseGamma()!;
@@ -276,7 +276,7 @@ function update_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 function update_join_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, λ:Arg4, k:Arg5, γ:Arg6, c:Arg7,
     s2:Arg8) -> {
-  let n <- length(x);
+  let n <- global.length(x);
   let z <- wrap(x - c);
   let λ' <- λ + dot(a)/s2;
   let ν' <- ν + dot(a, z)/s2;

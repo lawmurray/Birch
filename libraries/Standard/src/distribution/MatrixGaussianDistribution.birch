@@ -19,26 +19,26 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   V:Arg3 <- V;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(value(M), value(U), value(V));
+    return simulate_matrix_gaussian(global.value(M), global.value(U), global.value(V));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_gaussian(eval(M), eval(U), eval(V));
+    return simulate_matrix_gaussian(global.eval(M), global.eval(U), global.eval(V));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_gaussian(X, value(M), value(U), value(V));
+    return logpdf_matrix_gaussian(X, global.value(M), global.value(U), global.value(V));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_gaussian(X, eval(M), eval(U), eval(V));
+    return logpdf_matrix_gaussian(X, global.eval(M), global.eval(U), global.eval(V));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_matrix_gaussian(this.random(), M, U, V));
+    return box(logpdf_matrix_gaussian(this.self(), M, U, V));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(M);
     global.constant(U);
@@ -57,9 +57,9 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MatrixGaussian");
-    buffer.set("M", value(M));
-    buffer.set("U", value(U));
-    buffer.set("V", value(V));
+    buffer.set("M", global.value(M));
+    buffer.set("U", global.value(U));
+    buffer.set("V", global.value(V));
   }
 }
 

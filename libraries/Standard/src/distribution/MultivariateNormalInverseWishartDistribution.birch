@@ -24,28 +24,28 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   k:Arg4 <- k;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
-        value(Γ), value(k));
+    return simulate_multivariate_normal_inverse_wishart(global.value(ν), global.value(λ),
+        global.value(Γ), global.value(k));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_normal_inverse_wishart(eval(ν), eval(λ),
-        eval(Γ), eval(k));
+    return simulate_multivariate_normal_inverse_wishart(global.eval(ν), global.eval(λ),
+        global.eval(Γ), global.eval(k));
   }
   
   override function logpdf(x:Real[_]) -> Real! {   
-    return logpdf_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
-        value(Γ), value(k));
+    return logpdf_multivariate_normal_inverse_wishart(x, global.value(ν), global.value(λ),
+        global.value(Γ), global.value(k));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {   
-    return logpdf_multivariate_normal_inverse_wishart(x, eval(ν), eval(λ),
-        eval(Γ), eval(k));
+    return logpdf_multivariate_normal_inverse_wishart(x, global.eval(ν), global.eval(λ),
+        global.eval(Γ), global.eval(k));
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
-        value(Γ), value(k));
+    return update_multivariate_normal_inverse_wishart(x, global.value(ν), global.value(λ),
+        global.value(Γ), global.value(k));
   }
 
   override function updateLazy(x:Expression<Real[_]>) -> Delay? {
@@ -53,11 +53,11 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real> {   
-    return box(logpdf_multivariate_normal_inverse_wishart(this.random(),
+    return box(logpdf_multivariate_normal_inverse_wishart(this,
         ν, λ, Γ, k));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(ν);
     global.constant(λ);
@@ -78,10 +78,10 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateNormalInverseWishart");
-    buffer.set("ν", value(ν));
-    buffer.set("λ", value(λ));
-    buffer.set("Γ", value(Γ));
-    buffer.set("k", value(k));
+    buffer.set("ν", global.value(ν));
+    buffer.set("λ", global.value(λ));
+    buffer.set("Γ", global.value(Γ));
+    buffer.set("k", global.value(k));
   }
 }
 

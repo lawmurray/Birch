@@ -1,20 +1,19 @@
 /**
- * Move arguments in a delayed expression.
+ * Collect gradients from a delayed expression.
  *
- * @param x Vectorized arguments.
+ * @param size Number of arguments.
  */
-class MoveVisitor(x:Real[_]) {
+class GradVisitor(size:Integer) {
   /**
-   * Vectorized arguments.
+   * Vectorized gradients.
    */
-  x:Real[_] <- x;
+  g:Real[size];
 
   function visit(p:Distribution<Real>) {
-    let m <- p.offset + 1;
+    let h <- p.g!;
     cpp{{
-    auto y = x.slice(m);
+    g.slice(p->offset + 1) = h;
     }}
-    p.x <- y;
   }
 
   function visit(p:Distribution<Integer>) {
@@ -27,8 +26,8 @@ class MoveVisitor(x:Real[_]) {
 
   function visit(p:Distribution<Real[_]>) {
     let m <- p.offset + 1;
-    let n <- m + size(p.x!) - 1;
-    p.x <- x[m..n];
+    let n <- m + size(p.g!) - 1;
+    g[m..n] <- p.g!;
   }
 
   function visit(p:Distribution<Integer[_]>) {
@@ -37,7 +36,7 @@ class MoveVisitor(x:Real[_]) {
 
   function visit(p:Distribution<Real[_,_]>) {
     let m <- p.offset + 1;
-    let n <- m + size(p.x!) - 1;
-    p.x <- mat(x[m..n], columns(p.x!));
+    let n <- m + size(p.g!) - 1;
+    g[m..n] <- vec(p.g!);
   }
 }

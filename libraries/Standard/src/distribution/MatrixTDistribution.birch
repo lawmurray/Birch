@@ -24,26 +24,26 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
   Ψ:Arg4 <- Ψ;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_t(value(k), value(M), value(Σ), value(Ψ));
+    return simulate_matrix_t(global.value(k), global.value(M), global.value(Σ), global.value(Ψ));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_t(eval(k), eval(M), eval(Σ), eval(Ψ));
+    return simulate_matrix_t(global.eval(k), global.eval(M), global.eval(Σ), global.eval(Ψ));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_t(X, value(k), value(M), value(Σ), value(Ψ));
+    return logpdf_matrix_t(X, global.value(k), global.value(M), global.value(Σ), global.value(Ψ));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_t(X, eval(k), eval(M), eval(Σ), eval(Ψ));
+    return logpdf_matrix_t(X, global.eval(k), global.eval(M), global.eval(Σ), global.eval(Ψ));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_matrix_t(this.random(), k, M, Σ, Ψ));
+    return box(logpdf_matrix_t(this.self(), k, M, Σ, Ψ));
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(M);

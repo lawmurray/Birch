@@ -12,8 +12,8 @@ struct Unary<Middle>(m:Middle) < Form {
     birch::reset(m);
   }
 
-  void relink() const {
-    birch::relink(m);
+  void relink(const RelinkVisitor& visitor) const {
+    birch::relink(m, visitor);
   }
 
   void constant() const {
@@ -64,16 +64,16 @@ hpp{{
   } \
   \
   template<class G> \
-  void shallowGrad(const G& g) const { \
+  void shallowGrad(const G& g, const GradVisitor& visitor) const { \
     auto x = birch::peek(*this); \
     auto m = birch::peek(this->m); \
     if (!birch::is_constant(this->m)) { \
-      birch::shallow_grad(this->m, f_grad(g, x, m, ##__VA_ARGS__)); \
+      birch::shallow_grad(this->m, f_grad(g, x, m, ##__VA_ARGS__), visitor); \
     } \
     clear(); \
   } \
   \
-  void deepGrad() const { \
-    birch::deep_grad(this->m); \
+  void deepGrad(const GradVisitor& visitor) const { \
+    birch::deep_grad(this->m, visitor); \
   }
 }}

@@ -22,23 +22,23 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   b:Integer! <- b;
   
   override function simulate() -> Integer! {
-    return simulate_add_discrete_first(value(p), value(a), value(b));
+    return simulate_add_discrete_first(global.value(p), global.value(a), global.value(b));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_add_discrete_first(eval(p), eval(a), eval(b));
+    return simulate_add_discrete_first(global.eval(p), global.eval(a), global.eval(b));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return log(pdf_add_discrete_first(x, value(p), value(a), value(b)));
+    return log(pdf_add_discrete_first(x, global.value(p), global.value(a), global.value(b)));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return log(pdf_add_discrete_first(x, eval(p), eval(a), eval(b)));
+    return log(pdf_add_discrete_first(x, global.eval(p), global.eval(a), global.eval(b)));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_add_discrete_first(x, value(p), value(a), value(b));
+    return update_add_discrete_first(x, global.value(p), global.value(a), global.value(b));
   }
 
   override function updateLazy(x:Expression<Integer>) -> Delay? {
@@ -46,7 +46,7 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_first(this.random(), p, a, b)));
+    return box(log(pdf_add_discrete_first(this.self(), p, a, b)));
   }
 
   override function lower() -> Integer!? {
@@ -54,10 +54,10 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   }
   
   override function upper() -> Integer!? {
-    return a + length(p) - 1;
+    return a + global.length(p) - 1;
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(p);
     global.constant(a);
@@ -124,6 +124,6 @@ function pdf_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
  */
 function update_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
     b:Integer!) -> {
-  let sum <- a + b + length(p) - 1;
+  let sum <- a + b + global.length(p) - 1;
   return wrap_delta(sum - x);
 }

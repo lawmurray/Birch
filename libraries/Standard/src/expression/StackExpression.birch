@@ -51,19 +51,19 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
     }
   }
 
-  override function doShallowGrad() {
+  override function doShallowGrad(visitor:GradVisitor) {
     let R <- m.size();
     x:Element[R];
     for r in 1..R {
-      global.shallow_grad(m[r], this.g![r]);
+      global.shallow_grad(m[r], this.g![r], visitor);
     }
     this.g <- nil;  // clear intermediate gradient to save memory
   }
 
-  override function doDeepGrad() {
+  override function doDeepGrad(visitor:GradVisitor) {
     let R <- m.size();
     for r in 1..R {
-      global.deep_grad(m[r]);
+      global.deep_grad(m[r], visitor);
     }
   }
 
@@ -74,10 +74,10 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
     }
   }
 
-  override function doRelink() {
+  override function doRelink(visitor:RelinkVisitor) {
     let R <- m.size();
     for r in 1..R {
-      global.relink(m[r]);
+      global.relink(m[r], visitor);
     }
   }
 

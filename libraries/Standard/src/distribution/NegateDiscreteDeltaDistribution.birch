@@ -15,19 +15,19 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
   l:Integer! <- l;
 
   override function simulate() -> Integer! {
-    return 1 - l - simulate_categorical(value(p));
+    return 1 - l - simulate_categorical(global.value(p));
   }
 
   override function simulateLazy() -> Integer! {
-    return 1 - l - simulate_categorical(eval(p));
+    return 1 - l - simulate_categorical(global.eval(p));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_categorical(1 - l - x, value(p));
+    return logpdf_categorical(1 - l - x, global.value(p));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_categorical(1 - l - x, eval(p));
+    return logpdf_categorical(1 - l - x, global.eval(p));
   }
 
   override function update(x:Integer!) -> Delay? {
@@ -39,18 +39,18 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_categorical(1 - l - this.random(), p));
+    return box(logpdf_categorical(1 - l - this.self(), p));
   }
 
   override function lower() -> Integer!? {
-    return 1 - l - length(p);
+    return 1 - l - global.length(p);
   }
   
   override function upper() -> Integer!? {
     return -l;
   }
 
-  override function constant() {
+  override function doConstant() {
     super.constant();
     global.constant(p);
     global.constant(l);
@@ -62,7 +62,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    let n <- length(p);
+    let n <- global.length(p);
     return (box(gather(p, n - iota(0, n))), 1 - l - n);
   }
 }
