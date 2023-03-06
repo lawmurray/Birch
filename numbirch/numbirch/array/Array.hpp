@@ -829,10 +829,16 @@ template<class T>
 Array(const T value) -> Array<T,0>;
 
 template<class T>
+Array(const ArrayShape<0>& shape, const T value) -> Array<T,0>;
+
+template<class T>
 Array(const ArrayShape<1>& shape, const T value) -> Array<T,1>;
 
 template<class T>
 Array(const ArrayShape<2>& shape, const T value) -> Array<T,2>;
+
+template<class T>
+Array(const ArrayShape<0>& shape, const Array<T,0>& value) -> Array<T,0>;
 
 template<class T>
 Array(const ArrayShape<1>& shape, const Array<T,0>& value) -> Array<T,1>;
