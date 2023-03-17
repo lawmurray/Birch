@@ -31,7 +31,7 @@ template<>
 class ArrayShape<0> {
 public:
   ArrayShape(const int64_t k = 0) : k(k) {
-    //
+    assert(k >= 0);
   }
 
   static constexpr int dims() {
@@ -120,7 +120,9 @@ public:
       k(k),
       n(n),
       inc(inc) {
-    //
+    assert(k >= 0);
+    assert(n >= 0);
+    assert(inc >= 1);
   }
 
   static constexpr int dims() {
@@ -261,7 +263,10 @@ public:
       m(m),
       n(n),
       ld(ld) {
-    //
+    assert(k >= 0);
+    assert(m >= 0);
+    assert(n >= 0);
+    assert(ld >= m);
   }
 
   static constexpr int dims() {

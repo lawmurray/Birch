@@ -87,18 +87,28 @@ template<class T, class>
 Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
   assert(length(x) == length(y));
   Array<T,0> z;
-  auto x1 = make_eigen(x);
-  auto y1 = make_eigen(y);
-  z = x1.dot(y1);
+  if (size(x) > 0) {
+    auto x1 = make_eigen(x);
+    auto y1 = make_eigen(y);
+    z = x1.dot(y1);
+  } else {
+    z = T(0);
+  }
   return z;
 }
 
 template<class T, class>
 Array<T,0> frobenius(const Array<T,2>& x, const Array<T,2>& y) {
+  assert(rows(x) == rows(y));
+  assert(columns(x) == columns(y));
   Array<T,0> z;
-  auto x1 = make_eigen(x);
-  auto y1 = make_eigen(y);
-  z = (x1.array()*y1.array()).sum();
+  if (size(x) > 0 && size(y) > 0) {
+    auto x1 = make_eigen(x);
+    auto y1 = make_eigen(y);
+    z = (x1.array()*y1.array()).sum();
+  } else {
+    z = T(0);
+  }
   return z;
 }
 
@@ -136,8 +146,12 @@ Array<T,2> inv(const Array<T,2>& A) {
 
 template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
-  auto A1 = make_eigen(A);
-  return A1.householderQr().logAbsDeterminant();
+  if (size(A) == 0) {
+    return T(0);
+  } else {
+    auto A1 = make_eigen(A);
+    return A1.householderQr().logAbsDeterminant();
+  }
 }
 
 template<class T, class>

@@ -18,7 +18,7 @@ namespace numbirch {
  * 
  * @param x Argument.
  * 
- * @return Result.
+ * @return Result; zero for empty @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<int,0> count(const T& x);
@@ -51,7 +51,7 @@ real_t<T> count_grad(const Array<real,0>& g, const Array<R,0>& y,
  * 
  * @param x Argument.
  * 
- * @return Result.
+ * @return Result; zero for empty @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 Array<value_t<T>,0> sum(const T& x);

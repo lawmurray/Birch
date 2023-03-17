@@ -74,7 +74,7 @@ int columns(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 constexpr int columns(const T& x) {
   return 1;
 }
@@ -96,22 +96,29 @@ int width(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 constexpr int width(const T& x) {
   return 1;
 }
 
 /**
- * Maximum width amongst a set of objects.
+ * Broadcast width of several arrays and/or scalars.
  * 
  * @ingroup array
+ * 
+ * @return If all arguments are scalars then 1. If one or more arguments are
+ * arrays, their number of dimensions and widths must match and the width is
+ * returned; scalars are broadcast in this case and do not affect the width.
  */
 template<class Arg, class... Args>
 int width(const Arg& arg, const Args&... args) {
-  int w1 = width(arg);
-  int w2 = width(args...);
-  assert((w1 == 1 || w2 == 1 || w1 == w2) && "incompatible widths");
-  return std::max(w1, w2);
+  if constexpr (is_scalar_v<Arg>) {
+    return width(args...);
+  } else {
+    assert((width(arg) == width(args...) || is_scalar_v<Args...>) &&
+        "incompatible widths");
+    return width(arg);
+  }
 }
 
 /**
@@ -137,16 +144,23 @@ constexpr int height(const T& x) {
 }
 
 /**
- * Maximum height amongst a set of objects.
+ * Broadcast height of several arrays and/or scalars.
  * 
  * @ingroup array
+ * 
+ * @return If all arguments are scalars then 1. If one or more arguments are
+ * arrays, their number of dimensions and heights must match and the height is
+ * returned; scalars are broadcast in this case and do not affect the height.
  */
 template<class Arg, class... Args>
 int height(const Arg& arg, const Args&... args) {
-  int h1 = height(arg);
-  int h2 = height(args...);
-  assert((h1 == 1 || h2 == 1 || h1 == h2) && "incompatible heights");
-  return std::max(h1, h2);
+  if constexpr (is_scalar_v<Arg>) {
+    return height(args...);
+  } else {
+    assert((height(arg) == height(args...) || is_scalar_v<Args...>) &&
+        "incompatible heights");
+    return height(arg);
+  }
 }
 
 /**

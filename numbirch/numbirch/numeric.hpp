@@ -604,7 +604,7 @@ Array<T,2> cholsolve_grad2(const Array<T,2>& g, const Array<T,2>& B,
  * 
  * @param x Vector $x$.
  * 
- * @return Result $x^\top x$ as a scalar.
+ * @return Result $x^\top x$ as a scalar; zero for empty $x$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> dot(const Array<T,1>& x) {
@@ -640,7 +640,7 @@ Array<T,1> dot_grad(const Array<T,0>& g, const Array<T,0>& z,
  * @param x Vector $x$.
  * @param y Vector $y$.
  * 
- * @return Result $x^\top y$ as a scalar.
+ * @return Result $x^\top y$ as a scalar; zero for empty $x$ and $y$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y);
@@ -695,7 +695,7 @@ Array<T,1> dot_grad2(const Array<T,0>& g, const Array<T,0>& z,
  * @param A Matrix $A$.
  * 
  * @return Result $\langle A, A \rangle_\mathrm{F} = \mathrm{Tr}(A^\top A) =
- * \sum_{ij} A_{ij}^2$ as a scalar.
+ * \sum_{ij} A_{ij}^2$ as a scalar; zero for empty $A$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> frobenius(const Array<T,2>& A) {
@@ -733,7 +733,7 @@ Array<T,2> frobenius_grad(const Array<T,0>& g, const Array<T,0>& z,
  * @param B Matrix $B$.
  * 
  * @return Result $\langle A, B \rangle_\mathrm{F} = \mathrm{Tr}(A^\top B) =
- * \sum_{ij} A_{ij} B_{ij}$ as a scalar.
+ * \sum_{ij} A_{ij} B_{ij}$ as a scalar; zero for empty $A$ and $B$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> frobenius(const Array<T,2>& A, const Array<T,2>& B);
@@ -970,7 +970,8 @@ Array<T,2> inv_grad(const Array<T,2>& g, const Array<T,2>& B,
  * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
  * definite matrix $S = LL^\top$.
  * 
- * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$.
+ * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$; zero
+ * for empty $L$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> lcholdet(const Array<T,2>& L) {
@@ -1006,7 +1007,7 @@ Array<T,2> lcholdet_grad(const Array<T,0>& g, const Array<T,0>& d,
  * 
  * @param A Matrix $A$.
  * 
- * @return Result $\log |\det A|$.
+ * @return Result $\log |\det A|$; zero for empty $A$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> ldet(const Array<T,2>& A);
@@ -1040,7 +1041,7 @@ Array<T,2> ldet_grad(const Array<T,0>& g, const Array<T,0>& d,
  * 
  * @param L Lower-triangular matrix $L$.
  * 
- * @return Result $\log|\det L|$.
+ * @return Result $\log|\det L|$; zero for empty $L$.
  */
 template<class T, class = std::enable_if_t<is_real_v<T>,int>>
 Array<T,0> ltridet(const Array<T,2>& L) {

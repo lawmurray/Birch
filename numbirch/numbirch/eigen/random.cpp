@@ -52,7 +52,9 @@ Array<real,1> convolve(const Array<real,1>& p, const Array<real,1>& q) {
   auto r1 = make_eigen(r);
 
   r1.head(m).noalias() = L*q1;
-  r1.tail(n - 1).noalias() = U*q1;
+  if (n > 1) {
+    r1.tail(n - 1).noalias() = U*q1;
+  }
   return r;
 }
 
@@ -85,7 +87,10 @@ Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& r,
   auto gq1 = make_eigen(gq);
   auto g1 = make_eigen(g);
 
-  gq1.noalias() = L.transpose()*g1.head(m) + U.transpose()*g1.tail(n - 1);
+  gq1.noalias() = L.transpose()*g1.head(m);
+  if (n > 1) {
+    gq1.noalias() += U.transpose()*g1.tail(n - 1);
+  }
   return gq;
 }
 

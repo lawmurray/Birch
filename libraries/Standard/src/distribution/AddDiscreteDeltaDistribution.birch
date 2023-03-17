@@ -234,9 +234,9 @@ function pdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
    * least i, so the first must contribute at most... */
   let l <- min(n - 1, z - i);
 
-  assert(j - i - 1 == l - k - 1);   // lengths of ranges should be equal
-  let s <- iota(i + 1, j - i + 1);      // first range, ascending order
-  let t <- l + 1 - iota(0, l - k + 1);  // second range, descending order
+  assert j - i + 1 == l - k + 1;  // lengths of ranges should be equal
+  let s <- iota(i + 1, max(j - i + 1, 0));  // first range, ascending order
+  let t <- l + 1 - iota(0, max(l - k + 1, 0));  // second range, descending order
 
   return dot(gather(p, s), gather(q, t));
 }
@@ -260,7 +260,6 @@ function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
   let m <- global.length(p);
   let n <- global.length(q);
   let z <- wait(global.value(x) - a - b);  // offset to base zero
-  assert 0 <= z && z <= m + n - 2;
 
   /* start of range for first random variable; the second contributes at
    * most n - 1, so the first must contribute at least... */
@@ -278,9 +277,9 @@ function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
    * least i, so the first must contribute at most... */
   let l <- z - i;
 
-  assert(j - i - 1 == l - k - 1);  // lengths of ranges should be equal
-  let s <- iota(i + 1, j - i + 1);  // first range, ascending order
-  let t <- l + 1 - iota(0, l - k + 1);  // second range, descending order
+  assert j - i + 1 == l - k + 1;  // lengths of ranges should be equal
+  let s <- iota(i + 1, max(j - i + 1, 0));  // first range, ascending order
+  let t <- l + 1 - iota(0, max(l - k + 1, 0));  // second range, descending order
 
   let r <- hadamard(gather(p, s), gather(q, t));
   return wrap_add_discrete_first(r/sum(r), a + i, b + k);

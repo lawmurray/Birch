@@ -220,8 +220,12 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
   prefetch(x);
   prefetch(y);
   Array<T,0> z;
-  CUBLAS_CHECK(cublas<T>::dot(cublasHandle, length(x), sliced(x), stride(x),
-      sliced(y), stride(y), sliced(z)));
+  if (length(x) == 0) {
+    z = T(0);
+  } else {
+    CUBLAS_CHECK(cublas<T>::dot(cublasHandle, length(x), sliced(x), stride(x),
+        sliced(y), stride(y), sliced(z)));
+  }
   return z;
 }
 
@@ -292,38 +296,43 @@ Array<T,2> inv(const Array<T,2>& A) {
 template<class T, class>
 Array<T,0> ldet(const Array<T,2>& A) {
   prefetch(A);
-  Array<T,2> LU(A);
-  Array<int,0> info;
+  Array<T,0> ldet;
+  if (size(A) == 0) {
+    ldet = T(0);
+  } else {
+    Array<T,2> LU(A);
+    Array<int,0> info;
 
-  /* LU factorization with partial pivoting */
-  size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0,
-      ipivBytes = sizeof(int64_t)*rows(LU);
-  CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, sliced(LU),
-      stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
-      &bufferOnHostBytes));
-  void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
-  void* bufferOnHost = host_malloc(bufferOnHostBytes);
-  auto ipiv = (int64_t*)device_malloc(ipivBytes);
+    /* LU factorization with partial pivoting */
+    size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0,
+        ipivBytes = sizeof(int64_t)*rows(LU);
+    CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
+        cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, sliced(LU),
+        stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+        &bufferOnHostBytes));
+    void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
+    void* bufferOnHost = host_malloc(bufferOnHostBytes);
+    auto ipiv = (int64_t*)device_malloc(ipivBytes);
 
-  CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
-      rows(LU), columns(LU), cusolver<T>::CUDA_R, sliced(LU), stride(LU),
-      ipiv, cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
-      bufferOnHost, bufferOnHostBytes, sliced(info)));
-  nan_on_error(LU, info);
+    CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
+        rows(LU), columns(LU), cusolver<T>::CUDA_R, sliced(LU), stride(LU),
+        ipiv, cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+        bufferOnHost, bufferOnHostBytes, sliced(info)));
+    nan_on_error(LU, info);
 
-  /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
-   * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
-   * we're taking the logarithm of its absolute value, so can ignore the first
-   * term, and the second term is just 1 as $L$ has a unit diagonal; just need
-   * $|U|$ here; the logarithm of its absolute value is just the sum of the
-   * logarithms of the absolute values of elements on the main diagonal */
-  ///@todo Avoid temporary
-  Array<T,0> ldet = sum(transform(LU.diagonal(), log_abs_functor()));
+    /* the LU factorization is with partial pivoting, which means $|A| = (-1)^p
+    * |L||U|$, where $p$ is the number of row exchanges in `ipiv`; however,
+    * we're taking the logarithm of its absolute value, so can ignore the first
+    * term, and the second term is just 1 as $L$ has a unit diagonal; just need
+    * $|U|$ here; the logarithm of its absolute value is just the sum of the
+    * logarithms of the absolute values of elements on the main diagonal */
+    ///@todo Avoid temporary
+    ldet = sum(transform(LU.diagonal(), log_abs_functor()));
 
-  device_free(ipiv, ipivBytes);
-  device_free(bufferOnDevice, bufferOnDeviceBytes);
-  host_free(bufferOnHost, bufferOnHostBytes);
+    device_free(ipiv, ipivBytes);
+    device_free(bufferOnDevice, bufferOnDeviceBytes);
+    host_free(bufferOnHost, bufferOnHostBytes);
+  }
   return ldet;
 }
 

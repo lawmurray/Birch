@@ -196,40 +196,54 @@ inline constexpr int dimension_v = dimension<std::decay_t<T>>::value;
 /**
  * @var is_array_v
  * 
- * Is `T` an array type?
+ * @tparam Args... Types.
+ * 
+ * Are all Args... array types?
  * 
  * @ingroup trait
  * 
  * An array type is any instantiation of Array, including one with zero
  * dimensions.
  */
-template<class T>
+template<class Arg, class... Args>
 struct is_array {
+  static constexpr bool value = is_array<Arg>::value &&
+      is_array<Args...>::value;
+};
+template<class T>
+struct is_array<T> {
   static constexpr bool value = false;
 };
 template<class T, int D>
 struct is_array<Array<T,D>> {
   static constexpr bool value = true;
 };
-template<class T>
-inline constexpr bool is_array_v = is_array<std::decay_t<T>>::value;
+template<class... Args>
+inline constexpr bool is_array_v = is_array<std::decay_t<Args>...>::value;
 
 /**
  * @var is_scalar_v
  * 
- * Is `T` a scalar type?
+ * @tparam Args... Types.
+ * 
+ * Are all Args... scalar types?
  * 
  * @ingroup trait
  * 
  * A scalar type is any numeric type with zero dimensions.
  */
-template<class T>
+template<class Arg, class... Args>
 struct is_scalar {
+  static constexpr bool value = is_scalar<Arg>::value &&
+      is_scalar<Args...>::value;
+};
+template<class T>
+struct is_scalar<T> {
   static constexpr bool value = is_arithmetic_v<value_t<T>> &&
       dimension<T>::value == 0;
 };
-template<class T>
-inline constexpr bool is_scalar_v = is_scalar<std::decay_t<T>>::value;
+template<class... Args>
+inline constexpr bool is_scalar_v = is_scalar<std::decay_t<Args>...>::value;
 
 /**
  * @var is_vector_v
