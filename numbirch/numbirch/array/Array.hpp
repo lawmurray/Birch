@@ -289,24 +289,8 @@ public:
   /**
    * Value conversion (scalar only).
    */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator T&() {
-    return value();
-  }
-
-  /**
-   * Value conversion (scalar only).
-   */
-  template<int E = D, std::enable_if_t<E == 0,int> = 0>
-  operator const T() const {
-    return value();
-  }
-
-  /**
-   * Value conversion (scalar only).
-   */
   template<class U, int E = D, std::enable_if_t<E == 0 &&
-      is_scalar_v<U> && promotes_to_v<T,U>,int> = 0>
+      is_arithmetic_v<U>,int> = 0>
   operator U() const {
     return value();
   }
