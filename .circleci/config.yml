@@ -18,7 +18,7 @@ executors:
     resource_class: large
     environment:
       CODENAME: bench
-      OMP_NUM_THREADS: 2
+      OMP_NUM_THREADS: 4
       CXXFLAGS: -O3 -march=native -flto -Wall
       MAKEFLAGS: -j8
       CONFIGURE_FLAGS: --disable-assert
