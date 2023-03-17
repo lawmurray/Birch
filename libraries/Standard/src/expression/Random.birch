@@ -57,6 +57,11 @@ class Random<Value> < Expression<Value>(nil, false) {
   function setDistribution(p:Distribution<Value>) {
     assert !this.p?;
     this.p <- p;
+    if this.x? {
+      p.assign(this.x!);
+    } else if p.x? {
+      this.x <- p.x!;
+    }
   }
 
   /**

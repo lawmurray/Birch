@@ -160,6 +160,7 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
   final function assign(x:Value!) {
     let p <- Distribution<Value>?(this.graft())!;
     let h <- get_handler();
+    assert !p.x?;
     if h.autodiff {
       h.Ξ.pushBack(p);
       h.w <- h.w + p.logpdfLazy(x);
