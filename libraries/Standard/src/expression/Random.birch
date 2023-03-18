@@ -81,64 +81,64 @@ class Random<Value> < Expression<Value>(nil, false) {
   /**
    * Graft.
    */
-  function graft() -> Delay {
+  override function graft() -> Delay {
     assert p?;
     return p!.graft();
   }
 
-  function isGaussian() -> Boolean {
+  override function isGaussian() -> Boolean {
     return hasDistribution() && getDistribution().isGaussian();
   }
 
-  function isBeta() -> Boolean {
+  override function isBeta() -> Boolean {
     return hasDistribution() && getDistribution().isBeta();
   }
 
-  function isGamma() -> Boolean {
+  override function isGamma() -> Boolean {
     return hasDistribution() && getDistribution().isGamma();
   }
 
-  function isInverseGamma() -> Boolean {
+  override function isInverseGamma() -> Boolean {
     return hasDistribution() && getDistribution().isInverseGamma();
   } 
 
-  function isInverseWishart() -> Boolean {
+  override function isInverseWishart() -> Boolean {
     return hasDistribution() && getDistribution().isInverseWishart();
   } 
 
-  function isNormalInverseGamma() -> Boolean {
+  override function isNormalInverseGamma() -> Boolean {
     return hasDistribution() && getDistribution().isNormalInverseGamma();
   }
 
-  function isDirichlet() -> Boolean {
+  override function isDirichlet() -> Boolean {
     return hasDistribution() && getDistribution().isDirichlet();
   }
 
-  function isRestaurant() -> Boolean {
+  override function isRestaurant() -> Boolean {
     return hasDistribution() && getDistribution().isRestaurant();
   }
 
-  function isMultivariateGaussian() -> Boolean {
+  override function isMultivariateGaussian() -> Boolean {
     return hasDistribution() && getDistribution().isMultivariateGaussian();
   }
 
-  function isMultivariateNormalInverseGamma() -> Boolean {
+  override function isMultivariateNormalInverseGamma() -> Boolean {
     return hasDistribution() && getDistribution().isMultivariateNormalInverseGamma();
   }
 
-  function isMultivariateNormalInverseWishart() -> Boolean {
+  override function isMultivariateNormalInverseWishart() -> Boolean {
     return hasDistribution() && getDistribution().isMultivariateNormalInverseWishart();
   }
 
-  function isMatrixGaussian() -> Boolean {
+  override function isMatrixGaussian() -> Boolean {
     return hasDistribution() && getDistribution().isMatrixGaussian();
   }
 
-  function isMatrixNormalInverseWishart() -> Boolean {
+  override function isMatrixNormalInverseWishart() -> Boolean {
     return hasDistribution() && getDistribution().isMatrixNormalInverseWishart();
   }
 
-  function isBoundedDiscrete() -> Boolean {
+  override function isBoundedDiscrete() -> Boolean {
     return hasDistribution() && getDistribution().isBoundedDiscrete();
   }
 
