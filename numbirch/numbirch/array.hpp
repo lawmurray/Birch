@@ -1289,7 +1289,7 @@ Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y) {
-  return fill(real(0.0), length(y));
+  return fill(real(0), length(y));
 }
 
 /**
@@ -1350,7 +1350,7 @@ Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
-  return fill(real(0.0), rows(I), columns(I));
+  return fill(real(0), rows(I), columns(I));
 }
 
 /**
@@ -1371,7 +1371,7 @@ Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
-  return fill(real(0.0), rows(J), columns(J));
+  return fill(real(0), rows(J), columns(J));
 }
 
 /**
@@ -1515,7 +1515,7 @@ template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
     const int m, const int n) {
-  return fill(real(0.0), rows(I), columns(I));
+  return fill(real(0), rows(I), columns(I));
 }
 
 /**
@@ -1539,7 +1539,7 @@ template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
     const int m, const int n) {
-  return fill(real(0.0), rows(J), columns(J));
+  return fill(real(0), rows(J), columns(J));
 }
 
 }

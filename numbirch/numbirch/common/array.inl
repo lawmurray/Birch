@@ -99,9 +99,12 @@ struct gather_functor {
     //
   }
   NUMBIRCH_HOST_DEVICE auto operator()(const int j) const {
+    assert(0 <= j - 1);
     return get(A, 0, j - 1, ldA);
   }
   NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    assert(0 <= i - 1);
+    assert(0 <= j - 1);
     return get(A, i - 1, j - 1, ldA);
   }
 };
@@ -123,7 +126,11 @@ struct scatter_functor {
     //
   }
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
-    auto& c = get(C, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1, ldC);
+    int k = get(I, i, j, ldI) - 1;
+    int l = get(J, i, j, ldJ) - 1;
+    assert(0 <= k);
+    assert(0 <= l);
+    auto& c = get(C, k, l, ldC);
     auto a = get(A, i, j, ldA);
     #ifdef __CUDA_ARCH__
     if constexpr (is_bool_v<typeof(a)>) {
@@ -227,7 +234,7 @@ template<class T, class>
 Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n) {
   assert(conforms(x, y));
   auto z = fill(T(0), n);
-  for_each(length(x), scatter_functor(sliced(x), stride(x), 0, 0, sliced(y),
+  for_each(length(x), scatter_functor(sliced(x), stride(x), 1, 0, sliced(y),
       stride(y), sliced(z), stride(z)));
   return z;
 }
