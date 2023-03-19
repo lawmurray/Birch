@@ -75,32 +75,4 @@ abstract class Model {
       Φ.popFront();
     }
   }
-
-  /**
-   * Read at start.
-   */
-  override function read(buffer:Buffer) {
-    read(buffer);
-  }
-
-  /**
-   * Read for step `t`.
-   */
-  override function read(t:Integer, buffer:Buffer) {
-    //
-  }
-
-  /**
-   * Write at start.
-   */
-  override function write(buffer:Buffer) {
-    write(buffer);
-  }
-
-  /**
-   * Write for step `t`.
-   */
-  override function write(t:Integer, buffer:Buffer) {
-    //
-  }
 }
