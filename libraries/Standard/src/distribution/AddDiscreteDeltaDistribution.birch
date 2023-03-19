@@ -271,11 +271,11 @@ function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
 
   /* start of range for second random variable; the first contributes at
    * most j, so the second must contribute at least... */
-  let k <- z - j;
+  let k <- max(0, z - j);
 
   /* end of range for the second random variable; the first contributes at
    * least i, so the first must contribute at most... */
-  let l <- z - i;
+  let l <- min(n - 1, z - i);
 
   assert j - i + 1 == l - k + 1;  // lengths of ranges should be equal
   let s <- iota(i + 1, max(j - i + 1, 0));  // first range, ascending order
