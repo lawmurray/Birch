@@ -82,7 +82,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
       finish(')');
   
       /* using declarations for member functions in base classes that are
-      * overridden */
+       * overridden */
       std::set<std::string> names;
       for (auto f : memberFunctions) {
         if (f->has(OVERRIDE)) {

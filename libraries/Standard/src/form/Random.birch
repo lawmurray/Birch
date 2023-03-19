@@ -236,15 +236,25 @@ struct Random<Value> < Form {
     return hasDistribution() && getDistribution()->isBoundedDiscrete();
   }
 
-  void read(const Buffer& buffer) {
+  void read(const Buffer& buffer);
+  void read(const Integer t, const Buffer& buffer);
+  void write(const Buffer& buffer);
+  void write(const Integer t, const Buffer& buffer);
+  }}
+
+  cpp{{
+  template<class Value>
+  void Random<Value>::read(const Buffer& buffer) {
     birch::optional_assign(*this, buffer->get<Value>());
   }
 
-  void read(const Integer t, const Buffer& buffer) {
+  template<class Value>
+  void Random<Value>::read(const Integer t, const Buffer& buffer) {
     return read(buffer);
   }
 
-  void write(const Buffer& buffer) {
+  template<class Value>
+  void Random<Value>::write(const Buffer& buffer) {
     if (x || p) {
       buffer->set(value());
     } else {
@@ -252,10 +262,10 @@ struct Random<Value> < Form {
     }
   }
 
-  void write(const Integer t, const Buffer& buffer) {
+  template<class Value>
+  void Random<Value>::write(const Integer t, const Buffer& buffer) {
     return write(buffer);
   }
-
   }}
 }
 

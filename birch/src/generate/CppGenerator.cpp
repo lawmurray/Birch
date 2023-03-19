@@ -223,6 +223,7 @@ void birch::CppGenerator::visit(const File* o) {
     }
   }
 
+  /* everything else */
   line("namespace birch {");
   for (auto o1 : *o->root) {
     if (!dynamic_cast<const Raw*>(o1)) {

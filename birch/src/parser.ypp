@@ -709,6 +709,7 @@ class_statement
     | conversion_operator_declaration
     | slice_operator_declaration
     | hpp
+    | cpp
     ;
     
 class_statements
@@ -725,6 +726,7 @@ struct_statement
     : member_variable_declaration
     | member_phantom_declaration
     | hpp
+    | cpp
     ;
     
 struct_statements
@@ -746,8 +748,8 @@ file_statement
     | class_declaration
     | struct_declaration
     | basic_declaration
-    | cpp
     | hpp
+    | cpp
     ;
 
 file_statements

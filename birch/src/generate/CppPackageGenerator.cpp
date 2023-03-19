@@ -33,8 +33,8 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   Gatherer<UnaryOperator> unaries;
   for (auto file : o->sources) {
     file->accept(&basics);
-    file->accept(&classes);
     file->accept(&structs);
+    file->accept(&classes);
     file->accept(&globals);
     file->accept(&functions);
     file->accept(&programs);
@@ -44,13 +44,13 @@ void birch::CppPackageGenerator::visit(const Package* o) {
 
   /* base classes must be defined before their derived classes, so these are
    * gathered and sorted first */
-  poset<const Class*,inherits> sortedClasses;
-  for (auto o : classes) {
-    sortedClasses.insert(o);
-  }
   poset<const Struct*,inherits> sortedStructs;
   for (auto o : structs) {
     sortedStructs.insert(o);
+  }
+  poset<const Class*,inherits> sortedClasses;
+  for (auto o : classes) {
+    sortedClasses.insert(o);
   }
 
   if (header) {
@@ -70,6 +70,16 @@ void birch::CppPackageGenerator::visit(const Package* o) {
 
     line("namespace birch {");
 
+    /* forward struct type declarations */
+    for (auto o : structs) {
+      if (!o->isAlias()) {
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        line("struct " << o->name << ';');
+      }
+    }
+    line("");
+
     /* forward class type declarations */
     for (auto o : classes) {
       if (!o->isAlias()) {
@@ -81,16 +91,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         start("using " << o->name << " = membirch::Shared<" << o->name << '_');
         genTemplateArgs(o);
         finish(">;");
-      }
-    }
-    line("");
-
-    /* forward struct type declarations */
-    for (auto o : structs) {
-      if (!o->isAlias()) {
-        genTemplateParams(o);
-        genSourceLine(o->loc);
-        line("struct " << o->name << ';');
       }
     }
     line("");
@@ -111,6 +111,21 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     }
     line("");
 
+    /* struct type aliases */
+    for (auto o : structs) {
+      if (o->isAlias()) {
+        auto base = dynamic_cast<const NamedType*>(o->base);
+        assert(base);
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        start("using " << o->name << " = " << base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+        finish(';');
+      }
+    }
+
     /* class type aliases */
     for (auto o : classes) {
       if (o->isAlias()) {
@@ -126,21 +141,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
     line('}');
-
-    /* struct type aliases */
-    for (auto o : structs) {
-      if (o->isAlias()) {
-        auto base = dynamic_cast<const NamedType*>(o->base);
-        assert(base);
-        genTemplateParams(o);
-        genSourceLine(o->loc);
-        start("using " << o->name << " = " << base->name);
-        if (!base->typeArgs->isEmpty()) {
-          middle('<' << base->typeArgs << '>');
-        }
-        finish(';');
-      }
-    }
 
     /* raw C++ code */
     for (auto file : o->sources) {
@@ -174,15 +174,15 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* classes */
-    for (auto o : sortedClasses) {
+    /* structs */
+    for (auto o : sortedStructs) {
       if (!o->isAlias()) {
         auxDeclaration << o;
       }
     }
 
-    /* structs */
-    for (auto o : sortedStructs) {
+    /* classes */
+    for (auto o : sortedClasses) {
       if (!o->isAlias()) {
         auxDeclaration << o;
       }
@@ -191,13 +191,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     /* programs */
     for (auto o : programs) {
       auxDeclaration << o;
-    }
-
-    /* generic struct definitions */
-    for (auto o : structs) {
-      if (o->isGeneric() && !o->isAlias()) {
-        auxDefinition << o;
-      }
     }
 
     /* generic function and operator definitions; those with deduced return
@@ -229,6 +222,13 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     }
     for (auto o : unaries) {
       if (o->isGeneric() && !o->returnType->isDeduced()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic struct definitions */
+    for (auto o : structs) {
+      if (o->isGeneric() && !o->isAlias()) {
         auxDefinition << o;
       }
     }
