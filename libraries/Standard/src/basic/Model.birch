@@ -80,7 +80,7 @@ abstract class Model {
    * Read at start.
    */
   override function read(buffer:Buffer) {
-    super.read(buffer);
+    read(buffer);
   }
 
   /**
@@ -94,7 +94,7 @@ abstract class Model {
    * Write at start.
    */
   override function write(buffer:Buffer) {
-    super.write(buffer);
+    write(buffer);
   }
 
   /**

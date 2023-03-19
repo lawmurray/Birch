@@ -65,7 +65,7 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
         global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(Φ));
   }
 
-  override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
+  override function updateLazy(X:Random<Real[_,_]>) -> Delay? {
     return update_matrix_normal_inverse_wishart_matrix_gaussian(box(X - C), A,
         N, Λ, Γ, k, Φ);
   }

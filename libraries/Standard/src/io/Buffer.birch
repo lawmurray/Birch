@@ -305,76 +305,6 @@ final class Buffer {
   }
 
   /**
-   * Get the value.
-   *
-   * @tparam Type The desired type.
-   *
-   * @param o Existing object.
-   *
-   * This version is used when reading objects of class type, where instead of
-   * constructing a new object then calling its `read()` function, an existing
-   * object is provided, calling its `read()` function directly.
-   */
-  function get<Type>(o:Type) {
-    o.read(this);
-  }
-
-  /**
-   * Get the value.
-   *
-   * @tparam Type The desired type.
-   *
-   * @param t Step number.
-   * @param o Existing object.
-   *
-   * This version is used when reading objects of class type, where instead of
-   * constructing a new object then calling its `read()` function, an existing
-   * object is provided, calling its `read()` function directly.
-   */
-  function get<Type>(t:Integer, o:Type) {
-    o.read(t, this);
-  }
-
-  /**
-   * Get the value of an entry.
-   *
-   * @tparam Type The desired type.
-   *
-   * @param key Key of the entry.
-   * @param o Existing object.
-   *
-   * This version is used when reading objects of class type, where instead of
-   * constructing a new object then calling its `read()` function, an existing
-   * object is provided, calling its `read()` function directly.
-   */
-  function get<Type>(key:String, o:Type) {
-    let buffer <- get(key);
-    if buffer? {
-      buffer!.get<Type>(o);
-    }
-  }
-
-  /**
-   * Get the value of an entry.
-   *
-   * @tparam Type The desired type.
-   *
-   * @param key Key of the entry.
-   * @param t Step number.
-   * @param o Existing object.
-   *
-   * This version is used when reading objects of class type, where instead of
-   * constructing a new object then calling its `read()` function, an existing
-   * object is provided, calling its `read()` function directly.
-   */
-  function get<Type>(key:String, t:Integer, o:Type) {
-    let buffer <- get(key);
-    if buffer? {
-      buffer!.get<Type>(t, o);
-    }
-  }
-
-  /**
    * Get the value of an entry as a buffer.
    *
    * @param key Key of the entry.
@@ -964,9 +894,10 @@ final class Buffer {
     scalarString <- x;
   }
 
-  function doSet(x:Object) {
+  function doSet<Type>(x:Type) {
     setNil();
-    x.write(this);
+    let y <- x;
+    y.write(this);
   }
 
   function doSet(x:Boolean[_]) {
@@ -1027,9 +958,10 @@ final class Buffer {
     doSet(x);
   }
 
-  function doSet(t:Integer, x:Object) {
+  function doSet<Type>(t:Integer, x:Type) {
     setNil();
-    x.write(t, this);
+    let y <- x;
+    y.write(t, this);
   }
 
   function doSet(t:Integer, x:Boolean[_]) {
@@ -1138,7 +1070,7 @@ final class Buffer {
     push(make_buffer(x));
   }
 
-  function doPush(x:Object) {
+  function doPush<Type>(x:Type) {
     push(make_buffer(x));
   }
 
@@ -1236,7 +1168,7 @@ final class Buffer {
     doPush(x);
   }
 
-  function doPush(t:Integer, x:Object) {
+  function doPush<Type>(t:Integer, x:Type) {
     push(make_buffer(t, x));
   }
 

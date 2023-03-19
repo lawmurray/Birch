@@ -33,12 +33,12 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return update_dirichlet_multinomial(x, global.value(n), global.value(α));
   }
 
-  override function updateLazy(x:Expression<Integer[_]>) -> Delay? {
+  override function updateLazy(x:Random<Integer[_]>) -> Delay? {
     return update_dirichlet_multinomial(x, n, α);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_dirichlet_multinomial(this.self(), n, α));
+    return box(logpdf_dirichlet_multinomial(this, n, α));
   }
 
   override function doConstant() {

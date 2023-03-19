@@ -38,12 +38,12 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
     return update_inverse_gamma_gamma(x, global.value(k), global.value(α), global.value(β));
   }
 
-  override function updateLazy(x:Expression<Real>) -> Delay? {
+  override function updateLazy(x:Random<Real>) -> Delay? {
     return update_inverse_gamma_gamma(x, k, α, β);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_inverse_gamma_gamma(this.self(), k, α, β));
+    return box(logpdf_inverse_gamma_gamma(this, k, α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {

@@ -27,12 +27,12 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return update_dirichlet_categorical(x, global.value(α));
   }
 
-  override function updateLazy(x:Expression<Integer>) -> Delay? {
+  override function updateLazy(x:Random<Integer>) -> Delay? {
     return update_dirichlet_categorical(x, α);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_dirichlet_categorical(this.self(), α));
+    return box(logpdf_dirichlet_categorical(this, α));
   }
 
   override function lower() -> Integer!? {

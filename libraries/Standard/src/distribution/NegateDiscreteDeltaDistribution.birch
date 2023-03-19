@@ -34,12 +34,12 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
     return wrap_delta(-x);
   }
 
-  override function updateLazy(x:Expression<Integer>) -> Delay? {
+  override function updateLazy(x:Random<Integer>) -> Delay? {
     return wrap_delta(-x);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_categorical(1 - l - this.self(), p));
+    return box(logpdf_categorical(1 - l - this, p));
   }
 
   override function lower() -> Integer!? {

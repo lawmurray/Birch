@@ -59,7 +59,7 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
    *
    * @param x The observation.
    */
-  function updateLazy(x:Expression<Value>) -> Delay? {
+  function updateLazy(x:Random<Value>) -> Delay? {
     return nil;
   }
 
@@ -114,109 +114,92 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
    * Does this have a stateful variate assigned?
    */
   final function hasVariate() -> Boolean {
-    let p <- Distribution<Value>?(this.graft())!;
-    return p.x?;
+    return this.x?;
   }
 
   /**
    * Get the stateful variate.
    */
   final function variate() -> Value! {
-    let p <- Distribution<Value>?(this.graft())!;
-    p.realize();
-    p.constant();
-    return p.x!;
+    realize();
+    this.constant();
+    return this.x!;
   }
 
   /**
    * Get the stateful variate, with lazy evaluation.
    */
   final function variateLazy() -> Value! {
-    let p <- Distribution<Value>?(this.graft())!;
-    p.realize();
-    return p.x!;
+    realize();
+    return this.x!;
   }
 
   /**
    * Get the stateful variate, boxed as a Random.
    */
   final function random() -> Random<Value> {
-    let p <- Distribution<Value>?(this.graft())!;
     o:Random<Value>;
-    o.setDistribution(p);
+    o.setDistribution(this);
     return o;
-  }
-
-  /**
-   * Get this distribution.
-   */
-  final function self() -> Distribution<Value> {
-    return Distribution<Value>?(this.graft())!;
   }
 
   /**
    * Assign the stateful variate.
    */
   final function assign(x:Value!) {
-    let p <- Distribution<Value>?(this.graft())!;
     let h <- get_handler();
-    assert !p.x?;
+    assert !this.x?;
     if h.autodiff {
-      h.Ξ.pushBack(p);
-      h.w <- h.w + p.logpdfLazy(x);
+      h.Ξ.pushBack(this);
+      h.w <- h.w + logpdfLazy(x);
     } else {
-      h.w <- h.w + p.logpdf(x);
+      h.w <- h.w + logpdf(x);
     }
-    if p.hasJoined() {
-      p.getJoined().setSubordinate(true);
+    if this.hasJoined() {
+      this.getJoined().setSubordinate(true);
     }
-    p.x <- x;
+    this.x <- x;
   }
 
   final override function realize() {
-    let p <- Distribution<Value>?(this.graft())!;
-    if !p.x? {
+    if !this.x? {
       let h <- get_handler();
       if h.autodiff {
-        h.Ξ.pushBack(p);
-        p.x <- p.simulateLazy();
+        h.Ξ.pushBack(this);
+        this.x <- simulateLazy();
       } else {
-        p.x <- p.simulate();
+        this.x <- simulate();
       }
-      if p.hasJoined() {
-        p.getJoined().setSubordinate(true);
+      if this.hasJoined() {
+        this.getJoined().setSubordinate(true);
       }
     }
-    this.x <- p.x;   ///@todo possible that this == p
   }
 
   final override function condition() -> Delay? {
     let h <- get_handler();
+    let p <- Distribution<Value>?(this.getUpdated())!;
     if h.autodiff {
-      return updateLazy(random());
+      return updateLazy(p.random());
     } else {
-      return update(variate());
+      return update(p.variate());
     }
   }
 
   override function doEval() {
-    realize();
+    this.realize();
   }
 
   override function doMove(visitor:MoveVisitor) {
-    let p <- Distribution<Value>?(this.graft())!;
-    visitor.visit(p);
-    this.x <- p.x;   ///@todo possible that this == p
+    visitor.visit(this);
   }
 
   override function doArgs(visitor:ArgsVisitor) {
-    let p <- Distribution<Value>?(this.graft())!;
-    visitor.visit(p);
+    visitor.visit(this);
   }
 
   override function doShallowGrad(visitor:GradVisitor) {
-    let p <- Distribution<Value>?(this.graft())!;
-    visitor.visit(p);
+    visitor.visit(this);
   }
 
   override function doDeepGrad(visitor:GradVisitor) {
@@ -224,13 +207,11 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
   }
 
   override function doReset() {
-    let p <- Distribution<Value>?(this.graft())!;
-    p.offset <- 0;
+    offset <- 0;
   }
 
   override function doRelink(visitor:RelinkVisitor) {
-    let p <- Distribution<Value>?(this.graft())!;
-    visitor.visit(p);
+    visitor.visit(this);
   }
 
   override function doConstant() {

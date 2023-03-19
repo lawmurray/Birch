@@ -10,7 +10,7 @@ namespace birch {
  * If @p from has a value, then assign it to @p to, otherwise do nothing.
  */
 template<class To, class From>
-auto optional_assign(To& to, const std::optional<From>& from) {
+To& optional_assign(To& to, const std::optional<From>& from) {
   if (from.has_value()) {
     to = from.value();
   }
@@ -26,7 +26,7 @@ auto optional_assign(To& to, const std::optional<From>& from) {
  * If @p from has a value, then assign it to @p to, otherwise do nothing.
  */
 template<class To, class From>
-auto optional_assign(const membirch::Shared<To>& to,
+const membirch::Shared<To>& optional_assign(const membirch::Shared<To>& to,
     const std::optional<From>& from) {
   if (from.has_value()) {
     to = from.value();

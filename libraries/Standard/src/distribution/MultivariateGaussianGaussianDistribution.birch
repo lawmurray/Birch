@@ -36,7 +36,7 @@ final class MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         global.value(Σ), global.value(c), global.value(ω2), global.value(super.μ), global.value(super.σ2));
   }
 
-  override function updateLazy(x:Expression<Real>) -> Delay? {
+  override function updateLazy(x:Random<Real>) -> Delay? {
     return update_multivariate_gaussian_gaussian(x, a, μ, Σ, c, ω2, super.μ,
         super.σ2);
   }

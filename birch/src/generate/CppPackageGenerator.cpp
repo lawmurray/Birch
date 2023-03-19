@@ -33,8 +33,8 @@ void birch::CppPackageGenerator::visit(const Package* o) {
   Gatherer<UnaryOperator> unaries;
   for (auto file : o->sources) {
     file->accept(&basics);
-    file->accept(&structs);
     file->accept(&classes);
+    file->accept(&structs);
     file->accept(&globals);
     file->accept(&functions);
     file->accept(&programs);
@@ -111,21 +111,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     }
     line("");
 
-    /* struct type aliases */
-    for (auto o : structs) {
-      if (o->isAlias()) {
-        auto base = dynamic_cast<const NamedType*>(o->base);
-        assert(base);
-        genTemplateParams(o);
-        genSourceLine(o->loc);
-        start("using " << o->name << " = " << base->name);
-        if (!base->typeArgs->isEmpty()) {
-          middle('<' << base->typeArgs << '>');
-        }
-        finish(';');
-      }
-    }
-
     /* class type aliases */
     for (auto o : classes) {
       if (o->isAlias()) {
@@ -141,6 +126,21 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       }
     }
     line('}');
+
+    /* struct type aliases */
+    for (auto o : structs) {
+      if (o->isAlias()) {
+        auto base = dynamic_cast<const NamedType*>(o->base);
+        assert(base);
+        genTemplateParams(o);
+        genSourceLine(o->loc);
+        start("using " << o->name << " = " << base->name);
+        if (!base->typeArgs->isEmpty()) {
+          middle('<' << base->typeArgs << '>');
+        }
+        finish(';');
+      }
+    }
 
     /* raw C++ code */
     for (auto file : o->sources) {
@@ -174,15 +174,15 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* structs */
-    for (auto o : sortedStructs) {
+    /* classes */
+    for (auto o : sortedClasses) {
       if (!o->isAlias()) {
         auxDeclaration << o;
       }
     }
 
-    /* classes */
-    for (auto o : sortedClasses) {
+    /* structs */
+    for (auto o : sortedStructs) {
       if (!o->isAlias()) {
         auxDeclaration << o;
       }

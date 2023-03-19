@@ -48,7 +48,7 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         global.value(Γ), global.value(k));
   }
 
-  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+  override function updateLazy(x:Random<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_wishart(x, ν, λ, Γ, k);
   }
 

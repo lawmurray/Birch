@@ -33,7 +33,7 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_uniform(this.self(), l, u));
+    return box(logpdf_uniform(this, l, u));
   }
 
   override function cdf(x:Real!) -> Real!? {

@@ -65,7 +65,7 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
   }
 
-  override function updateLazy(x:Expression<Real>) -> Delay? {
+  override function updateLazy(x:Random<Real>) -> Delay? {
     return update_normal_inverse_gamma_gaussian(x, a, ν, λ, k, γ, c, s2);
   }
 
@@ -80,7 +80,7 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_normal_inverse_gamma_gaussian(this.self(), a, ν, λ, k,
+    return box(logpdf_normal_inverse_gamma_gaussian(this, a, ν, λ, k,
         γ, c, s2));
   }
 

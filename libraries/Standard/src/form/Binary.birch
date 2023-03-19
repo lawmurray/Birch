@@ -40,6 +40,22 @@ hpp{{
         birch::peek(std::declval<Right>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
+  int rows() const { \
+    return birch::rows(peek()); \
+  } \
+  \
+  int columns() const { \
+    return birch::columns(peek()); \
+  } \
+  \
+  int length() const { \
+    return birch::length(peek()); \
+  } \
+  \
+  int size() const { \
+    return birch::size(peek()); \
+  } \
+  \
   void clear() const { \
     const_cast<std::optional<Value>&>(x).reset(); \
   } \
@@ -81,12 +97,8 @@ hpp{{
     auto x = birch::peek(*this); \
     auto l = birch::peek(this->l); \
     auto r = birch::peek(this->r); \
-    if (!birch::is_constant(this->l)) { \
-      birch::shallow_grad(this->l, f_grad ## 1(g, x, l, r, ##__VA_ARGS__), visitor); \
-    } \
-    if (!birch::is_constant(this->r)) { \
-      birch::shallow_grad(this->r, f_grad ## 2(g, x, l, r, ##__VA_ARGS__), visitor); \
-    } \
+    birch::shallow_grad(this->l, f_grad ## 1(g, x, l, r, ##__VA_ARGS__), visitor); \
+    birch::shallow_grad(this->r, f_grad ## 2(g, x, l, r, ##__VA_ARGS__), visitor); \
     clear(); \
   } \
   \

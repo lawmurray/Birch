@@ -30,7 +30,7 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_multivariate_gaussian(this.self(), μ, Σ));
+    return box(logpdf_multivariate_gaussian(this, μ, Σ));
   }
 
   override function doConstant() {

@@ -27,7 +27,7 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_categorical(this.self(), ρ));
+    return box(logpdf_categorical(this, ρ));
   }
 
   override function cdf(x:Integer!) -> Real!? {

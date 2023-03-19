@@ -68,7 +68,7 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
         global.value(ω2));
   }
 
-  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+  override function updateLazy(x:Random<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
         x, a, ν, λ, Γ, k, c, ω2);
   }

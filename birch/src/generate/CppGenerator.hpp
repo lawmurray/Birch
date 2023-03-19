@@ -200,10 +200,10 @@ void birch::CppGenerator::genInit(const T* o) {
     if (!inConstructor) {
       middle(" = ");
     }
-    if (*o->op == "<~") {
-      middle("handle_simulate(" << o->value << ')');
-    } else if (*o->op == "~") {
-      middle("handle_assume(" << o->value << ')');
+    if (*o->op == "~") {
+      middle(o->value << "->random()");
+    } else if (*o->op == "<~") {
+      middle(o->value << "->variate()");
     } else {
       middle(o->value);
     }

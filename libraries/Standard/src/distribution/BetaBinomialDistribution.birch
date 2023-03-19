@@ -38,12 +38,12 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
     return update_beta_binomial(x, global.value(n), global.value(α), global.value(β));
   }
 
-  override function updateLazy(x:Expression<Integer>) -> Delay? {
+  override function updateLazy(x:Random<Integer>) -> Delay? {
     return update_beta_binomial(x, n, α, β);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_beta_binomial(this.self(), n, α, β));
+    return box(logpdf_beta_binomial(this, n, α, β));
   }
 
   override function cdf(x:Integer!) -> Real!? {

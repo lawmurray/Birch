@@ -71,12 +71,12 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
         global.value(γ));
   }
 
-  override function updateLazy(x:Expression<Real>) -> Delay? {
+  override function updateLazy(x:Random<Real>) -> Delay? {
    return update_normal_inverse_gamma(x, ν, λ, k, γ);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_normal_inverse_gamma(this.self(), ν, λ, k, γ));
+    return box(logpdf_normal_inverse_gamma(this, ν, λ, k, γ));
   }
 
   override function cdf(x:Real!) -> Real!? {

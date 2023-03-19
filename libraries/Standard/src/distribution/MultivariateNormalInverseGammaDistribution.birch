@@ -83,12 +83,12 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
         global.value(k), global.value(γ));
   }
 
-  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+  override function updateLazy(x:Random<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_gamma(x, ν, Λ, k, γ);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_multivariate_normal_inverse_gamma(this.self(), ν,
+    return box(logpdf_multivariate_normal_inverse_gamma(this, ν,
         Λ, k, γ));
   }
 

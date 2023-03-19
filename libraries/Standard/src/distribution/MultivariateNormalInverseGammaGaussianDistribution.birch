@@ -122,7 +122,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
     }
   }
 
-  override function updateLazy(x:Expression<Real>) -> Delay? {
+  override function updateLazy(x:Random<Real>) -> Delay? {
     if !this.joined? {
       return update_multivariate_normal_inverse_gamma_gaussian(x, a, ν, Λ, k, γ,
           c, ω2);
@@ -187,7 +187,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       (Expression<Real[_]>, Expression<Real[_,_]>, Expression<Real[_]>,
       Expression<Real[_,_]>, Expression<Real>, Expression<Real>,
       Expression<Real[_]>, Expression<Real[_]>)? {
-    x:StackExpression<Expression<Real>,Real>;
+    x:StackExpression<Random<Real>,Real>;
     A:PackExpression<Expression<Real[_]>,Real>;
     c:StackExpression<Expression<Real>,Real>;
     ω2:StackExpression<Expression<Real>,Real>;

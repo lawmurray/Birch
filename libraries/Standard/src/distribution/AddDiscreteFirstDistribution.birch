@@ -41,12 +41,12 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
     return update_add_discrete_first(x, global.value(p), global.value(a), global.value(b));
   }
 
-  override function updateLazy(x:Expression<Integer>) -> Delay? {
+  override function updateLazy(x:Random<Integer>) -> Delay? {
     return update_add_discrete_first(x, p, a, b);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_first(this.self(), p, a, b)));
+    return box(log(pdf_add_discrete_first(this, p, a, b)));
   }
 
   override function lower() -> Integer!? {

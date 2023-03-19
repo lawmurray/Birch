@@ -53,7 +53,7 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_conway_maxwell_poisson(this.self(), μ, ν, n));
+    return box(logpdf_conway_maxwell_poisson(this, μ, ν, n));
   }
 
   override function lower() -> Integer!? {

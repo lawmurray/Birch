@@ -160,30 +160,28 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
    * Number of rows in result.
    */
   final function rows() -> Integer {
-    eval();
-    return global.rows(x!);
+    return global.rows(eval());
   }
   
   /**
    * Number of columns in result.
    */
   final function columns() -> Integer {
-    eval();
-    return global.columns(x!);
+    return global.columns(eval());
   }
 
   /**
    * Length of result. This is synonymous with `rows()`.
    */
   final function length() -> Integer {
-    return rows();
+    return global.length(eval());
   }
 
   /**
    * Size of result. This is equal to `rows()*columns()`.
    */
   final function size() -> Integer {
-    return rows()*columns();
+    return global.size(eval());
   }
 
   /**

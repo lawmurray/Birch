@@ -38,12 +38,12 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     return update_beta_negative_binomial(x, global.value(k), global.value(α), global.value(β));
   }
 
-  override function updateLazy(x:Expression<Integer>) -> Delay? {
+  override function updateLazy(x:Random<Integer>) -> Delay? {
     return update_beta_negative_binomial(x, k, α, β);
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_beta_negative_binomial(this.self(), k, α, β));
+    return box(logpdf_beta_negative_binomial(this, k, α, β));
   }
 
   override function lower() -> Integer!? {

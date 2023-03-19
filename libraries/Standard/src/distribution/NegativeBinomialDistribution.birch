@@ -34,7 +34,7 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_negative_binomial(this.self(), k, ρ));
+    return box(logpdf_negative_binomial(this, k, ρ));
   }
 
   override function cdf(x:Integer!) -> Real!? {

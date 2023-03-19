@@ -42,7 +42,7 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
   }
   
   override function hoist() -> Expression<Real> {
-    return box(logpdf_uniform_int(this.self(), l, u));
+    return box(logpdf_uniform_int(this, l, u));
   }
 
   override function lower() -> Integer!? {

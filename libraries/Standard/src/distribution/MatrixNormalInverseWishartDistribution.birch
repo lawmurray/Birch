@@ -52,12 +52,12 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         global.value(Γ), global.value(k));
   }
 
-  override function updateLazy(X:Expression<Real[_,_]>) -> Delay? {
+  override function updateLazy(X:Random<Real[_,_]>) -> Delay? {
     return update_matrix_normal_inverse_wishart(X, N, Λ, Γ, k);
   }
 
   override function hoist() -> Expression<Real> {   
-    return box(logpdf_matrix_normal_inverse_wishart(this.self(), N, Λ,
+    return box(logpdf_matrix_normal_inverse_wishart(this, N, Λ,
         Γ, k));
   }
 

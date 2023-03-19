@@ -46,12 +46,12 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
         global.value(b));
   }
 
-  override function updateLazy(x:Expression<Integer>) -> Delay? {
+  override function updateLazy(x:Random<Integer>) -> Delay? {
     return update_add_discrete_delta(x, global.eval(p), global.eval(q), global.eval(a), global.eval(b));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_delta(this.self(), p, q, a, b)));
+    return box(log(pdf_add_discrete_delta(this, p, q, a, b)));
   }
 
   override function lower() -> Integer!? {

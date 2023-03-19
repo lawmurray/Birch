@@ -120,7 +120,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
     }
   }
 
-  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+  override function updateLazy(x:Random<Real[_]>) -> Delay? {
     if !this.joined? {
       return update_matrix_normal_inverse_wishart_multivariate_gaussian(
           x, a, N, Λ, Γ, k, c, φ2);
@@ -162,7 +162,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   }
 
   override function getMatrixNormalInverseWishartMultivariateGaussian(
-      x:Expression<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
+      x:Random<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
       Expression<Real>, Expression<Real>)? {
     return box(x - c, a, N, Λ, Γ, k, φ2);

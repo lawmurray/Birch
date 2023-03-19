@@ -437,7 +437,7 @@ abstract class Delay {
   }
 
   function getMatrixNormalInverseWishartMultivariateGaussian(
-      x:Expression<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
+      x:Random<Real[_]>) -> (Expression<Real[_]>, Expression<Real[_]>,
       Expression<Real[_,_]>, Expression<Real[_,_]>, Expression<Real[_,_]>,
       Expression<Real>, Expression<Real>)? {
     return nil;

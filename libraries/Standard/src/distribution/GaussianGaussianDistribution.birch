@@ -34,7 +34,7 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
         global.value(c), global.value(ω2), global.value(super.μ), global.value(super.σ2));
   }
 
-  override function updateLazy(x:Expression<Real>) -> Delay? {
+  override function updateLazy(x:Random<Real>) -> Delay? {
     return update_gaussian_gaussian(x, a, μ, σ2, c, ω2, super.μ, super.σ2);
   }
 

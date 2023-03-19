@@ -33,7 +33,7 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_gaussian(this.self(), μ, σ2));
+    return box(logpdf_gaussian(this, μ, σ2));
   }
   
   override function cdf(x:Real!) -> Real!? {

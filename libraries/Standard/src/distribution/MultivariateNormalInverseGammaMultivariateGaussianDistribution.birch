@@ -67,10 +67,10 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
   override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        this.self(), A, ν, Λ, k, γ, c, Ω));
+        this, A, ν, Λ, k, γ, c, Ω));
   }
 
-  override function updateLazy(x:Expression<Real[_]>) -> Delay? {
+  override function updateLazy(x:Random<Real[_]>) -> Delay? {
     return update_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
         A, ν, Λ, k, γ, c, Ω);
   }
