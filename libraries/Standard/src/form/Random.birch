@@ -1,0 +1,323 @@
+/**
+ * Random variate.
+ *
+ * @tparam Value Value type.
+ */
+struct Random<Value> < Form {
+  phantom x;
+  phantom p;
+
+  hpp{{
+  std::optional<numbirch::Future<Value>> x;
+  std::optional<Distribution<Value>> p;
+
+  /**
+   * Value assignment.
+   */
+  Random& operator=(const Value& x) {
+    assert(!this->x);
+    if (hasDistribution()) {
+      getDistribution()->assign(x);
+    }
+    constant();
+    this->x = x;
+    return *this;
+  }
+
+  int rows() const {
+    return birch::rows(peek());
+  }
+
+  int columns() const {
+    return birch::columns(peek());
+  }
+
+  int length() const {
+    return birch::length(peek());
+  }
+
+  int size() const {
+    return birch::size(peek());
+  }
+
+  void reset() const {
+    if (hasDistribution()) {
+      birch::reset(getDistribution());
+    }
+  }
+
+  void relink(const RelinkVisitor& visitor) const {
+    if (hasDistribution()) {
+      birch::relink(getDistribution(), visitor);
+    }
+  }
+
+  void constant() const {
+    if (hasDistribution()) {
+      birch::constant(getDistribution());
+    }
+  }
+
+  bool isConstant() const {
+    return !hasDistribution() || birch::is_constant(getDistribution());
+  }
+
+  void clear() const {
+    const_cast<Random*>(this)->x.reset();
+  }
+ 
+  auto value() const {
+    auto x = this->eval();
+    this->constant();
+    return x;
+  }
+ 
+  auto eval() const {
+    if (hasDistribution()) {
+      return birch::eval(getDistribution());
+    } else {
+      assert(hasValue());
+      return *x;
+    }
+  }
+ 
+  auto peek() const {
+    if (!x) {
+      assert(hasDistribution());
+      const_cast<Random*>(this)->x = birch::peek(getDistribution());
+    }
+    return *x;
+  }
+ 
+  auto move(const MoveVisitor& visitor) const {
+    if (hasDistribution()) {
+      return birch::move(getDistribution(), visitor);
+    } else {
+      assert(hasValue());
+      return *x;
+    }
+  }
+ 
+  void args(const ArgsVisitor& visitor) const {
+    if (hasDistribution()) {
+      birch::args(getDistribution(), visitor);
+    }
+  }
+ 
+  template<class G>
+  void shallowGrad(const G& g, const GradVisitor& visitor) const {
+    if (hasDistribution()) {
+      birch::shallow_grad(getDistribution(), g, visitor);
+      clear();
+    }
+  }
+ 
+  void deepGrad(const GradVisitor& visitor) const {
+    if (hasDistribution()) {
+      birch::deep_grad(getDistribution(), visitor);
+    }
+  }
+
+  /**
+   * Does this have a value?
+   */
+  bool hasValue() const {
+    return x.has_value() ||
+        (hasDistribution() && getDistribution()->hasValue());
+  }
+
+  /**
+   * Does this have a distribution?
+   */
+  bool hasDistribution() const {
+    return p.has_value();
+  }
+
+  /**
+   * Get the distribution.
+   */
+  Distribution<Value> getDistribution() const {
+    assert(hasDistribution());
+    using raw_type = typename Distribution<Value>::value_type*;
+    return Distribution<Value>(dynamic_cast<raw_type>((*p)->getUpdated().get()));
+  }
+
+  /**
+   * Set the distribution.
+   *
+   * @param p Distribution.
+   */
+  void setDistribution(const Distribution<Value>& p) {
+    assert(!this->p);
+    if (hasValue()) {
+      p->assign(*x);
+      clear();
+    }
+    this->p = p;
+  }
+
+  /**
+   * Does this have a marginalized distribution?
+   */
+  bool hasMarginalizedDistribution() const {
+    return hasDistribution() && getDistribution()->hasMarginalized();
+  }
+
+  /**
+   * Get the marginalized distribution.
+   */
+  Delay getMarginalizedDistribution() const {
+    assert(hasMarginalizedDistribution());
+    return getDistribution()->getMarginalized()->getUpdated();
+  }
+
+  Delay graft() const {
+    assert(p);
+    return getDistribution()->graft();
+  }
+
+  bool isGaussian() const {
+    return hasDistribution() && getDistribution()->isGaussian();
+  }
+
+  bool isBeta() const {
+    return hasDistribution() && getDistribution()->isBeta();
+  }
+
+  bool isGamma() const {
+    return hasDistribution() && getDistribution()->isGamma();
+  }
+
+  bool isInverseGamma() const {
+    return hasDistribution() && getDistribution()->isInverseGamma();
+  }
+
+  bool isInverseWishart() const {
+    return hasDistribution() && getDistribution()->isInverseWishart();
+  }
+
+  bool isNormalInverseGamma() const {
+    return hasDistribution() && getDistribution()->isNormalInverseGamma();
+  }
+
+  bool isDirichlet() const {
+    return hasDistribution() && getDistribution()->isDirichlet();
+  }
+
+  bool isRestaurant() const {
+    return hasDistribution() && getDistribution()->isRestaurant();
+  }
+
+  bool isMultivariateGaussian() const {
+    return hasDistribution() && getDistribution()->isMultivariateGaussian();
+  }
+
+  bool isMultivariateNormalInverseGamma() const {
+    return hasDistribution() && getDistribution()->isMultivariateNormalInverseGamma();
+  }
+
+  bool isMultivariateNormalInverseWishart() const {
+    return hasDistribution() && getDistribution()->isMultivariateNormalInverseWishart();
+  }
+
+  bool isMultivariateNormalWishart() const {
+    return hasDistribution() && getDistribution()->isMultivariateNormalWishart();
+  }
+
+  bool isMatrixGaussian() const {
+    return hasDistribution() && getDistribution()->isMatrixGaussian();
+  }
+
+  bool isMatrixNormalInverseWishart() const {
+    return hasDistribution() && getDistribution()->isMatrixNormalInverseWishart();
+  }
+
+  bool isBoundedDiscrete() const {
+    return hasDistribution() && getDistribution()->isBoundedDiscrete();
+  }
+
+  void read(const Buffer& buffer) {
+    birch::optional_assign(*this, buffer->get<Value>());
+  }
+
+  void read(const Integer t, const Buffer& buffer) {
+    return read(buffer);
+  }
+
+  void write(const Buffer& buffer) {
+    if (x || p) {
+      buffer->set(value());
+    } else {
+      buffer->setNil();
+    }
+  }
+
+  void write(const Integer t, const Buffer& buffer) {
+    return write(buffer);
+  }
+
+  }}
+}
+
+/**
+ * Create a Random.
+ */
+function make_random<Value>() -> Random<Value> {
+  o:Random<Value>;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Value to assign.
+ */
+function make_random<Value>(x:Value) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Value to assign.
+ */
+function make_random<Value>(x:Value?) -> Random<Value> {
+  o:Random<Value>;
+  o <-? x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Value to assign.
+ */
+function make_random<Value>(x:Value!) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Optional value to assign.
+ */
+function make_random<Value>(x:Value!?) -> Random<Value> {
+  o:Random<Value>;
+  if x? {
+    o <- x!;
+  }
+  return o;
+}
+
+/**
+ * Box a value in a Random (identity operation).
+ *
+ * @param x Existing object.
+ */
+function make_random<Value>(x:Random<Value>) -> Random<Value> {
+  return x;
+}
