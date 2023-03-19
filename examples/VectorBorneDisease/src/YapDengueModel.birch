@@ -91,9 +91,9 @@ final class YapDengueModel < Model {
   }
 
   override function read(buffer:Buffer) {
-    buffer.get("h", h);
-    buffer.get("m", m);
-    buffer.get("ρ", ρ);
+    h <-? buffer.get<SEIRComponent>("h");
+    m <-? buffer.get<SEIRComponent>("m");
+    ρ <-? buffer.get<Real>("ρ");
   }
 
   override function write(buffer:Buffer) {
