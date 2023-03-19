@@ -12,15 +12,22 @@ struct Random<Value> < Form {
   std::optional<Distribution<Value>> p;
 
   /**
+   * Copy assignment.
+   */
+  Random& operator=(const Random& o) {
+    if (o.hasDistribution()) {
+      setDistribution(*o.p);
+    } else if (o.hasValue()) {
+      setValue(*o.x);
+    }
+    return *this;
+  }
+
+  /**
    * Value assignment.
    */
   Random& operator=(const Value& x) {
-    assert(!this->x);
-    if (hasDistribution()) {
-      getDistribution()->assign(x);
-    }
-    constant();
-    this->x = x;
+    setValue(x);
     return *this;
   }
 
@@ -127,6 +134,21 @@ struct Random<Value> < Form {
   }
 
   /**
+   * Set the value.
+   *
+   * @param x Value.
+   */
+  void setValue(const Value& x) {
+    assert(!hasValue());
+    if (hasDistribution()) {
+      getDistribution()->assign(x);
+    } else {
+      this->x = x;
+    }
+    constant();
+  }
+
+  /**
    * Does this have a distribution?
    */
   bool hasDistribution() const {
@@ -148,12 +170,13 @@ struct Random<Value> < Form {
    * @param p Distribution.
    */
   void setDistribution(const Distribution<Value>& p) {
-    assert(!this->p);
-    if (hasValue()) {
-      p->assign(*x);
-      clear();
+    assert(!hasDistribution());
+    if (hasValue()) {  // must call hasValue() before setting this->p
+      this->p = p;
+      getDistribution()->assign(*x);
+    } else {
+      this->p = p;
     }
-    this->p = p;
   }
 
   /**
