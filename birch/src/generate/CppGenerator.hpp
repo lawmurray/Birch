@@ -201,9 +201,9 @@ void birch::CppGenerator::genInit(const T* o) {
       middle(" = ");
     }
     if (*o->op == "~") {
-      middle(o->value << "->random()");
+      middle('(' << o->value << ")->random()");
     } else if (*o->op == "<~") {
-      middle(o->value << "->variate()");
+      middle('(' << o->value << ")->variate()");
     } else {
       middle(o->value);
     }
