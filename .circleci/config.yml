@@ -6,7 +6,7 @@ orbs:
 executors:
   default:
     docker:
-      - image: registry.opensuse.org/opensuse/tumbleweed
+      - image: ubuntu:jammy
     resource_class: large
     environment:
       CODENAME: default
@@ -14,7 +14,7 @@ executors:
 
   bench:
     docker:
-      - image: registry.opensuse.org/opensuse/tumbleweed
+      - image: ubuntu:jammy
     resource_class: large
     environment:
       CODENAME: bench
@@ -23,11 +23,12 @@ executors:
       MAKEFLAGS: -j8
       CONFIGURE_FLAGS: --disable-assert
       BIRCH_FLAGS: --unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
+      MONGODB_DATABASE_TOOLS_URL: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.7.0.deb
     working_directory: /root/bench
 
   cover:
     docker:
-      - image: registry.opensuse.org/opensuse/tumbleweed
+      - image: ubuntu:jammy
     resource_class: large
     environment:
       CODENAME: cover
@@ -172,17 +173,18 @@ commands:
                     cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
               elif [[ "$CODENAME" =~ "default" || "$CODENAME" =~ "bench" || "$CODENAME" =~ "cover" ]]; then
-                zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
-                  && zypper --non-interactive refresh \
-                  && zypper --non-interactive update \
-                  && zypper --non-interactive install --no-recommends \
+                export DEBIAN_FRONTEND=noninteractive
+                apt update
+                apt install -y --no-install-recommends \
                   git \
-                  openssh \
+                  ssh \
+                  gpg \
+                  gpg-agent \
                   tar \
                   gzip \
-                  bzip2 \
-                  xz \
+                  xz-utils \
                   curl \
+                  wget \
                   time \
                   ca-certificates \
                   binutils \
@@ -193,31 +195,32 @@ commands:
                   libtool \
                   flex \
                   bison \
-                  gcc-c++ \
+                  g++ \
                   gdb \
                   lcov \
-                  libyaml-devel \
-                  jemalloc-devel \
-                  boost-devel \
-                  eigen3-devel \
-                  cairo-devel \
-                  sqlite3-devel \
-                  mongodb-database-tools \
-                  osc \
-                  gh \
+                  libjemalloc-dev \
+                  libeigen3-dev \
+                  libyaml-dev \
+                  libboost-math-dev \
+                  libsqlite3-dev \
+                  libcairo2-dev \
                   doxygen \
-                  rpmlint \
-                  rpm-build \
-                  createrepo_c \
+                  build-essential \
+                  apt-utils \
                   dpkg \
-                  dpkg-devel \
+                  dpkg-dev \
                   devscripts \
                   debhelper \
                   fakeroot \
+                  lintian \
                   reprepro \
                   python3 \
-                  python3-pip \
-                  && zypper clean --all
+                  python3-pip
+                if [[ "$CODENAME" =~ "bench" ]]; then
+                  curl -o mongodb-database-tools.deb $MONGODB_DATABASE_TOOLS_URL
+                  apt install -y ./mongodb-database-tools.deb
+                fi
+                rm -rf /var/lib/apt/lists/*
               elif [[ "$CODENAME" =~ "opensuse" ]]; then
                 zypper --non-interactive update
                 zypper --non-interactive install --no-recommends \
@@ -236,7 +239,6 @@ commands:
                   flex \
                   bison \
                   gcc-c++ \
-                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -250,7 +252,7 @@ commands:
                   rpm-build \
                   rpm-config-SUSE \
                   createrepo_c
-                rm -rf /var/lib/apt/lists/*
+                zypper clean --all
               elif [[ "$CODENAME" =~ "fedora" ]]; then
                 yum -y update
                 yum -y install \
@@ -269,7 +271,6 @@ commands:
                   flex \
                   bison \
                   gcc-c++ \
-                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -304,7 +305,6 @@ commands:
                   flex \
                   bison \
                   gcc-c++ \
-                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -366,7 +366,6 @@ commands:
                   bison \
                   gcc \
                   gdb \
-                  lcov \
                   autoconf \
                   automake \
                   libtool \
@@ -398,7 +397,6 @@ commands:
                   bison \
                   g++ \
                   gdb \
-                  lcov \
                   libjemalloc-dev \
                   libeigen3-dev \
                   libyaml-dev \
