@@ -158,13 +158,11 @@ commands:
           name: Install dependencies
           shell: /bin/sh  # use default shell, preferred may not have been installed yet (e.g. on Alpine, ash to bash)
           command: |
-              if [[ "$CODENAME" =~ "mac" ]]; then
+              if [ "$CODENAME" = "mac" ]; then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install \
                     gnupg \
                     coreutils \
-                    gnu-time \
-                    lcov \
                     libtool \
                     flex \
                     boost \
@@ -172,7 +170,7 @@ commands:
                     libomp \
                     cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-              elif [[ "$CODENAME" =~ "default" || "$CODENAME" =~ "bench" || "$CODENAME" =~ "cover" ]]; then
+              elif [ "$CODENAME" = "default" ] || [ "$CODENAME" = "bench" ] || [ "$CODENAME" = "cover" ]; then
                 apt update
                 DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
                   git \
@@ -214,12 +212,12 @@ commands:
                   reprepro \
                   python3 \
                   python3-pip
-                if [[ -n "$MONGODB_DATABASE_TOOLS_URL" ]]; then
+                if [ -n "$MONGODB_DATABASE_TOOLS_URL" ]; then
                   curl -o mongodb-database-tools.deb $MONGODB_DATABASE_TOOLS_URL
                   DEBIAN_FRONTEND=noninteractive apt install -y ./mongodb-database-tools.deb
                 fi
                 rm -rf /var/lib/apt/lists/*
-              elif [[ "$CODENAME" =~ "opensuse" ]]; then
+              elif [ "$CODENAME" = "opensuse" ]; then
                 zypper --non-interactive update
                 zypper --non-interactive install --no-recommends \
                   git \
@@ -251,7 +249,7 @@ commands:
                   rpm-config-SUSE \
                   createrepo_c
                 zypper clean --all
-              elif [[ "$CODENAME" =~ "fedora" ]]; then
+              elif [ "$CODENAME" = "fedora" ]; then
                 yum -y update
                 yum -y install \
                   git \
@@ -285,7 +283,7 @@ commands:
                   redhat-rpm-config \
                   createrepo_c
                 yum clean all
-              elif [[ "$CODENAME" =~ "mageia" ]]; then
+              elif [ "$CODENAME" = "mageia" ]; then
                 urpmi --auto-update
                 urpmi --force --no-recommends \
                   git \
@@ -319,7 +317,7 @@ commands:
                   rpm-mageia-setup \
                   rpm-mageia-setup-build \
                   createrepo_c
-              elif [[ "$CODENAME" =~ "alpine" ]]; then
+              elif [ "$CODENAME" = "alpine" ]; then
                 apk update
                 apk add --no-cache \
                   bash \
@@ -348,14 +346,13 @@ commands:
                   boost-dev \
                   sqlite-dev \
                   cairo-dev
-              elif [[ "$CODENAME" =~ "arch" ]]; then
+              elif [ "$CODENAME" = "arch" ]; then
                 pacman -Syu --noconfirm --needed \
                   git \
                   openssh \
                   tar \
                   gzip \
                   curl \
-                  time \
                   ca-certificates \
                   binutils \
                   elfutils \
