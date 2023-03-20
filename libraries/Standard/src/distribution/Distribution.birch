@@ -138,6 +138,10 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
    * Get the stateful variate, boxed as a Random.
    */
   final function random() -> Random<Value> {
+    let h <- get_handler();
+    if !h.autoconj {
+      realize();
+    }
     o:Random<Value>;
     o.setDistribution(this);
     return o;
