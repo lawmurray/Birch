@@ -34,7 +34,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_binomial(this, n, ρ));
+    return box(logpdf_binomial(random(), n, ρ));
   }
 
   override function cdf(x:Integer!) -> Real!? {
@@ -53,7 +53,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return global.value(n);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(n);
     global.constant(ρ);

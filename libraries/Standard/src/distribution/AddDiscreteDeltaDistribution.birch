@@ -51,7 +51,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_delta(this, p, q, a, b)));
+    return box(log(pdf_add_discrete_delta(random(), p, q, a, b)));
   }
 
   override function lower() -> Integer!? {
@@ -62,7 +62,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
     return global.value(a) + global.value(b) + (global.length(p) + global.length(q) - 2);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(p);
     global.constant(q);

@@ -41,7 +41,7 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
         Ω, super.μ, super.Σ);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(A);
     global.constant(μ);

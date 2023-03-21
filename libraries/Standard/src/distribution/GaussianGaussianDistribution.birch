@@ -38,7 +38,7 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     return update_gaussian_gaussian(x, a, μ, σ2, c, ω2, super.μ, super.σ2);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(μ);

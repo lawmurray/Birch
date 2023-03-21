@@ -869,37 +869,37 @@ auto peek(const T& x) {
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto move(const T& x, const MoveVisitor& visitor) {
+auto move(T& x, const MoveVisitor& visitor) {
   return x;
 }
 
 template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto move(const T& x, const MoveVisitor& visitor) {
+auto move(T& x, const MoveVisitor& visitor) {
   return x.move(visitor);
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto move(const T& x, const MoveVisitor& visitor) {
+auto move(T& x, const MoveVisitor& visitor) {
   return x->move(visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void args(const T& x, const ArgsVisitor& visitor) {
+void args(T& x, const ArgsVisitor& visitor) {
   //
 }
 
 template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void args(const T& x, const ArgsVisitor& visitor) {
+void args(T& x, const ArgsVisitor& visitor) {
   x.args(visitor);
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void args(const T& x, const ArgsVisitor& visitor) {
+void args(T& x, const ArgsVisitor& visitor) {
   x->args(visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void reset(const T& x) {
+void reset(T& x) {
   //
 }
 
@@ -909,12 +909,12 @@ void reset(T& x) {
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void reset(const T& x) {
+void reset(T& x) {
   x->reset();
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void relink(const T& x, const RelinkVisitor& visitor) {
+void relink(T& x, const RelinkVisitor& visitor) {
   //
 }
 
@@ -924,12 +924,12 @@ void relink(T& x, const RelinkVisitor& visitor) {
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void relink(const T& x, const RelinkVisitor& visitor) {
+void relink(T& x, const RelinkVisitor& visitor) {
   x->relink(visitor);
 }
 
 template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void grad(const T& x, const G& g) {
+void grad(T& x, const G& g) {
   //
 }
 
@@ -939,12 +939,12 @@ void grad(T& x, const G& g) {
 }
 
 template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
-void grad(const T& x, const G& g) {
+void grad(T& x, const G& g) {
   x->grad(g);
 }
 
 template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
+void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
   //
 }
 
@@ -954,12 +954,12 @@ void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
 }
 
 template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
-void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
+void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
   x->shallowGrad(g, visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void deep_grad(const T& x, const GradVisitor& visitor) {
+void deep_grad(T& x, const GradVisitor& visitor) {
   //
 }
 
@@ -969,12 +969,12 @@ void deep_grad(T& x, const GradVisitor& visitor) {
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void deep_grad(const T& x, const GradVisitor& visitor) {
+void deep_grad(T& x, const GradVisitor& visitor) {
   x->deepGrad(visitor);
 }
 
 template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void constant(const T& x) {
+void constant(T& x) {
   //
 }
 
@@ -984,7 +984,7 @@ void constant(T& x) {
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void constant(const T& x) {
+void constant(T& x) {
   x->constant();
 }
 
@@ -994,7 +994,7 @@ bool is_constant(const T& x) {
 }
 
 template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-bool is_constant(T& x) {
+bool is_constant(const T& x) {
   return x.isConstant();
 }
 

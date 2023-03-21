@@ -43,7 +43,7 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_inverse_gamma_gamma(this, k, α, β));
+    return box(logpdf_inverse_gamma_gamma(random(), k, α, β));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -54,7 +54,7 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
     return 0.0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(α);

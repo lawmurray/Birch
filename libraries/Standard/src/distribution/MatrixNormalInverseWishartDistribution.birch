@@ -57,11 +57,10 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real> {   
-    return box(logpdf_matrix_normal_inverse_wishart(this, N, Λ,
-        Γ, k));
+    return box(logpdf_matrix_normal_inverse_wishart(random(), N, Λ, Γ, k));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(N);
     global.constant(Λ);

@@ -27,7 +27,7 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_categorical(this, ρ));
+    return box(logpdf_categorical(random(), ρ));
   }
 
   override function cdf(x:Integer!) -> Real!? {
@@ -46,7 +46,7 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     return global.length(global.value(ρ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(ρ);
   }

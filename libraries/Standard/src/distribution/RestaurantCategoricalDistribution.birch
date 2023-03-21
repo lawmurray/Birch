@@ -43,10 +43,10 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_restaurant_categorical(this, α, θ, n));
+    return box(logpdf_restaurant_categorical(random(), α, θ, n));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(α);
     global.constant(θ);

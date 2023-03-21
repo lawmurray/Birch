@@ -39,7 +39,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_categorical(1 - l - this, p));
+    return box(logpdf_categorical(1 - l - random(), p));
   }
 
   override function lower() -> Integer!? {
@@ -50,7 +50,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
     return -l;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(p);
     global.constant(l);

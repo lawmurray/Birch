@@ -42,7 +42,7 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
   }
   
   override function hoist() -> Expression<Real> {
-    return box(logpdf_uniform_int(this, l, u));
+    return box(logpdf_uniform_int(random(), l, u));
   }
 
   override function lower() -> Integer!? {
@@ -53,7 +53,7 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return global.value(u);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(l);
     global.constant(u);

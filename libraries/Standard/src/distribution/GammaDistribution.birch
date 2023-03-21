@@ -33,7 +33,7 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_gamma(this, k, θ));
+    return box(logpdf_gamma(random(), k, θ));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -48,7 +48,7 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
     return 0.0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(θ);

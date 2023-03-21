@@ -47,7 +47,7 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_lomax(this, 1.0/(a*θ), k));
+    return box(logpdf_lomax(random(), 1.0/(a*θ), k));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -62,7 +62,7 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
     return 0.0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(k);

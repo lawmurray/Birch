@@ -53,11 +53,11 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real> {   
-    return box(logpdf_multivariate_normal_inverse_wishart(this,
-        ν, λ, Γ, k));
+    return box(logpdf_multivariate_normal_inverse_wishart(random(), ν, λ, Γ,
+        k));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(ν);
     global.constant(λ);

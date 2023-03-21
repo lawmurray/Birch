@@ -47,7 +47,7 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
     return box(0.0);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(α);
     global.constant(θ);

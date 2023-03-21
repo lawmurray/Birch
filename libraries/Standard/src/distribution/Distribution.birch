@@ -3,11 +3,21 @@
  *
  * @param Value Value type.
  */
-abstract class Distribution<Value> < Expression<Value>(nil, false) {
+abstract class Distribution<Value> < Delay {
+  /**
+   * Variate
+   */
+  x:Value!?;
+
   /**
    * Offset into vectorized arguments.
    */
-  offset:Integer <- 0;
+  offset:Integer <- -1;
+
+  /**
+   * Is the variate constant?
+   */
+  flagConstant:Boolean <- false;
 
   /**
    * Simulate a variate.
@@ -50,6 +60,7 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
    * @param x The observation.
    */
   function update(x:Value!) -> Delay? {
+    assert false;
     return nil;
   }
 
@@ -60,6 +71,7 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
    * @param x The observation.
    */
   function updateLazy(x:Random<Value>) -> Delay? {
+    assert false;
     return nil;
   }
 
@@ -110,63 +122,63 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
     return nil;
   }
 
-  /**
-   * Does this have a stateful variate assigned?
-   */
-  final function hasVariate() -> Boolean {
-    return this.x?;
-  }
-
-  /**
-   * Get the stateful variate.
-   */
-  final function variate() -> Value! {
-    realize();
-    this.constant();
-    return this.x!;
-  }
-
-  /**
-   * Get the stateful variate, with lazy evaluation.
-   */
-  final function variateLazy() -> Value! {
-    realize();
-    return this.x!;
-  }
-
-  /**
-   * Get the stateful variate, boxed as a Random.
-   */
   final function random() -> Random<Value> {
-    let h <- get_handler();
-    if !h.autoconj {
-      realize();
-    }
     o:Random<Value>;
     o.setDistribution(this);
     return o;
   }
 
-  /**
-   * Assign the stateful variate.
-   */
-  final function assign(x:Value!) {
+  final override function graft() -> Delay? {
+    let p <- this;
+    let p' <- this.getUpdated();
+    if p'.hasMarginalized() {
+      let q <- p'.getMarginalized();
+      let q' <- q.graft()!;
+      p'.setMarginalized(nil);
+      q'.realize();
+
+      let h <- get_handler();
+      if h.autojoin && q.supportsJoin() {
+        /* in this case, preserve the current updated distribution for this,
+         * but join the marginalized distribution to it */
+        p'.setJoined(q');
+      } else {
+        if p.isSecondOrder() {
+          /* in this case, q' is a joint distribution over the random variable
+           * associated with this distribution and the parent distribution,
+           * condition it to update the parent distribution */
+          p' <- q'.condition()!;
+        } else {
+          /* in this case, q' is just over the random variable associated with
+           * this distribution, condition the original distribution to update
+           * the parent distribution */
+          p' <- q.condition()!;
+        }
+        p.setUpdated(p');
+      }
+    }
+    assert !p'.hasMarginalized();
+    return p';
+  }
+
+  final function getUpdatedDistribution() -> Distribution<Value> {
+    return Distribution<Value>?(super.getUpdated())!;
+  }
+
+  final override function condition() -> Delay? {
     let h <- get_handler();
-    assert !this.x?;
+    let p <- this.getUpdatedDistribution();
     if h.autodiff {
-      h.Ξ.pushBack(this);
-      h.w <- h.w + logpdfLazy(x);
+      return updateLazy(p.random());
     } else {
-      h.w <- h.w + logpdf(x);
+      return update(p.value());
     }
-    if this.hasJoined() {
-      this.getJoined().setSubordinate(true);
-    }
-    this.x <- x;
   }
 
   final override function realize() {
-    if !this.x? {
+    if this.hasUpdated() {
+      this.getUpdated().realize();
+    } else if !this.x? {
       let h <- get_handler();
       if h.autodiff {
         h.Ξ.pushBack(this);
@@ -180,45 +192,116 @@ abstract class Distribution<Value> < Expression<Value>(nil, false) {
     }
   }
 
-  final override function condition() -> Delay? {
-    let h <- get_handler();
-    let p <- Distribution<Value>?(this.getUpdated())!;
-    if h.autodiff {
-      return updateLazy(p.random());
+  final function assign(x:Value!) {
+    if this.hasUpdated() {
+      this.getUpdatedDistribution().assign(x);
     } else {
-      return update(p.variate());
+      assert !this.x?;
+      let h <- get_handler();
+      if h.autodiff {
+        h.Ξ.pushBack(this);
+        h.w <- h.w + logpdfLazy(x);
+      } else {
+        h.w <- h.w + logpdf(x);
+      }
+      if this.hasJoined() {
+        this.getJoined().setSubordinate(true);
+      }
+      this.x <- x;
+      constant();
     }
   }
 
-  override function doEval() {
-    this.realize();
+  final function value() -> Value! {
+    this.graft()!.realize();
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().value();
+    } else {
+      this.constant();
+      return x!;
+    }
   }
 
-  override function doMove(visitor:MoveVisitor) {
-    visitor.visit(this);
+  final function eval() -> Value! {
+    this.graft()!.realize();
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().eval();
+    } else {
+      return x!;
+    }
   }
 
-  override function doArgs(visitor:ArgsVisitor) {
-    visitor.visit(this);
+  final function peek() -> Value! {
+    this.graft()!.realize();
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().peek();
+    } else {
+      return x!;
+    }
   }
 
-  override function doShallowGrad(visitor:GradVisitor) {
-    visitor.visit(this);
+  final function move(visitor:MoveVisitor) -> Value! {
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().move(visitor);
+    } else {
+      visitor.visit(this);
+      return x!;
+    }
   }
 
-  override function doDeepGrad(visitor:GradVisitor) {
-    //
+  final function args(visitor:ArgsVisitor) {
+    if this.hasUpdated() {
+      this.getUpdatedDistribution().args(visitor);
+    } else if offset >= 0 {
+      visitor.visit(x!, offset);
+    }
   }
 
-  override function doReset() {
-    offset <- 0;
+  final function grad<Gradient>(g:Gradient, visitor:GradVisitor) {
+    if this.hasUpdated() {
+      this.getUpdatedDistribution().grad(g, visitor);
+    } else if offset >= 0 {
+      visitor.visit(g, offset);
+    }
   }
 
-  override function doRelink(visitor:RelinkVisitor) {
-    visitor.visit(this);
+  final function reset() {
+    if this.hasUpdated() {
+      this.getUpdatedDistribution().reset();
+    } else {
+      offset <- -1;
+    }
   }
 
-  override function doConstant() {
-    //
+  final function relink(visitor:RelinkVisitor) {
+    if this.hasUpdated() {
+      this.getUpdatedDistribution().relink(visitor);
+    } else {
+      visitor.visit(this);
+    }
+  }
+
+  final function constant() {
+    if this.hasUpdated() {
+      this.getUpdatedDistribution().constant();
+    } else {
+      flagConstant <- true;
+    }
+  }
+
+  final function isConstant() -> Boolean {
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().isConstant();
+    } else {
+      return flagConstant;
+    }
+  }
+
+  final function hasValue() -> Boolean {
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().hasValue();
+    } else {
+      return x?;
+    }
   }
 }

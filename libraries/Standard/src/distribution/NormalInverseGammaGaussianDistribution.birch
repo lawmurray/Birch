@@ -80,11 +80,11 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_normal_inverse_gamma_gaussian(this, a, ν, λ, k,
+    return box(logpdf_normal_inverse_gamma_gaussian(random(), a, ν, λ, k,
         γ, c, s2));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(ν);
@@ -124,7 +124,8 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
   let ω2 <- σ2.l;
   let τ2 <- σ2.r;
   if τ2.isInverseGamma() && m.isNormalInverseGamma() &&
-      τ2.hasMarginalizedDistribution() && τ2.getMarginalizedDistribution() == m.getDistribution() {
+      τ2.hasMarginalized() && τ2.getMarginalized().getUpdated() ==
+      m.getDistribution().getUpdated() {
     let p_τ2 <- τ2.getDistribution();
     let p_m <- m.graft();
     let (ν, λ, k, γ) <- p_m.getNormalInverseGamma()!;

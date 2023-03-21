@@ -38,10 +38,10 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_beta_bernoulli(this, α, β));
+    return box(logpdf_beta_bernoulli(random(), α, β));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(α);
     global.constant(β);

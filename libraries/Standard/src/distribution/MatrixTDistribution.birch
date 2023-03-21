@@ -40,10 +40,10 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_matrix_t(this, k, M, Σ, Ψ));
+    return box(logpdf_matrix_t(random(), k, M, Σ, Ψ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(M);

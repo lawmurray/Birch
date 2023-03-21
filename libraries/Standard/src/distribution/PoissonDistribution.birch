@@ -28,7 +28,7 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_poisson(this, λ));
+    return box(logpdf_poisson(random(), λ));
   }
 
   override function cdf(x:Integer!) -> Real!? {
@@ -43,7 +43,7 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
     return 0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(λ);
   }

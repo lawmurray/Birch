@@ -34,7 +34,7 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_weibull(this, k, λ));
+    return box(logpdf_weibull(random(), k, λ));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -49,7 +49,7 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
     return 0.0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(λ);

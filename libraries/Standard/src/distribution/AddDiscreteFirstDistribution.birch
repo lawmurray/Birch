@@ -46,7 +46,7 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_first(this, p, a, b)));
+    return box(log(pdf_add_discrete_first(random(), p, a, b)));
   }
 
   override function lower() -> Integer!? {
@@ -57,7 +57,7 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
     return a + global.length(p) - 1;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(p);
     global.constant(a);

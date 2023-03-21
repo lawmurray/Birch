@@ -8,15 +8,15 @@ struct Unary<Middle>(m:Middle) < Form {
   m:Middle <- m;
 
   hpp{{
-  void reset() const {
+  void reset() {
     birch::reset(m);
   }
 
-  void relink(const RelinkVisitor& visitor) const {
+  void relink(const RelinkVisitor& visitor) {
     birch::relink(m, visitor);
   }
 
-  void constant() const {
+  void constant() {
     birch::constant(m);
   }
 
@@ -47,8 +47,8 @@ hpp{{
     return birch::size(peek()); \
   } \
   \
-  void clear() const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
+  void clear() { \
+    this->x.reset(); \
   } \
   \
   auto value() const { \
@@ -70,24 +70,24 @@ hpp{{
     return *x; \
   } \
   \
-  auto move(const MoveVisitor& visitor) const { \
+  auto move(const MoveVisitor& visitor) { \
     auto m = birch::move(this->m, visitor); \
     return f(m, ##__VA_ARGS__); \
   } \
   \
-  void args(const ArgsVisitor& visitor) const { \
+  void args(const ArgsVisitor& visitor) { \
     birch::args(this->m, visitor); \
   } \
   \
   template<class G> \
-  void shallowGrad(const G& g, const GradVisitor& visitor) const { \
+  void shallowGrad(const G& g, const GradVisitor& visitor) { \
     auto x = birch::peek(*this); \
     auto m = birch::peek(this->m); \
     birch::shallow_grad(this->m, f_grad(g, x, m, ##__VA_ARGS__), visitor); \
     clear(); \
   } \
   \
-  void deepGrad(const GradVisitor& visitor) const { \
+  void deepGrad(const GradVisitor& visitor) { \
     birch::deep_grad(this->m, visitor); \
   }
 }}

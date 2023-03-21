@@ -88,11 +88,11 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_multivariate_normal_inverse_gamma(this, ν,
-        Λ, k, γ));
+    return box(logpdf_multivariate_normal_inverse_gamma(random(), ν, Λ, k,
+        γ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(ν);
     global.constant(Λ);

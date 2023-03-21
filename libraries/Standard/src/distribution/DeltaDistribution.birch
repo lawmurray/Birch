@@ -27,8 +27,7 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
   }
 
   override function hoist() -> Expression<Real> {
-    self:DeltaDistribution<Arg> <- this;
-    return box(where(self == μ, 0.0, -inf));
+    return box(where(random() == μ, 0.0, -inf));
   }
 
   override function lower() -> Integer!? {
@@ -39,7 +38,7 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
     return global.value(μ);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(μ);
   }

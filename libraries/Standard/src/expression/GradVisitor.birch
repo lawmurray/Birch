@@ -7,36 +7,26 @@ class GradVisitor(size:Integer) {
   /**
    * Vectorized gradients.
    */
-  g:Real[size];
+  g:Real[_] <- vector(0.0, size);
 
-  function visit(p:Distribution<Real>) {
-    let h <- p.g!;
+  function visit(g:Real, offset:Integer) {
+    assert offset >= 0;
     cpp{{
-    g.slice(p->offset + 1) = h;
+    this->g.slice(offset + 1) = this->g.slice(offset + 1) + g;
     }}
   }
 
-  function visit(p:Distribution<Integer>) {
-    //
+  function visit(g:Real[_], offset:Integer) {
+    assert offset >= 0;
+    let m <- offset + 1;
+    let n <- m + size(g) - 1;
+    this.g[m..n] <- this.g[m..n] + g;
   }
 
-  function visit(p:Distribution<Boolean>) {
-    //
-  }
-
-  function visit(p:Distribution<Real[_]>) {
-    let m <- p.offset + 1;
-    let n <- m + size(p.g!) - 1;
-    g[m..n] <- p.g!;
-  }
-
-  function visit(p:Distribution<Integer[_]>) {
-    //
-  }
-
-  function visit(p:Distribution<Real[_,_]>) {
-    let m <- p.offset + 1;
-    let n <- m + size(p.g!) - 1;
-    g[m..n] <- vec(p.g!);
+  function visit(g:Real[_,_], offset:Integer) {
+    assert offset >= 0;
+    let m <- offset + 1;
+    let n <- m + size(g) - 1;
+    this.g[m..n] <- this.g[m..n] + vec(g);
   }
 }

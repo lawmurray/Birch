@@ -24,10 +24,10 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_dirichlet(this, global.value(α)));
+    return box(logpdf_dirichlet(random(), global.value(α)));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(α);
   }

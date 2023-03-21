@@ -47,7 +47,7 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_gamma_poisson(this, a, k, θ));
+    return box(logpdf_gamma_poisson(random(), a, k, θ));
   }
 
   override function cdf(x:Integer!) -> Real!? {
@@ -62,7 +62,7 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
     return 0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(k);

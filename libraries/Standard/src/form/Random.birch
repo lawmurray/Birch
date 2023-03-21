@@ -17,8 +17,8 @@ struct Random<Value> < Form {
   Random& operator=(const Random& o) {
     if (o.hasDistribution()) {
       setDistribution(*o.p);
-    } else if (o.hasValue()) {
-      setValue(*o.x);
+    } else {
+      this->x = o.x;
     }
     return *this;
   }
@@ -27,8 +27,58 @@ struct Random<Value> < Form {
    * Value assignment.
    */
   Random& operator=(const Value& x) {
-    setValue(x);
+    assert(!this->x.has_value());
+    if (hasDistribution()) {
+      getDistribution()->assign(x);
+    }
+    this->x = x;
+    this->constant();
     return *this;
+  }
+
+  /**
+   * Does this have a value?
+   */
+  bool hasValue() const {
+    return x.has_value() || (hasDistribution() &&
+        getDistribution()->hasValue());
+  }
+
+  /**
+   * Does this have a distribution?
+   */
+  bool hasDistribution() const {
+    return p.has_value();
+  }
+
+  /**
+   * Get the distribution.
+   */
+  Distribution<Value> getDistribution() const {
+    assert(hasDistribution());
+    return *p;
+  }
+
+  /**
+   * Set the distribution.
+   *
+   * @param p Distribution.
+   */
+  void setDistribution(const Distribution<Value>& p);
+
+  /**
+   * Does this have a marginalized distribution?
+   */
+  bool hasMarginalized() const {
+    return hasDistribution() && getDistribution()->hasMarginalized();
+  }
+
+  /**
+   * Get the marginalized distribution.
+   */
+  Delay getMarginalized() const {
+    assert(hasMarginalized());
+    return getDistribution()->getMarginalized();
   }
 
   int rows() const {
@@ -47,43 +97,44 @@ struct Random<Value> < Form {
     return birch::size(peek());
   }
 
-  void reset() const {
+  void reset() {
     if (hasDistribution()) {
-      birch::reset(getDistribution());
+      getDistribution()->reset();
     }
   }
 
-  void relink(const RelinkVisitor& visitor) const {
+  void relink(const RelinkVisitor& visitor) {
     if (hasDistribution()) {
-      birch::relink(getDistribution(), visitor);
+      getDistribution()->relink(visitor);
     }
   }
 
-  void constant() const {
+  void constant() {
     if (hasDistribution()) {
-      birch::constant(getDistribution());
+      getDistribution()->constant();
     }
+    this->p.reset();
   }
 
   bool isConstant() const {
-    return !hasDistribution() || birch::is_constant(getDistribution());
+    return !hasDistribution() || getDistribution()->isConstant();
   }
 
-  void clear() const {
-    const_cast<Random*>(this)->x.reset();
+  void clear() {
+    this->x.reset();
   }
  
   auto value() const {
     auto x = this->eval();
-    this->constant();
+    const_cast<Random*>(this)->constant();
     return x;
   }
  
   auto eval() const {
     if (hasDistribution()) {
-      return birch::eval(getDistribution());
+      return getDistribution()->eval();
     } else {
-      assert(hasValue());
+      assert(x.has_value());
       return *x;
     }
   }
@@ -91,112 +142,41 @@ struct Random<Value> < Form {
   auto peek() const {
     if (!x) {
       assert(hasDistribution());
-      const_cast<Random*>(this)->x = birch::peek(getDistribution());
+      const_cast<Random*>(this)->x = getDistribution()->peek();
     }
     return *x;
   }
  
-  auto move(const MoveVisitor& visitor) const {
+  auto move(const MoveVisitor& visitor) {
     if (hasDistribution()) {
-      return birch::move(getDistribution(), visitor);
+      return getDistribution()->move(visitor);
     } else {
-      assert(hasValue());
+      assert(x.has_value());
       return *x;
     }
   }
  
-  void args(const ArgsVisitor& visitor) const {
+  void args(const ArgsVisitor& visitor) {
     if (hasDistribution()) {
-      birch::args(getDistribution(), visitor);
+      getDistribution()->args(visitor);
     }
   }
  
   template<class G>
-  void shallowGrad(const G& g, const GradVisitor& visitor) const {
+  void shallowGrad(const G& g, const GradVisitor& visitor) {
     if (hasDistribution()) {
-      birch::shallow_grad(getDistribution(), g, visitor);
+      getDistribution()->grad(g, visitor);
       clear();
     }
   }
  
-  void deepGrad(const GradVisitor& visitor) const {
-    if (hasDistribution()) {
-      birch::deep_grad(getDistribution(), visitor);
-    }
-  }
-
-  /**
-   * Does this have a value?
-   */
-  bool hasValue() const {
-    return x.has_value() ||
-        (hasDistribution() && getDistribution()->hasValue());
-  }
-
-  /**
-   * Set the value.
-   *
-   * @param x Value.
-   */
-  void setValue(const Value& x) {
-    assert(!hasValue());
-    if (hasDistribution()) {
-      getDistribution()->assign(x);
-    } else {
-      this->x = x;
-    }
-    constant();
-  }
-
-  /**
-   * Does this have a distribution?
-   */
-  bool hasDistribution() const {
-    return p.has_value();
-  }
-
-  /**
-   * Get the distribution.
-   */
-  Distribution<Value> getDistribution() const {
-    assert(hasDistribution());
-    using raw_type = typename Distribution<Value>::value_type*;
-    return Distribution<Value>(dynamic_cast<raw_type>((*p)->getUpdated().get()));
-  }
-
-  /**
-   * Set the distribution.
-   *
-   * @param p Distribution.
-   */
-  void setDistribution(const Distribution<Value>& p) {
-    assert(!hasDistribution());
-    if (hasValue()) {  // must call hasValue() before setting this->p
-      this->p = p;
-      getDistribution()->assign(*x);
-    } else {
-      this->p = p;
-    }
-  }
-
-  /**
-   * Does this have a marginalized distribution?
-   */
-  bool hasMarginalizedDistribution() const {
-    return hasDistribution() && getDistribution()->hasMarginalized();
-  }
-
-  /**
-   * Get the marginalized distribution.
-   */
-  Delay getMarginalizedDistribution() const {
-    assert(hasMarginalizedDistribution());
-    return getDistribution()->getMarginalized()->getUpdated();
+  void deepGrad(const GradVisitor& visitor) {
+    //
   }
 
   Delay graft() const {
-    assert(p);
-    return getDistribution()->graft();
+    assert(hasDistribution());
+    return *getDistribution()->graft();
   }
 
   bool isGaussian() const {
@@ -266,6 +246,17 @@ struct Random<Value> < Form {
   }}
 
   cpp{{
+  template<class Value>
+  void Random<Value>::setDistribution(const Distribution<Value>& p) {
+    assert(!hasDistribution());
+    this->p = p;
+    if (x) {
+      getDistribution()->assign(*x);
+    } else if (!get_handler()->autoconj) {
+      getDistribution()->realize();
+    }
+  }
+
   template<class Value>
   void Random<Value>::read(const Buffer& buffer) {
     birch::optional_assign(*this, buffer->get<Value>());

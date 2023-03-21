@@ -35,10 +35,10 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_matrix_gaussian(this, M, U, V));
+    return box(logpdf_matrix_gaussian(random(), M, U, V));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(M);
     global.constant(U);

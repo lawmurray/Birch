@@ -154,7 +154,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
         global.value(ω2));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(ν);
@@ -244,7 +244,8 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
   let ω2 <- σ2.l;
   let τ2 <- σ2.r;
   if τ2.isInverseGamma() && m.isMultivariateNormalInverseGamma() &&
-      τ2.hasMarginalizedDistribution() && τ2.getMarginalizedDistribution() == m.getDistribution() {
+      τ2.hasMarginalized() && τ2.getMarginalized().getUpdated() ==
+      m.getDistribution().getUpdated() {
     let p_τ2 <- τ2.getDistribution();
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;

@@ -139,7 +139,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
         Y, A, N, Λ, Γ, k, Φ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(a);
     global.constant(N);
@@ -228,7 +228,8 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Inner<Random<Real[_,_]>,
   let ω2 <- Σ.l;
   let Ω <- Σ.r;
   if Ω.isInverseWishart() && m.isMatrixNormalInverseWishart() &&
-      Ω.hasMarginalizedDistribution() && Ω.getMarginalizedDistribution() == m.getDistribution() {
+      Ω.hasMarginalized() && Ω.getMarginalized().getUpdated() ==
+      m.getDistribution().getUpdated() {
     let p_Ω <- Ω.getDistribution();
     let p_m <- m.graft();
     let (N, Λ1, Γ, k) <- p_m.getMatrixNormalInverseWishart()!;

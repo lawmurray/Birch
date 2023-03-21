@@ -155,6 +155,7 @@ abstract class Delay {
    */
   final function getUpdated() -> Delay {
     if updated? {
+      assert !(updated!.hasUpdated());  // updates should not chain
       return updated!;
     } else {
       return this;
@@ -238,54 +239,31 @@ abstract class Delay {
    *
    * @return Updated distribution.
    */
-  function graft() -> Delay {
-    let p <- this;
-    let p' <- this.getUpdated();
-    if p'.hasMarginalized() {
-      let q <- p'.getMarginalized();
-      p'.setMarginalized(nil);
-      let q' <- q.graft();
-      q'.realize();
-
-      let h <- get_handler();
-      if h.autojoin && q.supportsJoin() {
-        /* in this case, preserve the current updated distribution for this,
-         * but join the marginalized distribution to it */
-        p'.setJoined(q');
-      } else if p.isSecondOrder() {
-        /* in this case, q' is a joint distribution over the random variable
-         * associated with this distribution and the parent distribution,
-         * condition it to update the parent distribution */  
-        p.setUpdated(q'.condition());
-      } else {
-        /* in this case, q' is just over the random variable associated with
-         * this distribution, condition the original distribution to update
-         * the parent distribution */
-        p.setUpdated(q.condition());
-      }
-    }
-    return p.getUpdated();
-  }
-
-  /**
-   * Realize a value for this node.
-   */
-  function realize() {
-    //
+  function graft() -> Delay? {
+    assert false;
+    return nil;
   }
 
   /**
    * Condition the parent node on the $M$-path.
    */
   function condition() -> Delay? {
+    assert false;
     return nil;
+  }
+
+  /**
+   * Realize a value for this node.
+   */
+  function realize() {
+    assert false;
   }
 
   /**
    * Render the node constant.
    */
   function constant() {
-    //
+    assert false;
   }
 
   /**

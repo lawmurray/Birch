@@ -99,7 +99,7 @@
  * by calling `peek()`. These memoized intermediate results are cleared again
  * as `grad()` progresses.
  */
-abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) < Delay {
+abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   /**
    * Memoized result.
    */

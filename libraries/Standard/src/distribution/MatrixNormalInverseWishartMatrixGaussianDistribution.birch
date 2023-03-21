@@ -72,10 +72,10 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
 
   override function hoist() -> Expression<Real> {
     return box(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(
-        box(this - C), A, N, Λ, Γ, k, Φ));
+        box(random() - C), A, N, Λ, Γ, k, Φ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(A);
     global.constant(N);
@@ -120,7 +120,8 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
   let M1 <- M.l.r;
   let C <- M.r;
   if Ψ.isInverseWishart() && M1.isMatrixNormalInverseWishart() &&
-      Ψ.hasMarginalizedDistribution() && Ψ.getMarginalizedDistribution() == M1.getDistribution() {
+      Ψ.hasMarginalized() && Ψ.getMarginalized().getUpdated() ==
+      M1.getDistribution().getUpdated() {
     let p_Ψ <- Ψ.getDistribution();
     let p_M1 <- M1.graft();
     let (N2, Λ1, Γ1, k) <- p_M1.getMatrixNormalInverseWishart()!;

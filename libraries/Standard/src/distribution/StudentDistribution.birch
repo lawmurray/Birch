@@ -39,7 +39,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_student_t(this, k, μ, σ2));
+    return box(logpdf_student_t(random(), k, μ, σ2));
   }
 
   override function cdf(x:Real!) -> Real!? {
@@ -50,7 +50,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     return quantile_student_t(P, global.value(k), global.value(μ), global.value(σ2));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(μ);

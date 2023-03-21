@@ -43,14 +43,14 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_beta_negative_binomial(this, k, α, β));
+    return box(logpdf_beta_negative_binomial(random(), k, α, β));
   }
 
   override function lower() -> Integer!? {
     return 0;
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(k);
     global.constant(α);

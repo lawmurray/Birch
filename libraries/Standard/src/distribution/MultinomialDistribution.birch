@@ -30,10 +30,10 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_multinomial(this, n, ρ));
+    return box(logpdf_multinomial(random(), n, ρ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(n);
     global.constant(ρ);

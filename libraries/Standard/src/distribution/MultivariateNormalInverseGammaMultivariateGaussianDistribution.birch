@@ -67,7 +67,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
   override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        this, A, ν, Λ, k, γ, c, Ω));
+        random(), A, ν, Λ, k, γ, c, Ω));
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {
@@ -75,7 +75,7 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
         A, ν, Λ, k, γ, c, Ω);
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(A);
     global.constant(ν);
@@ -123,7 +123,8 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   let Ω <- Σ.l;
   let ω2 <- Σ.r;
   if ω2.isInverseGamma() && m.isMultivariateNormalInverseGamma() &&
-      ω2.hasMarginalizedDistribution() && ω2.getMarginalizedDistribution() == m.getDistribution() {
+      ω2.hasMarginalized() && ω2.getMarginalized().getUpdated() ==
+      m.getDistribution().getUpdated() {
     let p_ω2 <- ω2.getDistribution();
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;

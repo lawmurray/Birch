@@ -24,10 +24,10 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_bernoulli(this, ρ));
+    return box(logpdf_bernoulli(random(), ρ));
   }
 
-  override function doConstant() {
+  function doConstant() {
     super.constant();
     global.constant(ρ);
   }
