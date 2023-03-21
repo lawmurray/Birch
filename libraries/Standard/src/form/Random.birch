@@ -180,63 +180,63 @@ struct Random<Value> < Form {
   }
 
   bool isGaussian() const {
-    return hasDistribution() && getDistribution()->isGaussian();
+    return hasDistribution() && getDistribution()->getUpdated()->isGaussian();
   }
 
   bool isBeta() const {
-    return hasDistribution() && getDistribution()->isBeta();
+    return hasDistribution() && getDistribution()->getUpdated()->isBeta();
   }
 
   bool isGamma() const {
-    return hasDistribution() && getDistribution()->isGamma();
+    return hasDistribution() && getDistribution()->getUpdated()->isGamma();
   }
 
   bool isInverseGamma() const {
-    return hasDistribution() && getDistribution()->isInverseGamma();
+    return hasDistribution() && getDistribution()->getUpdated()->isInverseGamma();
   }
 
   bool isInverseWishart() const {
-    return hasDistribution() && getDistribution()->isInverseWishart();
+    return hasDistribution() && getDistribution()->getUpdated()->isInverseWishart();
   }
 
   bool isNormalInverseGamma() const {
-    return hasDistribution() && getDistribution()->isNormalInverseGamma();
+    return hasDistribution() && getDistribution()->getUpdated()->isNormalInverseGamma();
   }
 
   bool isDirichlet() const {
-    return hasDistribution() && getDistribution()->isDirichlet();
+    return hasDistribution() && getDistribution()->getUpdated()->isDirichlet();
   }
 
   bool isRestaurant() const {
-    return hasDistribution() && getDistribution()->isRestaurant();
+    return hasDistribution() && getDistribution()->getUpdated()->isRestaurant();
   }
 
   bool isMultivariateGaussian() const {
-    return hasDistribution() && getDistribution()->isMultivariateGaussian();
+    return hasDistribution() && getDistribution()->getUpdated()->isMultivariateGaussian();
   }
 
   bool isMultivariateNormalInverseGamma() const {
-    return hasDistribution() && getDistribution()->isMultivariateNormalInverseGamma();
+    return hasDistribution() && getDistribution()->getUpdated()->isMultivariateNormalInverseGamma();
   }
 
   bool isMultivariateNormalInverseWishart() const {
-    return hasDistribution() && getDistribution()->isMultivariateNormalInverseWishart();
+    return hasDistribution() && getDistribution()->getUpdated()->isMultivariateNormalInverseWishart();
   }
 
   bool isMultivariateNormalWishart() const {
-    return hasDistribution() && getDistribution()->isMultivariateNormalWishart();
+    return hasDistribution() && getDistribution()->getUpdated()->isMultivariateNormalWishart();
   }
 
   bool isMatrixGaussian() const {
-    return hasDistribution() && getDistribution()->isMatrixGaussian();
+    return hasDistribution() && getDistribution()->getUpdated()->isMatrixGaussian();
   }
 
   bool isMatrixNormalInverseWishart() const {
-    return hasDistribution() && getDistribution()->isMatrixNormalInverseWishart();
+    return hasDistribution() && getDistribution()->getUpdated()->isMatrixNormalInverseWishart();
   }
 
   bool isBoundedDiscrete() const {
-    return hasDistribution() && getDistribution()->isBoundedDiscrete();
+    return hasDistribution() && getDistribution()->getUpdated()->isBoundedDiscrete();
   }
 
   void read(const Buffer& buffer);
