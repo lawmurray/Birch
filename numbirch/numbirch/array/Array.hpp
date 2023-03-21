@@ -669,30 +669,36 @@ public:
    * Get the control block.
    */
   ArrayControl* control() {
-    if (volume() > 0) {
-      if (isView) {
-        return ctl.load();
-      } else {
-        /* ctl is used as a lock, it may be set to nullptr while another
-         * thread is working on a copy-on-write */
-        ArrayControl* c;
+    ArrayControl* c = nullptr;
+    if (volume() > 0) {  // avoid unnecessary atomics
+      /* ctl is used as a lock, it may be set to nullptr while another thread
+       * is working on a copy-on-write */
+      do {
+        c = ctl.load();
+      } while (!c);
+
+      /* copy on write if necessary */
+      if (!isView && c->numShared() > 1) {
+        /* acquire exclusive lock */
         do {
           c = ctl.exchange(nullptr);
         } while (!c);
+
         if (c->numShared() > 1) {
-          /* copy for write */
+          /* copy on write */
           ArrayControl* d = new ArrayControl(*c);
+          ctl.store(d);
           if (c->decShared() == 0) {
             delete c;
           }
           c = d;
+        } else {
+          /* another thread did copy on write, return the original */
+          ctl.store(c);
         }
-        ctl.store(c);
-        return c;
       }
-    } else {
-      return nullptr;
     }
+    return c;
   }
 
   /**
@@ -701,21 +707,15 @@ public:
    * Get the control block.
    */
   ArrayControl* control() const {
-    if (volume() > 0) {
-      if (isView) {
-        return ctl.load();
-      } else {
-        /* ctl is used as a lock, it may be set to nullptr while another thread
-         * is working on a copy-on-write */
-        ArrayControl* c;
-        do {
-          c = const_cast<Array*>(this)->ctl.load();
-        } while (!c);
-        return c;
-      }
-    } else {
-      return nullptr;
+    ArrayControl* c = nullptr;
+    if (volume() > 0) {  // avoid unnecessary atomics
+      /* ctl is used as a lock, it may be set to nullptr while another thread
+       * is working on a copy-on-write */
+      do {
+        c = ctl.load();
+      } while (!c);
     }
+    return c;
   }
 
 private:
