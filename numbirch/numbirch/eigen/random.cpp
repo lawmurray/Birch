@@ -68,7 +68,7 @@ Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
   int m = length(p);
   int n = length(q);
   if (m < n) {
-    return convolve_grad1(g, r, q, p);
+    return convolve_grad2(g, r, q, p);
   } else {
     Array<real,1> gp(make_shape(m));
     auto gp1 = make_eigen(gp);
@@ -85,7 +85,7 @@ Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& r,
   int m = length(p);
   int n = length(q);
   if (m < n) {
-    return convolve_grad2(g, r, q, p);
+    return convolve_grad1(g, r, q, p);
   } else {
     Array<real,1> gq(make_shape(n));
     auto gq1 = make_eigen(gq);
