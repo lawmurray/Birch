@@ -111,8 +111,10 @@ struct Random<Value> < Form {
 
   void constant() {
     if (hasDistribution()) {
+      x = getDistribution()->eval();
       getDistribution()->constant();
     }
+    assert(x.has_value());
     this->p.reset();
   }
 
@@ -125,9 +127,8 @@ struct Random<Value> < Form {
   }
  
   auto value() const {
-    auto x = this->eval();
-    const_cast<Random*>(this)->constant();
-    return x;
+    const_cast<Random*>(this)->constant();  // also evaluates
+    return *x;
   }
  
   auto eval() const {
