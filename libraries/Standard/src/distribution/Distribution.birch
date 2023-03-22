@@ -143,7 +143,7 @@ abstract class Distribution<Value> < Delay {
          * but join the marginalized distribution to it */
         p'.setJoined(q');
       } else {
-        if p.isSecondOrder() {
+        if p'.isSecondOrder() {
           /* in this case, q' is a joint distribution over the random variable
            * associated with this distribution and the parent distribution,
            * condition it to update the parent distribution */
