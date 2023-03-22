@@ -513,9 +513,8 @@ Expression<typename T::value_type> box(const T& x) {
 
 template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
 auto box(const T& x) {
-  auto y = eval(x);
-  using U = typename std::decay_t<decltype(wait(y))>;
-  return Expression<U>(construct<BoxedForm<U,T>>(y, x));
+  using U = typename std::decay_t<decltype(wait(eval(x)))>;
+  return Expression<U>(construct<BoxedForm<U,T>>(x));
 }
 
 template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
