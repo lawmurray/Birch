@@ -57,8 +57,8 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
         k));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(ν);
     global.constant(λ);
     global.constant(Γ);

@@ -48,8 +48,8 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
     return 0.0;
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(k);
     global.constant(θ);
   }

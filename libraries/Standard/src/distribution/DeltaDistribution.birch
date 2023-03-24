@@ -46,8 +46,8 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
     return global.value(μ);
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(μ);
   }
 

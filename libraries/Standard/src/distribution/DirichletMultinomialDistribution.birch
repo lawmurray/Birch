@@ -41,8 +41,8 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
     return box(logpdf_dirichlet_multinomial(random(), n, α));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(n);
     global.constant(α);
   }

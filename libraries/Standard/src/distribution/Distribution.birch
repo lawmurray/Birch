@@ -289,6 +289,10 @@ abstract class Distribution<Value> < Delay {
     }
   }
 
+  function fix() {
+    flagConstant <- true;
+  }
+
   final function isConstant() -> Boolean {
     if this.hasUpdated() {
       return this.getUpdatedDistribution().isConstant();

@@ -75,8 +75,8 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
         box(random() - C), A, N, Λ, Γ, k, Φ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(A);
     global.constant(N);
     global.constant(Λ);

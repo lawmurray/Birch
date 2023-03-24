@@ -43,8 +43,8 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
     return 0;
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(λ);
   }
 

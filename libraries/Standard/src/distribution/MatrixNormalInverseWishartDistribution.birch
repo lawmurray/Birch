@@ -60,8 +60,8 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
     return box(logpdf_matrix_normal_inverse_wishart(random(), N, Λ, Γ, k));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(N);
     global.constant(Λ);
     global.constant(Γ);

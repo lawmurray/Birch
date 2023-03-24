@@ -44,7 +44,7 @@ class LangevinKernel < Kernel {
         }
 
         /* clean up and apply lag for next time */
-        m.constant(nlags);
+        m.fix(nlags);
       }
     }
     return cast<Real>(naccepts)/nmoves;

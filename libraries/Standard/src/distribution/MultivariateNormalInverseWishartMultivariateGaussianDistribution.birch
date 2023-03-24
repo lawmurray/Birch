@@ -78,8 +78,8 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
         box(random() - c), a, ν, λ, Γ, k, ω2));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(a);
     global.constant(ν);
     global.constant(λ);

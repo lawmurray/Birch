@@ -43,8 +43,8 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     return box(logpdf_matrix_t(random(), k, M, Σ, Ψ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(k);
     global.constant(M);
     global.constant(Σ);

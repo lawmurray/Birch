@@ -27,8 +27,8 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
     return box(logpdf_bernoulli(random(), ρ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(ρ);
   }
 

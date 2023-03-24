@@ -61,10 +61,15 @@ abstract class Model {
     return π!;
   }
 
-  final function constant(nlags:Integer) {
+  final function fix(nlags:Integer) {
     while Ξ.size() >= nlags {
       for j in 1..Ξ.front().size() {
-        Ξ.front()[j].constant();
+        /* we will ignore this factor henceforth when performing moves, so
+         * must render constant both the random variate and parameters of the
+         * associated distribution to avoid further moves on them in the
+         * absence of this factor (which would not be invariant to the
+         * posterior) */
+        Ξ.front()[j].fix();
       }
       Ξ.popFront();
     }

@@ -52,8 +52,8 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
     return 1.0;
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(α);
     global.constant(β);
   }

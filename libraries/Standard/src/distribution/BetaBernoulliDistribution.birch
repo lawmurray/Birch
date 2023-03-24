@@ -41,8 +41,8 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
     return box(logpdf_beta_bernoulli(random(), α, β));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(α);
     global.constant(β);
   }

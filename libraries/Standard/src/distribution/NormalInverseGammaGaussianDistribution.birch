@@ -84,8 +84,8 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         γ, c, s2));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(a);
     global.constant(ν);
     global.constant(λ);

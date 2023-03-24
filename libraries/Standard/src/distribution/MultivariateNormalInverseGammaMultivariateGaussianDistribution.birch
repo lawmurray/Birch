@@ -75,8 +75,8 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
         A, ν, Λ, k, γ, c, Ω);
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(A);
     global.constant(ν);
     global.constant(Λ);

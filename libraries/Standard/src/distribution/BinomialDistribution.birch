@@ -53,8 +53,8 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return global.value(n);
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(n);
     global.constant(ρ);
   }

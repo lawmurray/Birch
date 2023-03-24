@@ -38,8 +38,8 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
     return box(logpdf_multivariate_t(random(), k, μ, Σ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(k);
     global.constant(μ);
     global.constant(Σ);

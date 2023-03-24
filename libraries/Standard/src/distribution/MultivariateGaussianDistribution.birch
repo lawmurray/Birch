@@ -33,8 +33,8 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
     return box(logpdf_multivariate_gaussian(random(), μ, Σ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(μ);
     global.constant(Σ);
   }

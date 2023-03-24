@@ -43,8 +43,8 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
     return global.length(global.value(α));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(α);
   }
 }

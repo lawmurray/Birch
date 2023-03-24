@@ -46,8 +46,8 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     return global.length(global.value(ρ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(ρ);
   }
 

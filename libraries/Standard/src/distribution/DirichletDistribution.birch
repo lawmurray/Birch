@@ -27,8 +27,8 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
     return box(logpdf_dirichlet(random(), global.value(α)));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(α);
   }
 

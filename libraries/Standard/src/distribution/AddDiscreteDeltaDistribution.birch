@@ -62,8 +62,8 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
     return global.value(a) + global.value(b) + (global.length(p) + global.length(q) - 2);
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(p);
     global.constant(q);
     global.constant(a);

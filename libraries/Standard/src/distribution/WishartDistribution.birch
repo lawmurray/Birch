@@ -32,8 +32,8 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
     return box(logpdf_wishart(random(), Ψ, k));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(Ψ);
     global.constant(k);
   }

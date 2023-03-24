@@ -50,8 +50,8 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     return quantile_student_t(P, global.value(k), global.value(μ), global.value(σ2));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(k);
     global.constant(μ);
     global.constant(σ2);

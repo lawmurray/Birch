@@ -154,8 +154,8 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
         global.value(ω2));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(a);
     global.constant(ν);
     global.constant(Λ);

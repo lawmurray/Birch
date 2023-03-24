@@ -57,8 +57,8 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
     return a + global.length(p) - 1;
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(p);
     global.constant(a);
     global.constant(b);

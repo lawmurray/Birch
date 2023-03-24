@@ -10,6 +10,7 @@ class MoveVisitor(x:Real[_]) {
   x:Real[_] <- x;
 
   function visit(p:Distribution<Real>) {
+    assert p.offset >= 0;
     let m <- p.offset + 1;
     cpp{{
     auto y = x.slice(m);
@@ -26,6 +27,7 @@ class MoveVisitor(x:Real[_]) {
   }
 
   function visit(p:Distribution<Real[_]>) {
+    assert p.offset >= 0;
     let m <- p.offset + 1;
     let n <- m + size(p.x!) - 1;
     p.x <- x[m..n];
@@ -36,6 +38,7 @@ class MoveVisitor(x:Real[_]) {
   }
 
   function visit(p:Distribution<Real[_,_]>) {
+    assert p.offset >= 0;
     let m <- p.offset + 1;
     let n <- m + size(p.x!) - 1;
     p.x <- mat(x[m..n], columns(p.x!));

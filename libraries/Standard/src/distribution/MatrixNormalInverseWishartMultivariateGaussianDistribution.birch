@@ -139,8 +139,8 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
         Y, A, N, Λ, Γ, k, Φ));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(a);
     global.constant(N);
     global.constant(Λ);

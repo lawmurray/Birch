@@ -46,8 +46,8 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     return box(logpdf_restaurant_categorical(random(), α, θ, n));
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(α);
     global.constant(θ);
     global.constant(n);

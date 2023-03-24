@@ -53,8 +53,8 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
     return global.value(u);
   }
 
-  function doConstant() {
-    super.constant();
+  override function fix() {
+    super.fix();
     global.constant(l);
     global.constant(u);
   }

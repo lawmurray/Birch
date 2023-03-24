@@ -260,18 +260,27 @@ abstract class Delay {
   }
 
   /**
-   * Render the node constant.
+   * Construct a lazy expression for the log-pdf of this node, usually for the
+   * purposes of moving random variables in the expression with a kernel.
+   */
+  function hoist() -> Expression<Real> {
+    assert false;
+    return box(0.0);
+  }
+
+  /**
+   * Render the node value constant. The parameters of the node are still
+   * eligible for moving.
    */
   function constant() {
     assert false;
   }
 
   /**
-   * Construct a lazy expression for the log-pdf of this node.
+   * Render the node value and parameters constant.
    */
-  function hoist() -> Expression<Real> {
-    assert false;
-    return box(0.0);
+  function fix() {
+    //
   }
 
   /**
