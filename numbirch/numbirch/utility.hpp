@@ -609,7 +609,7 @@ using pack_t = Array<promote_t<value_t<T>,value_t<U>>,2>;
  */
 template<class T, class U>
 using stack_t = Array<promote_t<value_t<T>,value_t<U>>,
-    (dimension_v<T> == 2 || dimension_v<T> == 2) ? 2 : 1>;
+    (dimension_v<T> == 2 || dimension_v<U> == 2) ? 2 : 1>;
 
 /**
  * @internal

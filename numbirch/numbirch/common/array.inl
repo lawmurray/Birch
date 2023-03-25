@@ -398,7 +398,7 @@ stack_t<T,U> stack(const T& x, const U& y) {
       return z;
     } else {
       static_assert(is_matrix_v<U>);
-      stack_t<T,U> z(make_shape(1 + ry));
+      stack_t<T,U> z(make_shape(1 + ry, 1));
       z.slice(1, 1) = x;
       z.slice(std::make_pair(2, 1 + ry), std::make_pair(1, 1)) = y;
       return z;
@@ -417,7 +417,7 @@ stack_t<T,U> stack(const T& x, const U& y) {
     } else {
       static_assert(is_matrix_v<U>);
       stack_t<T,U> z(make_shape(rx + ry, 1));
-      z.slice(std::make_pair(1, rx), 1) = y;
+      z.slice(std::make_pair(1, rx), 1) = x;
       z.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, 1)) = y;
       return z;
     }
@@ -445,19 +445,19 @@ real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
   [[maybe_unused]] auto c = columns(x);
 
   if constexpr (is_scalar_v<T>) {
-    if constexpr (is_matrix_v<U>) {
+    if constexpr (is_matrix_v<stack_t<T,U>>) {
       return g.slice(1, 1);
     } else {
       return g.slice(1);
     }
   } else if constexpr (is_vector_v<T>) {
-    if constexpr (is_matrix_v<U>) {
+    if constexpr (is_matrix_v<stack_t<T,U>>) {
       return g.slice(std::make_pair(1, rx), 1);
     } else {
       return g.slice(std::make_pair(1, rx));
     }
   } else {
-    static_assert(is_matrix_v<T>);
+    static_assert(is_matrix_v<stack_t<T,U>>);
     return g.slice(std::make_pair(1, rx), std::make_pair(1, c));
   }
 }
@@ -471,19 +471,19 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
   [[maybe_unused]] auto c = columns(x);
 
   if constexpr (is_scalar_v<U>) {
-    if constexpr (is_matrix_v<T>) {
+    if constexpr (is_matrix_v<stack_t<T,U>>) {
       return g.slice(rx + 1, 1);
     } else {
       return g.slice(rx + 1);
     }
   } else if constexpr (is_vector_v<U>) {
-    if constexpr (is_matrix_v<U>) {
+    if constexpr (is_matrix_v<stack_t<T,U>>) {
       return g.slice(std::make_pair(rx + 1, rx + ry), 1);
     } else {
       return g.slice(std::make_pair(rx + 1, rx + ry));
     }
   } else {
-    static_assert(is_matrix_v<U>);
+    static_assert(is_matrix_v<stack_t<T,U>>);
     return g.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, c));
   }
 }

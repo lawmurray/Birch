@@ -14,10 +14,10 @@
     PACK_FIRST(f, int) \
     PACK_FIRST(f, bool)
 #define PACK_FIRST(f, T) \
-    PACK_SIG(f, T, real) \
-    PACK_SIG(f, T, int) \
-    PACK_SIG(f, T, bool)
-#define PACK_THIRD(f, T, U) \
+    PACK_SECOND(f, T, real) \
+    PACK_SECOND(f, T, int) \
+    PACK_SECOND(f, T, bool)
+#define PACK_SECOND(f, T, U) \
     PACK_SIG(f, T, U) \
     PACK_SIG(f, T, NUMBIRCH_ARRAY(U, 0)) \
     PACK_SIG(f, T, NUMBIRCH_ARRAY(U, 1)) \
