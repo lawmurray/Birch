@@ -26,6 +26,7 @@
 #define UNARY_BOOL_GRAD(f) UNARY_GRAD(f, bool_t)
 
 namespace numbirch {
+UNARY_ARITHMETIC_GRAD(neg_grad)
 UNARY_BOOL_GRAD(not_grad)
 UNARY_ARITHMETIC_GRAD(abs_grad)
 UNARY_REAL_GRAD(acos_grad)
@@ -34,6 +35,8 @@ UNARY_REAL_GRAD(atan_grad)
 UNARY_ARITHMETIC_GRAD(ceil_grad)
 UNARY_REAL_GRAD(cos_grad)
 UNARY_REAL_GRAD(cosh_grad)
+UNARY_REAL_GRAD(exp_grad)
+UNARY_REAL_GRAD(expm1_grad)
 UNARY_ARITHMETIC_GRAD(floor_grad)
 UNARY_BOOL_GRAD(isfinite_grad)
 UNARY_BOOL_GRAD(isinf_grad)

@@ -1011,9 +1011,19 @@ real_t<T> exp(const T& x) {
 }
 
 template<class T, class>
+real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  return hadamard(g, y);
+}
+
+template<class T, class>
 real_t<T> expm1(const T& x) {
   prefetch(x);
   return transform(x, expm1_functor());
+}
+
+template<class T, class>
+real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  return hadamard(g, y);
 }
 
 template<class T, class>
@@ -1245,6 +1255,11 @@ template<class T, class>
 T neg(const T& x) {
   prefetch(x);
   return transform(x, neg_functor());
+}
+
+template<class T, class>
+real_t<T> neg_grad(const real_t<T>& g, const T& y, const T& x) {
+  return neg(g);
 }
 
 template<class T, class U, class>

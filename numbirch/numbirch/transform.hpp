@@ -975,9 +975,7 @@ real_t<T> exp(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return hadamard(g, y);
-}
+real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Exponential of argument, minus one.
@@ -1007,9 +1005,7 @@ real_t<T> expm1(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return hadamard(g, y);
-}
+real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
  * Round to largest integer value not greater than argument.
@@ -1562,10 +1558,7 @@ T neg(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> neg_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
-  return neg(g);
-}
+real_t<T> neg_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
  * Unary plus.

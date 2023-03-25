@@ -17,8 +17,6 @@ Array<real,1> mul_grad2(const Array<real,1>& g, const Array<real,1>& y,
   return inner(A, g);
 }
 
-Array<real,2> operator*(const Array<real,2>& A, const Array<real,2>& B);
-
 Array<real,2> mul_grad1(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& A, const Array<real,2>& B) {
   return outer(g, B);
