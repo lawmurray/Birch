@@ -18,7 +18,9 @@
     FILL_SIG(f, NUMBIRCH_ARRAY(T, 0))
 #define FILL_SIG(f, T) \
     template Array<value_t<T>,2> f<T,int>(const T& x, const int m, \
-    const int n);
+        const int n); \
+    template Array<real,0> f##_grad(const Array<real,2>& g, \
+        const Array<value_t<T>,2>& C, const T& x, const int m, const int n);
 
 namespace numbirch {
 FILL(fill)

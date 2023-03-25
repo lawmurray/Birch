@@ -19,8 +19,9 @@
     VEC_SIG(f, NUMBIRCH_ARRAY(T, 1)) \
     VEC_SIG(f, NUMBIRCH_ARRAY(T, 2))
 #define VEC_SIG(f, T) \
-    template Array<value_t<T>,1> f<T,int>(const T& x);
-
+    template Array<value_t<T>,1> f<T,int>(const T& x); \
+    template real_t<T> f##_grad(const Array<real,1>& g, \
+        const Array<value_t<T>,1>& y, const T& x);
 namespace numbirch {
 VEC(vec)
 }

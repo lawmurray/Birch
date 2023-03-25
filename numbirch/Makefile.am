@@ -5,7 +5,8 @@ AM_CXXFLAGS = -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
 SOURCES =  \
     numbirch/array/ArrayControl.cpp \
     numbirch/common/random.cpp \
-    numbirch/instantiate/array/diagonal.cpp \
+    numbirch/instantiate/array/diagonal_from_scalar.cpp \
+    numbirch/instantiate/array/diagonal_from_vector.cpp \
     numbirch/instantiate/array/element_matrix.cpp \
     numbirch/instantiate/array/element_vector.cpp \
     numbirch/instantiate/array/fill_matrix.cpp \
@@ -13,10 +14,12 @@ SOURCES =  \
     numbirch/instantiate/array/gather_matrix.cpp \
     numbirch/instantiate/array/gather_vector.cpp \
     numbirch/instantiate/array/mat.cpp \
+    numbirch/instantiate/array/pack.cpp \
     numbirch/instantiate/array/scatter_matrix.cpp \
     numbirch/instantiate/array/scatter_vector.cpp \
     numbirch/instantiate/array/single_matrix.cpp \
     numbirch/instantiate/array/single_vector.cpp \
+    numbirch/instantiate/array/stack.cpp \
     numbirch/instantiate/array/vec.cpp \
     numbirch/instantiate/memory/memcpy.cpp \
     numbirch/instantiate/memory/memset.cpp \

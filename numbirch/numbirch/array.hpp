@@ -382,9 +382,7 @@ Array<value_t<T>,1> fill(const T& x, const int n);
  */
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x, const int n) {
-  return sum(g);
-}
+    const T& x, const int n);
 
 /**
  * Construct a matrix filled with a given value.
@@ -419,9 +417,7 @@ Array<value_t<T>,2> fill(const T& x, const int m, const int n);
  */
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,0> fill_grad(const Array<real,2>& g, const Array<value_t<T>,2>& C,
-    const T& x, const int m, const int n) {
-  return sum(g);
-}
+    const T& x, const int m, const int n);
 
 /**
  * Construct a vector filled with a sequence of values increasing by one each
@@ -455,9 +451,7 @@ Array<value_t<T>,1> iota(const T& x, const int n);
  */
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,0> iota_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x, const int n) {
-  return sum(g);
-}
+    const T& x, const int n);
 
 /**
  * Construct diagonal matrix, filling the diagonal with a given scalar.
@@ -490,9 +484,7 @@ Array<value_t<T>,2> diagonal(const T& x, const int n);
  */
 template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
 Array<real,0> diagonal_grad(const Array<real,2>& g,
-    const Array<value_t<T>,2>& y, const T& x, const int n) {
-  return sum(g.diagonal());
-}
+    const Array<value_t<T>,2>& y, const T& x, const int n);
 
 /**
  * Construct diagonal matrix, setting the diagonal to a given vector.
@@ -506,11 +498,7 @@ Array<real,0> diagonal_grad(const Array<real,2>& g,
  * @return Diagonal matrix.
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
-Array<T,2> diagonal(const Array<T,1>& x) {
-  Array<T,2> y(make_shape(length(x), length(x)), T(0));
-  y.diagonal() = x;
-  return y;
-}
+Array<T,2> diagonal(const Array<T,1>& x);
 
 /**
  * Gradient of diagonal().
@@ -527,9 +515,7 @@ Array<T,2> diagonal(const Array<T,1>& x) {
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
-    const Array<T,1>& x) {
-  return g.diagonal();
-}
+    const Array<T,1>& x);
 
 /**
  * Element of a vector.
@@ -566,9 +552,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,1>& x, const U& i) {
-  return single(g, i, length(x));
-}
+    const Array<T,1>& x, const U& i);
 
 /**
  * Gradient of element().
@@ -588,9 +572,7 @@ Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
 template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
     is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,1>& x, const U& i) {
-  return real(0);
-}
+    const Array<T,1>& x, const U& i);
 
 /**
  * Element of a matrix.
@@ -633,9 +615,7 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<real,2> element_grad1(const Array<real,0>& g,
-    const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j) {
-  return single(g, i, j, rows(A), columns(A));
-}
+    const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j);
 
 /**
  * Gradient of element().
@@ -658,9 +638,7 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,2>& A, const U& i, const V& j) {
-  return real(0);
-}
+    const Array<T,2>& A, const U& i, const V& j);
 
 /**
  * Gradient of element().
@@ -683,9 +661,7 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,2>& A, const U& i, const V& j) {
-  return real(0);
-}
+    const Array<T,2>& A, const U& i, const V& j);
 
 /**
  * Construct single-entry vector. A given element of the vector has a given
@@ -725,9 +701,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 template<class T, class U, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 Array<real,0> single_grad1(const Array<real,1>& g,
-    const Array<value_t<T>,1>& y, const T& x, const U& i, const int n) {
-  return element(g, i);
-}
+    const Array<value_t<T>,1>& y, const T& x, const U& i, const int n);
 
 /**
  * Gradient of single().
@@ -748,9 +722,7 @@ Array<real,0> single_grad1(const Array<real,1>& g,
 template<class T, class U, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
 real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x, const U& i, const int n) {
-  return real(0);
-}
+    const T& x, const U& i, const int n);
 
 /**
  * Construct single-entry matrix. A given element of the matrix has a given
@@ -800,9 +772,7 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 Array<real,0> single_grad1(const Array<real,2>& g,
     const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j,
-    const int m, const int n) {
-  return element(g, i, j);
-}
+    const int m, const int n);
 
 /**
  * Gradient of single().
@@ -827,9 +797,7 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
-    const T& x, const U& i, const V& j, const int m, const int n) {
-  return real(0);
-}
+    const T& x, const U& i, const V& j, const int m, const int n);
 
 /**
  * Gradient of single().
@@ -854,9 +822,7 @@ template<class T, class U, class V, class = std::enable_if_t<
     is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
     is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
 real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
-    const T& x, const U& i, const V& j, const int m, const int n) {
-  return real(0);
-}
+    const T& x, const U& i, const V& j, const int m, const int n);
 
 /**
  * Pack two arrays next to each other, concatenating their rows.
@@ -878,47 +844,7 @@ real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-pack_t<T,U> pack(const T& x, const U& y) {
-  assert(rows(x) == rows(y));
-  [[maybe_unused]] auto r = rows(x);
-  [[maybe_unused]] auto cx = columns(x);
-  [[maybe_unused]] auto cy = columns(y);
-  pack_t<T,U> z(make_shape(r, cx + cy));
-
-  if constexpr (is_scalar_v<T>) {
-    z.slice(1, 1) = x;
-    if constexpr (is_scalar_v<U>) {
-      z.slice(1, 2) = y;
-    } else if constexpr (is_vector_v<U>) {
-      z.slice(1, std::make_pair(2, 2)) = y;
-    } else {
-      static_assert(is_matrix_v<U>);
-      z.slice(std::make_pair(1, 1), std::make_pair(2, 1 + cy)) = y;
-    }
-  } else if constexpr (is_vector_v<T>) {
-    z.slice(std::make_pair(1, r), 1) = x;
-    if constexpr (is_scalar_v<U>) {
-      z.slice(1, 2) = y;
-    } else if constexpr (is_vector_v<U>) {
-      z.slice(std::make_pair(1, r), 2) = y;
-    } else {
-      static_assert(is_matrix_v<U>);
-      z.slice(std::make_pair(1, r), std::make_pair(2, 1 + cy)) = y;
-    }
-  } else {
-    static_assert(is_matrix_v<T>);
-    z.slice(std::make_pair(1, r), std::make_pair(1, cx)) = x;
-    if constexpr (is_scalar_v<U>) {
-      z.slice(1, cx + 1) = y;
-    } else if constexpr (is_vector_v<U>) {
-      z.slice(std::make_pair(1, r), cx + 1) = y;
-    } else {
-      static_assert(is_matrix_v<U>);
-      z.slice(std::make_pair(1, r), std::make_pair(cx + 1, cx + cy)) = y;
-    }
-  }
-  return z;
-}
+pack_t<T,U> pack(const T& x, const U& y);
 
 /**
  * Gradient of pack().
@@ -937,21 +863,8 @@ pack_t<T,U> pack(const T& x, const U& y) {
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-auto pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
-    const U& y) {
-  assert(rows(x) == rows(y));
-  [[maybe_unused]] auto r = rows(x);
-  [[maybe_unused]] auto cx = columns(x);
-
-  if constexpr (is_scalar_v<T>) {
-    return g.slice(1, 1);
-  } else if constexpr (is_vector_v<T>) {
-    return g.slice(std::make_pair(1, r), 1);
-  } else {
-    static_assert(is_matrix_v<T>);
-    return g.slice(std::make_pair(1, r), std::make_pair(1, cx));
-  }
-}
+real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
  * Gradient of pack().
@@ -970,22 +883,8 @@ auto pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-auto pack_grad2(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
-    const U& y) {
-  assert(rows(x) == rows(y));
-  [[maybe_unused]] auto r = rows(x);
-  [[maybe_unused]] auto cx = columns(x);
-  [[maybe_unused]] auto cy = columns(y);
-
-  if constexpr (is_scalar_v<U>) {
-    return g.slice(1, cx + 1);
-  } else if constexpr (is_vector_v<U>) {
-    return g.slice(std::make_pair(1, r), cx + 1);
-  } else {
-    static_assert(is_matrix_v<U>);
-    return g.slice(std::make_pair(1, r), std::make_pair(cx + 1, cx + cy));
-  }
-}
+real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
  * Stack two arrays atop one another, concatenating their columns.
@@ -1007,63 +906,7 @@ auto pack_grad2(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-stack_t<T,U> stack(const T& x, const U& y) {
-  assert(columns(x) == columns(y));
-  [[maybe_unused]] auto rx = rows(x);
-  [[maybe_unused]] auto ry = rows(y);
-  [[maybe_unused]] auto c = columns(x);
-
-  if constexpr (is_scalar_v<T>) {
-    if constexpr (is_scalar_v<U>) {
-      stack_t<T,U> z(make_shape(2));
-      z.slice(1) = x;
-      z.slice(2) = y;
-      return z;
-    } else if constexpr (is_vector_v<U>) {
-      stack_t<T,U> z(make_shape(1 + ry));
-      z.slice(1) = x;
-      z.slice(std::make_pair(2, 1 + ry)) = y;
-      return z;
-    } else {
-      static_assert(is_matrix_v<U>);
-      stack_t<T,U> z(make_shape(1 + ry));
-      z.slice(1, 1) = x;
-      z.slice(std::make_pair(2, 1 + ry), std::make_pair(1, 1)) = y;
-      return z;
-    }
-  } else if constexpr (is_vector_v<T>) {
-    if constexpr (is_scalar_v<U>) {
-      stack_t<T,U> z(make_shape(rx + 1));
-      z.slice(std::make_pair(1, rx)) = x;
-      z.slice(rx + 1) = y;
-      return z;
-    } else if constexpr (is_vector_v<U>) {
-      stack_t<T,U> z(make_shape(rx + ry));
-      z.slice(std::make_pair(1, rx)) = x;
-      z.slice(std::make_pair(rx + 1, rx + ry)) = y;
-      return z;
-    } else {
-      static_assert(is_matrix_v<U>);
-      stack_t<T,U> z(make_shape(rx + ry, 1));
-      z.slice(std::make_pair(1, rx), 1) = y;
-      z.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, 1)) = y;
-      return z;
-    }
-  } else {
-    static_assert(is_matrix_v<T>);
-    stack_t<T,U> z(make_shape(rx + ry, c));
-    z.slice(std::make_pair(1, rx), std::make_pair(1, c)) = x;
-    if constexpr (is_scalar_v<U>) {
-      z.slice(rx + 1, 1) = y;
-    } else if constexpr (is_vector_v<U>) {
-      z.slice(std::make_pair(rx + 1, rx + ry), 1) = y;
-    } else {
-      static_assert(is_matrix_v<U>);
-      z.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, c)) = y;
-    }
-    return z;
-  }
-}
+stack_t<T,U> stack(const T& x, const U& y);
 
 /**
  * Gradient of stack().
@@ -1082,29 +925,8 @@ stack_t<T,U> stack(const T& x, const U& y) {
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-auto stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
-    const T& x, const U& y) {
-  assert(columns(x) == columns(y));
-  [[maybe_unused]] auto rx = rows(x);
-  [[maybe_unused]] auto c = columns(x);
-
-  if constexpr (is_scalar_v<T>) {
-    if constexpr (is_matrix_v<U>) {
-      return g.slice(1, 1);
-    } else {
-      return g.slice(1);
-    }
-  } else if constexpr (is_vector_v<T>) {
-    if constexpr (is_matrix_v<U>) {
-      return g.slice(std::make_pair(1, rx), 1);
-    } else {
-      return g.slice(std::make_pair(1, rx));
-    }
-  } else {
-    static_assert(is_matrix_v<T>);
-    return g.slice(std::make_pair(1, rx), std::make_pair(1, c));
-  }
-}
+real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
  * Gradient of stack().
@@ -1123,30 +945,8 @@ auto stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-auto stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
-    const T& x, const U& y) {
-  assert(columns(x) == columns(y));
-  [[maybe_unused]] auto rx = rows(x);
-  [[maybe_unused]] auto ry = rows(y);
-  [[maybe_unused]] auto c = columns(x);
-
-  if constexpr (is_scalar_v<U>) {
-    if constexpr (is_matrix_v<T>) {
-      return g.slice(rx + 1, 1);
-    } else {
-      return g.slice(rx + 1);
-    }
-  } else if constexpr (is_vector_v<U>) {
-    if constexpr (is_matrix_v<U>) {
-      return g.slice(std::make_pair(rx + 1, rx + ry), 1);
-    } else {
-      return g.slice(std::make_pair(rx + 1, rx + ry));
-    }
-  } else {
-    static_assert(is_matrix_v<U>);
-    return g.slice(std::make_pair(rx + 1, rx + ry), std::make_pair(1, c));
-  }
-}
+real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
  * Vectorize.
@@ -1178,16 +978,8 @@ Array<value_t<T>,1> vec(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-auto vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x) {
-  if constexpr (is_scalar_v<T>) {
-    return g.slice(1);
-  } else if constexpr (is_vector_v<T>) {
-    return g;
-  } else {
-    return mat(g, columns(x));
-  }
-}
+real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
+    const T& x);
 
 /**
  * Matrixize.
@@ -1224,16 +1016,8 @@ Array<value_t<T>,2> mat(const T& x, const int n);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-auto mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
-    const T& x, const int n) {
-  if constexpr (is_scalar_v<T>) {
-    return g.slice(1, 1);
-  } else if constexpr (is_vector_v<T>) {
-    return vec(g);
-  } else {
-    return mat(g, columns(x));
-  }
-}
+real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
+    const T& x, const int n);
 
 /**
  * Vector gather.
@@ -1268,9 +1052,7 @@ Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y) {
-  return scatter(g, y, length(x));
-}
+    const Array<T,1>& x, const Array<int,1>& y);
 
 /**
  * Gradient of gather().
@@ -1288,9 +1070,7 @@ Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y) {
-  return fill(real(0), length(y));
-}
+    const Array<T,1>& x, const Array<int,1>& y);
 
 /**
  * Matrix gather.
@@ -1328,9 +1108,7 @@ Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
-  return scatter(G, C, A, I, J, rows(A), columns(A));
-}
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J);
 
 /**
  * Gradient of gather().
@@ -1349,9 +1127,7 @@ Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
-  return fill(real(0), rows(I), columns(I));
-}
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J);
 
 /**
  * Gradient of gather().
@@ -1370,9 +1146,7 @@ Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
-  return fill(real(0), rows(J), columns(J));
-}
+    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J);
 
 /**
  * Vector scatter.
@@ -1422,9 +1196,7 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y, const int n) {
-  return gather(g, y);
-}
+    const Array<T,1>& x, const Array<int,1>& y, const int n);
 
 /**
  * Gradient of scatter().
@@ -1443,9 +1215,7 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
  */
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y, const int n) {
-  return Array<real,1>(0, shape(y));
-}
+    const Array<T,1>& x, const Array<int,1>& y, const int n);
 
 /**
  * Matrix scatter.
@@ -1490,9 +1260,7 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
-    const int m, const int n) {
-  return gather(G, C, A, I, J);
-}
+    const int m, const int n);
 
 /**
  * Gradient of scatter().
@@ -1514,9 +1282,7 @@ Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& C,
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
-    const int m, const int n) {
-  return fill(real(0), rows(I), columns(I));
-}
+    const int m, const int n);
 
 /**
  * Gradient of scatter().
@@ -1538,8 +1304,6 @@ Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
 template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
-    const int m, const int n) {
-  return fill(real(0), rows(J), columns(J));
-}
+    const int m, const int n);
 
 }

@@ -15,6 +15,15 @@
     GATHER_MATRIX_SIG(f, bool)
 #define GATHER_MATRIX_SIG(f, T) \
     template Array<T,2> f<T,int>(const Array<T,2>& A, const Array<int,2>& I, \
+        const Array<int,2>& J); \
+    template Array<real,2> f##_grad1(const Array<real,2>& G, \
+        const Array<T,2>& C, const Array<T,2>& A, const Array<int,2>& I, \
+        const Array<int,2>& J); \
+    template Array<real,2> f##_grad2(const Array<real,2>& G, \
+        const Array<T,2>& C, const Array<T,2>& A, const Array<int,2>& I, \
+        const Array<int,2>& J); \
+    template Array<real,2> f##_grad3(const Array<real,2>& G, \
+        const Array<T,2>& C, const Array<T,2>& A, const Array<int,2>& I, \
         const Array<int,2>& J);
 
 namespace numbirch {

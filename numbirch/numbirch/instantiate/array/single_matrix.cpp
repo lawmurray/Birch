@@ -35,7 +35,16 @@
     SINGLE_MATRIX_SIG(f, NUMBIRCH_ARRAY(T, 0), NUMBIRCH_ARRAY(U, 0), NUMBIRCH_ARRAY(V, 0))
 #define SINGLE_MATRIX_SIG(f, T, U, V) \
     template Array<value_t<T>,2> f<T,U,V,int>(const T& x, const U& i, \
-        const V& j, const int m, const int n);
+        const V& j, const int m, const int n); \
+    template Array<real,0> f##_grad1(const Array<real,2>& g, \
+        const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j, \
+        const int m, const int n); \
+    template real f##_grad2(const Array<real,2>& g, \
+        const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j, \
+        const int m, const int n); \
+    template real f##_grad3(const Array<real,2>& g, \
+        const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j, \
+        const int m, const int n);
 
 namespace numbirch {
 SINGLE_MATRIX(single)

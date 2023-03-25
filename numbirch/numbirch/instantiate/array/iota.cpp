@@ -22,7 +22,9 @@
     IOTA_SIG(f, NUMBIRCH_ARRAY(T, 0), NUMBIRCH_ARRAY(U, 0))
 #define IOTA_SIG(f, T, U) \
     template Array<value_t<implicit_t<T,U>>,1> f<T,U,int>(const T& x, \
-        const U& y, const int n);
+        const U& y, const int n); \
+    template Array<real,0> f##_grad<T,U,int>(const Array<real,1>& g, \
+        const Array<value_t<T>,1>& y, const T& x, const int n);
 
 namespace numbirch {
 IOTA(iota)
