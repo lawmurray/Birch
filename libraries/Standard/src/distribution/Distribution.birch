@@ -245,8 +245,8 @@ abstract class Distribution<Value> < Delay {
       return this.getUpdatedDistribution().move(visitor);
     } else if offset >= 0 {
       visitor.visit(this);
-      return x!;
     }
+    return x!;
   }
 
   final function args(visitor:ArgsVisitor) {
