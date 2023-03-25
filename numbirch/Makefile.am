@@ -20,15 +20,6 @@ SOURCES =  \
     numbirch/instantiate/array/vec.cpp \
     numbirch/instantiate/memory/memcpy.cpp \
     numbirch/instantiate/memory/memset.cpp \
-    numbirch/instantiate/numeric/dot.cpp \
-    numbirch/instantiate/numeric/frobenius.cpp \
-    numbirch/instantiate/numeric/inner.cpp \
-    numbirch/instantiate/numeric/matrix.cpp \
-    numbirch/instantiate/numeric/mul.cpp \
-    numbirch/instantiate/numeric/outer.cpp \
-    numbirch/instantiate/numeric/reduce_matrix.cpp \
-    numbirch/instantiate/numeric/solve.cpp \
-    numbirch/instantiate/numeric/triouter.cpp \
     numbirch/instantiate/random/binary.cpp \
     numbirch/instantiate/random/standard_gaussian.cpp \
     numbirch/instantiate/random/standard_wishart.cpp \
@@ -45,7 +36,8 @@ SOURCES =  \
     numbirch/instantiate/transform/unary.cpp \
     numbirch/instantiate/transform/unary_grad.cpp \
     numbirch/instantiate/transform/unary_operator.cpp \
-    numbirch/instantiate/transform/where.cpp
+    numbirch/instantiate/transform/where.cpp \
+    numbirch/instantiate/numeric.cpp
 
 ONEAPI_CPPFLAGS = -DBACKEND_ONEAPI \
     -Wno-deprecated-declarations \

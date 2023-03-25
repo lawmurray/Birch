@@ -64,7 +64,7 @@ public:
   T load() const {
     #if NUMBIRCH_ATOMIC_OPENMP
     T value;
-    #pragma omp atomic read
+    #pragma omp atomic read relaxed
     value = this->value;
     return value;
     #else
@@ -77,7 +77,7 @@ public:
    */
   void store(const T& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic write
+    #pragma omp atomic write relaxed
     this->value = value;
     #else
     this->value.store(value, std::memory_order_relaxed);
@@ -94,7 +94,7 @@ public:
   T exchange(const T& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T old;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       old = this->value;
       this->value = value;
@@ -111,7 +111,7 @@ public:
    */
   void increment() {
     #if NUMBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update
+    #pragma omp atomic update relaxed
     ++value;
     #else
     value.fetch_add(1, std::memory_order_relaxed);
@@ -124,7 +124,7 @@ public:
    */
   void decrement() {
     #if NUMBIRCH_ATOMIC_OPENMP
-    #pragma omp atomic update
+    #pragma omp atomic update relaxed
     --value;
     #else
     value.fetch_sub(1, std::memory_order_relaxed);
@@ -135,7 +135,7 @@ public:
   T operator+=(const U& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       this->value += value;
       result = this->value;
@@ -150,7 +150,7 @@ public:
   T operator-=(const U& value) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       this->value -= value;
       result = this->value;
@@ -164,7 +164,7 @@ public:
   T operator++() {
     #if NUMBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       ++this->value;
       result = this->value;
@@ -178,7 +178,7 @@ public:
   T operator++(int) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       result = this->value;
       ++this->value;
@@ -192,7 +192,7 @@ public:
   T operator--() {
     #if NUMBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       --this->value;
       result = this->value;
@@ -206,7 +206,7 @@ public:
   T operator--(int) {
     #if NUMBIRCH_ATOMIC_OPENMP
     T result;
-    #pragma omp atomic capture
+    #pragma omp atomic capture relaxed
     {
       result = this->value;
       --this->value;

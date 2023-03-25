@@ -120,35 +120,32 @@ void nan_on_error(T& A, const Array<int,0>& info) {
   }
 }
 
-template<class T, class>
-Array<T,1> operator*(const Array<T,2>& A, const Array<T,1>& x) {
+Array<real,1> operator*(const Array<real,2>& A, const Array<real,1>& x) {
   assert(columns(A) == length(x));
   prefetch(A);
   prefetch(x);
-  Array<T,1> y(make_shape(rows(A)));
+  Array<real,1> y(make_shape(rows(A)));
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_N, rows(A), columns(A),
       scalar<T>::one, sliced(A), stride(A), sliced(x), stride(x), scalar<T>::zero,
       sliced(y), stride(y)));
   return y;
 }
 
-template<class T, class>
-Array<T,2> operator*(const Array<T,2>& A, const Array<T,2>& B) {
+Array<real,2> operator*(const Array<real,2>& A, const Array<real,2>& B) {
   assert(columns(A) == rows(B));
   prefetch(A);
   prefetch(B);
-  Array<T,2> C(make_shape(rows(A), columns(B)));
+  Array<real,2> C(make_shape(rows(A), columns(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N,
       rows(C), columns(C), columns(A), scalar<T>::one, sliced(A), stride(A),
       sliced(B), stride(B), scalar<T>::zero, sliced(C), stride(C)));
   return C;
 }
 
-template<class T, class>
-Array<T,2> chol(const Array<T,2>& S) {
+Array<real,2> chol(const Array<real,2>& S) {
   assert(rows(S) == columns(S));
   prefetch(S);
-  Array<T,2> L(tri(S));
+  Array<real,2> L(tri(S));
   Array<int,0> info;
 
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
@@ -169,11 +166,11 @@ Array<T,2> chol(const Array<T,2>& S) {
   return L;
 }
 
-template<class T, class U, class>
-Array<T,2> cholsolve(const Array<T,2>& L, const U& y) {
+template<class U, class>
+Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   prefetch(L);
-  Array<T,2> B(diagonal(y, rows(L)));
+  Array<real,2> B(diagonal(y, rows(L)));
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
@@ -183,13 +180,12 @@ Array<T,2> cholsolve(const Array<T,2>& L, const U& y) {
   return B;
 }
 
-template<class T, class>
-Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
+Array<real,1> cholsolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
   prefetch(L);
   prefetch(y);
-  Array<T,1> x(y, true);
+  Array<real,1> x(y, true);
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
@@ -198,13 +194,12 @@ Array<T,1> cholsolve(const Array<T,2>& L, const Array<T,1>& y) {
   return x;
 }
 
-template<class T, class>
-Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
+Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
   prefetch(L);
   prefetch(C);
-  Array<T,2> B(C, true);
+  Array<real,2> B(C, true);
   Array<int,0> info;
 
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
@@ -214,12 +209,11 @@ Array<T,2> cholsolve(const Array<T,2>& L, const Array<T,2>& C) {
   return B;
 }
 
-template<class T, class>
-Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
+Array<real,0> dot(const Array<real,1>& x, const Array<real,1>& y) {
   assert(length(x) == length(y));
   prefetch(x);
   prefetch(y);
-  Array<T,0> z;
+  Array<real,0> z;
   if (length(x) == 0) {
     z = T(0);
   } else {
@@ -229,42 +223,38 @@ Array<T,0> dot(const Array<T,1>& x, const Array<T,1>& y) {
   return z;
 }
 
-template<class T, class>
-Array<T,0> frobenius(const Array<T,2>& x, const Array<T,2>& y) {
+Array<real,0> frobenius(const Array<real,2>& x, const Array<real,2>& y) {
   ///@todo Avoid temporary
   return sum(hadamard(x, y));
 }
 
-template<class T, class>
-Array<T,1> inner(const Array<T,2>& A, const Array<T,1>& x) {
+Array<real,1> inner(const Array<real,2>& A, const Array<real,1>& x) {
   assert(rows(A) == length(x));
   prefetch(A);
   prefetch(x);
-  Array<T,1> y(make_shape(columns(A)));
+  Array<real,1> y(make_shape(columns(A)));
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_T, rows(A), columns(A),
       scalar<T>::one, sliced(A), stride(A), sliced(x), stride(x), scalar<T>::zero,
       sliced(y), stride(y)));
   return y;
 }
 
-template<class T, class>
-Array<T,2> inner(const Array<T,2>& A, const Array<T,2>& B) {
+Array<real,2> inner(const Array<real,2>& A, const Array<real,2>& B) {
   assert(rows(A) == rows(B));
   prefetch(A);
   prefetch(B);
-  Array<T,2> C(make_shape(columns(A), columns(B)));
+  Array<real,2> C(make_shape(columns(A), columns(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
       rows(C), columns(C), rows(A), scalar<T>::one, sliced(A), stride(A),
       sliced(B), stride(B), scalar<T>::zero, sliced(C), stride(C)));
   return C;
 }
 
-template<class T, class>
-Array<T,2> inv(const Array<T,2>& A) {
+Array<real,2> inv(const Array<real,2>& A) {
   assert(rows(A) == columns(A));
   prefetch(A);
-  Array<T,2> LU(A);
-  Array<T,2> B(diagonal(T(1.0), rows(A)));
+  Array<real,2> LU(A);
+  Array<real,2> B(diagonal(T(1.0), rows(A)));
   Array<int,0> info;
 
   /* invert via LU factorization with partial pivoting */
@@ -293,14 +283,13 @@ Array<T,2> inv(const Array<T,2>& A) {
   return B;
 }
 
-template<class T, class>
-Array<T,0> ldet(const Array<T,2>& A) {
+Array<real,0> ldet(const Array<real,2>& A) {
   prefetch(A);
-  Array<T,0> ldet;
+  Array<real,0> ldet;
   if (size(A) == 0) {
     ldet = T(0);
   } else {
-    Array<T,2> LU(A);
+    Array<real,2> LU(A);
     Array<int,0> info;
 
     /* LU factorization with partial pivoting */
@@ -336,11 +325,10 @@ Array<T,0> ldet(const Array<T,2>& A) {
   return ldet;
 }
 
-template<class T, class>
-Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
+Array<real,2> outer(const Array<real,1>& x, const Array<real,1>& y) {
   prefetch(x);
   prefetch(y);
-  Array<T,2> A(make_shape(length(x), length(y)));
+  Array<real,2> A(make_shape(length(x), length(y)));
 
   /* here, the two vectors are interpreted as single-row matrices, so that the
    * stride between elements becomes the stride between columns; to create the
@@ -352,24 +340,22 @@ Array<T,2> outer(const Array<T,1>& x, const Array<T,1>& y) {
   return A;
 }
 
-template<class T, class>
-Array<T,2> outer(const Array<T,2>& A, const Array<T,2>& B) {
+Array<real,2> outer(const Array<real,2>& A, const Array<real,2>& B) {
   assert(columns(A) == columns(B));
   prefetch(A);
   prefetch(B);
-  Array<T,2> C(make_shape(rows(A), rows(B)));
+  Array<real,2> C(make_shape(rows(A), rows(B)));
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T,
       rows(C), columns(C), columns(A), scalar<T>::one, sliced(A), stride(A),
       sliced(B), stride(B), scalar<T>::zero, sliced(C), stride(C)));
   return C;
 }
 
-template<class T, class>
-Array<T,2> phi(const Array<T,2>& A) {
+Array<real,2> phi(const Array<real,2>& A) {
   prefetch(A);
   auto m = rows(A);
   auto n = columns(A);
-  Array<T,2> B(make_shape(m, n));
+  Array<real,2> B(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   CUDA_LAUNCH(kernel_phi<<<grid,block,0,stream>>>(m, n, sliced(A), stride(A),
@@ -377,10 +363,9 @@ Array<T,2> phi(const Array<T,2>& A) {
   return B;
 }
 
-template<class T, class>
-Array<T,2> transpose(const Array<T,2>& A) {
+Array<real,2> transpose(const Array<real,2>& A) {
   prefetch(A);
-  Array<T,2> B(make_shape(columns(A), rows(A)));
+  Array<real,2> B(make_shape(columns(A), rows(A)));
 
   dim3 block;
   block.x = CUDA_TRANSPOSE_SIZE;
@@ -399,12 +384,11 @@ Array<T,2> transpose(const Array<T,2>& A) {
   return B;
 }
 
-template<class T, class>
-Array<T,2> tri(const Array<T,2>& A) {
+Array<real,2> tri(const Array<real,2>& A) {
   prefetch(A);
   auto m = rows(A);
   auto n = columns(A);
-  Array<T,2> B(make_shape(m, n));
+  Array<real,2> B(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
   CUDA_LAUNCH(kernel_tri<<<grid,block,0,stream>>>(m, n, sliced(A), stride(A),
@@ -412,26 +396,24 @@ Array<T,2> tri(const Array<T,2>& A) {
   return B;
 }
 
-template<class T, class>
-Array<T,1> triinner(const Array<T,2>& L, const Array<T,1>& x) {
+Array<real,1> triinner(const Array<real,2>& L, const Array<real,1>& x) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(x));
   prefetch(L);
   prefetch(x);
-  Array<T,1> y(x, true);
+  Array<real,1> y(x, true);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), sliced(L), stride(L), sliced(y),
       stride(y)));
   return y;
 }
 
-template<class T, class>
-Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
+Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(B));
   prefetch(L);
   prefetch(B);
-  Array<T,2> C(make_shape(rows(B), columns(B)));
+  Array<real,2> C(make_shape(rows(B), columns(B)));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(B),
       columns(B), scalar<T>::one, sliced(L), stride(L), sliced(B), stride(B),
@@ -439,10 +421,10 @@ Array<T,2> triinner(const Array<T,2>& L, const Array<T,2>& B) {
   return C;
 }
 
-template<class T, class U, class>
-Array<T,2> triinnersolve(const Array<T,2>& L, const U& y) {
+template<class U, class>
+Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
-  Array<T,2> B(diagonal(y, rows(L)));
+  Array<real,2> B(diagonal(y, rows(L)));
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
@@ -451,11 +433,10 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const U& y) {
   return B;
 }
 
-template<class T, class>
-Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& y) {
+Array<real,1> triinnersolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
-  Array<T,1> x(y, true);
+  Array<real,1> x(y, true);
 
   CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, length(x), sliced(L), stride(L),
@@ -463,11 +444,10 @@ Array<T,1> triinnersolve(const Array<T,2>& L, const Array<T,1>& y) {
   return x;
 }
 
-template<class T, class>
-Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C) {
+Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
-  Array<T,2> B(C, true);
+  Array<real,2> B(C, true);
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
@@ -476,26 +456,24 @@ Array<T,2> triinnersolve(const Array<T,2>& L, const Array<T,2>& C) {
   return B;
 }
 
-template<class T, class>
-Array<T,1> trimul(const Array<T,2>& L, const Array<T,1>& x) {
+Array<real,1> trimul(const Array<real,2>& L, const Array<real,1>& x) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(x));
   prefetch(L);
   prefetch(x);
-  Array<T,1> y(x, true);
+  Array<real,1> y(x, true);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), sliced(L), stride(L), sliced(y),
       stride(y)));
   return y;
 }
 
-template<class T, class>
-Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B) {
+Array<real,2> trimul(const Array<real,2>& L, const Array<real,2>& B) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(B));
   prefetch(L);
   prefetch(B);
-  Array<T,2> C(make_shape(rows(B), columns(B)));
+  Array<real,2> C(make_shape(rows(B), columns(B)));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(B),
       columns(B), scalar<T>::one, sliced(L), stride(L), sliced(B), stride(B),
@@ -503,13 +481,12 @@ Array<T,2> trimul(const Array<T,2>& L, const Array<T,2>& B) {
   return C;
 }
 
-template<class T, class>
-Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
+Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L) {
   assert(rows(L) == columns(L));
   assert(columns(A) == columns(L));
   prefetch(A);
   prefetch(L);
-  Array<T,2> C(make_shape(rows(A), rows(L)));
+  Array<real,2> C(make_shape(rows(A), rows(L)));
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(C),
       columns(C), scalar<T>::one, sliced(L), stride(L), sliced(A), stride(A),
@@ -517,10 +494,10 @@ Array<T,2> triouter(const Array<T,2>& A, const Array<T,2>& L) {
   return C;
 }
 
-template<class T, class U, class>
-Array<T,2> trisolve(const Array<T,2>& L, const U& y) {
+template<class U, class>
+Array<real,2> trisolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
-  Array<T,2> B(diagonal(y, rows(L)));
+  Array<real,2> B(diagonal(y, rows(L)));
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
@@ -529,11 +506,10 @@ Array<T,2> trisolve(const Array<T,2>& L, const U& y) {
   return B;
 }
 
-template<class T, class>
-Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y) {
+Array<real,1> trisolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
-  Array<T,1> x(y, true);
+  Array<real,1> x(y, true);
 
   CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(x), sliced(L), stride(L),
@@ -541,11 +517,10 @@ Array<T,1> trisolve(const Array<T,2>& L, const Array<T,1>& y) {
   return x;
 }
 
-template<class T, class>
-Array<T,2> trisolve(const Array<T,2>& L, const Array<T,2>& C) {
+Array<real,2> trisolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
-  Array<T,2> B(C, true);
+  Array<real,2> B(C, true);
 
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
