@@ -13,6 +13,7 @@ SOURCES =  \
     numbirch/instantiate/array/fill_vector.cpp \
     numbirch/instantiate/array/gather_matrix.cpp \
     numbirch/instantiate/array/gather_vector.cpp \
+    numbirch/instantiate/array/iota.cpp \
     numbirch/instantiate/array/mat.cpp \
     numbirch/instantiate/array/pack.cpp \
     numbirch/instantiate/array/scatter_matrix.cpp \
