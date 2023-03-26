@@ -760,13 +760,13 @@ void birch::Driver::init() {
   copy_with_prompt(find(shareDirs, "hello.birch"), fs::path("src") / "hello.birch");
 
   if (copy_with_prompt(find(shareDirs, "birch.yml"), "birch.yml")) {
-    replace_tag("birch.yml", "PACKAGE_NAME", packageName);
+    replace_tag("birch.yml", "\\{\\{PACKAGE_NAME\\}\\}", packageName);
   }
   if (copy_with_prompt(find(shareDirs, "README.md"), "README.md")) {
-    replace_tag("README.md", "PACKAGE_NAME", packageName);
+    replace_tag("README.md", "\\{\\{PACKAGE_NAME\\}\\}", packageName);
   }
   if (copy_with_prompt(find(shareDirs, "mkdocs.yml"), "mkdocs.yml")) {
-    replace_tag("mkdocs.yml", "PACKAGE_NAME", packageName);
+    replace_tag("mkdocs.yml", "\\{\\{PACKAGE_NAME\\}\\}", packageName);
   }
 }
 
