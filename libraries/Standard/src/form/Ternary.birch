@@ -45,32 +45,32 @@ struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
 
 hpp{{
 #define BIRCH_TERNARY_FUNCTION_FORM(f, f_grad, ...) \
-  using Value = decltype(f(birch::peek(std::declval<Left>()), \
-      birch::peek(std::declval<Middle>()), \
-      birch::peek(std::declval<Right>()), ##__VA_ARGS__)); \
+  using Value = decltype(f(birch::eval(std::declval<Left>()), \
+      birch::eval(std::declval<Middle>()), \
+      birch::eval(std::declval<Right>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
   int rows() const { \
-    return birch::rows(peek()); \
+    return birch::rows(eval()); \
   } \
   \
   int columns() const { \
-    return birch::columns(peek()); \
+    return birch::columns(eval()); \
   } \
   \
   int length() const { \
-    return birch::length(peek()); \
+    return birch::length(eval()); \
   } \
   \
   int size() const { \
-    return birch::size(peek()); \
+    return birch::size(eval()); \
   } \
   \
-  void clear() const { \
-    const_cast<std::optional<Value>&>(x).reset(); \
+  void clear() { \
+    this->x.reset(); \
   } \
   \
-  auto value() const { \
+  auto value() { \
     auto x = this->eval(); \
     this->constant(); \
     return x; \
@@ -83,12 +83,12 @@ hpp{{
     return f(l, m, r, ##__VA_ARGS__); \
   } \
   \
-  auto peek() const { \
+  auto peek() { \
     if (!x) { \
       auto l = birch::peek(this->l); \
       auto m = birch::peek(this->m); \
       auto r = birch::peek(this->r); \
-      const_cast<std::optional<Value>&>(x) = f(l, m, r, ##__VA_ARGS__); \
+      this->x = f(l, m, r, ##__VA_ARGS__); \
     } \
     return *x; \
   } \

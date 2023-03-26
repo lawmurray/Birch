@@ -180,12 +180,26 @@ function handle_factor(w:Real!) {
  *     [`factor`](https://www.birch.sh/language/probability/) statement, which
  *     is hard-wired to call this internally.
  */
-function handle_factor<Arg>(w:Arg) {
+function handle_factor(w:Expression<Real>) {
   let h <- get_handler();
   if h.autodiff {
-    h.Φ.pushBack(box(w));
+    h.Φ.pushBack(w);
     h.w <- h.w + eval(w);
   } else {
     h.w <- h.w + value(w);
   }
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor<Arg>(w:Arg) {
+  return handle_factor(box(w));
 }

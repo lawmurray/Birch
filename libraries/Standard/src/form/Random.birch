@@ -82,19 +82,19 @@ struct Random<Value> < Form {
   }
 
   int rows() const {
-    return birch::rows(peek());
+    return birch::rows(eval());
   }
 
   int columns() const {
-    return birch::columns(peek());
+    return birch::columns(eval());
   }
 
   int length() const {
-    return birch::length(peek());
+    return birch::length(eval());
   }
 
   int size() const {
-    return birch::size(peek());
+    return birch::size(eval());
   }
 
   void reset() {
@@ -126,8 +126,8 @@ struct Random<Value> < Form {
     this->x.reset();
   }
  
-  auto value() const {
-    const_cast<Random*>(this)->constant();  // also evaluates
+  auto value() {
+    this->constant();  // also evaluates
     return *x;
   }
  
@@ -140,10 +140,10 @@ struct Random<Value> < Form {
     }
   }
  
-  auto peek() const {
+  auto peek() {
     if (!x) {
       assert(hasDistribution());
-      const_cast<Random*>(this)->x = getDistribution()->peek();
+      this->x = getDistribution()->peek();
     }
     return *x;
   }

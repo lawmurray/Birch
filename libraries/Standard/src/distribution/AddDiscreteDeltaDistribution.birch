@@ -216,7 +216,7 @@ function pdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
 
   let m <- global.length(p);
   let n <- global.length(q);
-  let z <- wait(global.value(x) - a - b);  // offset to base zero
+  let z <- wait(global.eval(x) - a - b);  // offset to base zero
 
   /* start of range for first random variable; the second contributes at
    * most n - 1, so the first must contribute at least... */
@@ -259,7 +259,7 @@ function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
 
   let m <- global.length(p);
   let n <- global.length(q);
-  let z <- wait(global.value(x) - a - b);  // offset to base zero
+  let z <- wait(global.eval(x) - a - b);  // offset to base zero
 
   /* start of range for first random variable; the second contributes at
    * most n - 1, so the first must contribute at least... */
