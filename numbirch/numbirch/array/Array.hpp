@@ -591,32 +591,57 @@ public:
   void push(const T value) {
     assert(!isView);
 
-    ArrayControl* d = nullptr;
-    size_t newsize = (volume() + stride())*sizeof(T);
+    ArrayControl *c = nullptr, *d = nullptr;
     if (volume() == 0) {
-      /* allocate new */
-      d = new ArrayControl(newsize);
+      /* allocate new; as use cases for push() often see it called multiple
+       * times in succession, overallocate a little to start to accommodate
+       * some further pushes without reallocation */
+      d = new ArrayControl(16*sizeof(T));
     } else {
-      /* use ctl as a lock: exchange with nullptr, copy on write if necessary,
-       * resize buffer */
-      ArrayControl* c;
+      /* load control without obtaining lock */
       do {
-        c = ctl.exchange(nullptr);
+        c = ctl.load();
       } while (!c);
-      if (c->numShared() > 1) {
-        /* copy-on-write and resize simultaneously */
-        d = new ArrayControl(*c, newsize);
-        if (c->decShared() == 0) {
-          delete c;
-        }
-      } else {
+      d = c;
+
+      size_t newbytes = c->bytes;
+      if ((volume() + stride())*sizeof(T) > newbytes) {
+        /* must enlarge the allocation; as use cases for push() often see it
+         * called multiple times in succession, overallocate to reduce the
+         * need for reallocation on subsequent push() */
+        newbytes = std::max(2*newbytes, (volume() + stride())*sizeof(T));
+      }
+
+      if (c->numShared() > 1 || newbytes > c->bytes) {
+        /* reacquire control while obtaining lock*/
+        do {
+          c = ctl.exchange(nullptr);
+        } while (!c);
         d = c;
-        d->realloc(newsize);
+
+        if (c->numShared() > 1) {
+          /* copy-on-write and resize simultaneously */
+          d = new ArrayControl(*c, newbytes);
+          if (c->decShared() == 0) {
+            delete c;
+          }
+        } else if (newbytes > c->bytes) {
+          /* reallocate only if necessary */
+          c->realloc(newbytes);
+        }
+        c = nullptr;
       }
     }
-    memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
+
+    /* set new element; dicing preferable to slicing here given that the
+     * typical use case for push() is reading from a file */
+    static_cast<T*>(d->buf)[volume()] = value;
+    //memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
+
     shp.extend(1);
-    ctl.store(d);  // also unlocks
+    if (d != c) {
+      ctl.store(d);  // also unlocks
+    }
   }
 
   /**

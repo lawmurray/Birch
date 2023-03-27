@@ -34,47 +34,47 @@ void wait(void* evt) {
   //
 }
 
-void* malloc(const size_t size) {
-  return std::malloc(size);
+void* malloc(const size_t bytes) {
+  return std::malloc(bytes);
 }
 
-void* realloc(void* oldptr, const size_t oldsize, const size_t newsize) {
-  return std::realloc(oldptr, newsize);
+void* realloc(void* oldptr, const size_t oldbytes, const size_t newbytes) {
+  return std::realloc(oldptr, newbytes);
 }
 
 void free(void* ptr) {
   std::free(ptr);
 }
 
-void free(void* ptr, const size_t size) {
+void free(void* ptr, const size_t bytes) {
   std::free(ptr);
 }
 
-void memcpy(void* dst, const void* src, size_t n) {
-  std::memcpy(dst, src, n);
+void memcpy(void* dst, const void* src, size_t bytes) {
+  std::memcpy(dst, src, bytes);
 }
 
-void array_init(ArrayControl* ctl, const size_t size) {
+void array_init(ArrayControl* ctl, const size_t bytes) {
   assert(ctl);
-  ctl->buf = malloc(size);
-  ctl->size = size;
+  ctl->buf = malloc(bytes);
+  ctl->bytes = bytes;
   ctl->streamAlloc = nullptr;
   ctl->streamWrite = nullptr;
 }
 
 void array_term(ArrayControl* ctl) {
   assert(ctl);
-  free(ctl->buf, ctl->size);
+  free(ctl->buf, ctl->bytes);
 }
 
-void array_resize(ArrayControl* ctl, const size_t size) {
-  ctl->buf = numbirch::realloc(ctl->buf, ctl->size, size);
-  ctl->size = size;
+void array_resize(ArrayControl* ctl, const size_t bytes) {
+  ctl->buf = numbirch::realloc(ctl->buf, ctl->bytes, bytes);
+  ctl->bytes = bytes;
 }
 
 void array_copy(ArrayControl* dst, const ArrayControl* src) {
   auto src1 = const_cast<ArrayControl*>(src);
-  memcpy(dst->buf, src1->buf, std::min(dst->size, src1->size));
+  memcpy(dst->buf, src1->buf, std::min(dst->bytes, src1->bytes));
 }
 
 void array_wait(ArrayControl* ctl) {

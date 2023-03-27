@@ -146,9 +146,9 @@ void memset(T* dst, const int dpitch, const T value, const int width,
  * @ingroup memory
  * 
  * @param ctl Control block.
- * @param size Size, in bytes.
+ * @param bytes Number of bytes.
  */
-void array_init(ArrayControl* ctl, const size_t size);
+void array_init(ArrayControl* ctl, const size_t bytes);
 
 /**
  * Deallocate an array.
@@ -165,9 +165,9 @@ void array_term(ArrayControl* ctl);
  * @ingroup memory
  * 
  * @param ctl Control block.
- * @param size New sizse, in bytes.
+ * @param bytes New number of bytes.
  */
-void array_resize(ArrayControl* ctl, const size_t size);
+void array_resize(ArrayControl* ctl, const size_t bytes);
 
 /**
  * Copy between arrays.

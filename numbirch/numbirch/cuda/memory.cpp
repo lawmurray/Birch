@@ -131,10 +131,10 @@ void memcpy(void* dst, const void* src, size_t n) {
   CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
 }
 
-void array_init(ArrayControl* ctl, const size_t size) {
+void array_init(ArrayControl* ctl, const size_t bytes) {
   assert(ctl);
-  ctl->buf = numbirch::malloc(size);
-  ctl->size = size;
+  ctl->buf = numbirch::malloc(bytes);
+  ctl->bytes = bytes;
   ctl->streamAlloc = stream;
   ctl->streamWrite = stream;
 }
@@ -149,20 +149,20 @@ void array_term(ArrayControl* ctl) {
       CUDA_CHECK(cudaEventRecord(event, streamWrite));
       CUDA_CHECK(cudaStreamWaitEvent(streamAlloc, event));
     }
-    numbirch::free(ctl->buf, ctl->size);
+    numbirch::free(ctl->buf, ctl->bytes);
   }
 }
 
-void array_resize(ArrayControl* ctl, const size_t size) {
-  ctl->buf = numbirch::realloc(ctl->buf, ctl->size, size);
-  ctl->size = size;
+void array_resize(ArrayControl* ctl, const size_t bytes) {
+  ctl->buf = numbirch::realloc(ctl->buf, ctl->bytes, bytes);
+  ctl->bytes = bytes;
 }
 
 void array_copy(ArrayControl* dst, const ArrayControl* src) {
   auto src1 = const_cast<ArrayControl*>(src);
   before_read(src1);
   before_write(dst);
-  memcpy(dst->buf, src1->buf, std::min(dst->size, src1->size));
+  memcpy(dst->buf, src1->buf, std::min(dst->bytes, src1->bytes));
   after_write(dst);
   after_read(src1);
 }

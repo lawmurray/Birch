@@ -23,12 +23,12 @@ public:
   /**
    * Constructor.
    *
-   * @param size Buffer size.
+   * @param bytes Number of bytes to allocate.
    * 
    * The object is initialized with a reference count of one. The caller
    * need not (should not) call incShared().
    */
-  ArrayControl(const size_t size);
+  ArrayControl(const size_t bytes);
 
   /**
    * Copy constructor.
@@ -44,15 +44,15 @@ public:
    * Copy constructor with resized allocation.
    * 
    * @param o Source object.
-   * @param size Buffer size, in bytes. This may be less than or greater than
-   * the size of @p o.
+   * @param bytes Number of bytes to allocate. This may be less than or
+   * greater than the number of bytes of @p o.
    * 
    * The object is initialized with a reference count of one. The caller need
-   * not (should not) call incShared(). If @p size is greater than that of @p
-   * o, the extra bytes are uninitialized. If @p size is less than that of
+   * not (should not) call incShared(). If @p bytes is greater than that of @p
+   * o, the extra bytes are uninitialized. If @p bytes is less than that of
    * @p o, the extra bytes are truncated.
    */
-  ArrayControl(const ArrayControl& o, const size_t size);
+  ArrayControl(const ArrayControl& o, const size_t bytes);
 
   /**
    * Destructor.
@@ -90,9 +90,9 @@ public:
   /**
    * Reallocate the buffer.
    * 
-   * @param size New size, in bytes.
+   * @param bytes New number of bytes.
    */
-  void realloc(const size_t size);
+  void realloc(const size_t bytes);
 
   /**
    * Buffer.
@@ -110,9 +110,9 @@ public:
   void* streamWrite;
 
   /**
-   * Size of buffer, in bytes.
+   * Number of bytes in buffer.
    */
-  size_t size;
+  size_t bytes;
 
   /**
    * Reference count.
