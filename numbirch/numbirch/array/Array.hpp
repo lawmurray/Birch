@@ -609,7 +609,7 @@ public:
         /* must enlarge the allocation; as use cases for push() often see it
          * called multiple times in succession, overallocate to reduce the
          * need for reallocation on subsequent push() */
-        newbytes = std::max(2*newbytes, (volume() + stride())*sizeof(T));
+        newbytes = std::max(2*newbytes, size_t(volume() + stride())*sizeof(T));
       }
 
       if (c->numShared() > 1 || newbytes > c->bytes) {
