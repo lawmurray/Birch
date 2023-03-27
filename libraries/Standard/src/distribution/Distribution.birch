@@ -289,7 +289,7 @@ abstract class Distribution<Value> < Delay {
     }
   }
 
-  function fix() {
+  override function fix() {
     flagConstant <- true;
   }
 
