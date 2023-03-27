@@ -161,17 +161,7 @@ class YAMLReader < Reader {
       } else if (event.type == YAML_SEQUENCE_START_EVENT) {
         auto element = make_buffer();
         parseSequence(element);
-
-        /* attempt to merge sequences into numerical matrices */
-        if (element->vectorReal.has_value()) {
-          buffer->push(element->vectorReal.value());
-        } else if (element->vectorInteger.has_value()) {
-          buffer->push(element->vectorInteger.value());
-        } else if (element->vectorBoolean.has_value()) {
-          buffer->push(element->vectorBoolean.value());
-        } else {
-          buffer->push(element);
-        }
+        buffer->push(element);
       } else if (event.type == YAML_MAPPING_START_EVENT) {
         auto element = make_buffer();
         parseMapping(element);

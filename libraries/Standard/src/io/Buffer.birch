@@ -769,36 +769,48 @@ final class Buffer {
     }
   }
 
-  function doGet<Type>(x:Type[_,_]?) -> Type[_,_]? {
-    return doGetMatrix<Type>();
-  }
-
   function doGetMatrix<Type>() -> Type[_,_]? {
     if isNil() {
       return nil;
     } else {
-      y:Type[_];
-      let nrows <- 0;
+      /* we obtain the matrix row-by-row from the file (i.e. row-major) but
+       * matrices in Birch are column-major, so read rows from the files into
+       * columns of the matrix then transpose afterwards */
+      Y:Type[_,_];
+
+      let nrows <- size();
       let ncols <- 0;
       let iter <- walk();
-      while iter.hasNext() {
+
+      /* work out number of columns from the first element */
+      if iter.hasNext() {
         let z <- iter.next().get<Type[_]>();
-        if z? && (nrows == 0 || ncols == length(z!)) {
-          nrows <- nrows + 1;
+        if z? {
           ncols <- length(z!);
-          for i in 1..ncols {
-            let element <- z![i];
-            cpp{{
-            y.push(element);
-            }}
-          }
+          Y <- matrix<Type>(0, ncols, nrows);  // recall Y is transposed
+          Y[1..ncols,1] <- z!;
         } else {
           return nil;
         }
       }
-      return matrix_lambda(\(i:Integer, j:Integer) -> Type {
-            return y[(i - 1)*ncols + j];
-          }, nrows, ncols);
+
+      /* remaining elements, returning nil if a length does not match that of
+       * first element */
+      let i <- 1;
+      while iter.hasNext() {
+        let z <- iter.next().get<Type[_]>();
+        if z? && length(z!) == ncols {
+          i <- i + 1;
+          Y[1..ncols,i] <- z!;
+        } else {
+          warn("row " + (i + 1) + " does not match, has " + length(z!) +
+               " columns instead of " + ncols);
+          return nil;
+        }
+      }
+      assert i == nrows;
+
+      return transpose(Y);
     }
   }
 
@@ -856,10 +868,6 @@ final class Buffer {
 
   function doGet<Type>(t:Integer, x:Type[_,_]?) -> Type[_,_]? {
     return doGet(x);
-  }
-
-  function doGetMatrix<Type>(t:Integer) -> Type[_,_]? {
-    return doGetMatrix<Type>();
   }
 
   function doSet(x:Boolean) {
@@ -1075,57 +1083,15 @@ final class Buffer {
   }
 
   function doPush(x:Boolean[_]) {
-    if isEmpty() {
-      set(row(x));
-    } else if vectorBoolean? {
-      set(stack(row(vectorBoolean!), row(x)));
-    } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
-      set(stack(matrixBoolean!, row(x)));
-    } else if vectorInteger? || matrixInteger? {
-      push(cast<Integer>(x));
-    } else if vectorReal? || matrixReal? {
-      push(cast<Real>(x));
-    } else {
-      push(make_buffer(x));
-    }
+    push(make_buffer(x));
   }
 
   function doPush(x:Integer[_]) {
-    if isEmpty() {
-      set(row(x));
-    } else if vectorBoolean? {
-      set(stack(cast<Integer>(row(vectorBoolean!)), row(x)));
-    } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
-      set(stack(cast<Integer>(matrixBoolean!), row(x)));
-    } else if vectorInteger? {
-      set(stack(row(vectorInteger!), row(x)));
-    } else if matrixInteger? && columns(matrixInteger!) == length(x) {
-      set(stack(matrixInteger!, row(x)));
-    } else if vectorReal? || matrixReal? {
-      push(cast<Real>(x));
-    } else {
-      push(make_buffer(x));
-    }
+    push(make_buffer(x));
   }
 
   function doPush(x:Real[_]) {
-    if isEmpty() {
-      set(row(x));
-    } else if vectorBoolean? {
-      set(stack(cast<Real>(row(vectorBoolean!)), row(x)));
-    } else if matrixBoolean? && columns(matrixBoolean!) == length(x) {
-      set(stack(cast<Real>(matrixBoolean!), row(x)));
-    } else if vectorInteger? {
-      set(stack(cast<Real>(row(vectorInteger!)), row(x)));
-    } else if matrixInteger? && columns(matrixInteger!) == length(x) {
-      set(stack(cast<Real>(matrixInteger!), row(x)));
-    } else if vectorReal? {
-      set(stack(row(vectorReal!), row(x)));
-    } else if matrixReal? && columns(matrixReal!) == length(x) {
-      set(stack(matrixReal!, row(x)));
-    } else {
-      push(make_buffer(x));
-    }
+    push(make_buffer(x));
   }
 
   function doPush(x:Boolean[_,_]) {
