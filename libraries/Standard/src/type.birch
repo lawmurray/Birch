@@ -464,15 +464,196 @@ function wait<Type>(x:Type!) -> Type;
 
 hpp{{
 namespace birch {
-template<class T, std::enable_if_t<is_future_v<T>,int> = 0>
-auto wait(const T& x) {
-  return x.value();
+template<class T>
+auto wait(T&& x) {
+  if constexpr (is_future_v<T>) {
+    return x.value();
+  } else {
+    return x;
+  }
+}
+}
+}}
+
+hpp{{
+namespace birch {
+
+template<class T>
+auto rows(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return numbirch::rows(x);
+  } else if constexpr (is_form_v<T>) {
+    return x.rows();
+  } else {
+    return x->rows();
+  }
 }
 
-template<class T, std::enable_if_t<!is_future_v<T>,int> = 0>
-auto wait(const T& x) {
-  return x;
+template<class T>
+auto columns(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return numbirch::columns(x);
+  } else if constexpr (is_form_v<T>) {
+    return x.columns();
+  } else {
+    return x->columns();
+  }
 }
+
+template<class T>
+auto length(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return numbirch::length(x);
+  } else if constexpr (is_form_v<T>) {
+    return x.length();
+  } else {
+    return x->length();
+  }
+}
+
+template<class T>
+auto size(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return numbirch::size(x);
+  } else if constexpr (is_form_v<T>) {
+    return x.size();
+  } else {
+    return x->size();
+  }
+}
+
+template<class T>
+auto value(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return x;
+  } else if constexpr (is_form_v<T>) {
+    return x.value();
+  } else {
+    return x->value();
+  }
+}
+
+template<class T>
+auto eval(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return x;
+  } else if constexpr (is_form_v<T>) {
+    return x.eval();
+  } else {
+    return x->eval();
+  }
+}
+
+template<class T>
+auto peek(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return x;
+  } else if constexpr (is_form_v<T>) {
+    return x.peek();
+  } else {
+    return x->peek();
+  }
+}
+
+template<class T>
+auto move(T&& x, const MoveVisitor& visitor) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return x;
+  } else if constexpr (is_form_v<T>) {
+    return x.move(visitor);
+  } else {
+    return x->move(visitor);
+  }
+}
+
+template<class T>
+void args(T&& x, const ArgsVisitor& visitor) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.args(visitor);
+  } else {
+    x->args(visitor);
+  }
+}
+
+template<class T>
+void reset(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.reset();
+  } else {
+    x->reset();
+  }
+}
+
+template<class T>
+void relink(T&& x, const RelinkVisitor& visitor) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.relink(visitor);
+  } else {
+    x->relink(visitor);
+  }
+}
+
+template<class T, class G>
+void grad(T&& x, const G& g) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.grad(g);
+  } else {
+    x->grad(g);
+  }
+}
+
+template<class T, class G>
+void shallow_grad(T&& x, const G& g, const GradVisitor& visitor) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.shallowGrad(g, visitor);
+  } else {
+    x->shallowGrad(g, visitor);
+  }
+}
+
+template<class T>
+void deep_grad(T&& x, const GradVisitor& visitor) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.deepGrad(visitor);
+  } else {
+    x->deepGrad(visitor);
+  }
+}
+
+template<class T>
+void constant(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    //
+  } else if constexpr (is_form_v<T>) {
+    x.constant();
+  } else {
+    x->constant();
+  }
+}
+
+template<class T>
+bool is_constant(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return true;
+  } else if constexpr (is_form_v<T>) {
+    return x.isConstant();
+  } else {
+    return x->isConstant();
+  }
+}
+
 }
 }}
 
@@ -491,143 +672,6 @@ auto wait(const T& x) {
  * See also: [wrap](../../functions/wrap)
  */
 function box<Type>(x:Type) -> ;
-
-hpp{{
-namespace birch {
-template<class T, std::enable_if_t<numbirch::is_arithmetic_v<T>,int> = 0>
-Expression<T> box(const T& x) {
-  return Expression<T>(construct<BoxedValue<T>>(x));
-}
-
-template<class T, std::enable_if_t<is_array_v<T> &&
-    !is_future_v<T>,int> = 0>
-Expression<T> box(const T& x) {
-  return Expression<T>(construct<BoxedValue<T>>(x));
-}
-
-template<class T, std::enable_if_t<is_future_v<T>,int> = 0>
-Expression<typename T::value_type> box(const T& x) {
-  using U = typename T::value_type;
-  return Expression<U>(construct<BoxedValue<U>>(x));
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto box(const T& x) {
-  using U = typename std::decay_t<decltype(wait(eval(x)))>;
-  return Expression<U>(construct<BoxedForm<U,T>>(x));
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto box(const T& x) {
-  return x;
-}
-}
-}}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2>(x:(Value1,Value2)) -> {
-  let (x1, x2) <- x;
-  return (box(x1), box(x2));
-}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) -> {
-  let (x1, x2, x3) <- x;
-  return (box(x1), box(x2), box(x3));
-}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) -> {
-  let (x1, x2, x3, x4) <- x;
-  return (box(x1), box(x2), box(x3), box(x4));
-}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) -> {
-  let (x1, x2, x3, x4, x5) <- x;
-  return (box(x1), box(x2), box(x3), box(x4), box(x5));
-}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) -> {
-  let (x1, x2, x3, x4, x5, x6) <- x;
-  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6));
-}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) -> {
-  let (x1, x2, x3, x4, x5, x6, x7) <- x;
-  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7));
-}
-
-/**
- * Box the elements of a tuple.
- */
-function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) -> {
-  let (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
-  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7), box(x8));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2>(x1:Value1, x2:Value2) -> {
-  return (box(x1), box(x2));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2,Value3>(x1:Value1, x2:Value2, x3:Value3) -> {
-  return (box(x1), box(x2), box(x3));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2,Value3,Value4>(x1:Value1, x2:Value2, x3:Value3, x4:Value4) -> {
-  return (box(x1), box(x2), box(x3), box(x4));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2,Value3,Value4,Value5>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5) -> {
-  return (box(x1), box(x2), box(x3), box(x4), box(x5));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2,Value3,Value4,Value5,Value6>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6) -> {
-  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7) -> {
-  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7));
-}
-
-/**
- * Box multiple arguments.
- */
-function box<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7, x8:Value8) -> {
-  return (box(x1), box(x2), box(x3), box(x4), box(x5), box(x6), box(x7), box(x8));
-}
 
 /**
  * Wrap a value. The `wrap()` series of functions preserves basic values,
@@ -648,358 +692,39 @@ function wrap<Type>(x:Type) -> ;
 
 hpp{{
 namespace birch {
-template<class T, std::enable_if_t<numbirch::is_arithmetic_v<T>,int> = 0>
-auto wrap(const T& x) {
-  return x;
+template<class T>
+auto box(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    using U = typename std::decay_t<decltype(wait(eval(x)))>;
+    return Expression<U>(construct<BoxedValue<U>>(x));
+  } else if constexpr (is_form_v<T>) {
+    using U = typename std::decay_t<decltype(wait(eval(x)))>;
+    using V = typename std::decay_t<T>;
+    return Expression<U>(construct<BoxedForm<U,V>>(x));
+  } else {
+    return x;
+  }
 }
 
-template<class T, std::enable_if_t<is_array_v<T>,int> = 0>
-auto wrap(const T& x) {
-  return x;
+template<class... Args>
+auto box(Args&&... args) {
+  return std::make_tuple(box(std::forward<Args>(args))...);
 }
 
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto wrap(const T& x) {
-  return box(x);
+template<class T>
+auto wrap(T&& x) {
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return x;
+  } else if constexpr (is_form_v<T>) {
+    return box(x);
+  } else {
+    return x;
+  }
 }
 
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto wrap(const T& x) {
-  return x;
-}
-}
-}}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2>(x:(Value1,Value2)) -> {
-  let (x1, x2) <- x;
-  return (wrap(x1), wrap(x2));
-}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2,Value3>(x:(Value1,Value2,Value3)) -> {
-  let (x1, x2, x3) <- x;
-  return (wrap(x1), wrap(x2), wrap(x3));
-}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2,Value3,Value4>(x:(Value1,Value2,Value3,Value4)) -> {
-  let (x1, x2, x3, x4) <- x;
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4));
-}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5>(x:(Value1,Value2,Value3,Value4,Value5)) -> {
-  let (x1, x2, x3, x4, x5) <- x;
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5));
-}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5,Value6>(x:(Value1,Value2,Value3,Value4,Value5,Value6)) -> {
-  let (x1, x2, x3, x4, x5, x6) <- x;
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6));
-}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7)) -> {
-  let (x1, x2, x3, x4, x5, x6, x7) <- x;
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7));
-}
-
-/**
- * Wrap the elements of a tuple.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x:(Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8)) -> {
-  let (x1, x2, x3, x4, x5, x6, x7, x8) <- x;
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2>(x1:Value1, x2:Value2) -> {
-  return (wrap(x1), wrap(x2));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2,Value3>(x1:Value1, x2:Value2, x3:Value3) -> {
-  return (wrap(x1), wrap(x2), wrap(x3));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2,Value3,Value4>(x1:Value1, x2:Value2, x3:Value3, x4:Value4) -> {
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5) -> {
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5,Value6>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6) -> {
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7) -> {
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7));
-}
-
-/**
- * Wrap multiple arguments.
- */
-function wrap<Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8>(x1:Value1, x2:Value2, x3:Value3, x4:Value4, x5:Value5, x6:Value6, x7:Value7, x8:Value8) -> {
-  return (wrap(x1), wrap(x2), wrap(x3), wrap(x4), wrap(x5), wrap(x6), wrap(x7), wrap(x8));
-}
-
-hpp{{
-namespace birch {
-using numbirch::rows;
-using numbirch::columns;
-using numbirch::length;
-using numbirch::size;
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto rows(const T& x) {
-  return x.rows();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto rows(const T& x) {
-  return x->rows();
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto columns(const T& x) {
-  return x.columns();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto columns(const T& x) {
-  return x->columns();
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto length(const T& x) {
-  return x.length();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto length(const T& x) {
-  return x->length();
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto size(const T& x) {
-  return x.size();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto size(const T& x) {
-  return x->size();
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto value(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto value(T& x) {
-  return x.value();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto value(T& x) {
-  return x->value();
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto eval(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto eval(const T& x) {
-  return x.eval();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto eval(const T& x) {
-  return x->eval();
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto peek(const T& x) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto peek(T& x) {
-  return x.peek();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto peek(T& x) {
-  return x->peek();
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-auto move(const T& x, const MoveVisitor& visitor) {
-  return x;
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-auto move(T& x, const MoveVisitor& visitor) {
-  return x.move(visitor);
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-auto move(T& x, const MoveVisitor& visitor) {
-  return x->move(visitor);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void args(const T& x, const ArgsVisitor& visitor) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void args(T& x, const ArgsVisitor& visitor) {
-  x.args(visitor);
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void args(T& x, const ArgsVisitor& visitor) {
-  x->args(visitor);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void reset(const T& x) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void reset(T& x) {
-  x.reset();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void reset(T& x) {
-  x->reset();
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void relink(const T& x, const RelinkVisitor& visitor) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void relink(T& x, const RelinkVisitor& visitor) {
-  x.relink(visitor);
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void relink(T& x, const RelinkVisitor& visitor) {
-  x->relink(visitor);
-}
-
-template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void grad(const T& x, const G& g) {
-  //
-}
-
-template<class T, class G, std::enable_if_t<is_form_v<T>,int> = 0>
-void grad(T& x, const G& g) {
-  x.grad(g);
-}
-
-template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
-void grad(T& x, const G& g) {
-  x->grad(g);
-}
-
-template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
-  //
-}
-
-template<class T, class G, std::enable_if_t<is_form_v<T>,int> = 0>
-void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
-  x.shallowGrad(g, visitor);
-}
-
-template<class T, class G, std::enable_if_t<is_expression_v<T>,int> = 0>
-void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
-  x->shallowGrad(g, visitor);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void deep_grad(const T& x, const GradVisitor& visitor) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void deep_grad(T& x, const GradVisitor& visitor) {
-  x.deepGrad(visitor);
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void deep_grad(T& x, const GradVisitor& visitor) {
-  x->deepGrad(visitor);
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-void constant(const T& x) {
-  //
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-void constant(T& x) {
-  x.constant();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-void constant(T& x) {
-  x->constant();
-}
-
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-bool is_constant(const T& x) {
-  return true;
-}
-
-template<class T, std::enable_if_t<is_form_v<T>,int> = 0>
-bool is_constant(const T& x) {
-  return x.isConstant();
-}
-
-template<class T, std::enable_if_t<is_expression_v<T>,int> = 0>
-bool is_constant(const T& x) {
-  return x->isConstant();
+template<class... Args>
+auto wrap(Args&&... args) {
+  return std::make_tuple(wrap(std::forward<Args>(args))...);
 }
 
 }

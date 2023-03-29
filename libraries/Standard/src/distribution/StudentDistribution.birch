@@ -70,10 +70,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
  */
 function Student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) ->
     Distribution<Real> {
-  return wrap_student(k, μ, σ2);
-}
-function wrap_student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
-  return make_student(wrap(k), wrap(μ), wrap(σ2));
+  return make_student(k, μ, σ2);
 }
 function make_student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
   return construct<StudentDistribution<Arg1,Arg2,Arg3>>(k, μ, σ2);

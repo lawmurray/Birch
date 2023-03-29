@@ -50,10 +50,7 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
 
 function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) ->
     Distribution<Integer[_]> {
-  return wrap_dirichlet_multinomial(n, α);
-}
-function wrap_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
-  return make_dirichlet_multinomial(wrap(n), wrap(α));
+  return make_dirichlet_multinomial(n, α);
 }
 function make_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
   return construct<DirichletMultinomialDistribution<Arg1,Arg2>>(n, α);
@@ -67,11 +64,11 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
   if ρ.isDirichlet() {
     let p_ρ <- ρ.graft();
     let α <- p_ρ.getDirichlet()!;
-    let p <- wrap_dirichlet_multinomial(n, α);
+    let p <- make_dirichlet_multinomial(n, α);
     p_ρ.setMarginalized(p);
     return p;
   } else {
-    return wrap_multinomial(n, ρ);
+    return make_multinomial(n, ρ);
   }
 }
 
@@ -113,5 +110,5 @@ function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
  */
 function update_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
     α:Arg3) -> {
-  return wrap_dirichlet(α + x);
+  return make_dirichlet(α + x);
 }

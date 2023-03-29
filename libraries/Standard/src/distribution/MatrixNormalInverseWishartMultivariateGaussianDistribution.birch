@@ -155,7 +155,7 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
           global.value(Y), global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k),
           global.value(Φ));
-      setUpdated(wrap_matrix_normal_inverse_wishart_multivariate_gaussian(
+      setUpdated(make_matrix_normal_inverse_wishart_multivariate_gaussian(
           this.a, p.N, p.Λ, p.Γ, p.k, this.c, this.φ2));
       setJoined(nil);
     }
@@ -201,14 +201,8 @@ function MatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
   let N <- triinnersolve(L, O);
   let Λ <- cholinv(L);
   let Γ <- Ψ + inner(O);
-  return wrap_matrix_normal_inverse_wishart_multivariate_gaussian(a, N, Λ, Γ,
+  return make_matrix_normal_inverse_wishart_multivariate_gaussian(a, N, Λ, Γ,
       k, c, φ2);
-}
-function wrap_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, c:Arg6,
-    φ2:Arg7) -> {
-  return make_matrix_normal_inverse_wishart_multivariate_gaussian(wrap(a),
-      wrap(N), wrap(Λ), wrap(Γ), wrap(k), wrap(c), wrap(φ2));
 }
 function make_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, c:Arg6,
@@ -233,7 +227,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Inner<Random<Real[_,_]>,
     let p_Ω <- Ω.getDistribution();
     let p_m <- m.graft();
     let (N, Λ1, Γ, k) <- p_m.getMatrixNormalInverseWishart()!;
-    let p <- wrap_matrix_normal_inverse_wishart_multivariate_gaussian(A, N,
+    let p <- make_matrix_normal_inverse_wishart_multivariate_gaussian(A, N,
         Λ1, Γ, k, c, ω2);
     if p_m.hasJoined() {
       p.setJoined(p_m.getJoined());  // carry forward
@@ -248,11 +242,11 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Inner<Random<Real[_,_]>,
     let ν <- μ/ω2;
     let λ <- 1.0/ω2;
     let Γ <- Ψ + outer(μ/sqrt(ω2));
-    let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
+    let p <- make_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
     p_Ω.setMarginalized(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return make_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -352,5 +346,5 @@ function update_matrix_normal_inverse_wishart_multivariate_gaussian<
   let N' <- N + outer(a/φ2, x - c);
   let Γ' <- Γ + outer((x - c)/sqrt(φ2));
   let k' <- k + 1;
-  return wrap_matrix_normal_inverse_wishart(N', Λ', Γ', k');
+  return make_matrix_normal_inverse_wishart(N', Λ', Γ', k');
 }

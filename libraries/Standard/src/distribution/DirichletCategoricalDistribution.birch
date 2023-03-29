@@ -50,10 +50,7 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
 }
 
 function DirichletCategorical<Arg>(α:Arg) -> Distribution<Integer> {
-  return wrap_dirichlet_categorical(α);
-}
-function wrap_dirichlet_categorical<Arg>(α:Arg) -> {
-  return make_dirichlet_categorical(wrap(α));
+  return make_dirichlet_categorical(α);
 }
 function make_dirichlet_categorical<Arg>(α:Arg) -> {
   return construct<DirichletCategoricalDistribution<Arg>>(α);
@@ -66,17 +63,17 @@ function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
   if ρ.isDirichlet() {
     let p_ρ <- ρ.graft();
     let α <- p_ρ.getDirichlet()!;
-    let p <- wrap_dirichlet_categorical(α);
+    let p <- make_dirichlet_categorical(α);
     p_ρ.setMarginalized(p);
     return p;
   } else if ρ.isRestaurant() {
     let p_ρ <- ρ.graft();
     let (α, θ, n) <- p_ρ.getRestaurant()!;
-    let p <- wrap_restaurant_categorical(α, θ, n);
+    let p <- make_restaurant_categorical(α, θ, n);
     p_ρ.setMarginalized(p);
     return p;
   } else {
-    return wrap_categorical(ρ);
+    return make_categorical(ρ);
   }
 }
 
@@ -112,5 +109,5 @@ function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
  * @return the posterior hyperparameters `α'`.
  */
 function update_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
-  return wrap_dirichlet(α + single(1.0, x, global.length(α)));
+  return make_dirichlet(α + single(1.0, x, global.length(α)));
 }

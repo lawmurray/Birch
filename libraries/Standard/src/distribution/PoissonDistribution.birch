@@ -58,10 +58,7 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
  * Create Poisson distribution.
  */
 function Poisson<Arg>(λ:Arg) -> Distribution<Integer> {
-  return wrap_poisson(λ);
-}
-function wrap_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
-  return make_poisson(wrap(λ));
+  return make_poisson(λ);
 }
 function make_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
   return construct<PoissonDistribution<Arg>>(λ);

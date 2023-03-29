@@ -49,10 +49,7 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
 }
 
 function BetaBernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> Distribution<Boolean> {
-  return wrap_beta_bernoulli(α, β);
-}
-function wrap_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
-  return make_beta_bernoulli(wrap(α), wrap(β));
+  return make_beta_bernoulli(α, β);
 }
 function make_beta_bernoulli<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return construct<BetaBernoulliDistribution<Arg1,Arg2>>(α, β);
@@ -65,11 +62,11 @@ function Bernoulli(ρ:Random<Real>) -> Distribution<Boolean> {
   if ρ.isBeta() {
     let p_ρ <- ρ.graft();
     let (α, β) <- p_ρ.getBeta()!;
-    let p <- wrap_beta_bernoulli(α, β);
+    let p <- make_beta_bernoulli(α, β);
     p_ρ.setMarginalized(p);
     return p;
   } else {
-    return wrap_bernoulli(ρ);
+    return make_bernoulli(ρ);
   }
 }
 
@@ -106,5 +103,5 @@ function logpdf_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
  * @return the posterior hyperparameters `α'` and `β'`.
  */
 function update_beta_bernoulli<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
-  return wrap_beta(where(x, α + 1.0, α), where(x, β, β + 1.0));
+  return make_beta(where(x, α + 1.0, α), where(x, β, β + 1.0));
 }

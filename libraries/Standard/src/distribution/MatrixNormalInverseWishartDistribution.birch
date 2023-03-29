@@ -103,12 +103,7 @@ function MatrixNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(M:Arg1, Σ:Arg2,
   let N <- triinnersolve(L, O);
   let Λ <- cholinv(L);
   let Γ <- Ψ + inner(O);
-  return wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
-}
-function wrap_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
-    Λ:Arg2, Γ:Arg3, k:Arg4) -> {
-  return make_matrix_normal_inverse_wishart(wrap(N), wrap(Λ), wrap(Γ),
-      wrap(k));
+  return make_matrix_normal_inverse_wishart(N, Λ, Γ, k);
 }
 function make_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(N:Arg1,
     Λ:Arg2, Γ:Arg3, k:Arg4) -> {
@@ -129,11 +124,11 @@ function MatrixGaussian<Arg1,Arg2>(M:Arg1, U:Arg2, V:Random<Real[_,_]>) ->
     let N <- triinnersolve(L, O);
     let Λ <- cholinv(L);
     let Γ <- Ψ + inner(O);
-    let p <- wrap_matrix_normal_inverse_wishart(N, Λ, Γ, k);
+    let p <- make_matrix_normal_inverse_wishart(N, Λ, Γ, k);
     p_V.setMarginalized(p);
     return p;
   } else {
-    return wrap_matrix_gaussian(M, U, V);
+    return make_matrix_gaussian(M, U, V);
   }
 }
 
@@ -195,5 +190,5 @@ function update_matrix_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4,Arg5>(
   let M <- wrap(triinnersolve(L, O));
   let Ψ' <- Γ - inner(O) + inner(triinner(L, X - M));
   let k' <- k + n;
-  return wrap_inverse_wishart(Ψ', k');
+  return make_inverse_wishart(Ψ', k');
 }

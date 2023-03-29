@@ -84,11 +84,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
 
 function AddDiscreteDelta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
     b:Integer!) -> Distribution<Integer> {
-  return wrap_add_discrete_delta(p, q, a, b);
-}
-function wrap_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
-    b:Integer!) -> {
-  return make_add_discrete_delta(wrap(p), wrap(q), a, b);
+  return make_add_discrete_delta(p, q, a, b);
 }
 function make_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
     b:Integer!) -> {
@@ -107,7 +103,7 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     let p_r <- r.graft();
     let (p, a) <- p_l.getBoundedDiscrete()!;
     let (q, b) <- p_r.getBoundedDiscrete()!;
-    let r <- wrap_add_discrete_delta(p, q, a, b);
+    let r <- make_add_discrete_delta(p, q, a, b);
     p_r.setSecondOrder(true);
     p_r.setMarginalized(p_l);
     p_l.setMarginalized(r);
@@ -119,7 +115,7 @@ function Delta(μ:Add<Random<Integer>,Random<Integer>>) ->
     let x ~ Delta(l);
     return Delta(x + r);
   } else {
-    return wrap_delta(μ);
+    return make_delta(μ);
   }
 }
 
@@ -282,5 +278,5 @@ function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
   let t <- l + 1 - iota(0, max(l - k + 1, 0));  // second range, descending order
 
   let r <- hadamard(gather(p, s), gather(q, t));
-  return wrap_add_discrete_first(r/sum(r), a + i, b + k);
+  return make_add_discrete_first(r/sum(r), a + i, b + k);
 }

@@ -60,11 +60,7 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
 
 function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) ->
     Distribution<Integer> {
-  return wrap_beta_negative_binomial(k, α, β);
-}
-function wrap_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
-    β:Arg3) -> {
-  return make_beta_negative_binomial(wrap(k), wrap(α), wrap(β));
+  return make_beta_negative_binomial(k, α, β);
 }
 function make_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
@@ -79,11 +75,11 @@ function NegativeBinomial<Arg1>(k:Arg1, ρ:Random<Real>) ->
   if ρ.isBeta() {
     let p_ρ <- ρ.graft();
     let (α, β) <- p_ρ.getBeta()!;
-    let p <- wrap_beta_negative_binomial(k, α, β);
+    let p <- make_beta_negative_binomial(k, α, β);
     p_ρ.setMarginalized(p);
     return p;
   } else {
-    return wrap_negative_binomial(k, ρ);
+    return make_negative_binomial(k, ρ);
   }
 }
 
@@ -126,5 +122,5 @@ function logpdf_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1,
  */
 function update_beta_negative_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {
-  return wrap_beta(α + k, β + x);
+  return make_beta(α + k, β + x);
 }

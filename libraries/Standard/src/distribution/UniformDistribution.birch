@@ -69,10 +69,7 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
  * Create a uniform distribution.
  */
 function Uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> Distribution<Real> {
-  return wrap_uniform(l, u);
-}
-function wrap_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
-  return make_uniform(wrap(l), wrap(u));
+  return make_uniform(l, u);
 }
 function make_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   return construct<UniformDistribution<Arg1,Arg2>>(l, u);

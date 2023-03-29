@@ -119,11 +119,7 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
 function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2, α:Arg3,
     β:Arg4) -> Distribution<Real> {
   let γ <- 2.0*β + pow(μ, 2.0)/σ2;
-  return wrap_normal_inverse_gamma(μ/σ2, 1.0/σ2, 2.0*α, γ);
-}
-function wrap_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
-    k:Arg3, γ:Arg4) -> {
-  return make_normal_inverse_gamma(wrap(ν), wrap(λ), wrap(k), wrap(γ));
+  return make_normal_inverse_gamma(μ/σ2, 1.0/σ2, 2.0*α, γ);
 }
 function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
     k:Arg3, γ:Arg4) -> {
@@ -142,11 +138,11 @@ function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Mul<Arg2,Random<Real>>) ->
     let p_τ2 <- τ2.graft();
     let (α, β) <- p_τ2.getInverseGamma()!;
     let γ <- 2.0*β + pow(μ, 2.0)/ω2;
-    let p <- wrap_normal_inverse_gamma(μ/ω2, 1.0/ω2, 2.0*α, γ);
+    let p <- make_normal_inverse_gamma(μ/ω2, 1.0/ω2, 2.0*α, γ);
     p_τ2.setMarginalized(p);
     return p;
   } else {
-    return wrap_gaussian(μ, σ2);
+    return make_gaussian(μ, σ2);
   }
 }
 
@@ -203,7 +199,7 @@ function logpdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
 function update_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1,
     ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5) -> {
   let β <- γ - pow(ν, 2.0)/λ;  // actually two times beta
-  return wrap_inverse_gamma(0.5*(k + 1), 0.5*(β + pow(x - ν/λ, 2.0)*λ));
+  return make_inverse_gamma(0.5*(k + 1), 0.5*(β + pow(x - ν/λ, 2.0)*λ));
 }
 
 /*

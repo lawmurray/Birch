@@ -76,10 +76,7 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
 
 function AddDiscreteConstrained<Arg1>(p:Arg1, a:Integer!, b:Integer!) ->
     Distribution<Integer> {
-  return wrap_add_discrete_first(p, a, b);
-}
-function wrap_add_discrete_first<Arg1>(p:Arg1, a:Integer!, b:Integer!) -> {
-  return make_add_discrete_first(wrap(p), a, b);
+  return make_add_discrete_first(p, a, b);
 }
 function make_add_discrete_first<Arg1>(p:Arg1, a:Integer!, b:Integer!) -> {
   return construct<AddDiscreteFirstDistribution<Arg1>>(p, a, b);
@@ -125,5 +122,5 @@ function pdf_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
 function update_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
     b:Integer!) -> {
   let sum <- a + b + global.length(p) - 1;
-  return wrap_delta(sum - x);
+  return make_delta(sum - x);
 }

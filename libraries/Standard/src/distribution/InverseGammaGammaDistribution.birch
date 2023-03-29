@@ -64,10 +64,7 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
 
 function InverseGammaGamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) ->
     Distribution<Real> {
-  return wrap_inverse_gamma_gamma(k, α, β);
-}
-function wrap_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
-  return make_inverse_gamma_gamma(wrap(k), wrap(α), wrap(β));
+  return make_inverse_gamma_gamma(k, α, β);
 }
 function make_inverse_gamma_gamma<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) -> {
   return construct<InverseGammaGammaDistribution<Arg1,Arg2,Arg3>>(k, α, β);
@@ -80,11 +77,11 @@ function Gamma<Arg>(k:Arg, θ:Random<Real>) -> Distribution<Real> {
   if θ.isInverseGamma() {
     let p_θ <- θ.graft();
     let (α, β) <- p_θ.getInverseGamma()!;
-    let p <- wrap_inverse_gamma_gamma(k, α, β);
+    let p <- make_inverse_gamma_gamma(k, α, β);
     p_θ.setMarginalized(p);
     return p;
   } else {
-    return wrap_gamma(k, θ);
+    return make_gamma(k, θ);
   }
 }
 
@@ -128,7 +125,7 @@ function logpdf_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
  */
 function update_inverse_gamma_gamma<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2,
     α:Arg3, β:Arg4) -> {
-  return wrap_inverse_gamma(α + k, β + x);
+  return make_inverse_gamma(α + k, β + x);
 }
 
 /*

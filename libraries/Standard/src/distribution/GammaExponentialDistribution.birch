@@ -72,10 +72,7 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
 
 function GammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
     Distribution<Real> {
-  return wrap_gamma_exponential(a, k, θ);
-}
-function wrap_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
-  return make_gamma_exponential(wrap(a), wrap(k), wrap(θ));
+  return make_gamma_exponential(a, k, θ);
 }
 function make_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
   return construct<GammaExponentialDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
@@ -90,11 +87,11 @@ function Exponential<Arg>(λ:Mul<Arg,Random<Real>>) -> Distribution<Real> {
   if b.isGamma() {
     let p_b <- b.graft();
     let (k, θ) <- p_b.getGamma()!;
-    let p <- wrap_gamma_exponential(a, k, θ);
+    let p <- make_gamma_exponential(a, k, θ);
     p_b.setMarginalized(p);
     return p;
   } else {
-    return wrap_exponential(λ);
+    return make_exponential(λ);
   }
 }
 
@@ -140,7 +137,7 @@ function logpdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
  * @return the posterior hyperparameters `k'` and `θ'`.
  */
 function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
-  return wrap_gamma(k + 1.0, θ/(1.0 + x*θ));
+  return make_gamma(k + 1.0, θ/(1.0 + x*θ));
 }
 
 /*
@@ -185,5 +182,5 @@ function quantile_lomax<Arg1,Arg2,Arg3>(P:Arg1, λ:Arg2, α:Arg3) -> {
  */
 function update_gamma_exponential<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {
-  return wrap_gamma(k + 1.0, θ/(1.0 + x*a*θ));
+  return make_gamma(k + 1.0, θ/(1.0 + x*a*θ));
 }

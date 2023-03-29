@@ -50,12 +50,7 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
 
 function GaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2, σ2:Arg3,
     c:Arg4, ω2:Arg5) -> Distribution<Real> {
-  return wrap_gaussian_gaussian(a, μ, σ2, c, ω2);
-}
-function wrap_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
-    μ:Arg2, σ2:Arg3, c:Arg4, ω2:Arg5) -> {
-  return make_gaussian_gaussian(wrap(a), wrap(μ), wrap(σ2), wrap(c),
-      wrap(ω2));
+  return make_gaussian_gaussian(a, μ, σ2, c, ω2);
 }
 function make_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
     σ2:Arg3, c:Arg4, ω2:Arg5) -> {
@@ -74,11 +69,11 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
   if m.isGaussian() {
     let p_m <- m.graft();
     let (m1, ω2) <- p_m.getGaussian()!;
-    let p <- wrap_gaussian_gaussian(a, m1, ω2, c, σ2);
+    let p <- make_gaussian_gaussian(a, m1, ω2, c, σ2);
     p_m.setMarginalized(p);
     return p;
   } else {
-    return wrap_gaussian(μ, σ2);
+    return make_gaussian(μ, σ2);
   }
 }
 
@@ -122,5 +117,5 @@ function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(
     x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, ω2:Arg6, m:Arg7, τ2:Arg8) -> {
   let σ2' <- 1.0/(1.0/σ2 + a*a/ω2);
   let μ' <- σ2'*(μ/σ2 + a*(x - c)/ω2);
-  return wrap_gaussian(μ', σ2');
+  return make_gaussian(μ', σ2');
 }

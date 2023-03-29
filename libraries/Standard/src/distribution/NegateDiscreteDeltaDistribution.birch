@@ -31,11 +31,11 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
   }
 
   override function update(x:Integer!) -> Delay? {
-    return wrap_delta(-x);
+    return make_delta(-x);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {
-    return wrap_delta(-x);
+    return make_delta(-x);
   }
 
   override function hoist() -> Expression<Real> {
@@ -69,10 +69,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
 
 function NegateDiscreteDelta<Arg1>(p:Arg1, l:Integer!) ->
     Distribution<Integer> {
-  return wrap_negate_discrete_delta(p, l);
-}
-function wrap_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
-  return make_negate_discrete_delta(wrap(p), l);
+  return make_negate_discrete_delta(p, l);
 }
 function make_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
   return construct<NegateDiscreteDeltaDistribution<Arg1>>(p, l);
@@ -86,11 +83,11 @@ function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
   if m.isBoundedDiscrete() {
     let p_m <- m.graft();
     let (p, l) <- p_m.getBoundedDiscrete()!;
-    let q <- wrap_negate_discrete_delta(p, l);
+    let q <- make_negate_discrete_delta(p, l);
     p_m.setMarginalized(q);
     return q;
   } else {
-    return wrap_delta(μ);
+    return make_delta(μ);
   }
 }
 

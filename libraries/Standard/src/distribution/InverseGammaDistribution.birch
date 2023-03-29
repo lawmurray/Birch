@@ -75,10 +75,7 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
  * Create inverse-gamma distribution.
  */
 function InverseGamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> Distribution<Real> {
-  return wrap_inverse_gamma(α, β);
-}
-function wrap_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
-  return make_inverse_gamma(wrap(α), wrap(β));
+  return make_inverse_gamma(α, β);
 }
 function make_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return construct<InverseGammaDistribution<Arg1,Arg2>>(α, β);

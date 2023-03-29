@@ -53,12 +53,7 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
 
 function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> Distribution<Real[_]> {
-  return wrap_multivariate_gaussian_multivariate_gaussian(A, μ, Σ, c, Ω);
-}
-function wrap_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
-  return make_multivariate_gaussian_multivariate_gaussian(wrap(A), wrap(μ),
-      wrap(Σ), wrap(c), wrap(Ω));
+  return make_multivariate_gaussian_multivariate_gaussian(A, μ, Σ, c, Ω);
 }
 function make_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
@@ -77,12 +72,12 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
   if m.isMultivariateGaussian() {
     let p_m <- m.graft();
     let (μ1, Σ1) <- p_m.getMultivariateGaussian()!;
-    let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, μ1, Σ1, c,
+    let p <- make_multivariate_gaussian_multivariate_gaussian(A, μ1, Σ1, c,
         Σ);
     p_m.setMarginalized(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return make_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -132,5 +127,5 @@ function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
   let K' <- wrap(Σ*transpose(A));
   let μ' <- μ + K'*cholsolve(L, x - m);
   let Σ' <- Σ - K'*cholsolve(L, A*Σ);
-  return wrap_multivariate_gaussian(μ', Σ');
+  return make_multivariate_gaussian(μ', Σ');
 }

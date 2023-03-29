@@ -95,11 +95,7 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
  */
 function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2, n:Arg3) ->
     Distribution<Integer> {
-  return wrap_conway_maxwell_poisson(μ, ν, n);
-}
-function wrap_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
-    n:Arg3) -> {
-  return make_conway_maxwell_poisson(wrap(μ), wrap(ν), wrap(n));
+  return make_conway_maxwell_poisson(μ, ν, n);
 }
 function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {

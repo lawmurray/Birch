@@ -79,10 +79,7 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
 
 function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) ->
     Distribution<Integer> {
-  return wrap_beta_binomial(n, α, β);
-}
-function wrap_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
-  return make_beta_binomial(wrap(n), wrap(α), wrap(β));
+  return make_beta_binomial(n, α, β);
 }
 function make_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
   return construct<BetaBinomialDistribution<Arg1,Arg2,Arg3>>(n, α, β);
@@ -95,11 +92,11 @@ function Binomial<Arg1>(n:Arg1, ρ:Random<Real>) -> Distribution<Integer> {
   if ρ.isBeta() {
     let p_ρ <- ρ.graft();
     let (α, β) <- p_ρ.getBeta()!;
-    let p <- wrap_beta_binomial(n, α, β);
+    let p <- make_beta_binomial(n, α, β);
     p_ρ.setMarginalized(p);
     return p;
   } else {
-    return wrap_binomial(n, ρ);
+    return make_binomial(n, ρ);
   }
 }
 
@@ -141,7 +138,7 @@ function logpdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
  */
 function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
     β:Arg4) -> {
-  return wrap_beta(α + x, β + n - x);
+  return make_beta(α + x, β + n - x);
 }
 
 /*

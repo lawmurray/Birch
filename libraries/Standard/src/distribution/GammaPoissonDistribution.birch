@@ -72,10 +72,7 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
 
 function GammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
     Distribution<Integer> {
-  return wrap_gamma_poisson(a, k, θ);
-}
-function wrap_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
-  return make_gamma_poisson(wrap(a), wrap(k), wrap(θ));
+  return make_gamma_poisson(a, k, θ);
 }
 function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
   return construct<GammaPoissonDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
@@ -90,11 +87,11 @@ function Poisson<Arg>(λ:Mul<Arg,Random<Real>>) -> Distribution<Integer> {
   if b.isGamma() {
     let p_b <- b.graft();
     let (k, θ) <- p_b.getGamma()!;
-    let p <- wrap_gamma_poisson(a, k, θ);
+    let p <- make_gamma_poisson(a, k, θ);
     p_b.setMarginalized(p);
     return p;
   } else {
-    return wrap_poisson(λ);
+    return make_poisson(λ);
   }
 }
 
@@ -121,17 +118,17 @@ function Poisson(λ:Mul<Random<Real>,Random<Real>>) -> Distribution<Integer> {
   if a.isGamma() {
     let p_a <- a.graft();
     let (k, θ) <- p_a.getGamma()!;
-    let p <- wrap_gamma_poisson(b, k, θ);
+    let p <- make_gamma_poisson(b, k, θ);
     p_a.setMarginalized(p);
     return p;
   } else if b.isGamma() {
     let p_b <- b.graft();
     let (k, θ) <- p_b.getGamma()!;
-    let p <- wrap_gamma_poisson(a, k, θ);
+    let p <- make_gamma_poisson(a, k, θ);
     p_b.setMarginalized(p);
     return p;
   } else {
-    return wrap_poisson(λ);
+    return make_poisson(λ);
   }
 }
 
@@ -178,7 +175,7 @@ function logpdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
  */
 function update_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {
-  return wrap_gamma(k + x, θ/(a*θ + 1.0));
+  return make_gamma(k + x, θ/(a*θ + 1.0));
 }
 
 /*

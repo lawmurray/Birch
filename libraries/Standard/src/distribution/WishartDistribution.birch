@@ -49,10 +49,7 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
  * Create Wishart distribution.
  */
 function Wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> Distribution<Real[_,_]> {
-  return wrap_wishart(Ψ, k);
-}
-function wrap_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
-  return make_wishart(wrap(Ψ), wrap(k));
+  return make_wishart(Ψ, k);
 }
 function make_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   return construct<WishartDistribution<Arg1,Arg2>>(Ψ, k);

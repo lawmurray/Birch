@@ -54,11 +54,7 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
 
 function MatrixT<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) ->
     Distribution<Real[_,_]> {
-  return wrap_matrix_t(k, M, Σ, Ψ);
-}
-function wrap_scaled_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
-    Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) -> {
-  return make_matrix_t(wrap(k), wrap(M), wrap(Σ), wrap(Ψ));
+  return make_matrix_t(k, M, Σ, Ψ);
 }
 function make_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     Ψ:Arg4) -> {

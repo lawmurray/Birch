@@ -170,7 +170,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
           global.value(x), transpose(global.value(A)), global.value(ν), global.value(Λ), global.value(k),
           global.value(γ), global.value(c), diagonal(global.value(ω2)));
-      setUpdated(wrap_multivariate_normal_inverse_gamma_gaussian(this.a, p.ν,
+      setUpdated(make_multivariate_normal_inverse_gamma_gaussian(this.a, p.ν,
           p.Λ, p.k, p.γ, this.c, this.ω2));
       setJoined(nil);
     }
@@ -218,13 +218,7 @@ function MultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
   let ν <- triinnersolve(L, o);
   let k <- 2.0*α;
   let γ <- 2.0*β + dot(o);
-  return wrap_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, k, γ, c, ω2);
-}
-function wrap_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
-    Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5, c:Arg6,
-    ω2:Arg7) -> {
-  return make_multivariate_normal_inverse_gamma_gaussian(wrap(a), wrap(ν),
-      wrap(Λ), wrap(k), wrap(γ), wrap(c), wrap(ω2));
+  return make_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, k, γ, c, ω2);
 }
 function make_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5, c:Arg6,
@@ -249,7 +243,7 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     let p_τ2 <- τ2.getDistribution();
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;
-    let p <- wrap_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, k, γ,
+    let p <- make_multivariate_normal_inverse_gamma_gaussian(a, ν, Λ, k, γ,
         c, ω2);
     if p_m.hasJoined() {
       p.setJoined(p_m.getJoined());  // carry forward
@@ -262,17 +256,17 @@ function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Dot<Arg1,Random<Real[_]>>,Arg2>,
     let p_τ2 <- τ2.graft();
     let (α, β) <- p_τ2.getInverseGamma()!;
     let γ <- 2.0*β + pow(μ, 2.0)/ω2;
-    let p <- wrap_normal_inverse_gamma(μ/ω2, 1.0/ω2, 2.0*α, γ);
+    let p <- make_normal_inverse_gamma(μ/ω2, 1.0/ω2, 2.0*α, γ);
     p_τ2.setMarginalized(p);
     return p;
   } else if m.isMultivariateGaussian() {
     let p_m <- m.graft();
     let (m1, S) <- p_m.getMultivariateGaussian()!;
-    let p <- wrap_multivariate_gaussian_gaussian(a, m1, S, c, σ2);
+    let p <- make_multivariate_gaussian_gaussian(a, m1, S, c, σ2);
     p_m.setMarginalized(p);
     return p;
   } else {
-    return wrap_gaussian(μ, σ2);
+    return make_gaussian(μ, σ2);
   }
 }
 
@@ -373,7 +367,7 @@ function update_multivariate_normal_inverse_gamma_gaussian<Arg1,
   let ν' <- ν + a*((x - c)/ω2);
   let k' <- k + 1.0;
   let γ' <- γ + pow(x - c, 2.0)/ω2;
-  return wrap_multivariate_normal_inverse_gamma(ν', Λ', k', γ');
+  return make_multivariate_normal_inverse_gamma(ν', Λ', k', γ');
 }
 
 /*

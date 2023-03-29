@@ -137,12 +137,7 @@ function MultivariateNormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, Σ:Arg2,
   let Λ <- cholinv(L);
   let k <- 2.0*α;
   let γ <- 2.0*β + dot(o);
-  return wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
-}
-function wrap_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
-    Λ:Arg2, k:Arg3, γ:Arg4) -> {
-  return make_multivariate_normal_inverse_gamma(wrap(ν), wrap(Λ), wrap(k),
-      wrap(γ));
+  return make_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
 }
 function make_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     Λ:Arg2, k:Arg3, γ:Arg4) -> {
@@ -166,11 +161,11 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     let Λ <- cholinv(L);
     let k <- 2.0*α;
     let γ <- 2.0*β + dot(o);
-    let p <- wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
+    let p <- make_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
     p_ω2.setMarginalized(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return make_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -244,5 +239,5 @@ function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
   let o <- wrap(trisolve(L, ν));
   let μ <- triinnersolve(L, o);
   let β <- γ - dot(o);  // actually two times beta
-  return wrap_inverse_gamma(0.5*(k + n), 0.5*(β + dot(triinner(L, x - μ))));
+  return make_inverse_gamma(0.5*(k + n), 0.5*(β + dot(triinner(L, x - μ))));
 }

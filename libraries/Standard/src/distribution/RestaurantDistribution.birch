@@ -82,10 +82,7 @@ final class RestaurantDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) <
  */
 function Restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->
     Distribution<Real[_]> {
-  return wrap_restaurant(α, θ, n);
-}
-function wrap_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
-  return make_restaurant(wrap(α), wrap(θ), wrap(n));
+  return make_restaurant(α, θ, n);
 }
 function make_restaurant<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) -> {
   return construct<RestaurantDistribution<Arg1,Arg2,Arg3>>(α, θ, n);

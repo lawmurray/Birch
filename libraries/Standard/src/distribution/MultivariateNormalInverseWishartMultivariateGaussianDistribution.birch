@@ -95,14 +95,8 @@ function MultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
   let ν <- μ/σ2;
   let λ <- 1.0/σ2;
   let Γ <- Ψ + outer(μ/sqrt(σ2));
-  return wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(a, ν,
+  return make_multivariate_normal_inverse_wishart_multivariate_gaussian(a, ν,
       λ, Γ, k, c, ω2);
-}
-function wrap_multivariate_normal_inverse_wishart_multivariate_gaussian<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
-    k:Arg5, c:Arg6, ω2:Arg7) -> {
-  return make_multivariate_normal_inverse_wishart_multivariate_gaussian(
-      wrap(a), wrap(ν), wrap(λ), wrap(Γ), wrap(k), wrap(c), wrap(ω2));
 }
 function make_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
@@ -128,7 +122,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
     let p_Ω <- Ω.getDistribution();
     let p_m <- m.graft();
     let (ν, λ, Γ, k) <- p_m.getMultivariateNormalInverseWishart()!;
-    let p <- wrap_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
+    let p <- make_multivariate_normal_inverse_wishart_multivariate_gaussian(A,
         ν, λ, Γ, k, c, ω2);
     p_Ω.setSecondOrder(true);
     p_m.setMarginalized(p);
@@ -139,11 +133,11 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
     let ν <- μ/ω2;
     let λ <- 1.0/ω2;
     let Γ <- Ψ + outer(μ/sqrt(ω2));
-    let p <- wrap_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
+    let p <- make_multivariate_normal_inverse_wishart(ν, λ, Γ, k);
     p_Ω.setMarginalized(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return make_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -268,5 +262,5 @@ function update_multivariate_normal_inverse_wishart_multivariate_gaussian<
   let λ' <- λ + a*a/ω2;
   let Γ' <- Γ + outer((x - c)/sqrt(ω2));
   let k' <- k + 1;
-  return wrap_multivariate_normal_inverse_wishart(ν', λ', Γ', k');
+  return make_multivariate_normal_inverse_wishart(ν', λ', Γ', k');
 }

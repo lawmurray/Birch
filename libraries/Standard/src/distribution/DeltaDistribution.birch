@@ -27,11 +27,11 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
   }
 
   override function update(x:Integer!) -> Delay? {
-    return wrap_delta(x);
+    return make_delta(x);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {
-    return wrap_delta(x);
+    return make_delta(x);
   }
 
   override function hoist() -> Expression<Real> {
@@ -70,10 +70,7 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
  * Create delta distribution.
  */
 function Delta<Arg>(μ:Arg) -> Distribution<Integer> {
-  return wrap_delta(μ);
-}
-function wrap_delta<Arg>(μ:Arg) -> {
-  return make_delta(wrap(μ));
+  return make_delta(μ);
 }
 function make_delta<Arg>(μ:Arg) -> {
   return construct<DeltaDistribution<Arg>>(μ);

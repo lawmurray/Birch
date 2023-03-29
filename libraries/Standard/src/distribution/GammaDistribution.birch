@@ -74,10 +74,7 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
  * Create gamma distribution.
  */
 function Gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> Distribution<Real> {
-  return wrap_gamma(k, θ);
-}
-function wrap_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
-  return make_gamma(wrap(k), wrap(θ));
+  return make_gamma(k, θ);
 }
 function make_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   return construct<GammaDistribution<Arg1,Arg2>>(k, θ);

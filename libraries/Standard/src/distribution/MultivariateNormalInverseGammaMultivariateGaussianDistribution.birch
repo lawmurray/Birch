@@ -95,14 +95,8 @@ function MultivariateNormalInverseGammaMultivariateGaussian<Arg1,
   let Λ <- wrap(cholinv(L));
   let k <- 2.0*α;
   let γ <- 2.0*β + dot(o);
-  return wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(
-      A, ν, Λ, k, γ, c, Ω);
-}
-function wrap_multivariate_normal_inverse_gamma_multivariate_gaussian<
-    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, ν:Arg2, Λ:Arg3, k:Arg4,
-    γ:Arg5, c:Arg6, Ω:Arg7) -> {
   return make_multivariate_normal_inverse_gamma_multivariate_gaussian(
-      wrap(A), wrap(ν), wrap(Λ), wrap(k), wrap(γ), wrap(c), wrap(Ω));
+      A, ν, Λ, k, γ, c, Ω);
 }
 function make_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, ν:Arg2, Λ:Arg3, k:Arg4,
@@ -128,7 +122,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     let p_ω2 <- ω2.getDistribution();
     let p_m <- m.graft();
     let (ν, Λ, k, γ) <- p_m.getMultivariateNormalInverseGamma()!;
-    let p <- wrap_multivariate_normal_inverse_gamma_multivariate_gaussian(A,
+    let p <- make_multivariate_normal_inverse_gamma_multivariate_gaussian(A,
         ν, Λ, k, γ, c, Ω);
     p_ω2.setSecondOrder(true);
     p_m.setMarginalized(p);
@@ -142,17 +136,17 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     let Λ <- cholinv(L);
     let k <- 2.0*α;
     let γ <- 2.0*β + dot(o);
-    let p <- wrap_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
+    let p <- make_multivariate_normal_inverse_gamma(ν, Λ, k, γ);
     p_ω2.setMarginalized(p);
     return p;
   } else if m.isMultivariateGaussian() {
     let p_m <- m.graft();
     let (m1, S) <- p_m.getMultivariateGaussian()!;
-    let p <- wrap_multivariate_gaussian_multivariate_gaussian(A, m1, S, c, Σ);
+    let p <- make_multivariate_gaussian_multivariate_gaussian(A, m1, S, c, Σ);
     p_m.setMarginalized(p);
     return p;
   } else {
-    return wrap_multivariate_gaussian(μ, Σ);
+    return make_multivariate_gaussian(μ, Σ);
   }
 }
 
@@ -250,5 +244,5 @@ function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
   let ν' <- ν + transpose(A)*triinnersolve(L, o);
   let k' <- k + n;
   let γ' <- γ + dot(o);
-  return wrap_multivariate_normal_inverse_gamma(ν', Λ', k', γ');
+  return make_multivariate_normal_inverse_gamma(ν', Λ', k', γ');
 }
