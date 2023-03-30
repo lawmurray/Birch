@@ -19,7 +19,7 @@ final acyclic class BoxedValue<Value>(x:Value!) < Expression<Value>(x, true) {
   }
 
   override function doShallowGrad(visitor:GradVisitor) {
-    this.g <- nil;  // clear gradient to save memory
+    //
   }
 
   override function doReset() {

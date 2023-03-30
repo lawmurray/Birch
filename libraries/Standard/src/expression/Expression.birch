@@ -110,8 +110,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    */
   phantom g;
   hpp{{
-  std::optional<numbirch::Future<numbirch::Array<Real,
-      numbirch::Future<Value>::ndims>>> g;
+  std::optional<numbirch::Array<Real,numbirch::Future<Value>::ndims>> g;
   }}
 
   /**
@@ -147,13 +146,6 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    */
   final function hasValue() -> Boolean {
     return x?;
-  }
-
-  /**
-   * Does this have a gradient?
-   */
-  final function hasGradient() -> Boolean {
-    return g?;
   }
 
   /**

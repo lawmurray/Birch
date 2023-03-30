@@ -31,6 +31,16 @@ struct Binary<Left,Right>(l:Left, r:Right) < Form {
   bool isConstant() const {
     return birch::is_constant(l) && birch::is_constant(r);
   }
+
+  void args(const ArgsVisitor& visitor) {
+    birch::args(l, visitor);
+    birch::args(r, visitor);
+  }
+
+  void deepGrad(const GradVisitor& visitor) {
+    birch::deep_grad(l, visitor);
+    birch::deep_grad(r, visitor);
+  }
   }}
 }
 
@@ -57,7 +67,7 @@ hpp{{
   } \
   \
   void clear() { \
-    this->x.reset(); \
+    x.reset(); \
   } \
   \
   auto value() { \
@@ -87,11 +97,6 @@ hpp{{
     return f(l, r, ##__VA_ARGS__); \
   } \
   \
-  void args(const ArgsVisitor& visitor) { \
-    birch::args(this->l, visitor); \
-    birch::args(this->r, visitor); \
-  } \
-  \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) { \
     auto x = birch::peek(*this); \
@@ -100,10 +105,5 @@ hpp{{
     birch::shallow_grad(this->l, f_grad ## 1(g, x, l, r, ##__VA_ARGS__), visitor); \
     birch::shallow_grad(this->r, f_grad ## 2(g, x, l, r, ##__VA_ARGS__), visitor); \
     clear(); \
-  } \
-  \
-  void deepGrad(const GradVisitor& visitor) { \
-    birch::deep_grad(this->l, visitor); \
-    birch::deep_grad(this->r, visitor); \
   }
 }}
