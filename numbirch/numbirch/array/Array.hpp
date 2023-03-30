@@ -206,8 +206,6 @@ public:
       assert(c);
       c->incShared();
       ctl.store(c);
-    } else {
-      ctl.store(nullptr);
     }
   }
 
@@ -226,14 +224,13 @@ public:
    * Move constructor.
    */
   Array(Array&& o) :
-      shp(o.shp),
       isView(false) {
-    if (!o.isView) {
-      ctl.store(nullptr);
-      swap(o);
-    } else {
+    if (o.isView) {
+      shp = o.shp;
       allocate();
       copy(o);
+    } else {
+      swap(std::move(o), false);
     }
   }
 
@@ -256,8 +253,7 @@ public:
     if (isView) {
       copy(o);
     } else {
-      Array tmp(o);
-      swap(tmp);
+      swap(Array(o));
     }
     return *this;
   }
@@ -269,10 +265,9 @@ public:
     if (isView) {
       copy(o);
     } else if (o.isView) {
-      Array tmp(o);
-      swap(tmp);
+      swap(Array(o));
     } else {
-      swap(o);
+      swap(std::move(o));
     }
     return *this;
   }
@@ -784,17 +779,24 @@ private:
 
   /**
    * Swap with another array.
+   * 
+   * @param o The other array.
+   * @param allocated Does this have an allocation? For scalar arrays, the
+   * volume is one, but the allocation may not have been performed yet if we
+   * are in a constructor, and so the usual `volume() > 0` check is
+   * insufficient.
    */
-  void swap(Array& o) {
+  void swap(Array&& o, const bool allocated = true) {
     assert(!isView);
     assert(!o.isView);
-    auto c = volume() > 0 ? ctl.exchange(nullptr) : nullptr;
+    auto c = (allocated && volume() > 0) ? ctl.exchange(nullptr) : nullptr;
     auto d = o.volume() > 0 ? o.ctl.exchange(nullptr) : nullptr;
     std::swap(shp, o.shp);
-    if (d) {
+    if (volume() > 0) {
+      assert(d);
       ctl.store(d);
     }
-    if (c) {
+    if (o.volume() > 0) {
       o.ctl.store(c);
     }
   }
@@ -804,11 +806,9 @@ private:
    */
   void allocate() {
     shp.compact();
-    ArrayControl* c = nullptr;
     if (volume() > 0) {
-      c = new ArrayControl(shp.volume()*sizeof(T));
+      ctl.store(new ArrayControl(shp.volume()*sizeof(T)));
     }
-    ctl.store(c);
   }
 
   /**
