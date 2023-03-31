@@ -35,7 +35,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     }
 
     /* compute gradient */
-    let π <- h.hoist();
+    let π <- h.hoist()!;
     let p <- π.eval();
     let x <- π.args();
     let g <- π.grad();

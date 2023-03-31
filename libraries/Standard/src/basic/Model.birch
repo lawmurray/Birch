@@ -28,11 +28,7 @@ abstract class Model {
     //
   }
 
-  final function hasHoist() -> Boolean {
-    return Ξ.size() + Φ.size() > 0;
-  }
-
-  final function hoist() -> Expression<Real> {
+  final function hoist() -> Expression<Real>? {
     π:Expression<Real>? <- nil;
     for i in 1..Ξ.size() {
       for j in 1..Ξ[i].size() {
@@ -56,9 +52,10 @@ abstract class Model {
         }
       }
     }
-    assert π?;
-    π!.trace();
-    return π!;
+    if π? {
+      π!.trace();
+    }
+    return π;
   }
 
   final function fix(nlags:Integer) {

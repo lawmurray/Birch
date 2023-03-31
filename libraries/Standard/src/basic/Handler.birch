@@ -41,7 +41,7 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
    */
   autojoin:Boolean <- autojoin && autodiff;
 
-  function hoist() -> Expression<Real> {
+  function hoist() -> Expression<Real>? {
     π:Expression<Real>?;
     for i in 1..Ξ.size() {
       let ξ <- Ξ[i].hoist();
@@ -59,9 +59,10 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
         π <- φ;
       }
     }
-    assert π?;
-    π!.trace();
-    return π!;
+    if π? {
+      π!.trace();
+    }
+    return π;
   }
 }
 
