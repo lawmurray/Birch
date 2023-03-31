@@ -490,10 +490,18 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
 
 template<class T, class>
 Array<value_t<T>,1> vec(const T& x) {
-  Array<value_t<T>,1> y(make_shape(size(x)));
-  for_each(size(x), reshape_functor(width(x), 1, sliced(x), stride(x),
-      sliced(y), stride(y)));
-  return y;
+  if constexpr (is_vector_v<T>) {
+    return x;
+  } else if constexpr (is_arithmetic_v<T>) {
+    return Array<value_t<T>,1>(x);
+  } else if (x.canReshape()) {
+    return Array<value_t<T>,1>(x.control(), make_shape(x.size()), false);
+  } else {
+    Array<value_t<T>,1> y(make_shape(size(x)));
+    for_each(size(x), reshape_functor(width(x), 1, sliced(x), stride(x),
+        sliced(y), stride(y)));
+    return y;
+  }
 }
 
 template<class T, class>
@@ -511,10 +519,18 @@ real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 template<class T, class>
 Array<value_t<T>,2> mat(const T& x, const int n) {
   assert(size(x) % n == 0);
-  Array<value_t<T>,2> y(make_shape(size(x)/n, n));
-  for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, sliced(x),
-      stride(x), sliced(y), stride(y)));
-  return y;
+  if constexpr (is_matrix_v<T>) {
+    return x;
+  } else if constexpr (is_arithmetic_v<T>) {
+    return Array<value_t<T>,2>(x);
+  } else if (x.canReshape()) {
+    return Array<value_t<T>,2>(x.control(), make_shape(size(x)/n, n), false);
+  } else {
+    Array<value_t<T>,2> y(make_shape(size(x)/n, n));
+    for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, sliced(x),
+        stride(x), sliced(y), stride(y)));
+    return y;
+  }
 }
 
 template<class T, class>

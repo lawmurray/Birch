@@ -177,13 +177,18 @@ public:
   }
 
   /**
-   * View constructor.
+   * @internal
+   * 
+   * Constructor from individual components. Used when forming views and
+   * reshaping.
    */
-  Array(ArrayControl* ctl, const shape_type& shp) :
+  Array(ArrayControl* ctl, const shape_type& shp, const bool isView = true) :
       ctl(ctl),
       shp(shp),
-      isView(true) {
-    //
+      isView(isView) {
+    if (!isView) {
+      ctl->incShared();
+    }
   }
 
   /**
@@ -736,6 +741,16 @@ public:
       } while (!c);
     }
     return c;
+  }
+
+  /**
+   * @internal
+   * 
+   * Can the array be reshaped? True if the array is not a view and its
+   * elements are contiguous within its allocation.
+   */
+  bool canReshape() const {
+    return !isView && size() == volume();
   }
 
 private:
