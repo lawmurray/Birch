@@ -6,6 +6,7 @@ struct VectorGather<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(gather, gather_grad)
+  BIRCH_FUNCTION_FORM(gather, gather_grad)
   }}
 }
 

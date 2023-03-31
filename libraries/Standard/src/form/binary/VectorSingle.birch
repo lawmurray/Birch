@@ -12,6 +12,7 @@ struct VectorSingle<Left,Right>(x:Left, i:Right, n:Integer) <
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(single, single_grad, n)
+  BIRCH_FUNCTION_FORM(single, single_grad, n)
   }}
 }
 

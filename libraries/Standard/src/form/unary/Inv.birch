@@ -6,6 +6,7 @@ struct Inv<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(inv, inv_grad)
+  BIRCH_FUNCTION_FORM(inv, inv_grad)
   }}
 }
 
@@ -29,3 +30,11 @@ Inv<Middle> inv(const Middle& m) {
  * @return Result $B = A^{-1}$.
  */
 function inv(A:RealMatrixLike) -> RealMatrixLike;
+
+function inv<Arg>(L:DiagonalScalar<Arg>) -> {
+  return Diagonal(1.0/L.m, L.n);
+}
+
+function inv<Arg>(L:DiagonalVector<Arg>) -> {
+  return Diagonal(1.0/L.m);
+}

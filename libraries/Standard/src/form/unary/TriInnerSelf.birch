@@ -6,6 +6,7 @@ struct TriInnerSelf<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(triinner, triinner_grad)
+  BIRCH_FUNCTION_FORM(triinner, triinner_grad)
   }}
 }
 

@@ -6,6 +6,7 @@ struct LCholDet<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(lcholdet, lcholdet_grad)
+  BIRCH_FUNCTION_FORM(lcholdet, lcholdet_grad)
   }}
 }
 
@@ -32,3 +33,11 @@ LCholDet<Middle> lcholdet(const Middle& m) {
  * @return Result $\log(\det S) = \log(\det LL^\top) = 2 \log(\det L)$.
  */
 function lcholdet(L:RealMatrixLike) -> RealScalarLike;
+
+function lcholdet<Arg>(L:DiagonalScalar<Arg>) -> {
+  return 2.0*L.n*log(L.m);
+}
+
+function lcholdet<Arg>(L:DiagonalVector<Arg>) -> {
+  return 2.0*sum(log(L.m));
+}

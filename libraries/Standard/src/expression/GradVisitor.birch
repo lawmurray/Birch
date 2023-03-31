@@ -7,12 +7,12 @@ class GradVisitor(size:Integer) {
   /**
    * Vectorized gradients.
    */
-  g:Real[_] <- vector(0.0, size);
+  g:Real[size];
 
   function visit(g:Real, offset:Integer) {
     assert offset >= 0;
     cpp{{
-    this->g.slice(offset + 1) = this->g.slice(offset + 1) + g;
+    this->g.slice(offset + 1) = g;
     }}
   }
 
@@ -20,13 +20,13 @@ class GradVisitor(size:Integer) {
     assert offset >= 0;
     let m <- offset + 1;
     let n <- m + size(g) - 1;
-    this.g[m..n] <- this.g[m..n] + g;
+    this.g[m..n] <- g;
   }
 
   function visit(g:Real[_,_], offset:Integer) {
     assert offset >= 0;
     let m <- offset + 1;
     let n <- m + size(g) - 1;
-    this.g[m..n] <- this.g[m..n] + vec(g);
+    this.g[m..n] <- vec(g);
   }
 }

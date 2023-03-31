@@ -6,6 +6,7 @@ struct IsNan<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(isnan, isnan_grad)
+  BIRCH_FUNCTION_FORM(isnan, isnan_grad)
   }}
 }
 

@@ -6,6 +6,7 @@ struct IsInf<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(isinf, isinf_grad)
+  BIRCH_FUNCTION_FORM(isinf, isinf_grad)
   }}
 }
 

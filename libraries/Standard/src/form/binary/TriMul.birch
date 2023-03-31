@@ -6,6 +6,7 @@ struct TriMul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(trimul, trimul_grad)
+  BIRCH_FUNCTION_FORM(trimul, trimul_grad)
   }}
 }
 
@@ -42,3 +43,18 @@ function trimul(L:RealMatrixLike, x:RealVectorLike) -> RealVectorLike;
  * @return Result $C = LB$.
  */
 function trimul(L:RealMatrixLike, B:RealMatrixLike) -> RealMatrixLike;
+
+function trimul<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return A.m*B;
+}
+
+function trimul<Arg1,Arg2>(A:Arg1, B:DiagonalScalar<Arg2>) -> {
+  ///@todo Check for compatible sizes
+  return A*B.m;
+}
+
+function trimul<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:DiagonalScalar<Arg2>) -> {
+  assert A.n == B.n;
+  return Diagonal(A.m*B.m, A.n);
+}

@@ -6,6 +6,7 @@ struct LTriDet<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(ltridet, ltridet_grad)
+  BIRCH_FUNCTION_FORM(ltridet, ltridet_grad)
   }}
 }
 
@@ -30,3 +31,11 @@ LTriDet<Middle> ltridet(const Middle& m) {
  * @return Result $\log|\det L|$.
  */
 function ltridet(L:RealMatrixLike) -> RealScalarLike;
+
+function ltridet<Arg>(L:DiagonalScalar<Arg>) -> {
+  return L.n*log(L.m);
+}
+
+function ltridet<Arg>(L:DiagonalVector<Arg>) -> {
+  return sum(log(L.m));
+}

@@ -6,6 +6,7 @@ struct CholInv<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(cholinv, cholinv_grad)
+  BIRCH_FUNCTION_FORM(cholinv, cholinv_grad)
   }}
 }
 
@@ -31,3 +32,11 @@ CholInv<Middle> cholinv(const Middle& m) {
  * @return Result $S^{-1} = (LL^\top)^{-1}$.
  */
 function cholinv(L:RealMatrixLike) -> RealMatrixLike;
+
+function cholinv<Arg>(L:DiagonalScalar<Arg>) -> {
+  return Diagonal(pow(L.m, -2.0), L.n);
+}
+
+function cholinv<Arg>(L:DiagonalVector<Arg>) -> {
+  return Diagonal(pow(L.m, -2.0));
+}

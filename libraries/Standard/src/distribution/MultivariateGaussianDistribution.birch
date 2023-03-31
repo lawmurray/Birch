@@ -14,19 +14,19 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
   Σ:Arg2 <- Σ;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_gaussian(global.value(μ), global.value(Σ));
+    return global.value(simulate_multivariate_gaussian(μ, Σ));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_gaussian(global.eval(μ), global.eval(Σ));
+    return global.eval(simulate_multivariate_gaussian(μ, Σ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_gaussian(x, global.value(μ), global.value(Σ));
+    return global.value(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_multivariate_gaussian(x, global.eval(μ), global.eval(Σ));
+    return global.eval(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -63,6 +63,16 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) ->
     Distribution<Real[_]> {
   return make_multivariate_gaussian(μ, Σ);
 }
+
+/**
+ * Create multivariate Gaussian distribution with iid elements of given mean
+ * and variance.
+ */
+function MultivariateGaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2, n:Integer) ->
+    Distribution<Real[_]> {
+  return make_multivariate_gaussian(Fill(μ, n), Diagonal(σ2, n));
+}
+
 function make_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
   return construct<MultivariateGaussianDistribution<Arg1,Arg2>>(μ, Σ);
 }
@@ -93,6 +103,6 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
 function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
    Σ:Arg3) -> {
   let n <- global.length(x);
-  let L <- wrap(chol(Σ));
+  let L <- chol(Σ);
   return -0.5*(dot(trisolve(L, x - μ)) + n*log(2.0*π)) - ltridet(L);
 }

@@ -6,6 +6,7 @@ struct Log1p<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(log1p, log1p_grad)
+  BIRCH_FUNCTION_FORM(log1p, log1p_grad)
   }}
 }
 

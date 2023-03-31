@@ -10,6 +10,7 @@ struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
 
   hpp{{
   BIRCH_TERNARY_FUNCTION_FORM(element, element_grad)
+  BIRCH_FUNCTION_FORM(element, element_grad)
   }}
 }
 

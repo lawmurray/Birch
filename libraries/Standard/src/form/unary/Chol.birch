@@ -6,6 +6,7 @@ struct Chol<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(chol, chol_grad)
+  BIRCH_FUNCTION_FORM(chol, chol_grad)
   }}
 }
 
@@ -30,3 +31,11 @@ Chol<Middle> chol(const Middle& m) {
  * the factorization fails, then $L$ is filled with NaN.
  */
 function chol(S:RealMatrixLike) -> RealMatrixLike;
+
+function chol<Arg>(S:DiagonalScalar<Arg>) -> {
+  return Diagonal(sqrt(S.m), S.n);
+}
+
+function chol<Arg>(S:DiagonalVector<Arg>) -> {
+  return Diagonal(sqrt(S.m));
+}

@@ -6,6 +6,7 @@ struct LDet<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(ldet, ldet_grad)
+  BIRCH_FUNCTION_FORM(ldet, ldet_grad)
   }}
 }
 
@@ -29,3 +30,11 @@ LDet<Middle> ldet(const Middle& m) {
  * @return Result $\log |\det A|$.
  */
 function ldet(A:RealMatrixLike) -> RealScalarLike;
+
+function ldet<Arg>(A:DiagonalScalar<Arg>) -> {
+  return A.n*log(A.m);
+}
+
+function ldet<Arg>(A:DiagonalVector<Arg>) -> {
+  return sum(log(A.m));
+}

@@ -40,22 +40,6 @@ hpp{{
       ##__VA_ARGS__)); \
   std::optional<Value> x; \
   \
-  int rows() const { \
-    return birch::rows(eval()); \
-  } \
-  \
-  int columns() const { \
-    return birch::columns(eval()); \
-  } \
-  \
-  int length() const { \
-    return birch::length(eval()); \
-  } \
-  \
-  int size() const { \
-    return birch::size(eval()); \
-  } \
-  \
   void clear() { \
     x.reset(); \
   } \

@@ -6,6 +6,7 @@ struct TriInv<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(triinv, triinv_grad)
+  BIRCH_FUNCTION_FORM(triinv, triinv_grad)
   }}
 }
 
@@ -29,3 +30,11 @@ TriInv<Middle> triinv(const Middle& m) {
  * @return Result $L^{-1}$.
  */
 function triinv(L:RealMatrixLike) -> RealMatrixLike;
+
+function triinv<Arg>(L:DiagonalScalar<Arg>) -> {
+  return Diagonal(1.0/L.m, L.n);
+}
+
+function triinv<Arg>(L:DiagonalVector<Arg>) -> {
+  return Diagonal(1.0/L.m);
+}

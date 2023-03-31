@@ -6,6 +6,7 @@ struct Floor<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(floor, floor_grad)
+  BIRCH_FUNCTION_FORM(floor, floor_grad)
   }}
 }
 

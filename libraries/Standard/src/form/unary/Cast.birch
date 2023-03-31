@@ -6,6 +6,7 @@ struct Cast<To,Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(cast<To>, cast_grad<To>)
+  BIRCH_FUNCTION_FORM(cast<To>, cast_grad<To>)
   }}
 }
 

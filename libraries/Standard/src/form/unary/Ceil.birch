@@ -6,6 +6,7 @@ struct Ceil<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(ceil, ceil_grad)
+  BIRCH_FUNCTION_FORM(ceil, ceil_grad)
   }}
 }
 

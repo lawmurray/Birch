@@ -19,19 +19,19 @@ class MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) <
   V:Arg3 <- V;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_gaussian(global.value(M), global.value(U), global.value(V));
+    return global.value(simulate_matrix_gaussian(M, U, V));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_gaussian(global.eval(M), global.eval(U), global.eval(V));
+    return global.eval(simulate_matrix_gaussian(M, U, V));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_gaussian(X, global.value(M), global.value(U), global.value(V));
+    return global.value(logpdf_matrix_gaussian(X, M, U, V));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_gaussian(X, global.eval(M), global.eval(U), global.eval(V));
+    return global.eval(logpdf_matrix_gaussian(X, M, U, V));
   }
 
   override function hoist() -> Expression<Real> {
@@ -70,6 +70,16 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
     Distribution<Real[_,_]> {
   return make_matrix_gaussian(M, U, V);
 }
+
+/**
+ * Create matrix Gaussian distribution with iid elements of given mean and
+ * variance.
+ */
+function MatrixGaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2, m:Integer, n:Integer) ->
+    Distribution<Real[_,_]> {
+  return make_matrix_gaussian(Fill(μ, m, n), Identity(m), Diagonal(σ2, n));
+}
+
 function make_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
   return construct<MatrixGaussianDistribution<Arg1,Arg2,Arg3>>(M, U, V);
 }
@@ -106,9 +116,9 @@ function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
     V:Arg4) -> {
   let n <- rows(X);
   let p <- columns(X);
-  let Z <- wrap(X - M);
-  let L <- wrap(chol(U));
-  let J <- wrap(chol(V));
+  let Z <- X - M;
+  let L <- chol(U);
+  let J <- chol(V);
   return -0.5*(frobenius(Z*cholinv(J), cholsolve(L, Z)) + n*p*log(2.0*π)) -
       n*ltridet(J) - p*ltridet(L);
 }

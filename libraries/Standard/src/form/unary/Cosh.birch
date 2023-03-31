@@ -6,6 +6,7 @@ struct Cosh<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(cosh, cosh_grad)
+  BIRCH_FUNCTION_FORM(cosh, cosh_grad)
   }}
 }
 

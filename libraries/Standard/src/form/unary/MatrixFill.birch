@@ -16,6 +16,22 @@ struct MatrixFill<Middle>(a:Middle, m:Integer, n:Integer) < Unary<Middle>(a) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(fill, fill_grad, k, l)
+
+  int rows() const {
+    return k;
+  }
+
+  int columns() const {
+    return l;
+  }
+
+  int length() const {
+    return k;
+  }
+
+  int size() const {
+    return k*l;
+  }
   }}
 }
 
@@ -42,3 +58,16 @@ MatrixFill<Middle> fill(const Middle& a, const int m, const int n) {
  * @return Matrix.
  */
 function fill(x:NumberScalarLike, m:Integer, n:Integer) -> NumberMatrixLike;
+
+/**
+ * Construct a matrix form filled with a given value.
+ * 
+ * @param x Value.
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Matrix form.
+ */
+function Fill<Arg>(x:Arg, m:Integer, n:Integer) -> MatrixFill<Arg> {
+  return construct<MatrixFill<Arg>>(x, m, n);
+}

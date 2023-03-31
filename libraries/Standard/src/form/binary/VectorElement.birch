@@ -9,6 +9,7 @@ struct VectorElement<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(element, element_grad)
+  BIRCH_FUNCTION_FORM(element, element_grad)
   }}
 }
 

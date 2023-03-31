@@ -10,6 +10,7 @@ struct Neg<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(operator-, neg_grad)
+  BIRCH_FUNCTION_FORM(operator-, neg_grad)
   }}
 }
 

@@ -17,6 +17,7 @@ struct MatrixScatter<Left,Middle,Right>(A:Left, I:Middle, J:Right, m:Integer,
 
   hpp{{
   BIRCH_TERNARY_FUNCTION_FORM(scatter, scatter_grad, k, l)
+  BIRCH_FUNCTION_FORM(scatter, scatter_grad, k, l)
   }}
 }
 

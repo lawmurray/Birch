@@ -6,6 +6,7 @@ struct IsFinite<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(isfinite, isfinite_grad)
+  BIRCH_FUNCTION_FORM(isfinite, isfinite_grad)
   }}
 }
 

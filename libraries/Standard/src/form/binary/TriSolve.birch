@@ -6,6 +6,7 @@ struct TriSolve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(trisolve, trisolve_grad)
+  BIRCH_FUNCTION_FORM(trisolve, trisolve_grad)
   }}
 }
 
@@ -52,3 +53,13 @@ function trisolve(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
  * @return Solution of $B$ in $LB = C$.
  */
 function trisolve(L:RealMatrixLike, y:RealMatrixLike) -> RealMatrixLike;
+
+function trisolve<Arg1,Arg2>(L:DiagonalScalar<Arg1>, y:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return y/L.m;
+}
+
+function trisolve<Arg1,Arg2>(L:DiagonalVector<Arg1>, y:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return y/L.m;
+}

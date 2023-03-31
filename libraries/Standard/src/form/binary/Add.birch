@@ -10,6 +10,7 @@ struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(operator+, add_grad)
+  BIRCH_FUNCTION_FORM(operator+, add_grad)
   }}
 }
 
@@ -32,3 +33,23 @@ Add<Left,Right> operator+(const Left& l, const Right& r) {
  * Element-wise addition.
  */
 operator (x:NumberLike + y:NumberLike) -> NumberLike;
+
+operator<Arg1,Arg2> (x:VectorFill<Arg1> + y:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return x.m + y;
+}
+
+operator<Arg1,Arg2> (x:Arg1 + y:VectorFill<Arg2>) -> {
+  ///@todo Check for compatible sizes
+  return x + y.m;
+}
+
+operator<Arg1,Arg2> (x:MatrixFill<Arg1> + y:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return x.m + y;
+}
+
+operator<Arg1,Arg2> (x:Arg1 + y:MatrixFill<Arg2>) -> {
+  ///@todo Check for compatible sizes
+  return x + y.m;
+}

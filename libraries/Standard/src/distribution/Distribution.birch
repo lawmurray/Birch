@@ -10,9 +10,28 @@ abstract class Distribution<Value> < Delay {
   x:Value!?;
 
   /**
+   * Accumulated gradient.
+   */
+  phantom g;
+  hpp{{
+  std::optional<numbirch::Array<Real,numbirch::Future<Value>::ndims>> g;
+  }}
+
+  /**
    * Offset into vectorized arguments.
    */
   offset:Integer <- -1;
+
+  /**
+   * Count of number of parents, set by trace().
+   */
+  linkCount:Integer <- 1;
+
+  /**
+   * Counter used to obtain pre- and post-order traversals of the expression
+   * graph.
+   */
+  visitCount:Integer <- 0;
 
   /**
    * Is the variate constant?
@@ -243,25 +262,52 @@ abstract class Distribution<Value> < Delay {
   final function move(visitor:MoveVisitor) -> Value! {
     if this.hasUpdated() {
       return this.getUpdatedDistribution().move(visitor);
-    } else if offset >= 0 {
-      visitor.visit(this);
+    } else if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        visitor.visit(this);
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+      }
     }
+    assert x?;
     return x!;
   }
 
   final function args(visitor:ArgsVisitor) {
     if this.hasUpdated() {
       this.getUpdatedDistribution().args(visitor);
-    } else if offset >= 0 {
-      visitor.visit(x!, offset);
+    } else if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        visitor.visit(x!, offset);
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+      }
     }
   }
 
   final function grad<Gradient>(g:Gradient, visitor:GradVisitor) {
     if this.hasUpdated() {
       this.getUpdatedDistribution().grad(g, visitor);
-    } else if offset >= 0 {
-      visitor.visit(g, offset);
+    } else if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        /* (re-)start accumulation */
+        this.g <- g;
+      } else {
+        /* continue accumulation */
+        this.g <- this.g! + g;
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+        visitor.visit(this.g!, offset);
+      }
     }
   }
 
@@ -269,7 +315,9 @@ abstract class Distribution<Value> < Delay {
     if this.hasUpdated() {
       this.getUpdatedDistribution().reset();
     } else {
+      assert visitCount == 0;
       offset <- -1;
+      linkCount <- 0;
     }
   }
 
@@ -277,7 +325,13 @@ abstract class Distribution<Value> < Delay {
     if this.hasUpdated() {
       this.getUpdatedDistribution().relink(visitor);
     } else {
-      visitor.visit(this);
+      assert visitCount == 0;
+      if !flagConstant {
+        linkCount <- linkCount + 1;
+        if linkCount == 1 {
+          visitor.visit(this);
+        }
+      }
     }
   }
 
@@ -285,6 +339,8 @@ abstract class Distribution<Value> < Delay {
     if this.hasUpdated() {
       this.getUpdatedDistribution().constant();
     } else {
+      linkCount <- 0;
+      visitCount <- 0;
       flagConstant <- true;
     }
   }

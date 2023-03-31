@@ -116,7 +116,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   /**
    * Count of number of parents, set by trace().
    */
-  linkCount:Integer <- 1;
+  linkCount:Integer <- 0;
 
   /**
    * Counter used to obtain pre- and post-order traversals of the expression
@@ -367,9 +367,9 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   }
   final function reset() {
     assert visitCount == 0;
-    if !flagConstant && linkCount != 0 {
-      linkCount <- 0;
-      argsCount <- 0;
+    linkCount <- 0;
+    argsCount <- 0;
+    if !flagConstant {
       doReset();
     }
   }
@@ -393,7 +393,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   final function constant() {
     if !flagConstant {
       g <- nil;
-      linkCount <- 1;
+      linkCount <- 0;
       visitCount <- 0;
       flagConstant <- true;
       doConstant();

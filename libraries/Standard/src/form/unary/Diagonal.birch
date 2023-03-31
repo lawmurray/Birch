@@ -11,6 +11,22 @@ struct DiagonalScalar<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(diagonal, diagonal_grad, n)
+
+  int rows() const {
+    return n;
+  }
+
+  int columns() const {
+    return n;
+  }
+
+  int length() const {
+    return n;
+  }
+
+  int size() const {
+    return n*n;
+  }
   }}
 }
 
@@ -22,6 +38,22 @@ struct DiagonalVector<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(diagonal, diagonal_grad)
+
+  int rows() const {
+    return length(x);
+  }
+
+  int columns() const {
+    return length(x);
+  }
+
+  int length() const {
+    return length(x);
+  }
+
+  int size() const {
+    return pow(length(x), 2);
+  }
   }}
 }
 
@@ -53,10 +85,53 @@ DiagonalVector<Middle> diagonal(const Middle& m) {
 function diagonal(x:NumberScalarLike, n:Integer) -> NumberMatrixLike;
 
 /**
- * Create identity matrix.
+ * Construct diagonal matrix, setting the diagonal to a given vector.
+ * 
+ * @param x Vector to assign to diagonal.
+ * 
+ * @return Diagonal matrix.
+ */
+function diagonal(x:NumberVectorLike) -> NumberMatrixLike;
+
+/**
+ * Construct identity matrix.
  *
  * @param n Number of rows and columns.
  */
 function identity(n:Integer) -> Real[_,_] {
   return diagonal(1.0, n);
+}
+
+/**
+ * Construct diagonal matrix form, filling the diagonal with a given scalar.
+ * 
+ * @param x Scalar to assign to diagonal.
+ * @param n Number of rows and columns.
+ * 
+ * @return Diagonal matrix form.
+ */
+function Diagonal<Arg>(x:Arg, n:Integer) -> DiagonalScalar<Arg> {
+  return construct<DiagonalScalar<Arg>>(x, n);
+}
+
+/**
+ * Construct diagonal matrix form, setting the diagonal to a given vector.
+ * 
+ * @param x Vector to assign to diagonal.
+ * 
+ * @return Diagonal matrix form.
+ */
+function Diagonal<Arg>(x:Arg) -> DiagonalVector<Arg> {
+  return construct<DiagonalVector<Arg>>(x);
+}
+
+/**
+ * Construct identity matrix form.
+ *
+ * @param n Number of rows and columns.
+ *
+ * @return Identity matrix form.
+ */
+function Identity(n:Integer) -> DiagonalScalar<Real> {
+  return Diagonal(1.0, n);
 }

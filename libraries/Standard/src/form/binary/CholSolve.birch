@@ -6,6 +6,7 @@ struct CholSolve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(cholsolve, cholsolve_grad)
+  BIRCH_FUNCTION_FORM(cholsolve, cholsolve_grad)
   }}
 }
 
@@ -55,3 +56,13 @@ function cholsolve(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
  * @return Solution of $B$ in $SB = LL^\top B = C$.
  */
 function cholsolve(L:RealMatrixLike, y:RealMatrixLike) -> RealMatrixLike;
+
+function cholsolve<Arg1,Arg2>(L:DiagonalScalar<Arg1>, y:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return y/pow(L.m, 2.0);
+}
+
+function cholsolve<Arg1,Arg2>(L:DiagonalVector<Arg1>, y:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return y/pow(L.m, 2.0);
+}

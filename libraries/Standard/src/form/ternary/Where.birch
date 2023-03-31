@@ -7,6 +7,7 @@ struct Where<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
 
   hpp{{
   BIRCH_TERNARY_FUNCTION_FORM(where, where_grad)
+  BIRCH_FUNCTION_FORM(where, where_grad)
   }}
 }
 

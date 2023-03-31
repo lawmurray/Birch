@@ -7,3 +7,22 @@
 struct Form {
   //
 }
+
+hpp{{
+#define BIRCH_FUNCTION_FORM(f, f_grad, ...) \
+  int rows() const { \
+    return birch::rows(eval()); \
+  } \
+  \
+  int columns() const { \
+    return birch::columns(eval()); \
+  } \
+  \
+  int length() const { \
+    return birch::length(eval()); \
+  } \
+  \
+  int size() const { \
+    return birch::size(eval()); \
+  }
+}}

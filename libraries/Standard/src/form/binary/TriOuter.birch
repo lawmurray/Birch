@@ -6,6 +6,7 @@ struct TriOuter<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(triouter, triouter_grad)
+  BIRCH_FUNCTION_FORM(triouter, triouter_grad)
   }}
 }
 
@@ -32,3 +33,18 @@ TriOuter<Left,Right> triouter(const Left& l, const Right& r) {
  * @return Result $C = AL^\top$.
  */
 function triouter(A:RealMatrixLike, L:RealMatrixLike) -> RealMatrixLike;
+
+function triouter<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:Arg2) -> {
+  ///@todo Check for compatible sizes
+  return A.m*transpose(B);
+}
+
+function triouter<Arg1,Arg2>(A:Arg1, B:DiagonalScalar<Arg2>) -> {
+  ///@todo Check for compatible sizes
+  return A*B.m;
+}
+
+function triouter<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:DiagonalScalar<Arg2>) -> {
+  assert A.n == B.n;
+  return Diagonal(A.m*B.m, A.n);
+}

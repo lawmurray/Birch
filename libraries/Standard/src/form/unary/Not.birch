@@ -6,6 +6,7 @@ struct Not<Middle>(m:Middle) < Unary<Middle>(m) {
 
   hpp{{
   BIRCH_UNARY_FUNCTION_FORM(operator!, not_grad)
+  BIRCH_FUNCTION_FORM(operator!, not_grad)
   }}
 }
 

@@ -6,6 +6,7 @@ struct TriInnerSolve<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
 
   hpp{{
   BIRCH_BINARY_FUNCTION_FORM(triinnersolve, triinnersolve_grad)
+  BIRCH_FUNCTION_FORM(triinnersolve, triinnersolve_grad)
   }}
 }
 
