@@ -65,11 +65,11 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 implicit_t<T,U> operator+(const T& x, const U& y) {
   /* optimizations for addition of scalar zero */
   if constexpr (is_arithmetic_v<T>) {
-    if (value(x) == 0) {
+    if (x == T(0)) {
       return y;
     }
   } else if constexpr (is_arithmetic_v<U>) {
-    if (value(y) == 0) {
+    if (y == U(0)) {
       return x;
     }
   }
@@ -96,7 +96,7 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 implicit_t<T,U> operator-(const T& x, const U& y) {
   /* optimization for subtraction of scalar zero */
   if constexpr (is_arithmetic_v<U>) {
-    if (value(y) == 0) {
+    if (y == U(0)) {
       return x;
     }
   }
@@ -126,11 +126,11 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 implicit_t<T,U> operator*(const T& x, const U& y) {
   /* optimizations for multiplication of scalar one */
   if constexpr (is_arithmetic_v<T>) {
-    if (value(x) == 1) {
+    if (x == T(1)) {
       return y;
     }
   } else if constexpr (is_arithmetic_v<U>) {
-    if (value(y) == 1) {
+    if (y == U(1)) {
       return x;
     }
   }
@@ -158,7 +158,7 @@ real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
   /* optimization for multiplication of scalar one */
   if constexpr (is_arithmetic_v<U>) {
-    if (value(y) == 1) {
+    if (y == U(1)) {
       return g;
     }
   }
@@ -182,11 +182,11 @@ real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
   /* optimization for multiplication of scalar one */
   if constexpr (is_arithmetic_v<T>) {
-    if (value(x) == 1) {
+    if (x == T(1)) {
       return g;
     }
   }
@@ -297,7 +297,7 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 implicit_t<T,U> operator/(const T& x, const U& y) {
   /* optimization for division of scalar one */
   if constexpr (is_arithmetic_v<U>) {
-    if (value(y) == 1) {
+    if (y == U(1)) {
       return x;
     }
   }
