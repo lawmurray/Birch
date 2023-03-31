@@ -22,7 +22,7 @@ executors:
       CXXFLAGS: -O3 -march=native -flto -Wall
       MAKEFLAGS: -j8
       CONFIGURE_FLAGS: --disable-assert
-      BIRCH_FLAGS: --unit=dir --arch=native --jobs=1 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
+      BIRCH_FLAGS: --unit=dir --arch=native --jobs=2 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
       MONGODB_DATABASE_TOOLS_URL: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.7.0.deb
     working_directory: /root/bench
 
@@ -35,7 +35,7 @@ executors:
       OMP_NUM_THREADS: 4
       CXXFLAGS: -O0 -g -Wall -fno-inline --coverage
       MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single
+      BIRCH_FLAGS: --unit=dir --jobs=2 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single
     working_directory: /root/cover
 
   alpine:
@@ -48,7 +48,7 @@ executors:
       OMP_NUM_THREADS: 4
       CXXFLAGS: -O0 -Wall
       MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single
+      BIRCH_FLAGS: --unit=dir --jobs=2 --enable-verbose --disable-optimize --disable-static --disable-single
     working_directory: /root/alpine
 
   mac:
