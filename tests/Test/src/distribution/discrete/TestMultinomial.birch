@@ -1,0 +1,36 @@
+class TestMultinomial < TestModel {
+  n:Integer;
+  x:Random<Integer[_]>;
+  ρ:Random<Real[_]>;
+
+  override function initialize() {
+    n <- simulate_uniform_int(100, 500);
+    ρ ~ MultivariateGaussian(vector(0.0, 10), diagonal(4.0, 10));
+  }
+
+  override function simulate() {
+    x ~ Multinomial(n, exp(ρ)/sum(exp(ρ)));
+  }
+
+  override function forward() -> Real[_] {
+    return x.eval();
+  }
+
+  override function backward() -> Real[_] {
+    return x.eval();
+  }
+
+  function marginal() -> Distribution<Integer[_]> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_grad_multinomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestMultinomial;
+  test_grad(m, N, backward);
+}

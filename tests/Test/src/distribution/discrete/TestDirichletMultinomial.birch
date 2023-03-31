@@ -1,0 +1,50 @@
+class TestDirichletMultinomial < TestModel {
+  n:Integer;
+  α:Random<Real[_]>;
+  ρ:Random<Real[_]>;
+  x:Random<Integer[_]>;
+
+  override function initialize() {
+    n <- simulate_uniform_int(100, 500);
+    α ~ MultivariateGaussian(vector(0.0, 5), diagonal(4.0, 5));
+  }
+
+  override function simulate() {
+    ρ ~ Dirichlet(exp(α) + 1.0);
+    x ~ Multinomial(n, ρ);
+  }
+
+  override function forward() -> Real[_] {
+    D:Integer <- length(α);
+    y:Real[2*D];
+    y[1..D] <- ρ.eval();
+    y[D+1..2*D] <- x.eval();
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    D:Integer <- length(α);
+    y:Real[2*D];
+    assert !x.hasValue();
+    y[D+1..2*D] <- x.eval();
+    assert !ρ.hasValue();
+    y[1..D] <- ρ.eval();
+    return y;
+  }
+
+  override function size() -> Integer {
+    return 10;
+  }
+}
+
+program test_conjugacy_dirichlet_multinomial(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestDirichletMultinomial;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_grad_dirichlet_multinomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestDirichletMultinomial;
+  test_grad(m, N, backward);
+}

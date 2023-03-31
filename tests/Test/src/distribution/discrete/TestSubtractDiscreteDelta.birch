@@ -1,0 +1,60 @@
+class TestSubtractDiscreteDelta < TestModel {
+  ρ:Random<Real>;
+  x1:Random<Integer>;
+  x2:Random<Integer>;
+  s:Random<Integer>;
+
+  override function initialize() {
+    ρ ~ Beta(1.0, 3.0);
+  }
+
+  override function simulate() {
+    x1 ~ UniformInteger(1, 100);
+    x2 ~ Binomial(100, ρ);
+    s ~ Delta(x1 - x2);
+  }
+
+  override function forward() -> Real[_] {
+    y:Real[size()];
+    y[1] <- x1.eval();
+    y[2] <- x2.eval();
+    y[3] <- s.eval();
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    y:Real[size()];
+    y[3] <- s.eval();
+    assert !x1.hasValue();
+    assert !x2.hasValue();
+    y[2] <- x2.eval();
+    y[1] <- x1.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return s.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 3;
+  }
+}
+
+program test_conjugacy_subtract_discrete_delta(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestSubtractDiscreteDelta;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_subtract_discrete_delta(N:Integer <- 10000,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestSubtractDiscreteDelta;
+  test_pdf(m, N, lazy);
+}
+
+program test_grad_subtract_discrete_delta(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestSubtractDiscreteDelta;
+  test_grad(m, N, backward);
+}

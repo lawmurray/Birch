@@ -1,0 +1,48 @@
+class TestWishart < TestModel {
+  Σ:Random<Real[_,_]>;
+  
+  p:Integer <- 3;
+  Ψ:Real[p,p];
+  k:Real;
+
+  override function initialize() {
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
+    k <- simulate_uniform(3.0, 10.0) + p;
+    Ψ <- outer(Ψ) + diagonal(1.0e-1, p);
+  }
+
+  override function simulate() {
+    Σ ~ Wishart(Ψ, k);
+  }
+
+  override function forward() -> Real[_] {
+    Σ.eval();
+    return vectorize();
+  }
+
+  override function backward() -> Real[_] {
+    assert !Σ.hasValue();
+    Σ.eval();
+    return vectorize();
+  }
+
+  function marginal() -> Distribution<Real[_,_]> {
+    return Σ.getDistribution();
+  }
+
+  function vectorize() -> Real[_] {
+    z:Real[size()];
+    let k <- 0;
+    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    return z;
+  }
+
+  override function size() -> Integer {
+    return p*p;
+  }
+}
+
+program test_grad_wishart(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestWishart;
+  test_grad(m, N, backward);
+}

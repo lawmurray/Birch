@@ -1,0 +1,72 @@
+class TestLongDiscreteDelta < TestModel {
+  ρ:Array<Random<Real>>;
+  x:Array<Random<Integer>>;
+  s:Random<Integer>;
+
+  override function initialize() {
+    for i in 1..5 {
+      ρ[i] ~ Uniform(0.1, 0.9);
+    }    
+  }
+
+  override function simulate() {
+    for i in 1..5 {
+      x[i] ~ Binomial(10, ρ[i]);
+    }
+    s ~ Delta(-x[1] - (x[2] + x[3]) - (x[4] - x[5]));
+  }
+
+  override function forward() -> Real[_] {
+    y:Real[size()];
+    y[1] <- x[1].eval();
+    y[2] <- x[2].eval();
+    y[3] <- x[3].eval();
+    y[4] <- x[4].eval();
+    y[5] <- x[5].eval();
+    y[6] <- s.eval();
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    y:Real[size()];
+    y[6] <- s.eval();
+    assert !x[1].hasValue();
+    assert !x[2].hasValue();
+    assert !x[3].hasValue();
+    assert !x[4].hasValue();
+    assert !x[5].hasValue();
+    y[5] <- x[5].eval();
+    y[4] <- x[4].eval();
+    y[3] <- x[3].eval();
+    y[2] <- x[2].eval();
+    y[1] <- x[1].eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return s.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 6;
+  }
+}
+
+program test_conjugacy_long_discrete_delta(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestLongDiscreteDelta;
+  test_conjugacy(m, N, lazy);
+}
+
+
+program test_pdf_long_discrete_delta(N:Integer <- 10000,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestLongDiscreteDelta;
+  test_pdf(m, N, lazy);
+}
+
+program test_grad_long_discrete_delta(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestLongDiscreteDelta;
+  test_grad(m, N, backward);
+}

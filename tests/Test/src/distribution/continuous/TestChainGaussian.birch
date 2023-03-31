@@ -1,0 +1,73 @@
+class TestChainGaussian < TestModel {
+  x:Array<Random<Real>>;
+  μ:Random<Real>;
+  σ:Array<Random<Real>>;
+
+  override function initialize() {
+    μ ~ Uniform(-10.0, 10.0);
+    for i in 1..5 {
+      σ[i] ~ Uniform(0.1, 10.0);
+    }
+  }
+
+  override function simulate() {
+    x[1] ~ Gaussian(μ, σ[1]);
+    x[2] ~ Gaussian(x[1], σ[2]);
+    x[3] ~ Gaussian(x[2], σ[3]);
+    x[4] ~ Gaussian(x[3], σ[4]);
+    x[5] ~ Gaussian(x[4], σ[5]);
+  }
+
+  override function forward() -> Real[_] {
+    y:Real[5];
+    for i in 1..5 {
+      y[i] <- x[i].eval();
+    }
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    y:Real[5];
+    for i in 0..4 {
+      assert !x[5 - i].hasValue();
+      y[5 - i] <- x[5 - i].eval();
+    }
+    return y;
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x[5].getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 5;
+  }
+}
+
+program test_conjugacy_chain_gaussian(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestChainGaussian;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_chain_gaussian(N:Integer <- 10000, S:Integer <- 20,
+    lazy:Boolean <- false) {
+  m:TestChainGaussian;
+  test_pdf(m, N, S, lazy);
+}
+
+program test_z_chain_gaussian(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestChainGaussian;
+  test_z(m, N, lazy);
+}
+
+program test_cdf_chain_gaussian(N:Integer <- 10000) {
+  m:TestChainGaussian;
+  test_cdf(m, N);
+}
+
+program test_grad_chain_gaussian(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestChainGaussian;
+  test_grad(m, N, backward);
+}

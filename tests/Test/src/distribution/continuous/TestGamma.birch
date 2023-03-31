@@ -1,0 +1,51 @@
+class TestGamma < TestModel {
+  x:Random<Real>;
+  k:Random<Real>;
+  θ:Random<Real>;
+
+  override function initialize() {
+    k ~ Uniform(2.0, 10.0);
+    θ ~ Uniform(0.1, 10.0);
+  }
+
+  override function simulate() {
+    x ~ Gamma(k, θ);
+  }
+
+  override function forward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  override function backward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_gamma(N:Integer <- 10000, S:Integer <- 20,
+    lazy:Boolean <- false) {
+  m:TestGamma;
+  test_pdf(m, N, S, lazy);
+}
+
+program test_z_gamma(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestGamma;
+  test_z(m, N, lazy);
+}
+
+program test_cdf_gamma(N:Integer <- 10000) {
+  m:TestGamma;
+  test_cdf(m, N);
+}
+
+program test_grad_gamma(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestGamma;
+  test_grad(m, N, backward);
+}

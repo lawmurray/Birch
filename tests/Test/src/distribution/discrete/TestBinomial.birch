@@ -1,0 +1,47 @@
+class TestBinomial < TestModel {
+  n:Random<Integer>;
+  ρ:Random<Real>;
+  x:Random<Integer>;
+
+  override function initialize() {
+    n ~ UniformInteger(1, 100);
+    ρ ~ Uniform(0.0, 1.0);
+  }
+
+  override function simulate() {
+    x ~ Binomial(n, ρ);
+  }
+
+  override function forward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  override function backward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_binomial(N:Integer <- 10000,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestBinomial;
+  test_pdf(m, N, lazy);
+}
+
+program test_cdf_binomial() {
+  m:TestBinomial;
+  test_cdf(m);
+}
+
+program test_grad_binomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestBernoulli;
+  test_grad(m, N, backward);
+}

@@ -1,0 +1,72 @@
+class TestMultivariateNormalInverseWishart < TestModel {
+  Σ:Random<Real[_,_]>;
+  x:Random<Real[_]>;
+
+  n:Integer <- 5;
+  Ψ:Real[n,n];
+  k:Real;
+  μ:Real[n];
+
+  override function initialize() {
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+    k <- simulate_uniform(3.0, 10.0) + n;
+    μ <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+
+    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-1, n);
+  }
+
+  override function simulate() {
+    Σ ~ InverseWishart(Ψ, k);
+    x ~ MultivariateGaussian(μ, Σ);
+  }
+
+  override function forward() -> Real[_] {
+    Σ.eval();
+    x.eval();
+    return vectorize();
+  }
+
+  override function backward() -> Real[_] {
+    assert !x.hasValue();
+    x.eval();
+    assert !Σ.hasValue();
+    Σ.eval();
+    return vectorize();
+  }
+
+  function marginal() -> Distribution<Real[_]> {
+    return x.getDistribution();
+  }
+
+  function vectorize() -> Real[_] {
+    return stack(vec(eval(Σ)), eval(x));
+  }
+
+  override function size() -> Integer {
+    return n + n*n;
+  }
+}
+
+program test_conjugacy_multivariate_normal_inverse_wishart(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseWishart;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_multivariate_normal_inverse_wishart(N:Integer <- 10000,
+    S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseWishart;
+  test_pdf(m, N, S, lazy);
+}
+
+program test_z_multivariate_normal_inverse_wishart(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseWishart;
+  test_z(m, N, lazy);
+}
+
+program test_grad_multivariate_normal_inverse_wishart(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestMultivariateNormalInverseWishart;
+  test_grad(m, N, backward);
+}

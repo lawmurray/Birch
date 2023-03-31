@@ -1,0 +1,71 @@
+class TestMultivariateNormalInverseGamma < TestModel {
+  σ2:Random<Real>;
+  μ:Random<Real[_]>;
+
+  n:Integer <- 4;
+
+  α:Random<Real>;
+  β:Random<Real>;
+  m:Random<Real[_]>;
+  S:Random<Real[_,_]>;
+
+  override function initialize() {
+    α ~ Uniform(3.0, 10.0);
+    β ~ Uniform(0.1, 10.0);
+    m ~ MultivariateGaussian(vector(0.0, n), diagonal(100.0, n));
+    S ~ MatrixGaussian(matrix(0.0, n, n), diagonal(2.0, n), diagonal(2.0, n));
+  }
+
+  override function simulate() {
+    σ2 ~ InverseGamma(α, β);
+    μ ~ MultivariateGaussian(m, (outer(S, S) + diagonal(1.0e-2, n))*σ2);
+  }
+
+  override function forward() -> Real[_] {
+    y:Real[size()];
+    y[1] <- σ2.eval();
+    y[2..(n + 1)] <- μ.eval();
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    y:Real[size()];
+    assert !μ.hasValue();
+    y[2..(n + 1)] <- μ.eval();
+    assert !σ2.hasValue();
+    y[1] <- σ2.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Real[_]> {
+    return μ.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return n + 1;
+  }
+}
+
+program test_conjugacy_multivariate_normal_inverse_gamma(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_multivariate_normal_inverse_gamma(N:Integer <- 10000,
+    S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  test_pdf(m, N, S, lazy);
+}
+
+program test_z_multivariate_normal_inverse_gamma(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  test_z(m, N, lazy);
+}
+
+program test_grad_multivariate_normal_inverse_gamma(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestMultivariateNormalInverseGamma;
+  test_grad(m, N, backward);
+}

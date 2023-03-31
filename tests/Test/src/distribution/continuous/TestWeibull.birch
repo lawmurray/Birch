@@ -1,0 +1,51 @@
+class TestWeibull < TestModel {
+  x:Random<Real>;
+  k:Random<Real>;
+  λ:Random<Real>;
+
+  override function initialize() {
+    k ~ Uniform(1.0, 10.0);
+    λ ~ Uniform(0.1, 10.0);
+  }
+
+  override function simulate() {
+    x ~ Weibull(k, λ);
+  }
+
+  override function forward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  override function backward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  function marginal() -> Distribution<Real> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_weibull(N:Integer <- 10000, S:Integer <- 20,
+    lazy:Boolean <- false) {
+  m:TestWeibull;
+  test_pdf(m, N, S, lazy);
+}
+
+program test_z_weibull(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestWeibull;
+  test_z(m, N, lazy);
+}
+
+program test_cdf_weibull(N:Integer <- 10000) {
+  m:TestWeibull;
+  test_cdf(m, N);
+}
+
+program test_grad_weibull(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestWeibull;
+  test_grad(m, N, backward);
+}

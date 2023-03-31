@@ -1,0 +1,41 @@
+class TestUniformInteger < TestModel {
+  x:Random<Integer>;
+  l:Integer;
+  u:Integer;
+
+  override function initialize() {
+    l <- simulate_uniform_int(-100, 100);
+    u <- simulate_uniform_int(l, l + 200);
+  }
+
+  override function simulate() {
+    x ~ UniformInteger(l, u);
+  }
+
+  override function forward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  override function backward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_uniform_integer(N:Integer <- 10000,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestUniformInteger;
+  test_pdf(m, N, lazy);
+}
+
+program test_cdf_uniform_integer() {
+  m:TestUniformInteger;
+  test_cdf(m);
+}

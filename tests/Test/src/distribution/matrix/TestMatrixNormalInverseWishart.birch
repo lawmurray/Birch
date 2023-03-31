@@ -1,0 +1,82 @@
+class TestMatrixNormalInverseWishart < TestModel {
+  Σ:Random<Real[_,_]>;
+  X:Random<Real[_,_]>;
+
+  n:Integer <- 5;
+  p:Integer <- 4;
+
+  Ψ:Real[p,p];
+  k:Real;
+  M:Real[n,p];
+  U:Real[n,n];
+
+  override function initialize() {
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
+    k <- simulate_uniform(3.0, 10.0) + p;
+    M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
+    U <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+
+    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-1, p);
+    U <- outer(U, U) + diagonal(1.0e-2, n);
+  }
+
+  override function simulate() {
+    Σ ~ InverseWishart(Ψ, k);
+    X ~ MatrixGaussian(M, U, Σ);
+  }
+
+  override function forward() -> Real[_] {
+    Σ.eval();
+    X.eval();
+    return vectorize();
+  }
+
+  override function backward() -> Real[_] {
+    assert !X.hasValue();
+    X.eval();
+    assert !Σ.hasValue();
+    Σ.eval();
+    return vectorize();
+  }
+
+  function marginal() -> Distribution<Real[_,_]> {
+    return X.getDistribution();
+  }
+
+  function vectorize() -> Real[_] {
+    z:Real[size()];
+    let k <- 0;
+    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    k <- k + p*p;
+    z[k + 1.. k + n*p] <- vec(X.eval());
+    return z;
+  }
+
+  override function size() -> Integer {
+    return p*p + n*p;
+  }
+}
+
+program test_conjugacy_matrix_normal_inverse_wishart(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_matrix_normal_inverse_wishart(N:Integer <- 10000,
+    S:Integer <- 20, lazy:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  test_pdf(m, N, S, lazy);
+}
+
+program test_z_matrix_normal_inverse_wishart(N:Integer <- 10000,
+    lazy:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  test_z(m, N, lazy);
+}
+
+program test_grad_matrix_normal_inverse_wishart(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestMatrixNormalInverseWishart;
+  test_grad(m, N, backward);
+}

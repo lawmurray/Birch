@@ -1,0 +1,64 @@
+class TestBetaBinomial < TestModel {
+  ρ:Random<Real>;
+  x:Random<Integer>;
+  n:Random<Integer>;
+  α:Random<Real>;
+  β:Random<Real>;
+
+  override function initialize() {
+    n ~ UniformInteger(1, 100);
+    α ~ Uniform(1.0, 20.0);
+    β ~ Uniform(1.0, 20.0);
+  }
+
+  override function simulate() {
+    ρ ~ Beta(α, β);
+    x ~ Binomial(n, ρ);
+  }
+
+  override function forward() -> Real[_] {
+    y:Real[2];
+    y[1] <- ρ.eval();
+    y[2] <- x.eval();
+    return y;
+  }
+
+  override function backward() -> Real[_] {
+    y:Real[2];
+    assert !x.hasValue();
+    y[2] <- x.eval();
+    assert !ρ.hasValue();
+    y[1] <- ρ.eval();
+    return y;
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 2;
+  }
+}
+
+program test_conjugacy_beta_binomial(N:Integer <- 10000, lazy:Boolean <- false) {
+  m:TestBetaBinomial;
+  test_conjugacy(m, N, lazy);
+}
+
+program test_pdf_beta_binomial(N:Integer <- 10000,
+    S:Integer <- 0, lazy:Boolean <- false) {
+  m:TestBetaBinomial;
+  test_pdf(m, N, lazy);
+}
+
+program test_cdf_beta_binomial() {
+  m:TestBetaBinomial;
+  test_cdf(m);
+}
+
+program test_grad_beta_binomial(N:Integer <- 1000,
+    backward:Boolean <- false) {
+  m:TestBetaBernoulli;
+  test_grad(m, N, backward);
+}

@@ -1,0 +1,44 @@
+class TestCategorical < TestModel {
+  x:Random<Integer>;
+  ρ:Random<Real[_]>;
+
+  override function initialize() {
+    ρ ~ MultivariateGaussian(vector(0.0, 10), diagonal(4.0, 10));
+  }
+
+  override function simulate() {
+    x ~ Categorical(exp(ρ)/sum(exp(ρ)));
+  }
+
+  override function forward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  override function backward() -> Real[_] {
+    return vector(x.eval(), 1);
+  }
+
+  function marginal() -> Distribution<Integer> {
+    return x.getDistribution();
+  }
+
+  override function size() -> Integer {
+    return 1;
+  }
+}
+
+program test_pdf_categorical(N:Integer <- 10000, S:Integer <- 0,
+    lazy:Boolean <- false) {
+  m:TestCategorical;
+  test_pdf(m, N, lazy);
+}
+
+program test_grad_categorical(N:Integer <- 1000, backward:Boolean <- false) {
+  m:TestCategorical;
+  test_grad(m, N, backward);
+}
+
+program test_cdf_categorical() {
+  m:TestCategorical;
+  test_cdf(m);
+}
