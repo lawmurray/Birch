@@ -67,7 +67,7 @@ public:
   /**
    * Get raw pointer to buffer.
    */
-  T* data() const {
+  T* __restrict__ data() const {
     if (ctl) {
       array_wait(ctl);
       return static_cast<T*>(ctl->buf) + offset;
@@ -79,7 +79,7 @@ public:
   /**
    * Get raw pointer to buffer.
    */
-  operator T*() const {
+  operator T* __restrict__ () const {
     return data();
   }
 

@@ -92,7 +92,7 @@ public:
   /**
    * Get raw pointer to buffer.
    */
-  T* data() const {
+  T* __restrict__ data() const {
     if (ctl) {
       if (write) {
         before_write(ctl);
@@ -108,7 +108,7 @@ public:
   /**
    * Get raw pointer to buffer.
    */
-  operator T*() const {
+  operator T* __restrict__() const {
     return data();
   }
 
