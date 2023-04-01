@@ -35,7 +35,7 @@ executors:
       OMP_NUM_THREADS: 4
       CXXFLAGS: -O0 -flto -g -Wall -fno-inline --coverage
       MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=4 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single
+      BIRCH_FLAGS: --unit=dir --jobs=3 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single
     working_directory: /root/cover
 
   alpine:
