@@ -61,7 +61,6 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
     for c in 1..C {
       global.shallow_grad(m[c], this.g![1..R,c], visitor);
     }
-    this.g <- nil;  // clear intermediate gradient to save memory
   }
 
   override function doDeepGrad(visitor:GradVisitor) {

@@ -25,7 +25,6 @@ final class BoxedForm<Value,Form>(f:Form) < Expression<Value>(nil, false) {
 
   override function doShallowGrad(visitor:GradVisitor) {
     global.shallow_grad(f!, this.g!, visitor);
-    this.g <- nil;  // clear intermediate gradient to save memory
   }
 
   override function doDeepGrad(visitor:GradVisitor) {

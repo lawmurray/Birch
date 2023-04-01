@@ -751,6 +751,38 @@ public:
     return size() == volume();
   }
 
+  /**
+   * @internal
+   * 
+   * Convert to vector.
+   */
+  Array<T,1> vec() const {
+    if constexpr (D == 1) {
+      return *this;
+    } else {
+      assert(canReshape());
+      return Array<T,1>(control(), ArrayShape<1>(offset(), size(), 1));
+    }
+  }
+
+  /**
+   * @internal
+   * 
+   * Convert to matrix.
+   * 
+   * @param n Number of columns.
+   */
+  Array<T,2> mat(const int n) const {
+    if constexpr (D == 2) {
+      return *this;
+    } else {
+      assert(canReshape());
+      assert(size() % n == 0);
+      int m = size()/n;
+      return Array<T,2>(control(), ArrayShape<2>(offset(), m, n, m));
+    }
+  }
+
 private:
   /**
    * Fill with scalar value.

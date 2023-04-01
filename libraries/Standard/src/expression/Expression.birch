@@ -336,6 +336,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
       assert visitCount == linkCount;
       visitCount <- 0;  // reset for next time
       doShallowGrad(visitor);
+      this.g <- nil;  // clear intermediate gradient to save memory
       doDeepGrad(visitor);
     }
   }
@@ -367,6 +368,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
   }
   final function reset() {
     assert visitCount == 0;
+    g <- nil;
     linkCount <- 0;
     argsCount <- 0;
     if !flagConstant {

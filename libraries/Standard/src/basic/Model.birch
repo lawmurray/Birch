@@ -52,9 +52,6 @@ abstract class Model {
         }
       }
     }
-    if π? {
-      π!.trace();
-    }
     return π;
   }
 

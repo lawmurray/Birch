@@ -57,7 +57,6 @@ final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
     for r in 1..R {
       global.shallow_grad(m[r], this.g![r], visitor);
     }
-    this.g <- nil;  // clear intermediate gradient to save memory
   }
 
   override function doDeepGrad(visitor:GradVisitor) {

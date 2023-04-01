@@ -8,24 +8,18 @@ final class RelinkVisitor {
   n:Integer <- 0;
 
   function visit(p:Distribution<Real>) {
-    if !p.isConstant() && p.offset < 0 {
-      p.offset <- n;
-      n <- n + 1;
-    }
+    p.offset <- n;
+    n <- n + 1;
   }
 
   function visit(p:Distribution<Real[_]>) {
-    if !p.isConstant() && p.offset < 0 {
-      p.offset <- n;
-      n <- n + size(p.x!);
-    }
+    p.offset <- n;
+    n <- n + size(p.x!);
   }
 
   function visit(p:Distribution<Real[_,_]>) {
-    if !p.isConstant() && p.offset < 0 {
-      p.offset <- n;
-      n <- n + size(p.x!);
-    }
+    p.offset <- n;
+    n <- n + size(p.x!);
   }
 
   function visit<Value>(p:Distribution<Value>) {

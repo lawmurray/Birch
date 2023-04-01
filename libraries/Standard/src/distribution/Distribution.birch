@@ -20,12 +20,12 @@ abstract class Distribution<Value> < Delay {
   /**
    * Offset into vectorized arguments.
    */
-  offset:Integer <- -1;
+  offset:Integer <- 0;
 
   /**
    * Count of number of parents, set by trace().
    */
-  linkCount:Integer <- 1;
+  linkCount:Integer <- 0;
 
   /**
    * Counter used to obtain pre- and post-order traversals of the expression
@@ -307,6 +307,7 @@ abstract class Distribution<Value> < Delay {
         assert visitCount == linkCount;
         visitCount <- 0;  // reset for next time
         visitor.visit(this);
+        this.g <- nil;
       }
     }
   }
@@ -316,7 +317,8 @@ abstract class Distribution<Value> < Delay {
       this.getUpdatedDistribution().reset();
     } else {
       assert visitCount == 0;
-      offset <- -1;
+      g <- nil;
+      offset <- 0;
       linkCount <- 0;
     }
   }
@@ -337,7 +339,8 @@ abstract class Distribution<Value> < Delay {
     if this.hasUpdated() {
       this.getUpdatedDistribution().constant();
     } else {
-      offset <- -1;
+      g <- nil;
+      offset <- 0;
       linkCount <- 0;
       visitCount <- 0;
       flagConstant <- true;

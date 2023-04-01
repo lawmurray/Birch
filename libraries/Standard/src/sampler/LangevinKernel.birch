@@ -14,8 +14,9 @@ class LangevinKernel < Kernel {
     if nmoves > 0 {
       let π <- m.hoist();
       if π? {
-        let x <- π!.args();
+        π!.trace();
         let p <- π!.eval();
+        let x <- π!.args();
         let g <- π!.grad();
         let μ <- x + g*scale;  // mean of proposal from initial state
         let accept <- true;  // was most recent proposal accepted?

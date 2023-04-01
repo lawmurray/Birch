@@ -10,21 +10,18 @@ final class ArgsVisitor(size:Integer) {
   x:Real[size];
 
   function visit(p:Distribution<Real>) {
-    assert p.offset >= 0;
     cpp{{
     this->x.slice(p->offset + 1) = p->x.value();
     }}
   }
 
   function visit(p:Distribution<Real[_]>) {
-    assert p.offset >= 0;
     let m <- p.offset + 1;
     let n <- m + size(p.x!) - 1;
     this.x[m..n] <- p.x!;
   }
 
   function visit(p:Distribution<Real[_,_]>) {
-    assert p.offset >= 0;
     let m <- p.offset + 1;
     let n <- m + size(p.x!) - 1;
     this.x[m..n] <- vec(p.x!);

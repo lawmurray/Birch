@@ -59,9 +59,6 @@ final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
         π <- φ;
       }
     }
-    if π? {
-      π!.trace();
-    }
     return π;
   }
 }
