@@ -33,7 +33,7 @@ executors:
     environment:
       CODENAME: cover
       OMP_NUM_THREADS: 4
-      CXXFLAGS: -O0 -Wall -g -fno-inline --coverage
+      CXXFLAGS: -O1 -Wall -g -fno-inline --coverage
       MAKEFLAGS: -j8
       BIRCH_FLAGS: --unit=dir --jobs=3 --enable-verbose --disable-static --disable-single --enable-coverage
     working_directory: /root/cover
@@ -46,7 +46,7 @@ executors:
     environment:
       CODENAME: alpine
       OMP_NUM_THREADS: 4
-      CXXFLAGS: -O0 -Wall
+      CXXFLAGS: -O1 -Wall
       MAKEFLAGS: -j8
       BIRCH_FLAGS: --unit=dir --jobs=2 --enable-verbose --disable-static --disable-single
     working_directory: /root/alpine
