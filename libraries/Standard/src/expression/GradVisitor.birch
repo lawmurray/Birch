@@ -3,30 +3,34 @@
  *
  * @param size Number of arguments.
  */
-class GradVisitor(size:Integer) {
+final class GradVisitor(size:Integer) {
   /**
    * Vectorized gradients.
    */
   g:Real[size];
 
-  function visit(g:Real, offset:Integer) {
-    assert offset >= 0;
+  function visit(p:Distribution<Real>) {
+    assert p.offset >= 0;
     cpp{{
-    this->g.slice(offset + 1) = g;
+    this->g.slice(p->offset + 1) = p->g.value();
     }}
   }
 
-  function visit(g:Real[_], offset:Integer) {
-    assert offset >= 0;
-    let m <- offset + 1;
-    let n <- m + size(g) - 1;
-    this.g[m..n] <- g;
+  function visit(p:Distribution<Real[_]>) {
+    assert p.offset >= 0;
+    let m <- p.offset + 1;
+    let n <- m + size(p.g!) - 1;
+    this.g[m..n] <- p.g!;
   }
 
-  function visit(g:Real[_,_], offset:Integer) {
-    assert offset >= 0;
-    let m <- offset + 1;
-    let n <- m + size(g) - 1;
-    this.g[m..n] <- vec(g);
+  function visit(p:Distribution<Real[_,_]>) {
+    assert p.offset >= 0;
+    let m <- p.offset + 1;
+    let n <- m + size(p.g!) - 1;
+    this.g[m..n] <- vec(p.g!);
+  }
+
+  function visit<Value>(p:Distribution<Value>) {
+    // ignore
   }
 }

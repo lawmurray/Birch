@@ -3,7 +3,7 @@
  *
  * @param x Vectorized arguments.
  */
-class MoveVisitor(x:Real[_]) {
+final class MoveVisitor(x:Real[_]) {
   /**
    * Vectorized arguments.
    */
@@ -18,14 +18,6 @@ class MoveVisitor(x:Real[_]) {
     p.x <- y;
   }
 
-  function visit(p:Distribution<Integer>) {
-    //
-  }
-
-  function visit(p:Distribution<Boolean>) {
-    //
-  }
-
   function visit(p:Distribution<Real[_]>) {
     assert p.offset >= 0;
     let m <- p.offset + 1;
@@ -33,14 +25,14 @@ class MoveVisitor(x:Real[_]) {
     p.x <- x[m..n];
   }
 
-  function visit(p:Distribution<Integer[_]>) {
-    //
-  }
-
   function visit(p:Distribution<Real[_,_]>) {
     assert p.offset >= 0;
     let m <- p.offset + 1;
     let n <- m + size(p.x!) - 1;
     p.x <- mat(x[m..n], columns(p.x!));
+  }
+
+  function visit<Value>(p:Distribution<Value>) {
+    // ignore
   }
 }

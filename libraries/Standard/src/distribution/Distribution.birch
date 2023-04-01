@@ -282,7 +282,7 @@ abstract class Distribution<Value> < Delay {
     } else if !flagConstant {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
-        visitor.visit(x!, offset);
+        visitor.visit(this);
       }
       if visitCount >= linkCount {
         assert visitCount == linkCount;
@@ -306,7 +306,7 @@ abstract class Distribution<Value> < Delay {
       if visitCount >= linkCount {
         assert visitCount == linkCount;
         visitCount <- 0;  // reset for next time
-        visitor.visit(this.g!, offset);
+        visitor.visit(this);
       }
     }
   }
@@ -324,13 +324,11 @@ abstract class Distribution<Value> < Delay {
   final function relink(visitor:RelinkVisitor) {
     if this.hasUpdated() {
       this.getUpdatedDistribution().relink(visitor);
-    } else {
+    } else if !flagConstant {
       assert visitCount == 0;
-      if !flagConstant {
-        linkCount <- linkCount + 1;
-        if linkCount == 1 {
-          visitor.visit(this);
-        }
+      linkCount <- linkCount + 1;
+      if linkCount == 1 {
+        visitor.visit(this);
       }
     }
   }
@@ -339,6 +337,7 @@ abstract class Distribution<Value> < Delay {
     if this.hasUpdated() {
       this.getUpdatedDistribution().constant();
     } else {
+      offset <- -1;
       linkCount <- 0;
       visitCount <- 0;
       flagConstant <- true;

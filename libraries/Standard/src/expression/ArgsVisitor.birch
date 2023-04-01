@@ -3,30 +3,34 @@
  *
  * @param size Number of arguments.
  */
-class ArgsVisitor(size:Integer) {
+final class ArgsVisitor(size:Integer) {
   /**
    * Vectorized arguments.
    */
   x:Real[size];
 
-  function visit(x:Real, offset:Integer) {
-    assert offset >= 0;
+  function visit(p:Distribution<Real>) {
+    assert p.offset >= 0;
     cpp{{
-    this->x.slice(offset + 1) = x;
+    this->x.slice(p->offset + 1) = p->x.value();
     }}
   }
 
-  function visit(x:Real[_], offset:Integer) {
-    assert offset >= 0;
-    let m <- offset + 1;
-    let n <- m + size(x) - 1;
-    this.x[m..n] <- x;
+  function visit(p:Distribution<Real[_]>) {
+    assert p.offset >= 0;
+    let m <- p.offset + 1;
+    let n <- m + size(p.x!) - 1;
+    this.x[m..n] <- p.x!;
   }
 
-  function visit(x:Real[_,_], offset:Integer) {
-    assert offset >= 0;
-    let m <- offset + 1;
-    let n <- m + size(x) - 1;
-    this.x[m..n] <- vec(x);
+  function visit(p:Distribution<Real[_,_]>) {
+    assert p.offset >= 0;
+    let m <- p.offset + 1;
+    let n <- m + size(p.x!) - 1;
+    this.x[m..n] <- vec(p.x!);
+  }
+
+  function visit<Value>(p:Distribution<Value>) {
+    // ignore
   }
 }

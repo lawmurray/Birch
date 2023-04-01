@@ -1,7 +1,7 @@
 /**
  * Count arguments of a delayed expression.
  */
-class RelinkVisitor {
+final class RelinkVisitor {
   /**
    * Numbr of arguments.
    */
@@ -14,14 +14,6 @@ class RelinkVisitor {
     }
   }
 
-  function visit(p:Distribution<Integer>) {
-    //
-  }
-
-  function visit(p:Distribution<Boolean>) {
-    //
-  }
-
   function visit(p:Distribution<Real[_]>) {
     if !p.isConstant() && p.offset < 0 {
       p.offset <- n;
@@ -29,14 +21,14 @@ class RelinkVisitor {
     }
   }
 
-  function visit(p:Distribution<Integer[_]>) {
-    //
-  }
-
   function visit(p:Distribution<Real[_,_]>) {
     if !p.isConstant() && p.offset < 0 {
       p.offset <- n;
       n <- n + size(p.x!);
     }
+  }
+
+  function visit<Value>(p:Distribution<Value>) {
+    // ignore
   }
 }
