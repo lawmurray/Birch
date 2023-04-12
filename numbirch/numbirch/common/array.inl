@@ -517,8 +517,8 @@ Array<value_t<T>,1> vec(const T& x) {
     return x;
   } else if constexpr (is_arithmetic_v<T>) {
     return Array<value_t<T>,1>(x);
-  // } else if (x.canReshape()) {
-  //   return x.vec();
+  } else if (x.canReshape()) {
+    return x.vec();
   } else {
     Array<value_t<T>,1> y(make_shape(size(x)));
     for_each(size(x), reshape_functor(width(x), 1, sliced(x), stride(x),
@@ -546,8 +546,8 @@ Array<value_t<T>,2> mat(const T& x, const int n) {
     return x;
   } else if constexpr (is_arithmetic_v<T>) {
     return Array<value_t<T>,2>(x);
-  // } else if (x.canReshape()) {
-  //   return x.mat(n);
+  } else if (x.canReshape()) {
+    return x.mat(n);
   } else {
     Array<value_t<T>,2> y(make_shape(size(x)/n, n));
     for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, sliced(x),
