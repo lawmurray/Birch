@@ -122,7 +122,7 @@ void birch::CppGenerator::visit(const Assign* o) {
   } else if (*o->name == "<~") {
     middle(o->left << " = ");
     --inAssign;
-    middle('(' << o->right << ")->value()");
+    middle('(' << o->right << ")->variate()");
   } else if (*o->name == "~>") {
     middle('(' << o->right << ")->assign");
     --inAssign;
