@@ -5,8 +5,9 @@ struct Sqrt<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(sqrt, sqrt_grad)
-  BIRCH_FUNCTION_FORM(sqrt, sqrt_grad)
+  BIRCH_UNARY_FUNCTION_FORM(sqrt)
+  BIRCH_UNARY_FUNCTION_GRAD(sqrt_grad)
+  BIRCH_FUNCTION_FORM(sqrt)
   }}
 }
 

@@ -9,8 +9,9 @@ struct MatrixElement<Left,Middle,Right>(l:Left, m:Middle, r:Right) <
   phantom x;
 
   hpp{{
-  BIRCH_TERNARY_FUNCTION_FORM(element, element_grad)
-  BIRCH_FUNCTION_FORM(element, element_grad)
+  BIRCH_TERNARY_FUNCTION_FORM(element)
+  BIRCH_TERNARY_FUNCTION_GRAD(element_grad)
+  BIRCH_FUNCTION_FORM(element)
   }}
 }
 

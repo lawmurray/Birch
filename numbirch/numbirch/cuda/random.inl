@@ -269,13 +269,13 @@ struct standard_gaussian_functor {
 };
 
 template<class T, class U>
-struct standard_wishart_functor {
+struct simulate_wishart_functor {
   T k;
   const int n;
   U S;
   const int ldS;
   curandState_t* rngs;
-  standard_wishart_functor(const T k, const int n, U S, const int ldS) :
+  simulate_wishart_functor(const T k, const int n, U S, const int ldS) :
       k(k),
       n(n),
       S(S),

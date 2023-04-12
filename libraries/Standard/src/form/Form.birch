@@ -9,7 +9,7 @@ struct Form {
 }
 
 hpp{{
-#define BIRCH_FUNCTION_FORM(f, f_grad, ...) \
+#define BIRCH_FUNCTION_FORM(f, ...) \
   int rows() const { \
     return birch::rows(eval()); \
   } \
@@ -25,4 +25,11 @@ hpp{{
   int size() const { \
     return birch::size(eval()); \
   }
+
+#define BIRCH_FUNCTION_GRAD_NONE(...) \
+  template<class G> \
+  void shallowGrad(const G& g, const GradVisitor& visitor) { \
+    assert(false); \
+  }
+
 }}

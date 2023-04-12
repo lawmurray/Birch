@@ -89,22 +89,23 @@ struct simulate_weibull_functor {
 struct standard_gaussian_functor {
   real* A;
   const int ldA;
+  std::normal_distribution<real> p;
   standard_gaussian_functor(real* A, const int ldA) :
       A(A), ldA(ldA) {
     //
   }
-  void operator()(const int i, const int j) const {
-    get(A, i, j, ldA) = std::normal_distribution<real>()(stl<real>::rng());
+  void operator()(const int i, const int j) {
+    get(A, i, j, ldA) = p(stl<real>::rng());
   }
 };
 
 template<class T>
-struct standard_wishart_functor {
+struct simulate_wishart_functor {
   T k;
   const int n;
   real* S;
   const int ldS;
-  standard_wishart_functor(const T k, const int n, real* S, const int ldS) :
+  simulate_wishart_functor(const T k, const int n, real* S, const int ldS) :
       k(k), n(n), S(S), ldS(ldS) {
     //
   }

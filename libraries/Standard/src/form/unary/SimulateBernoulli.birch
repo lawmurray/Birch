@@ -1,0 +1,22 @@
+struct SimulateBernoulli<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(simulate_bernoulli)
+  BIRCH_FUNCTION_FORM(simulate_bernoulli)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_bernoulli;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+SimulateBernoulli<Middle> simulate_bernoulli(const Middle& m) {
+  return construct<SimulateBernoulli<Middle>>(m);
+}
+}
+}}

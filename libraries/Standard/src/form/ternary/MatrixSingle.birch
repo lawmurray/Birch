@@ -16,8 +16,9 @@ struct MatrixSingle<Left,Middle,Right>(x:Left, i:Middle, j:Right, m:Integer,
   n:Integer <- n;
 
   hpp{{
-  BIRCH_TERNARY_FUNCTION_FORM(single, single_grad, m, n)
-  BIRCH_FUNCTION_FORM(single, single_grad, m, n)
+  BIRCH_TERNARY_FUNCTION_FORM(single, m, n)
+  BIRCH_TERNARY_FUNCTION_GRAD(single_grad, m, n)
+  BIRCH_FUNCTION_FORM(single, m, n)
   }}
 }
 

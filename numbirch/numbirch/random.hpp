@@ -229,6 +229,21 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
 real_t<T,U> simulate_weibull(const T& k, const U& lambda);
 
 /**
+ * Simulate a Wishart distribution (with scale one).
+ *
+ * @ingroup random
+ * 
+ * @tparam T Scalar type.
+ * 
+ * @param nu Degrees of freedom.
+ * @param n Number of rows and columns.
+ * 
+ * @return Variates.
+ */
+template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+Array<real,2> simulate_wishart(const T& nu, const int n);
+
+/**
  * Create vector of standard Gaussian variates (mean zero, variance one).
  *
  * @ingroup random
@@ -250,21 +265,6 @@ Array<real,1> standard_gaussian(const int n);
  * @return Variates.
  */
 Array<real,2> standard_gaussian(const int m, const int n);
-
-/**
- * Create matrix of standard Wishart (scale one).
- *
- * @ingroup random
- * 
- * @tparam T Scalar type.
- * 
- * @param nu Degrees of freedom.
- * @param n Number of rows and columns.
- * 
- * @return Variates.
- */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
-Array<real,2> standard_wishart(const T& nu, const int n);
 
 /**
  * Convolve probabilities for the sum of two discrete random variables.

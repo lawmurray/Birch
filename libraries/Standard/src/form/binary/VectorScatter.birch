@@ -11,8 +11,9 @@ struct VectorScatter<Left,Right>(l:Left, r:Right, n:Integer) <
   n:Integer <- n;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(scatter, scatter_grad, n)
-  BIRCH_FUNCTION_FORM(scatter, scatter_grad, n)
+  BIRCH_BINARY_FUNCTION_FORM(scatter, n)
+  BIRCH_BINARY_FUNCTION_GRAD(scatter_grad, n)
+  BIRCH_FUNCTION_FORM(scatter, n)
   }}
 }
 

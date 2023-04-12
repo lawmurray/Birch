@@ -5,8 +5,9 @@ struct Cos<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(cos, cos_grad)
-  BIRCH_FUNCTION_FORM(cos, cos_grad)
+  BIRCH_UNARY_FUNCTION_FORM(cos)
+  BIRCH_UNARY_FUNCTION_GRAD(cos_grad)
+  BIRCH_FUNCTION_FORM(cos)
   }}
 }
 

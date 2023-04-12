@@ -5,8 +5,9 @@ struct Scal<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(scal, scal_grad)
-  BIRCH_FUNCTION_FORM(scal, scal_grad)
+  BIRCH_UNARY_FUNCTION_FORM(scal)
+  BIRCH_UNARY_FUNCTION_GRAD(scal_grad)
+  BIRCH_FUNCTION_FORM(scal)
   }}
 }
 

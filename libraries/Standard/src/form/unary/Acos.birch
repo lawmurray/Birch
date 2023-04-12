@@ -5,8 +5,9 @@ struct Acos<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(acos, acos_grad)
-  BIRCH_FUNCTION_FORM(acos, acos_grad)
+  BIRCH_UNARY_FUNCTION_FORM(acos)
+  BIRCH_UNARY_FUNCTION_GRAD(acos_grad)
+  BIRCH_FUNCTION_FORM(acos)
   }}
 }
 

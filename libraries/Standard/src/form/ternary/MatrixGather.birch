@@ -6,8 +6,9 @@ struct MatrixGather<Left,Middle,Right>(A:Left, I:Middle, J:Right) <
   phantom x;
 
   hpp{{
-  BIRCH_TERNARY_FUNCTION_FORM(gather, gather_grad)
-  BIRCH_FUNCTION_FORM(gather, gather_grad)
+  BIRCH_TERNARY_FUNCTION_FORM(gather)
+  BIRCH_TERNARY_FUNCTION_GRAD(gather_grad)
+  BIRCH_FUNCTION_FORM(gather)
   }}
 }
 

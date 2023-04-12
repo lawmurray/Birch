@@ -5,8 +5,9 @@ struct TriMul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(trimul, trimul_grad)
-  BIRCH_FUNCTION_FORM(trimul, trimul_grad)
+  BIRCH_BINARY_FUNCTION_FORM(trimul)
+  BIRCH_BINARY_FUNCTION_GRAD(trimul_grad)
+  BIRCH_FUNCTION_FORM(trimul)
   }}
 }
 

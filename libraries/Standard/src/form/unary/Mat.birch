@@ -10,8 +10,9 @@ struct Mat<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   n:Integer <- n;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(mat, mat_grad, n)
-  BIRCH_FUNCTION_FORM(mat, mat_grad, n)
+  BIRCH_UNARY_FUNCTION_FORM(mat, n)
+  BIRCH_UNARY_FUNCTION_GRAD(mat_grad, n)
+  BIRCH_FUNCTION_FORM(mat, n)
   }}
 }
 

@@ -1,0 +1,27 @@
+struct SimulateWishart<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  /**
+   * Size.
+   */
+  n:Integer <- n;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(simulate_wishart, n)
+  BIRCH_FUNCTION_FORM(simulate_wishart, n)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_wishart;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+SimulateWishart<Middle> simulate_wishart(const Middle& m, const int n) {
+  return construct<SimulateWishart<Middle>>(m, n);
+}
+}
+}}

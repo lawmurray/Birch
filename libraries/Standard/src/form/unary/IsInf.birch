@@ -5,8 +5,9 @@ struct IsInf<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(isinf, isinf_grad)
-  BIRCH_FUNCTION_FORM(isinf, isinf_grad)
+  BIRCH_UNARY_FUNCTION_FORM(isinf)
+  BIRCH_UNARY_FUNCTION_GRAD(isinf_grad)
+  BIRCH_FUNCTION_FORM(isinf)
   }}
 }
 

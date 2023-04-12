@@ -56,7 +56,7 @@ struct Ternary<Left,Middle,Right>(l:Left, m:Middle, r:Right) < Form {
 }
 
 hpp{{
-#define BIRCH_TERNARY_FUNCTION_FORM(f, f_grad, ...) \
+#define BIRCH_TERNARY_FUNCTION_FORM(f, ...) \
   using Value = decltype(f(birch::eval(std::declval<Left>()), \
       birch::eval(std::declval<Middle>()), \
       birch::eval(std::declval<Right>()), ##__VA_ARGS__)); \
@@ -94,8 +94,9 @@ hpp{{
     auto m = birch::move(this->m, visitor); \
     auto r = birch::move(this->r, visitor); \
     return f(l, m, r, ##__VA_ARGS__); \
-  } \
-  \
+  }
+
+#define BIRCH_TERNARY_FUNCTION_GRAD(f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) { \
     auto x = birch::peek(*this); \

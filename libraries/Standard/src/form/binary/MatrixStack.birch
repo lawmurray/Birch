@@ -5,8 +5,9 @@ struct MatrixStack<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(stack, stack_grad)
-  BIRCH_FUNCTION_FORM(stack, stack_grad)
+  BIRCH_BINARY_FUNCTION_FORM(stack)
+  BIRCH_BINARY_FUNCTION_GRAD(stack_grad)
+  BIRCH_FUNCTION_FORM(stack)
   }}
 }
 

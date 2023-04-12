@@ -9,8 +9,9 @@ struct Mul<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator*, mul_grad)
-  BIRCH_FUNCTION_FORM(operator*, mul_grad)
+  BIRCH_BINARY_FUNCTION_FORM(operator*)
+  BIRCH_BINARY_FUNCTION_GRAD(mul_grad)
+  BIRCH_FUNCTION_FORM(operator*)
   }}
 }
 

@@ -10,8 +10,9 @@ struct Iota<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   n:Integer <- n;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(iota, iota_grad, n)
-  BIRCH_FUNCTION_FORM(iota, iota_grad, n)
+  BIRCH_UNARY_FUNCTION_FORM(iota, n)
+  BIRCH_UNARY_FUNCTION_GRAD(iota_grad, n)
+  BIRCH_FUNCTION_FORM(iota, n)
   }}
 }
 

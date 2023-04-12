@@ -24,19 +24,19 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
   Ψ:Arg4 <- Ψ;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_t(value(k), value(M), value(Σ), value(Ψ));
+    return value(simulate_matrix_t(value(k), M, Σ, Ψ));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_t(eval(k), eval(M), eval(Σ), eval(Ψ));
+    return eval(simulate_matrix_t(eval(k), M, Σ, Ψ));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_t(X, value(k), value(M), value(Σ), value(Ψ));
+    return value(logpdf_matrix_t(X, value(k), M, Σ, Ψ));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_t(X, eval(k), eval(M), eval(Σ), eval(Ψ));
+    return eval(logpdf_matrix_t(X, eval(k), M, Σ, Ψ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -73,7 +73,7 @@ function simulate_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     Ψ:Arg4) -> {
   let m <- rows(M);
   let n <- columns(M);
-  let Y <- standard_wishart(k, n);
+  let Y <- simulate_wishart(k, n);
   let Z <- standard_gaussian(m, n);
   return M + trimul(chol(Σ), Z)*trisolve(Y, transpose(chol(Ψ)));
 }

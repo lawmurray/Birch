@@ -5,8 +5,9 @@ struct Abs<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(abs, abs_grad)
-  BIRCH_FUNCTION_FORM(abs, abs_grad)
+  BIRCH_UNARY_FUNCTION_FORM(abs)
+  BIRCH_UNARY_FUNCTION_GRAD(abs_grad)
+  BIRCH_FUNCTION_FORM(abs)
   }}
 }
 

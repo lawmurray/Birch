@@ -14,18 +14,18 @@
 /**
  * @internal
  * 
- * @def STANDARD_WISHART
+ * @def SIMULATE_WISHART
  */
-#define STANDARD_WISHART(f) \
-    STANDARD_WISHART_FIRST(f, real) \
-    STANDARD_WISHART_FIRST(f, int) \
-    STANDARD_WISHART_FIRST(f, bool)
-#define STANDARD_WISHART_FIRST(f, T) \
-    STANDARD_WISHART_SIG(f, NUMBIRCH_ARRAY(T, 0)) \
-    STANDARD_WISHART_SIG(f, T)
-#define STANDARD_WISHART_SIG(f, T) \
+#define SIMULATE_WISHART(f) \
+    SIMULATE_WISHART_FIRST(f, real) \
+    SIMULATE_WISHART_FIRST(f, int) \
+    SIMULATE_WISHART_FIRST(f, bool)
+#define SIMULATE_WISHART_FIRST(f, T) \
+    SIMULATE_WISHART_SIG(f, NUMBIRCH_ARRAY(T, 0)) \
+    SIMULATE_WISHART_SIG(f, T)
+#define SIMULATE_WISHART_SIG(f, T) \
     template Array<real,2> f<T>(const T& nu, const int n);
 
 namespace numbirch {
-STANDARD_WISHART(standard_wishart)
+SIMULATE_WISHART(simulate_wishart)
 }

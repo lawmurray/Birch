@@ -5,8 +5,9 @@ struct Atan<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(atan, atan_grad)
-  BIRCH_FUNCTION_FORM(atan, atan_grad)
+  BIRCH_UNARY_FUNCTION_FORM(atan)
+  BIRCH_UNARY_FUNCTION_GRAD(atan_grad)
+  BIRCH_FUNCTION_FORM(atan)
   }}
 }
 

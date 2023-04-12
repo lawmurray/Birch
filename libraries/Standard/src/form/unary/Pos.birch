@@ -5,8 +5,9 @@ struct Pos<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(operator+, pos_grad)
-  BIRCH_FUNCTION_FORM(operator+, pos_grad)
+  BIRCH_UNARY_FUNCTION_FORM(operator+)
+  BIRCH_UNARY_FUNCTION_GRAD(pos_grad)
+  BIRCH_FUNCTION_FORM(operator+)
   }}
 }
 

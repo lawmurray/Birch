@@ -5,8 +5,9 @@ struct IsNan<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(isnan, isnan_grad)
-  BIRCH_FUNCTION_FORM(isnan, isnan_grad)
+  BIRCH_UNARY_FUNCTION_FORM(isnan)
+  BIRCH_UNARY_FUNCTION_GRAD(isnan_grad)
+  BIRCH_FUNCTION_FORM(isnan)
   }}
 }
 

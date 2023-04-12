@@ -35,7 +35,7 @@ struct Unary<Middle>(m:Middle) < Form {
 }
 
 hpp{{
-#define BIRCH_UNARY_FUNCTION_FORM(f, f_grad, ...) \
+#define BIRCH_UNARY_FUNCTION_FORM(f, ...) \
   using Value = decltype(f(birch::eval(std::declval<Middle>()), \
       ##__VA_ARGS__)); \
   std::optional<Value> x; \
@@ -66,8 +66,9 @@ hpp{{
   auto move(const MoveVisitor& visitor) { \
     auto m = birch::move(this->m, visitor); \
     return f(m, ##__VA_ARGS__); \
-  } \
-  \
+  }
+
+#define BIRCH_UNARY_FUNCTION_GRAD(f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) { \
     auto x = birch::peek(*this); \

@@ -45,7 +45,7 @@ struct Binary<Left,Right>(l:Left, r:Right) < Form {
 }
 
 hpp{{
-#define BIRCH_BINARY_FUNCTION_FORM(f, f_grad, ...) \
+#define BIRCH_BINARY_FUNCTION_FORM(f, ...) \
   using Value = decltype(f(birch::eval(std::declval<Left>()), \
         birch::eval(std::declval<Right>()), ##__VA_ARGS__)); \
   std::optional<Value> x; \
@@ -79,8 +79,9 @@ hpp{{
     auto l = birch::move(this->l, visitor); \
     auto r = birch::move(this->r, visitor); \
     return f(l, r, ##__VA_ARGS__); \
-  } \
-  \
+  }
+
+#define BIRCH_BINARY_FUNCTION_GRAD(f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) { \
     auto x = birch::peek(*this); \

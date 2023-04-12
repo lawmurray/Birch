@@ -33,7 +33,7 @@ final class MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
 
   override function update(x:Real!) -> Delay? {
     return update_multivariate_gaussian_gaussian(x, value(a), value(μ),
-        value(Σ), value(c), value(ω2), value(super.μ), value(super.σ2));
+        Σ, value(c), value(ω2), value(super.μ), value(super.σ2));
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {

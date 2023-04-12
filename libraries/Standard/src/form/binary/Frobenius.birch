@@ -5,8 +5,9 @@ struct Frobenius<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(frobenius, frobenius_grad)
-  BIRCH_FUNCTION_FORM(frobenius, frobenius_grad)
+  BIRCH_BINARY_FUNCTION_FORM(frobenius)
+  BIRCH_BINARY_FUNCTION_GRAD(frobenius_grad)
+  BIRCH_FUNCTION_FORM(frobenius)
   }}
 }
 

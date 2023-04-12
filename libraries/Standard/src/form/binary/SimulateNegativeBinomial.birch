@@ -1,0 +1,24 @@
+struct SimulateNegativeBinomial<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(simulate_negative_binomial)
+  BIRCH_FUNCTION_FORM(simulate_negative_binomial)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_negative_binomial;
+
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+SimulateNegativeBinomial<Left,Right> simulate_negative_binomial(const Left& l, const Right& r) {
+  return construct<SimulateNegativeBinomial<Left,Right>>(l, r);
+}
+
+}
+}}

@@ -1,0 +1,24 @@
+struct SimulateGamma<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(simulate_gamma)
+  BIRCH_FUNCTION_FORM(simulate_gamma)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_gamma;
+
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+SimulateGamma<Left,Right> simulate_gamma(const Left& l, const Right& r) {
+  return construct<SimulateGamma<Left,Right>>(l, r);
+}
+
+}
+}}

@@ -59,27 +59,27 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
   γ:Arg4 <- γ;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(value(ν), value(Λ),
-        value(k), value(γ));
+    return value(simulate_multivariate_normal_inverse_gamma(value(ν), Λ,
+        value(k), value(γ)));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(eval(ν), eval(Λ),
-        eval(k), eval(γ));
+    return eval(simulate_multivariate_normal_inverse_gamma(eval(ν), Λ,
+        eval(k), eval(γ)));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_normal_inverse_gamma(x, value(ν), value(Λ),
-        value(k), value(γ));
+    return value(logpdf_multivariate_normal_inverse_gamma(x, value(ν), Λ,
+        value(k), value(γ)));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_multivariate_normal_inverse_gamma(x, eval(ν), eval(Λ),
-        eval(k), eval(γ));
+    return eval(logpdf_multivariate_normal_inverse_gamma(x, eval(ν), Λ,
+        eval(k), eval(γ)));
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_multivariate_normal_inverse_gamma(x, value(ν), value(Λ),
+    return update_multivariate_normal_inverse_gamma(x, value(ν), Λ,
         value(k), value(γ));
   }
 
@@ -104,7 +104,7 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
           getJoined().joinMultivariateNormalInverseGammaGaussian()!;
       setUpdated(update_multivariate_normal_inverse_gamma_multivariate_gaussian(
           value(x), transpose(value(A)), value(ν), value(Λ), value(k),
-          value(γ), value(c), diagonal(value(ω2))));
+          value(γ), value(c), Diagonal(value(ω2))));
       setJoined(nil);
     }
   }
@@ -187,7 +187,7 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
 
   /* now the same as simulate_multivariate_t(k, μ, β*cholinv(L)), but can
    * inline and simplify */
-  let Y <- standard_wishart(k, n);
+  let Y <- simulate_wishart(k, n);
   let z <- standard_gaussian(n);
   
   return μ + triinnersolve(L, triinnersolve(Y, z))*sqrt(β);

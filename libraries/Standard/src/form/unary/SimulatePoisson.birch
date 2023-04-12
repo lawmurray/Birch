@@ -1,0 +1,22 @@
+struct SimulatePoisson<Middle>(m:Middle) < Unary<Middle>(m) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_UNARY_FUNCTION_FORM(simulate_poisson)
+  BIRCH_FUNCTION_FORM(simulate_poisson)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_poisson;
+
+template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
+SimulatePoisson<Middle> simulate_poisson(const Middle& m) {
+  return construct<SimulatePoisson<Middle>>(m);
+}
+}
+}}

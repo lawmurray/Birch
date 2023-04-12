@@ -56,7 +56,7 @@ function make_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
 }
 
 hpp{{
-using numbirch::standard_wishart;
+using numbirch::simulate_wishart;
 }}
 
 /*
@@ -68,7 +68,7 @@ using numbirch::standard_wishart;
 function simulate_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   assert rows(Ψ) == columns(Ψ);
   let n <- rows(Ψ);
-  let A <- standard_wishart(k, n);
+  let A <- simulate_wishart(k, n);
   return triouter(trimul(chol(Ψ), A));
 }
 

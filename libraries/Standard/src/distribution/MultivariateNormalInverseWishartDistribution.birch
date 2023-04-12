@@ -24,28 +24,28 @@ final class MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   k:Arg4 <- k;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
-        value(Γ), value(k));
+    return value(simulate_multivariate_normal_inverse_wishart(value(ν), value(λ),
+        Γ, value(k)));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_normal_inverse_wishart(eval(ν), eval(λ),
-        eval(Γ), eval(k));
+    return eval(simulate_multivariate_normal_inverse_wishart(eval(ν), eval(λ),
+        Γ, eval(k)));
   }
   
   override function logpdf(x:Real[_]) -> Real! {   
-    return logpdf_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
-        value(Γ), value(k));
+    return value(logpdf_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
+        Γ, value(k)));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {   
-    return logpdf_multivariate_normal_inverse_wishart(x, eval(ν), eval(λ),
-        eval(Γ), eval(k));
+    return eval(logpdf_multivariate_normal_inverse_wishart(x, eval(ν), eval(λ),
+        Γ, eval(k)));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart(x, value(ν), value(λ),
-        value(Γ), value(k));
+        Γ, value(k));
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {

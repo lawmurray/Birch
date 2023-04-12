@@ -10,7 +10,8 @@ struct VectorFill<Middle>(m:Middle, n:Integer) < Unary<Middle>(m) {
   n:Integer <- n;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(fill, fill_grad, n)
+  BIRCH_UNARY_FUNCTION_FORM(fill, n)
+  BIRCH_UNARY_FUNCTION_GRAD(fill_grad, n)
 
   int rows() const {
     return n;

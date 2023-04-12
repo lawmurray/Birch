@@ -5,8 +5,9 @@ struct Chol<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(chol, chol_grad)
-  BIRCH_FUNCTION_FORM(chol, chol_grad)
+  BIRCH_UNARY_FUNCTION_FORM(chol)
+  BIRCH_UNARY_FUNCTION_GRAD(chol_grad)
+  BIRCH_FUNCTION_FORM(chol)
   }}
 }
 

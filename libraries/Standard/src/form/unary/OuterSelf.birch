@@ -5,8 +5,9 @@ struct OuterSelf<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(outer, outer_grad)
-  BIRCH_FUNCTION_FORM(outer, outer_grad)
+  BIRCH_UNARY_FUNCTION_FORM(outer)
+  BIRCH_UNARY_FUNCTION_GRAD(outer_grad)
+  BIRCH_FUNCTION_FORM(outer)
   }}
 }
 

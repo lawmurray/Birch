@@ -15,7 +15,8 @@ struct MatrixFill<Middle>(a:Middle, m:Integer, n:Integer) < Unary<Middle>(a) {
   l:Integer <- n;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(fill, fill_grad, k, l)
+  BIRCH_UNARY_FUNCTION_FORM(fill, k, l)
+  BIRCH_UNARY_FUNCTION_GRAD(fill_grad, k, l)
 
   int rows() const {
     return k;

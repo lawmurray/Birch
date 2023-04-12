@@ -9,8 +9,9 @@ struct Add<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(operator+, add_grad)
-  BIRCH_FUNCTION_FORM(operator+, add_grad)
+  BIRCH_BINARY_FUNCTION_FORM(operator+)
+  BIRCH_BINARY_FUNCTION_GRAD(add_grad)
+  BIRCH_FUNCTION_FORM(operator+)
   }}
 }
 

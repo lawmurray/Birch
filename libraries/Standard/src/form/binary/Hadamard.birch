@@ -5,8 +5,9 @@ struct Hadamard<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(hadamard, hadamard_grad)
-  BIRCH_FUNCTION_FORM(hadamard, hadamard_grad)
+  BIRCH_BINARY_FUNCTION_FORM(hadamard)
+  BIRCH_BINARY_FUNCTION_GRAD(hadamard_grad)
+  BIRCH_FUNCTION_FORM(hadamard)
   }}
 }
 

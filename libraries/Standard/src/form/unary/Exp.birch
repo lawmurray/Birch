@@ -5,8 +5,9 @@ struct Exp<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(exp, exp_grad)
-  BIRCH_FUNCTION_FORM(exp, exp_grad)
+  BIRCH_UNARY_FUNCTION_FORM(exp)
+  BIRCH_UNARY_FUNCTION_GRAD(exp_grad)
+  BIRCH_FUNCTION_FORM(exp)
   }}
 }
 

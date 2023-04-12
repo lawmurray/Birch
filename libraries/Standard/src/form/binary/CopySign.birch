@@ -5,8 +5,9 @@ struct CopySign<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
   phantom x;
 
   hpp{{
-  BIRCH_BINARY_FUNCTION_FORM(copysign, copysign_grad)
-  BIRCH_FUNCTION_FORM(copysign, copysign_grad)
+  BIRCH_BINARY_FUNCTION_FORM(copysign)
+  BIRCH_BINARY_FUNCTION_GRAD(copysign_grad)
+  BIRCH_FUNCTION_FORM(copysign)
   }}
 }
 

@@ -41,33 +41,33 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
   Φ:Arg7 <- Φ;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(value(A),
-        value(N), value(Λ), value(Γ), value(k), value(C), value(Φ));
+    return value(simulate_matrix_normal_inverse_wishart_matrix_gaussian(
+        A, N, Λ, Γ, value(k), C, Φ));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(eval(A),
-        eval(N), eval(Λ), eval(Γ), eval(k), eval(C), eval(Φ));
+    return eval(simulate_matrix_normal_inverse_wishart_matrix_gaussian(
+        A, N, Λ, Γ, eval(k), C, Φ));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - value(C),
-        value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
+    return value(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - C,
+        A, N, Λ, Γ, value(k), Φ));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - eval(C),
-        eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
+    return eval(logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - C,
+        A, N, Λ, Γ, eval(k), Φ));
   }
 
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(value(X - C),
-        value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(X - C,
+        A, N, Λ, Γ, value(k), Φ);
   }
 
   override function updateLazy(X:Random<Real[_,_]>) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(box(X - C), A,
-        N, Λ, Γ, k, Φ);
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(box(X - C),
+        A, N, Λ, Γ, k, Φ);
   }
 
   override function hoist() -> Expression<Real> {

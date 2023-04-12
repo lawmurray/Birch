@@ -6,8 +6,9 @@ struct LogZConwayMaxwellPoisson<Left,Middle,Right>(l:Left, m:Middle,
   phantom x;
 
   hpp{{
-  BIRCH_TERNARY_FUNCTION_FORM(logz_conway_maxwell_poisson, logz_conway_maxwell_poisson_grad)
-  BIRCH_FUNCTION_FORM(logz_conway_maxwell_poisson, logz_conway_maxwell_poisson_grad)
+  BIRCH_TERNARY_FUNCTION_FORM(logz_conway_maxwell_poisson)
+  BIRCH_TERNARY_FUNCTION_GRAD(logz_conway_maxwell_poisson_grad)
+  BIRCH_FUNCTION_FORM(logz_conway_maxwell_poisson)
   }}
 }
 

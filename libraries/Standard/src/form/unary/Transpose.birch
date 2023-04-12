@@ -5,8 +5,9 @@ struct Transpose<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(transpose, transpose_grad)
-  BIRCH_FUNCTION_FORM(transpose, transpose_grad)
+  BIRCH_UNARY_FUNCTION_FORM(transpose)
+  BIRCH_UNARY_FUNCTION_GRAD(transpose_grad)
+  BIRCH_FUNCTION_FORM(transpose)
   }}
 }
 

@@ -5,8 +5,9 @@ struct TriInv<Middle>(m:Middle) < Unary<Middle>(m) {
   phantom x;
 
   hpp{{
-  BIRCH_UNARY_FUNCTION_FORM(triinv, triinv_grad)
-  BIRCH_FUNCTION_FORM(triinv, triinv_grad)
+  BIRCH_UNARY_FUNCTION_FORM(triinv)
+  BIRCH_UNARY_FUNCTION_GRAD(triinv_grad)
+  BIRCH_FUNCTION_FORM(triinv)
   }}
 }
 

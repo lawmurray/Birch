@@ -1,0 +1,24 @@
+struct SimulateBinomial<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(simulate_binomial)
+  BIRCH_FUNCTION_FORM(simulate_binomial)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_binomial;
+
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+SimulateBinomial<Left,Right> simulate_binomial(const Left& l, const Right& r) {
+  return construct<SimulateBinomial<Left,Right>>(l, r);
+}
+
+}
+}}

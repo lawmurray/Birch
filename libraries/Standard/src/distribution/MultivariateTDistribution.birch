@@ -19,19 +19,19 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
   Σ:Arg3 <- Σ;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_t(value(k), value(μ), value(Σ));
+    return value(simulate_multivariate_t(value(k), value(μ), Σ));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_t(eval(k), eval(μ), eval(Σ));
+    return eval(simulate_multivariate_t(eval(k), eval(μ), Σ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_t(x, value(k), value(μ), value(Σ));
+    return value(logpdf_multivariate_t(x, value(k), value(μ), Σ));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_multivariate_t(x, eval(k), eval(μ), eval(Σ));
+    return eval(logpdf_multivariate_t(x, eval(k), eval(μ), Σ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -62,7 +62,7 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
  */
 function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
   let n <- length(μ);
-  let Y <- standard_wishart(k, n);
+  let Y <- simulate_wishart(k, n);
   let z <- standard_gaussian(n);
   return μ + inner(trisolve(Y, transpose(chol(Σ))), z);
 }

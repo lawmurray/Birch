@@ -1,0 +1,24 @@
+struct SimulateUniformInt<Left,Right>(l:Left, r:Right) < Binary<Left,Right>(l, r) {
+  /**
+   * Memoized result.
+   */
+  phantom x;
+
+  hpp{{
+  BIRCH_BINARY_FUNCTION_FORM(simulate_uniform_int)
+  BIRCH_FUNCTION_FORM(simulate_uniform_int)
+  }}
+}
+
+hpp{{
+namespace birch {
+using numbirch::simulate_uniform_int;
+
+template<class Left, class Right, std::enable_if_t<
+    is_delay_v<Left,Right>,int> = 0>
+SimulateUniformInt<Left,Right> simulate_uniform_int(const Left& l, const Right& r) {
+  return construct<SimulateUniformInt<Left,Right>>(l, r);
+}
+
+}
+}}
