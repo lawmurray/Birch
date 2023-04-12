@@ -31,6 +31,6 @@ Vec<Middle> vec(const Middle& m) {
  * @p x is a vector then returns it as-is. If @p x is a matrix then forms a
  * vector by stacking its columns atop one another.
  *
- * @see [mat](../../functions/mat)
+ * @see [mat](../../functions/mat), [scal](../../functions/scal)
  */
 function vec(x:NumericLike) -> NumericVectorLike;

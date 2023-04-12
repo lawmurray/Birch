@@ -40,6 +40,6 @@ Mat<Middle> mat(const Middle& m, const int n) {
  * matrix. If @p x is a matrix then reshapes it to the given number of columns
  * as if calling `mat(vec(x), n)`.
  *
- * @see [vec](../../functions/vec)
+ * @see [vec](../../functions/vec), [scal](../../functions/scal)
  */
 function mat(x:NumericLike, n:Integer) -> NumericMatrixLike;
