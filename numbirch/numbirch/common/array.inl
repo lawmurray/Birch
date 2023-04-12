@@ -489,6 +489,29 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
 }
 
 template<class T, class>
+Array<value_t<T>,0> scal(const T& x) {
+  if constexpr (is_scalar_v<T>) {
+    return x;
+  } else if constexpr (is_arithmetic_v<T>) {
+    return Array<value_t<T>,0>(x);
+  } else {
+    return x.scal();
+  }
+}
+
+template<class T, class>
+real_t<T> scal_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
+    const T& x) {
+  if constexpr (is_scalar_v<T>) {
+    return g;
+  } else if constexpr (is_vector_v<T>) {
+    return vec(g);
+  } else {
+    return mat(g, 1);
+  }
+}
+
+template<class T, class>
 Array<value_t<T>,1> vec(const T& x) {
   if constexpr (is_vector_v<T>) {
     return x;
@@ -508,7 +531,7 @@ template<class T, class>
 real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x) {
   if constexpr (is_scalar_v<T>) {
-    return g.slice(1);
+    return scal(g);
   } else if constexpr (is_vector_v<T>) {
     return g;
   } else {
@@ -537,7 +560,7 @@ template<class T, class>
 real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
     const T& x, const int n) {
   if constexpr (is_scalar_v<T>) {
-    return g.slice(1, 1);
+    return scal(g);
   } else if constexpr (is_vector_v<T>) {
     return vec(g);
   } else {

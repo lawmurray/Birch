@@ -748,7 +748,21 @@ public:
    * allocation.
    */
   bool canReshape() const {
-    return size() == volume();
+    return size() == 1 || size() == volume();
+  }
+
+  /**
+   * @internal
+   * 
+   * Convert to scalar.
+   */
+  Array<T,0> scal() const {
+    if constexpr (D == 0) {
+      return *this;
+    } else {
+      assert(size() == 1);
+      return Array<T,0>(control(), ArrayShape<0>(offset()));
+    }
   }
 
   /**

@@ -949,6 +949,39 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
     const T& x, const U& y);
 
 /**
+ * Scalarize.
+ * 
+ * @ingroup array
+ * 
+ * @tparam T Numeric type.
+ *
+ * @param x Argument.
+ * 
+ * @return If @p x is a scalar then returns that scalar. If @p x is a vector
+ * or matrix with a single element then returns that element as though a
+ * slice.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+Array<value_t<T>,0> scal(const T& x);
+
+/**
+ * Gradient of scal().
+ * 
+ * @ingroup array_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> scal_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
+    const T& x);
+
+/**
  * Vectorize.
  * 
  * @ingroup array
