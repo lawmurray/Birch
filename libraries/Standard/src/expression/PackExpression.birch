@@ -2,7 +2,8 @@
  * Special expression for pack() on an arbitrary number of arguments with
  * pre-allocation of the final result.
  *
- * @tparam Arg Argument type, e.g. `Real[_]` or `Expression<Real[_]>`.
+ * @tparam Arg Argument type, e.g. `Real[_]` or `Expression<Real[_]>`,
+ * `Real[_]` or `Expression<Real[_,_]>`.
  * @param Element Result element type, e.g. `Real`.
  */
 final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
@@ -21,74 +22,108 @@ final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
   }
 
   override function doEval() {
-    let C <- m.size();
-    if C > 0 {
-      let R <- rows(m[1]);
-      x:Element[R,C];
-      for c in 1..C {
-        x[1..R,c] <- global.eval(m[c]);
-      }
-      this.x <- x;
+    if m.empty() {
+      this.x <- matrix<Element>(0, 0, 0);
     } else {
-      this.x <- matrix(0.0, 0, 0);
+      let R <- rows(m[1]);
+      let C <- columns(m[1]);
+      for k in 2..m.size() {
+        assert rows(m[k]) == R;
+        C <- C + columns(m[k]);
+      }
+
+      x:Element[R,C];
+      let c <- 0;
+      for k in 1..m.size() {
+        let n <- columns(m[k]);
+        x[1..R,(c + 1)..(c + n)] <- mat(global.eval(m[k]), n);
+        c <- c + n;
+      }
+      assert c == C;
+      this.x <- x;
     }
   }
 
   override function doMove(visitor:MoveVisitor) {
-    let C <- m.size();
-    if C > 0 {
-      let R <- rows(m[1]);
-      x:Element[R,C];
-      for c in 1..C {
-        x[1..R,c] <- global.move(m[c], visitor);
-      }
-      this.x <- x;
+    if m.empty() {
+      this.x <- matrix<Element>(0, 0, 0);
     } else {
-      this.x <- matrix(0.0, 0, 0);
+      let R <- rows(m[1]);
+      let C <- columns(m[1]);
+      for k in 2..m.size() {
+        assert rows(m[k]) == R;
+        C <- C + columns(m[k]);
+      }
+
+      x:Element[R,C];
+      let c <- 0;
+      for k in 1..m.size() {
+        let n <- columns(m[k]);
+        x[1..R,(c + 1)..(c + n)] <- mat(global.move(m[k], visitor), n);
+        c <- c + n;
+      }
+      assert c == C;
+      this.x <- x;
     }
   }
 
   override function doArgs(visitor:ArgsVisitor) {
-    let C <- m.size();
-    for c in 1..C {
-      global.args(m[c], visitor);
+    for k in 1..m.size() {
+      global.args(m[k], visitor);
     }
   }
 
   override function doShallowGrad(visitor:GradVisitor) {
     let R <- rows(this.g!);
     let C <- columns(this.g!);
-    for c in 1..C {
-      global.shallow_grad(m[c], this.g![1..R,c], visitor);
+    let c <- 0;
+    for k in 1..m.size() {
+      let n <- columns(m[k]);
+      let g <- reshape(this.g![1..R,(c + 1)..(c + n)], eval(m[k]));
+      global.shallow_grad(m[k], g, visitor);
+      c <- c + n;
     }
+    assert c == C;
   }
 
   override function doDeepGrad(visitor:GradVisitor) {
-    let C <- m.size();
-    for c in 1..C {
-      global.deep_grad(m[c], visitor);
+    for k in 1..m.size() {
+      global.deep_grad(m[k], visitor);
     }
   }
 
   override function doReset() {
-    let C <- m.size();
-    for c in 1..C {
-      global.reset(m[c]);
+    for k in 1..m.size() {
+      global.reset(m[k]);
     }
   }
 
   override function doRelink(visitor:RelinkVisitor) {
-    let C <- m.size();
-    for c in 1..C {
-      global.relink(m[c], visitor);
+    for k in 1..m.size() {
+      global.relink(m[k], visitor);
     }
   }
 
   override function doConstant() {
-    let C <- m.size();
-    for c in 1..C {
-      global.constant(m[c]);
+    for k in 1..m.size() {
+      global.constant(m[k]);
     }
     m.clear();
   }
+}
+
+function reshape(g:Real[_,_], x:Real) -> Real! {
+  return scal(g);
+}
+
+function reshape(g:Real[_,_], x:Real!) -> Real! {
+  return scal(g);
+}
+
+function reshape(g:Real[_,_], x:Real[_]) -> Real[_] {
+  return vec(g);
+}
+
+function reshape(g:Real[_,_], x:Real[_,_]) -> Real[_,_] {
+  return g;
 }
