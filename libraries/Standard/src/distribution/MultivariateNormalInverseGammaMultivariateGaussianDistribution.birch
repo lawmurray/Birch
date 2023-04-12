@@ -42,27 +42,27 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-      global.value(A), global.value(ν), global.value(Λ), global.value(k), global.value(γ), global.value(c), global.value(Ω));
+      value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));
   }
 
   override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        global.eval(A), global.eval(ν), global.eval(Λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(Ω));
+        eval(A), eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(Ω));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-        global.value(A), global.value(ν), global.value(Λ), global.value(k), global.value(γ), global.value(c), global.value(Ω));
+        value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-        global.eval(A), global.eval(ν), global.eval(Λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(Ω));
+        eval(A), eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(Ω));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-        global.value(A), global.value(ν), global.value(Λ), global.value(k), global.value(γ), global.value(c), global.value(Ω));
+        value(A), value(ν), value(Λ), value(k), value(γ), value(c), value(Ω));
   }
 
   override function hoist() -> Expression<Real> {
@@ -77,12 +77,12 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
   override function fix() {
     super.fix();
-    global.constant(A);
-    global.constant(ν);
-    global.constant(Λ);
-    global.constant(γ);
-    global.constant(c);
-    global.constant(Ω);
+    constant(A);
+    constant(ν);
+    constant(Λ);
+    constant(γ);
+    constant(c);
+    constant(Ω);
   }
 }
 
@@ -237,7 +237,7 @@ function logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian<
 function update_multivariate_normal_inverse_gamma_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, A:Arg2,
     ν:Arg3, Λ:Arg4, k:Arg5, γ:Arg6, c:Arg7, Ω:Arg8) -> {
-  let n <- global.length(x);
+  let n <- length(x);
   let L <- wrap(chol(Ω));
   let o <- wrap(trisolve(L, x - c));
   let Λ' <- Λ + inner(trisolve(L, A));

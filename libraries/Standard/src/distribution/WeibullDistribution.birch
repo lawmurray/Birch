@@ -18,19 +18,19 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
   λ:Arg2 <- λ;
 
   override function simulate() -> Real! {
-    return simulate_weibull(global.value(k), global.value(λ));
+    return simulate_weibull(value(k), value(λ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_weibull(global.eval(k), global.eval(λ));
+    return simulate_weibull(eval(k), eval(λ));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_weibull(x, global.value(k), global.value(λ));
+    return logpdf_weibull(x, value(k), value(λ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_weibull(x, global.eval(k), global.eval(λ));
+    return logpdf_weibull(x, eval(k), eval(λ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -38,11 +38,11 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_weibull(x, global.value(k), global.value(λ));
+    return cdf_weibull(x, value(k), value(λ));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_weibull(P, global.value(k), global.value(λ));
+    return quantile_weibull(P, value(k), value(λ));
   }
 
   override function lower() -> Real!? {
@@ -51,14 +51,14 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
 
   override function fix() {
     super.fix();
-    global.constant(k);
-    global.constant(λ);
+    constant(k);
+    constant(λ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Weibull");
-    buffer.set("k", global.value(k));
-    buffer.set("λ", global.value(λ));
+    buffer.set("k", value(k));
+    buffer.set("λ", value(λ));
   }
 }
 

@@ -47,78 +47,78 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
   override function simulate() -> Real! {
     if !this.joined? {
       return simulate_multivariate_normal_inverse_gamma_gaussian(
-          global.value(a), global.value(ν), global.value(Λ), global.value(k), global.value(γ), global.value(c),
-          global.value(ω2));
+          value(a), value(ν), value(Λ), value(k), value(γ), value(c),
+          value(ω2));
     } else {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.value(x), transpose(global.value(A)), global.value(ν), global.value(Λ), global.value(k), global.value(γ),
-          global.value(c), diagonal(global.value(ω2)));
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k), value(γ),
+          value(c), diagonal(value(ω2)));
       return simulate_multivariate_normal_inverse_gamma_gaussian(
-          global.value(this.a), global.value(p.ν), global.value(p.Λ), global.value(p.k), global.value(p.γ),
-          global.value(this.c), global.value(this.ω2));
+          value(this.a), value(p.ν), value(p.Λ), value(p.k), value(p.γ),
+          value(this.c), value(this.ω2));
     }        
   }
 
   override function simulateLazy() -> Real! {
     if !this.joined? {
       return simulate_multivariate_normal_inverse_gamma_gaussian(
-          global.eval(a), global.eval(ν), global.eval(Λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(ω2));
+          eval(a), eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(ω2));
     } else {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.eval(x), transpose(global.eval(A)), global.eval(ν), global.eval(Λ), global.eval(k), global.eval(γ),
-          global.eval(c), diagonal(global.eval(ω2)));
+          eval(x), transpose(eval(A)), eval(ν), eval(Λ), eval(k), eval(γ),
+          eval(c), diagonal(eval(ω2)));
       return simulate_multivariate_normal_inverse_gamma_gaussian(
-          global.eval(this.a), global.eval(p.ν), global.eval(p.Λ), global.eval(p.k), global.eval(p.γ),
-          global.eval(this.c), global.eval(this.ω2));
+          eval(this.a), eval(p.ν), eval(p.Λ), eval(p.k), eval(p.γ),
+          eval(this.c), eval(this.ω2));
     }        
   }
 
   override function logpdf(x':Real!) -> Real! {
     if !this.joined? {
-      return logpdf_multivariate_normal_inverse_gamma_gaussian(x', global.value(a),
-          global.value(ν), global.value(Λ), global.value(k), global.value(γ), global.value(c), global.value(ω2));
+      return logpdf_multivariate_normal_inverse_gamma_gaussian(x', value(a),
+          value(ν), value(Λ), value(k), value(γ), value(c), value(ω2));
     } else {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.value(x), transpose(global.value(A)), global.value(ν), global.value(Λ), global.value(k), global.value(γ),
-          global.value(c), diagonal(global.value(ω2)));
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k), value(γ),
+          value(c), diagonal(value(ω2)));
       return logpdf_multivariate_normal_inverse_gamma_gaussian(x',
-          global.value(this.a), global.value(p.ν), global.value(p.Λ), global.value(p.k), global.value(p.γ),
-          global.value(this.c), global.value(this.ω2));
+          value(this.a), value(p.ν), value(p.Λ), value(p.k), value(p.γ),
+          value(this.c), value(this.ω2));
     }
   }
 
   override function logpdfLazy(x':Real!) -> Real! {
     if !this.joined? {
-      return logpdf_multivariate_normal_inverse_gamma_gaussian(x', global.eval(a),
-          global.eval(ν), global.eval(Λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(ω2));
+      return logpdf_multivariate_normal_inverse_gamma_gaussian(x', eval(a),
+          eval(ν), eval(Λ), eval(k), eval(γ), eval(c), eval(ω2));
     } else {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.eval(x), transpose(global.eval(A)), global.eval(ν), global.eval(Λ), global.eval(k), global.eval(γ),
-          global.eval(c), diagonal(global.eval(ω2)));
+          eval(x), transpose(eval(A)), eval(ν), eval(Λ), eval(k), eval(γ),
+          eval(c), diagonal(eval(ω2)));
       return logpdf_multivariate_normal_inverse_gamma_gaussian(x',
-          global.eval(this.a), global.eval(p.ν), global.eval(p.Λ), global.eval(p.k), global.eval(p.γ),
-          global.eval(this.c), global.eval(this.ω2));
+          eval(this.a), eval(p.ν), eval(p.Λ), eval(p.k), eval(p.γ),
+          eval(this.c), eval(this.ω2));
     }
   }
 
   override function update(x:Real!) -> Delay? {
     if !this.joined? {
-      return update_multivariate_normal_inverse_gamma_gaussian(x, global.value(a),
-          global.value(ν), global.value(Λ), global.value(k), global.value(γ), global.value(c), global.value(ω2));
+      return update_multivariate_normal_inverse_gamma_gaussian(x, value(a),
+          value(ν), value(Λ), value(k), value(γ), value(c), value(ω2));
     } else {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joinMultivariateNormalInverseGammaGaussian()!;
       return update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.value(x), transpose(global.value(A)), global.value(ν), global.value(Λ), global.value(k),
-          global.value(γ), global.value(c), diagonal(global.value(ω2)));
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k),
+          value(γ), value(c), diagonal(value(ω2)));
     }
   }
 
@@ -143,33 +143,33 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
 
   override function cdf(x:Real!) -> Real!? {
     assert !this.joined?;
-    return cdf_multivariate_normal_inverse_gamma_gaussian(x, global.value(a),
-        global.value(ν), global.value(Λ), global.value(c), global.value(k), global.value(γ), global.value(ω2));
+    return cdf_multivariate_normal_inverse_gamma_gaussian(x, value(a),
+        value(ν), value(Λ), value(c), value(k), value(γ), value(ω2));
   }
 
   override function quantile(P:Real!) -> Real!? {
     assert !this.joined?;
     return quantile_multivariate_normal_inverse_gamma_gaussian(P,
-        global.value(a), global.value(ν), global.value(Λ), global.value(c), global.value(k), global.value(γ),
-        global.value(ω2));
+        value(a), value(ν), value(Λ), value(c), value(k), value(γ),
+        value(ω2));
   }
 
   override function fix() {
     super.fix();
-    global.constant(a);
-    global.constant(ν);
-    global.constant(Λ);
-    global.constant(k);
-    global.constant(γ);
-    global.constant(c);
-    global.constant(ω2);
+    constant(a);
+    constant(ν);
+    constant(Λ);
+    constant(k);
+    constant(γ);
+    constant(c);
+    constant(ω2);
 
     if hasJoined() {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           getJoined().joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.value(x), transpose(global.value(A)), global.value(ν), global.value(Λ), global.value(k),
-          global.value(γ), global.value(c), diagonal(global.value(ω2)));
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k),
+          value(γ), value(c), diagonal(value(ω2)));
       setUpdated(make_multivariate_normal_inverse_gamma_gaussian(this.a, p.ν,
           p.Λ, p.k, p.γ, this.c, this.ω2));
       setJoined(nil);

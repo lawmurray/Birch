@@ -59,28 +59,28 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
   γ:Arg4 <- γ;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(global.value(ν), global.value(Λ),
-        global.value(k), global.value(γ));
+    return simulate_multivariate_normal_inverse_gamma(value(ν), value(Λ),
+        value(k), value(γ));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_normal_inverse_gamma(global.eval(ν), global.eval(Λ),
-        global.eval(k), global.eval(γ));
+    return simulate_multivariate_normal_inverse_gamma(eval(ν), eval(Λ),
+        eval(k), eval(γ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_normal_inverse_gamma(x, global.value(ν), global.value(Λ),
-        global.value(k), global.value(γ));
+    return logpdf_multivariate_normal_inverse_gamma(x, value(ν), value(Λ),
+        value(k), value(γ));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_multivariate_normal_inverse_gamma(x, global.eval(ν), global.eval(Λ),
-        global.eval(k), global.eval(γ));
+    return logpdf_multivariate_normal_inverse_gamma(x, eval(ν), eval(Λ),
+        eval(k), eval(γ));
   }
 
   override function update(x:Real[_]) -> Delay? {
-    return update_multivariate_normal_inverse_gamma(x, global.value(ν), global.value(Λ),
-        global.value(k), global.value(γ));
+    return update_multivariate_normal_inverse_gamma(x, value(ν), value(Λ),
+        value(k), value(γ));
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {
@@ -94,17 +94,17 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function fix() {
     super.fix();
-    global.constant(ν);
-    global.constant(Λ);
-    global.constant(k);
-    global.constant(γ);
+    constant(ν);
+    constant(Λ);
+    constant(k);
+    constant(γ);
 
     if hasJoined() {
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           getJoined().joinMultivariateNormalInverseGammaGaussian()!;
       setUpdated(update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          global.value(x), transpose(global.value(A)), global.value(ν), global.value(Λ), global.value(k),
-          global.value(γ), global.value(c), diagonal(global.value(ω2))));
+          value(x), transpose(value(A)), value(ν), value(Λ), value(k),
+          value(γ), value(c), diagonal(value(ω2))));
       setJoined(nil);
     }
   }
@@ -122,10 +122,10 @@ final class MultivariateNormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateNormalInverseGamma");
-    buffer.set("ν", global.value(ν));
-    buffer.set("Λ", global.value(Λ));
-    buffer.set("k", global.value(k));
-    buffer.set("γ", global.value(γ));
+    buffer.set("ν", value(ν));
+    buffer.set("Λ", value(Λ));
+    buffer.set("k", value(k));
+    buffer.set("γ", value(γ));
   }
 }
 
@@ -179,7 +179,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
  */
 function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
     ν:Arg1, Λ:Arg2, k:Arg3, γ:Arg4) -> {
-  let n <- global.length(ν);
+  let n <- length(ν);
   let L <- wrap(chol(Λ));
   let o <- wrap(trisolve(L, ν));
   let μ <- triinnersolve(L, o);
@@ -206,7 +206,7 @@ function simulate_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(
  */
 function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5) -> {
-  let n <- global.length(x);
+  let n <- length(x);
   let L <- wrap(chol(Λ));
   let o <- wrap(trisolve(L, ν));
   let μ <- triinnersolve(L, o);
@@ -234,7 +234,7 @@ function logpdf_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
  */
 function update_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(
     x:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5) -> {
-  let n <- global.length(x);
+  let n <- length(x);
   let L <- wrap(chol(Λ));
   let o <- wrap(trisolve(L, ν));
   let μ <- triinnersolve(L, o);

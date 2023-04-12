@@ -11,19 +11,19 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   ρ:Arg <- ρ;
 
   override function simulate() -> Integer! {
-    return simulate_categorical(global.value(ρ));
+    return simulate_categorical(value(ρ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_categorical(global.eval(ρ));
+    return simulate_categorical(eval(ρ));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_categorical(x, global.value(ρ));
+    return logpdf_categorical(x, value(ρ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_categorical(x, global.eval(ρ));
+    return logpdf_categorical(x, eval(ρ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -31,11 +31,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_categorical(x, global.value(ρ));
+    return cdf_categorical(x, value(ρ));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_categorical(P, global.value(ρ));
+    return quantile_categorical(P, value(ρ));
   }
 
   override function lower() -> Integer!? {
@@ -43,12 +43,12 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function upper() -> Integer!? {
-    return global.length(global.value(ρ));
+    return length(value(ρ));
   }
 
   override function fix() {
     super.fix();
-    global.constant(ρ);
+    constant(ρ);
   }
 
   override function isBoundedDiscrete() -> Boolean {
@@ -62,7 +62,7 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Categorical");
-    buffer.set("ρ", global.value(ρ));
+    buffer.set("ρ", value(ρ));
   }
 }
 
@@ -96,7 +96,7 @@ function simulate_categorical<Arg1,Arg2>(ρ:Arg1, Z:Arg2) -> {
   let P <- 0.0;
   let u <- simulate_uniform(0.0, Z);
   let x <- 0;
-  let N <- global.length(ρ);
+  let N <- length(ρ);
   while P <= u && x < N {
     x <- x + 1;
     P <- P + ρ[x];
@@ -177,13 +177,13 @@ function quantile_categorical<Arg1,Arg2>(P:Arg1, ρ:Arg2) -> {
  * @return the quantile.
  */
 function quantile_categorical<Arg1,Arg2,Arg3>(P:Arg1, ρ:Arg2, Z:Arg3) -> {
-  if global.length(ρ) == 0 {
+  if length(ρ) == 0 {
     return 0;
   } else {
     let i <- 1;
     let R <- ρ[1];
     let Q <- wait(P*Z);
-    while R < Q && i < global.length(ρ) {
+    while R < Q && i < length(ρ) {
       i <- i + 1;
       R <- R + ρ[i];
     }

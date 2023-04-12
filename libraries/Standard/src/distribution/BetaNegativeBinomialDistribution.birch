@@ -19,23 +19,23 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
   β:Arg3 <- β;
 
   override function simulate() -> Integer! {
-    return simulate_beta_negative_binomial(global.value(k), global.value(α), global.value(β));
+    return simulate_beta_negative_binomial(value(k), value(α), value(β));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_beta_negative_binomial(global.eval(k), global.eval(α), global.eval(β));
+    return simulate_beta_negative_binomial(eval(k), eval(α), eval(β));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_beta_negative_binomial(x, global.value(k), global.value(α), global.value(β));
+    return logpdf_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_beta_negative_binomial(x, global.eval(k), global.eval(α), global.eval(β));
+    return logpdf_beta_negative_binomial(x, eval(k), eval(α), eval(β));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_beta_negative_binomial(x, global.value(k), global.value(α), global.value(β));
+    return update_beta_negative_binomial(x, value(k), value(α), value(β));
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {
@@ -52,9 +52,9 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
 
   override function fix() {
     super.fix();
-    global.constant(k);
-    global.constant(α);
-    global.constant(β);
+    constant(k);
+    constant(α);
+    constant(β);
   }
 }
 

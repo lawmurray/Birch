@@ -19,23 +19,23 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   n:Arg3 <- n;
 
   override function simulate() -> Integer! {
-    return simulate_restaurant_categorical(global.value(α), global.value(θ), global.value(n));
+    return simulate_restaurant_categorical(value(α), value(θ), value(n));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_restaurant_categorical(global.eval(α), global.eval(θ), global.eval(n));
+    return simulate_restaurant_categorical(eval(α), eval(θ), eval(n));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_restaurant_categorical(x, global.value(α), global.value(θ), global.value(n));
+    return logpdf_restaurant_categorical(x, value(α), value(θ), value(n));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_restaurant_categorical(x, global.eval(α), global.eval(θ), global.eval(n));
+    return logpdf_restaurant_categorical(x, eval(α), eval(θ), eval(n));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_restaurant_categorical(x, global.value(α), global.value(θ), global.value(n));
+    return update_restaurant_categorical(x, value(α), value(θ), value(n));
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {
@@ -48,9 +48,9 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
 
   override function fix() {
     super.fix();
-    global.constant(α);
-    global.constant(θ);
-    global.constant(n);
+    constant(α);
+    constant(θ);
+    constant(n);
   }
 }
 
@@ -125,6 +125,6 @@ function logpdf_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
  */
 function update_restaurant_categorical<Arg1,Arg2,Arg3,Arg4>(x:Arg1, α:Arg2,
     θ:Arg3, n:Arg4) -> {
-  let n' <- n + single(1, x, global.length(n));
+  let n' <- n + single(1, x, length(n));
   return make_restaurant(α, θ, n');
 }

@@ -12,19 +12,19 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
   λ:Arg <- λ;
 
   override function simulate() -> Integer! {
-    return simulate_poisson(global.value(λ));
+    return simulate_poisson(value(λ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_poisson(global.eval(λ));
+    return simulate_poisson(eval(λ));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_poisson(x, global.value(λ));
+    return logpdf_poisson(x, value(λ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_poisson(x, global.eval(λ));
+    return logpdf_poisson(x, eval(λ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -32,11 +32,11 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_poisson(x, global.value(λ));
+    return cdf_poisson(x, value(λ));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_poisson(P, global.value(λ));
+    return quantile_poisson(P, value(λ));
   }
 
   override function lower() -> Integer!? {
@@ -45,12 +45,12 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
 
   override function fix() {
     super.fix();
-    global.constant(λ);
+    constant(λ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Poisson");
-    buffer.set("λ", global.value(λ));
+    buffer.set("λ", value(λ));
   }
 }
 

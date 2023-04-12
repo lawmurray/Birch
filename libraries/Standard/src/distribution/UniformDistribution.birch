@@ -17,19 +17,19 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
   u:Arg2 <- u;
 
   override function simulate() -> Real! {
-    return simulate_uniform(global.value(l), global.value(u));
+    return simulate_uniform(value(l), value(u));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_uniform(global.eval(l), global.eval(u));
+    return simulate_uniform(eval(l), eval(u));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_uniform(x, global.value(l), global.value(u));
+    return logpdf_uniform(x, value(l), value(u));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_uniform(x, global.eval(l), global.eval(u));
+    return logpdf_uniform(x, eval(l), eval(u));
   }
 
   override function hoist() -> Expression<Real> {
@@ -37,31 +37,31 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_uniform(x, global.value(l), global.value(u));
+    return cdf_uniform(x, value(l), value(u));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_uniform(P, global.value(l), global.value(u));
+    return quantile_uniform(P, value(l), value(u));
   }
 
   override function lower() -> Real!? {
-    return global.value(l);
+    return value(l);
   }
   
   override function upper() -> Real!? {
-    return global.value(u);
+    return value(u);
   }
 
   override function fix() {
     super.fix();
-    global.constant(l);
-    global.constant(u);
+    constant(l);
+    constant(u);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Uniform");
-    buffer.set("l", global.value(l));
-    buffer.set("u", global.value(u));
+    buffer.set("l", value(l));
+    buffer.set("u", value(u));
   }
 }
 

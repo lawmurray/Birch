@@ -42,30 +42,30 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 
   override function simulate() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        global.value(a), global.value(ν), global.value(λ), global.value(Γ), global.value(k), global.value(c),
-        global.value(ω2));
+        value(a), value(ν), value(λ), value(Γ), value(k), value(c),
+        value(ω2));
   }
 
   override function simulateLazy() -> Real[_] {
     return simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        global.eval(a), global.eval(ν), global.eval(λ), global.eval(Γ), global.eval(k), global.eval(c), global.eval(ω2));
+        eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(c), eval(ω2));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - global.value(c), global.value(a), global.value(ν), global.value(λ), global.value(Γ), global.value(k),
-        global.value(ω2));
+        x - value(c), value(a), value(ν), value(λ), value(Γ), value(k),
+        value(ω2));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     return logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - global.eval(c), global.eval(a), global.eval(ν), global.eval(λ), global.eval(Γ), global.eval(k), global.eval(ω2));
+        x - eval(c), eval(a), eval(ν), eval(λ), eval(Γ), eval(k), eval(ω2));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, global.value(a), global.value(ν), global.value(λ), global.value(Γ), global.value(k), global.value(c),
-        global.value(ω2));
+        x, value(a), value(ν), value(λ), value(Γ), value(k), value(c),
+        value(ω2));
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {
@@ -80,12 +80,12 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 
   override function fix() {
     super.fix();
-    global.constant(a);
-    global.constant(ν);
-    global.constant(λ);
-    global.constant(Γ);
-    global.constant(c);
-    global.constant(ω2);
+    constant(a);
+    constant(ν);
+    constant(λ);
+    constant(Γ);
+    constant(c);
+    constant(ω2);
   }
 }
 

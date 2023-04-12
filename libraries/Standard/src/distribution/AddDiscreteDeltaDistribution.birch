@@ -24,30 +24,30 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
   b:Integer! <- b;
 
   override function simulate() -> Integer! {
-    return simulate_add_discrete_delta(global.value(p), global.value(q), global.value(a),
-        global.value(b));
+    return simulate_add_discrete_delta(value(p), value(q), value(a),
+        value(b));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_add_discrete_delta(global.eval(p), global.eval(q), global.eval(a), global.eval(b));
+    return simulate_add_discrete_delta(eval(p), eval(q), eval(a), eval(b));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return log(pdf_add_discrete_delta(x, global.value(p), global.value(q), global.value(a),
-        global.value(b)));
+    return log(pdf_add_discrete_delta(x, value(p), value(q), value(a),
+        value(b)));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return log(pdf_add_discrete_delta(x, global.eval(p), global.eval(q), global.eval(a), global.eval(b)));
+    return log(pdf_add_discrete_delta(x, eval(p), eval(q), eval(a), eval(b)));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_add_discrete_delta(x, global.value(p), global.value(q), global.value(a),
-        global.value(b));
+    return update_add_discrete_delta(x, value(p), value(q), value(a),
+        value(b));
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {
-    return update_add_discrete_delta(x, global.eval(p), global.eval(q), global.eval(a), global.eval(b));
+    return update_add_discrete_delta(x, eval(p), eval(q), eval(a), eval(b));
   }
 
   override function hoist() -> Expression<Real> {
@@ -55,19 +55,19 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
   }
 
   override function lower() -> Integer!? {
-    return global.value(a) + global.value(b);
+    return value(a) + value(b);
   }
 
   override function upper() -> Integer!? {
-    return global.value(a) + global.value(b) + (global.length(p) + global.length(q) - 2);
+    return value(a) + value(b) + (length(p) + length(q) - 2);
   }
 
   override function fix() {
     super.fix();
-    global.constant(p);
-    global.constant(q);
-    global.constant(a);
-    global.constant(b);
+    constant(p);
+    constant(q);
+    constant(a);
+    constant(b);
   }
 
   override function isBoundedDiscrete() -> Boolean {
@@ -207,12 +207,12 @@ function simulate_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
  */
 function pdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
     a:Integer!, b:Integer!) -> {
-  assert global.length(p) > 0;
-  assert global.length(q) > 0;
+  assert length(p) > 0;
+  assert length(q) > 0;
 
-  let m <- global.length(p);
-  let n <- global.length(q);
-  let z <- wait(global.eval(x) - a - b);  // offset to base zero
+  let m <- length(p);
+  let n <- length(q);
+  let z <- wait(eval(x) - a - b);  // offset to base zero
 
   /* start of range for first random variable; the second contributes at
    * most n - 1, so the first must contribute at least... */
@@ -250,12 +250,12 @@ function pdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
  */
 function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
     a:Integer!, b:Integer!) -> {
-  assert global.length(p) > 0;
-  assert global.length(q) > 0;
+  assert length(p) > 0;
+  assert length(q) > 0;
 
-  let m <- global.length(p);
-  let n <- global.length(q);
-  let z <- wait(global.eval(x) - a - b);  // offset to base zero
+  let m <- length(p);
+  let n <- length(q);
+  let z <- wait(eval(x) - a - b);  // offset to base zero
 
   /* start of range for first random variable; the second contributes at
    * most n - 1, so the first must contribute at least... */

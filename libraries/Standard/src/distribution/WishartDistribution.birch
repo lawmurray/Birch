@@ -13,19 +13,19 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
   k:Arg2 <- k;
 
   override function simulate() -> Real[_,_] {
-    return simulate_wishart(global.value(Ψ), global.value(k));
+    return simulate_wishart(value(Ψ), value(k));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_wishart(global.eval(Ψ), global.eval(k));
+    return simulate_wishart(eval(Ψ), eval(k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_wishart(X, global.value(Ψ), global.value(k));
+    return logpdf_wishart(X, value(Ψ), value(k));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_wishart(X, global.eval(Ψ), global.eval(k));
+    return logpdf_wishart(X, eval(Ψ), eval(k));
   }
 
   override function hoist() -> Expression<Real> {
@@ -34,14 +34,14 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
 
   override function fix() {
     super.fix();
-    global.constant(Ψ);
-    global.constant(k);
+    constant(Ψ);
+    constant(k);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Wishart");
-    buffer.set("Ψ", global.value(Ψ));
-    buffer.set("k", global.value(k));
+    buffer.set("Ψ", value(Ψ));
+    buffer.set("k", value(k));
   }
 }
 

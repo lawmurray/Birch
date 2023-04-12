@@ -17,19 +17,19 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
   β:Arg2 <- β;
 
   override function simulate() -> Real! {
-    return simulate_inverse_gamma(global.value(α), global.value(β));
+    return simulate_inverse_gamma(value(α), value(β));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_inverse_gamma(global.eval(α), global.eval(β));
+    return simulate_inverse_gamma(eval(α), eval(β));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_inverse_gamma(x, global.value(α), global.value(β));
+    return logpdf_inverse_gamma(x, value(α), value(β));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_inverse_gamma(x, global.eval(α), global.eval(β));
+    return logpdf_inverse_gamma(x, eval(α), eval(β));
   }
 
   override function hoist() -> Expression<Real> {
@@ -37,11 +37,11 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_inverse_gamma(x, global.value(α), global.value(β));
+    return cdf_inverse_gamma(x, value(α), value(β));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_inverse_gamma(P, global.value(α), global.value(β));
+    return quantile_inverse_gamma(P, value(α), value(β));
   }
 
   override function lower() -> Real!? {
@@ -50,8 +50,8 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
 
   override function fix() {
     super.fix();
-    global.constant(α);
-    global.constant(β);
+    constant(α);
+    constant(β);
   }
 
   override function isInverseGamma() -> Boolean {
@@ -66,8 +66,8 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
 
   override function write(buffer:Buffer) {
     buffer.set("class", "InverseGamma");
-    buffer.set("α", global.value(α));
-    buffer.set("β", global.value(β));
+    buffer.set("α", value(α));
+    buffer.set("β", value(β));
   }
 }
 

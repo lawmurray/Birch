@@ -269,15 +269,15 @@ abstract class Delay {
   }
 
   /**
-   * Render the node value constant. The parameters of the node are still
+   * Render the node variate constant. The parameters of the node are still
    * eligible for moving.
    */
-  function constant() {
+  function pin() {
     assert false;
   }
 
   /**
-   * Render the node value and parameters constant.
+   * Render the node variate and parameters constant.
    */
   function fix() {
     //

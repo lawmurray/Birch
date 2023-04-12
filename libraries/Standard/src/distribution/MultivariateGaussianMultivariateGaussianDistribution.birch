@@ -31,9 +31,9 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
   Ω:Arg5 <- Ω;
 
   override function update(x:Real[_]) -> Delay? {
-    return update_multivariate_gaussian_multivariate_gaussian(x, global.value(A),
-        global.value(μ), global.value(Σ), global.value(c), global.value(Ω), global.value(super.μ),
-        global.value(super.Σ));
+    return update_multivariate_gaussian_multivariate_gaussian(x, value(A),
+        value(μ), value(Σ), value(c), value(Ω), value(super.μ),
+        value(super.Σ));
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {
@@ -43,11 +43,11 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
 
   override function fix() {
     super.fix();
-    global.constant(A);
-    global.constant(μ);
-    global.constant(Σ);
-    global.constant(c);
-    global.constant(Ω);
+    constant(A);
+    constant(μ);
+    constant(Σ);
+    constant(c);
+    constant(Ω);
   }
 }
 

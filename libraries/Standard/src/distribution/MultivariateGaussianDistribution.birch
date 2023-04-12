@@ -14,19 +14,19 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
   Σ:Arg2 <- Σ;
 
   override function simulate() -> Real[_] {
-    return global.value(simulate_multivariate_gaussian(μ, Σ));
+    return value(simulate_multivariate_gaussian(μ, Σ));
   }
 
   override function simulateLazy() -> Real[_] {
-    return global.eval(simulate_multivariate_gaussian(μ, Σ));
+    return eval(simulate_multivariate_gaussian(μ, Σ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return global.value(logpdf_multivariate_gaussian(x, μ, Σ));
+    return value(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return global.eval(logpdf_multivariate_gaussian(x, μ, Σ));
+    return eval(logpdf_multivariate_gaussian(x, μ, Σ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -35,8 +35,8 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
 
   override function fix() {
     super.fix();
-    global.constant(μ);
-    global.constant(Σ);
+    constant(μ);
+    constant(Σ);
   }
 
   override function isMultivariateGaussian() -> Boolean {
@@ -51,8 +51,8 @@ class MultivariateGaussianDistribution<Arg1,Arg2>(μ:Arg1, Σ:Arg2) <
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateGaussian");
-    buffer.set("μ", global.value(μ));
-    buffer.set("Σ", global.value(Σ));
+    buffer.set("μ", value(μ));
+    buffer.set("Σ", value(Σ));
   }
 }
 
@@ -84,9 +84,9 @@ function make_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
  * @param Σ Covariance.
  */
 function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
-  assert global.length(μ) == rows(Σ);
-  assert global.length(μ) == columns(Σ);
-  let n <- global.length(μ);
+  assert length(μ) == rows(Σ);
+  assert length(μ) == columns(Σ);
+  let n <- length(μ);
   let z <- standard_gaussian(n);
   return μ + trimul(chol(Σ), z);
 }
@@ -102,7 +102,7 @@ function simulate_multivariate_gaussian<Arg1,Arg2>(μ:Arg1, Σ:Arg2) -> {
  */
 function logpdf_multivariate_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2,
    Σ:Arg3) -> {
-  let n <- global.length(x);
+  let n <- length(x);
   let L <- chol(Σ);
   return -0.5*(dot(trisolve(L, x - μ)) + n*log(2.0*π)) - ltridet(L);
 }

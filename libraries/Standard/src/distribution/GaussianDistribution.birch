@@ -17,19 +17,19 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
   σ2:Arg2 <- σ2;
 
   override function simulate() -> Real! {
-    return simulate_gaussian(global.value(μ), global.value(σ2));
+    return simulate_gaussian(value(μ), value(σ2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_gaussian(global.eval(μ), global.eval(σ2));
+    return simulate_gaussian(eval(μ), eval(σ2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_gaussian(x, global.value(μ), global.value(σ2));
+    return logpdf_gaussian(x, value(μ), value(σ2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_gaussian(x, global.eval(μ), global.eval(σ2));
+    return logpdf_gaussian(x, eval(μ), eval(σ2));
   }
 
   override function hoist() -> Expression<Real> {
@@ -37,17 +37,17 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
   }
   
   override function cdf(x:Real!) -> Real!? {
-    return cdf_gaussian(x, global.value(μ), global.value(σ2));
+    return cdf_gaussian(x, value(μ), value(σ2));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_gaussian(P, global.value(μ), global.value(σ2));
+    return quantile_gaussian(P, value(μ), value(σ2));
   }
 
   override function fix() {
     super.fix();
-    global.constant(μ);
-    global.constant(σ2);
+    constant(μ);
+    constant(σ2);
   }
 
   override function isGaussian() -> Boolean {
@@ -61,8 +61,8 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Gaussian");
-    buffer.set("μ", global.value(μ));
-    buffer.set("σ2", global.value(σ2));
+    buffer.set("μ", value(μ));
+    buffer.set("σ2", value(σ2));
   }
 }
 

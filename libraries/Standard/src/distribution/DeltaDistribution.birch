@@ -11,19 +11,19 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
   μ:Arg <- μ;
 
   override function simulate() -> Integer! {
-    return global.value(μ);
+    return value(μ);
   }
 
   override function simulateLazy() -> Integer! {
-    return global.eval(μ);
+    return eval(μ);
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return where(x == global.value(μ), 0.0, -inf);
+    return where(x == value(μ), 0.0, -inf);
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return where(x == global.eval(μ), 0.0, -inf);
+    return where(x == eval(μ), 0.0, -inf);
   }
 
   override function update(x:Integer!) -> Delay? {
@@ -39,16 +39,16 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
   }
 
   override function lower() -> Integer!? {
-    return global.value(μ);
+    return value(μ);
   }
   
   override function upper() -> Integer!? {
-    return global.value(μ);
+    return value(μ);
   }
 
   override function fix() {
     super.fix();
-    global.constant(μ);
+    constant(μ);
   }
 
   override function isBoundedDiscrete() -> Boolean {
@@ -57,12 +57,12 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    return (box(vector(1.0, 1)), global.value(μ));
+    return (box(vector(1.0, 1)), value(μ));
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Delta");
-    buffer.set("μ", global.value(μ));
+    buffer.set("μ", value(μ));
   }
 }
 

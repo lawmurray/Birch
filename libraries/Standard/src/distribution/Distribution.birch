@@ -34,9 +34,9 @@ abstract class Distribution<Value> < Delay {
   visitCount:Integer <- 0;
 
   /**
-   * Is the variate constant?
+   * Is the variate pinned?
    */
-  flagConstant:Boolean <- false;
+  flagPinned:Boolean <- false;
 
   /**
    * Simulate a variate.
@@ -141,6 +141,34 @@ abstract class Distribution<Value> < Delay {
     return nil;
   }
 
+  /**
+   * Get the stateful variate.
+   */
+  final function variate() -> Value! {
+    this.graft()!.realize();
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().variate();
+    } else {
+      this.pin();
+      return x!;
+    }
+  }
+
+  /**
+   * Get the stateful variate, using lazy expressions.
+   */
+  final function variateLazy() -> Value! {
+    this.graft()!.realize();
+    if this.hasUpdated() {
+      return this.getUpdatedDistribution().variateLazy();
+    } else {
+      return x!;
+    }
+  }
+
+  /**
+   * Get the stateful variate, as a random variate.
+   */
   final function random() -> Random<Value> {
     o:Random<Value>;
     o.setDistribution(this);
@@ -190,7 +218,7 @@ abstract class Distribution<Value> < Delay {
     if h.autodiff {
       return updateLazy(p.random());
     } else {
-      return update(p.value());
+      return update(p.variate());
     }
   }
 
@@ -227,42 +255,14 @@ abstract class Distribution<Value> < Delay {
         this.getJoined().setSubordinate(true);
       }
       this.x <- x;
-      constant();
-    }
-  }
-
-  final function value() -> Value! {
-    this.graft()!.realize();
-    if this.hasUpdated() {
-      return this.getUpdatedDistribution().value();
-    } else {
-      this.constant();
-      return x!;
-    }
-  }
-
-  final function eval() -> Value! {
-    this.graft()!.realize();
-    if this.hasUpdated() {
-      return this.getUpdatedDistribution().eval();
-    } else {
-      return x!;
-    }
-  }
-
-  final function peek() -> Value! {
-    this.graft()!.realize();
-    if this.hasUpdated() {
-      return this.getUpdatedDistribution().peek();
-    } else {
-      return x!;
+      pin();
     }
   }
 
   final function move(visitor:MoveVisitor) -> Value! {
     if this.hasUpdated() {
       return this.getUpdatedDistribution().move(visitor);
-    } else if !flagConstant {
+    } else if !flagPinned {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
         visitor.visit(this);
@@ -279,7 +279,7 @@ abstract class Distribution<Value> < Delay {
   final function args(visitor:ArgsVisitor) {
     if this.hasUpdated() {
       this.getUpdatedDistribution().args(visitor);
-    } else if !flagConstant {
+    } else if !flagPinned {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
         visitor.visit(this);
@@ -294,7 +294,7 @@ abstract class Distribution<Value> < Delay {
   final function grad<Gradient>(g:Gradient, visitor:GradVisitor) {
     if this.hasUpdated() {
       this.getUpdatedDistribution().grad(g, visitor);
-    } else if !flagConstant {
+    } else if !flagPinned {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
         /* (re-)start accumulation */
@@ -326,7 +326,7 @@ abstract class Distribution<Value> < Delay {
   final function relink(visitor:RelinkVisitor) {
     if this.hasUpdated() {
       this.getUpdatedDistribution().relink(visitor);
-    } else if !flagConstant {
+    } else if !flagPinned {
       assert visitCount == 0;
       linkCount <- linkCount + 1;
       if linkCount == 1 {
@@ -335,27 +335,27 @@ abstract class Distribution<Value> < Delay {
     }
   }
 
-  final function constant() {
+  final function pin() {
     if this.hasUpdated() {
-      this.getUpdatedDistribution().constant();
+      this.getUpdatedDistribution().pin();
     } else {
       g <- nil;
       offset <- 0;
       linkCount <- 0;
       visitCount <- 0;
-      flagConstant <- true;
+      flagPinned <- true;
     }
   }
 
   override function fix() {
-    flagConstant <- true;
+    flagPinned <- true;
   }
 
-  final function isConstant() -> Boolean {
+  final function isConstantVariate() -> Boolean {
     if this.hasUpdated() {
-      return this.getUpdatedDistribution().isConstant();
+      return this.getUpdatedDistribution().isConstantVariate();
     } else {
-      return flagConstant;
+      return flagPinned;
     }
   }
 

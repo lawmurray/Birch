@@ -111,8 +111,7 @@ struct Random<Value> < Form {
 
   void constant() {
     if (hasDistribution()) {
-      x = getDistribution()->eval();
-      getDistribution()->constant();
+      x = getDistribution()->variate();
     }
     assert(x.has_value());
     this->p.reset();
@@ -133,7 +132,7 @@ struct Random<Value> < Form {
  
   auto eval() const {
     if (hasDistribution()) {
-      return getDistribution()->eval();
+      return getDistribution()->variateLazy();
     } else {
       assert(x.has_value());
       return *x;
@@ -143,7 +142,7 @@ struct Random<Value> < Form {
   auto peek() {
     if (!x) {
       assert(hasDistribution());
-      this->x = getDistribution()->peek();
+      this->x = getDistribution()->variateLazy();
     }
     return *x;
   }

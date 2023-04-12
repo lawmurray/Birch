@@ -41,28 +41,28 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   s2:Arg7 <- s2;
 
   override function simulate() -> Real! {
-    return simulate_normal_inverse_gamma_gaussian(global.value(a), global.value(ν),
-        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
+    return simulate_normal_inverse_gamma_gaussian(value(a), value(ν),
+        value(λ), value(k), value(γ), value(c), value(s2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_normal_inverse_gamma_gaussian(global.eval(a), global.eval(ν),
-        global.eval(λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(s2));
+    return simulate_normal_inverse_gamma_gaussian(eval(a), eval(ν),
+        eval(λ), eval(k), eval(γ), eval(c), eval(s2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma_gaussian(x, global.value(a), global.value(ν),
-        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
+    return logpdf_normal_inverse_gamma_gaussian(x, value(a), value(ν),
+        value(λ), value(k), value(γ), value(c), value(s2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma_gaussian(x, global.eval(a), global.eval(ν),
-        global.eval(λ), global.eval(k), global.eval(γ), global.eval(c), global.eval(s2));
+    return logpdf_normal_inverse_gamma_gaussian(x, eval(a), eval(ν),
+        eval(λ), eval(k), eval(γ), eval(c), eval(s2));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_normal_inverse_gamma_gaussian(x, global.value(a), global.value(ν),
-        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
+    return update_normal_inverse_gamma_gaussian(x, value(a), value(ν),
+        value(λ), value(k), value(γ), value(c), value(s2));
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {
@@ -70,13 +70,13 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_normal_inverse_gamma_gaussian(x, global.value(a), global.value(ν),
-        global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
+    return cdf_normal_inverse_gamma_gaussian(x, value(a), value(ν),
+        value(λ), value(k), value(γ), value(c), value(s2));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma_gaussian(P, global.value(a),
-        global.value(ν), global.value(λ), global.value(k), global.value(γ), global.value(c), global.value(s2));
+    return quantile_normal_inverse_gamma_gaussian(P, value(a),
+        value(ν), value(λ), value(k), value(γ), value(c), value(s2));
   }
 
   override function hoist() -> Expression<Real> {
@@ -86,13 +86,13 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
 
   override function fix() {
     super.fix();
-    global.constant(a);
-    global.constant(ν);
-    global.constant(λ);
-    global.constant(k);
-    global.constant(γ);
-    global.constant(c);
-    global.constant(s2);
+    constant(a);
+    constant(ν);
+    constant(λ);
+    constant(k);
+    constant(γ);
+    constant(c);
+    constant(s2);
   }
 }
 
@@ -272,7 +272,7 @@ function update_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
 function update_join_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, λ:Arg4, k:Arg5, γ:Arg6, c:Arg7,
     s2:Arg8) -> {
-  let n <- global.length(x);
+  let n <- length(x);
   let z <- wrap(x - c);
   let λ' <- λ + dot(a)/s2;
   let ν' <- ν + dot(a, z)/s2;

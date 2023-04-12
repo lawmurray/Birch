@@ -8,19 +8,19 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
   ρ:Arg <- ρ;
 
   override function simulate() -> Boolean! {
-    return simulate_bernoulli(global.value(ρ));
+    return simulate_bernoulli(value(ρ));
   }
   
   override function simulateLazy() -> Boolean! {
-    return simulate_bernoulli(global.eval(ρ));
+    return simulate_bernoulli(eval(ρ));
   }
   
   override function logpdf(x:Boolean!) -> Real! {
-    return logpdf_bernoulli(x, global.value(ρ));
+    return logpdf_bernoulli(x, value(ρ));
   }
 
   override function logpdfLazy(x:Boolean!) -> Real! {
-    return logpdf_bernoulli(x, global.eval(ρ));
+    return logpdf_bernoulli(x, eval(ρ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -29,12 +29,12 @@ final class BernoulliDistribution<Arg>(ρ:Arg) < Distribution<Boolean> {
 
   override function fix() {
     super.fix();
-    global.constant(ρ);
+    constant(ρ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Bernoulli");
-    buffer.set("ρ", global.value(ρ));
+    buffer.set("ρ", value(ρ));
   }
 }
 

@@ -41,28 +41,28 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
   Φ:Arg7 <- Φ;
 
   override function simulate() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(global.value(A),
-        global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(C), global.value(Φ));
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(value(A),
+        value(N), value(Λ), value(Γ), value(k), value(C), value(Φ));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(global.eval(A),
-        global.eval(N), global.eval(Λ), global.eval(Γ), global.eval(k), global.eval(C), global.eval(Φ));
+    return simulate_matrix_normal_inverse_wishart_matrix_gaussian(eval(A),
+        eval(N), eval(Λ), eval(Γ), eval(k), eval(C), eval(Φ));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - global.value(C),
-        global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(Φ));
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - value(C),
+        value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - global.eval(C),
-        global.eval(A), global.eval(N), global.eval(Λ), global.eval(Γ), global.eval(k), global.eval(Φ));
+    return logpdf_matrix_normal_inverse_wishart_matrix_gaussian(X - eval(C),
+        eval(A), eval(N), eval(Λ), eval(Γ), eval(k), eval(Φ));
   }
 
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart_matrix_gaussian(global.value(X - C),
-        global.value(A), global.value(N), global.value(Λ), global.value(Γ), global.value(k), global.value(Φ));
+    return update_matrix_normal_inverse_wishart_matrix_gaussian(value(X - C),
+        value(A), value(N), value(Λ), value(Γ), value(k), value(Φ));
   }
 
   override function updateLazy(X:Random<Real[_,_]>) -> Delay? {
@@ -77,13 +77,13 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
 
   override function fix() {
     super.fix();
-    global.constant(A);
-    global.constant(N);
-    global.constant(Λ);
-    global.constant(Γ);
-    global.constant(k);
-    global.constant(C);
-    global.constant(Φ);
+    constant(A);
+    constant(N);
+    constant(Λ);
+    constant(Γ);
+    constant(k);
+    constant(C);
+    constant(Φ);
   }
 }
 

@@ -8,23 +8,23 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   α:Arg <- α;
 
   override function simulate() -> Integer! {
-    return simulate_dirichlet_categorical(global.value(α));
+    return simulate_dirichlet_categorical(value(α));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_dirichlet_categorical(global.eval(α));
+    return simulate_dirichlet_categorical(eval(α));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_dirichlet_categorical(x, global.value(α));
+    return logpdf_dirichlet_categorical(x, value(α));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_dirichlet_categorical(x, global.eval(α));
+    return logpdf_dirichlet_categorical(x, eval(α));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_dirichlet_categorical(x, global.value(α));
+    return update_dirichlet_categorical(x, value(α));
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {
@@ -40,12 +40,12 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function upper() -> Integer!? {
-    return global.length(global.value(α));
+    return length(value(α));
   }
 
   override function fix() {
     super.fix();
-    global.constant(α);
+    constant(α);
   }
 }
 
@@ -109,5 +109,5 @@ function logpdf_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
  * @return the posterior hyperparameters `α'`.
  */
 function update_dirichlet_categorical<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
-  return make_dirichlet(α + single(1.0, x, global.length(α)));
+  return make_dirichlet(α + single(1.0, x, length(α)));
 }

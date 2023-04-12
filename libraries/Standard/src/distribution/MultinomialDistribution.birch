@@ -14,19 +14,19 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function simulate() -> Integer[_] {
-    return simulate_multinomial(global.value(n), global.value(ρ));
+    return simulate_multinomial(value(n), value(ρ));
   }
 
   override function simulateLazy() -> Integer[_] {
-    return simulate_multinomial(global.eval(n), global.eval(ρ));
+    return simulate_multinomial(eval(n), eval(ρ));
   }
 
   override function logpdf(x:Integer[_]) -> Real! {
-    return logpdf_multinomial(x, global.value(n), global.value(ρ));
+    return logpdf_multinomial(x, value(n), value(ρ));
   }
 
   override function logpdfLazy(x:Integer[_]) -> Real! {
-    return logpdf_multinomial(x, global.eval(n), global.eval(ρ));
+    return logpdf_multinomial(x, eval(n), eval(ρ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -35,14 +35,14 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
 
   override function fix() {
     super.fix();
-    global.constant(n);
-    global.constant(ρ);
+    constant(n);
+    constant(ρ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Multinomial");
-    buffer.set("n", global.value(n));
-    buffer.set("ρ", global.value(ρ));
+    buffer.set("n", value(n));
+    buffer.set("ρ", value(ρ));
   }
 }
 
@@ -86,10 +86,10 @@ function simulate_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
  * Science Department.
  */
 function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
-  assert global.length(ρ) > 0;
+  assert length(ρ) > 0;
   assert abs(sum(ρ)! - Z) < 1.0e-6;
 
-  let D <- global.length(ρ);
+  let D <- length(ρ);
   let R <- ρ[D];
   let lnMax <- 0.0;
   let j <- D;
@@ -124,6 +124,6 @@ function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
  * @return the log probability mass.
  */
 function logpdf_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
-  assert global.length(x) == global.length(ρ);
+  assert length(x) == length(ρ);
   return lfact(n) + sum(hadamard(x, log(ρ)) - lfact(x));
 }

@@ -8,28 +8,28 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   α:Arg <- α;
 
   override function simulate() -> Real[_] {
-    return simulate_dirichlet(global.value(α));
+    return simulate_dirichlet(value(α));
   }
   
   override function simulateLazy() -> Real[_] {
-    return simulate_dirichlet(global.eval(α));
+    return simulate_dirichlet(eval(α));
   }
 
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_dirichlet(x, global.value(α));
+    return logpdf_dirichlet(x, value(α));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_dirichlet(x, global.eval(α));
+    return logpdf_dirichlet(x, eval(α));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_dirichlet(random(), global.value(α)));
+    return box(logpdf_dirichlet(random(), value(α)));
   }
 
   override function fix() {
     super.fix();
-    global.constant(α);
+    constant(α);
   }
 
   override function isDirichlet() -> Boolean {
@@ -43,7 +43,7 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Dirichlet");
-    buffer.set("α", global.value(α));
+    buffer.set("α", value(α));
   }
 }
 
@@ -87,6 +87,6 @@ function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
  * @return the log probability density.
  */
 function logpdf_dirichlet<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
-  assert global.length(x) == global.length(α);
+  assert length(x) == length(α);
   return sum(hadamard(α, log(x)) - log(x) - lgamma(α)) + lgamma(sum(α));
 }

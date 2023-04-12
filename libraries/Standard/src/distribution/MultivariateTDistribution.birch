@@ -19,19 +19,19 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
   Σ:Arg3 <- Σ;
 
   override function simulate() -> Real[_] {
-    return simulate_multivariate_t(global.value(k), global.value(μ), global.value(Σ));
+    return simulate_multivariate_t(value(k), value(μ), value(Σ));
   }
 
   override function simulateLazy() -> Real[_] {
-    return simulate_multivariate_t(global.eval(k), global.eval(μ), global.eval(Σ));
+    return simulate_multivariate_t(eval(k), eval(μ), eval(Σ));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_multivariate_t(x, global.value(k), global.value(μ), global.value(Σ));
+    return logpdf_multivariate_t(x, value(k), value(μ), value(Σ));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_multivariate_t(x, global.eval(k), global.eval(μ), global.eval(Σ));
+    return logpdf_multivariate_t(x, eval(k), eval(μ), eval(Σ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -40,16 +40,16 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
 
   override function fix() {
     super.fix();
-    global.constant(k);
-    global.constant(μ);
-    global.constant(Σ);
+    constant(k);
+    constant(μ);
+    constant(Σ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "MultivariateT");
-    buffer.set("k", global.value(k));
-    buffer.set("μ", global.value(μ));
-    buffer.set("Σ", global.value(Σ));
+    buffer.set("k", value(k));
+    buffer.set("μ", value(μ));
+    buffer.set("Σ", value(Σ));
   }
 }
 
@@ -61,7 +61,7 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
  * @param Σ Spread matrix.
  */
 function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
-  let n <- global.length(μ);
+  let n <- length(μ);
   let Y <- standard_wishart(k, n);
   let z <- standard_gaussian(n);
   return μ + inner(trisolve(Y, transpose(chol(Σ))), z);
@@ -79,7 +79,7 @@ function simulate_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
  */
 function logpdf_multivariate_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     Σ:Arg4) -> {
-  let n <- global.length(x);
+  let n <- length(x);
   let a <- 0.5*k + 0.5*n;
   let b <- 0.5*k;
   let L <- chol(Σ);

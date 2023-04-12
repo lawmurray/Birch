@@ -12,19 +12,19 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
   λ:Arg1 <- λ;
 
   override function simulate() -> Real! {
-    return simulate_exponential(global.value(λ));
+    return simulate_exponential(value(λ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_exponential(global.eval(λ));
+    return simulate_exponential(eval(λ));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_exponential(x, global.value(λ));
+    return logpdf_exponential(x, value(λ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_exponential(x, global.eval(λ));
+    return logpdf_exponential(x, eval(λ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -32,11 +32,11 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_exponential(x, global.value(λ));
+    return cdf_exponential(x, value(λ));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_exponential(P, global.value(λ));
+    return quantile_exponential(P, value(λ));
   }
 
   override function lower() -> Real!? {
@@ -45,12 +45,12 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
 
   override function fix() {
     super.fix();
-    global.constant(λ);
+    constant(λ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Exponential");
-    buffer.set("λ", global.value(λ));
+    buffer.set("λ", value(λ));
   }
 }
 

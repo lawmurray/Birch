@@ -18,19 +18,19 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function simulate() -> Integer! {
-    return simulate_negative_binomial(global.value(k), global.value(ρ));
+    return simulate_negative_binomial(value(k), value(ρ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_negative_binomial(global.eval(k), global.eval(ρ));
+    return simulate_negative_binomial(eval(k), eval(ρ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_negative_binomial(x, global.value(k), global.value(ρ));
+    return logpdf_negative_binomial(x, value(k), value(ρ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_negative_binomial(x, global.eval(k), global.eval(ρ));
+    return logpdf_negative_binomial(x, eval(k), eval(ρ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -38,11 +38,11 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_negative_binomial(x, global.value(k), global.value(ρ));
+    return cdf_negative_binomial(x, value(k), value(ρ));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_negative_binomial(P, global.value(k), global.value(ρ));
+    return quantile_negative_binomial(P, value(k), value(ρ));
   }
 
   override function lower() -> Integer!? {
@@ -51,14 +51,14 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
 
   override function fix() {
     super.fix();
-    global.constant(k);
-    global.constant(ρ);
+    constant(k);
+    constant(ρ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "NegativeBinomial");
-    buffer.set("k", global.value(k));
-    buffer.set("ρ", global.value(ρ));
+    buffer.set("k", value(k));
+    buffer.set("ρ", value(ρ));
   }
 }
 

@@ -76,7 +76,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   }
 
   /* smoke test for constant */
-  π.constant();
+  π.fix();
 }
 
 /*
@@ -150,7 +150,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   }
 
   /* smoke test for constant */
-  π.constant();
+  π.fix();
 }
 
 /*
@@ -247,7 +247,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   }
 
   /* smoke test for constant */
-  π.constant();
+  π.fix();
 }
 
 /*
@@ -355,7 +355,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
   }
 
   /* smoke test for constant */
-  π.constant();
+  π.fix();
 }
 
 /*
@@ -468,5 +468,5 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
   }
 
   /* smoke test for constant */
-  π.constant();
+  π.fix();
 }

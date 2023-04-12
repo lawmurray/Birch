@@ -48,27 +48,27 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   γ:Arg4 <- γ;
   
   override function simulate() -> Real! {
-    return simulate_normal_inverse_gamma(global.value(ν), global.value(λ), global.value(k),
-        global.value(γ));
+    return simulate_normal_inverse_gamma(value(ν), value(λ), value(k),
+        value(γ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_normal_inverse_gamma(global.eval(ν), global.eval(λ), global.eval(k), global.eval(γ));
+    return simulate_normal_inverse_gamma(eval(ν), eval(λ), eval(k), eval(γ));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma(x, global.value(ν), global.value(λ), global.value(k),
-        global.value(γ));
+    return logpdf_normal_inverse_gamma(x, value(ν), value(λ), value(k),
+        value(γ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma(x, global.eval(ν), global.eval(λ), global.eval(k),
-        global.eval(γ));
+    return logpdf_normal_inverse_gamma(x, eval(ν), eval(λ), eval(k),
+        eval(γ));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_normal_inverse_gamma(x, global.value(ν), global.value(λ), global.value(k),
-        global.value(γ));
+    return update_normal_inverse_gamma(x, value(ν), value(λ), value(k),
+        value(γ));
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {
@@ -80,21 +80,21 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   }
 
   override function cdf(x:Real!) -> Real!? {
-    return cdf_normal_inverse_gamma(x, global.value(ν), global.value(λ), global.value(k),
-        global.value(γ));
+    return cdf_normal_inverse_gamma(x, value(ν), value(λ), value(k),
+        value(γ));
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma(P, global.value(ν), global.value(λ), global.value(k),
-        global.value(γ));
+    return quantile_normal_inverse_gamma(P, value(ν), value(λ), value(k),
+        value(γ));
   }
 
   override function fix() {
     super.fix();
-    global.constant(ν);
-    global.constant(λ);
-    global.constant(k);
-    global.constant(γ);
+    constant(ν);
+    constant(λ);
+    constant(k);
+    constant(γ);
   }
 
   override function isNormalInverseGamma() -> Boolean {
@@ -109,10 +109,10 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
 
   override function write(buffer:Buffer) {
     buffer.set("class", "NormalInverseGamma");
-    buffer.set("ν", global.value(ν));
-    buffer.set("λ", global.value(λ));
-    buffer.set("k", global.value(k));
-    buffer.set("γ", global.value(γ));
+    buffer.set("ν", value(ν));
+    buffer.set("λ", value(λ));
+    buffer.set("k", value(k));
+    buffer.set("γ", value(γ));
   }
 }
 

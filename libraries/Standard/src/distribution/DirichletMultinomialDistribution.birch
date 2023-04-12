@@ -14,23 +14,23 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   α:Arg2 <- α;
 
   override function simulate() -> Integer[_] {
-    return simulate_dirichlet_multinomial(global.value(n), global.value(α));
+    return simulate_dirichlet_multinomial(value(n), value(α));
   }
 
   override function simulateLazy() -> Integer[_] {
-    return simulate_dirichlet_multinomial(global.eval(n), global.eval(α));
+    return simulate_dirichlet_multinomial(eval(n), eval(α));
   }
 
   override function logpdf(x:Integer[_]) -> Real! {
-    return logpdf_dirichlet_multinomial(x, global.value(n), global.value(α));
+    return logpdf_dirichlet_multinomial(x, value(n), value(α));
   }
 
   override function logpdfLazy(x:Integer[_]) -> Real! {
-    return logpdf_dirichlet_multinomial(x, global.eval(n), global.eval(α));
+    return logpdf_dirichlet_multinomial(x, eval(n), eval(α));
   }
 
   override function update(x:Integer[_]) -> Delay? {
-    return update_dirichlet_multinomial(x, global.value(n), global.value(α));
+    return update_dirichlet_multinomial(x, value(n), value(α));
   }
 
   override function updateLazy(x:Random<Integer[_]>) -> Delay? {
@@ -43,8 +43,8 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
 
   override function fix() {
     super.fix();
-    global.constant(n);
-    global.constant(α);
+    constant(n);
+    constant(α);
   }
 }
 
@@ -93,7 +93,7 @@ function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
  */
 function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
     α:Arg3) -> {
-  assert global.length(x) == global.length(α);
+  assert length(x) == length(α);
   return lfact(n) + lgamma(sum(α)) - lgamma(n + sum(α)) +
       sum(lgamma(x + α) - lgamma(α) - lfact(x));
 }

@@ -18,19 +18,19 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function simulate() -> Integer! {
-    return simulate_binomial(global.value(n), global.value(ρ));
+    return simulate_binomial(value(n), value(ρ));
   }
   
   override function simulateLazy() -> Integer! {
-    return simulate_binomial(global.eval(n), global.eval(ρ));
+    return simulate_binomial(eval(n), eval(ρ));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_binomial(x, global.value(n), global.value(ρ));
+    return logpdf_binomial(x, value(n), value(ρ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_binomial(x, global.eval(n), global.eval(ρ));
+    return logpdf_binomial(x, eval(n), eval(ρ));
   }
 
   override function hoist() -> Expression<Real> {
@@ -38,11 +38,11 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_binomial(x, global.value(n), global.value(ρ));
+    return cdf_binomial(x, value(n), value(ρ));
   }
 
   override function quantile(P:Real!) -> Integer!? {
-    return quantile_binomial(P, global.value(n), global.value(ρ));
+    return quantile_binomial(P, value(n), value(ρ));
   }
 
   override function lower() -> Integer!? {
@@ -50,19 +50,19 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   }
   
   override function upper() -> Integer!? {
-    return global.value(n);
+    return value(n);
   }
 
   override function fix() {
     super.fix();
-    global.constant(n);
-    global.constant(ρ);
+    constant(n);
+    constant(ρ);
   }
 
   override function write(buffer:Buffer) {
     buffer.set("class", "Binomial");
-    buffer.set("n", global.value(n));
-    buffer.set("ρ", global.value(ρ));
+    buffer.set("n", value(n));
+    buffer.set("ρ", value(ρ));
   }
 
   override function isBoundedDiscrete() -> Boolean {
@@ -71,7 +71,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    let p <- exp(logpdf_binomial(iota(0, wait(global.value(n)) + 1), n, ρ));
+    let p <- exp(logpdf_binomial(iota(0, wait(value(n)) + 1), n, ρ));
     return (box(p/sum(p)), 0);
     // ^ numerical errors can accumulate, so renormalize
   }
