@@ -10,7 +10,7 @@ executors:
     resource_class: large
     environment:
       CODENAME: default
-    working_directory: /root/default
+    working_directory: /home/circleci/default
 
   bench:
     machine:
@@ -24,7 +24,7 @@ executors:
       CONFIGURE_FLAGS: --disable-assert
       BIRCH_FLAGS: --unit=dir --arch=native --jobs=4 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
       MONGODB_DATABASE_TOOLS_URL: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.7.0.deb
-    working_directory: /root/bench
+    working_directory: /home/circleci/bench
 
   cover:
     machine:
@@ -36,7 +36,18 @@ executors:
       CXXFLAGS: -O1 -Wall -g -fno-inline --coverage
       MAKEFLAGS: -j8
       BIRCH_FLAGS: --unit=dir --jobs=3 --enable-verbose --disable-static --disable-single --enable-coverage
-    working_directory: /root/cover
+    working_directory: /home/circleci/cover
+
+  mac:
+    macos:
+      xcode: 13.4.1
+    environment:
+      CODENAME: mac
+      OMP_NUM_THREADS: 4
+      CXXFLAGS: -O1 -flto -Wall
+      MAKEFLAGS: -j8
+      BIRCH_FLAGS: --unit=dir --jobs=4 --enable-verbose --disable-static --disable-single
+    working_directory: /Users/distiller/mac
 
   alpine:
     docker:
@@ -50,17 +61,6 @@ executors:
       MAKEFLAGS: -j8
       BIRCH_FLAGS: --unit=dir --jobs=2 --enable-verbose --disable-static --disable-single
     working_directory: /root/alpine
-
-  mac:
-    macos:
-      xcode: 13.4.1
-    environment:
-      CODENAME: mac
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: -O1 -flto -Wall
-      MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=4 --enable-verbose --disable-static --disable-single
-    working_directory: /Users/distiller/mac
 
   buster:
     docker:
@@ -614,8 +614,8 @@ commands:
           command: |
               cd << parameters.dir >>
               birch docs
-              mkdir -p /root/docs/docs/<< parameters.dir >>
-              cp -r docs/* /root/docs/docs/<< parameters.dir >>/.
+              mkdir -p $HOME/docs/docs/<< parameters.dir >>
+              cp -r docs/* $HOME/docs/docs/<< parameters.dir >>/.
 
   package_deb:
     parameters:
@@ -649,7 +649,7 @@ commands:
           name: Deploy Debian package << parameters.dir >>
           command: |
               cd << parameters.dir >>
-              reprepro -b /root/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
+              reprepro -b $HOME/deb/$CODENAME --ignore=wrongdistribution include $CODENAME *.changes
 
   package_rpm:
     parameters:
@@ -669,22 +669,22 @@ commands:
               fi
               cd << parameters.dir >>
               TARNAME=`ls *-$VERSION.tar.gz | grep -Eo '^[a-z\-]+[a-z]'`
-              mkdir -p /root/rpmbuild/SOURCES
-              mv $TARNAME-$VERSION.tar.gz /root/rpmbuild/SOURCES/.
-              rpmbuild --define='_topdir /root/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ba $TARNAME.spec
+              mkdir -p $HOME/rpmbuild/SOURCES
+              mv $TARNAME-$VERSION.tar.gz $HOME/rpmbuild/SOURCES/.
+              rpmbuild --define='_topdir $HOME/rpmbuild' --define="_smp_mflags -j$JOBS" --define="debug_package %{nil}" -ba $TARNAME.spec
       - run:
           name: Sign RPM package << parameters.dir >>
           command: |
-              rpmsign --addsign /root/rpmbuild/RPMS/x86_64/*.rpm
+              rpmsign --addsign $HOME/rpmbuild/RPMS/x86_64/*.rpm
       - run:
           name: Install RPM package << parameters.dir >>
           command: |
-              rpm --install --nodeps /root/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
+              rpm --install --nodeps $HOME/rpmbuild/RPMS/x86_64/*.rpm  # establish dependencies as we go
       - run:
           name: Deploy RPM package << parameters.dir >>
           command: |
-              mv /root/rpmbuild/RPMS/x86_64/*.rpm /root/rpm/$CODENAME/x86_64/.
-              mv /root/rpmbuild/SRPMS/*.rpm /root/rpm/$CODENAME/src/.
+              mv $HOME/rpmbuild/RPMS/x86_64/*.rpm $HOME/rpm/$CODENAME/x86_64/.
+              mv $HOME/rpmbuild/SRPMS/*.rpm $HOME/rpm/$CODENAME/src/.
 
   package_brew:
     parameters:
@@ -714,8 +714,8 @@ commands:
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
                 mkdir << parameters.subdomain >>
                 cd << parameters.subdomain >>
-                mkdir rpm && cp -r /root/rpm/* rpm/.
-                mkdir deb && cp -r /root/deb/*/* deb/.  # merge repos
+                mkdir rpm && cp -r $HOME/rpm/* rpm/.
+                mkdir deb && cp -r $HOME/deb/*/* deb/.  # merge repos
 
                 # finalize apt repo (add key)
                 gpg --export --armor > deb/Release.key
@@ -743,7 +743,7 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" && -n "$VERSION" ]]; then
                 mkdir $CIRCLE_WORKING_DIRECTORY/<< parameters.repo >>
-                cd $CIRCLE_WORKING_DIRECTORY/brew || cd /root/brew  # may be run by mac or linux executor
+                cd $CIRCLE_WORKING_DIRECTORY/brew || cd $HOME/brew  # may be run by mac or linux executor
                 cp *.rb *.tar.gz $CIRCLE_WORKING_DIRECTORY/<< parameters.repo >>/.
                 cd $CIRCLE_WORKING_DIRECTORY/<< parameters.repo >>
                 for file in *.rb; do
@@ -768,7 +768,7 @@ commands:
           command: |
               if [[ -n "$GITHUB_USERNAME" && -n "$GITHUB_PASSWORD" ]]; then
                 pip3 install mkdocs mkdocs-material
-                cd /root/docs
+                cd $HOME/docs
                 mkdocs build
                 cd site
                 git init -b gh-pages
@@ -867,8 +867,8 @@ jobs:
       - run:
           name: Initialize repository
           command: |
-              mkdir -p /root/deb/$CODENAME/conf
-              printf "Codename: $CODENAME\nSuite: stable\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > /root/deb/$CODENAME/conf/distributions
+              mkdir -p $HOME/deb/$CODENAME/conf
+              printf "Codename: $CODENAME\nSuite: stable\nComponents: main\nArchitectures: source amd64\nSignWith: default\n" > $HOME/deb/$CODENAME/conf/distributions
       - package_deb:
           dir: numbirch
       - package_deb:
@@ -884,7 +884,7 @@ jobs:
       - run:
           name: Remove unnecessary files
           command: |
-              rm -rf /root/deb/$CODENAME/{conf,db}
+              rm -rf $HOME/deb/$CODENAME/{conf,db}
       - persist_to_workspace:
           root: ..
           paths:
@@ -920,7 +920,7 @@ jobs:
       - run:
           name: Initialize repository
           command: |
-              mkdir -p /root/rpm/$CODENAME/{x86_64,src}
+              mkdir -p $HOME/rpm/$CODENAME/{x86_64,src}
               gpg --export --armor > public.key
               rpm --import public.key
               rm public.key
@@ -939,7 +939,7 @@ jobs:
       - run:
           name: Finalize repository
           command: |
-              cd /root/rpm/$CODENAME
+              cd $HOME/rpm/$CODENAME
               createrepo .
               gpg --detach-sign --armor repodata/repomd.xml
               gpg --export --armor > repodata/repomd.xml.key
@@ -1066,7 +1066,7 @@ jobs:
       - run:
           name: Initialize docs
           command: |
-              mkdir -p /root/docs/docs
+              mkdir -p $HOME/docs/docs
       - docs_birch:
           dir: libraries/Standard
       - docs_birch:
@@ -1076,8 +1076,8 @@ jobs:
       - run:
           name: Finalize docs
           command: |
-              cp mkdocs.yml /root/docs/.
-              cp README.md /root/docs/docs/index.md
+              cp mkdocs.yml $HOME/docs/.
+              cp README.md $HOME/docs/docs/index.md
       - persist_to_workspace:
           root: ..
           paths:
