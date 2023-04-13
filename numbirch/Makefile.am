@@ -26,8 +26,8 @@ SOURCES =  \
     numbirch/instantiate/memory/memcpy.cpp \
     numbirch/instantiate/memory/memset.cpp \
     numbirch/instantiate/random/binary.cpp \
+    numbirch/instantiate/random/simulate_wishart.cpp \
     numbirch/instantiate/random/standard_gaussian.cpp \
-    numbirch/instantiate/random/standard_wishart.cpp \
     numbirch/instantiate/random/unary.cpp \
     numbirch/instantiate/reduce/count.cpp \
     numbirch/instantiate/reduce/count_grad.cpp \
