@@ -418,11 +418,10 @@ commands:
                 echo "export VERSION=0.0.0" >> $BASH_ENV
               fi
               echo "export VERSION_SAFE=\`echo \$VERSION | sed -E 's/\./_/g'\`" >> $BASH_ENV
-              echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:/usr/local/cuda/bin:\$PATH" >> $BASH_ENV
-              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:/usr/local/cuda/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
+              echo "export PATH=\$CIRCLE_WORKING_DIRECTORY/bin:/usr/local/cuda/bin:\$PATH" >> $BASH_ENV
+              echo "export CPLUS_INCLUDE_PATH=\$CIRCLE_WORKING_DIRECTORY/include:/usr/local/cuda/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$CIRCLE_WORKING_DIRECTORY/lib64:\$CIRCLE_WORKING_DIRECTORY/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export LIBRARY_PATH=\$CIRCLE_WORKING_DIRECTORY/lib64:\$CIRCLE_WORKING_DIRECTORY/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
       - run:
           name: GPG keys
@@ -512,7 +511,7 @@ commands:
           command: |
               cd << parameters.dir >>
               ./bootstrap
-              ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
+              ./configure --disable-checks --prefix="$CIRCLE_WORKING_DIRECTORY" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make dist
 
   source_birch:
@@ -528,7 +527,7 @@ commands:
           command: |
               cd << parameters.dir >>
               birch bootstrap
-              ./configure --disable-checks --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
+              ./configure --disable-checks --prefix="$CIRCLE_WORKING_DIRECTORY" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make dist
 
   build_cpp:
@@ -545,7 +544,7 @@ commands:
           command: |
               cd << parameters.dir >>
               ./bootstrap
-              ./configure --prefix="$PREFIX" $CONFIGURE_FLAGS || (cat config.log && exit 1)
+              ./configure --prefix="$CIRCLE_WORKING_DIRECTORY" $CONFIGURE_FLAGS || (cat config.log && exit 1)
               make install
       - run:
           name: Smoke test << parameters.dir >>
@@ -568,7 +567,7 @@ commands:
           name: Build << parameters.dir >>
           command: |
               cd << parameters.dir >>
-              birch install --prefix="$PREFIX" $BIRCH_FLAGS || (cat config.log && exit 1)
+              birch install --prefix="$CIRCLE_WORKING_DIRECTORY" $BIRCH_FLAGS || (cat config.log && exit 1)
           no_output_timeout: 30m
       - run:
           name: Smoke test << parameters.dir >>
