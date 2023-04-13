@@ -171,8 +171,8 @@ commands:
                     cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
               elif [ "$CODENAME" = "default" ] || [ "$CODENAME" = "bench" ] || [ "$CODENAME" = "cover" ]; then
-                apt update
-                DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+                sudo apt update
+                DEBIAN_FRONTEND=noninteractive sudo apt install -y --no-install-recommends \
                   git \
                   ssh \
                   gpg \
@@ -214,9 +214,9 @@ commands:
                   python3-pip
                 if [ -n "$MONGODB_DATABASE_TOOLS_URL" ]; then
                   curl -o mongodb-database-tools.deb $MONGODB_DATABASE_TOOLS_URL
-                  DEBIAN_FRONTEND=noninteractive apt install -y ./mongodb-database-tools.deb
+                  DEBIAN_FRONTEND=noninteractive sudo apt install -y ./mongodb-database-tools.deb
                 fi
-                rm -rf /var/lib/apt/lists/*
+                sudo rm -rf /var/lib/apt/lists/*
               elif [ "$CODENAME" = "opensuse" ]; then
                 zypper --non-interactive update
                 zypper --non-interactive install --no-recommends \
