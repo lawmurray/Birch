@@ -182,11 +182,13 @@ public:
    * Constructor from individual components. Used when forming views and
    * reshaping.
    */
-  Array(ArrayControl* ctl, const shape_type& shp) :
+  Array(ArrayControl* ctl, const shape_type& shp, const bool isView = true) :
       ctl(ctl),
       shp(shp),
-      isView(true) {
-    //
+      isView(isView) {
+    if (volume() > 0 && !isView) {
+      ctl->incShared();
+    }
   }
 
   /**
@@ -761,7 +763,7 @@ public:
       return *this;
     } else {
       assert(size() == 1);
-      return Array<T,0>(control(), ArrayShape<0>(offset()));
+      return Array<T,0>(control(), ArrayShape<0>(offset()), false);
     }
   }
 
@@ -775,7 +777,7 @@ public:
       return *this;
     } else {
       assert(canReshape());
-      return Array<T,1>(control(), ArrayShape<1>(offset(), size(), 1));
+      return Array<T,1>(control(), ArrayShape<1>(offset(), size(), 1), false);
     }
   }
 
@@ -793,7 +795,7 @@ public:
       assert(canReshape());
       assert(size() % n == 0);
       int m = size()/n;
-      return Array<T,2>(control(), ArrayShape<2>(offset(), m, n, m));
+      return Array<T,2>(control(), ArrayShape<2>(offset(), m, n, m), false);
     }
   }
 
