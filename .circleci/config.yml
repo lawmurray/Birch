@@ -41,13 +41,13 @@ executors:
   mac:
     macos:
       xcode: 14.2.0
-    resource_class: large
+    resource_class: medium
     environment:
       CODENAME: mac
-      OMP_NUM_THREADS: 8
+      OMP_NUM_THREADS: 4
       CXXFLAGS: -O1 -flto -Wall
-      MAKEFLAGS: -j16
-      BIRCH_FLAGS: --unit=dir --jobs=8 --enable-verbose --disable-static --disable-single
+      MAKEFLAGS: -j8
+      BIRCH_FLAGS: --unit=dir --jobs=4 --enable-verbose --disable-static --disable-single
     working_directory: /Users/distiller/mac
 
   alpine:
