@@ -30,15 +30,15 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return log(pdf_add_discrete_first(x, value(p), value(a), value(b)));
+    return value(log(pdf_add_discrete_first(x, p, a, b)));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return log(pdf_add_discrete_first(x, eval(p), eval(a), eval(b)));
+    return eval(log(pdf_add_discrete_first(x, p, a, b)));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_add_discrete_first(x, value(p), value(a), value(b));
+    return update_add_discrete_first(x, p, a, b);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {

@@ -18,19 +18,19 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function simulate() -> Integer! {
-    return simulate_negative_binomial(value(k), value(ρ));
+    return value(simulate_negative_binomial(k, ρ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_negative_binomial(eval(k), eval(ρ));
+    return eval(simulate_negative_binomial(k, ρ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_negative_binomial(x, value(k), value(ρ));
+    return value(logpdf_negative_binomial(x, k, ρ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_negative_binomial(x, eval(k), eval(ρ));
+    return eval(logpdf_negative_binomial(x, k, ρ));
   }
 
   override function hoist() -> Expression<Real> {

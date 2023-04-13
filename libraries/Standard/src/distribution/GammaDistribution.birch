@@ -17,19 +17,19 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
   θ:Arg2 <- θ;
 
   override function simulate() -> Real! {
-    return simulate_gamma(value(k), value(θ));
+    return value(simulate_gamma(k, θ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_gamma(eval(k), eval(θ));
+    return eval(simulate_gamma(k, θ));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_gamma(x, value(k), value(θ));
+    return value(logpdf_gamma(x, k, θ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_gamma(x, eval(k), eval(θ));
+    return eval(logpdf_gamma(x, k, θ));
   }
 
   override function hoist() -> Expression<Real> {

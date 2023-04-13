@@ -28,23 +28,23 @@ final class MatrixNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
   k:Arg4 <- k;
 
   override function simulate() -> Real[_,_] {
-    return value(simulate_matrix_normal_inverse_wishart(N, Λ, Γ, value(k)));
+    return value(simulate_matrix_normal_inverse_wishart(N, Λ, Γ, k));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return eval(simulate_matrix_normal_inverse_wishart(N, Λ, Γ, eval(k)));
+    return eval(simulate_matrix_normal_inverse_wishart(N, Λ, Γ, k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {   
-    return value(logpdf_matrix_normal_inverse_wishart(X, N, Λ, Γ, value(k)));
+    return value(logpdf_matrix_normal_inverse_wishart(X, N, Λ, Γ, k));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {   
-    return eval(logpdf_matrix_normal_inverse_wishart(X, N, Λ, Γ, eval(k)));
+    return eval(logpdf_matrix_normal_inverse_wishart(X, N, Λ, Γ, k));
   }
 
   override function update(X:Real[_,_]) -> Delay? {
-    return update_matrix_normal_inverse_wishart(X, N, Λ, Γ, value(k));
+    return update_matrix_normal_inverse_wishart(X, N, Λ, Γ, k);
   }
 
   override function updateLazy(X:Random<Real[_,_]>) -> Delay? {

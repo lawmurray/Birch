@@ -23,23 +23,23 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
   θ:Arg3 <- θ;
 
   override function simulate() -> Integer! {
-    return simulate_gamma_poisson(value(a), value(k), value(θ));
+    return value(simulate_gamma_poisson(a, k, θ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_gamma_poisson(eval(a), eval(k), eval(θ));
+    return eval(simulate_gamma_poisson(a, k, θ));
   }
   
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_gamma_poisson(x, value(a), value(k), value(θ));
+    return value(logpdf_gamma_poisson(x, a, k, θ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_gamma_poisson(x, eval(a), eval(k), eval(θ));
+    return eval(logpdf_gamma_poisson(x, a, k, θ));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_gamma_poisson(x, value(a), value(k), value(θ));
+    return update_gamma_poisson(x, a, k, θ);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {

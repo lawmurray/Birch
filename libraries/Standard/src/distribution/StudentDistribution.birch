@@ -23,19 +23,19 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
   σ2:Arg3 <- σ2;
   
   override function simulate() -> Real! {
-    return simulate_student_t(value(k), value(μ), value(σ2));
+    return value(simulate_student_t(k, μ, σ2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_student_t(eval(k), eval(μ), eval(σ2));
+    return eval(simulate_student_t(k, μ, σ2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_student_t(x, value(k), value(μ), value(σ2));
+    return value(logpdf_student_t(x, k, μ, σ2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_student_t(x, eval(k), eval(μ), eval(σ2));
+    return eval(logpdf_student_t(x, k, μ, σ2));
   }
 
   override function hoist() -> Expression<Real> {

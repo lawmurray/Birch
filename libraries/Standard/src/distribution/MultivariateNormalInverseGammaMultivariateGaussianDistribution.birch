@@ -42,27 +42,27 @@ class MultivariateNormalInverseGammaMultivariateGaussianDistribution<
 
   override function simulate() -> Real[_] {
     return value(simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-      A, value(ν), Λ, value(k), value(γ), value(c), Ω));
+      A, ν, Λ, k, γ, c, Ω));
   }
 
   override function simulateLazy() -> Real[_] {
     return eval(simulate_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        A, eval(ν), Λ, eval(k), eval(γ), eval(c), Ω));
+        A, ν, Λ, k, γ, c, Ω));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return value(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, value(ν), Λ, value(k), value(γ), value(c), Ω));
+        x, A, ν, Λ, k, γ, c, Ω));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     return eval(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, eval(ν), Λ, eval(k), eval(γ), eval(c), Ω));
+        x, A, ν, Λ, k, γ, c, Ω));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, A, value(ν), Λ, value(k), value(γ), value(c), Ω);
+        x, A, ν, Λ, k, γ, c, Ω);
   }
 
   override function hoist() -> Expression<Real> {

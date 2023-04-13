@@ -17,19 +17,19 @@ final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> 
   u:Arg2 <- u;
 
   override function simulate() -> Real! {
-    return simulate_uniform(value(l), value(u));
+    return value(simulate_uniform(l, u));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_uniform(eval(l), eval(u));
+    return eval(simulate_uniform(l, u));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_uniform(x, value(l), value(u));
+    return value(logpdf_uniform(x, l, u));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_uniform(x, eval(l), eval(u));
+    return eval(logpdf_uniform(x, l, u));
   }
 
   override function hoist() -> Expression<Real> {

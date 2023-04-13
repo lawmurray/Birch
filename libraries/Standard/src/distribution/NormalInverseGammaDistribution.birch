@@ -48,31 +48,27 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
   γ:Arg4 <- γ;
   
   override function simulate() -> Real! {
-    return simulate_normal_inverse_gamma(value(ν), value(λ), value(k),
-        value(γ));
+    return value(simulate_normal_inverse_gamma(ν, λ, k, γ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_normal_inverse_gamma(eval(ν), eval(λ), eval(k), eval(γ));
+    return eval(simulate_normal_inverse_gamma(ν, λ, k, γ));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma(x, value(ν), value(λ), value(k),
-        value(γ));
+    return value(logpdf_normal_inverse_gamma(x, ν, λ, k, γ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma(x, eval(ν), eval(λ), eval(k),
-        eval(γ));
+    return eval(logpdf_normal_inverse_gamma(x, ν, λ, k, γ));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_normal_inverse_gamma(x, value(ν), value(λ), value(k),
-        value(γ));
+    return update_normal_inverse_gamma(x, ν, λ, k, γ);
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {
-   return update_normal_inverse_gamma(x, ν, λ, k, γ);
+    return update_normal_inverse_gamma(x, ν, λ, k, γ);
   }
 
   override function hoist() -> Expression<Real> {

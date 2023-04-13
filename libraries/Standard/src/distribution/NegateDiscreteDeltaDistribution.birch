@@ -23,11 +23,11 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_categorical(1 - l - x, value(p));
+    return value(logpdf_categorical(1 - l - x, p));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_categorical(1 - l - x, eval(p));
+    return eval(logpdf_categorical(1 - l - x, p));
   }
 
   override function update(x:Integer!) -> Delay? {

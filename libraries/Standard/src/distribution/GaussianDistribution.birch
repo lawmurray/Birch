@@ -5,7 +5,8 @@ hpp{{
 /**
  * Gaussian distribution.
  */
-class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
+final class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) <
+    Distribution<Real> {
   /**
    * Mean.
    */
@@ -17,19 +18,19 @@ class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) < Distribution<Real> {
   σ2:Arg2 <- σ2;
 
   override function simulate() -> Real! {
-    return simulate_gaussian(value(μ), value(σ2));
+    return value(simulate_gaussian(μ, σ2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_gaussian(eval(μ), eval(σ2));
+    return eval(simulate_gaussian(μ, σ2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_gaussian(x, value(μ), value(σ2));
+    return value(logpdf_gaussian(x, μ, σ2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_gaussian(x, eval(μ), eval(σ2));
+    return eval(logpdf_gaussian(x, μ, σ2));
   }
 
   override function hoist() -> Expression<Real> {

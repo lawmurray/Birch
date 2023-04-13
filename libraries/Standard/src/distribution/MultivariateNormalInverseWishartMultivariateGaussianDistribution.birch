@@ -42,28 +42,27 @@ class MultivariateNormalInverseWishartMultivariateGaussianDistribution<
 
   override function simulate() -> Real[_] {
     return value(simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        value(a), value(ν), value(λ), Γ, value(k), value(c), value(ω2)));
+        a, ν, λ, Γ, k, c, ω2));
   }
 
   override function simulateLazy() -> Real[_] {
     return eval(simulate_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        eval(a), eval(ν), eval(λ), Γ, eval(k), eval(c), eval(ω2)));
+        a, ν, λ, Γ, k, c, ω2));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return value(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - value(c), value(a), value(ν), value(λ), Γ, value(k), value(ω2)));
+        x - c, a, ν, λ, Γ, k, ω2));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     return eval(logpdf_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x - eval(c), eval(a), eval(ν), eval(λ), Γ, eval(k), eval(ω2)));
+        x - c, a, ν, λ, Γ, k, ω2));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_normal_inverse_wishart_multivariate_gaussian(
-        x, value(a), value(ν), value(λ), Γ, value(k), value(c),
-        value(ω2));
+        x, a, ν, λ, Γ, k, c, ω2);
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {

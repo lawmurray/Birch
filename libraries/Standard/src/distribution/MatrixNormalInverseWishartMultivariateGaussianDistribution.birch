@@ -47,72 +47,68 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
   override function simulate() -> Real[_] {
     if !this.joined? {
       return value(simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          value(a), N, Λ, Γ, value(k), value(c), value(φ2)));
+          a, N, Λ, Γ, k, c, φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          Y, A, N, Λ, Γ, value(k), Φ);
+          Y, A, N, Λ, Γ, k, Φ);
       return value(simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          value(this.a), p.N, p.Λ, p.Γ, value(p.k), value(this.c),
-          value(this.φ2)));
+          this.a, p.N, p.Λ, p.Γ, p.k, this.c, this.φ2));
     }
   }
 
   override function simulateLazy() -> Real[_] {
     if !this.joined? {
       return eval(simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          eval(a), N, Λ, Γ, eval(k), eval(c), eval(φ2)));
+          a, N, Λ, Γ, k, c, φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          Y, A, N, Λ, Γ, eval(k), Φ);
+          Y, A, N, Λ, Γ, k, Φ);
       return eval(simulate_matrix_normal_inverse_wishart_multivariate_gaussian(
-          eval(this.a), p.N, p.Λ, p.Γ, eval(p.k), eval(this.c),
-          eval(this.φ2)));
+          this.a, p.N, p.Λ, p.Γ, p.k, this.c, this.φ2));
     }
   }
 
   override function logpdf(x:Real[_]) -> Real! {
     if !this.joined? {
       return value(logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, value(a), N, Λ, Γ, value(k), value(c), value(φ2)));
+          x, a, N, Λ, Γ, k, c, φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          Y, A, N, Λ, Γ, value(k), Φ);
+          Y, A, N, Λ, Γ, k, Φ);
       return value(logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, value(this.a), p.N, p.Λ, p.Γ, value(p.k), value(this.c),
-          value(this.φ2)));
+          x, this.a, p.N, p.Λ, p.Γ, p.k, this.c, this.φ2));
     }
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     if !this.joined? {
       return eval(logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, eval(a), N, Λ, Γ, eval(k), eval(c), eval(φ2)));
+          x, a, N, Λ, Γ, k, c, φ2));
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           this.joined!.joinMatrixNormalInverseWishartMultivariateGaussian()!;
       let p <- update_matrix_normal_inverse_wishart_matrix_gaussian(
-          Y, A, N, Λ, Γ, eval(k), Φ);
+          Y, A, N, Λ, Γ, k, Φ);
       return eval(logpdf_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, eval(this.a), p.N, p.Λ, p.Γ, eval(p.k), eval(this.c),
-          eval(this.φ2)));
+          x, this.a, p.N, p.Λ, p.Γ, p.k, this.c, this.φ2));
     }
   }
 
   override function update(x:Real[_]) -> Delay? {
     if !this.joined? {
       return update_matrix_normal_inverse_wishart_multivariate_gaussian(
-          x, value(a), N, Λ, Γ, value(k), value(c), value(φ2));
+          x, a, N, Λ, Γ, k, c, φ2);
     } else {
       let (Y, A, N, Λ, Γ, k, Φ) <-
           joinMatrixNormalInverseWishartMultivariateGaussian()!;
       return update_matrix_normal_inverse_wishart_matrix_gaussian(
-          Y, A, N, Λ, Γ, value(k), Φ);
+          Y, A, N, Λ, Γ, k, Φ);
     }
   }
 

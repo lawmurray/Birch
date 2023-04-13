@@ -18,19 +18,19 @@ final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
   u:Arg2 <- u;
 
   override function simulate() -> Integer! {
-    return simulate_uniform_int(value(l), value(u));
+    return value(simulate_uniform_int(l, u));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_uniform_int(eval(l), eval(u));
+    return eval(simulate_uniform_int(l, u));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_uniform_int(x, value(l), value(u));
+    return value(logpdf_uniform_int(x, l, u));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_uniform_int(x, eval(l), eval(u));
+    return eval(logpdf_uniform_int(x, l, u));
   }
 
   override function cdf(x:Integer!) -> Real!? {

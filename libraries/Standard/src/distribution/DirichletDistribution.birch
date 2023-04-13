@@ -16,11 +16,11 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   }
 
   override function logpdf(x:Real[_]) -> Real! {
-    return logpdf_dirichlet(x, value(α));
+    return value(logpdf_dirichlet(x, α));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
-    return logpdf_dirichlet(x, eval(α));
+    return eval(logpdf_dirichlet(x, α));
   }
 
   override function hoist() -> Expression<Real> {

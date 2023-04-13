@@ -23,23 +23,23 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
   θ:Arg3 <- θ;
 
   override function simulate() -> Real! {
-    return simulate_lomax(1.0/(value(a)*value(θ)), value(k));
+    return value(simulate_lomax(1.0/(a*θ), k));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_lomax(1.0/(eval(a)*eval(θ)), eval(k));
+    return eval(simulate_lomax(1.0/(a*θ), k));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
+    return value(logpdf_lomax(x, 1.0/(a*θ), k));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_lomax(x, 1.0/(eval(a)*eval(θ)), eval(k));
+    return eval(logpdf_lomax(x, 1.0/(a*θ), k));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_gamma_exponential(x, value(a), value(k), value(θ));
+    return update_gamma_exponential(x, a, k, θ);
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {

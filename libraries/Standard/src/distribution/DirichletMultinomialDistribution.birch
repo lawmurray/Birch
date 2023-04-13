@@ -22,15 +22,15 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   }
 
   override function logpdf(x:Integer[_]) -> Real! {
-    return logpdf_dirichlet_multinomial(x, value(n), value(α));
+    return value(logpdf_dirichlet_multinomial(x, n, α));
   }
 
   override function logpdfLazy(x:Integer[_]) -> Real! {
-    return logpdf_dirichlet_multinomial(x, eval(n), eval(α));
+    return eval(logpdf_dirichlet_multinomial(x, n, α));
   }
 
   override function update(x:Integer[_]) -> Delay? {
-    return update_dirichlet_multinomial(x, value(n), value(α));
+    return update_dirichlet_multinomial(x, n, α);
   }
 
   override function updateLazy(x:Random<Integer[_]>) -> Delay? {

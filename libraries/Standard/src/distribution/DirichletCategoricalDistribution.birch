@@ -16,15 +16,15 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_dirichlet_categorical(x, value(α));
+    return value(logpdf_dirichlet_categorical(x, α));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_dirichlet_categorical(x, eval(α));
+    return eval(logpdf_dirichlet_categorical(x, α));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_dirichlet_categorical(x, value(α));
+    return update_dirichlet_categorical(x, α);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {

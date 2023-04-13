@@ -31,32 +31,32 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
 
   override function simulate() -> Real[_] {
     return value(simulate_multivariate_gaussian_multivariate_gaussian(
-        A, value(μ), Σ, value(c), Ω));
+        A, μ, Σ, c, Ω));
   }
 
   override function simulateLazy() -> Real[_] {
     return eval(simulate_multivariate_gaussian_multivariate_gaussian(
-        A, eval(μ), Σ, eval(c), Ω));
+        A, μ, Σ, c, Ω));
   }
   
   override function logpdf(x:Real[_]) -> Real! {
     return value(logpdf_multivariate_gaussian_multivariate_gaussian(x,
-        A, value(μ), Σ, value(c), Ω));
+        A, μ, Σ, c, Ω));
   }
 
   override function logpdfLazy(x:Real[_]) -> Real! {
     return eval(logpdf_multivariate_gaussian_multivariate_gaussian(x,
-        A, eval(μ), Σ, eval(c), Ω));
+        A, μ, Σ, c, Ω));
   }
 
   override function hoist() -> Expression<Real> {
     return box(logpdf_multivariate_gaussian_multivariate_gaussian(random(),
-        A, value(μ), Σ, value(c), Ω));
+        A, μ, Σ, c, Ω));
   }
 
   override function update(x:Real[_]) -> Delay? {
     return update_multivariate_gaussian_multivariate_gaussian(x,
-        A, value(μ), Σ, value(c), Ω);
+        A, μ, Σ, c, Ω);
   }
 
   override function updateLazy(x:Random<Real[_]>) -> Delay? {
@@ -80,7 +80,7 @@ final class MultivariateGaussianMultivariateGaussianDistribution<Arg1,Arg2,
   override function getMultivariateGaussian() -> (Expression<Real[_]>,
       Expression<Real[_,_]>)? {
     assert isMultivariateGaussian();
-    return box(μ, Σ);
+    return box(A*μ + c, A*Σ*transpose(A) + Ω);
   }
 }
 

@@ -13,19 +13,19 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
   k:Arg2 <- k;
 
   override function simulate() -> Real[_,_] {
-    return simulate_wishart(value(Ψ), value(k));
+    return value(simulate_wishart(Ψ, k));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return simulate_wishart(eval(Ψ), eval(k));
+    return eval(simulate_wishart(Ψ, k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return logpdf_wishart(X, value(Ψ), value(k));
+    return value(logpdf_wishart(X, Ψ, k));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return logpdf_wishart(X, eval(Ψ), eval(k));
+    return eval(logpdf_wishart(X, Ψ, k));
   }
 
   override function hoist() -> Expression<Real> {

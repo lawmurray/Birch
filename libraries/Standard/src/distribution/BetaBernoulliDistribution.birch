@@ -14,23 +14,23 @@ final class BetaBernoulliDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) <
   β:Arg2 <- β;
 
   override function simulate() -> Boolean! {
-    return simulate_beta_bernoulli(value(α), value(β));
+    return value(simulate_beta_bernoulli(α, β));
   }
   
   override function simulateLazy() -> Boolean! {
-    return simulate_beta_bernoulli(eval(α), eval(β));
+    return eval(simulate_beta_bernoulli(α, β));
   }
   
   override function logpdf(x:Boolean!) -> Real! {
-    return logpdf_beta_bernoulli(x, value(α), value(β));
+    return value(logpdf_beta_bernoulli(x, α, β));
   }
 
   override function logpdfLazy(x:Boolean!) -> Real! {
-    return logpdf_beta_bernoulli(x, eval(α), eval(β));
+    return eval(logpdf_beta_bernoulli(x, α, β));
   }
 
   override function update(x:Boolean!) -> Delay? {
-    return update_beta_bernoulli(x, value(α), value(β));
+    return update_beta_bernoulli(x, α, β);
   }
 
   override function updateLazy(x:Random<Boolean>) -> Delay? {

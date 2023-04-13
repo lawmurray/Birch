@@ -3,9 +3,7 @@
  * prior.
  */
 final class MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
-    Arg5>(a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, ω2:Arg5) <
-    GaussianDistribution<Expression<Real>,Expression<Real>>(
-    box(dot(a, μ) + c), box(dot(a, Σ*a) + ω2)) {
+    Arg5>(a:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, ω2:Arg5) < Distribution<Real> {
   /**
    * Scale.
    */
@@ -31,14 +29,40 @@ final class MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
    */
   ω2:Arg5 <- ω2;
 
+  override function simulate() -> Real! {
+    return value(simulate_gaussian(dot(a, μ) + c, dot(a, Σ*a) + ω2));
+  }
+
+  override function simulateLazy() -> Real! {
+    return eval(simulate_gaussian(dot(a, μ) + c, dot(a, Σ*a) + ω2));
+  }
+  
+  override function logpdf(x:Real!) -> Real! {
+    return value(logpdf_gaussian(x, dot(a, μ) + c, dot(a, Σ*a) + ω2));
+  }
+
+  override function logpdfLazy(x:Real!) -> Real! {
+    return eval(logpdf_gaussian(x, dot(a, μ) + c, dot(a, Σ*a) + ω2));
+  }
+
   override function update(x:Real!) -> Delay? {
-    return update_multivariate_gaussian_gaussian(x, value(a), value(μ),
-        Σ, value(c), value(ω2), value(super.μ), value(super.σ2));
+    return update_multivariate_gaussian_gaussian(x, a, μ, Σ, c, ω2);
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {
-    return update_multivariate_gaussian_gaussian(x, a, μ, Σ, c, ω2, super.μ,
-        super.σ2);
+    return update_multivariate_gaussian_gaussian(x, a, μ, Σ, c, ω2);
+  }
+
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_gaussian(random(), dot(a, μ) + c, dot(a, Σ*a) + ω2));
+  }
+  
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_gaussian(x, value(dot(a, μ) + c), value(dot(a, Σ*a) + ω2));
+  }
+
+  override function quantile(P:Real!) -> Real!? {
+    return quantile_gaussian(P, value(dot(a, μ) + c), value(dot(a, Σ*a) + ω2));
   }
 
   override function fix() {
@@ -48,6 +72,15 @@ final class MultivariateGaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
     constant(Σ);
     constant(c);
     constant(ω2);
+  }
+
+  override function isGaussian() -> Boolean {
+    return !x?;
+  }
+
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    assert isGaussian();
+    return box(dot(a, μ) + c, dot(a, Σ*a) + ω2);
   }
 }
 
@@ -99,16 +132,13 @@ function Gaussian<Arg1,Arg2>(μ:Dot<Arg1,Random<Real[_]>>, σ2:Arg2) ->
  * @param Σ Prior covariance.
  * @param c Offset.
  * @param ω2 Likelihood covariance.
- * @param m Precomputed marginal mean.
- * @param τ2 Precomputed marginal variance.
  *
  * @return the posterior hyperparameters `μ'` and `Σ'`.
  */
-function update_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
-    Arg7,Arg8>(x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, ω2:Arg6, m:Arg7,
-    τ2:Arg8) -> {
-  let k' <- wrap(Σ*a/τ2);
-  let μ' <- μ + k'*(x - m);
+function update_multivariate_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+    x:Arg1, a:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, ω2:Arg6) -> {
+  let k' <- wrap(Σ*a/(dot(a, Σ*a) + ω2));
+  let μ' <- μ + k'*(x - dot(a, μ) - c);
   let Σ' <- Σ - outer(k', a)*Σ;
   return make_multivariate_gaussian(μ', Σ');
 }

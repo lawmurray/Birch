@@ -27,15 +27,15 @@ final class RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_restaurant_categorical(x, value(α), value(θ), value(n));
+    return value(logpdf_restaurant_categorical(x, α, θ, n));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_restaurant_categorical(x, eval(α), eval(θ), eval(n));
+    return eval(logpdf_restaurant_categorical(x, α, θ, n));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_restaurant_categorical(x, value(α), value(θ), value(n));
+    return update_restaurant_categorical(x, α, θ, n);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {

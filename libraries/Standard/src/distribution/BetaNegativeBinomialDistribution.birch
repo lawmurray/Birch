@@ -19,23 +19,23 @@ final class BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
   β:Arg3 <- β;
 
   override function simulate() -> Integer! {
-    return simulate_beta_negative_binomial(value(k), value(α), value(β));
+    return value(simulate_beta_negative_binomial(k, α, β));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_beta_negative_binomial(eval(k), eval(α), eval(β));
+    return eval(simulate_beta_negative_binomial(k, α, β));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_beta_negative_binomial(x, value(k), value(α), value(β));
+    return value(logpdf_beta_negative_binomial(x, k, α, β));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_beta_negative_binomial(x, eval(k), eval(α), eval(β));
+    return eval(logpdf_beta_negative_binomial(x, k, α, β));
   }
 
   override function update(x:Integer!) -> Delay? {
-    return update_beta_negative_binomial(x, value(k), value(α), value(β));
+    return update_beta_negative_binomial(x, k, α, β);
   }
 
   override function updateLazy(x:Random<Integer>) -> Delay? {

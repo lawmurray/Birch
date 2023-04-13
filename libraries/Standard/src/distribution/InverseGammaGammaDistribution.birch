@@ -19,23 +19,23 @@ final class InverseGammaGammaDistribution<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Ar
   β:Arg3 <- β;
 
   override function simulate() -> Real! {
-    return simulate_inverse_gamma_gamma(value(k), value(α), value(β));
+    return value(simulate_inverse_gamma_gamma(k, α, β));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_inverse_gamma_gamma(eval(k), eval(α), eval(β));
+    return eval(simulate_inverse_gamma_gamma(k, α, β));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_inverse_gamma_gamma(x, value(k), value(α), value(β));
+    return value(logpdf_inverse_gamma_gamma(x, k, α, β));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_inverse_gamma_gamma(x, eval(k), eval(α), eval(β));
+    return eval(logpdf_inverse_gamma_gamma(x, k, α, β));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_inverse_gamma_gamma(x, value(k), value(α), value(β));
+    return update_inverse_gamma_gamma(x, k, α, β);
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {

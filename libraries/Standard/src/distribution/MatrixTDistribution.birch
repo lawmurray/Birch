@@ -24,19 +24,19 @@ class MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
   Ψ:Arg4 <- Ψ;
 
   override function simulate() -> Real[_,_] {
-    return value(simulate_matrix_t(value(k), M, Σ, Ψ));
+    return value(simulate_matrix_t(k, M, Σ, Ψ));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return eval(simulate_matrix_t(eval(k), M, Σ, Ψ));
+    return eval(simulate_matrix_t(k, M, Σ, Ψ));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
-    return value(logpdf_matrix_t(X, value(k), M, Σ, Ψ));
+    return value(logpdf_matrix_t(X, k, M, Σ, Ψ));
   }
 
   override function logpdfLazy(X:Real[_,_]) -> Real! {
-    return eval(logpdf_matrix_t(X, eval(k), M, Σ, Ψ));
+    return eval(logpdf_matrix_t(X, k, M, Σ, Ψ));
   }
 
   override function hoist() -> Expression<Real> {

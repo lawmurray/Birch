@@ -19,11 +19,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_categorical(x, value(ρ));
+    return value(logpdf_categorical(x, ρ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_categorical(x, eval(ρ));
+    return eval(logpdf_categorical(x, ρ));
   }
 
   override function hoist() -> Expression<Real> {

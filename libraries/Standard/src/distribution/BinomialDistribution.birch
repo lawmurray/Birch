@@ -18,19 +18,19 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function simulate() -> Integer! {
-    return simulate_binomial(value(n), value(ρ));
+    return value(simulate_binomial(n, ρ));
   }
   
   override function simulateLazy() -> Integer! {
-    return simulate_binomial(eval(n), eval(ρ));
+    return eval(simulate_binomial(n, ρ));
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return logpdf_binomial(x, value(n), value(ρ));
+    return value(logpdf_binomial(x, n, ρ));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return logpdf_binomial(x, eval(n), eval(ρ));
+    return eval(logpdf_binomial(x, n, ρ));
   }
 
   override function hoist() -> Expression<Real> {

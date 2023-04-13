@@ -12,19 +12,19 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
   λ:Arg1 <- λ;
 
   override function simulate() -> Real! {
-    return simulate_exponential(value(λ));
+    return value(simulate_exponential(λ));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_exponential(eval(λ));
+    return eval(simulate_exponential(λ));
   }
 
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_exponential(x, value(λ));
+    return value(logpdf_exponential(x, λ));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_exponential(x, eval(λ));
+    return eval(logpdf_exponential(x, λ));
   }
 
   override function hoist() -> Expression<Real> {

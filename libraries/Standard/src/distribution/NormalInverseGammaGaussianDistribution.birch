@@ -41,28 +41,23 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   s2:Arg7 <- s2;
 
   override function simulate() -> Real! {
-    return simulate_normal_inverse_gamma_gaussian(value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return value(simulate_normal_inverse_gamma_gaussian(a, ν, λ, k, γ, c, s2));
   }
 
   override function simulateLazy() -> Real! {
-    return simulate_normal_inverse_gamma_gaussian(eval(a), eval(ν),
-        eval(λ), eval(k), eval(γ), eval(c), eval(s2));
+    return eval(simulate_normal_inverse_gamma_gaussian(a, ν, λ, k, γ, c, s2));
   }
   
   override function logpdf(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma_gaussian(x, value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return value(logpdf_normal_inverse_gamma_gaussian(x, a, ν, λ, k, γ, c, s2));
   }
 
   override function logpdfLazy(x:Real!) -> Real! {
-    return logpdf_normal_inverse_gamma_gaussian(x, eval(a), eval(ν),
-        eval(λ), eval(k), eval(γ), eval(c), eval(s2));
+    return eval(logpdf_normal_inverse_gamma_gaussian(x, a, ν, λ, k, γ, c, s2));
   }
 
   override function update(x:Real!) -> Delay? {
-    return update_normal_inverse_gamma_gaussian(x, value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
+    return update_normal_inverse_gamma_gaussian(x, a, ν, λ, k, γ, c, s2);
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {
@@ -75,13 +70,13 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
   }
 
   override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma_gaussian(P, value(a),
-        value(ν), value(λ), value(k), value(γ), value(c), value(s2));
+    return quantile_normal_inverse_gamma_gaussian(P, value(a), value(ν),
+        value(λ), value(k), value(γ), value(c), value(s2));
   }
 
   override function hoist() -> Expression<Real> {
-    return box(logpdf_normal_inverse_gamma_gaussian(random(), a, ν, λ, k,
-        γ, c, s2));
+    return box(logpdf_normal_inverse_gamma_gaussian(random(), a, ν, λ, k, γ,
+        c, s2));
   }
 
   override function fix() {

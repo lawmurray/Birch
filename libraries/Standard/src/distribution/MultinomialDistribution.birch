@@ -22,11 +22,11 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   }
 
   override function logpdf(x:Integer[_]) -> Real! {
-    return logpdf_multinomial(x, value(n), value(ρ));
+    return value(logpdf_multinomial(x, n, ρ));
   }
 
   override function logpdfLazy(x:Integer[_]) -> Real! {
-    return logpdf_multinomial(x, eval(n), eval(ρ));
+    return eval(logpdf_multinomial(x, n, ρ));
   }
 
   override function hoist() -> Expression<Real> {

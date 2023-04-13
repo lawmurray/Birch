@@ -2,8 +2,7 @@
  * Gaussian distribution with linear transformation of Gaussian prior.
  */
 final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
-    μ:Arg2, σ2:Arg3, c:Arg4, ω2:Arg5) < GaussianDistribution<Expression<Real>,
-    Expression<Real>>(box(a*μ + c), box(pow(a, 2.0)*σ2 + ω2)) {
+    μ:Arg2, σ2:Arg3, c:Arg4, ω2:Arg5) < Distribution<Real> {
   /**
    * Scale.
    */
@@ -29,13 +28,40 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
    */
   ω2:Arg5 <- ω2;
 
+  override function simulate() -> Real! {
+    return value(simulate_gaussian(a*μ + c, a*a*σ2 + ω2));
+  }
+
+  override function simulateLazy() -> Real! {
+    return eval(simulate_gaussian(a*μ + c, a*a*σ2 + ω2));
+  }
+  
+  override function logpdf(x:Real!) -> Real! {
+    return value(logpdf_gaussian(x, a*μ + c, a*a*σ2 + ω2));
+  }
+
+  override function logpdfLazy(x:Real!) -> Real! {
+    return eval(logpdf_gaussian(x, a*μ + c, a*a*σ2 + ω2));
+  }
+
   override function update(x:Real!) -> Delay? {
-    return update_gaussian_gaussian(x, value(a), value(μ), value(σ2),
-        value(c), value(ω2), value(super.μ), value(super.σ2));
+    return update_gaussian_gaussian(x, a, μ, σ2, c, ω2);
   }
 
   override function updateLazy(x:Random<Real>) -> Delay? {
-    return update_gaussian_gaussian(x, a, μ, σ2, c, ω2, super.μ, super.σ2);
+    return update_gaussian_gaussian(x, a, μ, σ2, c, ω2);
+  }
+
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_gaussian(random(), a*μ + c, a*a*σ2 + ω2));
+  }
+  
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_gaussian(x, value(a*μ + c), value(a*a*σ2 + ω2));
+  }
+
+  override function quantile(P:Real!) -> Real!? {
+    return quantile_gaussian(P, value(a*μ + c), value(a*a*σ2 + ω2));
   }
 
   override function fix() {
@@ -45,6 +71,15 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
     constant(σ2);
     constant(c);
     constant(ω2);
+  }
+
+  override function isGaussian() -> Boolean {
+    return !x?;
+  }
+
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    assert isGaussian();
+    return box(a*μ + c, a*a*σ2 + ω2);
   }
 }
 
@@ -113,8 +148,8 @@ function Gaussian<Arg>(μ:Random<Real>, σ2:Arg) -> Distribution<Real> {
  *
  * @return the posterior hyperparameters `μ'` and `σ2'`.
  */
-function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(
-    x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, ω2:Arg6, m:Arg7, τ2:Arg8) -> {
+function update_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6>(
+    x:Arg1, a:Arg2, μ:Arg3, σ2:Arg4, c:Arg5, ω2:Arg6) -> {
   let σ2' <- 1.0/(1.0/σ2 + a*a/ω2);
   let μ' <- σ2'*(μ/σ2 + a*(x - c)/ω2);
   return make_gaussian(μ', σ2');
