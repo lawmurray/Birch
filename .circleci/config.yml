@@ -5,16 +5,16 @@ orbs:
 
 executors:
   default:
-    docker:
-      - image: ubuntu:jammy
+    machine:
+      image: ubuntu-2204:current
     resource_class: large
     environment:
       CODENAME: default
     working_directory: /root/default
 
   bench:
-    docker:
-      - image: ubuntu:jammy
+    machine:
+      image: ubuntu-2204:current
     resource_class: large
     environment:
       CODENAME: bench
@@ -27,8 +27,8 @@ executors:
     working_directory: /root/bench
 
   cover:
-    docker:
-      - image: ubuntu:jammy
+    machine:
+      image: ubuntu-2204:current
     resource_class: large
     environment:
       CODENAME: cover
