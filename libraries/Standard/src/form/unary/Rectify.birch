@@ -26,4 +26,8 @@ Rectify<Middle> rectify(const Middle& m) {
 /**
  * Rectification.
  */
-function rect(x:NumberLike) -> NumberLike;
+function rectify(x:NumberLike) -> NumberLike;
+
+function rectify<Arg>(x:Rectify<Arg>) -> Rectify<Arg> {
+  return x;
+}

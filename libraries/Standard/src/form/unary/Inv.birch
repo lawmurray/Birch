@@ -39,3 +39,7 @@ function inv<Arg>(L:DiagonalScalar<Arg>) -> {
 function inv<Arg>(L:DiagonalVector<Arg>) -> {
   return Diagonal(1.0/L.m);
 }
+
+function inv<Arg>(A:Inv<Arg>) -> Arg {
+  return A.m;
+}

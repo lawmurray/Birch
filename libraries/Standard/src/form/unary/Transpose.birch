@@ -31,3 +31,7 @@ Transpose<Middle> transpose(const Middle& m) {
  * @return Result $B = A^\top$.
  */
 function transpose(A:RealMatrixLike) -> RealMatrixLike;
+
+function transpose<Arg>(A:Transpose<Arg>) -> Arg {
+  return A.m;
+}

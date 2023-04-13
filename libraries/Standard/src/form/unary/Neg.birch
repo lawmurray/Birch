@@ -31,3 +31,7 @@ Neg<Middle> operator-(const Middle& m) {
  * Negation.
  */
 operator (-x:NumberLike) -> NumberLike;
+
+operator<Arg> (-x:Neg<Arg>) -> Arg {
+  return x.m;
+}

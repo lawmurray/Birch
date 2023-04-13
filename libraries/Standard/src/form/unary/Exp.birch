@@ -27,3 +27,7 @@ Exp<Middle> exp(const Middle& m) {
  * Exponential.
  */
 function exp(x:NumberLike) -> RealLike;
+
+function exp<Arg>(x:Log<Arg>) -> Arg {
+  return x.m;
+}

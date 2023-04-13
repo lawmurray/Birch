@@ -39,3 +39,7 @@ function triinv<Arg>(L:DiagonalScalar<Arg>) -> {
 function triinv<Arg>(L:DiagonalVector<Arg>) -> {
   return Diagonal(1.0/L.m);
 }
+
+function triinv<Arg>(A:TriInv<Arg>) -> Arg {
+  return A.m;
+}

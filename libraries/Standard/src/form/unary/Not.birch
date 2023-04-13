@@ -27,3 +27,7 @@ Not<Middle> operator!(const Middle& m) {
  * Logical `not`.
  */
 operator (!x:NumberLike) -> BooleanLike;
+
+operator<Arg> (!x:Not<Arg>) -> Arg {
+  return x.m;
+}

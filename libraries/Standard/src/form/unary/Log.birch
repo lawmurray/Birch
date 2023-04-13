@@ -27,3 +27,7 @@ Log<Middle> log(const Middle& m) {
  * Logarithm.
  */
 function log(x:NumberLike) -> RealLike;
+
+function log<Arg>(x:Exp<Arg>) -> Arg {
+  return x.m;
+}

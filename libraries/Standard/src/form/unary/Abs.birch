@@ -27,3 +27,7 @@ Abs<Middle> abs(const Middle& m) {
  * Absolute value.
  */
 function abs(x:NumberLike) -> NumberLike;
+
+function abs<Arg>(x:Abs<Arg>) -> Abs<Arg> {
+  return x;
+}
