@@ -22,7 +22,7 @@ executors:
       CXXFLAGS: -O3 -flto -march=native -Wall
       MAKEFLAGS: -j8
       CONFIGURE_FLAGS: --disable-assert
-      BIRCH_FLAGS: --unit=dir --arch=native --jobs=4 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
+      BIRCH_FLAGS: --unit=dir --arch=native --jobs=8 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single
       MONGODB_DATABASE_TOOLS_URL: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.7.0.deb
     working_directory: /home/circleci/bench
 
@@ -35,18 +35,19 @@ executors:
       OMP_NUM_THREADS: 4
       CXXFLAGS: -O1 -Wall -g -fno-inline --coverage
       MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=3 --enable-verbose --disable-static --disable-single --enable-coverage
+      BIRCH_FLAGS: --unit=dir --jobs=8 --enable-verbose --disable-static --disable-single --enable-coverage
     working_directory: /home/circleci/cover
 
   mac:
     macos:
-      xcode: 13.4.1
+      xcode: 14.2.0
+    resource_class: large
     environment:
       CODENAME: mac
-      OMP_NUM_THREADS: 4
+      OMP_NUM_THREADS: 8
       CXXFLAGS: -O1 -flto -Wall
-      MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=4 --enable-verbose --disable-static --disable-single
+      MAKEFLAGS: -j16
+      BIRCH_FLAGS: --unit=dir --jobs=8 --enable-verbose --disable-static --disable-single
     working_directory: /Users/distiller/mac
 
   alpine:
