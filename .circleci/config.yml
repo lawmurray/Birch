@@ -437,17 +437,6 @@ commands:
           command: |
               git config --global user.name "Birch Machine"
               git config --global user.email "birch-machine@indii.org"
-      - run:
-          name: OSC identity
-          command: |
-              if [[ -n "$OSC_USERNAME" && -n "$OSC_PASSWORD" ]]; then
-                mkdir -p ~/.config/osc
-                echo [general]                          > ~/.config/osc/oscrc
-                echo apiurl = https://api.opensuse.org >> ~/.config/osc/oscrc
-                echo [https://api.opensuse.org]        >> ~/.config/osc/oscrc
-                echo user = $OSC_USERNAME              >> ~/.config/osc/oscrc
-                echo pass = $OSC_PASSWORD              >> ~/.config/osc/oscrc
-              fi
 
   install_cuda_prereq:
     steps:
