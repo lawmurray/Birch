@@ -170,9 +170,12 @@ commands:
                     libtool \
                     flex \
                     bison \
-                    boost \
-                    eigen \
                     libomp \
+                    jemalloc \
+                    eigen \
+                    libyaml \
+                    boost \
+                    sqlite \
                     cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
               elif [ "$CODENAME" = "default" ] || [ "$CODENAME" = "bench" ] || [ "$CODENAME" = "cover" ]; then
