@@ -164,8 +164,12 @@ commands:
                 HOMEBREW_NO_AUTO_UPDATE=1 brew install \
                     gnupg \
                     coreutils \
+                    make \
+                    autoconf \
+                    automake \
                     libtool \
                     flex \
+                    bison \
                     boost \
                     eigen \
                     libomp \
