@@ -673,23 +673,6 @@ bool is_constant(T&& x) {
  */
 function box<Type>(x:Type) -> ;
 
-/**
- * Wrap a value. The `wrap()` series of functions preserves basic values,
- * while boxing [Expression](../../classes/Expression) objects into
- * [Expression](../../classes/Expression) objects, using the following
- * conversions:
- *
- * | From                | To                        | Detail                                                                         |
- * | ------------------- | ------------------------- | ---------------------------------------------------- |
- * | `Value`             | `Value`                   | where `Value` is a basic or array type.              |
- * | `Value!`            | `Value!`                  | where `Value` is a basic type.                       |
- * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
- * | `Expression<Value>` | `Expression<Value>`       |                                                      |
- *
- * See also: [box](../../functions/box)
- */
-function wrap<Type>(x:Type) -> ;
-
 hpp{{
 namespace birch {
 template<class T>
@@ -710,6 +693,39 @@ template<class... Args>
 auto box(Args&&... args) {
   return std::make_tuple(box(std::forward<Args>(args))...);
 }
+}
+}}
+
+/**
+ * Wrap a value. The `wrap()` series of functions preserves basic values,
+ * while boxing [Expression](../../classes/Expression) objects into
+ * [Expression](../../classes/Expression) objects, using the following
+ * conversions:
+ *
+ * | From                | To                        | Detail                                                                         |
+ * | ------------------- | ------------------------- | ---------------------------------------------------- |
+ * | `Value`             | `Value`                   | where `Value` is a basic or array type.              |
+ * | `Value!`            | `Value!`                  | where `Value` is a basic type.                       |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
+ * | `Expression<Value>` | `Expression<Value>`       |                                                      |
+ *
+ * Some exceptions are made for special forms such as Diagonal, which also
+ * return as-is, as these are commonly required for expression optimization.
+ *
+ * See also: [box](../../functions/box)
+ */
+function wrap<Type>(x:Type) -> ;
+
+function wrap<Value>(x:DiagonalScalar<Value>) -> DiagonalScalar<Value> {
+  return x;
+}
+
+function wrap<Value>(x:DiagonalVector<Value>) -> DiagonalVector<Value> {
+  return x;
+}
+
+hpp{{
+namespace birch {
 
 template<class T>
 auto wrap(T&& x) {
