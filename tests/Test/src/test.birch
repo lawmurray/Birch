@@ -27,7 +27,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let B <- 10000;  // number of bootstrap resamples
   let nfails <- 0;
   let ntests <- 2*C - 1;
-  let α <- 0.001/ntests;  // p-value for failure, with Bonferroni correction
+  let α <- 5.0e-3/ntests;  // p-value for failure, with Bonferroni correction
   let l <- vector(1, R);
   let u <- vector(2*R, R);
 
@@ -65,7 +65,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     }
   }
   if 100 < R && 0 < nfails {
-    error("***failed*** in aggregate, " + nfails + " of " + ntests + " failed");
+    warn("***failed*** in aggregate, " + nfails + " of " + ntests + " failed");
     return false;
   } else {
     return true;

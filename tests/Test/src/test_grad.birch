@@ -15,7 +15,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   //   success or ntrials trials, after which the test is considered failed
 
   let γ <- 1.0e-3;  // acceptable failure rate
-  let ε <- 1.0e-2;  // relative error threshold for fail
+  let ε <- 1.0e-3;  // relative error threshold for fail
   // ^ the pass criterion is that 100*(1 - γ) percent of gradients computed
   //   are within 100.0*ε percent of the finite difference approximation; e.g.
   //   with γ = 1.0e-3 and ε = 1.0e-2, that "99.9% of gradients computed are

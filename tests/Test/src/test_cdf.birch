@@ -74,7 +74,7 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     P <- P + q.pdf(x)*(to!! - from!!)/N;
 
     let δ <- abs(C - P);
-    let ε <- 2.0/sqrt(N);
+    let ε <- 1.0/sqrt(N);
     if 100 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
       failed <- true;
       warn("on step " + n + ", " + C + " vs " + P);
@@ -131,7 +131,7 @@ function test_cdf(q:Distribution<Integer>) {
     P <- P + q.pdf(x);
 
     let δ <- abs(C - P);
-    let ε <- 2.0e-3;
+    let ε <- 1.0e-3;
     if !(δ <= ε) {  // careful of nans
       failed <- true;
       warn("on value " + x + ", " + C + " vs " + P);

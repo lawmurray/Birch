@@ -52,7 +52,7 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
   /* test distance between the iid and Metropolis samples */
   let (ess, lsum) <- resample_reduce(z);
   let δ <- abs(expm1(lsum - log(N)));
-  let ε <- 10.0/sqrt(N);
+  let ε <- 1.0/sqrt(N);
   if !(N < 10 || δ < ε) {
     let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
@@ -76,7 +76,7 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   /* compute the shape for a t-distribution proposal using the mean and
    * sample variance of iid samples, calculated with Welford's online
    * algorithm */
-  let k <- 3 + D; // degrees of freedom
+  let k <- 3; // degrees of freedom
   μ:Real[D]; // running mean
   M:Real[D,D]; // running matrix of co-moments
   do {
@@ -108,7 +108,7 @@ function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   /* test distance between the iid and Metropolis samples */
   let (ess, lsum) <- resample_reduce(z);
   let δ <- abs(expm1(lsum - log(N)));
-  let ε <- 10.0/sqrt(N);
+  let ε <- 1.0/sqrt(N);
   if !(N < 10 || δ < ε) {
     let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
@@ -167,7 +167,7 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   /* test distance between the iid and Metropolis samples */
   let (ess, lsum) <- resample_reduce(z);
   let δ <- abs(expm1(lsum - log(N)));
-  let ε <- 10.0/sqrt(N);
+  let ε <- 1.0/sqrt(N);
   if !(N < 10 || δ < ε) {
     let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
