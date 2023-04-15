@@ -4,7 +4,7 @@
 #include "src/visitor/Visitor.hpp"
 
 void birch::Visitor::visit(const Package* o) {
-  for (auto file : o->files) {
+  for (auto file : o->sources) {
     file->accept(this);
   }
 }

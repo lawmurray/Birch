@@ -20,14 +20,14 @@ void birch::MarkdownGenerator::visit(const Package* o) {
   auto all = [](const void*) { return true; };
   auto docsNotEmpty = [](const Located* o) { return !o->loc->doc.empty(); };
 
-  Gatherer<GlobalVariable> variables(docsNotEmpty, false);
-  Gatherer<Program> programs(docsNotEmpty, false);
-  Gatherer<Function> functions(docsNotEmpty, false);
-  Gatherer<BinaryOperator> binaries(all, false);
-  Gatherer<UnaryOperator> unaries(all, false);
-  Gatherer<Basic> basics(docsNotEmpty, false);
-  Gatherer<Struct> structs(docsNotEmpty, false);
-  Gatherer<Class> classes(docsNotEmpty, false);
+  Gatherer<GlobalVariable> variables(docsNotEmpty);
+  Gatherer<Program> programs(docsNotEmpty);
+  Gatherer<Function> functions(docsNotEmpty);
+  Gatherer<BinaryOperator> binaries(all);
+  Gatherer<UnaryOperator> unaries(all);
+  Gatherer<Basic> basics(docsNotEmpty);
+  Gatherer<Struct> structs(docsNotEmpty);
+  Gatherer<Class> classes(docsNotEmpty);
 
   o->accept(&variables);
   o->accept(&programs);

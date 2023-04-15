@@ -18,11 +18,9 @@ public:
    * Constructor.
    *
    * @param predicate Optional predicate function to filter objects of type T.
-   * @param headers For packages, recurse into header files as well (or just
-   * source files)?
    */
   Gatherer(std::function<bool(const T*)> predicate =
-      [](const T* o) -> bool {return true;}, const bool headers = true);
+      [](const T* o) -> bool {return true;});
 
   /**
    * Begin iterator over gathered objects.
@@ -56,11 +54,6 @@ protected:
   std::function<bool(const T*)> predicate;
 
   /**
-   * Recurse into headers?
-   */
-  bool headers;
-
-  /**
    * Gathered objects.
    */
   std::vector<T*> gathered;
@@ -68,18 +61,13 @@ protected:
 }
 
 template<class T>
-birch::Gatherer<T>::Gatherer(std::function<bool(const T*)> predicate, const bool headers) :
-    predicate(predicate), headers(headers) {
+birch::Gatherer<T>::Gatherer(std::function<bool(const T*)> predicate) :
+    predicate(predicate) {
   //
 }
 
 template<class T>
 void birch::Gatherer<T>::visit(const Package* o) {
-  if (headers) {
-    for (auto file : o->headers) {
-      file->accept(this);
-    }
-  }
   for (auto file : o->sources) {
     file->accept(this);
   }
