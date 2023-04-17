@@ -59,13 +59,23 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     std::string name = upper(canonical(o->name));
     line("#ifndef " << name << "_HPP");
     line("#define " << name << "_HPP\n");
-    line("#include <numbirch.hpp>\n");
+    line("#include <numbirch.hpp>");
     line("#include <membirch.hpp>\n");
 
     for (auto name : o->packages) {
       fs::path include(tar(name));
       include.replace_extension(".hpp");
       line("#include <" << include.string() << '>');
+    }
+
+    /* raw C++ code */
+    for (auto file : o->sources) {
+      for (auto o : *file->root) {
+        auto raw = dynamic_cast<const Raw*>(o);
+        if (raw) {
+          *this << raw;
+        }
+      }
     }
 
     line("namespace birch {");
@@ -140,19 +150,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         finish(';');
       }
     }
-    line('}');
-
-    /* raw C++ code */
-    for (auto file : o->sources) {
-      for (auto o : *file->root) {
-        auto raw = dynamic_cast<const Raw*>(o);
-        if (raw) {
-          *this << raw;
-        }
-      }
-    }
-
-    line("namespace birch{");
 
     /* global variables */
     for (auto o : globals) {

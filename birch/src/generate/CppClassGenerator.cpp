@@ -174,7 +174,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
 
         if (!o->braces->isEmpty()) {
           start("static int register_factory_" << o->name);
-          middle("_ = ::register_factory(");
+          middle("_ = register_factory(");
           finish("\"" << o->name << "\", make_" << o->name << "_);");
         }
       }

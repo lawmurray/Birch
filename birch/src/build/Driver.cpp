@@ -1215,6 +1215,7 @@ void birch::Driver::setup() {
   contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_TARNAME\\}\\}"), tarName);
   contents = std::regex_replace(contents, std::regex("\\{\\{PACKAGE_CANONICAL_NAME\\}\\}"), canonicalName);
 
+  /* Birch built sources */
   std::stringstream makeStream;
   makeStream << contents << "\n\n";
   makeStream << "COMMON_SOURCES =";
@@ -1245,13 +1246,27 @@ void birch::Driver::setup() {
       }
     }
   }
+
+  /* C++ sources */
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".cpp") == 0) {
+      makeStream << " \\\n  " << file.string();
+    }
+  }
   makeStream << '\n';
 
-  /* headers to install and distribute */
-  makeStream << "include_HEADERS =";
+  /* Birch built headers */
+  makeStream << "nobase_include_HEADERS =";
   auto header = fs::path(tarName);
   header.replace_extension(".hpp");
   makeStream << " \\\n  " << header.string();
+
+  /* C++ headers */
+  for (auto file : metaFiles["manifest.source"]) {
+    if (file.extension().compare(".hpp") == 0) {
+      makeStream << " \\\n  " << file.string();
+    }
+  }
   makeStream << '\n';
 
   /* data files to distribute */
@@ -1442,6 +1457,7 @@ birch::Package* birch::Driver::createPackage() {
 }
 
 void birch::Driver::readFiles(const std::string& key) {
+  auto tarName = tar(packageName);
   for (auto pattern : metaContents[key]) {
     auto paths = glob(pattern);
     if (paths.empty()) {
@@ -1456,11 +1472,13 @@ void birch::Driver::readFiles(const std::string& key) {
           throw DriverException(std::string("file name ") + path.string() +
             " in build configuration contains whitespace, which is not supported.");
         }
-        auto inserted = allFiles.insert(path);
-        if (!inserted.second) {
-          warn(path.string() + " repeated in build configuration.");
+        if (!path.stem().compare(tarName) == 0) {
+          auto inserted = allFiles.insert(path);
+          if (!inserted.second) {
+            warn(path.string() + " repeated in build configuration.");
+          }
+          metaFiles[key].push_back(path);
         }
-        metaFiles[key].push_back(path);
       }
     }
   }

@@ -73,7 +73,7 @@ std::string birch::nice(const std::string& name) {
 }
 
 std::string birch::sanitize(const std::string& name) {
-  std::string str = nice(escape_unicode(name));
+  std::string str = nice(name);
 
   /* stdin, stdout, and stderr are defined as macros in C, but also global
    * variables in Birch; this can create conflicts in some implementations,

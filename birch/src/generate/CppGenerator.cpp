@@ -455,7 +455,7 @@ void birch::CppGenerator::visit(const Program* o) {
       /* register program */
       if (!o->braces->isEmpty()) {
         start("static int register_program_" << o->name);
-        middle("_ = ::register_program(");
+        middle("_ = register_program(");
         finish("\"" << o->name << "\", " << o->name << ");");
       }
     }
