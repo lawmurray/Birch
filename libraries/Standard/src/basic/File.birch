@@ -1,8 +1,0 @@
-/**
- * File handle.
- */
-type File;
-
-hpp{{
-using File = FILE*;
-}}

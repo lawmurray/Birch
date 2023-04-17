@@ -1,0 +1,128 @@
+/**
+ * Uniform integer distribution.
+ */
+final class UniformIntegerDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) <
+    Distribution<Integer> {
+  /**
+   * Lower bound.
+   */
+  l:Arg1 <- l;
+
+  /**
+   * Upper bound.
+   */
+  u:Arg2 <- u;
+
+  override function simulate() -> Integer! {
+    return value(simulate_uniform_int(l, u));
+  }
+
+  override function simulateLazy() -> Integer! {
+    return eval(simulate_uniform_int(l, u));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return value(logpdf_uniform_int(x, l, u));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real! {
+    return eval(logpdf_uniform_int(x, l, u));
+  }
+
+  override function cdf(x:Integer!) -> Real!? {
+    return cdf_uniform_int(x, value(l), value(u));
+  }
+
+  override function quantile(P:Real!) -> Integer!? {
+    return quantile_uniform_int(P, value(l), value(u));
+  }
+  
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_uniform_int(random(), l, u));
+  }
+
+  override function lower() -> Integer!? {
+    return value(l);
+  }
+  
+  override function upper() -> Integer!? {
+    return value(u);
+  }
+
+  override function fix() {
+    super.fix();
+    constant(l);
+    constant(u);
+  }
+
+  override function isBoundedDiscrete() -> Boolean {
+    return !x?;
+  }
+
+  override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
+    assert isBoundedDiscrete();
+    let n <- wait(value(u - l + 1));
+    let p <- vector(1.0/n, n);
+    return (box(p), value(l));
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "UniformInteger");
+    buffer.set("l", value(l));
+    buffer.set("u", value(u));
+  }
+}
+
+/**
+ * Create uniform distribution over integers.
+ */
+function UniformInteger<Arg1,Arg2>(l:Arg1, u:Arg2) -> Distribution<Integer> {
+  return make_uniform_integer(l, u);
+}
+function make_uniform_integer<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
+  return construct<UniformIntegerDistribution<Arg1,Arg2>>(l, u);
+}
+
+hpp{{
+using numbirch::simulate_uniform_int;
+}}
+
+/*
+ * Observe an integer uniform variate.
+ *
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
+ *
+ * @return the log probability mass.
+ */
+function logpdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
+  return where(x >= l && x <= u, -log1p(u - l), -inf);
+}
+
+/*
+ * CDF of a uniform integer variate.
+ *
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
+ *
+ * @return the cumulative probability.
+ */
+function cdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
+  return where(x < l, 0.0, where(x <= u, (x - l + 1.0)/
+      (u - l + 1.0), 1.0));
+}
+
+/*
+ * Quantile of a uniform integer distribution.
+ *
+ * @param P The cumulative probability.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
+ *
+ * @return the quantile.
+ */
+function quantile_uniform_int(P:Real, l:Integer, u:Integer) -> Integer {
+  return l + cast<Integer>(P*(u - l));
+}

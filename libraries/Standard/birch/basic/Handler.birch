@@ -1,0 +1,128 @@
+/**
+ * Event handler.
+ *
+ * @param autoconj Enable automatic conjugacy (marginalization, conditioning,
+ * enumeration)?
+ * @param autodiff Enable automatic differentiation?
+ * @param autojoin Enable automatic joins? Requires automatic differentiation
+ * also.
+ *
+ * Events are triggered as code executes. Each event is handled via a call to
+ * the currently-installed event handler, which is an object of type Handler.
+ */
+final class Handler(autoconj:Boolean, autodiff:Boolean, autojoin:Boolean) {
+  /**
+   * Distribution and Random objects for move.
+   */
+  Ξ:Array<Delay>;
+
+  /**
+   * Factors for move.
+   */
+  Φ:Array<Expression<Real>>;
+
+  /**
+   * Accumulated eager weight.
+   */
+  w:Real! <- 0.0;
+
+  /**
+   * Enable automatic conjugacy (marginalization, conditioning, enumeration)?
+   */
+  autoconj:Boolean <- autoconj;
+
+  /**
+   * Enable automatic differentiation?
+   */
+  autodiff:Boolean <- autodiff;
+
+  /**
+   * Enable automatic joins? Requires automatic differentiation also.
+   */
+  autojoin:Boolean <- autojoin && autodiff;
+
+  function hoist() -> Expression<Real>? {
+    π:Expression<Real>?;
+    for i in 1..Ξ.size() {
+      let ξ <- Ξ[i].hoist();
+      if π? {
+        π <- box(π! + ξ);
+      } else {
+        π <- ξ;
+      }
+    }
+    for i in 1..Φ.size() {
+      let φ <- Φ[i];
+      if π? {
+        π <- box(π! + φ);
+      } else {
+        π <- φ;
+      }
+    }
+    return π;
+  }
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor(w:Real) {
+  let h <- get_handler();
+  h.w <- h.w + w;
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor(w:Real!) {
+  let h <- get_handler();
+  h.w <- h.w + w;
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor(w:Expression<Real>) {
+  let h <- get_handler();
+  if h.autodiff {
+    h.Φ.pushBack(w);
+    h.w <- h.w + eval(w);
+  } else {
+    h.w <- h.w + value(w);
+  }
+}
+
+/*
+ * Handle factor event.
+ *
+ * @param w Log-weight.
+ *
+ * @attention
+ *     Typically one does not call this directly, but rather uses the
+ *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     is hard-wired to call this internally.
+ */
+function handle_factor<Arg>(w:Arg) {
+  return handle_factor(box(w));
+}

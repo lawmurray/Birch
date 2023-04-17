@@ -2,11 +2,15 @@ name: Birch.Standard
 version: 0.0.0
 manifest:
   source:
-    - src/*.birch
-    - src/*/*.birch
-    - src/*/*/*.birch
-    - src/*/*/*/*.birch
-    - src/*/*/*/*/*.birch
+    - birch/*.birch
+    - birch/*/*.birch
+    - birch/*/*/*.birch
+    - birch/*.cpp
+    - birch/*/*.cpp
+    - birch/*/*/*.cpp
+    - birch/*.hpp
+    - birch/*/*.hpp
+    - birch/*/*/*.hpp
   other:
     - birch.yml
     - mkdocs.yml

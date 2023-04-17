@@ -29,8 +29,9 @@
 .libs
 .deps
 .dirstamp
-*.hpp
-*.cpp
+birch-standard.hpp
+birch-standard.cpp
+birch-standard-standalone.cpp
 *.la
 *.lo
 *.o

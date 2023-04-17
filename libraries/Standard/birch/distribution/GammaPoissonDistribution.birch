@@ -1,0 +1,209 @@
+/**
+ *  Gamma-Poisson distribution.
+ */
+final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
+    Distribution<Integer> {
+  /**
+   * Scale.
+   */
+  a:Arg1 <- a;
+
+  /**
+   * Shape.
+   */
+  k:Arg2 <- k;
+
+  /**
+   * Scale.
+   */
+  θ:Arg3 <- θ;
+
+  override function simulate() -> Integer! {
+    return value(simulate_gamma_poisson(a, k, θ));
+  }
+
+  override function simulateLazy() -> Integer! {
+    return eval(simulate_gamma_poisson(a, k, θ));
+  }
+  
+  override function logpdf(x:Integer!) -> Real! {
+    return value(logpdf_gamma_poisson(x, a, k, θ));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real! {
+    return eval(logpdf_gamma_poisson(x, a, k, θ));
+  }
+
+  override function update(x:Integer!) -> Delay? {
+    return update_gamma_poisson(x, a, k, θ);
+  }
+
+  override function updateLazy(x:Random<Integer>) -> Delay? {
+    return update_gamma_poisson(x, a, k, θ);
+  }
+
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_gamma_poisson(random(), a, k, θ));
+  }
+
+  override function cdf(x:Integer!) -> Real!? {
+    return cdf_gamma_poisson(x, value(a), value(k), value(θ));
+  }
+
+  override function quantile(P:Real!) -> Integer!? {
+    return quantile_gamma_poisson(P, value(a), value(k), value(θ));
+  }
+
+  override function lower() -> Integer!? {
+    return 0;
+  }
+
+  override function fix() {
+    super.fix();
+    constant(a);
+    constant(k);
+    constant(θ);
+  }
+}
+
+function GammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
+    Distribution<Integer> {
+  return make_gamma_poisson(a, k, θ);
+}
+function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  return construct<GammaPoissonDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson<Arg>(λ:Mul<Arg,Random<Real>>) -> Distribution<Integer> {
+  let a <- λ.l;
+  let b <- λ.r;
+  if b.isGamma() {
+    let p_b <- b.graft();
+    let (k, θ) <- p_b.getGamma()!;
+    let p <- make_gamma_poisson(a, k, θ);
+    p_b.setMarginalized(p);
+    return p;
+  } else {
+    return make_poisson(λ);
+  }
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson<Arg>(λ:Mul<Random<Real>,Arg>) -> Distribution<Integer> {
+  return Poisson(λ.r*λ.l);
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson(λ:Random<Real>) -> Distribution<Integer> {
+  return Poisson(1.0*λ);
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson(λ:Mul<Random<Real>,Random<Real>>) -> Distribution<Integer> {
+  let a <- λ.l;
+  let b <- λ.r;
+  if a.isGamma() {
+    let p_a <- a.graft();
+    let (k, θ) <- p_a.getGamma()!;
+    let p <- make_gamma_poisson(b, k, θ);
+    p_a.setMarginalized(p);
+    return p;
+  } else if b.isGamma() {
+    let p_b <- b.graft();
+    let (k, θ) <- p_b.getGamma()!;
+    let p <- make_gamma_poisson(a, k, θ);
+    p_b.setMarginalized(p);
+    return p;
+  } else {
+    return make_poisson(λ);
+  }
+}
+
+/*
+ * Simulate a gamma-Poisson distribution.
+ *
+ * @param a Scale;
+ * @param k Shape.
+ * @param θ Scale.
+ */
+function simulate_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  /* C++ std::negative_binomial_distribution only accepts integer k, so
+   * simulate the gamma then the Poisson instead of treating this as a
+   * negative binomial distribution */
+  return simulate_poisson(simulate_gamma(k, a*θ));
+}
+
+/*
+ * Observe a gamma-Poisson variate.
+ *
+ * @param x The variate.
+ * @param a Scale;
+ * @param k Shape.
+ * @param θ Scale.
+ *
+ * @return the log probability mass.
+ */
+function logpdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
+    θ:Arg4) -> {
+  let ρ <- 1.0/(a*θ + 1.0);
+  return k*log(ρ) + x*log1p(-ρ) + lchoose(x + k - 1, x);
+}
+
+/*
+ * Update the parameters of a scaled gamma distribution with a Poisson
+ * likelihood.
+ *
+ * @param x The variate.
+ * @param a Scale.
+ * @param k Prior shape.
+ * @param θ Prior scale.
+ *
+ * @return the posterior hyperparameters `k'` and `θ'`.
+ */
+function update_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
+    θ:Arg4) -> {
+  return make_gamma(k + x, θ/(a*θ + 1.0));
+}
+
+/*
+ * CDF of a gamma-Poisson variate.
+ *
+ * @param x The variate.
+ * @param a Scale.
+ * @param k Shape.
+ * @param θ Scale.
+ *
+ * @return the cumulative probability.
+ */
+function cdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
+    θ:Arg4) -> {
+  return ibeta(k, x + 1, 1.0/(a*θ + 1.0));
+}
+
+/*
+ * Quantile of a gamma-Poisson distribution.
+ *
+ * @param P The cumulative probability.
+ * @param a Scale.
+ * @param k Shape.
+ * @param θ Scale.
+ *
+ * @return the quantile.
+ */
+function quantile_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, a:Arg2, k:Arg3,
+    θ:Arg4) -> {
+  let ρ <- 1.0/(a*θ + 1.0);
+  cpp{{
+  return boost::math::quantile(boost::math::negative_binomial_distribution<
+      Real>(wait(k), wait(ρ)), wait(P));
+  }}
+}

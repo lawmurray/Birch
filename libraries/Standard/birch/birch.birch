@@ -1,0 +1,315 @@
+hpp{{
+#include "birch/external.hpp"
+#include "birch/basic.hpp"
+#include "birch/handler.hpp"
+#include "birch/registry.hpp"
+#include "birch/utility.hpp"
+#include "birch/form.hpp"
+
+namespace birch {
+using namespace numbirch;
+}
+
+}}
+
+/**
+ * Make an object, with the type given as an argument.
+ *
+ *   @tparam Type The type.
+ *
+ * @return An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * The make will not succeed if the type is a class with initialization
+ * parameters, or a compound type that includes such a class.
+ */
+function make<Type>() -> Type? {
+  return make_optional<Type>();
+}
+
+/**
+ * Make an object, with the class given as a string.
+ *
+ *   @tparam Type Base type, which may be Object.
+ *   @param name Name of the class.
+ *
+ * @return An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(name:String) -> Type? {
+  result:Object?;
+  cpp{{
+  auto f = retrieve_factory(name);
+  if (f) {
+    result = Object(f());
+  }
+  }}
+  return Type?(result);
+}
+
+/**
+ * Make an object, with the class given in a buffer.
+ *
+ *   @param buffer The buffer.
+ *
+ * @return An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make(buffer:Buffer) -> Object? {
+  result:Object?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Object>(className!);
+  }
+  if result? {
+    result!.read(buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer.
+ *
+ *   @param t Step number.
+ *   @param buffer The buffer.
+ *
+ * @return An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make(t:Integer, buffer:Buffer) -> Object? {
+  result:Object?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Object>(className!);
+  }
+  if result? {
+    result!.read(t, buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer, otherwise by a generic
+ * type.
+ *
+ * @tparam Type Class if not given in buffer.
+ *
+ * @param buffer The buffer.
+ *
+ * @return An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. Otherwise, an object of class `Type` is constructed, if
+ * possible. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(buffer:Buffer) -> Type? {
+  result:Type?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Type>(className!);
+  } else {
+    result <- make<Type>();
+  }
+  if result? {
+    result!.read(buffer);
+  }
+  return result;
+}
+
+/**
+ * Make an object, with the class given in a buffer, otherwise by a generic
+ * type.
+ *
+ * @tparam Type Class if not given in buffer.
+ *
+ * @param t Step number.
+ * @param buffer The buffer.
+ *
+ * @return An optional with a value if successful, or no value if not
+ * successful.
+ *
+ * If the buffer contains a key `class`, an object of that class is 
+ * constructed. Otherwise, an object of class `Type` is constructed, if
+ * possible. The buffer is then passed to the `read()` function of the new
+ * object.
+ *
+ * The make will not succeed if the class has initialization parameters.
+ */
+function make<Type>(t:Integer, buffer:Buffer) -> Type? {
+  result:Type?;
+  let className <- buffer.get<String>("class");
+  if className? {
+    result <- make<Type>(className!);
+  } else {
+    result <- make<Type>();
+  }
+  if result? {
+    result!.read(t, buffer);
+  }
+  return result;
+}
+
+/**
+ * Create a Random.
+ */
+function make_random<Value>() -> Random<Value> {
+  o:Random<Value>;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Value to assign.
+ */
+function make_random<Value>(x:Value) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Value to assign.
+ */
+function make_random<Value>(x:Value?) -> Random<Value> {
+  o:Random<Value>;
+  o <-? x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Value to assign.
+ */
+function make_random<Value>(x:Value!) -> Random<Value> {
+  o:Random<Value>;
+  o <- x;
+  return o;
+}
+
+/**
+ * Box a value in a Random.
+ *
+ * @param x Optional value to assign.
+ */
+function make_random<Value>(x:Value!?) -> Random<Value> {
+  o:Random<Value>;
+  if x? {
+    o <- x!;
+  }
+  return o;
+}
+
+/**
+ * Box a value in a Random (identity operation).
+ *
+ * @param x Existing object.
+ */
+function make_random<Value>(x:Random<Value>) -> Random<Value> {
+  return x;
+}
+
+/**
+ * Find bridges in the reachable graph.
+ */
+function bridge<Type>(o:Type) {
+  cpp{{
+  o.bridge();
+  }}
+}
+
+/**
+ * Deep copy. May be preceded by bridge() for a lazy copy, otherwise will
+ * perform an eager copy.
+ */
+function copy<Type>(o:Type) -> Type {
+  cpp{{
+  return o.copy();
+  }}
+}
+
+/**
+ * Deep copy multiple times to construct an array. May be preceded by bridge()
+ * for lazy copies, otherwise will perform eager copies.
+ *
+ * @param o Source object.
+ * @param length Length of vector.
+ */
+function copy<Type>(o:Type, length:Integer) -> Type[_] {
+  return vector_lambda(\(i:Integer) -> { return copy(o); }, length);
+}
+
+/**
+ * Wait on a future and return the result. When applied to futures, this is
+ * equivalent to the postfix `!` operator, while when applied to non-futures,
+ * it is equivalent to the identity function.
+ *
+ * @note
+ *     `wait()` is useful for generic types, which may or may not be futures.
+ */
+function wait<Type>(x:Type!) -> Type;
+
+/**
+ * Box a value. The `box()` series of functions boxes basic values into
+ * [Expression](../../classes/Expression) objects, using the following
+ * conversions:
+ *
+ * | From                | To                        | Detail                                                                         |
+ * | ------------------- | ------------------------- | ---------------------------------------------------- |
+ * | `Value`             | `Expression<Value>`       | where `Value` is a basic or array type.              |
+ * | `Value!`            | `Expression<Value>`       | where `Value` is a basic type.                       |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
+ * | `Expression<Value>` | `Expression<Value>`       |                                                                                |
+ *
+ * See also: [wrap](../../functions/wrap)
+ */
+function box<Type>(x:Type) -> ;
+
+/**
+ * Wrap a value. The `wrap()` series of functions preserves basic values,
+ * while boxing [Expression](../../classes/Expression) objects into
+ * [Expression](../../classes/Expression) objects, using the following
+ * conversions:
+ *
+ * | From                | To                        | Detail                                                                         |
+ * | ------------------- | ------------------------- | ---------------------------------------------------- |
+ * | `Value`             | `Value`                   | where `Value` is a basic or array type.              |
+ * | `Value!`            | `Value!`                  | where `Value` is a basic type.                       |
+ * | `Form`              | `Expression<Value>`       | where `move(Form)` returns type `Value` or `Value!`. |
+ * | `Expression<Value>` | `Expression<Value>`       |                                                      |
+ *
+ * Some exceptions are made for special forms such as Diagonal, which also
+ * return as-is, as these are commonly required for expression optimization.
+ *
+ * See also: [box](../../functions/box)
+ */
+function wrap<Type>(x:Type) -> ;
+
+function wrap<Value>(x:DiagonalScalar<Value>) -> DiagonalScalar<Value> {
+  return x;
+}
+
+function wrap<Value>(x:DiagonalVector<Value>) -> DiagonalVector<Value> {
+  return x;
+}

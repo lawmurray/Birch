@@ -1,0 +1,197 @@
+/**
+ * Character string.
+ */
+type String;
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Real) -> String {
+  cpp{{
+  std::stringstream buf;
+  if (x == (int64_t)x) {
+    buf << (int64_t)x << ".0";
+  } else {
+    buf << std::scientific << std::setprecision(14) << x;
+  }
+  return buf.str();
+  }}
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Real!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Integer) -> String {
+  cpp{{
+  return std::to_string(x);
+  }}
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Integer!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Boolean) -> String {
+  if x {
+    return "true";
+  } else {
+    return "false";
+  }
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:Boolean!) -> String {
+  return to_string(x!);
+}
+
+/**
+ * Convert to string.
+ */
+function to_string(x:String) -> String {
+  return x;
+}
+
+/**
+ * Convert vector to String.
+ */
+function to_string<Type>(x:Type[_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for i in 1..length(x) {
+    let value <- x[i];
+    cpp{{
+    if (i > 1) {
+      buf << ' ';
+    }
+    buf << to_string(value);
+    }}
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert matrix to String.
+ */
+function to_string<Type>(X:Type[_,_]) -> String {
+  result:String;
+  cpp{{
+  std::stringstream buf;
+  }}
+  for i in 1..rows(X) {
+    cpp{{
+    if (i > 1) {
+      buf << '\n';
+    }
+    }}
+    for j in 1..columns(X) {
+      let value <- X[i,j];
+      cpp{{
+      if (j > 1) {
+        buf << ' ';
+      }
+      buf << to_string(value);
+      }}
+    }
+  }
+  cpp{{
+  result = buf.str();
+  }}
+  return result;
+}
+
+/**
+ * Convert string to numerical scalar.
+ *
+ * @param Value Numerical type.
+ */
+function from_string<Value>(s:String) -> Value {
+  cpp{{
+  if (std::is_same<Value,Real>::value) {
+    return static_cast<Value>(std::stod(s));
+  } else if (std::is_same<Value,Integer>::value) {
+    return static_cast<Value>(std::stoll(s));
+  } else if (s == "true" || s == "True") {
+    return true;
+  } else {
+    return false;
+  }
+  }}
+}
+
+/**
+ * Lexical comparison.
+ */
+operator (x:String > y:String) -> Boolean;
+
+/**
+ * Lexical comparison.
+ */
+operator (x:String < y:String) -> Boolean;
+
+/**
+ * Lexical comparison.
+ */
+operator (x:String >= y:String) -> Boolean;
+
+/**
+ * Lexical comparison.
+ */
+operator (x:String <= y:String) -> Boolean;
+
+/**
+ * Equality comparison.
+ */
+operator (x:String == y:String) -> Boolean;
+
+/**
+ * Equality comparison.
+ */
+operator (x:String != y:String) -> Boolean;
+
+/**
+ * String concatenation.
+ */
+operator (x:String + y:String) -> String;
+
+/**
+ * String concatenation.
+ */
+operator<Type> (x:String + y:Type) -> String {
+  return x + to_string(y);
+}
+
+/**
+ * String concatenation.
+ */
+operator<Type> (x:Type + y:String) -> String {
+  return to_string(x) + y;
+}
+
+/**
+ * Length of a string.
+ */
+function length(x:String) -> Integer {
+  cpp{{
+  return x.length();
+  }}
+}

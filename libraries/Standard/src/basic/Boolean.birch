@@ -1,9 +1,0 @@
-/**
- * Boolean, taking on values of `true` and `false` only. This is implemented
- * with the C++ type `bool`, usually occupying 8 bits.
- */
-type Boolean;
-
-hpp{{
-using Boolean = bool;
-}}

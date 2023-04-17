@@ -1,0 +1,119 @@
+/**
+ * Gaussian distribution.
+ */
+final class GaussianDistribution<Arg1,Arg2>(μ:Arg1, σ2:Arg2) <
+    Distribution<Real> {
+  /**
+   * Mean.
+   */
+  μ:Arg1 <- μ;
+
+  /**
+   * Variance.
+   */
+  σ2:Arg2 <- σ2;
+
+  override function simulate() -> Real! {
+    return value(simulate_gaussian(μ, σ2));
+  }
+
+  override function simulateLazy() -> Real! {
+    return eval(simulate_gaussian(μ, σ2));
+  }
+  
+  override function logpdf(x:Real!) -> Real! {
+    return value(logpdf_gaussian(x, μ, σ2));
+  }
+
+  override function logpdfLazy(x:Real!) -> Real! {
+    return eval(logpdf_gaussian(x, μ, σ2));
+  }
+
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_gaussian(random(), μ, σ2));
+  }
+  
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_gaussian(x, value(μ), value(σ2));
+  }
+
+  override function quantile(P:Real!) -> Real!? {
+    return quantile_gaussian(P, value(μ), value(σ2));
+  }
+
+  override function fix() {
+    super.fix();
+    constant(μ);
+    constant(σ2);
+  }
+
+  override function isGaussian() -> Boolean {
+    return !x?;
+  }
+
+  override function getGaussian() -> (Expression<Real>, Expression<Real>)? {
+    assert isGaussian();
+    return box(μ, σ2);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Gaussian");
+    buffer.set("μ", value(μ));
+    buffer.set("σ2", value(σ2));
+  }
+}
+
+/**
+ * Create Gaussian distribution.
+ */
+function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) -> Distribution<Real> {
+  return make_gaussian(μ, σ2);
+}
+function make_gaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2) -> {
+  return construct<GaussianDistribution<Arg1,Arg2>>(μ, σ2);
+}
+
+/*
+ * Observe a Gaussian variate.
+ *
+ * @param x The variate.
+ * @param μ Mean.
+ * @param σ2 Variance.
+ *
+ * @return the log probability density.
+ */
+function logpdf_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return -0.5*(pow(x - μ, 2.0)/σ2 + log(2.0*π*σ2));
+}
+
+/*
+ * CDF of a Gaussian variate.
+ *
+ * @param x The variate.
+ * @param μ Mean.
+ * @param σ2 Variance.
+ *
+ * @return the cumulative probability.
+ */
+function cdf_gaussian<Arg1,Arg2,Arg3>(x:Arg1, μ:Arg2, σ2:Arg3) -> {
+  cpp{{
+  return boost::math::cdf(boost::math::normal_distribution<Real>(
+      wait(μ), sqrt(wait(σ2))), wait(x));
+  }}
+}
+
+/*
+ * Quantile of a Gaussian distribution.
+ *
+ * @param P The cumulative probability.
+ * @param μ Mean.
+ * @param σ2 Variance.
+ *
+ * @return the quantile.
+ */
+function quantile_gaussian<Arg1,Arg2,Arg3>(P:Arg1, μ:Arg2, σ2:Arg3) -> {
+  cpp{{
+  return boost::math::quantile(boost::math::normal_distribution<Real>(
+      wait(μ), sqrt(wait(σ2))), wait(P));
+  }}
+}

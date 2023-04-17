@@ -1,0 +1,32 @@
+/**
+ * Integer. This is implemented with the C++ type `int`, usually a 32-bit
+ * signed integer.
+ */
+type Integer;
+
+/**
+ * Modulus.
+ */
+function mod(x:Integer, y:Integer) -> Integer {
+  cpp {{
+  return x % y;
+  }}
+}
+
+/**
+ * Maximum of two values.
+ */
+function max(x:Integer, y:Integer) -> Integer {
+  cpp{{
+  return std::max(x, y);
+  }}
+}
+
+/**
+ * Minimum of two values.
+ */
+function min(x:Integer, y:Integer) -> Integer {
+  cpp{{
+  return std::min(x, y);
+  }}
+}

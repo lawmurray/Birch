@@ -1,0 +1,104 @@
+/**
+ * Poisson distribution.
+ */
+final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
+  /**
+   * Rate.
+   */
+  λ:Arg <- λ;
+
+  override function simulate() -> Integer! {
+    return value(simulate_poisson(λ));
+  }
+
+  override function simulateLazy() -> Integer! {
+    return eval(simulate_poisson(λ));
+  }
+
+  override function logpdf(x:Integer!) -> Real! {
+    return value(logpdf_poisson(x, λ));
+  }
+
+  override function logpdfLazy(x:Integer!) -> Real! {
+    return eval(logpdf_poisson(x, λ));
+  }
+
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_poisson(random(), λ));
+  }
+
+  override function cdf(x:Integer!) -> Real!? {
+    return cdf_poisson(x, value(λ));
+  }
+
+  override function quantile(P:Real!) -> Integer!? {
+    return quantile_poisson(P, value(λ));
+  }
+
+  override function lower() -> Integer!? {
+    return 0;
+  }
+
+  override function fix() {
+    super.fix();
+    constant(λ);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Poisson");
+    buffer.set("λ", value(λ));
+  }
+}
+
+/**
+ * Create Poisson distribution.
+ */
+function Poisson<Arg>(λ:Arg) -> Distribution<Integer> {
+  return make_poisson(λ);
+}
+function make_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
+  return construct<PoissonDistribution<Arg>>(λ);
+}
+
+hpp{{
+using numbirch::simulate_poisson;
+}}
+
+/*
+ * Observe a Poisson variate.
+ *
+ * @param x The variate.
+ * @param λ Rate.
+ *
+ * @return the log probability mass.
+ */
+function logpdf_poisson<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
+  return x*log(λ) - λ - lfact(x);
+}
+
+/*
+ * CDF of a Poisson variate.
+ *
+ * @param x The variate.
+ * @param λ Rate.
+ *
+ * @return the cumulative probability.
+ */
+function cdf_poisson<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
+  return gamma_q(floor(x + 1.0), λ);
+}
+
+/*
+ * Quantile of a Poisson distribution.
+ *
+ * @param P The cumulative probability.
+ * @param λ Rate.
+ *
+ * @return the quantile.
+ */
+function quantile_poisson<Arg1,Arg2>(P:Arg1, λ:Arg2) -> {
+  cpp{{
+  return boost::math::quantile(boost::math::poisson_distribution<Real>(
+      wait(λ)), wait(P));
+  }}
+}

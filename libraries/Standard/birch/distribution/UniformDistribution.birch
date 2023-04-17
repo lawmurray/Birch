@@ -1,0 +1,115 @@
+/**
+ * Uniform distribution.
+ */
+final class UniformDistribution<Arg1,Arg2>(l:Arg1, u:Arg2) < Distribution<Real> {
+  /**
+   * Lower bound.
+   */
+  l:Arg1 <- l;
+  
+  /**
+   * Upper bound.
+   */
+  u:Arg2 <- u;
+
+  override function simulate() -> Real! {
+    return value(simulate_uniform(l, u));
+  }
+
+  override function simulateLazy() -> Real! {
+    return eval(simulate_uniform(l, u));
+  }
+
+  override function logpdf(x:Real!) -> Real! {
+    return value(logpdf_uniform(x, l, u));
+  }
+
+  override function logpdfLazy(x:Real!) -> Real! {
+    return eval(logpdf_uniform(x, l, u));
+  }
+
+  override function hoist() -> Expression<Real> {
+    return box(logpdf_uniform(random(), l, u));
+  }
+
+  override function cdf(x:Real!) -> Real!? {
+    return cdf_uniform(x, value(l), value(u));
+  }
+
+  override function quantile(P:Real!) -> Real!? {
+    return quantile_uniform(P, value(l), value(u));
+  }
+
+  override function lower() -> Real!? {
+    return value(l);
+  }
+  
+  override function upper() -> Real!? {
+    return value(u);
+  }
+
+  override function fix() {
+    super.fix();
+    constant(l);
+    constant(u);
+  }
+
+  override function write(buffer:Buffer) {
+    buffer.set("class", "Uniform");
+    buffer.set("l", value(l));
+    buffer.set("u", value(u));
+  }
+}
+
+/**
+ * Create a uniform distribution.
+ */
+function Uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> Distribution<Real> {
+  return make_uniform(l, u);
+}
+function make_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
+  return construct<UniformDistribution<Arg1,Arg2>>(l, u);
+}
+
+hpp{{
+using numbirch::simulate_uniform;
+}}
+
+/*
+ * Observe a uniform variate.
+ *
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
+ *
+ * @return the log probability density.
+ */
+function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
+  return where(l <= x && x <= u, -log(u - l), -inf);
+}
+
+/*
+ * CDF of a uniform variate.
+ *
+ * @param x The variate.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
+ *
+ * @return the cumulative probability.
+ */
+function cdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
+  return where(x <= l, 0.0, where(x <= u, (x - l)/(u - l), 1.0));
+}
+
+/*
+ * Quantile of a uniform distribution.
+ *
+ * @param P The cumulative probability.
+ * @param l Lower bound of interval.
+ * @param u Upper bound of interval.
+ *
+ * @return the quantile.
+ */
+function quantile_uniform<Arg1,Arg2,Arg3>(P:Arg1, l:Arg2, u:Arg3) -> {
+  return l + P*(u - l);
+}
