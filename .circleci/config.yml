@@ -781,8 +781,8 @@ jobs:
         type: string
     executor: << parameters.os >>
     steps:
-      - checkout
       - environment
+      - checkout
       - build_cpp:
           dir: numbirch
       - build_cpp:
