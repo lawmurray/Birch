@@ -468,6 +468,7 @@ commands:
           command: lcov --directory . --no-external --capture -o cov.info || echo
       - codecov/upload:
           file: cov.info
+          when: on_success
 
   version:
     parameters:
