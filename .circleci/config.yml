@@ -223,6 +223,7 @@ commands:
                 if [ -n "$MONGODB_DATABASE_TOOLS_URL" ]; then
                   curl -o mongodb-database-tools.deb $MONGODB_DATABASE_TOOLS_URL
                   DEBIAN_FRONTEND=noninteractive sudo apt install -y ./mongodb-database-tools.deb
+                  rm -f mongodb-database-tools.deb
                 fi
                 sudo rm -rf /var/lib/apt/lists/*
               elif [ "$CODENAME" = "opensuse" ]; then
