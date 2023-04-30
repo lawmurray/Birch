@@ -49,7 +49,7 @@ AC_ENABLE_SHARED
 LT_INIT([dlopen disable-static])
 
 # Checks for basic things
-AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
+AX_CXX_COMPILE_STDCXX(20, [noext], [mandatory])
 AC_HEADER_ASSERT
 AC_OPENMP
 CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
