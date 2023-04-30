@@ -120,7 +120,7 @@ void nan_on_error(T& A, const Array<int,0>& info) {
   }
 }
 
-Array<real,1> operator*(const Array<real,2>& A, const Array<real,1>& x) {
+Array<real,1> mul(const Array<real,2>& A, const Array<real,1>& x) {
   assert(columns(A) == length(x));
   prefetch(A);
   prefetch(x);
@@ -131,7 +131,7 @@ Array<real,1> operator*(const Array<real,2>& A, const Array<real,1>& x) {
   return y;
 }
 
-Array<real,2> operator*(const Array<real,2>& A, const Array<real,2>& B) {
+Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B) {
   assert(columns(A) == rows(B));
   prefetch(A);
   prefetch(B);
@@ -363,9 +363,10 @@ Array<real,2> phi(const Array<real,2>& A) {
   return B;
 }
 
-Array<real,2> transpose(const Array<real,2>& A) {
+template<class T, class>
+Array<T,2> transpose(const Array<T,2>& A) {
   prefetch(A);
-  Array<real,2> B(make_shape(columns(A), rows(A)));
+  Array<T,2> B(make_shape(columns(A), rows(A)));
 
   dim3 block;
   block.x = CUDA_TRANSPOSE_SIZE;

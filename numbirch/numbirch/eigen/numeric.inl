@@ -9,7 +9,7 @@
 
 namespace numbirch {
 
-Array<real,1> operator*(const Array<real,2>& A, const Array<real,1>& x) {
+Array<real,1> mul(const Array<real,2>& A, const Array<real,1>& x) {
   assert(columns(A) == length(x));
   Array<real,1> y(make_shape(rows(A)));
   auto A1 = make_eigen(A);
@@ -19,7 +19,7 @@ Array<real,1> operator*(const Array<real,2>& A, const Array<real,1>& x) {
   return y;
 }
 
-Array<real,2> operator*(const Array<real,2>& A, const Array<real,2>& B) {
+Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B) {
   assert(columns(A) == rows(B));
   Array<real,2> C(make_shape(rows(A), columns(B)));
   auto A1 = make_eigen(A);
@@ -171,8 +171,9 @@ Array<real,2> phi(const Array<real,2>& A) {
   return L;
 }
 
-Array<real,2> transpose(const Array<real,2>& A) {
-  Array<real,2> B(make_shape(columns(A), rows(A)));
+template<class T, class>
+Array<T,2> transpose(const Array<T,2>& A) {
+  Array<T,2> B(make_shape(columns(A), rows(A)));
   auto A1 = make_eigen(A);
   auto B1 = make_eigen(B);
   B1.noalias() = A1.transpose();

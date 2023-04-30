@@ -25,4 +25,13 @@ namespace numbirch {
 BINARY_MATRIX(cholsolve)
 BINARY_MATRIX(triinnersolve)
 BINARY_MATRIX(trisolve)
+
+template Array<bool,2> transpose<bool,int>(const Array<bool,2>&);
+template Array<int,2> transpose<int,int>(const Array<int,2>&);
+template Array<real,2> transpose<real,int>(const Array<real,2>&);
+
+template Array<real,2> transpose_grad<bool,int>(const Array<real,2>&, const Array<bool,2>&, const Array<bool,2>&);
+template Array<real,2> transpose_grad<int,int>(const Array<real,2>&, const Array<int,2>&, const Array<int,2>&);
+template Array<real,2> transpose_grad<real,int>(const Array<real,2>&, const Array<real,2>&, const Array<real,2>&);
+
 }
