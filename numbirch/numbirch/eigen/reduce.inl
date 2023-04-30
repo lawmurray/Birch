@@ -6,6 +6,8 @@
 #include "numbirch/reduce.hpp"
 #include "numbirch/eigen/eigen.hpp"
 
+#include <algorithm>
+
 namespace numbirch {
 
 template<class T, class>
@@ -15,7 +17,7 @@ Array<int,0> count(const T& x) {
   } else if (size(x) == 0) {
     return 0;
   } else {
-    return make_eigen(x).unaryExpr(count_functor()).sum();
+    return std::count_if(x.begin(), x.end(), count_functor());
   }
 }
 
@@ -26,7 +28,42 @@ Array<value_t<T>,0> sum(const T& x) {
   } else if (size(x) == 0) {
     return value_t<T>(0);
   } else {
-    return make_eigen(x).sum();
+    return std::reduce(x.begin(), x.end());
+  }
+}
+
+template<class T, class>
+Array<value_t<T>,0> min(const T& x) {
+  if constexpr (is_scalar_v<T>) {
+    return x;
+  } else if (size(x) == 0) {
+    return value_t<T>(0);
+  } else {
+    return *std::min_element(x.begin(), x.end());
+  }
+}
+
+template<class T, class>
+Array<value_t<T>,0> max(const T& x) {
+  if constexpr (is_scalar_v<T>) {
+    return x;
+  } else if (size(x) == 0) {
+    return value_t<T>(0);
+  } else {
+    return *std::max_element(x.begin(), x.end());
+  }
+}
+
+template<class T, class>
+T cumsum(const T& x) {
+  if constexpr (is_scalar_v<T>) {
+    return x;
+  } else if (size(x) == 0) {
+    return x;
+  } else {
+    T y(shape(x));
+    std::inclusive_scan(x.begin(), x.end(), y.begin());
+    return y;
   }
 }
 
