@@ -83,6 +83,10 @@ public:
     k = 0;
   }
 
+  void clear() {
+    k = 0;
+  }
+
   int64_t serial(const int64_t s = 0) const {
     return s;
   }
@@ -172,6 +176,12 @@ public:
 
   void compact() {
     k = 0;
+    inc = 1;
+  }
+
+  void clear() {
+    k = 0;
+    n = 0;
     inc = 1;
   }
 
@@ -317,6 +327,13 @@ public:
   void compact() {
     k = 0;
     ld = m;
+  }
+
+  void clear() {
+    k = 0;
+    m = 0;
+    n = 0;
+    ld = 0;
   }
 
   /**

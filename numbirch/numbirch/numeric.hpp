@@ -7,102 +7,9 @@
 #include "numbirch/array/Scalar.hpp"
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
+#include "numbirch/transform.hpp"
 
 namespace numbirch {
-/**
- * Unary plus.
- * 
- * @ingroup linalg
- * 
- * @tparam T Numeric type.
- * 
- * @param x Argument.
- * 
- * @return Result.
- * 
- * @see pos()
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-T operator+(const T& x) {
-  return pos(x);
-}
-
-/**
- * Negation.
- * 
- * @ingroup linalg
- * 
- * @tparam T Numeric type.
- * 
- * @param x Argument.
- * 
- * @return Result.
- * 
- * @see neg()
- */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-T operator-(const T& x) {
-  return neg(x);
-}
-
-/**
- * Element-wise addition.
- * 
- * @ingroup linalg
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- * 
- * @see add()
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> operator+(const T& x, const U& y) {
-  /* optimizations for addition of scalar zero */
-  if constexpr (is_arithmetic_v<T>) {
-    if (x == T(0)) {
-      return y;
-    }
-  } else if constexpr (is_arithmetic_v<U>) {
-    if (y == U(0)) {
-      return x;
-    }
-  }
-  return add(x, y);
-}
-
-/**
- * Element-wise subtraction.
- * 
- * @ingroup linalg
- * 
- * @tparam T Numeric type.
- * @tparam U Numeric type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- * 
- * @see sub()
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> operator-(const T& x, const U& y) {
-  /* optimization for subtraction of scalar zero */
-  if constexpr (is_arithmetic_v<U>) {
-    if (y == U(0)) {
-      return x;
-    }
-  }
-  return sub(x, y);
-}
-
 /**
  * Scalar multiplication.
  * 
@@ -116,29 +23,19 @@ implicit_t<T,U> operator-(const T& x, const U& y) {
  * 
  * @return Result.
  * 
- * @note operator*() supports only multiplication by a scalar on the left or
+ * @note mul() supports only multiplication by a scalar on the left or
  * right; for element-wise multiplication, see hadamard().
  * 
  * @see hadamard()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
-implicit_t<T,U> operator*(const T& x, const U& y) {
-  /* optimizations for multiplication of scalar one */
-  if constexpr (is_arithmetic_v<T>) {
-    if (x == T(1)) {
-      return y;
-    }
-  } else if constexpr (is_arithmetic_v<U>) {
-    if (y == U(1)) {
-      return x;
-    }
-  }
+implicit_t<T,U> mul(const T& x, const U& y) {
   return hadamard(x, y);
 }
 
 /**
- * Gradient of operator*().
+ * Gradient of mul().
  * 
  * @ingroup transform_grad
  * 
@@ -156,17 +53,11 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
 real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
-  /* optimization for multiplication of scalar one */
-  if constexpr (is_arithmetic_v<U>) {
-    if (y == U(1)) {
-      return g;
-    }
-  }
   return hadamard_grad1(g, z, x, y);
 }
 
 /**
- * Gradient of operator*().
+ * Gradient of mul().
  * 
  * @ingroup transform_grad
  * 
@@ -184,12 +75,6 @@ template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
 real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
-  /* optimization for multiplication of scalar one */
-  if constexpr (is_arithmetic_v<T>) {
-    if (x == T(1)) {
-      return g;
-    }
-  }
   return hadamard_grad2(g, z, x, y);
 }
 
@@ -203,10 +88,10 @@ real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Result $y = Ax$.
  */
-Array<real,1> operator*(const Array<real,2>& A, const Array<real,1>& x);
+Array<real,1> mul(const Array<real,2>& A, const Array<real,1>& x);
 
 /**
- * Gradient of operator*().
+ * Gradient of mul().
  * 
  * @ingroup linalg_grad
  * 
@@ -221,7 +106,7 @@ Array<real,2> mul_grad1(const Array<real,1>& g, const Array<real,1>& y,
     const Array<real,2>& A, const Array<real,1>& x);
 
 /**
- * Gradient of operator*().
+ * Gradient of mul().
  * 
  * @ingroup linalg_grad
  * 
@@ -245,10 +130,10 @@ Array<real,1> mul_grad2(const Array<real,1>& g, const Array<real,1>& y,
  * 
  * @return Result $C = AB$.
  */
-Array<real,2> operator*(const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B);
 
 /**
- * Gradient of operator*().
+ * Gradient of mul().
  * 
  * @ingroup linalg_grad
  * 
@@ -263,7 +148,7 @@ Array<real,2> mul_grad1(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& A, const Array<real,2>& B);
 
 /**
- * Gradient of operator*().
+ * Gradient of mul().
  * 
  * @ingroup linalg_grad
  * 
@@ -276,33 +161,6 @@ Array<real,2> mul_grad1(const Array<real,2>& g, const Array<real,2>& C,
  */
 Array<real,2> mul_grad2(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& A, const Array<real,2>& B);
-
-/**
- * Element-wise division.
- * 
- * @ingroup linalg
- * 
- * @tparam T Numeric type.
- * @tparam U Scalar type.
- * 
- * @param x Argument.
- * @param y Argument.
- * 
- * @return Result.
- * 
- * @see div()
- */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
-implicit_t<T,U> operator/(const T& x, const U& y) {
-  /* optimization for division of scalar one */
-  if constexpr (is_arithmetic_v<U>) {
-    if (y == U(1)) {
-      return x;
-    }
-  }
-  return div(x, y);
-}
 
 /**
  * Cholesky factorization of a symmetric positive definite matrix.
@@ -1028,7 +886,8 @@ Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& L,
  * 
  * @return Result $B = A^\top$.
  */
-Array<real,2> transpose(const Array<real,2>& A);
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<T,2> transpose(const Array<T,2>& A);
 
 /**
  * Gradient of transpose().
@@ -1041,8 +900,9 @@ Array<real,2> transpose(const Array<real,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> transpose_grad(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& A);
+template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& B,
+    const Array<T,2>& A);
 
 /**
  * Scalar transpose.

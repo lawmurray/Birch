@@ -3,14 +3,11 @@
  */
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.inl"
-#include "numbirch/cuda/random.inl"
 #endif
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.inl"
-#include "numbirch/eigen/random.inl"
 #endif
 #include "numbirch/common/transform.inl"
-#include "numbirch/common/random.inl"
 
 #define BINARY_GRAD(f, R) \
     BINARY_GRAD_FIRST(f, R, real) \
@@ -46,8 +43,6 @@
 #define BINARY_BOOL_GRAD(f) BINARY_GRAD(f, bool_t)
 
 namespace numbirch {
-BINARY_BOOL_GRAD(and_grad)
-BINARY_BOOL_GRAD(or_grad)
 BINARY_BOOL_GRAD(equal_grad)
 BINARY_BOOL_GRAD(not_equal_grad)
 BINARY_BOOL_GRAD(less_grad)
@@ -61,6 +56,8 @@ BINARY_ARITHMETIC_GRAD(hadamard_grad)
 BINARY_REAL_GRAD(lbeta_grad)
 BINARY_REAL_GRAD(lchoose_grad)
 BINARY_REAL_GRAD(lgamma_grad)
+BINARY_BOOL_GRAD(logical_and_grad)
+BINARY_BOOL_GRAD(logical_or_grad)
 BINARY_REAL_GRAD(pow_grad)
 BINARY_ARITHMETIC_GRAD(sub_grad)
 }

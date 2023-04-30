@@ -30,8 +30,8 @@ Array<real,2> mul_grad2(const Array<real,2>& g, const Array<real,2>& C,
 Array<real,2> chol_grad(const Array<real,2>& g, const Array<real,2>& L,
     const Array<real,2>& S) {
   auto A = phi(triinner(L, g));
-  return phi(transpose(triinnersolve(L, transpose(triinnersolve(L, A +
-      transpose(A))))));
+  return phi(transpose(triinnersolve(L, transpose(triinnersolve(L, add(A,
+      transpose(A)))))));
 }
 
 Array<real,2> cholinv(const Array<real,2>& L) {
@@ -47,8 +47,8 @@ template<class U, class>
 Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   auto gy = cholsolve(L, g);
-  auto gS = outer(gy, -B);
-  auto gL = tri((gS + transpose(gS))*L);
+  auto gS = outer(gy, neg(B));
+  auto gL = tri(mul(add(gS, transpose(gS)), L));
   return gL;
 }
 
@@ -61,8 +61,8 @@ Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
 Array<real,2> cholsolve_grad1(const Array<real,1>& g, const Array<real,1>& x,
     const Array<real,2>& L, const Array<real,1>& y) {
   auto gy = cholsolve(L, g);
-  auto gS = outer(gy, -x);
-  auto gL = tri((gS + transpose(gS))*L);
+  auto gS = outer(gy, neg(x));
+  auto gL = tri(mul(add(gS, transpose(gS)), L));
   return gL;
 }
 
@@ -74,8 +74,8 @@ Array<real,1> cholsolve_grad2(const Array<real,1>& g, const Array<real,1>& x,
 Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const Array<real,2>& C) {
   auto gC = cholsolve(L, g);
-  auto gS = outer(gC, -B);
-  auto gL = tri((gS + transpose(gS))*L);
+  auto gS = outer(gC, neg(B));
+  auto gL = tri(mul(add(gS, transpose(gS)), L));
   return gL;
 }
 
@@ -90,17 +90,17 @@ Array<real,0> dot(const Array<real,1>& x) {
 
 Array<real,1> dot_grad(const Array<real,0>& g, const Array<real,0>& z,
     const Array<real,1>& x) {
-  return real(2)*g*x;
+  return mul(mul(real(2), g), x);
 }
 
 Array<real,1> dot_grad1(const Array<real,0>& g, const Array<real,0>& z,
     const Array<real,1>& x, const Array<real,1>& y) {
-  return g*y;
+  return mul(g, y);
 }
 
 Array<real,1> dot_grad2(const Array<real,0>& g, const Array<real,0>& z,
     const Array<real,1>& x, const Array<real,1>& y) {
-  return g*x;
+  return mul(g, x);
 }
 
 Array<real,0> frobenius(const Array<real,2>& A) {
@@ -109,17 +109,17 @@ Array<real,0> frobenius(const Array<real,2>& A) {
 
 Array<real,2> frobenius_grad(const Array<real,0>& g, const Array<real,0>& z,
     const Array<real,2>& A) {
-  return real(2)*g*A;
+  return mul(mul(real(2), g), A);
 }
 
 Array<real,2> frobenius_grad1(const Array<real,0>& g, const Array<real,0>& z,
     const Array<real,2>& A, const Array<real,2>& B) {
-  return g*B;
+  return mul(g, B);
 }
 
 Array<real,2> frobenius_grad2(const Array<real,0>& g, const Array<real,0>& z,
     const Array<real,2>& A, const Array<real,2>& B) {
-  return g*A;
+  return mul(g, A);
 }
 
 Array<real,2> inner_grad1(const Array<real,1>& g, const Array<real,1>& y,
@@ -129,7 +129,7 @@ Array<real,2> inner_grad1(const Array<real,1>& g, const Array<real,1>& y,
 
 Array<real,1> inner_grad2(const Array<real,1>& g, const Array<real,1>& y,
     const Array<real,2>& A, const Array<real,1>& x) {
-  return A*g;
+  return mul(A, g);
 }
 
 Array<real,2> inner(const Array<real,2>& A) {
@@ -138,7 +138,7 @@ Array<real,2> inner(const Array<real,2>& A) {
 
 Array<real,2> inner_grad(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& A) {
-  return A*(g + transpose(g));
+  return mul(A, add(g,  transpose(g)));
 }
 
 Array<real,2> inner_grad1(const Array<real,2>& g, const Array<real,2>& C,
@@ -148,26 +148,26 @@ Array<real,2> inner_grad1(const Array<real,2>& g, const Array<real,2>& C,
 
 Array<real,2> inner_grad2(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& A, const Array<real,2>& B) {
-  return A*g;
+  return mul(A, g);
 }
 
 Array<real,2> inv_grad(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& A) {
-  return -outer(inner(B, g), B);
+  return neg(outer(inner(B, g), B));
 }
 
 Array<real,0> lcholdet(const Array<real,2>& L) {
-  return real(2)*ltridet(L);
+  return mul(real(2), ltridet(L));
 }
 
 Array<real,2> lcholdet_grad(const Array<real,0>& g, const Array<real,0>& d,
     const Array<real,2>& L) {
-  return ltridet_grad(real(2)*g, d, L);
+  return ltridet_grad(mul(real(2), g), d, L);
 }
 
 Array<real,2> ldet_grad(const Array<real,0>& g, const Array<real,0>& d,
     const Array<real,2>& A) {
-  return g*transpose(inv(A));
+  return mul(g, transpose(inv(A)));
 }
 
 Array<real,0> ltridet(const Array<real,2>& L) {
@@ -176,7 +176,7 @@ Array<real,0> ltridet(const Array<real,2>& L) {
 
 Array<real,2> ltridet_grad(const Array<real,0>& g, const Array<real,0>& d,
     const Array<real,2>& L) {
-  return diagonal(g/L.diagonal());
+  return diagonal(div(g, L.diagonal()));
 }
 
 Array<real,2> outer(const Array<real,1>& x) {
@@ -185,12 +185,12 @@ Array<real,2> outer(const Array<real,1>& x) {
 
 Array<real,1> outer_grad(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,1>& x) {
-  return (g + transpose(g))*x;
+  return mul(add(g, transpose(g)), x);
 }
 
 Array<real,1> outer_grad1(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,1>& x, const Array<real,1>& y) {
-  return g*y;
+  return mul(g, y);
 }
 
 Array<real,1> outer_grad2(const Array<real,2>& g, const Array<real,2>& C,
@@ -204,12 +204,12 @@ Array<real,2> outer(const Array<real,2>& A) {
 
 Array<real,2> outer_grad(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& A) {
-  return (g + transpose(g))*A;
+  return mul(add(g, transpose(g)), A);
 }
 
 Array<real,2> outer_grad1(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& A, const Array<real,2>& B) {
-  return g*B;
+  return mul(g, B);
 }
 
 Array<real,2> outer_grad2(const Array<real,2>& g, const Array<real,2>& C,
@@ -222,8 +222,9 @@ Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& L,
   return phi(g);
 }
 
-Array<real,2> transpose_grad(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& A) {
+template<class T, class>
+Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& B,
+    const Array<T,2>& A) {
   return transpose(g);
 }
 
@@ -248,7 +249,7 @@ Array<real,2> triinner(const Array<real,2>& L) {
 
 Array<real,2> triinner_grad(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& L) {
-  return tri(trimul(L, g + transpose(g)));
+  return tri(trimul(L, add(g, transpose(g))));
 }
 
 Array<real,2> triinner_grad1(const Array<real,2>& g, const Array<real,2>& C,
@@ -264,7 +265,7 @@ Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& C,
 template<class U, class>
 Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
-  return tri(outer(-B, trisolve(L, g)));
+  return tri(outer(neg(B), trisolve(L, g)));
 }
 
 template<class U, class>
@@ -275,7 +276,7 @@ Array<real,0> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B
 
 Array<real,2> triinnersolve_grad1(const Array<real,1>& g, const Array<real,1>& x,
     const Array<real,2>& L, const Array<real,1>& y) {
-  return tri(outer(-x, trisolve(L, g)));
+  return tri(outer(neg(x), trisolve(L, g)));
 }
 
 Array<real,1> triinnersolve_grad2(const Array<real,1>& g, const Array<real,1>& x,
@@ -285,7 +286,7 @@ Array<real,1> triinnersolve_grad2(const Array<real,1>& g, const Array<real,1>& x
 
 Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const Array<real,2>& C) {
-  return tri(outer(-B, trisolve(L, g)));
+  return tri(outer(neg(B), trisolve(L, g)));
 }
 
 Array<real,2> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
@@ -328,12 +329,12 @@ Array<real,2> triouter(const Array<real,2>& L) {
 
 Array<real,2> triouter_grad(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& L) {
-  return tri((g + transpose(g))*L);
+  return tri(mul(add(g, transpose(g)), L));
 }
 
 Array<real,2> triouter_grad1(const Array<real,2>& g, const Array<real,2>& C,
     const Array<real,2>& A, const Array<real,2>& L) {
-  return g*L;
+  return mul(g, L);
 }
 
 Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& C,
@@ -344,7 +345,7 @@ Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& C,
 template<class U, class>
 Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
-  return tri(outer(triinnersolve(L, g), -B));
+  return tri(outer(triinnersolve(L, g), neg(B)));
 }
 
 template<class U, class>
@@ -355,7 +356,7 @@ Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
 
 Array<real,2> trisolve_grad1(const Array<real,1>& g, const Array<real,1>& x,
     const Array<real,2>& L, const Array<real,1>& y) {
-  return tri(outer(triinnersolve(L, g), -x));
+  return tri(outer(triinnersolve(L, g), neg(x)));
 }
 
 Array<real,1> trisolve_grad2(const Array<real,1>& g, const Array<real,1>& x,
@@ -365,7 +366,7 @@ Array<real,1> trisolve_grad2(const Array<real,1>& g, const Array<real,1>& x,
 
 Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const Array<real,2>& C) {
-  return tri(outer(triinnersolve(L, g), -B));
+  return tri(outer(triinnersolve(L, g), neg(B)));
 }
 
 Array<real,2> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,

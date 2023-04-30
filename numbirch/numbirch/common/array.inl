@@ -516,7 +516,7 @@ Array<value_t<T>,1> vec(const T& x) {
   if constexpr (is_vector_v<T>) {
     return x;
   } else if constexpr (is_arithmetic_v<T>) {
-    return Array<value_t<T>,1>(x);
+    return fill(x, 1);
   } else if (x.canReshape()) {
     return x.vec();
   } else {
@@ -545,7 +545,7 @@ Array<value_t<T>,2> mat(const T& x, const int n) {
   if constexpr (is_matrix_v<T>) {
     return x;
   } else if constexpr (is_arithmetic_v<T>) {
-    return Array<value_t<T>,2>(x);
+    return fill(x, 1, 1);
   } else if (x.canReshape()) {
     return x.mat(n);
   } else {

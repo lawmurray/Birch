@@ -12,31 +12,48 @@
 #endif
 
 namespace numbirch {
+/**
+ * @internal
+ * 
+ * Performs the inverse operation of a scalar broadcast during gradient
+ * computation. That is, if a scalar was broadcast during the forward pass,
+ * upstream gradients must be aggregated, by summation, during the backward
+ * pass.
+ */
+template<int D, class T>
+constexpr auto aggregate(const T& x) {
+  if constexpr (D == 0 && dimension_v<T> != 0) {
+    return sum(x);
+  } else {
+    return x;
+  }
+}
+
 template<class R>
 struct cast_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE R operator()(const T x) const {
     return R(x);
   }
 };
 
 struct neg_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
     return -x;
   }
 };
 
 struct add_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
+  NUMBIRCH_HOST_DEVICE promote_t<T,U> operator()(const T x, const U y) const {
     return x + y;
   }
 };
 
 struct sub_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
+  NUMBIRCH_HOST_DEVICE promote_t<T,U> operator()(const T x, const U y) const {
     return x - y;
   }
 };
@@ -106,56 +123,57 @@ struct greater_or_equal_functor {
 
 struct abs_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
     return std::abs(x);
   }
 };
 
 struct abs_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  template<class T>
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x) const {
     return std::copysign(g, x);
   }
 };
 
 struct acos_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::acos(x);
   }
 };
 
 struct acos_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return -g/std::sqrt(real(1.0) - x*x);
   }
 };
 
 struct asin_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::asin(x);
   }
 };
 
 struct asin_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g/std::sqrt(real(1) - x*x);
   }
 };
 
 struct atan_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::atan(x);
   }
 };
 
 struct atan_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g/(real(1) + x*x);
   }
 };
 
 struct ceil_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
     if constexpr (is_int_v<T> || is_bool_v<T>) {
       return x;
     } else {
@@ -165,34 +183,34 @@ struct ceil_functor {
 };
 
 struct cos_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::cos(x);
   }
 };
 
 struct cos_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return -g*std::sin(x);
   }
 };
 
 struct cosh_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::cosh(x);
   }
 };
 
 struct cosh_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return -g*std::sinh(x);
   }
 };
 
 struct digamma_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return Eigen::numext::digamma(x);
   }
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x, const int y) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x, const int y) const {
     real z = 0;
     for (int i = 1; i <= y; ++i) {
       z += Eigen::numext::digamma(x + real(0.5)*(1 - i));
@@ -203,7 +221,7 @@ struct digamma_functor {
 
 struct div_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
+  NUMBIRCH_HOST_DEVICE promote_t<T,U> operator()(const T x, const U y) const {
     return x/y;
   }
 };
@@ -225,20 +243,20 @@ struct div_grad2_functor {
 };
 
 struct exp_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::exp(x);
   }
 };
 
 struct expm1_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::expm1(x);
   }
 };
 
 struct floor_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
     if constexpr (is_int_v<T> || is_bool_v<T>) {
       return x;
     } else {
@@ -249,8 +267,12 @@ struct floor_functor {
 
 struct hadamard_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y) const {
-    return x*y;
+  NUMBIRCH_HOST_DEVICE promote_t<T,U> operator()(const T x, const U y) const {
+    if constexpr (is_bool_v<T> && is_bool_v<U>) {
+      return x && y;  // avoids compiler warning
+    } else {
+      return x*y;
+    }
   }
 };
 
@@ -292,22 +314,22 @@ struct isnan_functor {
 };
 
 struct lfact_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::lgamma(x + real(1));
   }
 };
 
 struct lfact_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*Eigen::numext::digamma(x + real(1));
   }
 };
 
 struct lgamma_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::lgamma(x);
   }
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x, const real y) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x, const real y) const {
     real z = real(0.25)*y*(y - 1)*std::log(real(PI));
     for (int i = 1; i <= y; ++i) {
       z += std::lgamma(x + real(0.5)*(1 - i));
@@ -317,7 +339,7 @@ struct lgamma_functor {
 };
 
 struct lgamma_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*Eigen::numext::digamma(x);
   }
 };
@@ -341,44 +363,44 @@ struct lgamma_grad2_functor {
 };
 
 struct log_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::log(x);
   }
 };
 
 struct log_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g/x;
   }
 };
 
 struct log1p_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::log1p(x);
   }
 };
 
 struct log1p_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g/(x + real(1));
   }
 };
 
 struct log_abs_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::log(std::abs(x));
   }
 };
 
 struct log_square_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return real(2)*std::log(x);
   }
 };
 
 struct rectify_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
     /* this is written to ensure that NaN propagates, i.e. if isnan(x)
      * then the condition is false and NaN is returned */
     if (x <= T(0)) {
@@ -398,7 +420,7 @@ struct rectify_grad_functor {
 
 struct round_functor {
   template<class T>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x) const {
+  NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
     if constexpr (is_int_v<T> || is_bool_v<T>) {
       return x;
     } else {
@@ -408,68 +430,68 @@ struct round_functor {
 };
 
 struct sin_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::sin(x);
   }
 };
 
 struct sin_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*std::cos(x);
   }
 };
 
 struct sinh_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::sinh(x);
   }
 };
 
 struct sinh_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*std::cosh(x);
   }
 };
 
 struct sqrt_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::sqrt(x);
   }
 };
 
 struct sqrt_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*real(0.5)/std::sqrt(x);
   }
 };
 
 struct tan_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::tan(x);
   }
 };
 
 struct tan_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*(real(1) + std::pow(std::tan(x), real(2)));
   }
 };
 
 struct tanh_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::tanh(x);
   }
 };
 
 struct tanh_grad_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real g, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
     return g*(real(1) + std::pow(std::tanh(x), real(2)));
   }
 };
 
 struct copysign_functor {
   template<class T, class U>
-  NUMBIRCH_HOST_DEVICE T operator()(const T x, const U y) const {
+  NUMBIRCH_HOST_DEVICE promote_t<T,U> operator()(const T x, const U y) const {
     if constexpr (is_int_v<T> || is_bool_v<T>) {
       /* don't use std::copysign, as it promotes to floating point, which
        * we don't wish to do here */
@@ -505,19 +527,19 @@ struct copysign_grad2_functor {
 };
 
 struct gamma_p_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real a, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real a, const real x) const {
     return Eigen::numext::igamma(a, x);
   }
 };
 
 struct gamma_q_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real a, const real x) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real a, const real x) const {
     return Eigen::numext::igammac(a, x);
   }
 };
 
 struct lbeta_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x, const real y) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x, const real y) const {
     return std::lgamma(x) + std::lgamma(y) - std::lgamma(x + y);
   }
 };
@@ -537,7 +559,7 @@ struct lbeta_grad2_functor {
 };
 
 struct lchoose_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x, const real y) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x, const real y) const {
     return std::lgamma(x + real(1)) - std::lgamma(y + real(1)) -
         std::lgamma(x - y + real(1));
   }
@@ -562,7 +584,7 @@ struct lchoose_grad2_functor {
 };
 
 struct pow_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real x, const real y) const {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x, const real y) const {
     return std::pow(x, y);
   }
 };
@@ -582,7 +604,7 @@ struct pow_grad2_functor {
 };
 
 struct ibeta_functor {
-  NUMBIRCH_HOST_DEVICE auto operator()(const real a, const real b,
+  NUMBIRCH_HOST_DEVICE real operator()(const real a, const real b,
       const real x) const {
     /* as of Eigen 3.4.0, the edge cases of a == 0 and b == 0 are not handled
     * internally, see https://gitlab.com/libeigen/eigen/-/issues/2359 */
@@ -598,9 +620,9 @@ struct ibeta_functor {
 
 struct where_functor {
   template<class T, class U, class V>
-  NUMBIRCH_HOST_DEVICE auto operator()(const T x, const U y, const V z)
-      const {
-    using W = implicit_t<T,U,V>;
+  NUMBIRCH_HOST_DEVICE promote_t<T,U,V> operator()(const T x, const U y,
+      const V z) const {
+    using W = promote_t<T,U,V>;
     return x ? W(y) : W(z);
   }
 };
@@ -619,27 +641,28 @@ struct zero_grad_functor {
 };
 
 template<class T, class>
-bool_t<T> operator!(const T& x) {
+bool_t<T> logical_not(const T& x) {
   prefetch(x);
   return transform(x, not_functor());
 }
 
 template<class T, class>
-real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+real_t<T> logical_not_grad(const real_t<T>& g, const bool_t<T>& y,
+    const T& x) {
   prefetch(x);
   return transform(g, x, zero_grad_functor());
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator&&(const T& x, const U& y) {
+bool_t<T,U> logical_and(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, and_functor());
 }
 
 template<class T, class U, class>
-real_t<T> and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -647,8 +670,8 @@ real_t<T> and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> logical_and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -656,15 +679,15 @@ real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator||(const T& x, const U& y) {
+bool_t<T,U> logical_or(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, or_functor());
 }
 
 template<class T, class U, class>
-real_t<T> or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -672,8 +695,8 @@ real_t<T> or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-real_t<U> or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> logical_or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y) {
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -681,7 +704,7 @@ real_t<U> or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator==(const T& x, const U& y) {
+bool_t<T,U> equal(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, equal_functor());
@@ -706,7 +729,7 @@ real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator!=(const T& x, const U& y) {
+bool_t<T,U> not_equal(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, not_equal_functor());
@@ -731,7 +754,7 @@ real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator<(const T& x, const U& y) {
+bool_t<T,U> less(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, less_functor());
@@ -756,7 +779,7 @@ real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator<=(const T& x, const U& y) {
+bool_t<T,U> less_or_equal(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, less_or_equal_functor());
@@ -781,7 +804,7 @@ real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator>(const T& x, const U& y) {
+bool_t<T,U> greater(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, greater_functor());
@@ -806,7 +829,7 @@ real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
 }
 
 template<class T, class U, class>
-bool_t<T,U> operator>=(const T& x, const U& y) {
+bool_t<T,U> greater_or_equal(const T& x, const U& y) {
   prefetch(x);
   prefetch(y);
   return transform(x, y, greater_or_equal_functor());
@@ -856,6 +879,17 @@ real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
 
 template<class T, class U, class>
 implicit_t<T,U> add(const T& x, const U& y) {
+  /* optimizations for addition of scalar zero */
+  if constexpr (is_arithmetic_v<T> && std::is_same_v<implicit_t<T,U>,U>) {
+    if (x == T(0)) {
+      return y;
+    }
+  } else if constexpr (is_arithmetic_v<U> &&
+      std::is_same_v<implicit_t<T,U>,T>) {
+    if (y == U(0)) {
+      return x;
+    }
+  }
   prefetch(x);
   prefetch(y);
   return transform(x, y, add_functor());
@@ -981,6 +1015,13 @@ real_t<T,U> digamma(const T& x, const U& y) {
 
 template<class T, class U, class>
 implicit_t<T,U> div(const T& x, const U& y) {
+  /* optimization for division of scalar one */
+  if constexpr (is_arithmetic_v<U> && std::is_same_v<implicit_t<T,U>,T>) {
+    if (y == U(1)) {
+      return x;
+    }
+  }
+
   prefetch(x);
   prefetch(y);
   return transform(x, y, div_functor());
@@ -1226,6 +1267,18 @@ real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
 
 template<class T, class U, class>
 implicit_t<T,U> hadamard(const T& x, const U& y) {
+  /* optimizations for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<T> && std::is_same_v<implicit_t<T,U>,U>) {
+    if (x == T(1)) {
+      return y;
+    }
+  } else if constexpr (is_arithmetic_v<U> &&
+      std::is_same_v<implicit_t<T,U>,T>) {
+    if (y == U(1)) {
+      return x;
+    }
+  }
+
   prefetch(x);
   prefetch(y);
   return transform(x, y, hadamard_functor());
@@ -1234,6 +1287,13 @@ implicit_t<T,U> hadamard(const T& x, const U& y) {
 template<class T, class U, class>
 real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
+  /* optimization for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<U>) {
+    if (y == U(1)) {
+      return g;
+    }
+  }
+
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -1244,6 +1304,13 @@ real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
 template<class T, class U, class>
 real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
+  /* optimization for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<T>) {
+    if (x == T(1)) {
+      return g;
+    }
+  }
+
   prefetch(g);
   prefetch(x);
   prefetch(y);
@@ -1351,6 +1418,13 @@ real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
 
 template<class T, class U, class>
 implicit_t<T,U> sub(const T& x, const U& y) {
+  /* optimization for subtraction of scalar zero */
+  if constexpr (is_arithmetic_v<U> && std::is_same_v<implicit_t<T,U>,T>) {
+    if (y == U(0)) {
+      return x;
+    }
+  }
+
   prefetch(x);
   prefetch(y);
   return transform(x, y, sub_functor());

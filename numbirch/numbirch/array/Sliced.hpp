@@ -129,7 +129,4 @@ private:
   bool write;
 };
 
-template<class T, int D>
-Sliced(const Array<T,D>& x) -> Sliced<T>;
-
 }

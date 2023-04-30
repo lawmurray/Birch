@@ -21,10 +21,10 @@ namespace numbirch {
  * @return Result.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-bool_t<T> operator!(const T& x);
+bool_t<T> logical_not(const T& x);
 
 /**
- * Gradient of operator!().
+ * Gradient of logical_not().
  * 
  * @ingroup transform_grad
  * 
@@ -37,7 +37,8 @@ bool_t<T> operator!(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
+real_t<T> logical_not_grad(const real_t<T>& g, const bool_t<T>& y,
+    const T& x);
 
 /**
  * Element-wise logical `and`.
@@ -54,10 +55,10 @@ real_t<T> not_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator&&(const T& x, const U& y);
+bool_t<T,U> logical_and(const T& x, const U& y);
 
 /**
- * Gradient of operator&&().
+ * Gradient of logical_and().
  * 
  * @ingroup transform_grad
  * 
@@ -73,11 +74,11 @@ bool_t<T,U> operator&&(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-real_t<T> and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, 
+    const T& x, const U& y);
 
 /**
- * Gradient of operator&&().
+ * Gradient of logical_and().
  * 
  * @ingroup transform_grad
  * 
@@ -93,8 +94,8 @@ real_t<T> and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<U> logical_and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
  * Element-wise logical `or`.
@@ -111,10 +112,10 @@ real_t<U> and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator||(const T& x, const U& y);
+bool_t<T,U> logical_or(const T& x, const U& y);
 
 /**
- * Gradient of operator||().
+ * Gradient of logical_or().
  * 
  * @ingroup transform_grad
  * 
@@ -131,11 +132,11 @@ bool_t<T,U> operator||(const T& x, const U& y);
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-real_t<T> or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
- * Gradient of operator||().
+ * Gradient of logical_or().
  * 
  * @ingroup transform_grad
  * 
@@ -152,8 +153,8 @@ real_t<T> or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-real_t<U> or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<U> logical_or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
+    const T& x, const U& y);
 
 /**
  * Element-wise equal to comparison.
@@ -170,10 +171,10 @@ real_t<U> or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator==(const T& x, const U& y);
+bool_t<T,U> equal(const T& x, const U& y);
 
 /**
- * Gradient of operator==().
+ * Gradient of equal().
  * 
  * @ingroup transform_grad
  * 
@@ -193,7 +194,7 @@ real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
 /**
- * Gradient of operator==().
+ * Gradient of equal().
  * 
  * @ingroup transform_grad
  * 
@@ -227,10 +228,10 @@ real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator!=(const T& x, const U& y);
+bool_t<T,U> not_equal(const T& x, const U& y);
 
 /**
- * Gradient of operator!=().
+ * Gradient of not_equal().
  * 
  * @ingroup transform_grad
  * 
@@ -250,7 +251,7 @@ real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
 /**
- * Gradient of operator!=().
+ * Gradient of not_equal().
  * 
  * @ingroup transform_grad
  * 
@@ -284,10 +285,10 @@ real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator<(const T& x, const U& y);
+bool_t<T,U> less(const T& x, const U& y);
 
 /**
- * Gradient of operator<().
+ * Gradient of less().
  * 
  * @ingroup transform_grad
  * 
@@ -307,7 +308,7 @@ real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
 /**
- * Gradient of operator<().
+ * Gradient of less().
  * 
  * @ingroup transform_grad
  * 
@@ -341,10 +342,10 @@ real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator<=(const T& x, const U& y);
+bool_t<T,U> less_or_equal(const T& x, const U& y);
 
 /**
- * Gradient of operator<=().
+ * Gradient of less_or_equal().
  * 
  * @ingroup transform_grad
  * 
@@ -364,7 +365,7 @@ real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
 /**
- * Gradient of operator<=().
+ * Gradient of less_or_equal().
  * 
  * @ingroup transform_grad
  * 
@@ -398,10 +399,10 @@ real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator>(const T& x, const U& y);
+bool_t<T,U> greater(const T& x, const U& y);
 
 /**
- * Gradient of operator>().
+ * Gradient of greater().
  * 
  * @ingroup transform_grad
  * 
@@ -421,7 +422,7 @@ real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
 /**
- * Gradient of operator>().
+ * Gradient of greater().
  * 
  * @ingroup transform_grad
  * 
@@ -455,10 +456,10 @@ real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
-bool_t<T,U> operator>=(const T& x, const U& y);
+bool_t<T,U> greater_or_equal(const T& x, const U& y);
 
 /**
- * Gradient of operator>=().
+ * Gradient of greater_or_equal().
  * 
  * @ingroup transform_grad
  * 
@@ -478,7 +479,7 @@ real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
 /**
- * Gradient of operator>=().
+ * Gradient of greater_or_equal().
  * 
  * @ingroup transform_grad
  * 
@@ -569,8 +570,6 @@ real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * @param y Argument.
  * 
  * @return Result.
- * 
- * @see operator+()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
@@ -900,8 +899,6 @@ real_t<T,U> digamma(const T& x, const U& y);
  * @param y Argument.
  * 
  * @return Result.
- * 
- * @see operator+()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
@@ -1083,8 +1080,6 @@ real_t<T,U> gamma_q(const T& x, const U& y);
  * @param y Argument.
  * 
  * @return Result.
- * 
- * @see operator+()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
@@ -1813,15 +1808,13 @@ real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * @param y Argument.
  * 
  * @return Result.
- * 
- * @see operator-()
  */
 template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
     is_numeric_v<U>,int>>
 implicit_t<T,U> sub(const T& x, const U& y);
 
 /**
- * Gradient of operator-().
+ * Gradient of sub().
  * 
  * @ingroup transform_grad
  * 
@@ -1841,7 +1834,7 @@ real_t<T> sub_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
     const U& y);
 
 /**
- * Gradient of operator-().
+ * Gradient of sub().
  * 
  * @ingroup transform_grad
  * 

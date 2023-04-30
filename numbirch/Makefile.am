@@ -29,18 +29,18 @@ SOURCES =  \
     numbirch/instantiate/random/simulate_wishart.cpp \
     numbirch/instantiate/random/standard_gaussian.cpp \
     numbirch/instantiate/random/unary.cpp \
+    numbirch/instantiate/reduce/cumsum.cpp \
+    numbirch/instantiate/reduce/cumsum_grad.cpp \
     numbirch/instantiate/reduce/count.cpp \
     numbirch/instantiate/reduce/count_grad.cpp \
     numbirch/instantiate/reduce/sum.cpp \
     numbirch/instantiate/reduce/sum_grad.cpp \
     numbirch/instantiate/transform/binary.cpp \
     numbirch/instantiate/transform/binary_grad.cpp \
-    numbirch/instantiate/transform/binary_operator.cpp \
     numbirch/instantiate/transform/cast.cpp \
     numbirch/instantiate/transform/ibeta.cpp \
     numbirch/instantiate/transform/unary.cpp \
     numbirch/instantiate/transform/unary_grad.cpp \
-    numbirch/instantiate/transform/unary_operator.cpp \
     numbirch/instantiate/transform/where.cpp \
     numbirch/instantiate/numeric.cpp
 

@@ -3,11 +3,9 @@
  */
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.inl"
-#include "numbirch/cuda/random.inl"
 #endif
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.inl"
-#include "numbirch/eigen/random.inl"
 #endif
 #include "numbirch/common/transform.inl"
 
@@ -46,6 +44,7 @@ UNARY_REAL(lfact)
 UNARY_REAL(lgamma)
 UNARY_REAL(log)
 UNARY_REAL(log1p)
+UNARY_BOOL(logical_not)
 UNARY_ARITHMETIC(neg)
 UNARY_ARITHMETIC(pos)
 UNARY_ARITHMETIC(rectify)

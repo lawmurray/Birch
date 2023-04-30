@@ -23,4 +23,6 @@
 
 namespace numbirch {
 REDUCE_SUM(sum)
+REDUCE_SUM(min)
+REDUCE_SUM(max)
 }

@@ -24,4 +24,6 @@
 
 namespace numbirch {
 REDUCE_SUM_GRAD(sum_grad)
+REDUCE_SUM_GRAD(min_grad)
+REDUCE_SUM_GRAD(max_grad)
 }

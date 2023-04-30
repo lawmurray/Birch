@@ -54,7 +54,10 @@
 #endif
 
 namespace numbirch {
-template<class T, int D> class Array;
+  namespace array {
+    template<class T, int D> class Array;
+  }
+  using array::Array;
 
 /**
  * Default floating point type. This is set to the value of the macro
@@ -568,6 +571,29 @@ template<class T, class U>
 inline constexpr bool promotes_to_v = promotes_to<T,U>::value;
 
 /**
+ * @var all_numeric_v
+ * 
+ * Are all argument types numeric?
+ * 
+ * @ingroup trait
+ */
+template<class... Args>
+struct all_numeric {
+  //
+};
+template<class Arg>
+struct all_numeric<Arg> {
+  static const bool value = is_numeric<Arg>::value;
+};
+template<class Arg, class... Args>
+struct all_numeric<Arg,Args...> {
+  static const bool value = is_numeric<Arg>::value &&
+      all_numeric<Args...>::value;
+};
+template<class... Args>
+inline constexpr bool all_numeric_v = all_numeric<Args...>::value;
+
+/**
  * @var all_integral_v
  * 
  * Are all argument types integral?
@@ -657,23 +683,6 @@ template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
 NUMBIRCH_HOST_DEVICE const T& get(const T& x, const int i = 0,
     const int j = 0, const int ld = 0) {
   return x;
-}
-
-/**
- * @internal
- * 
- * Performs the inverse operation of a scalar broadcast during gradient
- * computation. That is, if a scalar was broadcast during the forward pass,
- * upstream gradients must be aggregated, by summation, during the backward
- * pass.
- */
-template<int D, class T>
-constexpr auto aggregate(const T& x) {
-  if constexpr (D == 0 && dimension_v<T> != 0) {
-    return sum(x);
-  } else {
-    return x;
-  }
 }
 
 /**

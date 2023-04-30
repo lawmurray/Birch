@@ -3,11 +3,9 @@
  */
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/transform.inl"
-#include "numbirch/cuda/random.inl"
 #endif
 #ifdef BACKEND_EIGEN
 #include "numbirch/eigen/transform.inl"
-#include "numbirch/eigen/random.inl"
 #endif
 #include "numbirch/common/transform.inl"
 
@@ -46,12 +44,21 @@ BINARY_ARITHMETIC(add)
 BINARY_ARITHMETIC(copysign)
 BINARY_ARITHMETIC(div)
 BINARY_REAL(digamma)
+BINARY_BOOL(equal)
 BINARY_REAL(gamma_p)
 BINARY_REAL(gamma_q)
+BINARY_BOOL(greater)
+BINARY_BOOL(greater_or_equal)
 BINARY_ARITHMETIC(hadamard)
 BINARY_REAL(lbeta)
 BINARY_REAL(lchoose)
+BINARY_BOOL(less)
+BINARY_BOOL(less_or_equal)
 BINARY_REAL(lgamma)
+BINARY_BOOL(logical_and)
+BINARY_BOOL(logical_or)
+BINARY_BOOL(not_equal)
 BINARY_REAL(pow)
 BINARY_ARITHMETIC(sub)
+
 }

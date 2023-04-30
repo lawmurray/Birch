@@ -27,7 +27,6 @@
 
 namespace numbirch {
 UNARY_ARITHMETIC_GRAD(neg_grad)
-UNARY_BOOL_GRAD(not_grad)
 UNARY_ARITHMETIC_GRAD(abs_grad)
 UNARY_REAL_GRAD(acos_grad)
 UNARY_REAL_GRAD(asin_grad)
@@ -45,6 +44,7 @@ UNARY_REAL_GRAD(lfact_grad)
 UNARY_REAL_GRAD(lgamma_grad)
 UNARY_REAL_GRAD(log_grad)
 UNARY_REAL_GRAD(log1p_grad)
+UNARY_BOOL_GRAD(logical_not_grad)
 UNARY_ARITHMETIC_GRAD(rectify_grad)
 UNARY_ARITHMETIC_GRAD(round_grad)
 UNARY_REAL_GRAD(sin_grad)

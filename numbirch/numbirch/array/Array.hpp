@@ -24,7 +24,14 @@
 #include <cstddef>
 #include <cstring>
 
+namespace numbirch::array {
+using namespace numbirch;
+}
 namespace numbirch {
+using namespace numbirch::array;
+}
+
+namespace numbirch::array {
 /**
  * Multidimensional array with copy-on-write.
  * 
@@ -48,8 +55,10 @@ template<class T, int D>
 class Array {
   template<class U, int E> friend class Array;
 public:
-  static_assert(is_arithmetic_v<T>, "Array is only for arithmetic types");
-  static_assert(!std::is_const_v<T>, "Array cannot have const value type");
+  static_assert(std::is_arithmetic_v<T>, "Array is only for arithmetic types");
+  static_assert(!std::is_const_v<T>, "Array cannot have a const value type");
+  static_assert(!std::is_reference_v<T>, "Array cannot have a reference value type");
+
   using value_type = T;
   using shape_type = ArrayShape<D>;
 
@@ -64,6 +73,7 @@ public:
   Array() :
       isView(false) {
     allocate();
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -75,6 +85,7 @@ public:
       shp(shp),
       isView(false) {
     allocate();
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -82,14 +93,33 @@ public:
    * 
    * @param value Fill value.
    * 
-   * Typically this is used for construction of scalars, which have one
-   * element by default. Arrays of higher dimension have no elements by
-   * default.
+   * Constructs an array of the given number of dimensions, with a single
+   * element set to @p value.
    */
-  Array(const T value) :
+  Array(const T& value) :
+      shp(make_shape<D>(1, 1)),
       isView(false) {
     allocate();
     fill(value);
+    assert(!volume() || this->ctl.load());
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param value Fill value.
+   * 
+   * Constructs an array of the given number of dimensions, with a single
+   * element set to @p value.
+   */
+  template<class U>
+  Array(const Array<U,0>& value) :
+      shp(make_shape<D>(1, 1)),
+      isView(false) {
+    allocate();
+    fill(value);
+    assert(!volume() || this->ctl.load());
+    assert(!value.volume() || value.ctl.load());
   }
 
   /**
@@ -98,11 +128,12 @@ public:
    * @param shp Shape.
    * @param value Fill value.
    */
-  Array(const shape_type& shp, const T value) :
+  Array(const shape_type& shp, const T& value) :
       shp(shp),
       isView(false) {
     allocate();
     fill(value);
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -111,11 +142,14 @@ public:
    * @param shp Shape.
    * @param value Fill value.
    */
-  Array(const shape_type& shp, const Array<T,0>& value) :
+  template<class U>
+  Array(const shape_type& shp, const Array<U,0>& value) :
       shp(shp),
       isView(false) {
     allocate();
     fill(value);
+    assert(!volume() || this->ctl.load());
+    assert(!value.volume() || value.ctl.load());
   }
 
   /**
@@ -138,6 +172,7 @@ public:
         *iter = l(++n);
       }
     }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -153,6 +188,7 @@ public:
     if (volume() > 0) {
       std::copy(values.begin(), values.end(), begin());
     }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -174,6 +210,7 @@ public:
         }
       }
     }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -189,6 +226,7 @@ public:
     if (volume() > 0 && !isView) {
       ctl->incShared();
     }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -208,41 +246,35 @@ public:
       copy(o);
     } else if (volume() > 0) {
       auto c = o.control();
-      assert(c);
       c->incShared();
       ctl.store(c);
     }
-  }
-
-  /**
-   * Generic copy constructor.
-   */
-  template<class U, std::enable_if_t<is_arithmetic_v<U>,int> = 0>
-  Array(const Array<U,D>& o) :
-      shp(o.shp),
-      isView(false) {
-    allocate();
-    copy(o);
+    assert(!volume() || this->ctl.load());
+    assert(!o.volume() || o.ctl.load());
   }
 
   /**
    * Move constructor.
    */
   Array(Array&& o) :
+      shp(o.shp),
       isView(false) {
     if (o.isView) {
-      shp = o.shp;
       allocate();
       copy(o);
     } else {
-      swap(std::move(o), false);
+      o.shp.clear();
+      ctl.store(o.ctl.exchange(nullptr));
     }
+    assert(!volume() || this->ctl.load());
+    assert(!o.volume() || o.ctl.load() || D == 0);
   }
 
   /**
    * Destructor.
    */
   ~Array() {
+    assert(!volume() || this->ctl.load() || D == 0);
     if (!isView && volume() > 0) {
       ArrayControl* c = ctl.load();
       if (c && c->decShared() == 0) {
@@ -258,10 +290,25 @@ public:
     if (isView) {
       copy(o);
     } else {
-      swap(Array(o));
+      shp = o.shp;
+      ArrayControl* c = ctl.exchange(o.ctl.load());
+      if (c->decShared() == 0) {
+        delete c;
+      }
     }
+    assert(!volume() || this->ctl.load());
     return *this;
   }
+
+  /**
+   * Generic copy assignment.
+   */
+  template<class U>
+  Array& operator=(const Array<U,D>& o) {
+    copy(o);
+    assert(!volume() || this->ctl.load());
+    return *this;
+ }
 
   /**
    * Move assignment.
@@ -270,44 +317,59 @@ public:
     if (isView) {
       copy(o);
     } else if (o.isView) {
-      swap(Array(o));
+      if (volume() > 0) {
+        shp = o.shp;
+        reallocate();
+      } else {
+        shp = o.shp;
+        allocate();
+      }
+      copy(o);
     } else {
-      swap(std::move(o));
+      ArrayControl *c = nullptr, *d = nullptr;
+      if (volume() > 0) {
+        c = ctl.exchange(nullptr);  // obtains exclusive lock
+      }
+      if (o.volume() > 0) {
+        d = o.ctl.exchange(c);  // need not lock o, being moved anyway
+      } else if (c) {
+        o.ctl.store(c);
+      }
+      std::swap(shp, o.shp);
+      if (volume() > 0) {
+        assert(d);
+        ctl.store(d);  // releases exclusive lock
+      }
     }
+    assert(!volume() || this->ctl.load());
+    assert(!o.volume() || o.ctl.load() || D == 0);
     return *this;
   }
 
   /**
    * Value assignment. Fills the entire array with the given value.
    */
-  template<class U, std::enable_if_t<is_arithmetic_v<U>,int> = 0>
-  Array& operator=(const U value) {
+  Array& operator=(const T& value) {
     fill(value);
+    assert(!volume() || this->ctl.load());
     return *this;
   }
 
   /**
    * Value conversion (scalar only).
    */
-  template<class U, int E = D, std::enable_if_t<E == 0 &&
-      is_arithmetic_v<U>,int> = 0>
+  template<class U = T, int E = D, std::enable_if_t<
+      std::is_arithmetic_v<U> && E == 0,int> = 0>
   operator U() const {
+    assert(!volume() || this->ctl.load());
     return value();
   }
 
   /**
    * @copydoc value()
-   * 
-   * @see value()
    */
-  decltype(auto) operator*() {
-    return value();
-  }
-
-  /**
-   * @copydoc operator*()
-   */
-  decltype(auto) operator*() const {
+  auto operator*() const {
+    assert(!volume() || this->ctl.load());
     return value();
   }
 
@@ -316,20 +378,8 @@ public:
    * 
    * @return For a scalar, the value. For a vector or matrix, `*this`.
    */
-  decltype(auto) value() {
-    if constexpr (D == 0) {
-      return *diced();
-    } else {
-      return *this;
-    }
-  }
-
-  /**
-   * Value.
-   * 
-   * @return For a scalar, the value. For a vector or matrix, `*this`.
-   */
-  decltype(auto) value() const {
+  auto value() const {
+    assert(!volume() || this->ctl.load());
     if constexpr (D == 0) {
       return *diced();
     } else {
@@ -343,6 +393,7 @@ public:
    * complete?
    */
   bool has_value() const {
+    assert(!volume() || this->ctl.load());
     return volume() == 0 || control()->test();
   }
 
@@ -350,6 +401,7 @@ public:
    * Iterator to the first element.
    */
   ArrayIterator<T,D> begin() {
+    assert(!volume() || this->ctl.load());
     return ArrayIterator<T,D>(diced(), shape(), 0);
   }
 
@@ -357,6 +409,7 @@ public:
    * @copydoc begin()
    */
   ArrayIterator<const T,D> begin() const {
+    assert(!volume() || this->ctl.load());
     return ArrayIterator<const T,D>(diced(), shape(), 0);
   }
 
@@ -364,6 +417,7 @@ public:
    * Iterator to one past the last element.
    */
   ArrayIterator<T,D> end() {
+    assert(!volume() || this->ctl.load());
     return ArrayIterator<T,D>(diced(), shape(), size());
   }
 
@@ -371,6 +425,7 @@ public:
    * @copydoc end()
    */
   ArrayIterator<const T,D> end() const {
+    assert(!volume() || this->ctl.load());
     return ArrayIterator<const T,D>(diced(), shape(), size());
   }
 
@@ -380,6 +435,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       !all_integral_v<Args...>,int> = 0>
   auto operator()(const Args... args) {
+    assert(!volume() || this->ctl.load());
     return slice(args...);
   }
 
@@ -389,6 +445,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       !all_integral_v<Args...>,int> = 0>
   const auto operator()(const Args... args) const {
+    assert(!volume() || this->ctl.load());
     return slice(args...);
   }
 
@@ -398,6 +455,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       all_integral_v<Args...>,int> = 0>
   T& operator()(const Args... args) {
+    assert(!volume() || this->ctl.load());
     return dice(args...);
   }
 
@@ -407,6 +465,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       all_integral_v<Args...>,int> = 0>
   const T& operator()(const Args... args) const {
+    assert(!volume() || this->ctl.load());
     return dice(args...);
   }
 
@@ -431,6 +490,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
   auto slice(const Args... args) {
     auto view = shp.slice(args...);
+    assert(!volume() || this->ctl.load());
     return Array<T,view.dims()>(control(), view);
   }
 
@@ -440,6 +500,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D,int> = 0>
   const auto slice(const Args... args) const {
     auto view = shp.slice(args...);
+    assert(!volume() || this->ctl.load());
     return Array<T,view.dims()>(control(), view);
   }
 
@@ -457,6 +518,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       all_integral_v<Args...>,int> = 0>
   T& dice(const Args... args) {
+    assert(!volume() || this->ctl.load());
     return diced()[shp.dice(args...)];
   }
 
@@ -466,6 +528,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D &&
       all_integral_v<Args...>,int> = 0>
   const T& dice(const Args... args) const {
+    assert(!volume() || this->ctl.load());
     return diced()[shp.dice(args...)];
   }
 
@@ -474,6 +537,7 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() {
+    assert(!volume() || this->ctl.load());
     return Array<T,1>(control(), shp.diagonal());
   }
 
@@ -482,6 +546,7 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() const {
+    assert(!volume() || this->ctl.load());
     return Array<T,1>(control(), shp.diagonal());
   }
 
@@ -489,6 +554,7 @@ public:
    * Shape.
    */
   ArrayShape<D> shape() const {
+    assert(!volume() || this->ctl.load());
     return shp;
   }
 
@@ -496,6 +562,7 @@ public:
    * Offset into buffer.
    */
   int64_t offset() const {
+    assert(!volume() || this->ctl.load());
     return shp.offset();
   }
 
@@ -503,6 +570,7 @@ public:
    * Number of elements.
    */
   int64_t size() const {
+    assert(!volume() || this->ctl.load());
     return shp.size();
   }
 
@@ -518,6 +586,7 @@ public:
    * number of rows. Same as rows().
    */
   int length() const {
+    assert(!volume() || this->ctl.load());
     return shp.rows();
   }
 
@@ -526,6 +595,7 @@ public:
    * matrix its number of rows. Same as length().
    */
   int rows() const {
+    assert(!volume() || this->ctl.load());
     return shp.rows();
   }
 
@@ -534,6 +604,7 @@ public:
    * number of columns.
    */
   int columns() const {
+    assert(!volume() || this->ctl.load());
     return shp.columns();
   }
 
@@ -544,6 +615,7 @@ public:
    * rows.
    */
   int width() const {
+    assert(!volume() || this->ctl.load());
     return shp.width();
   }
 
@@ -554,6 +626,7 @@ public:
    * columns.
    */
   int height() const {
+    assert(!volume() || this->ctl.load());
     return shp.height();
   }
 
@@ -565,6 +638,7 @@ public:
    * columns.
    */
   int stride() const {
+    assert(!volume() || this->ctl.load());
     return shp.stride();
   }
 
@@ -575,6 +649,7 @@ public:
    */
   template<class U, int E>
   bool conforms(const Array<U,E>& o) const {
+    assert(!volume() || this->ctl.load());
     return shp.conforms(o.shp);
   }
 
@@ -588,21 +663,27 @@ public:
    * pushing the new value.
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
-  void push(const T value) {
+  void push(const T& value) {
     assert(!isView);
 
-    ArrayControl *c = nullptr, *d = nullptr;
+    ArrayControl* c = nullptr;
     if (volume() == 0) {
       /* allocate new; as use cases for push() often see it called multiple
        * times in succession, overallocate a little to start to accommodate
        * some further pushes without reallocation */
-      d = new ArrayControl(16*sizeof(T));
+      c = new ArrayControl(16*sizeof(T));
+
+      /* set new element; dicing preferable to slicing here given that the
+        * typical use case for push() is reading from a file */
+      static_cast<T*>(c->buf)[volume()] = value;
+      //memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
+      shp.extend(1);
+      ctl.store(c);
     } else {
       /* load control without obtaining lock */
       do {
         c = ctl.load();
       } while (!c);
-      d = c;
 
       size_t newbytes = c->bytes;
       if ((volume() + stride())*sizeof(T) > newbytes) {
@@ -617,37 +698,41 @@ public:
         do {
           c = ctl.exchange(nullptr);
         } while (!c);
-        d = c;
 
         if (c->numShared() > 1) {
           /* copy-on-write and resize simultaneously */
-          d = new ArrayControl(*c, newbytes);
+          ArrayControl* d = new ArrayControl(*c, newbytes);
+
+          /* set new element; dicing preferable to slicing here given that the
+           * typical use case for push() is reading from a file */
+          static_cast<T*>(d->buf)[volume()] = value;
+          //memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
+          shp.extend(1);
+          ctl.store(d);
           if (c->decShared() == 0) {
             delete c;
           }
         } else if (newbytes > c->bytes) {
-          /* reallocate only if necessary */
+          /* reallocate */
           c->realloc(newbytes);
+
+          /* set new element; dicing preferable to slicing here given that the
+           * typical use case for push() is reading from a file */
+          static_cast<T*>(c->buf)[volume()] = value;
+          //memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
+          shp.extend(1);
+          ctl.store(c);
         }
-        c = nullptr;
       }
     }
-
-    /* set new element; dicing preferable to slicing here given that the
-     * typical use case for push() is reading from a file */
-    static_cast<T*>(d->buf)[volume()] = value;
-    //memset(Sliced<T>(d, volume(), true).data(), stride(), value, 1, 1);
-
-    shp.extend(1);
-    if (d != c) {
-      ctl.store(d);  // also unlocks
-    }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
    * Get underlying buffer for use in a slice operation.
    */
   Sliced<T> sliced() {
+    assert(!volume() || this->ctl.load());
     if (volume() > 0) {
       return Sliced<T>(control(), offset(), true);
     } else {
@@ -659,6 +744,7 @@ public:
    * @copydoc sliced()
    */
   const Sliced<T> sliced() const {
+    assert(!volume() || this->ctl.load());
     if (volume() > 0) {
       return Sliced<T>(control(), offset(), false);
     } else {
@@ -670,6 +756,7 @@ public:
    * Get underlying buffer for use in a dice operation.
    */
   Diced<T> diced() {
+    assert(!volume() || this->ctl.load());
     if (volume() > 0) {
       return Diced<T>(control(), offset());
     } else {
@@ -681,6 +768,7 @@ public:
    * @copydoc diced()
    */
   const Diced<T> diced() const {
+    assert(!volume() || this->ctl.load());
     if (volume() > 0) {
       return Diced<T>(control(), offset());
     } else {
@@ -723,6 +811,7 @@ public:
         }
       }
     }
+    assert(!volume() || this->ctl.load());
     return c;
   }
 
@@ -740,6 +829,7 @@ public:
         c = ctl.load();
       } while (!c);
     }
+    assert(!volume() || this->ctl.load());
     return c;
   }
 
@@ -750,6 +840,7 @@ public:
    * allocation.
    */
   bool canReshape() const {
+    assert(!volume() || this->ctl.load());
     return size() == 1 || size() == volume();
   }
 
@@ -759,6 +850,7 @@ public:
    * Convert to scalar.
    */
   Array<T,0> scal() const {
+    assert(!volume() || this->ctl.load());
     if constexpr (D == 0) {
       return *this;
     } else {
@@ -773,6 +865,7 @@ public:
    * Convert to vector.
    */
   Array<T,1> vec() const {
+    assert(!volume() || this->ctl.load());
     if constexpr (D == 1) {
       return *this;
     } else {
@@ -789,6 +882,7 @@ public:
    * @param n Number of columns.
    */
   Array<T,2> mat(const int n) const {
+    assert(!volume() || this->ctl.load());
     if constexpr (D == 2) {
       return *this;
     } else {
@@ -805,10 +899,11 @@ private:
    *
    * @param value The value.
    */
-  void fill(const T value) {
+  void fill(const T& value) {
     if (volume() > 0) {
       memset(sliced().data(), stride(), value, width(), height());
     }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -822,6 +917,7 @@ private:
       memcpy(sliced().data(), stride(), value.sliced().data(), value.stride(),
           width(), height());
     }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -836,30 +932,7 @@ private:
       memcpy(sliced().data(), stride(), o.sliced().data(), o.stride(),
           width(), height());
     }
-  }
-
-  /**
-   * Swap with another array.
-   * 
-   * @param o The other array.
-   * @param allocated Does this have an allocation? For scalar arrays, the
-   * volume is one, but the allocation may not have been performed yet if we
-   * are in a constructor, and so the usual `volume() > 0` check is
-   * insufficient.
-   */
-  void swap(Array&& o, const bool allocated = true) {
-    assert(!isView);
-    assert(!o.isView);
-    auto c = (allocated && volume() > 0) ? ctl.exchange(nullptr) : nullptr;
-    auto d = o.volume() > 0 ? o.ctl.exchange(nullptr) : nullptr;
-    std::swap(shp, o.shp);
-    if (volume() > 0) {
-      assert(d);
-      ctl.store(d);
-    }
-    if (o.volume() > 0) {
-      o.ctl.store(c);
-    }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -870,6 +943,23 @@ private:
     if (volume() > 0) {
       ctl.store(new ArrayControl(shp.volume()*sizeof(T)));
     }
+    assert(!volume() || this->ctl.load());
+  }
+
+  /**
+   * Reallocate memory for this, leaving uninitialized.
+   */
+  void reallocate() {
+    shp.compact();
+    ArrayControl* c = nullptr;
+    if (volume() > 0) {
+      c = new ArrayControl(shp.volume()*sizeof(T));
+    }
+    c = ctl.exchange(c);
+    if (c && c->decShared() == 0) {
+      delete c;
+    }
+    assert(!volume() || this->ctl.load());
   }
 
   /**
@@ -890,30 +980,19 @@ private:
 };
 
 template<class T>
-Array(const std::initializer_list<std::initializer_list<T>>&) -> Array<T,2>;
+Array(const std::initializer_list<std::initializer_list<T>>&) ->
+    Array<std::decay_t<T>,2>;
 
 template<class T>
-Array(const std::initializer_list<T>&) -> Array<T,1>;
+Array(const std::initializer_list<T>&) ->
+    Array<std::decay_t<T>,1>;
 
 template<class T>
-Array(const T value) -> Array<T,0>;
+Array(const T& value) ->
+    Array<std::decay_t<T>,0>;
 
-template<class T>
-Array(const ArrayShape<0>& shape, const T value) -> Array<T,0>;
-
-template<class T>
-Array(const ArrayShape<1>& shape, const T value) -> Array<T,1>;
-
-template<class T>
-Array(const ArrayShape<2>& shape, const T value) -> Array<T,2>;
-
-template<class T>
-Array(const ArrayShape<0>& shape, const Array<T,0>& value) -> Array<T,0>;
-
-template<class T>
-Array(const ArrayShape<1>& shape, const Array<T,0>& value) -> Array<T,1>;
-
-template<class T>
-Array(const ArrayShape<2>& shape, const Array<T,0>& value) -> Array<T,2>;
+template<class T, int D>
+Array(const ArrayShape<D>& shape, const T& value) ->
+    Array<std::decay_t<T>,D>;
 
 }
