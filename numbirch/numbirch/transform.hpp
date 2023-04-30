@@ -945,6 +945,36 @@ real_t<U> div_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
 /**
+ * Error function.
+ * 
+ * @ingroup transform
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param x Argument.
+ * 
+ * @return Result.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> erf(const T& x);
+
+/**
+ * Gradient of erf().
+ * 
+ * @ingroup transform_grad
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param x Argument.
+ * 
+ * @return Gradient with respect to @p x.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> erf_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
+
+/**
  * Exponential.
  * 
  * @ingroup transform

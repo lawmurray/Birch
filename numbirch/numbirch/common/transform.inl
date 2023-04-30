@@ -242,6 +242,18 @@ struct div_grad2_functor {
   }
 };
 
+struct erf_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
+    return std::erf(x);
+  }
+};
+
+struct erf_grad_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
+    return g*real(2.0/std::sqrt(PI))*std::exp(-x*x);
+  }
+};
+
 struct exp_functor {
   NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::exp(x);
@@ -1043,6 +1055,19 @@ real_t<U> div_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
   prefetch(x);
   prefetch(y);
   return aggregate<dimension_v<U>>(transform(g, x, y, div_grad2_functor()));
+}
+
+template<class T, class>
+real_t<T> erf(const T& x) {
+  prefetch(x);
+  return transform(x, erf_functor());
+}
+
+template<class T, class>
+real_t<T> erf_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+  prefetch(g);
+  prefetch(x);
+  return transform(g, x, erf_grad_functor());
 }
 
 template<class T, class>
