@@ -4,6 +4,7 @@
 #pragma once
 
 #include "numbirch/random.hpp"
+#include "numbirch/reduce.hpp"
 
 namespace numbirch {
 
@@ -31,6 +32,12 @@ template<class T, class>
 real_t<T> simulate_chi_squared(const T& nu) {
   prefetch(nu);
   return transform(nu, simulate_chi_squared_functor());
+}
+
+template<class T, class>
+real_t<T> simulate_dirichlet(const T& alpha) {
+  auto x = simulate_gamma(alpha, real(1));
+  return div(x, sum(x));
 }
 
 template<class T, class>

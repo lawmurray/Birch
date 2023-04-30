@@ -99,6 +99,20 @@ template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
 real_t<T> simulate_chi_squared(const T& nu);
 
 /**
+ * Simulate a Dirichlet distribution.
+ *
+ * @ingroup random
+ * 
+ * @tparam T Numeric type.
+ * 
+ * @param alpha Concentrations.
+ * 
+ * @return Variate.
+ */
+template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+real_t<T> simulate_dirichlet(const T& alpha);
+
+/**
  * Simulate an exponential distribution.
  *
  * @ingroup random
