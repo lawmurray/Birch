@@ -71,7 +71,7 @@ real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
 }
 
 template<class T, class>
-real_t<T> cumsum_grad(const Array<real,0>& g, const T& y, const T& x) {
+real_t<T> cumsum_grad(const real_t<T>& g, const T& y, const T& x) {
   return sub(sum(g), sub(cumsum(g), g));
 }
 
