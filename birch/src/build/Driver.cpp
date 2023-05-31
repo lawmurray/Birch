@@ -134,14 +134,9 @@ birch::Driver::Driver(int argc, char** argv) :
     PREFIX_ARG,
     ARCH_ARG,
     UNIT_ARG,
-    MODE_ARG,
     PRECISION_ARG,
     BACKEND_ARG,
     JOBS_ARG,
-    ENABLE_TEST_ARG,
-    DISABLE_TEST_ARG,
-    ENABLE_RELEASE_ARG,
-    DISABLE_RELEASE_ARG,
     ENABLE_SINGLE_ARG,
     DISABLE_SINGLE_ARG,
     ENABLE_DOUBLE_ARG,
@@ -178,14 +173,9 @@ birch::Driver::Driver(int argc, char** argv) :
       { "prefix", required_argument, 0, PREFIX_ARG },
       { "arch", required_argument, 0, ARCH_ARG },
       { "unit", required_argument, 0, UNIT_ARG },
-      { "mode", required_argument, 0, MODE_ARG },
       { "precision", required_argument, 0, PRECISION_ARG },
       { "backend", required_argument, 0, BACKEND_ARG },
       { "jobs", required_argument, 0, JOBS_ARG },
-      { "enable-test", no_argument, 0, ENABLE_TEST_ARG },
-      { "disable-test", no_argument, 0, DISABLE_TEST_ARG },
-      { "enable-release", no_argument, 0, ENABLE_RELEASE_ARG },
-      { "disable-release", no_argument, 0, DISABLE_RELEASE_ARG },
       { "enable-single", no_argument, 0, ENABLE_SINGLE_ARG },
       { "disable-single", no_argument, 0, DISABLE_SINGLE_ARG },
       { "enable-double", no_argument, 0, ENABLE_DOUBLE_ARG },
@@ -239,9 +229,6 @@ birch::Driver::Driver(int argc, char** argv) :
     case UNIT_ARG:
       unit = optarg;
       break;
-    case MODE_ARG:
-      warn("--mode is deprecated and will be removed in future: there are no longer separate debug and release builds.");
-      break;
     case PRECISION_ARG:
       precision = optarg;
       break;
@@ -250,22 +237,6 @@ birch::Driver::Driver(int argc, char** argv) :
       break;
     case JOBS_ARG:
       jobs = atoi(optarg);
-      break;
-    case ENABLE_TEST_ARG:
-      warn("--enable-test is deprecated and will be removed in future: setting --enable-coverage instead.");
-      enableCoverage = true;
-      break;
-    case DISABLE_TEST_ARG:
-      warn("--disable-test is deprecated and will be removed in future: setting --disable-coverage instead.");
-      enableCoverage = false;
-      break;
-    case ENABLE_RELEASE_ARG:
-      warn("--enable-release is deprecated and will be removed in future: setting --enable-optimize instead.");
-      enableOptimize = true;
-      break;
-    case DISABLE_RELEASE_ARG:
-      warn("--disable-release is deprecated and will be removed in future: setting --disable-optimize instead.");
-      enableOptimize = false;
       break;
     case ENABLE_SINGLE_ARG:
       enableSingle = true;
@@ -480,13 +451,13 @@ void birch::Driver::configure() {
       cflags << " -march=native";
       cxxflags << " -march=native";
     }
-    if (enableOptimize) {
-      cflags << " -O3 -flto";
-      cxxflags << " -O3 -flto";
-    }
     if (enableDebug) {
       cflags << " -g";
       cxxflags << " -g";
+    }
+    if (enableOptimize) {
+      cflags << " -O3 -flto";
+      cxxflags << " -O3 -flto";
     }
     if (enableCoverage) {
       cflags << " -fno-inline --coverage";
@@ -1330,7 +1301,7 @@ void birch::Driver::target(const std::string& cmd) {
   std::regex rxNotes("note:|required by|required from|\\[with.*?\\]", options);
 
   std::regex rxSkipLine("In file included from|In function|In member function|In instantiation|instantiation contexts|unrecognized command-line option|^\\s*from|std::enable_if|At global scope:|type_traits", options);
-  std::regex rxNamespace("birch::|membirch::|numbirch::", options);
+  std::regex rxNamespace("birch::|membirch::|numbirch::|array::", options);
   std::regex rxInternal("\\b(" + name + ")_\\b", options);
   std::regex rxCxxWords("\\b(?:virtual|class|const|typename|template(?= *<))\\b *", options);
   std::regex rxTemplateParameter("template parameter", options);

@@ -26,6 +26,11 @@ public:
   int argc();
 
   /**
+   * Remaining command-line options after processing those recognized.
+   */
+  char** argv();
+
+  /**
    * Determine name of the shared library for the NumBirch backend required.
    */
   std::string numbirch();
@@ -34,11 +39,6 @@ public:
    * Determine name of the shared library for this package.
    */
   std::string library();
-
-  /**
-   * Remaining command-line options after processing those recognized.
-   */
-  char** argv();
 
   /**
    * Bootstrap package.
@@ -97,7 +97,7 @@ public:
 
 private:
   /**
-   * Read in the META.json file.
+   * Read in the configuration file.
    */
   void meta();
 
