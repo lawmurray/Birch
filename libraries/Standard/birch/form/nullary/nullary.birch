@@ -1,0 +1,18 @@
+/**
+ * Construct a vector filled with standard Gaussian variates.
+ * 
+ * @param n Length.
+ * 
+ * @return Vector.
+ */
+function standard_gaussian(n:Integer) -> NumberVectorLike;
+
+/**
+ * Construct a matrix filled with standard Gaussian variates.
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Matrix.
+ */
+function standard_gaussian(m:Integer, n:Integer) -> NumberMatrixLike;
