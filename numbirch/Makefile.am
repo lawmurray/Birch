@@ -186,7 +186,6 @@ noinst_HEADERS = \
 
 dist_noinst_DATA =  \
   Doxyfile \
-  DoxygenLayout.xml \
   LICENSE \
   CONTRIBUTING.md \
   README.md
