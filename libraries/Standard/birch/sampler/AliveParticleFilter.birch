@@ -31,7 +31,7 @@ class AliveParticleFilter < ParticleFilter {
         p[n] <- p[n] + 1;
 
         let m <- x[n];
-        let h <- construct<Handler>(autoconj, autodiff, autojoin);
+        let h <- Handler(autoconj, autodiff, autojoin);
         with h {
           x[n].read(t, input);
           x[n].simulate(t);

@@ -138,8 +138,8 @@ final class Buffer {
    */
   function setEmptyObject() {
     setNil();
-    keys <- construct<Array<String>>();
-    values <- construct<Array<Buffer>>();
+    keys <- Array<String>();
+    values <- Array<Buffer>();
     cpp{{
     map.clear();
     }}
@@ -159,7 +159,7 @@ final class Buffer {
    */
   function setEmptyArray() {
     setNil();
-    values <- construct<Array<Buffer>>();
+    values <- Array<Buffer>();
     cpp{{
     map.clear();
     }}
@@ -428,29 +428,29 @@ final class Buffer {
    */
   function walk() -> Iterator<Buffer> {
     if keys? {
-      return construct<ObjectBufferIterator>(keys!, values!);
+      return ObjectBufferIterator(keys!, values!);
     } else if values? {
-      return construct<ArrayBufferIterator>(values!);
+      return ArrayBufferIterator(values!);
     } else if scalarString? {
-      return construct<ScalarBufferIterator<String>>(scalarString!);
+      return ScalarBufferIterator<String>(scalarString!);
     } else if scalarReal? {
-      return construct<ScalarBufferIterator<Real>>(scalarReal!);
+      return ScalarBufferIterator<Real>(scalarReal!);
     } else if scalarInteger? {
-      return construct<ScalarBufferIterator<Integer>>(scalarInteger!);
+      return ScalarBufferIterator<Integer>(scalarInteger!);
     } else if scalarBoolean? {
-      return construct<ScalarBufferIterator<Boolean>>(scalarBoolean!);
+      return ScalarBufferIterator<Boolean>(scalarBoolean!);
     } else if vectorReal? {
-      return construct<VectorBufferIterator<Real>>(vectorReal!);
+      return VectorBufferIterator<Real>(vectorReal!);
     } else if vectorInteger? {
-      return construct<VectorBufferIterator<Integer>>(vectorInteger!);
+      return VectorBufferIterator<Integer>(vectorInteger!);
     } else if vectorBoolean? {
-      return construct<VectorBufferIterator<Boolean>>(vectorBoolean!);
+      return VectorBufferIterator<Boolean>(vectorBoolean!);
     } else if matrixReal? {
-      return construct<MatrixBufferIterator<Real>>(matrixReal!);
+      return MatrixBufferIterator<Real>(matrixReal!);
     } else if matrixInteger? {
-      return construct<MatrixBufferIterator<Integer>>(matrixInteger!);
+      return MatrixBufferIterator<Integer>(matrixInteger!);
     } else if matrixBoolean? {
-      return construct<MatrixBufferIterator<Boolean>>(matrixBoolean!);
+      return MatrixBufferIterator<Boolean>(matrixBoolean!);
     } else {
       return EmptyIterator<Buffer>();
     }
@@ -1161,7 +1161,7 @@ final class Buffer {
  * Create a Buffer.
  */
 function make_buffer() -> Buffer {
-  return construct<Buffer>();
+  return Buffer();
 }
 
 /**

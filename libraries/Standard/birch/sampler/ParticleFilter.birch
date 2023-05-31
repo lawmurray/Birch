@@ -129,7 +129,7 @@ class ParticleFilter {
    */
   function simulate(input:Buffer) {
     parallel for n in 1..nparticles {
-      let h <- construct<Handler>(autoconj, autodiff, autojoin);
+      let h <- Handler(autoconj, autodiff, autojoin);
       with h {
         x[n].read(input);
         x[n].simulate();
@@ -153,7 +153,7 @@ class ParticleFilter {
    */
   function simulate(t:Integer, input:Buffer) {
     parallel for n in 1..nparticles {
-      let h <- construct<Handler>(autoconj, autodiff, autojoin);
+      let h <- Handler(autoconj, autodiff, autojoin);
       with h {
         x[n].read(t, input);
         x[n].simulate(t);

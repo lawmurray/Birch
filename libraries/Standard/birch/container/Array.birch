@@ -206,7 +206,7 @@ final class Array<Type> {
    * @return an iterator across elements in forward order.
    */
   function walk() -> Iterator<Type> {
-    return construct<ArrayIterator<Type>>(this);
+    return ArrayIterator<Type>(this);
   }
 
   override function read(buffer:Buffer) {

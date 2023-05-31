@@ -132,19 +132,6 @@ template<class... Args>
 inline constexpr bool is_delay_v = is_delay<Args...>::value;
 
 /**
- * Construct an object.
- *
- * @tparam Type The class type.
- * @tparam Args Argument types.
- *
- * @return The object.
- */
-template<class Type, class... Args>
-Type construct(Args&&... args) {
-  return Type(std::forward<Args>(args)...);
-}
-
-/**
  * Make a shared object.
  *
  * @tparam T Type.

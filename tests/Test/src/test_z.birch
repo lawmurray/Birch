@@ -6,7 +6,7 @@
  * @param lazy Use lazy expressions?
  */
 function test_z<TestModelType>(m:TestModelType, N:Integer, lazy:Boolean) {
-  with construct<Handler>(true, lazy, true) {
+  with Handler(true, lazy, true) {
     m.initialize();
     m.simulate();
   }

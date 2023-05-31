@@ -123,7 +123,7 @@ final class RaggedArray<Type> {
    * Add a new row at the back.
    */
   function pushBack() {
-    values.pushBack(construct<Array<Type>>());
+    values.pushBack(Array<Type>());
   }
 
   /**
