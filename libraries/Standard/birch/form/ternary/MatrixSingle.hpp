@@ -6,43 +6,17 @@
 #include "birch/form/Ternary.hpp"
 
 namespace birch {
-using numbirch::single;
-using numbirch::single_grad1;
-using numbirch::single_grad2;
-using numbirch::single_grad3;
 
 template<class Left, class Middle, class Right>
-struct MatrixSingle : public Ternary<Left,Middle,Right> {
-  template<class T, class U, class V>
-  MatrixSingle(T&& x, U&& i, V&& j, Integer m, Integer n) :
-      Ternary<Left,Middle,Right>(std::forward<T>(x), std::forward<U>(i),
-      std::forward<V>(j)),
-      m(m),
-      n(n) {
-    //
-  }
-
-  /**
-   * Number of rows.
-   */
-  Integer m;
-
-  /**
-   * Number of columns.
-   */
-  Integer n;
-
-  BIRCH_TERNARY_FORM(single, m, n)
-  BIRCH_TERNARY_GRAD(single_grad, m, n)
+struct MatrixSingle {
+  BIRCH_TERNARY_FORM(MatrixSingle, numbirch::single, R, C)
+  BIRCH_TERNARY_GRAD(numbirch::single_grad, R, C)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay_v<Left,Middle,Right>,int> = 0>
-MatrixSingle<Left,Middle,Right> single(const Left& x, const Middle& i,
-    const Right& j, const int m, const int n) {
-  return MatrixSingle<Left,Middle,Right>(x, i, j, m, n);
+template<class Left, class Middle, class Right>
+auto single(const Left& l, const Middle& m, const Right& r, const int R, const int C) {
+  return BIRCH_TERNARY_CONSTRUCT(MatrixSingle, R, C);
 }
 
 }

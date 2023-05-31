@@ -10,7 +10,7 @@ using Real = numbirch::real;
 using String = std::string;
 using File = FILE*;
 
-struct Form;
+template<class T> struct Random;
 
 class Buffer_;
 using Buffer = membirch::Shared<Buffer_>;

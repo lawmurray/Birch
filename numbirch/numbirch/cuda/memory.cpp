@@ -8,7 +8,6 @@
 #include "numbirch/cuda/cusolver.hpp"
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
-#include "numbirch/array/ArrayControl.hpp"
 
 /*
  * Disable retention of extents by jemalloc. This is critical as the custom
@@ -26,10 +25,6 @@ void init() {
   curand_init();
   jemalloc_init();
   seed();
-}
-
-void wait() {
-  CUDA_CHECK(cudaStreamSynchronize(stream));
 }
 
 void term() {
@@ -131,82 +126,33 @@ void memcpy(void* dst, const void* src, size_t n) {
   CUDA_CHECK(cudaMemcpyAsync(dst, src, n, cudaMemcpyDefault, stream));
 }
 
-void array_init(ArrayControl* ctl, const size_t bytes) {
-  assert(ctl);
-  ctl->buf = numbirch::malloc(bytes);
-  ctl->bytes = bytes;
-  ctl->streamAlloc = stream;
-  ctl->streamWrite = stream;
+void* stream_get() {
+  return stream;
 }
 
-void array_term(ArrayControl* ctl) {
-  assert(ctl);
-  if (ctl->buf) {
-    auto streamAlloc = static_cast<cudaStream_t>(ctl->streamAlloc);
-    auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-    if (streamWrite != streamAlloc) {
-      /* ensure that the most recent write completes before reuse */
-      CUDA_CHECK(cudaEventRecord(event, streamWrite));
-      CUDA_CHECK(cudaStreamWaitEvent(streamAlloc, event));
-    }
-    numbirch::free(ctl->buf, ctl->bytes);
-  }
+void stream_wait(void* s) {
+  auto t = static_cast<cudaStream_t>(s);
+  CUDA_CHECK(cudaStreamSynchronize(t));
 }
 
-void array_resize(ArrayControl* ctl, const size_t bytes) {
-  ctl->buf = numbirch::realloc(ctl->buf, ctl->bytes, bytes);
-  ctl->bytes = bytes;
-}
-
-void array_copy(ArrayControl* dst, const ArrayControl* src) {
-  auto src1 = const_cast<ArrayControl*>(src);
-  before_read(src1);
-  before_write(dst);
-  memcpy(dst->buf, src1->buf, std::min(dst->bytes, src1->bytes));
-  after_write(dst);
-  after_read(src1);
-}
-
-void array_wait(ArrayControl* ctl) {
-  assert(ctl);
-  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  CUDA_CHECK(cudaStreamSynchronize(streamWrite));
-}
-
-bool array_test(ArrayControl* ctl) {
-  assert(ctl);
-  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  return cudaStreamQuery(streamWrite) == cudaSuccess;
-}
-
-void before_read(ArrayControl* ctl) {
-  assert(ctl);
-  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  if (streamWrite != stream) {
+void stream_join(void* s) {
+  auto t = static_cast<cudaStream_t>(s);
+  if (t != stream) {
     /* ensure that the most recent write completes before reading */
-    CUDA_CHECK(cudaEventRecord(event, streamWrite));
+    CUDA_CHECK(cudaEventRecord(event, t));
     CUDA_CHECK(cudaStreamWaitEvent(stream, event));
+    s = stream;
   }
 }
 
-void before_write(ArrayControl* ctl) {
-  assert(ctl);
-  auto streamWrite = static_cast<cudaStream_t>(ctl->streamWrite);
-  if (streamWrite != stream) {
-    /* ensure that the most recent write completes before writing */
-    CUDA_CHECK(cudaEventRecord(event, streamWrite));
-    CUDA_CHECK(cudaStreamWaitEvent(stream, event));
+void stream_finish(void* streamAlloc, void* stream) {
+  auto s = static_cast<cudaStream_t>(streamAlloc);
+  auto t = static_cast<cudaStream_t>(stream);
+  if (s != t) {
+    /* ensure that the most recent write completes before reuse */
+    CUDA_CHECK(cudaEventRecord(event, t));
+    CUDA_CHECK(cudaStreamWaitEvent(s, event));
   }
-}
-
-void after_read(ArrayControl* ctl) {
-  assert(ctl);
-  ctl->streamWrite = stream;
-}
-
-void after_write(ArrayControl* ctl) {
-  assert(ctl);
-  ctl->streamWrite = stream;
 }
 
 }

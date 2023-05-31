@@ -90,8 +90,8 @@ class MatrixNormalInverseWishartMatrixGaussianDistribution<Arg1,Arg2,Arg3,
 function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(A:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, C:Arg6,
     Φ:Arg7) -> Distribution<Real[_,_]> {
-  let L <- wrap(chol(Σ));
-  let O <- wrap(trisolve(L, M));
+  let L <- chol(Σ);
+  let O <- trisolve(L, M);
   let N <- triinnersolve(L, O);
   let Λ <- cholinv(L);
   let Γ <- Ψ + inner(O);
@@ -101,8 +101,15 @@ function MatrixNormalInverseWishartMatrixGaussian<Arg1,Arg2,Arg3,
 function make_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, C:Arg6,
     Φ:Arg7) -> {
-  return construct<MatrixNormalInverseWishartMatrixGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(A, N, Λ, Γ, k, C, Φ);
+  return peg_matrix_normal_inverse_wishart_matrix_gaussian(peg(A),
+      peg(N), peg(Λ), peg(Γ), peg(k), peg(C),
+      peg(Φ));
+}
+function peg_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, C:Arg6,
+    Φ:Arg7) -> {
+  return MatrixNormalInverseWishartMatrixGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(A, N, Λ, Γ, k, C, Φ);
 }
 
 /**
@@ -127,8 +134,8 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
   } else if Ψ.isInverseWishart() {
     let p_Ψ <- Ψ.graft();
     let (Ψ1, k) <- p_Ψ.getInverseWishart()!;
-    let L <- wrap(chol(Σ));
-    let O <- wrap(trisolve(L, M));
+    let L <- chol(Σ);
+    let O <- trisolve(L, M);
     let N <- triinnersolve(L, O);
     let Λ <- cholinv(L);
     let Γ <- Ψ1 + inner(O);
@@ -172,8 +179,8 @@ function MatrixGaussian<Arg>(M:Random<Real[_,_]>, Σ:Arg,
 function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(A:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, C:Arg6,
     Φ:Arg7) -> {
-  let L <- wrap(chol(Λ));
-  let O <- wrap(trisolve(L, N));
+  let L <- chol(Λ);
+  let O <- trisolve(L, N);
   let M <- triinnersolve(L, O);
   let Σ <- inner(trisolve(L, transpose(A))) + Φ;
   let Ψ <- Γ - inner(O);
@@ -196,8 +203,8 @@ function simulate_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
 function logpdf_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, N:Arg3, Λ:Arg4, Γ:Arg5, k:Arg6,
     Φ:Arg7) -> {
-  let L <- wrap(chol(Λ));
-  let O <- wrap(trisolve(L, N));
+  let L <- chol(Λ);
+  let O <- trisolve(L, N);
   let M <- triinnersolve(L, O);
   let Σ <- inner(trisolve(L, transpose(A))) + Φ;
   let Ψ <- Γ - inner(O);
@@ -222,9 +229,9 @@ function update_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7>(Y:Arg1, A:Arg2, N:Arg3, Λ:Arg4, Γ:Arg5, k:Arg6,
     Φ:Arg7) -> {
   let n <- rows(Y);
-  let L <- wrap(chol(Φ));
-  let B <- wrap(trisolve(L, A));
-  let C <- wrap(trisolve(L, Y));
+  let L <- chol(Φ);
+  let B <- trisolve(L, A);
+  let C <- trisolve(L, Y);
   let Λ' <- Λ + inner(B);
   let N' <- N + inner(B, C);
   let Γ' <- Γ + inner(C);

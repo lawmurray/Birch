@@ -13,11 +13,11 @@ final class WishartDistribution<Arg1,Arg2>(Ψ:Arg1, k:Arg2) < Distribution<Real[
   k:Arg2 <- k;
 
   override function simulate() -> Real[_,_] {
-    return value(simulate_wishart(Ψ, k));
+    return value(simulate_scaled_wishart(Ψ, k));
   }
 
   override function simulateLazy() -> Real[_,_] {
-    return eval(simulate_wishart(Ψ, k));
+    return eval(simulate_scaled_wishart(Ψ, k));
   }
   
   override function logpdf(X:Real[_,_]) -> Real! {
@@ -52,11 +52,14 @@ function Wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> Distribution<Real[_,_]> {
   return make_wishart(Ψ, k);
 }
 function make_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
-  return construct<WishartDistribution<Arg1,Arg2>>(Ψ, k);
+  return peg_wishart(peg(Ψ), peg(k));
+}
+function peg_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
+  return WishartDistribution<Arg1,Arg2>(Ψ, k);
 }
 
 hpp{{
-using numbirch::simulate_wishart;
+//using numbirch::simulate_wishart;
 }}
 
 /*
@@ -65,11 +68,10 @@ using numbirch::simulate_wishart;
  * @param Ψ Scale matrix.
  * @param k Degrees of freedom.
  */
-function simulate_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
+function simulate_scaled_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   assert rows(Ψ) == columns(Ψ);
   let n <- rows(Ψ);
-  let A <- simulate_wishart(k, n);
-  return triouter(trimul(chol(Ψ), A));
+  return triouter(trimul(chol(Ψ), simulate_wishart(k, n)));
 }
 
 /*
@@ -83,9 +85,9 @@ function simulate_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
  */
 function logpdf_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
-  let l <- wrap(k + (p + 1.0));
-  let L <- wrap(chol(X));
-  let J <- wrap(chol(Ψ));
+  let l <- k + (p + 1.0);
+  let L <- chol(X);
+  let J <- chol(Ψ);
   return 0.5*(frobenius(trisolve(J, L)) - l*p*log(2.0)) + l*ltridet(J) +
       k*ltridet(L) - lgamma(0.5*l, p);
 }

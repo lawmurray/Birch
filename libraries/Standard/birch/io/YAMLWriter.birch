@@ -166,25 +166,28 @@ class YAMLWriter < Writer {
   }
 
   override function visit(value:Boolean[_,_]) {
+    let n <- columns(value);
     startSequence();
     for i in 1..rows(value) {
-      visit(row(value, i));
+      visit(value[i,1..n]);
     }
     endSequence();
   }
 
   override function visit(value:Integer[_,_]) {
+    let n <- columns(value);
     startSequence();
     for i in 1..rows(value) {
-      visit(row(value, i));
+      visit(value[i,1..n]);
     }
     endSequence();
   }
   
   override function visit(value:Real[_,_]) {
+    let n <- columns(value);
     startSequence();
     for i in 1..rows(value) {
-      visit(row(value, i));
+      visit(value[i,1..n]);
     }
     endSequence();
   }

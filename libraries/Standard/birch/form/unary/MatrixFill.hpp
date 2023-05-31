@@ -6,53 +6,32 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::fill;
-using numbirch::fill_grad;
 
 template<class Middle>
-struct MatrixFill : public Unary<Middle> {
-  /**
-   * Number of rows.
-   */
-  Integer k;
-
-  /**
-   * Number of columns.
-   */
-  Integer l;
-
-  template<class T>
-  MatrixFill(T&& a, Integer m, Integer n) :
-      Unary<Middle>(std::forward<T>(a)),
-      k(m),
-      l(n) {
-    //
-  }
-
-  BIRCH_FORM_OP
-  BIRCH_UNARY_FORM(fill, k, l)
-  BIRCH_UNARY_GRAD(fill_grad, k, l)
+struct MatrixFill {
+  BIRCH_UNARY_FORM(MatrixFill, numbirch::fill, R, C)
+  BIRCH_UNARY_GRAD(numbirch::fill_grad, R, C)
 
   int rows() const {
-    return k;
+    return R;
   }
 
   int columns() const {
-    return l;
+    return C;
   }
 
   int length() const {
-    return k;
+    return R;
   }
 
   int size() const {
-    return k*l;
+    return R*C;
   }
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-MatrixFill<Middle> fill(const Middle& a, const int m, const int n) {
-  return MatrixFill<Middle>(a, m, n);
+template<class Middle>
+auto fill(const Middle& m, const int R, const int C) {
+  return BIRCH_UNARY_CONSTRUCT(MatrixFill, R, C);
 }
 
 }

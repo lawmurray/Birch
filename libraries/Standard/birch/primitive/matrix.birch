@@ -1,34 +1,4 @@
 /**
- * Convert vector to matrix with single row.
- */
-function row<Type>(x:Type[_]) -> Type[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> { return x[j]; }, 1,
-      length(x));
-}
-
-/**
- * Obtain the `i`th row of a matrix.
- */
-function row<Type>(X:Type[_,_], i:Integer) -> Type[_] {
-  return X[i,1..columns(X)];
-}
-
-/**
- * Convert vector to matrix with single column.
- */
-function column<Type>(x:Type[_]) -> Type[_,_] {
-  return matrix_lambda(\(i:Integer, j:Integer) -> { return x[i]; }, 1,
-      length(x));
-}
-
-/**
- * Obtain the `j`th column of a matrix.
- */
-function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
-  return X[1..rows(X),j];
-}
-
-/**
  * Create a matrix filled by a lambda function.
  *
  * @param λ Lambda function.
@@ -43,13 +13,12 @@ function column<Type>(X:Type[_,_], j:Integer) -> Type[_] {
  */
 function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
   cpp{{
-  using T = decltype(wait(λ(1,1)));
-  return numbirch::Array<T,2>(numbirch::make_shape(rows, columns),
-      [&](const int64_t s) {
+  using T = std::decay_t<decltype(wait(λ(1,1)))>;
+  return numbirch::Array<T,2>([&](const int64_t s) {
         int j = (s - 1)/rows + 1;
         int i = (s - 1)%rows + 1;
         return λ(i, j);
-      });
+      }, numbirch::make_shape(rows, columns));
   }}
 }
 
@@ -60,8 +29,8 @@ function matrix_lambda<Lambda>(λ:Lambda, rows:Integer, columns:Integer) -> {
  * @param rows Number of rows.
  * @param columns Number of columns.
  */
-function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> {
+function matrix<Type>(x:Type, rows:Integer, columns:Integer) -> Type[_,_] {
   cpp{{
-  return numbirch::Array(numbirch::make_shape(rows, columns), x);
+  return numbirch::Array(x, numbirch::make_shape(rows, columns));
   }}
 }

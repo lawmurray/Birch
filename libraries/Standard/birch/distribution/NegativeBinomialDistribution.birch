@@ -37,10 +37,6 @@ final class NegativeBinomialDistribution<Arg1,Arg2>(k:Arg1, ρ:Arg2) <
     return cdf_negative_binomial(x, value(k), value(ρ));
   }
 
-  override function quantile(P:Real!) -> Integer!? {
-    return quantile_negative_binomial(P, value(k), value(ρ));
-  }
-
   override function lower() -> Integer!? {
     return 0;
   }
@@ -66,11 +62,14 @@ function NegativeBinomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) ->
   return make_negative_binomial(k, ρ);
 }
 function make_negative_binomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
-  return construct<NegativeBinomialDistribution<Arg1,Arg2>>(k, ρ);
+  return peg_negative_binomial(peg(k), peg(ρ));
+}
+function peg_negative_binomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
+  return NegativeBinomialDistribution<Arg1,Arg2>(k, ρ);
 }
 
 hpp{{
-using numbirch::simulate_negative_binomial;
+//using numbirch::simulate_negative_binomial;
 }}
 
 /*
@@ -97,21 +96,4 @@ function logpdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
  */
 function cdf_negative_binomial<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, ρ:Arg3) -> {
   return ibeta(k, x + 1, ρ);
-}
-
-/*
- * Quantile of a negative binomial distribution.
- *
- * @param P The cumulative probability.
- * @param k Number of successes before the experiment is stopped.
- * @param ρ Probability of success.
- *
- * @return the quantile.
- */
-function quantile_negative_binomial<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2,
-    ρ:Arg3) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::negative_binomial_distribution<
-      Real>(wait(k), wait(ρ)), wait(P));
-  }}
 }

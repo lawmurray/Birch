@@ -3,7 +3,6 @@ AM_CXXFLAGS = -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
 # ^ BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS set to avoid valgrind issues
 
 SOURCES =  \
-    numbirch/array/ArrayControl.cpp \
     numbirch/common/random.cpp \
     numbirch/instantiate/array/diagonal_from_scalar.cpp \
     numbirch/instantiate/array/diagonal_from_vector.cpp \
@@ -141,15 +140,13 @@ include_HEADERS = numbirch/numbirch.hpp
 
 nobase_include_HEADERS = \
   numbirch/array/Array.hpp \
-  numbirch/array/ArrayControl.hpp \
-  numbirch/array/ArrayIterator.hpp \
-  numbirch/array/ArrayShape.hpp \
+  numbirch/array/ArrayCOW.hpp \
   numbirch/array/Atomic.hpp \
-  numbirch/array/Diced.hpp \
   numbirch/array/Future.hpp \
+  numbirch/array/Iterator.hpp \
   numbirch/array/Matrix.hpp \
   numbirch/array/Scalar.hpp \
-  numbirch/array/Sliced.hpp \
+  numbirch/array/Shape.hpp \
   numbirch/array/Vector.hpp \
   numbirch/array.hpp \
   numbirch/memory.hpp \

@@ -4,12 +4,10 @@
 #pragma once
 
 #include "numbirch/array/Array.hpp"
+#include "numbirch/array/Future.hpp"
 #include "numbirch/array/Scalar.hpp"
 #include "numbirch/array/Vector.hpp"
 #include "numbirch/array/Matrix.hpp"
-#include "numbirch/array/Future.hpp"
-#include "numbirch/array/Sliced.hpp"
-#include "numbirch/array/Diced.hpp"
 #include "numbirch/reduce.hpp"
 
 namespace numbirch {
@@ -215,7 +213,7 @@ constexpr int size(const T& x) {
  * @see Array::shape()
  */
 template<class T, int D>
-ArrayShape<D> shape(const Array<T,D>& x) {
+Shape<D> shape(const Array<T,D>& x) {
   return x.shape();
 }
 
@@ -225,35 +223,28 @@ ArrayShape<D> shape(const Array<T,D>& x) {
  * @ingroup array
  */
 template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
-ArrayShape<0> shape(const T& x) {
+Shape<0> shape(const T& x) {
   return make_shape();
 }
 
 /**
- * Buffer of an array for a slice operation.
+ * Buffer of an array.
  * 
  * @ingroup array
  */
-inline bool* sliced(Sliced<bool>&& x) {
-  return x;
+template<class T, int D>
+inline T* buffer(Array<T,D>& x) {
+  return x.buffer();
 }
 
 /**
- * Buffer of an array for a slice operation.
+ * Buffer of an array.
  * 
  * @ingroup array
  */
-inline int* sliced(Sliced<int>&& x) {
-  return x;
-}
-
-/**
- * Buffer of an array for a slice operation.
- * 
- * @ingroup array
- */
-inline real* sliced(Sliced<real>&& x) {
-  return x;
+template<class T, int D>
+inline const T* buffer(const Array<T,D>& x) {
+  return x.buffer();
 }
 
 /**
@@ -262,44 +253,7 @@ inline real* sliced(Sliced<real>&& x) {
  * @ingroup array
  */
 template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
-T sliced(const T x) {
-  return x;
-}
-
-/**
- * Buffer of an array for a dice operation.
- * 
- * @ingroup array
- */
-inline bool* diced(Diced<bool>&& x) {
-  return x;
-}
-
-/**
- * Buffer of an array for a dice operation.
- * 
- * @ingroup array
- */
-inline int* diced(Diced<int>&& x) {
-  return x;
-}
-
-/**
- * Buffer of an array for a dice operation.
- * 
- * @ingroup array
- */
-inline real* diced(Diced<real>&& x) {
-  return x;
-}
-
-/**
- * Buffer of a scalar for a dice operation---just the scalar itself.
- * 
- * @ingroup array
- */
-template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
-T diced(const T x) {
+T buffer(const T& x) {
   return x;
 }
 

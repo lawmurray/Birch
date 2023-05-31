@@ -53,7 +53,10 @@ function Multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> Distribution<Integer[_]> {
   return make_multinomial(n, ρ);
 }
 function make_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
-  return construct<MultinomialDistribution<Arg1,Arg2>>(n, ρ);
+  return peg_multinomial(peg(n), peg(ρ));
+}
+function peg_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return MultinomialDistribution<Arg1,Arg2>(n, ρ);
 }
 
 /*
@@ -68,7 +71,7 @@ function make_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
  * numbers. Technical Report 2450, Carnegie Mellon University, Computer
  * Science Department.
  */
-function simulate_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+function simulate_multinomial(n:Integer, ρ:Real[_]) -> Integer[_] {
   return simulate_multinomial(n, ρ, 1.0);
 }
 
@@ -85,7 +88,7 @@ function simulate_multinomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
  * numbers. Technical Report 2450, Carnegie Mellon University, Computer
  * Science Department.
  */
-function simulate_multinomial<Arg1,Arg2,Arg3>(n:Arg1, ρ:Arg2, Z:Arg3) -> {
+function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   assert length(ρ) > 0;
   assert abs(sum(ρ)! - Z) < 1.0e-6;
 

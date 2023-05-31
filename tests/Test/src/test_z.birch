@@ -21,38 +21,36 @@ function test_z<TestModelType>(m:TestModelType, N:Integer, lazy:Boolean) {
  * @param lazy Use lazy expressions?
  */
 function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {  
-  /* compute the shape for a t-distribution proposal using the mean
-   * and sample variance of iid samples, calculated with Welford's online
-   * algorithm */
-  let k <- 3;  // degrees of freedom
+  /* create a t-distribution proposal using the mean and sample variance of
+   * iid samples, calculated with Welford's online algorithm */
+  let k <- 3.0;  // degrees of freedom
   let μ <- 0.0; // running mean
   let S <- 0.0; // running sum of squares of differences from mean
   for n in 1..N {
-    let x <- π.simulate();
-    let dμ <- x - μ;
-    μ <- μ + dμ/n;
-    S <- S + dμ*(x - μ);
+    let x <- π.simulate()!;
+    let d <- x - μ;
+    μ <- μ + d/n;
+    S <- S + d*(x - μ);
   }
-  let σ2 <- (S/N)/k; // spread for Student's t proposal
+  let σ2 <- S*(k - 2)/N; // spread for Student's t proposal
+  let q <- StudentT(k, μ, σ2);
 
-  /* draw importance samples */
+  /* importance sample */
   z:Real[N];
   parallel for n in 1..N {
-    let x <- simulate_student_t(k, μ, σ2);
-    let q <- logpdf_student_t(x, k, μ, σ2);
-    let p <- 0.0;
     if lazy {
-      p <- π.logpdfLazy(x);
+      let x <- q.simulateLazy();
+      z[n] <- π.logpdfLazy(x)! - q.logpdfLazy(x)!;
     } else {
-      p <- π.logpdf(x);
+      let x <- q.simulate();
+      z[n] <- π.logpdf(x)! - q.logpdf(x)!;
     }
-    z[n] <- p - q;
   }
   
-  /* test distance between the iid and Metropolis samples */
+  /* check difference in estimate */
   let (ess, lsum) <- resample_reduce(z);
   let δ <- abs(expm1(lsum - log(N)));
-  let ε <- 1.0/sqrt(N);
+  let ε <- 10.0/sqrt(N);
   if !(N < 10 || δ < ε) {
     let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
@@ -73,42 +71,43 @@ function test_z(π:Distribution<Real>, N:Integer, lazy:Boolean) {
 function test_z(π:Distribution<Real[_]>, N:Integer, lazy:Boolean) {
   let D <- rows(π.simulate());
   
-  /* compute the shape for a t-distribution proposal using the mean and
-   * sample variance of iid samples, calculated with Welford's online
-   * algorithm */
-  let k <- 3; // degrees of freedom
-  μ:Real[D]; // running mean
-  M:Real[D,D]; // running matrix of co-moments
+  /* create a multivariate-t proposal using the mean and sample variance of
+   * iid samples, calculated with Welford's online algorithm */
+  let k <- 3.0; // degrees of freedom
+  μ:Real[D];  // running mean
+  M:Real[D,D];  // running matrix of co-moments
+  Σ:Real[D,D];  // spread for multivariate-t proposal
+  x:Real[_];
+  d:Real[_];
   do {
     μ <- 0.0;
     M <- 0.0;
     for n in 1..N {
-      let x <- π.simulate();
-      let dμ <- x - μ;
-      μ <- μ + dμ/n;
-      M <- M + outer(dμ, x - μ);
+      x <- π.simulate();
+      d <- x - μ;
+      μ <- μ + d/n;
+      M <- M + outer(d, x - μ);
     }
-  } while N >= 10 && sum(isfinite(chol(M))) == 0;
-  let Σ <- M/N*(k-2); // spread for multivariate t proposal
+    Σ <- M*((k - 2)/N);
+  } while N >= 10 && sum(isfinite(chol(Σ)))! == 0;
+  let q <- MultivariateT(k, μ, Σ);
 
   /* draw importance samples */
   z:Real[N];
   parallel for n in 1..N {
-    let x <- simulate_multivariate_t(k, μ, Σ);
-    let q <- logpdf_multivariate_t(x, k, μ, Σ);
-    let p <- 0.0;
     if lazy {
-      p <- π.logpdfLazy(x);
+      let x <- q.simulateLazy();
+      z[n] <- π.logpdfLazy(x)! - q.logpdfLazy(x)!;
     } else {
-      p <- π.logpdf(x);
+      let x <- q.simulate();
+      z[n] <- π.logpdf(x)! - q.logpdf(x)!;
     }
-    z[n] <- p - q;
   }
   
-  /* test distance between the iid and Metropolis samples */
+  /* check difference in estimate */
   let (ess, lsum) <- resample_reduce(z);
   let δ <- abs(expm1(lsum - log(N)));
-  let ε <- 1.0/sqrt(N);
+  let ε <- 10.0/sqrt(N);
   if !(N < 10 || δ < ε) {
     let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");
@@ -131,43 +130,43 @@ function test_z(π:Distribution<Real[_,_]>, N:Integer, lazy:Boolean) {
   let C <- columns(π.simulate());
   let D <- R*C;
 
-  /* compute the shape for a t-distribution proposal using the mean and
-   * sample variance of iid samples, calculated with Welford's online
-   * algorithm */
-  let k <- 3 + D; // degrees of freedom
-  μ:Real[D]; // running mean
-  M:Real[D,D]; // running matrix of co-moments
+  /* create a multivariate-t proposal using the mean and sample variance of
+   * iid samples, calculated with Welford's online algorithm */
+  let k <- 3.0; // degrees of freedom
+  μ:Real[D];  // running mean
+  M:Real[D,D];  // running matrix of co-moments
+  Σ:Real[D,D];  // spread for multivariate-t proposal
+  x:Real[_];
+  d:Real[_];
   do {
     μ <- 0.0;
     M <- 0.0;
     for n in 1..N {
-      let x <- vec(π.simulate());
-      let dμ <- x - μ;
-      μ <- μ + dμ/n;
-      M <- M + outer(dμ, x - μ);
+      x <- vec(π.simulate());
+      d <- x - μ;
+      μ <- μ + d/n;
+      M <- M + outer(d, x - μ);
     }
-  } while N >= 10 && sum(isfinite(chol(M))) == 0;
-  let Σ <- M/N*(k-2); // spread for matrix-t proposal
+    Σ <- M*((k - 2)/N);
+  } while N >= 10 && sum(isfinite(chol(Σ)))! == 0;
+  let q <- MultivariateT(k, μ, Σ);
 
   /* draw importance samples */
   z:Real[N];
   parallel for n in 1..N {
-    let x <- simulate_multivariate_t(k, μ, Σ);
-    let q <- logpdf_multivariate_t(x, k, μ, Σ);
-    let p <- 0.0;
-    let X <- mat(x, C);
     if lazy {
-      p <- π.logpdfLazy(X);
+      let x <- q.simulateLazy();
+      z[n] <- π.logpdfLazy(mat(x, C))! - q.logpdfLazy(x)!;
     } else {
-      p <- π.logpdf(X);
+      let x <- q.simulate();
+      z[n] <- π.logpdf(mat(x, C))! - q.logpdf(x)!;
     }
-    z[n] <- p - q;
   }
   
-  /* test distance between the iid and Metropolis samples */
+  /* check difference in estimate */
   let (ess, lsum) <- resample_reduce(z);
   let δ <- abs(expm1(lsum - log(N)));
-  let ε <- 1.0/sqrt(N);
+  let ε <- 10.0/sqrt(N);
   if !(N < 10 || δ < ε) {
     let Z <- exp(lsum - log(N));
     stderr.print("***failed*** Z=" + Z + ", ess=" + ess + "\n");

@@ -45,7 +45,10 @@ function Bernoulli<Arg>(ρ:Arg) -> Distribution<Boolean> {
   return make_bernoulli(ρ);
 }
 function make_bernoulli<Arg>(ρ:Arg) -> {
-  return construct<BernoulliDistribution<Arg>>(ρ);
+  return peg_bernoulli(peg(ρ));
+}
+function peg_bernoulli<Arg>(ρ:Arg) -> {
+  return BernoulliDistribution<Arg>(ρ);
 }
 
 /*

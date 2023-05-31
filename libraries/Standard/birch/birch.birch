@@ -6,10 +6,6 @@ hpp{{
 #include "birch/utility.hpp"
 #include "birch/form.hpp"
 
-namespace birch {
-using namespace numbirch;
-}
-
 }}
 
 /**
@@ -250,17 +246,6 @@ function copy<Type>(o:Type) -> Type {
 }
 
 /**
- * Deep copy multiple times to construct an array. May be preceded by bridge()
- * for lazy copies, otherwise will perform eager copies.
- *
- * @param o Source object.
- * @param length Length of vector.
- */
-function copy<Type>(o:Type, length:Integer) -> Type[_] {
-  return vector_lambda(\(i:Integer) -> { return copy(o); }, length);
-}
-
-/**
  * Wait on a future and return the result. When applied to futures, this is
  * equivalent to the postfix `!` operator, while when applied to non-futures,
  * it is equivalent to the identity function.
@@ -287,7 +272,7 @@ function wait<Type>(x:Type!) -> Type;
 function box<Type>(x:Type) -> ;
 
 /**
- * Wrap a value. The `wrap()` series of functions preserves basic values,
+ * Wrap a value. The `wrap()` series of functions pegs basic values,
  * while boxing [Expression](../../classes/Expression) objects into
  * [Expression](../../classes/Expression) objects, using the following
  * conversions:
@@ -306,10 +291,16 @@ function box<Type>(x:Type) -> ;
  */
 function wrap<Type>(x:Type) -> ;
 
-function wrap<Value>(x:DiagonalScalar<Value>) -> DiagonalScalar<Value> {
+function wrap<Value>(x:ScalarDiagonal<Value>) -> ScalarDiagonal<Value> {
   return x;
 }
 
-function wrap<Value>(x:DiagonalVector<Value>) -> DiagonalVector<Value> {
+function wrap<Value>(x:VectorDiagonal<Value>) -> VectorDiagonal<Value> {
   return x;
 }
+
+/**
+ * Preserve a form. This takes a form that may contain reference member
+ * variables and converts it to one without references.
+ */
+function peg<Form>(x:Form) -> ;

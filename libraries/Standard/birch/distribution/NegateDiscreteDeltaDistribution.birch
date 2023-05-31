@@ -47,7 +47,7 @@ final class NegateDiscreteDeltaDistribution<Arg1>(p:Arg1, l:Integer!) <
   }
   
   override function upper() -> Integer!? {
-    return -l;
+    return value(-l);
   }
 
   override function fix() {
@@ -72,7 +72,10 @@ function NegateDiscreteDelta<Arg1>(p:Arg1, l:Integer!) ->
   return make_negate_discrete_delta(p, l);
 }
 function make_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
-  return construct<NegateDiscreteDeltaDistribution<Arg1>>(p, l);
+  return peg_negate_discrete_delta(peg(p), peg(l));
+}
+function peg_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
+  return NegateDiscreteDeltaDistribution<Arg1>(p, l);
 }
 
 /**

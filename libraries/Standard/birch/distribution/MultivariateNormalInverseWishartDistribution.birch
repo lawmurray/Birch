@@ -89,8 +89,13 @@ function MultivariateNormalInverseWishart<Arg1,Arg2,Arg3,Arg4>(μ:Arg1,
 }
 function make_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
     λ:Arg2, Γ:Arg3, k:Arg4) -> {
-  return construct<MultivariateNormalInverseWishartDistribution<Arg1,Arg2,
-      Arg3,Arg4>>(ν, λ, Γ, k);
+  return peg_multivariate_normal_inverse_wishart(
+      peg(ν), peg(λ), peg(Γ), peg(k));
+}
+function peg_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
+    ν:Arg1, λ:Arg2, Γ:Arg3, k:Arg4) -> {
+  return MultivariateNormalInverseWishartDistribution<Arg1,Arg2,Arg3,Arg4>(
+      ν, λ, Γ, k);
 }
 
 /**

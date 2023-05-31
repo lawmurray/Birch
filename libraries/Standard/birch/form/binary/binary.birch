@@ -83,19 +83,19 @@ operator (A:RealMatrixLike*x:RealVectorLike) -> RealVectorLike;
  */
 operator (A:RealMatrixLike*B:RealMatrixLike) -> RealMatrixLike;
 
-operator<Arg1,Arg2> (A:DiagonalScalar<Arg1>*B:Arg2) -> {
+operator<Arg1,Arg2> (A:ScalarDiagonal<Arg1>*B:Arg2) -> {
   ///@todo Check for compatible sizes
   return A.m*B;
 }
 
-operator<Arg1,Arg2> (A:Arg1*B:DiagonalScalar<Arg2>) -> {
+operator<Arg1,Arg2> (A:Arg1*B:ScalarDiagonal<Arg2>) -> {
   ///@todo Check for compatible sizes
   return A*B.m;
 }
 
-operator<Arg1,Arg2> (A:DiagonalScalar<Arg1>*B:DiagonalScalar<Arg2>) -> {
+operator<Arg1,Arg2> (A:ScalarDiagonal<Arg1>*B:ScalarDiagonal<Arg2>) -> {
   assert A.n == B.n;
-  return Diagonal(A.m*B.m, A.n);
+  return diagonal(A.m*B.m, A.n);
 }
 
 /**
@@ -161,12 +161,12 @@ function cholsolve(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
  */
 function cholsolve(L:RealMatrixLike, y:RealMatrixLike) -> RealMatrixLike;
 
-function cholsolve<Arg1,Arg2>(L:DiagonalScalar<Arg1>, y:Arg2) -> {
+function cholsolve<Arg1,Arg2>(L:ScalarDiagonal<Arg1>, y:Arg2) -> {
   ///@todo Check for compatible sizes
   return y/pow(L.m, 2.0);
 }
 
-function cholsolve<Arg1,Arg2>(L:DiagonalVector<Arg1>, y:Arg2) -> {
+function cholsolve<Arg1,Arg2>(L:VectorDiagonal<Arg1>, y:Arg2) -> {
   ///@todo Check for compatible sizes
   return y/pow(L.m, 2.0);
 }
@@ -340,19 +340,19 @@ function triinner(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
  */
 function triinner(L:RealMatrixLike, B:RealMatrixLike) -> RealMatrixLike;
 
-function triinner<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:Arg2) -> {
+function triinner<Arg1,Arg2>(A:ScalarDiagonal<Arg1>, B:Arg2) -> {
   ///@todo Check for compatible sizes
   return A.m*B;
 }
 
-function triinner<Arg1,Arg2>(A:Arg1, B:DiagonalScalar<Arg2>) -> {
+function triinner<Arg1,Arg2>(A:Arg1, B:ScalarDiagonal<Arg2>) -> {
   ///@todo Check for compatible sizes
   return transpose(A)*B.m;
 }
 
-function triinner<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:DiagonalScalar<Arg2>) -> {
+function triinner<Arg1,Arg2>(A:ScalarDiagonal<Arg1>, B:ScalarDiagonal<Arg2>) -> {
   assert A.n == B.n;
-  return Diagonal(A.m*B.m, A.n);
+  return diagonal(A.m*B.m, A.n);
 }
 
 /**
@@ -405,19 +405,19 @@ function trimul(L:RealMatrixLike, x:RealVectorLike) -> RealVectorLike;
  */
 function trimul(L:RealMatrixLike, B:RealMatrixLike) -> RealMatrixLike;
 
-function trimul<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:Arg2) -> {
+function trimul<Arg1,Arg2>(A:ScalarDiagonal<Arg1>, B:Arg2) -> {
   ///@todo Check for compatible sizes
   return A.m*B;
 }
 
-function trimul<Arg1,Arg2>(A:Arg1, B:DiagonalScalar<Arg2>) -> {
+function trimul<Arg1,Arg2>(A:Arg1, B:ScalarDiagonal<Arg2>) -> {
   ///@todo Check for compatible sizes
   return A*B.m;
 }
 
-function trimul<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:DiagonalScalar<Arg2>) -> {
+function trimul<Arg1,Arg2>(A:ScalarDiagonal<Arg1>, B:ScalarDiagonal<Arg2>) -> {
   assert A.n == B.n;
-  return Diagonal(A.m*B.m, A.n);
+  return diagonal(A.m*B.m, A.n);
 }
 
 /**
@@ -430,19 +430,19 @@ function trimul<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:DiagonalScalar<Arg2>) -> {
  */
 function triouter(A:RealMatrixLike, L:RealMatrixLike) -> RealMatrixLike;
 
-function triouter<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:Arg2) -> {
+function triouter<Arg1,Arg2>(A:ScalarDiagonal<Arg1>, B:Arg2) -> {
   ///@todo Check for compatible sizes
   return A.m*transpose(B);
 }
 
-function triouter<Arg1,Arg2>(A:Arg1, B:DiagonalScalar<Arg2>) -> {
+function triouter<Arg1,Arg2>(A:Arg1, B:ScalarDiagonal<Arg2>) -> {
   ///@todo Check for compatible sizes
   return A*B.m;
 }
 
-function triouter<Arg1,Arg2>(A:DiagonalScalar<Arg1>, B:DiagonalScalar<Arg2>) -> {
+function triouter<Arg1,Arg2>(A:ScalarDiagonal<Arg1>, B:ScalarDiagonal<Arg2>) -> {
   assert A.n == B.n;
-  return Diagonal(A.m*B.m, A.n);
+  return diagonal(A.m*B.m, A.n);
 }
 
 /**
@@ -475,12 +475,7 @@ function trisolve(L:RealMatrixLike, y:RealVectorLike) -> RealVectorLike;
  */
 function trisolve(L:RealMatrixLike, y:RealMatrixLike) -> RealMatrixLike;
 
-function trisolve<Arg1,Arg2>(L:DiagonalScalar<Arg1>, y:Arg2) -> {
-  ///@todo Check for compatible sizes
-  return y/L.m;
-}
-
-function trisolve<Arg1,Arg2>(L:DiagonalVector<Arg1>, y:Arg2) -> {
+function trisolve<Arg1,Arg2>(L:ScalarDiagonal<Arg1>, y:Arg2) -> {
   ///@todo Check for compatible sizes
   return y/L.m;
 }

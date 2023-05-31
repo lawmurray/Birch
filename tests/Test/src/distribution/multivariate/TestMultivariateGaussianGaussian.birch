@@ -14,12 +14,12 @@ class TestLinearMultivariateGaussianGaussian < TestModel {
     c ~ Uniform(-10.0, 10.0);
     a ~ MultivariateGaussian(vector(0.0, n), diagonal(4.0, n));
     m ~ MultivariateGaussian(vector(0.0, n), diagonal(100.0, n));
-    S ~ MatrixGaussian(matrix(0.0, n, n), diagonal(2.0, n), diagonal(2.0, n));
+    S ~ MatrixGaussian(fill(0.0, n, n), diagonal(2.0, n), diagonal(2.0, n));
     s2 ~ Uniform(0.1, 10.0);
   }
 
   override function simulate() {
-    μ ~ MultivariateGaussian(m, outer(S, S) + diagonal(1.0e-2, n));
+    μ ~ MultivariateGaussian(m, outer(S) + diagonal(1.0e-2, n));
     x ~ Gaussian(dot(a, μ) + c, s2);
   }
 

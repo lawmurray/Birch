@@ -33,11 +33,11 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return value(log(pdf_add_discrete_delta(x, p, q, a, b)));
+    return value(logpdf_add_discrete_delta(x, p, q, a, b));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return eval(log(pdf_add_discrete_delta(x, p, q, a, b)));
+    return eval(logpdf_add_discrete_delta(x, p, q, a, b));
   }
 
   override function update(x:Integer!) -> Delay? {
@@ -49,15 +49,15 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_delta(random(), p, q, a, b)));
+    return box(logpdf_add_discrete_delta(random(), p, q, a, b));
   }
 
   override function lower() -> Integer!? {
-    return value(a) + value(b);
+    return a + b;
   }
 
   override function upper() -> Integer!? {
-    return value(a) + value(b) + (length(p) + length(q) - 2);
+    return a + b + (length(p) + length(q) - 2);
   }
 
   override function fix() {
@@ -74,9 +74,7 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
 
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
-    let r <- convolve(p, q);
-    return (box(r/sum(r)), a + b);
-    // ^ numerical errors can accumulate, so renormalize
+    return (box(convolve(p, q)), a + b);
   }
 }
 
@@ -86,7 +84,11 @@ function AddDiscreteDelta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
 }
 function make_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
     b:Integer!) -> {
-  return construct<AddDiscreteDeltaDistribution<Arg1,Arg2>>(p, q, a, b);
+  return peg_add_discrete_delta(peg(p), peg(q), a, b);
+}
+function peg_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
+    b:Integer!) -> {
+  return AddDiscreteDeltaDistribution<Arg1,Arg2>(p, q, a, b);
 }
 
 /**
@@ -203,36 +205,9 @@ function simulate_add_discrete_delta<Arg1,Arg2>(p:Arg1, q:Arg2, a:Integer!,
  *
  * @return the probability mass.
  */
-function pdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
+function logpdf_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
     a:Integer!, b:Integer!) -> {
-  assert length(p) > 0;
-  assert length(q) > 0;
-
-  let m <- length(p);
-  let n <- length(q);
-  let z <- wait(eval(x) - a - b);  // offset to base zero
-
-  /* start of range for first random variable; the second contributes at
-   * most n - 1, so the first must contribute at least... */
-  let i <- max(0, z - (n - 1));
-
-  /* end of range for the first random variable; the second contributes at
-   * least zero, so the first must contribute at most... */
-  let j <- min(m - 1, z);
-
-  /* start of range for second random variable; the first contributes at
-   * most j, so the second must contribute at least... */
-  let k <- max(0, z - j);
-
-  /* end of range for the second random variable; the first contributes at
-   * least i, so the first must contribute at most... */
-  let l <- min(n - 1, z - i);
-
-  assert j - i + 1 == l - k + 1;  // lengths of ranges should be equal
-  let s <- iota(i + 1, max(j - i + 1, 0));  // first range, ascending order
-  let t <- l + 1 - iota(0, max(l - k + 1, 0));  // second range, descending order
-
-  return dot(gather(p, s), gather(q, t));
+  return log(element(convolve(p, q), x - a - b + 1));
 }
 
 /*
@@ -253,7 +228,7 @@ function update_add_discrete_delta<Arg1,Arg2,Arg3>(x:Arg1, p:Arg2, q:Arg3,
 
   let m <- length(p);
   let n <- length(q);
-  let z <- wait(eval(x) - a - b);  // offset to base zero
+  let z <- wait(eval(x - a - b));  // offset to base zero
 
   /* start of range for first random variable; the second contributes at
    * most n - 1, so the first must contribute at least... */

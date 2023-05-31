@@ -6,24 +6,20 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::simulate_exponential;
 
 template<class Middle>
-struct SimulateExponential : public Unary<Middle> {
-  template<class T>
-  SimulateExponential(T&& m) :
-      Unary<Middle>(std::forward<T>(m)) {
-    //
-  }
-
-  BIRCH_UNARY_FORM(simulate_exponential)
+struct SimulateExponential {
+  BIRCH_UNARY_FORM(SimulateExponential, numbirch::simulate_exponential)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-SimulateExponential<Middle> simulate_exponential(const Middle& m) {
-  return SimulateExponential<Middle>(m);
+template<class Middle>
+auto simulate_exponential(const Middle& m) {
+  if constexpr (numbirch::is_arithmetic_v<Middle>) {
+    return numbirch::simulate_exponential(m);
+  } else {
+    return BIRCH_UNARY_CONSTRUCT(SimulateExponential);
+  }
 }
 
 }

@@ -6,26 +6,17 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::inner;
-using numbirch::inner_grad;
 
 template<class Middle>
-struct InnerSelf : public Unary<Middle> {
-  template<class T>
-  InnerSelf(T&& m) :
-      Unary<Middle>(std::forward<T>(m)) {
-    //
-  }
-
-  BIRCH_UNARY_FORM(inner)
-  BIRCH_UNARY_GRAD(inner_grad)
+struct InnerSelf {
+  BIRCH_UNARY_FORM(InnerSelf, numbirch::inner)
+  BIRCH_UNARY_GRAD(numbirch::inner_grad)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-InnerSelf<Middle> inner(const Middle& m) {
-  return InnerSelf<Middle>(m);
+template<class Middle>
+auto inner(const Middle& m) {
+  return BIRCH_UNARY_CONSTRUCT(InnerSelf);
 }
 
 }

@@ -6,25 +6,20 @@
 #include "birch/form/Binary.hpp"
 
 namespace birch {
-using numbirch::simulate_binomial;
 
 template<class Left, class Right>
-struct SimulateBinomial : public Binary<Left,Right> {
-  template<class T, class U>
-  SimulateBinomial(T&& l, U&& r) :
-      Binary<Left,Right>(std::forward<T>(l), std::forward<U>(r)) {
-    //
-  }
-
-  BIRCH_BINARY_FORM(simulate_binomial)
+struct SimulateBinomial {
+  BIRCH_BINARY_FORM(SimulateBinomial, numbirch::simulate_binomial)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Left, class Right, std::enable_if_t<
-    is_delay_v<Left,Right>,int> = 0>
-SimulateBinomial<Left,Right> simulate_binomial(const Left& l, const Right& r) {
-  return SimulateBinomial<Left,Right>(l, r);
+template<class Left, class Right>
+auto simulate_binomial(const Left& l, const Right& r) {
+  if constexpr (numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>) {
+    return numbirch::simulate_binomial(l, r);
+  } else {
+    return BIRCH_BINARY_CONSTRUCT(SimulateBinomial);
+  }
 }
 
 }

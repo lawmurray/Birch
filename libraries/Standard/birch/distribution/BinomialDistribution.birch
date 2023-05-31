@@ -37,10 +37,6 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
     return cdf_binomial(x, value(n), value(ρ));
   }
 
-  override function quantile(P:Real!) -> Integer!? {
-    return quantile_binomial(P, value(n), value(ρ));
-  }
-
   override function lower() -> Integer!? {
     return 0;
   }
@@ -68,8 +64,7 @@ final class BinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
     let p <- exp(logpdf_binomial(iota(0, wait(value(n)) + 1), n, ρ));
-    return (box(p/sum(p)), 0);
-    // ^ numerical errors can accumulate, so renormalize
+    return (box(p), 0);
   }
 }
 
@@ -80,7 +75,10 @@ function Binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> Distribution<Integer> {
   return make_binomial(n, ρ);
 }
 function make_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
-  return construct<BinomialDistribution<Arg1,Arg2>>(n, ρ);
+  return peg_binomial(peg(n), peg(ρ));
+}
+function peg_binomial<Arg1,Arg2>(n:Arg1, ρ:Arg2) -> {
+  return BinomialDistribution<Arg1,Arg2>(n, ρ);
 }
 
 /*
@@ -107,20 +105,4 @@ function logpdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
  */
 function cdf_binomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2, ρ:Arg3) -> {
   return ibeta(n - x, x + 1, 1.0 - ρ);
-}
-
-/*
- * Quantile of a binomial distribution.
- *
- * @param P The cumulative probability.
- * @param n Number of trials.
- * @param ρ Probability of a true result.
- *
- * @return the quantile.
- */
-function quantile_binomial<Arg1,Arg2,Arg3>(P:Arg1, n:Arg2, ρ:Arg3) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::binomial_distribution<Real>(
-      wait(n), wait(ρ)), wait(P));
-  }}
 }

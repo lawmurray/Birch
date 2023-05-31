@@ -186,7 +186,7 @@ abstract class Distribution<Value> < Delay {
 
       let h <- get_handler();
       if h.autojoin && q.supportsJoin() {
-        /* in this case, preserve the current updated distribution for this,
+        /* in this case, peg the current updated distribution for this,
          * but join the marginalized distribution to it */
         p'.setJoined(q');
       } else {

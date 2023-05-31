@@ -71,12 +71,12 @@ function ceil(x:NumberLike) -> NumberLike;
  */
 function chol(S:RealMatrixLike) -> RealMatrixLike;
 
-function chol<Arg>(S:DiagonalScalar<Arg>) -> {
-  return Diagonal(sqrt(S.m), S.n);
+function chol<Arg>(S:ScalarDiagonal<Arg>) -> {
+  return diagonal(sqrt(S.m), S.n);
 }
 
-function chol<Arg>(S:DiagonalVector<Arg>) -> {
-  return Diagonal(sqrt(S.m));
+function chol<Arg>(S:VectorDiagonal<Arg>) -> {
+  return diagonal(sqrt(S.m));
 }
 
 /**
@@ -90,12 +90,12 @@ function chol<Arg>(S:DiagonalVector<Arg>) -> {
  */
 function cholinv(L:RealMatrixLike) -> RealMatrixLike;
 
-function cholinv<Arg>(L:DiagonalScalar<Arg>) -> {
-  return Diagonal(pow(L.m, -2.0), L.n);
+function cholinv<Arg>(L:ScalarDiagonal<Arg>) -> {
+  return diagonal(pow(L.m, -2.0), L.n);
 }
 
-function cholinv<Arg>(L:DiagonalVector<Arg>) -> {
-  return Diagonal(pow(L.m, -2.0));
+function cholinv<Arg>(L:VectorDiagonal<Arg>) -> {
+  return diagonal(pow(L.m, -2.0));
 }
 
 /**
@@ -137,42 +137,8 @@ function diagonal(x:NumberVectorLike) -> NumberMatrixLike;
  *
  * @param n Number of rows and columns.
  */
-function identity(n:Integer) -> Real[_,_] {
+function identity(n:Integer) -> ScalarDiagonal<Real> {
   return diagonal(1.0, n);
-}
-
-/**
- * Construct diagonal matrix form, filling the diagonal with a given scalar.
- * 
- * @param x Scalar to assign to diagonal.
- * @param n Number of rows and columns.
- * 
- * @return Diagonal matrix form.
- */
-function Diagonal<Arg>(x:Arg, n:Integer) -> DiagonalScalar<Arg> {
-  return DiagonalScalar<Arg>(x, n);
-}
-
-/**
- * Construct diagonal matrix form, setting the diagonal to a given vector.
- * 
- * @param x Vector to assign to diagonal.
- * 
- * @return Diagonal matrix form.
- */
-function Diagonal<Arg>(x:Arg) -> DiagonalVector<Arg> {
-  return DiagonalVector<Arg>(x);
-}
-
-/**
- * Construct identity matrix form.
- *
- * @param n Number of rows and columns.
- *
- * @return Identity matrix form.
- */
-function Identity(n:Integer) -> DiagonalScalar<Real> {
-  return Diagonal(1.0, n);
 }
 
 /**
@@ -197,6 +163,10 @@ function exp<Arg>(x:Log<Arg>) -> Arg {
  * Exponential of argument, minus one.
  */
 function expm1(x:NumberLike) -> RealLike;
+
+function expm1<Arg>(x:Log1p<Arg>) -> Arg {
+  return x.m;
+}
 
 /**
  * Round to largest integer value not greater than argument.
@@ -231,12 +201,12 @@ function inner(A:RealMatrixLike) -> RealMatrixLike;
  */
 function inv(A:RealMatrixLike) -> RealMatrixLike;
 
-function inv<Arg>(L:DiagonalScalar<Arg>) -> {
-  return Diagonal(1.0/L.m, L.n);
+function inv<Arg>(L:ScalarDiagonal<Arg>) -> {
+  return diagonal(1.0/L.m, L.n);
 }
 
-function inv<Arg>(L:DiagonalVector<Arg>) -> {
-  return Diagonal(1.0/L.m);
+function inv<Arg>(L:VectorDiagonal<Arg>) -> {
+  return diagonal(1.0/L.m);
 }
 
 function inv<Arg>(A:Inv<Arg>) -> Arg {
@@ -281,11 +251,11 @@ function isnan(x:NumberLike) -> BooleanLike;
  */
 function lcholdet(L:RealMatrixLike) -> RealScalarLike;
 
-function lcholdet<Arg>(L:DiagonalScalar<Arg>) -> {
+function lcholdet<Arg>(L:ScalarDiagonal<Arg>) -> {
   return 2.0*L.n*log(L.m);
 }
 
-function lcholdet<Arg>(L:DiagonalVector<Arg>) -> {
+function lcholdet<Arg>(L:VectorDiagonal<Arg>) -> {
   return 2.0*sum(log(L.m));
 }
 
@@ -298,11 +268,11 @@ function lcholdet<Arg>(L:DiagonalVector<Arg>) -> {
  */
 function ldet(A:RealMatrixLike) -> RealScalarLike;
 
-function ldet<Arg>(A:DiagonalScalar<Arg>) -> {
+function ldet<Arg>(A:ScalarDiagonal<Arg>) -> {
   return A.n*log(A.m);
 }
 
-function ldet<Arg>(A:DiagonalVector<Arg>) -> {
+function ldet<Arg>(A:VectorDiagonal<Arg>) -> {
   return sum(log(A.m));
 }
 
@@ -326,11 +296,11 @@ function lfact(x:NumberLike) -> RealLike;
  */
 function ltridet(L:RealMatrixLike) -> RealScalarLike;
 
-function ltridet<Arg>(L:DiagonalScalar<Arg>) -> {
+function ltridet<Arg>(L:ScalarDiagonal<Arg>) -> {
   return L.n*log(L.m);
 }
 
-function ltridet<Arg>(L:DiagonalVector<Arg>) -> {
+function ltridet<Arg>(L:VectorDiagonal<Arg>) -> {
   return sum(log(L.m));
 }
 
@@ -346,7 +316,11 @@ function log<Arg>(x:Exp<Arg>) -> Arg {
 /**
  * Logarithm of one plus argument.
  */
-function log(x:NumberLike) -> RealLike;
+function log1p(x:NumberLike) -> RealLike;
+
+function log1p<Arg>(x:Expm1<Arg>) -> Arg {
+  return x.m;
+}
 
 /**
  * Matrixize.
@@ -377,19 +351,6 @@ function mat(x:NumberLike, n:Integer) -> NumberMatrixLike;
 function fill(x:NumberScalarLike, m:Integer, n:Integer) -> NumberMatrixLike;
 
 /**
- * Construct a matrix form filled with a given value.
- * 
- * @param x Value.
- * @param m Number of rows.
- * @param n Number of columns.
- * 
- * @return Matrix form.
- */
-function Fill<Arg>(x:Arg, m:Integer, n:Integer) -> MatrixFill<Arg> {
-  return MatrixFill<Arg>(x, m, n);
-}
-
-/**
  * Vector outer product.
  * 
  * @param x Vector $x$.
@@ -411,10 +372,6 @@ function outer(A:RealMatrixLike) -> RealMatrixLike;
  * Rectification.
  */
 function rectify(x:NumberLike) -> NumberLike;
-
-function rectify<Arg>(x:Rectify<Arg>) -> Rectify<Arg> {
-  return x;
-}
 
 /**
  * Round to nearest integer value.
@@ -495,12 +452,12 @@ function triinner(L:RealMatrixLike) -> RealMatrixLike;
  */
 function triinv(L:RealMatrixLike) -> RealMatrixLike;
 
-function triinv<Arg>(L:DiagonalScalar<Arg>) -> {
-  return Diagonal(1.0/L.m, L.n);
+function triinv<Arg>(L:ScalarDiagonal<Arg>) -> {
+  return diagonal(1.0/L.m, L.n);
 }
 
-function triinv<Arg>(L:DiagonalVector<Arg>) -> {
-  return Diagonal(1.0/L.m);
+function triinv<Arg>(L:VectorDiagonal<Arg>) -> {
+  return diagonal(1.0/L.m);
 }
 
 function triinv<Arg>(A:TriInv<Arg>) -> Arg {
@@ -538,15 +495,3 @@ function vec(x:NumberLike) -> NumberVectorLike;
  * @return Vector.
  */
 function fill(x:NumberScalarLike, n:Integer) -> NumberVectorLike;
-
-/**
- * Construct a vector form filled with a given value.
- * 
- * @param x Value.
- * @param n Length.
- * 
- * @return Vector form.
- */
-function Fill<Arg>(x:Arg, n:Integer) -> VectorFill<Arg> {
-  return VectorFill<Arg>(x, n);
-}

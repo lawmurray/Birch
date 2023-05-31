@@ -41,6 +41,30 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
     }
   } else {
     from <- q.quantile(1.0/N);
+    if !from? {
+      /* search for a rough lower bound */
+      let l <- -1.0e4;  // left
+      let m <- 0.0;  // middle
+      let r <- 1.0e4;  // right
+      let c <- q.cdf(m)!!;
+      let pass <- false;
+      do {
+        if c > 1.0/N {
+          /* move left */
+          r <- m;
+        } else if c < 0.1/N {
+          /* move right */
+          l <- m;
+        } else {
+          pass <- true;
+        }
+        if !pass {
+          m <- 0.5*(l + r);
+          c <- q.cdf(m)!!;
+        }
+      } while !pass;
+      from <- m;
+    }
     assert from?;
   }
 
@@ -49,32 +73,50 @@ function test_cdf(q:Distribution<Real>, N:Integer) {
   if to? {
     /* test the upper bound against the quantile */
     let test <- q.quantile(1.0);
-    if test? && abs(to! - test!) > 1.0/N {
+    if test? && abs(to!! - test!!) > 1.0/N {
       error("upper bound and quantile comparison failed, " + to!! + " vs " +
           test!! + ".");
     }
   } else {
     to <- q.quantile(1.0 - 1.0/N);
     if !to? {
-      /* search for a rough upper bound for the interval */
-      let u <- 1.0;
-      while q.pdf(u) > 1.0/N {
-        u <- 2.0*u;
-      }
-      to <- u;
+      /* search for a rough upper bound */
+      let l <- -1.0e4;  // left
+      let m <- 0.0;  // middle
+      let r <- 1.0e4;  // right
+      let c <- q.cdf(m)!!;
+      let pass <- false;
+      do {
+        if 1.0 - c > 1.0/N {
+          /* move right */
+          l <- m;
+        } else if 1.0 - c < 0.1/N {
+          /* move left */
+          r <- m;
+        } else {
+          pass <- true;
+        }
+        if !pass {
+          m <- 0.5*(l + r);
+          c <- q.cdf(m)!!;
+        }
+      } while !pass;
+      to <- m;
     }
     assert to?;
   }
 
   /* compare sum of pdf to cdf evaluations */
-  let P <- 0.5/N;
+  let w <- (to!! - from!!)/N;  // width of interval
+  let P <- 0.0;
   for n in 1..N {
-    let x <- from!! + (n - 0.5)*(to!! - from!!)/N;
-    let C <- q.cdf(x)!!;
-    P <- P + q.pdf(x)*(to!! - from!!)/N;
+    let m <- from!! + (n - 0.5)*w;  // middle of interval
+    let r <- from!! + n*w;  // right of interval
+    let C <- q.cdf(r)!!;
+    P <- P + q.pdf(m)!*w;
 
     let δ <- abs(C - P);
-    let ε <- 1.0/sqrt(N);
+    let ε <- 1.0/N;
     if 100 < N && !(δ <= ε) {  // if N <= 10 smoke only; careful of nans
       failed <- true;
       warn("on step " + n + ", " + C + " vs " + P);
@@ -107,6 +149,14 @@ function test_cdf(q:Distribution<Integer>) {
     }
   } else {
     from <- q.quantile(1.0e-6);
+    if !from? {
+      /* search for a rough lower bound for the interval */
+      let u <- -1e4;
+      while q.cdf(u + 1)!! < 1.0e-6 {
+        u <- u + 1;
+      }
+      from <- u;
+    }
     assert from?;
   }
 
@@ -121,6 +171,14 @@ function test_cdf(q:Distribution<Integer>) {
     }
   } else {
     to <- q.quantile(1.0 - 1.0e-6);
+    if !to? {
+      /* search for a rough upper bound for the interval */
+      let u <- 1e4;
+      while 1.0 - q.cdf(u - 1)!! < 1.0e-6 {
+        u <- u - 1;
+      }
+      to <- u;
+    }
     assert to?;
   }
 
@@ -128,10 +186,10 @@ function test_cdf(q:Distribution<Integer>) {
   let P <- 0.0;
   for x in from!!..to!! {
     let C <- q.cdf(x)!!;
-    P <- P + q.pdf(x);
+    P <- P + q.pdf(x)!;
 
     let δ <- abs(C - P);
-    let ε <- 1.0e-3;
+    let ε <- 1.0e-4;
     if !(δ <= ε) {  // careful of nans
       failed <- true;
       warn("on value " + x + ", " + C + " vs " + P);

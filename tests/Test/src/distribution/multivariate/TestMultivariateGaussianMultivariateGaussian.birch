@@ -20,8 +20,8 @@ class TestLinearMultivariateGaussianMultivariateGaussian < TestModel {
         A[i,j] <- simulate_uniform(-2.0, 2.0);
       }
     }
-    Σ_0 <- outer(Σ_0, Σ_0) + diagonal(1.0e-2, n);
-    Σ_1 <- outer(Σ_1, Σ_1) + diagonal(1.0e-2, n);
+    Σ_0 <- outer(Σ_0) + diagonal(1.0e-2, n);
+    Σ_1 <- outer(Σ_1) + diagonal(1.0e-2, n);
   }
 
   override function simulate() {

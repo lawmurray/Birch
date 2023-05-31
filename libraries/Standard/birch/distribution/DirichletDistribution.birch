@@ -54,28 +54,10 @@ function Dirichlet<Arg>(α:Arg) -> Distribution<Real[_]> {
   return make_dirichlet(α);
 }
 function make_dirichlet<Arg>(α:Arg) -> {
-  return construct<DirichletDistribution<Arg>>(α);
+  return peg_dirichlet(peg(α));
 }
-
-/*
- * Simulate a Dirichlet distribution.
- *
- * @param α Concentrations.
- */
-function simulate_dirichlet<Arg1>(α:Arg1) -> {
-  let x <- simulate_gamma(α, 1.0);
-  return x/sum(x);
-}
-
-/*
- * Simulate a Dirichlet distribution.
- *
- * @param α Concentrations.
- * @param D Number of dimensions.
- */
-function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
-  let x <- simulate_gamma(α, vector(1.0, D));
-  return x/sum(x);
+function peg_dirichlet<Arg>(α:Arg) -> {
+  return DirichletDistribution<Arg>(α);
 }
 
 /*
@@ -87,6 +69,5 @@ function simulate_dirichlet<Arg1,Arg2>(α:Arg1, D:Arg2) -> {
  * @return the log probability density.
  */
 function logpdf_dirichlet<Arg1,Arg2>(x:Arg1, α:Arg2) -> {
-  assert length(x) == length(α);
   return sum(hadamard(α, log(x)) - log(x) - lgamma(α)) + lgamma(sum(α));
 }

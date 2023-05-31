@@ -7,8 +7,7 @@ class TestConwayMaxwellPoisson < TestModel {
   override function initialize() {
     μ ~ Uniform(0.5, 100.0);
     ν ~ Uniform(0.5, 10.0);
-    let P <- simulate_uniform(0.5, 0.95);
-    n <- quantile_conway_maxwell_poisson(P, eval(μ), eval(ν), 10000) + 1;
+    n <- simulate_uniform_int(1, 10000);
   }
 
   override function simulate() {
@@ -16,11 +15,11 @@ class TestConwayMaxwellPoisson < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return vector(x.eval(), 1);
+    return x.eval();
   }
 
   override function backward() -> Real[_] {
-    return vector(x.eval(), 1);
+    return x.eval();
   }
 
   function marginal() -> Distribution<Integer> {

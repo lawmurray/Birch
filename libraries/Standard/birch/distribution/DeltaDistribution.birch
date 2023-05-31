@@ -26,14 +26,6 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
     return where(x == eval(μ), 0.0, -inf);
   }
 
-  override function update(x:Integer!) -> Delay? {
-    return make_delta(x);
-  }
-
-  override function updateLazy(x:Random<Integer>) -> Delay? {
-    return make_delta(x);
-  }
-
   override function hoist() -> Expression<Real> {
     return box(where(random() == μ, 0.0, -inf));
   }
@@ -72,6 +64,9 @@ final class DeltaDistribution<Arg>(μ:Arg) < Distribution<Integer> {
 function Delta<Arg>(μ:Arg) -> Distribution<Integer> {
   return make_delta(μ);
 }
-function make_delta<Arg>(μ:Arg) -> {
-  return construct<DeltaDistribution<Arg>>(μ);
+function make_delta<Arg>(μ:Arg) -> Distribution<Integer> {
+  return peg_delta(peg(μ));
+}
+function peg_delta<Arg>(μ:Arg) -> Distribution<Integer> {
+  return DeltaDistribution<Arg>(μ);
 }

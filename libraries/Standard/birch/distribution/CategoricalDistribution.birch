@@ -34,10 +34,6 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
     return cdf_categorical(x, value(ρ));
   }
 
-  override function quantile(P:Real!) -> Integer!? {
-    return quantile_categorical(P, value(ρ));
-  }
-
   override function lower() -> Integer!? {
     return 1;
   }
@@ -73,7 +69,10 @@ function Categorical<Arg>(ρ:Arg) -> Distribution<Integer> {
   return make_categorical(ρ);
 }
 function make_categorical<Arg>(ρ:Arg) -> {
-  return construct<CategoricalDistribution<Arg>>(ρ);
+  return peg_categorical(peg(ρ));
+}
+function peg_categorical<Arg>(ρ:Arg) -> {
+  return CategoricalDistribution<Arg>(ρ);
 }
 
 /*
@@ -92,17 +91,7 @@ function simulate_categorical<Arg1>(ρ:Arg1) -> {
  * @param Z Sum of the unnormalized category probabilities.
  */
 function simulate_categorical<Arg1,Arg2>(ρ:Arg1, Z:Arg2) -> {
-  assert Z > 0.0;
-  let P <- 0.0;
-  let u <- simulate_uniform(0.0, Z);
-  let x <- 0;
-  let N <- length(ρ);
-  while P <= u && x < N {
-    x <- x + 1;
-    P <- P + ρ[x];
-  }
-  assert 1 <= x && x <= N;
-  return x;
+  return count(simulate_uniform(0.0, Z) > cumsum(ρ)) + 1;
 }
 
 /*
@@ -152,41 +141,5 @@ function cdf_categorical<Arg1,Arg2>(x:Arg1, ρ:Arg2) -> {
  * @return the cumulative probability.
  */
 function cdf_categorical<Arg1,Arg2,Arg3>(x:Arg1, ρ:Arg2, Z:Arg3) -> {
-  return sum(ρ[1..wait(x)])/Z;
-}
-
-/*
- * Quantile of a categorical variate.
- *
- * @param P The cumulative probability.
- * @param ρ Normalized category probabilities.
- *
- * @return the quantile.
- */
-function quantile_categorical<Arg1,Arg2>(P:Arg1, ρ:Arg2) -> {
-  return quantile_categorical(P, ρ, 1.0);
-}
-
-/*
- * Quantile of a categorical variate.
- *
- * @param P The cumulative probability.
- * @param ρ Unnormalized category probabilities.
- * @param Z Sum of the unnormalized category probabilities.
- *
- * @return the quantile.
- */
-function quantile_categorical<Arg1,Arg2,Arg3>(P:Arg1, ρ:Arg2, Z:Arg3) -> {
-  if length(ρ) == 0 {
-    return 0;
-  } else {
-    let i <- 1;
-    let R <- ρ[1];
-    let Q <- wait(P*Z);
-    while R < Q && i < length(ρ) {
-      i <- i + 1;
-      R <- R + ρ[i];
-    }
-    return i;
-  }
+  return element(cumsum(ρ), x)/Z;
 }

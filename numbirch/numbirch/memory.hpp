@@ -3,12 +3,12 @@
  */
 #pragma once
 
+#include "numbirch/utility.hpp"
+
 #include <cstddef>
 #include <type_traits>
 
 namespace numbirch {
-class ArrayControl;
-
 /**
  * Initialize NumBirch. This should be called once at the start of the
  * program. It initializes, for example, thread-local variables necessary for
@@ -17,13 +17,6 @@ class ArrayControl;
  * @ingroup memory
  */
 void init();
-
-/**
- * Synchronize with the device stream associated with the current thread.
- * 
- * @ingroup memory
- */
-void wait();
 
 /**
  * Terminate NumBirch.
@@ -40,12 +33,6 @@ void term();
  * @param size Number of bytes to allocate.
  * 
  * @return New allocation.
- * 
- * @attention malloc() may return memory that is still in use but that will be
- * safely available by the time it is used again by NumBirch. To safely use
- * the allocation outside of NumBirch, one should use wait() either before or
- * after the call to malloc() to ensure that the memory is no longer in use.
- * Array handles this for you.
  */
 void* malloc(const size_t size);
 
@@ -59,17 +46,6 @@ void* malloc(const size_t size);
  * @param newsize New size of allocation.
  * 
  * @return Resized allocation.
- * 
- * realloc() is considered a write to the allocated memory with respect to
- * sequencing and synchronization.
- * 
- * @attention If there may be outstanding writes to the existing allocation,
- * one should call wait() before calling realloc(). realloc() may return
- * memory that is still in use but that will be safely available by the time
- * it is used again by NumBirch. To safely use the allocation outside of
- * NumBirch, one should use wait() either before or after the call to
- * realloc() to ensure that the memory is no longer in use. Array handles this
- * for you.
  */
 void* realloc(void* oldptr, const size_t oldsize, const size_t newsize);
 
@@ -136,102 +112,62 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
  * @param width Width of each batch, in elements.
  * @param height Number of batches.
  */
-template<class T, class = std::enable_if_t<std::is_arithmetic_v<T>,int>>
-void memset(T* dst, const int dpitch, const T value, const int width,
+template<class T, class U, class = std::enable_if_t<
+    std::is_arithmetic_v<T>,int>>
+void memset(T* dst, const int dpitch, const U value, const int width,
     const int height);
 
 /**
- * Allocate and initialize an array.
+ * Fill memory with a single value.
  * 
  * @ingroup memory
  * 
- * @param ctl Control block.
- * @param bytes Number of bytes.
+ * @tparam T Arithmetic type.
+ * 
+ * @param[out] dst Destination.
+ * @param dpitch Stride between batches of `dst`, in elements.
+ * @param value Value to set.
+ * @param width Width of each batch, in elements.
+ * @param height Number of batches.
  */
-void array_init(ArrayControl* ctl, const size_t bytes);
+template<class T, class U, class = std::enable_if_t<
+    std::is_arithmetic_v<T>,int>>
+void memset(T* dst, const int dpitch, const U* value, const int width,
+    const int height);
 
 /**
- * Deallocate an array.
+ * Get the stream associated with the current thread.
  * 
  * @ingroup memory
- * 
- * @param ctl Control block.
  */
-void array_term(ArrayControl* ctl);
+void* stream_get();
 
 /**
- * Resize an array.
+ * Synchronize the host with a given stream.
  * 
  * @ingroup memory
  * 
- * @param ctl Control block.
- * @param bytes New number of bytes.
+ * @param stream Stream.
  */
-void array_resize(ArrayControl* ctl, const size_t bytes);
+void stream_wait(void* stream);
 
 /**
- * Copy between arrays.
+ * Synchronize the stream associated the current thread with a given stream.
  * 
  * @ingroup memory
  * 
- * @param dst Destination.
- * @param src Source.
+ * @param stream Stream.
  */
-void array_copy(ArrayControl* dst, const ArrayControl* src);
+void stream_join(void* stream);
 
 /**
- * Wait for completion of reads and writes of an array.
+ * Synchronize streams on destruction of an array.
  * 
  * @ingroup memory
  * 
- * @param ctl Control block.
+ * @param streamAlloc Stream of allocation of the array.
+ * @param stream Stream of last operation involving the array.
  */
-void array_wait(ArrayControl* ctl);
-
-/**
- * Test for completion of reads and writes of an array.
- * 
- * @ingroup memory
- * 
- * @param ctl Control block.
- */
-bool array_test(ArrayControl* ctl);
-
-/**
- * Start a read.
- * 
- * @ingroup memory
- * 
- * @param ctl Control block.
- */
-void before_read(ArrayControl* ctl);
-
-/**
- * Start a write.
- * 
- * @ingroup memory
- * 
- * @param ctl Control block.
- */
-void before_write(ArrayControl* ctl);
-
-
-/**
- * Finish a read.
- * 
- * @ingroup memory
- * 
- * @param ctl Control block.
- */
-void after_read(ArrayControl* ctl);
-
-/**
- * Finish a write.
- * 
- * @ingroup memory
- * 
- * @param ctl Control block.
- */
-void after_write(ArrayControl* ctl);
+void stream_finish(void* streamAlloc, void* stream);
 
 }

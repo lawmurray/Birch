@@ -6,25 +6,20 @@
 #include "birch/form/Binary.hpp"
 
 namespace birch {
-using numbirch::simulate_weibull;
 
 template<class Left, class Right>
-struct SimulateWeibull : public Binary<Left,Right> {
-  template<class T, class U>
-  SimulateWeibull(T&& l, U&& r) :
-      Binary<Left,Right>(std::forward<T>(l), std::forward<U>(r)) {
-    //
-  }
-
-  BIRCH_BINARY_FORM(simulate_weibull)
+struct SimulateWeibull {
+  BIRCH_BINARY_FORM(SimulateWeibull, numbirch::simulate_weibull)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Left, class Right, std::enable_if_t<
-    is_delay_v<Left,Right>,int> = 0>
-SimulateWeibull<Left,Right> simulate_weibull(const Left& l, const Right& r) {
-  return SimulateWeibull<Left,Right>(l, r);
+template<class Left, class Right>
+auto simulate_weibull(const Left& l, const Right& r) {
+  if constexpr (numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>) {
+    return numbirch::simulate_weibull(l, r);
+  } else {
+    return BIRCH_BINARY_CONSTRUCT(SimulateWeibull);
+  }
 }
 
 }

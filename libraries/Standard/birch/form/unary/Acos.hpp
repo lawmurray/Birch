@@ -6,26 +6,21 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::acos;
-using numbirch::acos_grad;
 
 template<class Middle>
-struct Acos : public Unary<Middle> {
-  template<class T>
-  Acos(T&& m) :
-      Unary<Middle>(std::forward<T>(m)) {
-    //
-  }
-
-  BIRCH_UNARY_FORM(acos)
-  BIRCH_UNARY_GRAD(acos_grad)
+struct Acos {
+  BIRCH_UNARY_FORM(Acos, numbirch::acos)
+  BIRCH_UNARY_GRAD(numbirch::acos_grad)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-Acos<Middle> acos(const Middle& m) {
-  return Acos<Middle>(m);
+template<class Middle>
+auto acos(const Middle& m) {
+  if constexpr (numbirch::is_arithmetic_v<Middle>) {
+    return numbirch::acos(m);
+  } else {
+    return BIRCH_UNARY_CONSTRUCT(Acos);
+  }
 }
 
 }

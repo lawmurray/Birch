@@ -64,7 +64,12 @@ function BetaNegativeBinomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2, β:Arg3) ->
 }
 function make_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
     β:Arg3) -> {
-  return construct<BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>>(k, α, β);
+  return peg_beta_negative_binomial(peg(k), peg(α),
+      peg(β));
+}
+function peg_beta_negative_binomial<Arg1,Arg2,Arg3>(k:Arg1, α:Arg2,
+    β:Arg3) -> {
+  return BetaNegativeBinomialDistribution<Arg1,Arg2,Arg3>(k, α, β);
 }
 
 /**

@@ -90,7 +90,10 @@ function InverseWishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) ->
   return make_inverse_wishart(Ψ, k);
 }
 function make_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
-  return construct<InverseWishartDistribution<Arg1,Arg2>>(Ψ, k);
+  return peg_inverse_wishart(peg(Ψ), peg(k));
+}
+function peg_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
+  return InverseWishartDistribution<Arg1,Arg2>(Ψ, k);
 }
 
 /*
@@ -117,9 +120,9 @@ function simulate_inverse_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
  */
 function logpdf_inverse_wishart<Arg1,Arg2,Arg3>(X:Arg1, Ψ:Arg2, k:Arg3) -> {
   let p <- columns(X);
-  let l <- wrap(k + (p + 1.0));
-  let L <- wrap(chol(X));
-  let J <- wrap(chol(Ψ));
+  let l <- k + (p + 1.0);
+  let L <- chol(X);
+  let J <- chol(Ψ);
   return -0.5*(frobenius(trisolve(L, J)) + l*p*log(2.0)) - l*ltridet(J) -
       (l + (p + 1.0))*ltridet(L) - lgamma(0.5*l, p);
 }

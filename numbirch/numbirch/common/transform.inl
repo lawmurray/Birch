@@ -124,7 +124,11 @@ struct greater_or_equal_functor {
 struct abs_functor {
   template<class T>
   NUMBIRCH_HOST_DEVICE T operator()(const T x) const {
-    return std::abs(x);
+    if constexpr (is_bool_v<T>) {
+      return x;
+    } else {
+      return std::abs(x);
+    }
   }
 };
 
@@ -504,7 +508,9 @@ struct tanh_grad_functor {
 struct copysign_functor {
   template<class T, class U>
   NUMBIRCH_HOST_DEVICE promote_t<T,U> operator()(const T x, const U y) const {
-    if constexpr (is_int_v<T> || is_bool_v<T>) {
+    if constexpr (is_bool_v<T>) {
+      return x;
+    } else if constexpr (is_int_v<T>) {
       /* don't use std::copysign, as it promotes to floating point, which
        * we don't wish to do here */
       return (y >= U(0)) ? std::abs(x) : -std::abs(x);
@@ -519,7 +525,9 @@ struct copysign_grad1_functor {
   NUMBIRCH_HOST_DEVICE real operator()(const real g, const T x, const U y)
       const {
     T z;
-    if constexpr (is_int_v<T> || is_bool_v<T>) {
+    if constexpr (is_bool_v<T>) {
+      z = x;
+    } else if constexpr (is_int_v<T>) {
       /* don't use std::copysign, as it promotes to floating point, which
        * we don't wish to do here */
       z = (y >= U(0)) ? std::abs(x) : -std::abs(x);
@@ -1508,7 +1516,7 @@ implicit_t<T,U,V> where(const T& x, const U& y, const V& z) {
 template<class T, class U, class V, class>
 real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
     const T& x, const U& y, const V& z) {
-  return Array(shape(x), real(0));
+  return Array(real(0), shape(x));
 }
 
 template<class T, class U, class V, class>

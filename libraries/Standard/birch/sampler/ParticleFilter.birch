@@ -208,7 +208,7 @@ class ParticleFilter {
           parallel for n in 1..nparticles {
             α[n] <- κ!.move(x[n]);
           }
-          raccepts <- sum(α)/nparticles;
+          raccepts <- sum(α)!/nparticles;
 
           /* update acceptance rate errors for next scale update */
           κ!.adapt(raccepts!);

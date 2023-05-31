@@ -36,10 +36,6 @@ final class GammaDistribution<Arg1,Arg2>(k:Arg1, θ:Arg2) < Distribution<Real> {
     return cdf_gamma(x, value(k), value(θ));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_gamma(P, value(k), value(θ));
-  }
-
   override function lower() -> Real!? {
     return 0.0;
   }
@@ -73,11 +69,14 @@ function Gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> Distribution<Real> {
   return make_gamma(k, θ);
 }
 function make_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
-  return construct<GammaDistribution<Arg1,Arg2>>(k, θ);
+  return peg_gamma(peg(k), peg(θ));
+}
+function peg_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
+  return GammaDistribution<Arg1,Arg2>(k, θ);
 }
 
 hpp{{
-using numbirch::simulate_gamma;
+//using numbirch::simulate_gamma;
 }}
 
 /*
@@ -105,20 +104,4 @@ function logpdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  */
 function cdf_gamma<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
   return where(0.0 < x, gamma_p(k, x/θ), 0.0);
-}
-
-/*
- * Quantile of a gamma distribution.
- *
- * @param P The cumulative probability.
- * @param k Shape.
- * @param θ Scale.
- *
- * @return the quantile.
- */
-function quantile_gamma<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, θ:Arg3) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::gamma_distribution<Real>(wait(k),
-      wait(θ)), wait(P));
-  }}
 }

@@ -49,7 +49,7 @@ class AliveParticleFilter < ParticleFilter {
      * particles are not exchangeable for all resamplers) */
     w[simulate_uniform_int(1, nparticles)] <- -inf;
 
-    npropagations <- sum(p);
+    npropagations <- sum(p)!;
     (ess, lsum) <- resample_reduce(w);
     lnormalize <- lnormalize + lsum - log(npropagations - 1);
   }

@@ -53,7 +53,10 @@ function DirichletMultinomial<Arg1,Arg2>(n:Arg1, α:Arg2) ->
   return make_dirichlet_multinomial(n, α);
 }
 function make_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
-  return construct<DirichletMultinomialDistribution<Arg1,Arg2>>(n, α);
+  return peg_dirichlet_multinomial(peg(n), peg(α));
+}
+function peg_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+  return DirichletMultinomialDistribution<Arg1,Arg2>(n, α);
 }
 
 /**
@@ -78,7 +81,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
  * @param n Number of trials.
  * @param α Concentrations.
  */
-function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
+function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
   return simulate_multinomial(n, simulate_dirichlet(α));
 }
 
@@ -93,7 +96,6 @@ function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
  */
 function logpdf_dirichlet_multinomial<Arg1,Arg2,Arg3>(x:Arg1, n:Arg2,
     α:Arg3) -> {
-  assert length(x) == length(α);
   return lfact(n) + lgamma(sum(α)) - lgamma(n + sum(α)) +
       sum(lgamma(x + α) - lgamma(α) - lfact(x));
 }

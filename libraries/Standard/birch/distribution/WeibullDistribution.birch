@@ -37,10 +37,6 @@ final class WeibullDistribution<Arg1,Arg2>(k:Arg1, λ:Arg2) <
     return cdf_weibull(x, value(k), value(λ));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_weibull(P, value(k), value(λ));
-  }
-
   override function lower() -> Real!? {
     return 0.0;
   }
@@ -65,11 +61,14 @@ function Weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> Distribution<Real> {
   return make_weibull(k, λ);
 }
 function make_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
-  return construct<WeibullDistribution<Arg1,Arg2>>(k, λ);
+  return peg_weibull(peg(k), peg(λ));
+}
+function peg_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
+  return WeibullDistribution<Arg1,Arg2>(k, λ);
 }
 
 hpp{{
-using numbirch::simulate_weibull;
+//using numbirch::simulate_weibull;
 }}
 
 /*
@@ -97,20 +96,4 @@ function logpdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
  */
 function cdf_weibull<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, λ:Arg3) -> {
   return where(0.0 < x, -expm1(-pow(x/λ, k)), 0.0);
-}
-
-/*
- * Quantile of a Weibull distribution.
- *
- * @param P The cumulative probability.
- * @param k Shape.
- * @param λ Scale.
- *
- * @return the quantile.
- */
-function quantile_weibull<Arg1,Arg2,Arg3>(P:Arg1, k:Arg2, λ:Arg3) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::weibull_distribution<Real>(
-      wait(k), wait(λ)), wait(P));
-  }}
 }

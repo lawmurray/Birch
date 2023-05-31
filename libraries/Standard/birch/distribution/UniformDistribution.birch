@@ -68,11 +68,14 @@ function Uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> Distribution<Real> {
   return make_uniform(l, u);
 }
 function make_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
-  return construct<UniformDistribution<Arg1,Arg2>>(l, u);
+  return peg_uniform(peg(l), peg(u));
+}
+function peg_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
+  return UniformDistribution<Arg1,Arg2>(l, u);
 }
 
 hpp{{
-using numbirch::simulate_uniform;
+//using numbirch::simulate_uniform;
 }}
 
 /*

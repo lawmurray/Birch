@@ -188,8 +188,8 @@ class MatrixNormalInverseWishartMultivariateGaussianDistribution<Arg1,Arg2,
 function MatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4, k:Arg5, c:Arg6,
     φ2:Arg7) -> Distribution<Real[_]> {
-  let L <- wrap(chol(Σ));
-  let O <- wrap(trisolve(L, M));
+  let L <- chol(Σ);
+  let O <- trisolve(L, M);
   let N <- triinnersolve(L, O);
   let Λ <- cholinv(L);
   let Γ <- Ψ + inner(O);
@@ -199,8 +199,15 @@ function MatrixNormalInverseWishartMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
 function make_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, c:Arg6,
     φ2:Arg7) -> {
-  return construct<MatrixNormalInverseWishartMultivariateGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, N, Λ, Γ, k, c, φ2);
+  return peg_matrix_normal_inverse_wishart_multivariate_gaussian(
+      peg(a), peg(N), peg(Λ), peg(Γ), peg(k),
+      peg(c), peg(φ2));
+}
+function peg_matrix_normal_inverse_wishart_multivariate_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4, k:Arg5, c:Arg6,
+    φ2:Arg7) -> {
+  return MatrixNormalInverseWishartMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a, N, Λ, Γ, k, c, φ2);
 }
 
 /**
@@ -283,8 +290,8 @@ function MultivariateGaussian<Arg>(μ:Inner<Random<Real[_,_]>,Arg>,
 function simulate_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, N:Arg2, Λ:Arg3, Γ:Arg4,
     k:Arg5, c:Arg6, φ2:Arg7) -> {
-  let L <- wrap(chol(Λ));
-  let O <- wrap(trisolve(L, N));
+  let L <- chol(Λ);
+  let O <- trisolve(L, N);
   let M <- triinnersolve(L, O);
   let Ψ <- Γ - inner(O);
   let Σ <- (φ2 + dot(trisolve(L, a)))*Ψ;
@@ -308,8 +315,8 @@ function simulate_matrix_normal_inverse_wishart_multivariate_gaussian<
 function logpdf_matrix_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, N:Arg3, Λ:Arg4,
     Γ:Arg5, k:Arg6, c:Arg7, φ2:Arg8) -> {
-  let L <- wrap(chol(Λ));
-  let O <- wrap(trisolve(L, N));
+  let L <- chol(Λ);
+  let O <- trisolve(L, N);
   let M <- triinnersolve(L, O);
   let Ψ <- Γ - inner(O);
   let Σ <- (φ2 + dot(trisolve(L, a)))*Ψ;

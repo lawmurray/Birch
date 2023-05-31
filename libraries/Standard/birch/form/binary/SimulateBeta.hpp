@@ -6,25 +6,20 @@
 #include "birch/form/Binary.hpp"
 
 namespace birch {
-using numbirch::simulate_beta;
 
 template<class Left, class Right>
-struct SimulateBeta : public Binary<Left,Right> {
-  template<class T, class U>
-  SimulateBeta(T&& l, U&& r) :
-      Binary<Left,Right>(std::forward<T>(l), std::forward<U>(r)) {
-    //
-  }
-
-  BIRCH_BINARY_FORM(simulate_beta)
+struct SimulateBeta {
+  BIRCH_BINARY_FORM(SimulateBeta, numbirch::simulate_beta)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Left, class Right, std::enable_if_t<
-    is_delay_v<Left,Right>,int> = 0>
-SimulateBeta<Left,Right> simulate_beta(const Left& l, const Right& r) {
-  return SimulateBeta<Left,Right>(l, r);
+template<class Left, class Right>
+auto simulate_beta(const Left& l, const Right& r) {
+  if constexpr (numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>) {
+    return numbirch::simulate_beta(l, r);
+  } else {
+    return BIRCH_BINARY_CONSTRUCT(SimulateBeta);
+  }
 }
 
 }

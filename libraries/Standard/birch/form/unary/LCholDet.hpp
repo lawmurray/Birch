@@ -6,26 +6,17 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::lcholdet;
-using numbirch::lcholdet_grad;
 
 template<class Middle>
-struct LCholDet : public Unary<Middle> {
-  template<class T>
-  LCholDet(T&& m) :
-      Unary<Middle>(std::forward<T>(m)) {
-    //
-  }
-
-  BIRCH_UNARY_FORM(lcholdet)
-  BIRCH_UNARY_GRAD(lcholdet_grad)
+struct LCholDet {
+  BIRCH_UNARY_FORM(LCholDet, numbirch::lcholdet)
+  BIRCH_UNARY_GRAD(numbirch::lcholdet_grad)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-LCholDet<Middle> lcholdet(const Middle& m) {
-  return LCholDet<Middle>(m);
+template<class Middle>
+auto lcholdet(const Middle& m) {
+  return BIRCH_UNARY_CONSTRUCT(LCholDet);
 }
 
 }

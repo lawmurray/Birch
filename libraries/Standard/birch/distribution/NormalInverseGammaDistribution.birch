@@ -80,11 +80,6 @@ final class NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
         value(γ));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma(P, value(ν), value(λ), value(k),
-        value(γ));
-  }
-
   override function fix() {
     super.fix();
     constant(ν);
@@ -119,8 +114,12 @@ function NormalInverseGamma<Arg1,Arg2,Arg3,Arg4>(μ:Arg1, σ2:Arg2, α:Arg3,
 }
 function make_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
     k:Arg3, γ:Arg4) -> {
-  return construct<NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>>(ν, λ,
-      k, γ);
+  return peg_normal_inverse_gamma(peg(ν), peg(λ),
+      peg(k), peg(γ));
+}
+function peg_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
+    k:Arg3, γ:Arg4) -> {
+  return NormalInverseGammaDistribution<Arg1,Arg2,Arg3,Arg4>(ν, λ, k, γ);
 }
 
 /**
@@ -213,21 +212,4 @@ function cdf_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(x:Arg1, ν:Arg2,
     λ:Arg3, k:Arg4, γ:Arg5) -> {
   let β <- γ - pow(ν, 2.0)/λ;  // actually two times beta
   return cdf_student_t(x, k, ν/λ, (β/k)/λ);
-}
-
-/*
- * Quantile of a normal inverse-gamma distribution.
- *
- * @param P The cumulative probability.
- * @param ν Precision times mean.
- * @param λ Precision.
- * @param k Degrees of freedom.
- * @param γ Accumulator of variance scale.
- *
- * @return the quantile.
- */
-function quantile_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4,Arg5>(P:Arg1,
-    ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5) -> {
-  let β <- γ - pow(ν, 2.0)/λ;  // actually two times beta
-  return quantile_student_t(P, k, ν/λ, (β/k)/λ);
 }

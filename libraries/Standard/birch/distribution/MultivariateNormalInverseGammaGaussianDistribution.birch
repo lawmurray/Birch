@@ -52,7 +52,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          x, transpose(A), ν, Λ, k, γ, c, Diagonal(ω2));
+          x, transpose(A), ν, Λ, k, γ, c, diagonal(ω2));
       return value(simulate_multivariate_normal_inverse_gamma_gaussian(
           this.a, p.ν, p.Λ, p.k, p.γ, this.c, this.ω2));
     }        
@@ -66,7 +66,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          x, transpose(A), ν, Λ, k, γ, c, Diagonal(ω2));
+          x, transpose(A), ν, Λ, k, γ, c, diagonal(ω2));
       return eval(simulate_multivariate_normal_inverse_gamma_gaussian(
           this.a, p.ν, p.Λ, p.k, p.γ, this.c, this.ω2));
     }        
@@ -80,7 +80,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          x, transpose(A), ν, Λ, k, γ, c, Diagonal(ω2));
+          x, transpose(A), ν, Λ, k, γ, c, diagonal(ω2));
       return value(logpdf_multivariate_normal_inverse_gamma_gaussian(x',
           this.a, p.ν, p.Λ, p.k, p.γ, this.c, this.ω2));
     }
@@ -94,7 +94,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joined!.joinMultivariateNormalInverseGammaGaussian()!;
       let p <- update_multivariate_normal_inverse_gamma_multivariate_gaussian(
-          x, transpose(A), ν, Λ, k, γ, c, Diagonal(ω2));
+          x, transpose(A), ν, Λ, k, γ, c, diagonal(ω2));
       return eval(logpdf_multivariate_normal_inverse_gamma_gaussian(x',
           this.a, p.ν, p.Λ, p.k, p.γ, this.c, this.ω2));
     }
@@ -108,7 +108,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joinMultivariateNormalInverseGammaGaussian()!;
       return update_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-          transpose(A), ν, Λ, k, γ, c, Diagonal(ω2));
+          transpose(A), ν, Λ, k, γ, c, diagonal(ω2));
     }
   }
 
@@ -120,7 +120,7 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
       let (x, A, ν, Λ, k, γ, c, ω2) <-
           this.joinMultivariateNormalInverseGammaGaussian()!;
       return update_multivariate_normal_inverse_gamma_multivariate_gaussian(x,
-          transpose(A), ν, Λ, k, γ, c, Diagonal(ω2));
+          transpose(A), ν, Λ, k, γ, c, diagonal(ω2));
     }
   }
 
@@ -128,18 +128,12 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
     let (x, A, ν, Λ, k, γ, c, ω2) <-
         this.joinMultivariateNormalInverseGammaGaussian()!;
     return box(logpdf_multivariate_normal_inverse_gamma_multivariate_gaussian(
-        x, transpose(A), ν, Λ, k, γ, c, Diagonal(ω2)));
+        x, transpose(A), ν, Λ, k, γ, c, diagonal(ω2)));
   }
 
   override function cdf(x:Real!) -> Real!? {
     assert !this.joined?;
     return cdf_multivariate_normal_inverse_gamma_gaussian(x, value(a),
-        value(ν), value(Λ), value(c), value(k), value(γ), value(ω2));
-  }
-
-  override function quantile(P:Real!) -> Real!? {
-    assert !this.joined?;
-    return quantile_multivariate_normal_inverse_gamma_gaussian(P, value(a),
         value(ν), value(Λ), value(c), value(k), value(γ), value(ω2));
   }
 
@@ -201,9 +195,9 @@ final class MultivariateNormalInverseGammaGaussianDistribution<Arg1,
 function MultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
     Arg7>(a:Arg1, μ:Arg2, Σ:Arg3, α:Arg4, β:Arg5, c:Arg6, ω2:Arg7) ->
     Distribution<Real> {
-  let L <- wrap(chol(Σ));
-  let Λ <- wrap(cholinv(L));
-  let o <- wrap(trisolve(L, μ));
+  let L <- chol(Σ);
+  let Λ <- cholinv(L);
+  let o <- trisolve(L, μ);
   let ν <- triinnersolve(L, o);
   let k <- 2.0*α;
   let γ <- 2.0*β + dot(o);
@@ -212,8 +206,15 @@ function MultivariateNormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
 function make_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
     Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5, c:Arg6,
     ω2:Arg7) -> {
-  return construct<MultivariateNormalInverseGammaGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, ν, Λ, k, γ, c, ω2);
+  return peg_multivariate_normal_inverse_gamma_gaussian(peg(a),
+      peg(ν), peg(Λ), peg(k), peg(γ), peg(c),
+      peg(ω2));
+}
+function peg_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
+    Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5, c:Arg6,
+    ω2:Arg7) -> {
+  return MultivariateNormalInverseGammaGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a, ν, Λ, k, γ, c, ω2);
 }
 
 /**
@@ -298,8 +299,8 @@ function Gaussian<Arg>(μ:Dot<Arg,Random<Real[_]>>, σ2:Random<Real>) ->
 function simulate_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, Λ:Arg3, k:Arg4, γ:Arg5, c:Arg6,
     ω2:Arg7) -> {
-  let L <- wrap(chol(Λ));
-  let o <- wrap(trisolve(L, ν));
+  let L <- chol(Λ);
+  let o <- trisolve(L, ν);
   let μ <- triinnersolve(L, o);
   let β <- γ - dot(o);  // actually two times beta
   let m <- dot(a, μ) + c;
@@ -325,8 +326,8 @@ function simulate_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
 function logpdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4,
     k:Arg5, γ:Arg6, c:Arg7, ω2:Arg8) -> {
-  let L <- wrap(chol(Λ));
-  let o <- wrap(trisolve(L, ν));
+  let L <- chol(Λ);
+  let o <- trisolve(L, ν);
   let μ <- triinnersolve(L, o);
   let β <- γ - dot(o);  // actually two times beta
   let m <- dot(a, μ) + c;
@@ -377,38 +378,11 @@ function update_multivariate_normal_inverse_gamma_gaussian<Arg1,
 function cdf_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5, k:Arg6,
     γ:Arg7, ω2:Arg8) -> {
-  let L <- wrap(chol(Λ));
-  let o <- wrap(trisolve(L, ν));
+  let L <- chol(Λ);
+  let o <- trisolve(L, ν);
   let μ <- triinnersolve(L, o);
   let β <- γ - dot(o);  // actually two times beta
   let m <- dot(a, μ) + c;
   let s2 <- (β/k)*(ω2 + dot(trisolve(L, a)));
   return cdf_student_t(x, k, m, s2);
-}
-
-/*
- * Quantile of a Gaussian distribution with a multivariate linear normal
- * inverse-gamma prior with linear transformation.
- *
- * @param P The cumulative probability.
- * @param a Scale.
- * @param ν Precision times mean.
- * @param Λ Precision.
- * @param c Offset.
- * @param k Variance shape.
- * @param γ Variance scale.
- * @param ω2 Likelihood variance scale.
- *
- * @return the quantile.
- */
-function quantile_multivariate_normal_inverse_gamma_gaussian<Arg1,Arg2,
-    Arg3,Arg4,Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, Λ:Arg4, c:Arg5,
-    k:Arg6, γ:Arg7, ω2:Arg8) -> {
-  let L <- wrap(chol(Λ));
-  let o <- wrap(trisolve(L, ν));
-  let μ <- triinnersolve(L, o);
-  let β <- γ - dot(o);  // actually two times beta
-  let m <- dot(a, μ) + c;
-  let s2 <- (β/k)*(ω2 + dot(trisolve(L, a)));
-  return quantile_student_t(P, k, m, s2);
 }

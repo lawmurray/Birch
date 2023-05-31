@@ -77,7 +77,7 @@ function MatrixGaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
  */
 function MatrixGaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2, m:Integer, n:Integer) ->
     Distribution<Real[_,_]> {
-  return make_matrix_gaussian(Fill(μ, m, n), Identity(m), Diagonal(σ2, n));
+  return make_matrix_gaussian(fill(μ, m, n), identity(m), diagonal(σ2, n));
 }
 
 /**
@@ -86,11 +86,16 @@ function MatrixGaussian<Arg1,Arg2>(μ:Arg1, σ2:Arg2, m:Integer, n:Integer) ->
  */
 function MatrixGaussian<Arg1,Arg2>(M:Arg1, σ2:Arg2) ->
     Distribution<Real[_,_]> {
-  return make_matrix_gaussian(M, Identity(rows(M)), Diagonal(σ2, columns(M)));
+  return make_matrix_gaussian(M, identity(rows(M)), diagonal(σ2, columns(M)));
 }
 
-function make_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) -> {
-  return construct<MatrixGaussianDistribution<Arg1,Arg2,Arg3>>(M, U, V);
+function make_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
+    Distribution<Real[_,_]> {
+  return peg_matrix_gaussian(peg(M), peg(U), peg(V));
+}
+function peg_matrix_gaussian<Arg1,Arg2,Arg3>(M:Arg1, U:Arg2, V:Arg3) ->
+    Distribution<Real[_,_]> {
+  return MatrixGaussianDistribution<Arg1,Arg2,Arg3>(M, U, V);
 }
 
 /*
@@ -125,9 +130,9 @@ function logpdf_matrix_gaussian<Arg1,Arg2,Arg3,Arg4>(X:Arg1, M:Arg2, U:Arg3,
     V:Arg4) -> {
   let n <- rows(X);
   let p <- columns(X);
-  let Z <- wrap(X - M);
-  let L <- wrap(chol(U));
-  let J <- wrap(chol(V));
+  let Z <- X - M;
+  let L <- chol(U);
+  let J <- chol(V);
   return -0.5*(frobenius(Z*cholinv(J), cholsolve(L, Z)) + n*p*log(2.0*π)) -
       n*ltridet(J) - p*ltridet(L);
 }

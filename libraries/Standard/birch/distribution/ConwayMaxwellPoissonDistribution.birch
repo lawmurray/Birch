@@ -48,10 +48,6 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     return cdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
   }
 
-  override function quantile(P:Real!) -> Integer!? {
-    return quantile_conway_maxwell_poisson(P, value(μ), value(ν), value(n));
-  }
-
   override function hoist() -> Expression<Real> {
     return box(logpdf_conway_maxwell_poisson(random(), μ, ν, n));
   }
@@ -99,7 +95,11 @@ function ConwayMaxwellPoisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2, n:Arg3) ->
 }
 function make_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
     n:Arg3) -> {
-  return construct<ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>>(μ, ν, n);
+  return peg_conway_maxwell_poisson(peg(μ), peg(ν), peg(n));
+}
+function peg_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
+    n:Arg3) -> {
+  return ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ, ν, n);
 }
 
 /*
@@ -145,20 +145,4 @@ function cdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
   let p <- exp(logpdf_conway_maxwell_poisson(iota(0, n + 1), μ, ν, n));
   return cdf_categorical(x + 1, p, 1.0);
-}
-
-/*
- * Quantile of a Conway-Maxwell-Poisson distribution.
- *
- * @param P The cumulative probability.
- * @param μ Mode.
- * @param ν Dispersion.
- * @param n Truncation point.
- *
- * @return the quantile.
- */
-function quantile_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, μ:Arg2,
-    ν:Arg3, n:Arg4) -> {
-  let p <- exp(logpdf_conway_maxwell_poisson(iota(0, n + 1), μ, ν, n));
-  return quantile_categorical(P, p, 1.0) - 1;
 }

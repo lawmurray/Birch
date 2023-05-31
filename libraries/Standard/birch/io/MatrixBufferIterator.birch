@@ -19,14 +19,15 @@ final class MatrixBufferIterator<Type>(values:Type[_,_]) < Iterator<Buffer> {
    * Is there a next element?
    */
   override function hasNext() -> Boolean {
-    return i < rows(this.values);
+    return i < rows(values);
   }
 
   /**
    * Get the next element.
    */
   override function next() -> Buffer {
-    this.i <- this.i + 1;
-    return make_buffer(row(this.values, this.i));
+    i <- i + 1;
+    let n <- columns(values);
+    return make_buffer(values[i,1..n]);
   }
 }

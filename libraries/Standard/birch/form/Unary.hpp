@@ -5,92 +5,84 @@
 
 #include "birch/form/Form.hpp"
 
-namespace birch {
-/**
- * Delayed form with one argument.
- */
-template<class Middle>
-struct Unary : public Form {
-  template<class T>
-  Unary(T&& m) :
-      Form(),
-      m(m) {
-    //
-  }
-
-  void reset() {
-    birch::reset(m);
-  }
-
-  void relink(const RelinkVisitor& visitor) {
-    birch::relink(m, visitor);
-  }
-
-  void constant() {
-    birch::constant(m);
-  }
-
-  bool isConstant() const {
-    return birch::is_constant(m);
-  }
-
-  void args(const ArgsVisitor& visitor) {
-    birch::args(m, visitor);
-  }
-
-  void deepGrad(const GradVisitor& visitor) {
-    birch::deep_grad(m, visitor);
-  }
-
-  /**
-   * Argument.
-   */
-  Middle m;
-
-  MEMBIRCH_STRUCT(Unary, Form)
-  MEMBIRCH_STRUCT_MEMBERS(m)
-};
-
-}
-
-#define BIRCH_UNARY_FORM(f, ...) \
-  using Value = decltype(f(birch::eval(std::declval<Middle>()), \
-      ##__VA_ARGS__)); \
-  std::optional<Value> x; \
+#define BIRCH_UNARY_FORM(This, f, ...) \
+  static constexpr bool is_form = true; \
+  Middle m; \
+  __VA_OPT__(Integer __VA_ARGS__;) \
   \
-  void clear() { \
-    x.reset(); \
+  MEMBIRCH_STRUCT(This) \
+  MEMBIRCH_STRUCT_MEMBERS(m) \
+  \
+  auto operator->() { \
+    return this; \
   } \
   \
-  auto value() { \
-    auto x = this->eval(); \
-    this->constant(); \
-    return x; \
+  auto operator->() const { \
+    return this; \
+  } \
+  \
+  operator auto() const { \
+    return value(); \
+  } \
+  \
+  auto operator*() const { \
+    return wait(value()); \
+  } \
+  \
+  void reset() { \
+    birch::reset(m); \
+  } \
+  \
+  void relink(const RelinkVisitor& visitor) { \
+    birch::relink(m, visitor); \
+  } \
+  \
+  void constant() const { \
+    birch::constant(m); \
+  } \
+  \
+  bool isConstant() const { \
+    return birch::is_constant(m); \
+  } \
+  \
+  void args(const ArgsVisitor& visitor) { \
+    birch::args(m, visitor); \
+  } \
+  \
+  void deepGrad(const GradVisitor& visitor) { \
+    birch::deep_grad(m, visitor); \
+  } \
+  \
+  auto value() const { \
+    return f(birch::value(m)__VA_OPT__(,) __VA_ARGS__); \
   } \
   \
   auto eval() const { \
-    auto m = birch::eval(this->m); \
-    return f(m, ##__VA_ARGS__); \
+    return f(birch::eval(m)__VA_OPT__(,) __VA_ARGS__); \
   } \
   \
-  auto peek() { \
-    if (!x) { \
-      auto m = birch::peek(this->m); \
-      this->x = f(m, ##__VA_ARGS__);\
-    } \
-    return *x; \
+  auto peek() const { \
+    return f(birch::peek(m)__VA_OPT__(,) __VA_ARGS__); \
   } \
   \
-  auto move(const MoveVisitor& visitor) { \
-    auto m = birch::move(this->m, visitor); \
-    return f(m, ##__VA_ARGS__); \
+  auto move(const MoveVisitor& visitor) const { \
+    return f(birch::move(m, visitor)__VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  auto peg() const { \
+    using T = std::decay_t<decltype(birch::peg(m))>; \
+    return This<T>{birch::peg(m)__VA_OPT__(,) __VA_ARGS__}; \
+  } \
+  auto tag() const { \
+    using T = decltype(birch::tag(m)); \
+    return This<T>{birch::tag(m)__VA_OPT__(,) __VA_ARGS__}; \
   }
 
 #define BIRCH_UNARY_GRAD(f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) { \
-    auto x = birch::peek(*this); \
-    auto m = birch::peek(this->m); \
-    birch::shallow_grad(this->m, f_grad(g, x, m, ##__VA_ARGS__), visitor); \
-    clear(); \
+    birch::shallow_grad(m, f_grad(g, birch::peek(*this), birch::peek(m)__VA_OPT__(,) __VA_ARGS__), visitor); \
   }
+
+#define BIRCH_UNARY_CONSTRUCT(This, ...) \
+  This<decltype(tag(m))>{tag(m) __VA_OPT__(,) __VA_ARGS__}

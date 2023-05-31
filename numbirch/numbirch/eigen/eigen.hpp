@@ -75,32 +75,32 @@ static auto make_eigen(T* ptr, const int m, const int n, const int ld) {
 
 template<class T>
 static auto make_eigen(Array<T,0>& x) {
-  return make_eigen(sliced(x));
+  return make_eigen(buffer(x));
 }
 
 template<class T>
 static auto make_eigen(const Array<T,0>& x) {
-  return make_eigen(sliced(x));
+  return make_eigen(buffer(x));
 }
 
 template<class T>
 static auto make_eigen(Array<T,1>& x) {
-  return make_eigen(sliced(x), length(x), stride(x));
+  return make_eigen(buffer(x), length(x), stride(x));
 }
 
 template<class T>
 static auto make_eigen(const Array<T,1>& x) {
-  return make_eigen(sliced(x), length(x), stride(x));
+  return make_eigen(buffer(x), length(x), stride(x));
 }
 
 template<class T>
 static auto make_eigen(Array<T,2>& x) {
-  return make_eigen(sliced(x), rows(x), columns(x), stride(x));
+  return make_eigen(buffer(x), rows(x), columns(x), stride(x));
 }
 
 template<class T>
 static auto make_eigen(const Array<T,2>& x) {
-  return make_eigen(sliced(x), rows(x), columns(x), stride(x));
+  return make_eigen(buffer(x), rows(x), columns(x), stride(x));
 }
 
 }

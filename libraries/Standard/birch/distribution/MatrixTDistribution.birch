@@ -58,7 +58,12 @@ function MatrixT<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3, Ψ:Arg4) ->
 }
 function make_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
     Ψ:Arg4) -> {
-  return construct<MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>>(k, M, Σ, Ψ);
+  return peg_matrix_t(peg(k), peg(M), peg(Σ),
+      peg(Ψ));
+}
+function peg_matrix_t<Arg1,Arg2,Arg3,Arg4>(k:Arg1, M:Arg2, Σ:Arg3,
+    Ψ:Arg4) -> {
+  return MatrixTDistribution<Arg1,Arg2,Arg3,Arg4>(k, M, Σ, Ψ);
 }
 
 /*
@@ -95,9 +100,9 @@ function logpdf_matrix_t<Arg1,Arg2,Arg3,Arg4,Arg5>(X:Arg1, k:Arg2, M:Arg3,
   let p <- columns(X);
   let a <- 0.5*k + 0.5*(p + n - 1);
   let b <- 0.5*k + 0.5*(p - 1);
-  let Z <- wrap(X - M);
-  let L <- wrap(chol(Σ));
-  let J <- wrap(chol(Ψ));
+  let Z <- X - M;
+  let L <- chol(Σ);
+  let J <- chol(Ψ);
   return lgamma(a, p) - 0.5*p*n*log(π) - lgamma(b, p) - p*ltridet(L) -
       n*ltridet(J) - a*ldet(diagonal(1.0, n) +
       cholsolve(L, Z)*cholsolve(J, transpose(Z)));

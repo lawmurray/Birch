@@ -69,11 +69,6 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
         value(λ), value(k), value(γ), value(c), value(s2));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_normal_inverse_gamma_gaussian(P, value(a), value(ν),
-        value(λ), value(k), value(γ), value(c), value(s2));
-  }
-
   override function hoist() -> Expression<Real> {
     return box(logpdf_normal_inverse_gamma_gaussian(random(), a, ν, λ, k, γ,
         c, s2));
@@ -92,15 +87,20 @@ final class NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,
 }
 
 function NormalInverseGammaGaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(
-    a:Arg1, μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5, c:Arg6, s2:Arg7)  ->
+    a:Arg1, μ:Arg2, σ2:Arg3, α:Arg4, β:Arg5, c:Arg6, s2:Arg7) ->
     Distribution<Real> {
   let γ <- 2.0*β + pow(μ, 2.0)/σ2;
   return make_normal_inverse_gamma_gaussian(a, μ/σ2, 1.0/σ2, 2.0*α, γ, c, s2);
 }
-function make_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
-    Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5, c:Arg6, s2:Arg7)  -> {
-  return construct<NormalInverseGammaGaussianDistribution<Arg1,Arg2,
-      Arg3,Arg4,Arg5,Arg6,Arg7>>(a, ν, λ, k, γ, c, s2);
+function make_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
+    Arg7>(a:Arg1, ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5, c:Arg6, s2:Arg7) -> {
+  return peg_normal_inverse_gamma_gaussian(peg(a), peg(ν),
+      peg(λ), peg(k), peg(γ), peg(c), peg(s2));
+}
+function peg_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
+    Arg7>(a:Arg1, ν:Arg2, λ:Arg3, k:Arg4, γ:Arg5, c:Arg6, s2:Arg7)  -> {
+  return NormalInverseGammaGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,
+      Arg7>(a, ν, λ, k, γ, c, s2);
 }
 
 /**
@@ -268,7 +268,7 @@ function update_join_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     Arg6,Arg7,Arg8>(x:Arg1, a:Arg2, ν:Arg3, λ:Arg4, k:Arg5, γ:Arg6, c:Arg7,
     s2:Arg8) -> {
   let n <- length(x);
-  let z <- wrap(x - c);
+  let z <- x - c;
   let λ' <- λ + dot(a)/s2;
   let ν' <- ν + dot(a, z)/s2;
   let k' <- k + n;
@@ -296,26 +296,4 @@ function cdf_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5,
     s2:Arg8) -> {
   let β <- γ - pow(ν, 2.0)/λ;
   return cdf_student_t(x, k, a*ν/λ + c, (β/k)*(pow(a, 2.0)/λ + s2));
-}
-
-/*
- * Quantile of a Gaussian distribution with a normal inverse-gamma prior with
- * linear transformation.
- *
- * @param P The cumulative probability.
- * @param a Scale.
- * @param ν Precision times mean.
- * @param λ Precision.
- * @param k Degrees of freedom.
- * @param γ Accumulator of variance scale.
- * @param c Offset.
- * @param s2 Likelihood variance scale.
- *
- * @return the quantile.
- */
-function quantile_normal_inverse_gamma_gaussian<Arg1,Arg2,Arg3,Arg4,
-    Arg5,Arg6,Arg7,Arg8>(P:Arg1, a:Arg2, ν:Arg3, λ:Arg4, k:Arg5, γ:Arg6,
-    c:Arg7, s2:Arg8) -> {
-  let β <- γ - pow(ν, 2.0)/λ;
-  return quantile_student_t(P, k, a*ν/λ + c, (β/k)*(pow(a, 2.0)/λ + s2));
 }

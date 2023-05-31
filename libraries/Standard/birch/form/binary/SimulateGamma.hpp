@@ -6,25 +6,20 @@
 #include "birch/form/Binary.hpp"
 
 namespace birch {
-using numbirch::simulate_gamma;
 
 template<class Left, class Right>
-struct SimulateGamma : public Binary<Left,Right> {
-  template<class T, class U>
-  SimulateGamma(T&& l, U&& r) :
-      Binary<Left,Right>(std::forward<T>(l), std::forward<U>(r)) {
-    //
-  }
-
-  BIRCH_BINARY_FORM(simulate_gamma)
+struct SimulateGamma {
+  BIRCH_BINARY_FORM(SimulateGamma, numbirch::simulate_gamma)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Left, class Right, std::enable_if_t<
-    is_delay_v<Left,Right>,int> = 0>
-SimulateGamma<Left,Right> simulate_gamma(const Left& l, const Right& r) {
-  return SimulateGamma<Left,Right>(l, r);
+template<class Left, class Right>
+auto simulate_gamma(const Left& l, const Right& r) {
+  if constexpr (numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>) {
+    return numbirch::simulate_gamma(l, r);
+  } else {
+    return BIRCH_BINARY_CONSTRUCT(SimulateGamma);
+  }
 }
 
 }

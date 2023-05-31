@@ -98,8 +98,15 @@ function MultivariateNormalInverseWishartMultivariateGaussian<Arg1,Arg2,
 function make_multivariate_normal_inverse_wishart_multivariate_gaussian<
     Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
     k:Arg5, c:Arg6, ω2:Arg7) -> {
-  return construct<MultivariateNormalInverseWishartMultivariateGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>>(a, ν, λ, Γ, k, c, ω2);
+  return peg_multivariate_normal_inverse_wishart_multivariate_gaussian(
+      peg(a), peg(ν), peg(λ), peg(Γ), peg(k),
+      peg(c), peg(ω2));
+}
+function peg_multivariate_normal_inverse_wishart_multivariate_gaussian<
+    Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a:Arg1, ν:Arg2, λ:Arg3, Γ:Arg4,
+    k:Arg5, c:Arg6, ω2:Arg7) -> {
+  return MultivariateNormalInverseWishartMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5,Arg6,Arg7>(a, ν, λ, Γ, k, c, ω2);
 }
 
 /**

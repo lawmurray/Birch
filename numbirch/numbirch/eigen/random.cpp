@@ -47,9 +47,9 @@ Array<real,1> convolve(const Array<real,1>& p, const Array<real,1>& q) {
   } else {
     Array<real,1> r(make_shape(m + n - 1));
 
-    auto L = make_eigen(sliced(p), m, n, -1).
+    auto L = make_eigen(buffer(p), m, n, -1).
         template triangularView<Eigen::Lower>();
-    auto U = make_eigen(sliced(p) + m, n - 1, n, - 1).
+    auto U = make_eigen(buffer(p) + m, n - 1, n, - 1).
         template triangularView<Eigen::StrictlyUpper>();
     auto q1 = make_eigen(q);
     auto r1 = make_eigen(r);
@@ -72,7 +72,7 @@ Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
   } else {
     Array<real,1> gp(make_shape(m));
     auto gp1 = make_eigen(gp);
-    auto B = make_eigen(sliced(g), n, m, 1);
+    auto B = make_eigen(buffer(g), n, m, 1);
     auto q1 = make_eigen(q);
     gp1.noalias() = B.transpose()*q1;
     return gp;
@@ -89,7 +89,7 @@ Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& r,
   } else {
     Array<real,1> gq(make_shape(n));
     auto gq1 = make_eigen(gq);
-    auto B = make_eigen(sliced(g), m, n, 1);
+    auto B = make_eigen(buffer(g), m, n, 1);
     auto p1 = make_eigen(p);
     gq1.noalias() = B.transpose()*p1;
     return gq;

@@ -60,7 +60,7 @@ auto transform(const T& x, Functor f) {
     auto m = width(x);
     auto n = height(x);
     auto y = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y), f);
+    kernel_transform(m, n, buffer(x), stride(x), buffer(y), stride(y), f);
     return y;
   }
 }
@@ -87,8 +87,8 @@ auto transform(const T& x, const U& y, Functor f) {
     auto m = width(x, y);
     auto n = height(x, y);
     auto z = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y),
-        sliced(z), stride(z), f);
+    kernel_transform(m, n, buffer(x), stride(x), buffer(y), stride(y),
+        buffer(z), stride(z), f);
     return z;
   }
 }
@@ -118,8 +118,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     auto m = width(x, y, z);
     auto n = height(x, y, z);
     auto a = Array<R,D>(make_shape<D>(m, n));
-    kernel_transform(m, n, sliced(x), stride(x), sliced(y), stride(y), sliced(z),
-        stride(z), sliced(a), stride(a), f);
+    kernel_transform(m, n, buffer(x), stride(x), buffer(y), stride(y), buffer(z),
+        stride(z), buffer(a), stride(a), f);
     return a;
   }
 }

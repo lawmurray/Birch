@@ -6,26 +6,11 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::fill;
-using numbirch::fill_grad;
 
 template<class Middle>
-struct VectorFill : public Unary<Middle> {
-  /**
-   * Length.
-   */
-  Integer n;
-
-  template<class T>
-  VectorFill(T&& m, Integer n) :
-      Unary<Middle>(std::forward<T>(m)),
-      n(n) {
-    //
-  }
-
-  BIRCH_FORM_OP
-  BIRCH_UNARY_FORM(fill, n)
-  BIRCH_UNARY_GRAD(fill_grad, n)
+struct VectorFill {
+  BIRCH_UNARY_FORM(VectorFill, numbirch::fill, n)
+  BIRCH_UNARY_GRAD(numbirch::fill_grad, n)
 
   int rows() const {
     return n;
@@ -44,9 +29,9 @@ struct VectorFill : public Unary<Middle> {
   }
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-VectorFill<Middle> fill(const Middle& m, const int n) {
-  return VectorFill<Middle>(m, n);
+template<class Middle>
+auto fill(const Middle& m, const int n) {
+  return BIRCH_UNARY_CONSTRUCT(VectorFill, n);
 }
 
 }

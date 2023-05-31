@@ -12,7 +12,7 @@ class TestMultivariateNormalInverseWishart < TestModel {
     k <- simulate_uniform(3.0, 10.0) + n;
     μ <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
 
-    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-1, n);
+    Ψ <- outer(Ψ) + diagonal(1.0e-1, n);
   }
 
   override function simulate() {

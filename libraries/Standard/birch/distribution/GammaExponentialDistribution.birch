@@ -50,10 +50,6 @@ final class GammaExponentialDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2,
     return cdf_lomax(x, 1.0/(value(a)*value(θ)), value(k));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_lomax(P, 1.0/(value(a)*value(θ)), value(k));
-  }
-
   override function lower() -> Real!? {
     return 0.0;
   }
@@ -71,7 +67,10 @@ function GammaExponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
   return make_gamma_exponential(a, k, θ);
 }
 function make_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
-  return construct<GammaExponentialDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
+  return peg_gamma_exponential(peg(a), peg(k), peg(θ));
+}
+function peg_gamma_exponential<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  return GammaExponentialDistribution<Arg1,Arg2,Arg3>(a, k, θ);
 }
 
 /**
@@ -147,22 +146,6 @@ function update_gamma_exponential<Arg1,Arg2,Arg3>(x:Arg1, k:Arg2, θ:Arg3) -> {
  */
 function cdf_lomax<Arg1,Arg2,Arg3>(x:Arg1, λ:Arg2, α:Arg3) -> {
   return where(0.0 < x, 1.0 - pow((1.0 + x/λ), -α), 0.0);
-}
-
-/*
- * Quantile of a Lomax distribution.
- *
- * @param P The cumulative probability.
- * @param λ Scale.
- * @param α Shape.
- *
- * @return the quantile.
- */
-function quantile_lomax<Arg1,Arg2,Arg3>(P:Arg1, λ:Arg2, α:Arg3) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::pareto_distribution<Real>(
-      wait(λ), wait(α)), wait(P)) - wait(λ);
-  }}
 }
 
 /*

@@ -19,7 +19,7 @@
     REDUCE_CUMSUM_GRAD_SIG(f, NUMBIRCH_ARRAY(T, 0)) \
     REDUCE_CUMSUM_GRAD_SIG(f, T)
 #define REDUCE_CUMSUM_GRAD_SIG(f, T) \
-    template real_t<T> f(const Array<real,0>&, const T&, const T&);
+    template real_t<T> f(const real_t<T>&, const T&, const T&);
 
 namespace numbirch {
 REDUCE_CUMSUM_GRAD(cumsum_grad)

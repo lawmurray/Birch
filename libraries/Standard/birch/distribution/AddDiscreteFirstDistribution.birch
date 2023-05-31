@@ -30,11 +30,11 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   }
 
   override function logpdf(x:Integer!) -> Real! {
-    return value(log(pdf_add_discrete_first(x, p, a, b)));
+    return value(logpdf_add_discrete_first(x, p, a, b));
   }
 
   override function logpdfLazy(x:Integer!) -> Real! {
-    return eval(log(pdf_add_discrete_first(x, p, a, b)));
+    return eval(logpdf_add_discrete_first(x, p, a, b));
   }
 
   override function update(x:Integer!) -> Delay? {
@@ -46,7 +46,7 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   }
 
   override function hoist() -> Expression<Real> {
-    return box(log(pdf_add_discrete_first(random(), p, a, b)));
+    return box(logpdf_add_discrete_first(random(), p, a, b));
   }
 
   override function lower() -> Integer!? {
@@ -79,7 +79,10 @@ function AddDiscreteConstrained<Arg1>(p:Arg1, a:Integer!, b:Integer!) ->
   return make_add_discrete_first(p, a, b);
 }
 function make_add_discrete_first<Arg1>(p:Arg1, a:Integer!, b:Integer!) -> {
-  return construct<AddDiscreteFirstDistribution<Arg1>>(p, a, b);
+  return peg_add_discrete_first(peg(p), a, b);
+}
+function peg_add_discrete_first<Arg1>(p:Arg1, a:Integer!, b:Integer!) -> {
+  return AddDiscreteFirstDistribution<Arg1>(p, a, b);
 }
 
 /*
@@ -104,9 +107,9 @@ function simulate_add_discrete_first<Arg1>(p:Arg1, a:Integer!,
  *
  * @return the probability mass.
  */
-function pdf_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
+function logpdf_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
     b:Integer!) -> {
-  return element(p, x - a + 1);
+  return log(element(p, x - a + 1));
 }
 
 /*
@@ -121,6 +124,5 @@ function pdf_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
  */
 function update_add_discrete_first<Arg1,Arg2>(x:Arg1, p:Arg2, a:Integer!,
     b:Integer!) -> {
-  let sum <- a + b + length(p) - 1;
-  return make_delta(sum - x);
+  return make_delta(a + b + length(p) - 1 - x);
 }

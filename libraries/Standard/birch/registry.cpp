@@ -9,16 +9,21 @@ namespace birch {
 /**
  * Program function registry.
  */
-static std::map<std::string,prog_t*> programs;
-
+static std::map<std::string,prog_t*>& programs() {
+  static std::map<std::string,prog_t*> programs;
+  return programs;
+}
 /**
  * Default-constructible object factory function registry.
  */
-static std::map<std::string,fact_t*> factories;
+static std::map<std::string,fact_t*>& factories() {
+  static std::map<std::string,fact_t*> factories;
+  return factories;
+}
 
 extern "C" prog_t* retrieve_program(const std::string& name) {
-  auto iter = programs.find(name);
-  if (iter != programs.end()) {
+  auto iter = programs().find(name);
+  if (iter != programs().end()) {
     return iter->second;
   } else {
     return nullptr;
@@ -26,13 +31,13 @@ extern "C" prog_t* retrieve_program(const std::string& name) {
 }
 
 int register_program(const std::string& name, prog_t* f) {
-  programs[name] = f;
+  programs()[name] = f;
   return 0;
 }
 
 extern "C" fact_t* retrieve_factory(const std::string& name) {
-  auto iter = factories.find(name);
-  if (iter != factories.end()) {
+  auto iter = factories().find(name);
+  if (iter != factories().end()) {
     return iter->second;
   } else {
     return nullptr;
@@ -40,7 +45,7 @@ extern "C" fact_t* retrieve_factory(const std::string& name) {
 }
 
 int register_factory(const std::string& name, fact_t* f) {
-  factories[name] = f;
+  factories()[name] = f;
   return 0;
 }
 

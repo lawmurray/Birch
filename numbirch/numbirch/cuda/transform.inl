@@ -18,7 +18,7 @@ void prefetch(const Array<T,D>& x) {
    * sections with multiple calls; to keep it simple, only the full array is
    * prefetched, and only if the view contains at least half the elements */
   // if (volume(x) > 0 && size(x) >= volume(x)/2) {
-  //   CUDA_CHECK(cudaMemPrefetchAsync(sliced(x), volume(x)*sizeof(T), device,
+  //   CUDA_CHECK(cudaMemPrefetchAsync(buffer(x), volume(x)*sizeof(T), device,
   //       stream));
   // }
 }
@@ -84,8 +84,8 @@ auto transform(const T& x, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, sliced(x),
-          stride(x), sliced(y), stride(y), f));
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, buffer(x),
+          stride(x), buffer(y), stride(y), f));
     }
     return y;
   }
@@ -119,8 +119,8 @@ auto transform(const T& x, const U& y, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, sliced(x),
-          stride(x), sliced(y), stride(y), sliced(z), stride(z), f));
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, buffer(x),
+          stride(x), buffer(y), stride(y), buffer(z), stride(z), f));
     }
     return z;
   }
@@ -156,8 +156,8 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
-      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, sliced(x),
-          stride(x), sliced(y), stride(y), sliced(z), stride(z), sliced(a),
+      CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, buffer(x),
+          stride(x), buffer(y), stride(y), buffer(z), stride(z), buffer(a),
           stride(a), f));
     }
     return a;

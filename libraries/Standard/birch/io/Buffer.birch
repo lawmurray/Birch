@@ -898,10 +898,9 @@ final class Buffer {
     scalarString <- x;
   }
 
-  function doSet<Type>(x:Type) {
+  function doSet(x:Object) {
     setNil();
-    let y <- x;
-    y.write(this);
+    x.write(this);
   }
 
   function doSet(x:Boolean[_]) {
@@ -962,10 +961,9 @@ final class Buffer {
     doSet(x);
   }
 
-  function doSet<Type>(t:Integer, x:Type) {
+  function doSet(t:Integer, x:Object) {
     setNil();
-    let y <- x;
-    y.write(t, this);
+    x.write(t, this);
   }
 
   function doSet(t:Integer, x:Boolean[_]) {
@@ -1074,7 +1072,7 @@ final class Buffer {
     push(make_buffer(x));
   }
 
-  function doPush<Type>(x:Type) {
+  function doPush(x:Object) {
     push(make_buffer(x));
   }
 
@@ -1130,7 +1128,7 @@ final class Buffer {
     doPush(x);
   }
 
-  function doPush<Type>(t:Integer, x:Type) {
+  function doPush(t:Integer, x:Object) {
     push(make_buffer(t, x));
   }
 

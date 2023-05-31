@@ -18,7 +18,6 @@ manifest:
     - README.md
 require:
   header:
-    - boost/math/distributions.hpp
     - yaml.h
     - dlfcn.h
     - getopt.h

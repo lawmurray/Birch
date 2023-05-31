@@ -5,19 +5,18 @@
 
 #include "birch/form/Ternary.hpp"
 
-namespace birch {
-
-inline Real logz_conway_maxwell_poisson(const Real& μ, const Real& ν,
-    const Integer& n) {
+namespace numbirch {
+inline real logz_conway_maxwell_poisson(const real& μ, const real& ν,
+    const int& n) {
   /* to avoid taking exp() of large negative values, renormalize each term in
    * this sum using the maximum term, which is the unnormalized log
    * probability at the mode; this is similar to log_sum_exp() */
   auto log_λ = ν*log(μ);
-  auto mode = std::min(μ, cast<Real>(n));
+  auto mode = std::min(μ, cast<real>(n));
   auto mx = mode*log_λ - ν*lfact(mode);
 
   /* sum renormalized terms for x in 0..n */
-  auto log_xf = Real(0.0);  // accumulator of log(x!)
+  auto log_xf = real(0.0);  // accumulator of log(x!)
   auto Z = exp(-(mx));  // x = 0 case
   for (int x = int(1); x <= int(n); ++x) {
     log_xf = log_xf + log(x);
@@ -28,13 +27,13 @@ inline Real logz_conway_maxwell_poisson(const Real& μ, const Real& ν,
 
 template<class Gradient, class Value>
 inline auto logz_conway_maxwell_poisson_grad1(const Gradient& g,
-    const Value& x, const Real& μ, const Real& ν, const Integer& n) {
+    const Value& x, const real& μ, const real& ν, const int& n) {
   auto log_λ = ν*log(μ);
   auto mx = μ*log_λ - ν*lfact(μ);  // renormalizer
-  auto log_xf = Real(0.0);  // accumulator of lfact(x)
-  auto z = Real(0.0);
+  auto log_xf = real(0.0);  // accumulator of lfact(x)
+  auto z = real(0.0);
   auto Z = exp(-(mx));  // for x == 0
-  auto gλ = Real(0.0);
+  auto gλ = real(0.0);
   for (int x = int(1); x <= int(n); ++x) {
     log_xf = log_xf + log(x);
     z = exp(x*log_λ - ν*log_xf - mx);
@@ -46,14 +45,14 @@ inline auto logz_conway_maxwell_poisson_grad1(const Gradient& g,
 
 template<class Gradient, class Value>
 inline auto logz_conway_maxwell_poisson_grad2(const Gradient& g,
-    const Value& x, const Real& μ, const Real& ν, const Integer& n) {
+    const Value& x, const real& μ, const real& ν, const int& n) {
   auto log_λ = ν*log(μ);
   auto mx = μ*log_λ - ν*lfact(μ);  // renormalizer
-  auto log_xf = Real(0.0);  // accumulator of lfact(x)
-  auto z = Real(0.0);
+  auto log_xf = real(0.0);  // accumulator of lfact(x)
+  auto z = real(0.0);
   auto Z = exp(-(mx));  // for x == 0
-  auto gλ = Real(0.0);
-  auto gν = Real(0.0);
+  auto gλ = real(0.0);
+  auto gν = real(0.0);
   for (int x = int(1); x <= int(n); ++x) {
     log_xf = log_xf + log(x);
     z = exp(x*log_λ - ν*log_xf - mx);
@@ -66,40 +65,41 @@ inline auto logz_conway_maxwell_poisson_grad2(const Gradient& g,
 
 template<class Gradient, class Value>
 inline auto logz_conway_maxwell_poisson_grad3(const Gradient& g,
-    const Value& x, const Real& μ, const Real& ν, const Integer& n) {
-  return Real(0.0);
+    const Value& x, const real& μ, const real& ν, const int& n) {
+  return real(0.0);
 }
 
-template<class Left, class Middle, class Right>
-struct LogZConwayMaxwellPoisson : public Ternary<Left,Middle,Right> {
-  template<class T, class U, class V>
-  LogZConwayMaxwellPoisson(T&& l, U&& m, V&& r) :
-      Ternary<Left,Middle,Right>(std::forward<T>(l), std::forward<U>(m),
-      std::forward<V>(r)) {
-    //
-  }
+}
 
-  BIRCH_TERNARY_FORM(logz_conway_maxwell_poisson)
-  BIRCH_TERNARY_GRAD(logz_conway_maxwell_poisson_grad)
+namespace birch {
+
+template<class Left, class Middle, class Right>
+struct LogZConwayMaxwellPoisson {
+  BIRCH_TERNARY_FORM(LogZConwayMaxwellPoisson, numbirch::logz_conway_maxwell_poisson)
+  BIRCH_TERNARY_GRAD(numbirch::logz_conway_maxwell_poisson_grad)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
 /**
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
  * distribution truncated on a finite interval $[0,n]$.
  *
- * @param μ Mode.
- * @param ν Dispersion.
- * @param n Truncation point.
+ * @param l Mode.
+ * @param m Dispersion.
+ * @param r Truncation point.
  *
- * @return vector of probabilities on $[0,n]$.
+ * @return Logarithm of normalizing constant.
  */
-template<class Left, class Middle, class Right, std::enable_if_t<
-    is_delay_v<Left,Middle,Right>,int> = 0>
-LogZConwayMaxwellPoisson<Left,Middle,Right> logz_conway_maxwell_poisson(
-    const Left& λ, const Middle& ν, const Right& n) {
-  return LogZConwayMaxwellPoisson<Left,Middle,Right>(λ, ν, n);
+template<class Left, class Middle, class Right>
+auto logz_conway_maxwell_poisson(const Left& l, const Middle& m,
+    const Right& r) {
+  if constexpr (numbirch::is_arithmetic_v<Left> &&
+      numbirch::is_arithmetic_v<Middle> &&
+      numbirch::is_arithmetic_v<Right>) {
+    return numbirch::logz_conway_maxwell_poisson(l, m, r);
+  } else {
+    return BIRCH_TERNARY_CONSTRUCT(LogZConwayMaxwellPoisson);
+  }
 }
 
 }

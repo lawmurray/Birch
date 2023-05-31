@@ -30,8 +30,8 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
         Ψ[i,j] <- simulate_uniform(-10.0, 10.0);
       }
     }
-    U <- outer(U, U) + diagonal(1.0e-2, n);
-    Ψ <- outer(Ψ, Ψ) + diagonal(1.0e-1, p);
+    U <- outer(U) + diagonal(1.0e-2, n);
+    Ψ <- outer(Ψ) + diagonal(1.0e-1, p);
   }
 
   override function simulate() {

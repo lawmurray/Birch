@@ -35,9 +35,9 @@
 /**
  * @internal
  * 
- * @def ARRAY
+ * @def NUMBIRCH_ARRAY
  * 
- * Constructs the type `Array<T,D>`.
+ * Assembles the type `Array<T,D>`.
  */
 #define NUMBIRCH_ARRAY(T, D) Array<T,D>
 
@@ -55,8 +55,10 @@
 
 namespace numbirch {
   namespace array {
+    template<class T, int D> class ArrayCOW;
     template<class T, int D> class Array;
   }
+  using array::ArrayCOW;
   using array::Array;
 
 /**
@@ -419,6 +421,7 @@ struct implicit<T,U,Args...> {
   using type = typename implicit<typename implicit<std::decay_t<T>,
       std::decay_t<U>>::type,Args...>::type;
 };
+
 template<class T, int D, class U, int E>
 struct implicit<Array<T,D>,Array<U,E>> {
   using type = void;
@@ -447,6 +450,7 @@ template<class T, class U, int D>
 struct implicit<T,Array<U,D>> {
   using type = Array<typename promote<T,U>::type,D>;
 };
+
 template<class T, class U>
 struct implicit<T,U> {
   using type = typename promote<T,U>::type;

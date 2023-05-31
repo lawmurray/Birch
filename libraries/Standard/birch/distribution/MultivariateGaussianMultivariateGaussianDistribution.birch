@@ -90,8 +90,13 @@ function MultivariateGaussianMultivariateGaussian<Arg1,Arg2,Arg3,Arg4,
 }
 function make_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
     Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
-  return construct<MultivariateGaussianMultivariateGaussianDistribution<
-      Arg1,Arg2,Arg3,Arg4,Arg5>>(A, μ, Σ, c, Ω);
+  return peg_multivariate_gaussian_multivariate_gaussian(peg(A),
+      peg(μ), peg(Σ), peg(c), peg(Ω));
+}
+function peg_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
+    Arg3,Arg4,Arg5>(A:Arg1, μ:Arg2, Σ:Arg3, c:Arg4, Ω:Arg5) -> {
+  return MultivariateGaussianMultivariateGaussianDistribution<
+      Arg1,Arg2,Arg3,Arg4,Arg5>(A, μ, Σ, c, Ω);
 }
 
 /**
@@ -188,8 +193,8 @@ function logpdf_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
  */
 function update_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,Arg3,
     Arg4,Arg5,Arg6>(x:Arg1, A:Arg2, μ:Arg3, Σ:Arg4, c:Arg5, Ω:Arg6) -> {
-  let L <- wrap(chol(A*Σ*transpose(A) + Ω));
-  let K' <- wrap(Σ*transpose(A));
+  let L <- chol(A*Σ*transpose(A) + Ω);
+  let K' <- Σ*transpose(A);
   let μ' <- μ + K'*cholsolve(L, x - A*μ - c);
   let Σ' <- Σ - K'*cholsolve(L, A*Σ);
   return make_multivariate_gaussian(μ', Σ');

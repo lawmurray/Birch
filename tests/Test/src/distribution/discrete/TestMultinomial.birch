@@ -13,11 +13,11 @@ class TestMultinomial < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return x.eval();
+    return cast<Real>(x.eval());
   }
 
   override function backward() -> Real[_] {
-    return x.eval();
+    return cast<Real>(x.eval());
   }
 
   function marginal() -> Distribution<Integer[_]> {

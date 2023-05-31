@@ -21,14 +21,14 @@ __global__ void kernel_memcpy(T* dst, const int dpitch, const U* src,
   }
 }
 
-template<class T>
-__global__ void kernel_memset(T* dst, const int dpitch, const T value,
+template<class T, class U>
+__global__ void kernel_memset(T* dst, const int dpitch, const U value,
     const int width, const int height) {
   for (auto j = blockIdx.y*blockDim.y + threadIdx.y; j < height;
       j += gridDim.y*blockDim.y) {
     for (auto i = blockIdx.x*blockDim.x + threadIdx.x; i < width;
         i += gridDim.x*blockDim.x) {
-      get(dst, i, j, dpitch) = value;
+      get(dst, i, j, dpitch) = get(value);
     }
   }
 }
@@ -44,14 +44,25 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
   }
 }
 
-template<class T, class>
-void memset(T* dst, const int dpitch, const T value, const int width,
+template<class T, class U, class>
+void memset(T* dst, const int dpitch, const U value, const int width,
     const int height) {
   if (width > 0 && height > 0) {
     auto grid = make_grid(width, height);
     auto block = make_block(width, height);
-    CUDA_LAUNCH(kernel_memset<<<grid,block,0,stream>>>(dst, dpitch, value,
-        width, height));
+    CUDA_LAUNCH(kernel_memset<<<grid,block,0,stream>>>(dst, dpitch,
+        value, width, height));
+  }
+}
+
+template<class T, class U, class>
+void memset(T* dst, const int dpitch, const U* value, const int width,
+    const int height) {
+  if (width > 0 && height > 0) {
+    auto grid = make_grid(width, height);
+    auto block = make_block(width, height);
+    CUDA_LAUNCH(kernel_memset<<<grid,block,0,stream>>>(dst, dpitch,
+        value, width, height));
   }
 }
 

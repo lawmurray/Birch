@@ -31,10 +31,6 @@ final class PoissonDistribution<Arg>(λ:Arg) < Distribution<Integer> {
     return cdf_poisson(x, value(λ));
   }
 
-  override function quantile(P:Real!) -> Integer!? {
-    return quantile_poisson(P, value(λ));
-  }
-
   override function lower() -> Integer!? {
     return 0;
   }
@@ -57,11 +53,14 @@ function Poisson<Arg>(λ:Arg) -> Distribution<Integer> {
   return make_poisson(λ);
 }
 function make_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
-  return construct<PoissonDistribution<Arg>>(λ);
+  return peg_poisson(peg(λ));
+}
+function peg_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
+  return PoissonDistribution<Arg>(λ);
 }
 
 hpp{{
-using numbirch::simulate_poisson;
+//using numbirch::simulate_poisson;
 }}
 
 /*
@@ -86,19 +85,4 @@ function logpdf_poisson<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
  */
 function cdf_poisson<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
   return gamma_q(floor(x + 1.0), λ);
-}
-
-/*
- * Quantile of a Poisson distribution.
- *
- * @param P The cumulative probability.
- * @param λ Rate.
- *
- * @return the quantile.
- */
-function quantile_poisson<Arg1,Arg2>(P:Arg1, λ:Arg2) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::poisson_distribution<Real>(
-      wait(λ)), wait(P));
-  }}
 }

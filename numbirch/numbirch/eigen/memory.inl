@@ -18,12 +18,22 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
   }
 }
 
-template<class T, class>
-void memset(T* dst, const int dpitch, const T value, const int width,
+template<class T, class U, class>
+void memset(T* dst, const int dpitch, const U value, const int width,
     const int height) {
   for (int j = 0; j < height; ++j) {
     for (int i = 0; i < width; ++i) {
       get(dst, i, j, dpitch) = value;
+    }
+  }
+}
+
+template<class T, class U, class>
+void memset(T* dst, const int dpitch, const U* value, const int width,
+    const int height) {
+  for (int j = 0; j < height; ++j) {
+    for (int i = 0; i < width; ++i) {
+      get(dst, i, j, dpitch) = get(value);
     }
   }
 }

@@ -36,10 +36,6 @@ final class BetaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution<Real> {
     return cdf_beta(x, value(α), value(β));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_beta(P, value(α), value(β));
-  }
-
   override function lower() -> Real!? {
     return 0.0;
   }
@@ -77,11 +73,14 @@ function Beta<Arg1,Arg2>(α:Arg1, β:Arg2) -> Distribution<Real> {
   return make_beta(α, β);
 }
 function make_beta<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
-  return construct<BetaDistribution<Arg1,Arg2>>(α, β);
+  return peg_beta(peg(α), peg(β));
+}
+function peg_beta<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
+  return BetaDistribution<Arg1,Arg2>(α, β);
 }
 
 hpp{{
-using numbirch::simulate_beta;
+//using numbirch::simulate_beta;
 }}
 
 /*
@@ -108,20 +107,4 @@ function logpdf_beta<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
  */
 function cdf_beta<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return ibeta(α, β, x);
-}
-
-/*
- * Quantile of a beta distribution.
- *
- * @param P The cumulative probability.
- * @param α Shape.
- * @param β Shape.
- *
- * @return the quantile.
- */
-function quantile_beta<Arg1,Arg2,Arg3>(P:Arg1, α:Arg2, β:Arg3) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::beta_distribution<Real>(wait(α),
-      wait(β)), wait(P));
-  }}
 }

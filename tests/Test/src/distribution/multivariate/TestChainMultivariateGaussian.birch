@@ -10,7 +10,7 @@ class TestChainMultivariateGaussian < TestModel {
         Σ[i,j] <- simulate_uniform(-2.0, 2.0);
       }
     }
-    Σ <- outer(Σ, Σ) + diagonal(1.0e-2, 3);
+    Σ <- outer(Σ) + diagonal(1.0e-2, 3);
   }
 
   override function simulate() {

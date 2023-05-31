@@ -36,10 +36,6 @@ final class InverseGammaDistribution<Arg1,Arg2>(α:Arg1, β:Arg2) < Distribution
     return cdf_inverse_gamma(x, value(α), value(β));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_inverse_gamma(P, value(α), value(β));
-  }
-
   override function lower() -> Real!? {
     return 0.0;
   }
@@ -74,7 +70,10 @@ function InverseGamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> Distribution<Real> {
   return make_inverse_gamma(α, β);
 }
 function make_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
-  return construct<InverseGammaDistribution<Arg1,Arg2>>(α, β);
+  return peg_inverse_gamma(peg(α), peg(β));
+}
+function peg_inverse_gamma<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
+  return InverseGammaDistribution<Arg1,Arg2>(α, β);
 }
 
 /*
@@ -111,24 +110,4 @@ function logpdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
  */
 function cdf_inverse_gamma<Arg1,Arg2,Arg3>(x:Arg1, α:Arg2, β:Arg3) -> {
   return gamma_q(α, β/x);
-}
-
-/*
- * Quantile of an inverse-gamma distribution.
- *
- * @param P The cumulative probability.
- * @param α Shape.
- * @param β Scale.
- *
- * @return the quantile.
- */
-function quantile_inverse_gamma<Arg1,Arg2,Arg3>(P:Arg1, α:Arg2, β:Arg3) -> {
-  if P == 0.0 {
-    return 0.0;
-  } else {
-    cpp{{
-    return boost::math::quantile(boost::math::inverse_gamma_distribution<
-        Real>(wait(α), wait(β)), wait(P));
-    }}
-  }
 }

@@ -12,8 +12,8 @@
  */
 function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   cpp{{
-  using T = decltype(wait(λ(1)));
-  return numbirch::Array<T,1>(numbirch::make_shape(length), λ);
+  using T = std::decay_t<decltype(wait(λ(1)))>;
+  return numbirch::Array<T,1>(λ, numbirch::make_shape(length));
   }}
 }
 
@@ -23,8 +23,8 @@ function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
  * @param x The value.
  * @param length Length.
  */
-function vector<Type>(x:Type, length:Integer) -> {
+function vector<Type>(x:Type, length:Integer) -> Type[_] {
   cpp{{
-  return numbirch::Array(numbirch::make_shape(length), x);
+  return numbirch::Array(x, numbirch::make_shape(length));
   }}
 }

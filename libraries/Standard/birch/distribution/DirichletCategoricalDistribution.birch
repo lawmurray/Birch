@@ -53,7 +53,10 @@ function DirichletCategorical<Arg>(α:Arg) -> Distribution<Integer> {
   return make_dirichlet_categorical(α);
 }
 function make_dirichlet_categorical<Arg>(α:Arg) -> {
-  return construct<DirichletCategoricalDistribution<Arg>>(α);
+  return peg_dirichlet_categorical(peg(α));
+}
+function peg_dirichlet_categorical<Arg>(α:Arg) -> {
+  return DirichletCategoricalDistribution<Arg>(α);
 }
 
 /**

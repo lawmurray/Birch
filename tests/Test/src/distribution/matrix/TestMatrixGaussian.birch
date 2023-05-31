@@ -13,8 +13,8 @@ class TestMatrixGaussian < TestModel {
     U <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
     V <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
 
-    U <- outer(U, U) + diagonal(1.0e-2, n);
-    V <- outer(V, V) + diagonal(1.0e-1, p);
+    U <- outer(U) + diagonal(1.0e-2, n);
+    V <- outer(V) + diagonal(1.0e-1, p);
   }
 
   override function simulate() {

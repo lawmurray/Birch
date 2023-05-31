@@ -72,8 +72,7 @@ final class BetaBinomialDistribution<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) <
   override function getBoundedDiscrete() -> (Expression<Real[_]>, Integer!)? {
     assert isBoundedDiscrete();
     let p <- exp(logpdf_beta_binomial(iota(0, wait(value(n)) + 1), n, α, β));
-    return (box(p/sum(p)), 0);
-    // ^ numerical errors can accumulate, so renormalize
+    return (box(p), 0);
   }
 }
 
@@ -82,7 +81,10 @@ function BetaBinomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) ->
   return make_beta_binomial(n, α, β);
 }
 function make_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
-  return construct<BetaBinomialDistribution<Arg1,Arg2,Arg3>>(n, α, β);
+  return peg_beta_binomial(peg(n), peg(α), peg(β));
+}
+function peg_beta_binomial<Arg1,Arg2,Arg3>(n:Arg1, α:Arg2, β:Arg3) -> {
+  return BetaBinomialDistribution<Arg1,Arg2,Arg3>(n, α, β);
 }
 
 /**
@@ -151,7 +153,6 @@ function update_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
  *
  * @return the cumulative probability.
  */
-function cdf_beta_binomial<Arg1,Arg2,Arg3,Arg4>(x:Arg1, n:Arg2, α:Arg3,
-    β:Arg4) -> {
-  return sum(exp(logpdf_beta_binomial(iota(0, wait(value(x)) + 1), n, α, β)));
+function cdf_beta_binomial(x:Integer, n:Integer, α:Real, β:Real) -> Real! {
+  return sum(exp(logpdf_beta_binomial(iota(0, x + 1), n, α, β)));
 }

@@ -15,7 +15,7 @@ static thread_local Handler handler(nullptr);
 void init() {
   #pragma omp parallel
   {
-    handler = birch::Handler(std::in_place, true, false, false);
+    handler = birch::Handler(true, false, false);
   }
 }
 

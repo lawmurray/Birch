@@ -5,45 +5,50 @@
 
 #include "numbirch/array.hpp"
 
+/* redundant template deduction guides are provided for functors here as a
+ * workaround for missing support for P1816 (class template argument deduction
+ * for aggregate types) in clang++ as of 7 May 2023; they may be removable in
+ * future */
+
 namespace numbirch {
 template<class T, class U>
 struct fill_functor {
   const T a;
   U A;
   const int ldA;
-  fill_functor(const T a, U A, const int ldA) : a(a), A(A), ldA(ldA) {
 
-  }
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     get(A, i, j, ldA) = get(a);
   }
 };
+template<class T, class U>
+fill_functor(T, U, int) -> fill_functor<T, U>;
 
 template<class T, class U>
 struct iota_functor {
   const T a;
   U A;
   const int ldA;
-  iota_functor(const T a, U A, const int ldA) : a(a), A(A), ldA(ldA) {
-    //
-  }
+
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     get(A, i, j, ldA) = get(a) + j;
   }
 };
+template<class T, class U>
+iota_functor(T, U, int) -> iota_functor<T, U>;
 
 template<class T, class U>
 struct diagonal_functor {
   const T a;
   U A;
   const int ldA;
-  diagonal_functor(const T a, U A, const int ldA) : a(a), A(A), ldA(ldA) {
-    //
-  }
+
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     get(A, i, j, ldA) = (i == j) ? get(a) : 0;
   }
 };
+template<class T, class U>
+diagonal_functor(T, U, int) -> diagonal_functor<T, U>;
 
 template<class T, class U, class V, class W>
 struct single_functor {
@@ -52,14 +57,13 @@ struct single_functor {
   const V l;
   W A;
   const int ldA;
-  single_functor(const T x, const U k, const V l, W A, const int ldA) :
-      x(x), k(k), l(l), A(A), ldA(ldA) {
-    //
-  }
+
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     get(A, i, j, ldA) = (i == get(k) - 1 && j == get(l) - 1) ? get(x) : 0;
   }
 };
+template<class T, class U, class V, class W>
+single_functor(T, U, V, W, int) -> single_functor<T, U, V, W>;
 
 template<class T, class U>
 struct reshape_functor {
@@ -78,10 +82,6 @@ struct reshape_functor {
   const U C;
   const int ldC;
 
-  reshape_functor(const int m1, const int m2, const T A, const int ldA, U C,
-      const int ldC) : m1(m1), m2(m2), A(A), ldA(ldA), C(C), ldC(ldC) {
-    //
-  }
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     // (i,j) is the element in the destination, (k,l) in the source
     auto s = i + j*m2;  // serial index
@@ -90,41 +90,38 @@ struct reshape_functor {
     get(C, i, j, ldC) = get(A, k, l, ldA);
   }
 };
+template<class T, class U>
+reshape_functor(int, int, T, int, U, int) -> reshape_functor<T, U>;
 
-template<class T>
+template<class T, class U, class V, class W>
 struct gather_functor {
   const T A;
   const int ldA;
-  gather_functor(const T A, const int ldA) : A(A), ldA(ldA) {
-    //
-  }
-  NUMBIRCH_HOST_DEVICE auto operator()(const int j) const {
-    assert(0 <= j - 1);
-    return get(A, 0, j - 1, ldA);
-  }
-  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
-    assert(0 <= i - 1);
-    assert(0 <= j - 1);
-    return get(A, i - 1, j - 1, ldA);
-  }
-};
-
-template<class T, class U, class V>
-struct scatter_functor {
-  T A;
-  const int ldA;
-  U I;
+  const U I;
   const int ldI;
-  V J;
+  const V J;
   const int ldJ;
-  T C;
+  W C;
   const int ldC;
 
-  scatter_functor(T A, const int ldA, const U I, const int ldI, const V J,
-      const int ldJ, const T C, const int ldC) : A(A), ldA(ldA), I(I), ldI(ldI),
-      J(J), ldJ(ldJ), C(C), ldC(ldC) {
-    //
+  NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
+    get(C, i, j, ldC) = get(A, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1, ldA);
   }
+};
+template<class T, class U, class V, class W>
+gather_functor(T, int, U, int, V, int, W, int) -> gather_functor<T, U, V, W>;
+
+template<class T, class U, class V, class W>
+struct scatter_functor {
+  const T A;
+  const int ldA;
+  const U I;
+  const int ldI;
+  const V J;
+  const int ldJ;
+  W C;
+  const int ldC;
+
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
     int k = get(I, i, j, ldI) - 1;
     int l = get(J, i, j, ldJ) - 1;
@@ -147,11 +144,13 @@ struct scatter_functor {
     #endif
   }
 };
+template<class T, class U, class V, class W>
+scatter_functor(T, int, U, int, V, int, W, int) -> scatter_functor<T, U, V, W>;
 
 template<class T, class>
 Array<value_t<T>,1> fill(const T& x, const int n) {
   Array<value_t<T>,1> y(make_shape(n));
-  for_each(n, fill_functor(sliced(x), sliced(y), stride(y)));
+  for_each(n, fill_functor{buffer(x), buffer(y), stride(y)});
   return y;
 }
 
@@ -164,7 +163,7 @@ Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 template<class T, class>
 Array<value_t<T>,2> fill(const T& x, const int m, const int n) {
   Array<value_t<T>,2> C(make_shape(m, n));
-  for_each(m, n, fill_functor(sliced(x), sliced(C), stride(C)));
+  for_each(m, n, fill_functor{buffer(x), buffer(C), stride(C)});
   return C;
 }
 
@@ -177,7 +176,7 @@ Array<real,0> fill_grad(const Array<real,2>& g, const Array<value_t<T>,2>& C,
 template<class T, class>
 Array<value_t<T>,1> iota(const T& x, const int n) {
   Array<value_t<T>,1> y(make_shape(n));
-  for_each(n, iota_functor(sliced(x), sliced(y), stride(y)));
+  for_each(n, iota_functor{buffer(x), buffer(y), stride(y)});
   return y;
 }
 
@@ -190,7 +189,7 @@ Array<real,0> iota_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
 template<class T, class>
 Array<value_t<T>,2> diagonal(const T& x, const int n) {
   Array<value_t<T>,2> A(make_shape(n, n));
-  for_each(n, n, diagonal_functor(sliced(x), sliced(A), stride(A)));
+  for_each(n, n, diagonal_functor{buffer(x), buffer(A), stride(A)});
   return A;
 }
 
@@ -202,7 +201,7 @@ Array<real,0> diagonal_grad(const Array<real,2>& g,
 
 template<class T, class>
 Array<T,2> diagonal(const Array<T,1>& x) {
-  Array<T,2> y(make_shape(length(x), length(x)), T(0));
+  Array<T,2> y(T(0), make_shape(length(x), length(x)));
   y.diagonal() = x;
   return y;
 }
@@ -215,7 +214,10 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
 
 template<class T, class U, class>
 Array<T,0> element(const Array<T,1>& x, const U& i) {
-  return transform(i, gather_functor(sliced(x), stride(x)));
+  Array<T,0> z;
+  for_each(1, 1, gather_functor{buffer(x), stride(x), 1, 0, buffer(i),
+      stride(i), buffer(z), stride(z)});
+  return z;
 }
 
 template<class T, class U, class>
@@ -232,7 +234,10 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
 
 template<class T, class U, class V, class>
 Array<T,0> element(const Array<T,2>& A, const U& i, const V& j) {
-  return transform(i, j, gather_functor(sliced(A), stride(A)));
+  Array<T,0> z;
+  for_each(1, 1, gather_functor{buffer(A), stride(A), buffer(i), stride(i),
+      buffer(j), stride(j), buffer(z), stride(z)});
+  return z;
 }
 
 template<class T, class U, class V, class>
@@ -256,7 +261,7 @@ real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
 template<class T, class U, class>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n) {
   Array<value_t<T>,1> y(make_shape(n));
-  for_each(n, single_functor(sliced(x), 1, sliced(i), sliced(y), stride(y)));
+  for_each(n, single_functor{buffer(x), 1, buffer(i), buffer(y), stride(y)});
   return y;
 }
 
@@ -276,8 +281,8 @@ template<class T, class U, class V, class>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n) {
   Array<value_t<T>,2> Y(make_shape(m, n));
-  for_each(m, n, single_functor(sliced(x), sliced(i), sliced(j), sliced(Y),
-      stride(Y)));
+  for_each(m, n, single_functor{buffer(x), buffer(i), buffer(j), buffer(Y),
+      stride(Y)});
   return Y;
 }
 
@@ -490,10 +495,8 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
 
 template<class T, class>
 Array<value_t<T>,0> scal(const T& x) {
-  if constexpr (is_scalar_v<T>) {
+  if constexpr (is_arithmetic_v<T>) {
     return x;
-  } else if constexpr (is_arithmetic_v<T>) {
-    return Array<value_t<T>,0>(x);
   } else {
     return x.scal();
   }
@@ -503,26 +506,24 @@ template<class T, class>
 real_t<T> scal_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x) {
   if constexpr (is_scalar_v<T>) {
-    return g;
+    return g.scal();
   } else if constexpr (is_vector_v<T>) {
-    return vec(g);
+    return g.vec();
   } else {
-    return mat(g, 1);
+    return g.mat(1);
   }
 }
 
 template<class T, class>
 Array<value_t<T>,1> vec(const T& x) {
-  if constexpr (is_vector_v<T>) {
+  if constexpr (is_arithmetic_v<T>) {
     return x;
-  } else if constexpr (is_arithmetic_v<T>) {
-    return fill(x, 1);
-  } else if (x.canReshape()) {
+  } else if (x.contiguous() || is_vector_v<T>) {
     return x.vec();
   } else {
     Array<value_t<T>,1> y(make_shape(size(x)));
-    for_each(size(x), reshape_functor(width(x), 1, sliced(x), stride(x),
-        sliced(y), stride(y)));
+    for_each(size(x), reshape_functor{width(x), 1, buffer(x), stride(x),
+        buffer(y), stride(y)});
     return y;
   }
 }
@@ -531,27 +532,25 @@ template<class T, class>
 real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x) {
   if constexpr (is_scalar_v<T>) {
-    return scal(g);
+    return g.scal();
   } else if constexpr (is_vector_v<T>) {
-    return g;
+    return g.vec();
   } else {
-    return mat(g, columns(x));
+    return g.mat(columns(x));
   }
 }
 
 template<class T, class>
 Array<value_t<T>,2> mat(const T& x, const int n) {
   assert(size(x) % n == 0);
-  if constexpr (is_matrix_v<T>) {
+  if constexpr (is_arithmetic_v<T>) {
     return x;
-  } else if constexpr (is_arithmetic_v<T>) {
-    return fill(x, 1, 1);
-  } else if (x.canReshape()) {
+  } else if (x.contiguous() || (is_matrix_v<T> && columns(x) == n)) {
     return x.mat(n);
   } else {
     Array<value_t<T>,2> y(make_shape(size(x)/n, n));
-    for_each(size(x)/n, n, reshape_functor(width(x), size(x)/n, sliced(x),
-        stride(x), sliced(y), stride(y)));
+    for_each(size(x)/n, n, reshape_functor{width(x), size(x)/n, buffer(x),
+        stride(x), buffer(y), stride(y)});
     return y;
   }
 }
@@ -560,17 +559,20 @@ template<class T, class>
 real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
     const T& x, const int n) {
   if constexpr (is_scalar_v<T>) {
-    return scal(g);
+    return g.scal();
   } else if constexpr (is_vector_v<T>) {
-    return vec(g);
+    return g.vec();
   } else {
-    return mat(g, columns(x));
+    return g.mat(columns(x));
   }
 }
 
 template<class T, class>
 Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y) {
-  return transform(y, gather_functor(sliced(x), stride(x)));
+  Array<T,1> z(shape(y));
+  for_each(length(y), gather_functor{buffer(x), stride(x), 1, 0, buffer(y),
+      stride(y), buffer(z), stride(z)});
+  return z;
 }
 
 template<class T, class>
@@ -588,7 +590,10 @@ Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
 template<class T, class>
 Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
     const Array<int,2>& J) {
-  return transform(I, J, gather_functor(sliced(A), stride(A)));
+  Array<T,2> C(shape(I));
+  for_each(rows(I), columns(I), gather_functor{buffer(A), stride(A),
+      buffer(I), stride(I), buffer(J), stride(J), buffer(C), stride(C)});
+  return C;
 }
 
 template<class T, class>
@@ -613,8 +618,8 @@ template<class T, class>
 Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n) {
   assert(conforms(x, y));
   auto z = fill(T(0), n);
-  for_each(length(x), scatter_functor(sliced(x), stride(x), 1, 0, sliced(y),
-      stride(y), sliced(z), stride(z)));
+  for_each(length(x), scatter_functor{buffer(x), stride(x), 1, 0, buffer(y),
+      stride(y), buffer(z), stride(z)});
   return z;
 }
 
@@ -627,7 +632,7 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
 template<class T, class>
 Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y, const int n) {
-  return Array<real,1>(0, shape(y));
+  return Array<real,1>(shape(y), real(0));
 }
 
 template<class T, class>
@@ -636,8 +641,8 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
   assert(conforms(A, I));
   assert(conforms(A, J));
   auto C = fill(T(0), m, n);
-  for_each(rows(A), columns(A), scatter_functor(sliced(A), stride(A),
-      sliced(I), stride(I), sliced(J), stride(J), sliced(C), stride(C)));
+  for_each(rows(A), columns(A), scatter_functor{buffer(A), stride(A),
+      buffer(I), stride(I), buffer(J), stride(J), buffer(C), stride(C)});
   return C;
 }
 

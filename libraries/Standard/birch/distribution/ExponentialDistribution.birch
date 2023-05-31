@@ -31,10 +31,6 @@ final class ExponentialDistribution<Arg1>(λ:Arg1) < Distribution<Real> {
     return cdf_exponential(x, value(λ));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_exponential(P, value(λ));
-  }
-
   override function lower() -> Real!? {
     return 0.0;
   }
@@ -57,11 +53,14 @@ function Exponential<Arg>(λ:Arg) -> Distribution<Real> {
   return make_exponential(λ);
 }
 function make_exponential<Arg>(λ:Arg) -> {
-  return construct<ExponentialDistribution<Arg>>(λ);
+  return peg_exponential(peg(λ));
+}
+function peg_exponential<Arg>(λ:Arg) -> {
+  return ExponentialDistribution<Arg>(λ);
 }
 
 hpp{{
-using numbirch::simulate_exponential;
+//using numbirch::simulate_exponential;
 }}
 
 /*
@@ -86,19 +85,4 @@ function logpdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
  */
 function cdf_exponential<Arg1,Arg2>(x:Arg1, λ:Arg2) -> {
   return where(0.0 < x, -expm1(-λ*x), 0.0);
-}
-
-/*
- * Quantile of an exponential distribution.
- *
- * @param P The cumulative probability.
- * @param λ Rate.
- *
- * @return the quantile.
- */
-function quantile_exponential<Arg1,Arg2>(P:Arg1, λ:Arg2) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::exponential_distribution<Real>(
-      wait(λ)), wait(P));
-  }}
 }

@@ -53,6 +53,17 @@ class MultivariateTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) <
   }
 }
 
+function MultivariateT<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) ->
+    Distribution<Real[_]> {
+  return make_multivariate_t(k, μ, Σ);
+}
+function make_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
+  return peg_multivariate_t(peg(k), peg(μ), peg(Σ));
+}
+function peg_multivariate_t<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, Σ:Arg3) -> {
+  return MultivariateTDistribution<Arg1,Arg2,Arg3>(k, μ, Σ);
+}
+
 /*
  * Simulate a multivariate $t$-distribution variate with location and scale.
  *

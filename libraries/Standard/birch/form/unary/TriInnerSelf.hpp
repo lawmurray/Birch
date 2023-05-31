@@ -6,26 +6,17 @@
 #include "birch/form/Unary.hpp"
 
 namespace birch {
-using numbirch::triinner;
-using numbirch::triinner_grad;
 
 template<class Middle>
-struct TriInnerSelf : public Unary<Middle> {
-  template<class T>
-  TriInnerSelf(T&& m) :
-      Unary<Middle>(std::forward<T>(m)) {
-    //
-  }
-
-  BIRCH_UNARY_FORM(triinner)
-  BIRCH_UNARY_GRAD(triinner_grad)
+struct TriInnerSelf {
+  BIRCH_UNARY_FORM(TriInnerSelf, numbirch::triinner)
+  BIRCH_UNARY_GRAD(numbirch::triinner_grad)
   BIRCH_FORM
-  BIRCH_FORM_OP
 };
 
-template<class Middle, std::enable_if_t<is_delay_v<Middle>,int> = 0>
-TriInnerSelf<Middle> triinner(const Middle& m) {
-  return TriInnerSelf<Middle>(m);
+template<class Middle>
+auto triinner(const Middle& m) {
+  return BIRCH_UNARY_CONSTRUCT(TriInnerSelf);
 }
 
 }

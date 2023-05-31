@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <algorithm>
-
 #include <cassert>
 #include <cstdint>
 
@@ -18,7 +17,7 @@ namespace numbirch {
  * @tparam D Number of dimensions.
  */
 template<int D>
-class ArrayShape {
+class Shape {
   static_assert(0 <= D && D <= 2, "Array supports up to two dimensions");
 };
 
@@ -28,18 +27,10 @@ class ArrayShape {
  * @ingroup array
  */
 template<>
-class ArrayShape<0> {
+class Shape<0> {
 public:
-  ArrayShape(const int64_t k = 0) : k(k) {
-    assert(k >= 0);
-  }
-
   static constexpr int dims() {
     return 0;
-  }
-
-  int64_t offset() const {
-    return k;
   }
 
   static constexpr int64_t size() {
@@ -70,21 +61,21 @@ public:
     return 0;
   }
 
-  static constexpr bool conforms(const ArrayShape<0>& o) {
+  static constexpr bool conforms(const Shape<0>& o) {
     return true;
   }
 
   template<int D>
-  static constexpr bool conforms(const ArrayShape<D>& o) {
+  static constexpr bool conforms(const Shape<D>& o) {
     return false;
   }
 
-  void compact() {
-    k = 0;
+  static constexpr bool contiguous() {
+    return true;
   }
 
-  void clear() {
-    k = 0;
+  Shape<0> compact() const {
+    return *this;
   }
 
   int64_t serial(const int64_t s = 0) const {
@@ -94,12 +85,6 @@ public:
   int64_t transpose(const int64_t t = 0) const {
     return t;
   }
-
-private:
-  /**
-   * Offset.
-   */
-  int64_t k;
 };
 
 /**
@@ -107,8 +92,8 @@ private:
  * 
  * @ingroup array
  */
-inline ArrayShape<0> make_shape() {
-  return ArrayShape<0>();
+inline Shape<0> make_shape() {
+  return Shape<0>();
 }
 
 /**
@@ -117,24 +102,17 @@ inline ArrayShape<0> make_shape() {
  * @ingroup array
  */
 template<>
-class ArrayShape<1> {
+class Shape<1> {
 public:
-  explicit ArrayShape(const int64_t k = 0, const int n = 0,
-      const int inc = 1) :
-      k(k),
+  explicit Shape(const int n = 0, const int inc = 1) :
       n(n),
       inc(inc) {
-    assert(k >= 0);
     assert(n >= 0);
     assert(inc >= 1);
   }
 
   static constexpr int dims() {
     return 1;
-  }
-
-  int64_t offset() const {
-    return k;
   }
 
   int64_t size() const {
@@ -165,46 +143,46 @@ public:
     return inc;
   }
 
-  bool conforms(const ArrayShape<1>& o) const {
+  bool conforms(const Shape<1>& o) const {
     return n == o.n;
   }
 
   template<int D>
-  static constexpr bool conforms(const ArrayShape<D>& o) {
+  static constexpr bool conforms(const Shape<D>& o) {
     return false;
   }
 
-  void compact() {
-    k = 0;
-    inc = 1;
+  bool contiguous() const {
+    return inc == 1;
   }
 
-  void clear() {
-    k = 0;
-    n = 0;
-    inc = 1;
+  Shape<1> compact() const {
+    Shape<1> o(*this);
+    o.inc = 1;
+    return o;
   }
 
   void extend(const int extra) {
     n += extra;
   }
 
-  ArrayShape<1> slice(const std::pair<int,int>& range) const {
+  Shape<1> range(const std::pair<int,int>& range) const {
     assert(1 <= range.first && range.first <= n &&
         "start of range out of bounds");
     assert(range.second <= n && "end of range out of bounds");
-    int64_t off = k + (range.first - 1)*int64_t(inc);
     int len = std::max(0, range.second - range.first + 1);
-    return ArrayShape<1>(off, len, inc);
+    return Shape<1>(len, inc);
   }
 
-  ArrayShape<0> slice(const int i) const {
-    assert(1 <= i && i <= n && "index out of bounds");
-    int64_t off = k + (i - 1)*int64_t(inc);
-    return ArrayShape<0>(off);
+  Shape<0> range(const int i) const {
+    return Shape<0>();
   }
 
-  int64_t dice(const int i) const {
+  int64_t offset(const std::pair<int,int>& range) const {
+    return offset(range.first);
+  }
+
+  int64_t offset(const int i) const {
     assert(1 <= i && i <= n && "index out of bounds");
     return (i - 1)*int64_t(inc);
   }
@@ -231,11 +209,6 @@ public:
 
 private:
   /**
-   * Offset.
-   */
-  int64_t k;
-
-  /**
    * Number of elements.
    */
   int n;
@@ -255,8 +228,8 @@ private:
  * 
  * @return Shape.
  */
-inline ArrayShape<1> make_shape(const int n) {
-  return ArrayShape<1>(0, n);
+inline Shape<1> make_shape(const int n) {
+  return Shape<1>(n);
 }
 
 /**
@@ -265,15 +238,12 @@ inline ArrayShape<1> make_shape(const int n) {
  * @ingroup array
  */
 template<>
-class ArrayShape<2> {
+class Shape<2> {
 public:
-  ArrayShape(const int64_t k = 0, const int m = 0, const int n = 0,
-      const int ld = 0) :
-      k(k),
+  explicit Shape(const int m = 0, const int n = 0, const int ld = 0) :
       m(m),
       n(n),
       ld(ld) {
-    assert(k >= 0);
     assert(m >= 0);
     assert(n >= 0);
     assert(ld >= m);
@@ -281,10 +251,6 @@ public:
 
   static constexpr int dims() {
     return 2;
-  }
-
-  int64_t offset() const {
-    return k;
   }
 
   int64_t size() const {
@@ -315,25 +281,23 @@ public:
     return ld;
   }
 
-  bool conforms(const ArrayShape<2>& o) const {
+  bool conforms(const Shape<2>& o) const {
     return m == o.m && n == o.n;
   }
 
   template<int D>
-  static constexpr bool conforms(const ArrayShape<D>& o) {
+  static constexpr bool conforms(const Shape<D>& o) {
     return false;
   }
 
-  void compact() {
-    k = 0;
-    ld = m;
+  bool contiguous() const {
+    return m == ld;
   }
 
-  void clear() {
-    k = 0;
-    m = 0;
-    n = 0;
-    ld = 0;
+  Shape<2> compact() const {
+    Shape<2> o(*this);
+    o.ld = o.m;
+    return o;
   }
 
   /**
@@ -360,11 +324,11 @@ public:
     return i + ld*j;
   }
 
-  ArrayShape<1> diagonal() const {
-    return ArrayShape<1>(k, std::min(m, n), ld + 1);
+  Shape<1> diagonal() const {
+    return Shape<1>(std::min(m, n), ld + 1);
   }
 
-  ArrayShape<2> slice(const std::pair<int,int>& rows,
+  Shape<2> range(const std::pair<int,int>& rows,
      const std::pair<int,int>& cols) const {
     assert(1 <= rows.first && rows.first <= m &&
         "start of row range out of bounds");
@@ -374,49 +338,53 @@ public:
     assert(cols.second <= n && "end of column range out of bounds");
     int r = std::max(0, rows.second - rows.first + 1);
     int c = std::max(0, cols.second - cols.first + 1);
-    int64_t off = k + (rows.first - 1) + int64_t(ld)*(cols.first - 1);
-    return ArrayShape<2>(off, r, c, ld);
+    return Shape<2>(r, c, ld);
   }
 
-  ArrayShape<1> slice(const std::pair<int,int>& rows, const int j) const {
+  Shape<1> range(const std::pair<int,int>& rows, const int j) const {
     assert(1 <= rows.first && rows.first <= m &&
         "start of row range out of bounds");
     assert(rows.second <= m && "end of row range out of bounds");
     assert(1 <= j && j <= n && "column index out of bounds");
     int r = std::max(0, rows.second - rows.first + 1);
-    int64_t off = k + (rows.first - 1) + int64_t(ld)*(j - 1);
-    return ArrayShape<1>(off, r);
+    return Shape<1>(r);
   }
 
-  ArrayShape<1> slice(const int i, const std::pair<int,int>& cols) const {
+  Shape<1> range(const int i, const std::pair<int,int>& cols) const {
     assert(1 <= i && i <= m && "row index out of bounds");
     assert(1 <= cols.first && cols.first <= n &&
         "start of column range out of bounds");
     assert(cols.second <= n && "end of column range out of bounds");
     int c = std::max(0, cols.second - cols.first + 1);
-    int64_t off = k + (i - 1) + int64_t(ld)*(cols.first - 1);
-    return ArrayShape<1>(off, c, ld);
+    return Shape<1>(c, ld);
   }
 
-  ArrayShape<0> slice(const int i, const int j) const {
+  Shape<0> range(const int i, const int j) const {
     assert(1 <= i && i <= m && "row index out of bounds");
     assert(1 <= j && j <= n && "column index out of bounds");
-    int64_t off = k + (i - 1) + int64_t(ld)*(j - 1);
-    return ArrayShape<0>(off);
+    return Shape<0>();
   }
 
-  int64_t dice(const int i, const int j) const {
+  int64_t offset(const std::pair<int,int>& rows,
+     const std::pair<int,int>& cols) const {
+    return offset(rows.first, cols.first);
+  }
+
+  int64_t offset(const std::pair<int,int>& rows, const int j) const {
+    return offset(rows.first, j);
+  }
+
+  int64_t offset(const int i, const std::pair<int,int>& cols) const {
+    return offset(i, cols.first);
+  }
+
+  int64_t offset(const int i, const int j) const {
     assert(1 <= i && i <= m && "row index out of bounds");
     assert(1 <= j && j <= n && "column index out of bounds");
     return (i - 1) + int64_t(ld)*(j - 1);
   }
 
 private:
-  /**
-   * Offset.
-   */
-  int64_t k;
-
   /**
    * Number of rows.
    */
@@ -443,8 +411,8 @@ private:
  * 
  * @return Shape.
  */
-inline ArrayShape<2> make_shape(const int m, const int n) {
-  return ArrayShape<2>(0, m, n, m);
+inline Shape<2> make_shape(const int m, const int n) {
+  return Shape<2>(m, n, m);
 }
 
 /**
@@ -464,7 +432,7 @@ inline ArrayShape<2> make_shape(const int m, const int n) {
  * @see width(), height()
  */
 template<int D>
-ArrayShape<D> make_shape(const int m, const int n) {
+Shape<D> make_shape(const int m, const int n) {
   if constexpr (D == 0) {
     assert(m == 1);
     assert(n == 1);

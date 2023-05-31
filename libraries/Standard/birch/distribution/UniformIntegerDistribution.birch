@@ -80,11 +80,14 @@ function UniformInteger<Arg1,Arg2>(l:Arg1, u:Arg2) -> Distribution<Integer> {
   return make_uniform_integer(l, u);
 }
 function make_uniform_integer<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
-  return construct<UniformIntegerDistribution<Arg1,Arg2>>(l, u);
+  return peg_uniform_integer(peg(l), peg(u));
+}
+function peg_uniform_integer<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
+  return UniformIntegerDistribution<Arg1,Arg2>(l, u);
 }
 
 hpp{{
-using numbirch::simulate_uniform_int;
+//using numbirch::simulate_uniform_int;
 }}
 
 /*
@@ -110,8 +113,7 @@ function logpdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
  * @return the cumulative probability.
  */
 function cdf_uniform_int<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
-  return where(x < l, 0.0, where(x <= u, (x - l + 1.0)/
-      (u - l + 1.0), 1.0));
+  return where(x < l, 0.0, where(x <= u, (x - l + 1.0)/(u - l + 1.0), 1.0));
 }
 
 /*

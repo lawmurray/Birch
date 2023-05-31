@@ -13,7 +13,7 @@ namespace numbirch {
  * @tparam D Number of dimensions.
  */
 template<class T, int D>
-class ArrayIterator {
+class Iterator {
 public:
   using value_type = std::remove_const_t<T>;
   using difference_type = std::ptrdiff_t;
@@ -23,8 +23,7 @@ public:
   using const_reference = const T&;
   using iterator_category = std::random_access_iterator_tag;
 
-  explicit ArrayIterator(T* buf, const ArrayShape<D> shp,
-      const difference_type pos) :
+  explicit Iterator(T* buf, const Shape<D> shp, const difference_type pos) :
       buf(buf),
       shp(shp),
       pos(pos) {
@@ -39,7 +38,7 @@ public:
     return buf[shp.serial(pos + i)];
   }
 
-  difference_type operator-(const ArrayIterator& o) const {
+  difference_type operator-(const Iterator& o) const {
     return pos - o.pos;
   }
 
@@ -59,70 +58,70 @@ public:
     return get();
   }
 
-  bool operator==(const ArrayIterator& o) const {
+  bool operator==(const Iterator& o) const {
     return get() == o.get();
   }
 
-  bool operator!=(const ArrayIterator& o) const {
+  bool operator!=(const Iterator& o) const {
     return get() != o.get();
   }
 
-  bool operator<=(const ArrayIterator& o) const {
+  bool operator<=(const Iterator& o) const {
     return get() <= o.get();
   }
 
-  bool operator<(const ArrayIterator& o) const {
+  bool operator<(const Iterator& o) const {
     return get() < o.get();
   }
 
-  bool operator>=(const ArrayIterator& o) const {
+  bool operator>=(const Iterator& o) const {
     return get() >= o.get();
   }
 
-  bool operator>(const ArrayIterator& o) const {
+  bool operator>(const Iterator& o) const {
     return get() > o.get();
   }
 
-  ArrayIterator& operator+=(const difference_type i) {
+  Iterator& operator+=(const difference_type i) {
     pos += i;
     return *this;
   }
 
-  ArrayIterator operator+(const difference_type i) const {
-    ArrayIterator result(*this);
+  Iterator operator+(const difference_type i) const {
+    Iterator result(*this);
     result += i;
     return result;
   }
 
-  ArrayIterator& operator-=(const difference_type i) {
+  Iterator& operator-=(const difference_type i) {
     pos -= i;
     return *this;
   }
 
-  ArrayIterator operator-(const difference_type i) const {
-    ArrayIterator result(*this);
+  Iterator operator-(const difference_type i) const {
+    Iterator result(*this);
     result -= i;
     return result;
   }
 
-  ArrayIterator& operator++() {
+  Iterator& operator++() {
     ++pos;
     return *this;
   }
 
-  ArrayIterator operator++(int) {
-    ArrayIterator result(*this);
+  Iterator operator++(int) {
+    Iterator result(*this);
     ++pos;
     return result;
   }
 
-  ArrayIterator& operator--() {
+  Iterator& operator--() {
     --pos;
     return *this;
   }
 
-  ArrayIterator operator--(int) {
-    ArrayIterator result(*this);
+  Iterator operator--(int) {
+    Iterator result(*this);
     --pos;
     return result;
   }
@@ -150,7 +149,7 @@ private:
   /**
    * Shape.
    */
-  ArrayShape<D> shp;
+  Shape<D> shp;
 
   /**
    * Position.

@@ -187,6 +187,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
      * simulate, constant() will remove this */
     eval();
     constant();
+    assert x?;
     return x!;
   }
 
@@ -220,13 +221,13 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
         doMove(visitor);
-        assert x?;
       }
       if visitCount >= linkCount {
         assert visitCount == linkCount;
         visitCount <- 0;  // reset for next time
       }
     }
+    assert x?;
     return x!;
   }
   function doMove(visitor:MoveVisitor) {
@@ -306,7 +307,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    */
   final function grad() -> Real[_] {
     cpp{{
-    numbirch::Array g(shape(*x), Real(1.0));
+    numbirch::Array g(Real(1), numbirch::shape(*x));
     }}
     return grad(g);
   }

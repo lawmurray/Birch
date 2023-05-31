@@ -4,9 +4,6 @@
 #pragma once
 
 #include "numbirch/array/Array.hpp"
-#include "numbirch/array/Scalar.hpp"
-#include "numbirch/array/Vector.hpp"
-#include "numbirch/array/Matrix.hpp"
 
 namespace numbirch {
 /**
@@ -161,6 +158,6 @@ T cumsum(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
-real_t<T> cumsum_grad(const Array<real,0>& g, const T& y, const T& x);
+real_t<T> cumsum_grad(const real_t<T>& g, const T& y, const T& x);
 
 }

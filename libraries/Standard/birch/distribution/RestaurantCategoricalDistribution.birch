@@ -60,8 +60,12 @@ function RestaurantCategorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2, n:Arg3) ->
 }
 function make_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
     n:Arg3) -> {
-  return construct<RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>>(α, θ,
-      n);
+  return peg_restaurant_categorical(peg(α), peg(θ),
+      peg(n));
+}
+function peg_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
+    n:Arg3) -> {
+  return RestaurantCategoricalDistribution<Arg1,Arg2,Arg3>(α, θ, n);
 }
 
 /*
@@ -72,13 +76,13 @@ function make_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
  * @param θ Discount.
  * @param n Vector of number of draws of each element.
  */
-function simulate_restaurant_categorical<Arg1,Arg2,Arg3>(α:Arg1, θ:Arg2,
-    n:Arg3) -> {
+function simulate_restaurant_categorical(α:Real, θ:Real, n:Integer[_]) ->
+    Integer {
   let k <- 0;
-  let α1 <- wait(α);
-  let θ1 <- wait(θ);
-  let K <- wait(count(n));
-  let N <- wait(sum(n));
+  let α1 <- α;
+  let θ1 <- θ;
+  let K <- count(n)!;
+  let N <- sum(n)!;
   if N == 0 {
     /* first component */
     k <- 1;

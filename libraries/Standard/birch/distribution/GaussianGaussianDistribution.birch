@@ -55,13 +55,9 @@ final class GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1,
   override function hoist() -> Expression<Real> {
     return box(logpdf_gaussian(random(), a*μ + c, a*a*σ2 + ω2));
   }
-  
+
   override function cdf(x:Real!) -> Real!? {
     return cdf_gaussian(x, value(a*μ + c), value(a*a*σ2 + ω2));
-  }
-
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_gaussian(P, value(a*μ + c), value(a*a*σ2 + ω2));
   }
 
   override function fix() {
@@ -89,7 +85,11 @@ function GaussianGaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2, σ2:Arg3,
 }
 function make_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
     σ2:Arg3, c:Arg4, ω2:Arg5) -> {
-  return construct<GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>>(a,
+  return peg_gaussian_gaussian(peg(a), peg(μ), peg(σ2), peg(c), peg(ω2));
+}
+function peg_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
+    σ2:Arg3, c:Arg4, ω2:Arg5) -> {
+  return GaussianGaussianDistribution<Arg1,Arg2,Arg3,Arg4,Arg5>(a,
       μ, σ2, c, ω2);
 }
 

@@ -50,10 +50,6 @@ final class GammaPoissonDistribution<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) <
     return cdf_gamma_poisson(x, value(a), value(k), value(θ));
   }
 
-  override function quantile(P:Real!) -> Integer!? {
-    return quantile_gamma_poisson(P, value(a), value(k), value(θ));
-  }
-
   override function lower() -> Integer!? {
     return 0;
   }
@@ -71,7 +67,10 @@ function GammaPoisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) ->
   return make_gamma_poisson(a, k, θ);
 }
 function make_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
-  return construct<GammaPoissonDistribution<Arg1,Arg2,Arg3>>(a, k, θ);
+  return peg_gamma_poisson(peg(a), peg(k), peg(θ));
+}
+function peg_gamma_poisson<Arg1,Arg2,Arg3>(a:Arg1, k:Arg2, θ:Arg3) -> {
+  return GammaPoissonDistribution<Arg1,Arg2,Arg3>(a, k, θ);
 }
 
 /**
@@ -187,23 +186,4 @@ function update_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
 function cdf_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, a:Arg2, k:Arg3,
     θ:Arg4) -> {
   return ibeta(k, x + 1, 1.0/(a*θ + 1.0));
-}
-
-/*
- * Quantile of a gamma-Poisson distribution.
- *
- * @param P The cumulative probability.
- * @param a Scale.
- * @param k Shape.
- * @param θ Scale.
- *
- * @return the quantile.
- */
-function quantile_gamma_poisson<Arg1,Arg2,Arg3,Arg4>(P:Arg1, a:Arg2, k:Arg3,
-    θ:Arg4) -> {
-  let ρ <- 1.0/(a*θ + 1.0);
-  cpp{{
-  return boost::math::quantile(boost::math::negative_binomial_distribution<
-      Real>(wait(k), wait(ρ)), wait(P));
-  }}
 }

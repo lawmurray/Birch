@@ -27,7 +27,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let B <- 10000;  // number of bootstrap resamples
   let nfails <- 0;
   let ntests <- 2*C - 1;
-  let α <- 5.0e-3/ntests;  // p-value for failure, with Bonferroni correction
+  let α <- 1.0e-3/ntests;  // p-value for failure, with Bonferroni correction
   let l <- vector(1, R);
   let u <- vector(2*R, R);
 
@@ -40,9 +40,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
       x2 <- X2[1..R,c];
     } else {
       /* test random projection */
-      let v <- vector_lambda(\(i:Integer) -> {
-          return simulate_gaussian(0.0, 1.0);
-        }, C);
+      let v <~ MultivariateGaussian(0.0, 1.0, C);
       v <- v/sqrt(dot(v));
       x1 <- X1*v;
       x2 <- X2*v;
@@ -51,8 +49,8 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
     let z0 <- stack(x1, x2);
     let n <- vector(0, B);  // to record test failures
     parallel for b in 1..B {
-      let z1' <- gather(z0, simulate_uniform_int(l, u));
-      let z2' <- gather(z0, simulate_uniform_int(l, u));
+      let z1' <- gather(z0, simulate_uniform_int(l, u))!;
+      let z2' <- gather(z0, simulate_uniform_int(l, u))!;
       let δ' <- wasserstein(z1', z2');  // bootstrap sample difference
       if δ' > δ {
         n[b] <- 1;
@@ -82,5 +80,5 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
  * Return: 1-Wasserstein distance between `x1` and `x2`.
  */
 function wasserstein(x1:Real[_], x2:Real[_]) -> Real {
-  return sum(abs(sort(x1) - sort(x2)))/length(x1);
+  return sum(abs(sort(x1) - sort(x2)))!/length(x1);
 }

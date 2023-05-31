@@ -3,12 +3,13 @@
  *
  * @tparam Value Value type.
  */
-struct Random<Value> < Form {
+struct Random<Value> {
   phantom x;
   phantom p;
 
   hpp{{
   BIRCH_FORM
+  static constexpr bool is_form = true;
 
   /**
    * Variate value.
@@ -19,6 +20,14 @@ struct Random<Value> < Form {
    * Distribution.
    */
   std::optional<Distribution<Value>> p;
+
+  operator auto() const {
+    return value();
+  }
+
+  auto operator*() const {
+    return wait(value());
+  }
 
   /**
    * Copy assignment.
@@ -35,7 +44,7 @@ struct Random<Value> < Form {
   /**
    * Value assignment.
    */
-  Random& operator=(const Value& x) {
+  Random& operator=(const numbirch::Future<Value>& x) {
     assert(!this->x.has_value());
     if (hasDistribution()) {
       getDistribution()->assign(x);
@@ -63,7 +72,7 @@ struct Random<Value> < Form {
   /**
    * Get the distribution.
    */
-  Distribution<Value> getDistribution() const {
+  auto getDistribution() const {
     assert(hasDistribution());
     return *p;
   }
@@ -110,6 +119,12 @@ struct Random<Value> < Form {
     this->p.reset();
   }
 
+  void constant() const {
+    if (hasDistribution()) {
+      getDistribution()->variate();
+    }
+  }
+
   bool isConstant() const {
     return !hasDistribution() || getDistribution()->isConstant();
   }
@@ -118,9 +133,13 @@ struct Random<Value> < Form {
     this->x.reset();
   }
  
-  auto value() {
-    this->constant();  // also evaluates
-    return *x;
+  auto value() const {
+    if (hasDistribution()) {
+      return getDistribution()->variate();
+    } else {
+      assert(x.has_value());
+      return *x;
+    }
   }
  
   auto eval() const {
@@ -132,15 +151,16 @@ struct Random<Value> < Form {
     }
   }
  
-  auto peek() {
-    if (!x) {
-      assert(hasDistribution());
-      this->x = getDistribution()->variateLazy();
+  auto peek() const {
+    if (hasDistribution()) {
+      return getDistribution()->variateLazy();
+    } else {
+      assert(x.has_value());
+      return *x;
     }
-    return *x;
   }
  
-  auto move(const MoveVisitor& visitor) {
+  auto move(const MoveVisitor& visitor) const {
     if (hasDistribution()) {
       return getDistribution()->move(visitor);
     } else {
@@ -148,7 +168,15 @@ struct Random<Value> < Form {
       return *x;
     }
   }
- 
+
+  auto peg() const {
+    return *this;
+  }
+
+  auto tag() const {
+    return *this;
+  }
+
   void args(const ArgsVisitor& visitor) {
     if (hasDistribution()) {
       getDistribution()->args(visitor);

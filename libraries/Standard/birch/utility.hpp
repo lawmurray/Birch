@@ -26,7 +26,7 @@ struct is_future {
   static constexpr bool value = false;
 };
 template<class T>
-struct is_future<numbirch::Scalar<T>> {
+struct is_future<numbirch::Array<T,0>> {
   static constexpr bool value = true;
 };
 template<class T>
@@ -37,7 +37,18 @@ inline constexpr bool is_future_v = is_future<std::decay_t<T>>::value;
  */
 template<class T>
 struct is_form {
-  static constexpr bool value = std::is_base_of_v<Form,T>;
+private:
+  template<class U>
+  static constexpr bool test(decltype(&U::is_form)) {
+    return true;
+  }
+  template<class>
+  static constexpr bool test(...) {
+    return false;
+  }
+
+public:
+  static constexpr bool value = test<T>(0);
 };
 template<class T>
 inline constexpr bool is_form_v = is_form<std::decay_t<T>>::value;
@@ -130,7 +141,7 @@ inline constexpr bool is_delay_v = is_delay<Args...>::value;
  */
 template<class Type, class... Args>
 Type construct(Args&&... args) {
-  return Type(std::in_place, std::forward<Args>(args)...);
+  return Type(std::forward<Args>(args)...);
 }
 
 /**
@@ -266,99 +277,99 @@ std::optional<To> optional_cast(const std::optional<From>& from) {
 }
 
 template<class T>
-auto wait(T&& x) {
+decltype(auto) wait(T&& x) {
   if constexpr (is_future_v<T>) {
     return x.value();
   } else {
-    return x;
+    return std::forward<T>(x);
   }
 }
 
 template<class T>
-auto rows(T&& x) {
+auto rows(const T& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     return numbirch::rows(x);
-  } else if constexpr (is_form_v<T>) {
-    return x.rows();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     return x->rows();
+  } else {
+    return x.rows();
   }
 }
 
 template<class T>
-auto columns(T&& x) {
+auto columns(const T& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     return numbirch::columns(x);
-  } else if constexpr (is_form_v<T>) {
-    return x.columns();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     return x->columns();
+  } else {
+    return x.columns();
   }
 }
 
 template<class T>
-auto length(T&& x) {
+auto length(const T& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     return numbirch::length(x);
-  } else if constexpr (is_form_v<T>) {
-    return x.length();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     return x->length();
+  } else {
+    return x.length();
   }
 }
 
 template<class T>
-auto size(T&& x) {
+auto size(const T& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     return numbirch::size(x);
-  } else if constexpr (is_form_v<T>) {
-    return x.size();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     return x->size();
+  } else {
+    return x.size();
   }
 }
 
 template<class T>
-auto value(T&& x) {
+decltype(auto) value(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
-    return x;
-  } else if constexpr (is_form_v<T>) {
-    return x.value();
-  } else {
+    return std::forward<T>(x);
+  } else if constexpr (is_expression_v<T>) {
     return x->value();
+  } else {
+    return x.value();
   }
 }
 
 template<class T>
-auto eval(T&& x) {
+decltype(auto) eval(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
-    return x;
-  } else if constexpr (is_form_v<T>) {
-    return x.eval();
-  } else {
+    return std::forward<T>(x);
+  } else if constexpr (is_expression_v<T>) {
     return x->eval();
+  } else {
+    return x.eval();
   }
 }
 
 template<class T>
-auto peek(T&& x) {
+decltype(auto) peek(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
-    return x;
-  } else if constexpr (is_form_v<T>) {
-    return x.peek();
-  } else {
+    return std::forward<T>(x);
+  } else if constexpr (is_expression_v<T>) {
     return x->peek();
+  } else {
+    return x.peek();
   }
 }
 
 template<class T>
-auto move(T&& x, const MoveVisitor& visitor) {
+decltype(auto) move(T&& x, const MoveVisitor& visitor) {
   if constexpr (numbirch::is_numeric_v<T>) {
-    return x;
-  } else if constexpr (is_form_v<T>) {
-    return x.move(visitor);
-  } else {
+    return std::forward<T>(x);
+  } else if constexpr (is_expression_v<T>) {
     return x->move(visitor);
+  } else {
+    return x.move(visitor);
   }
 }
 
@@ -366,10 +377,10 @@ template<class T>
 void args(T&& x, const ArgsVisitor& visitor) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.args(visitor);
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->args(visitor);
+  } else {
+    x.args(visitor);
   }
 }
 
@@ -377,10 +388,10 @@ template<class T>
 void reset(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.reset();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->reset();
+  } else {
+    x.reset();
   }
 }
 
@@ -388,10 +399,10 @@ template<class T>
 void relink(T&& x, const RelinkVisitor& visitor) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.relink(visitor);
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->relink(visitor);
+  } else {
+    x.relink(visitor);
   }
 }
 
@@ -399,10 +410,10 @@ template<class T, class G>
 void grad(T&& x, const G& g) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.grad(g);
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->grad(g);
+  } else {
+    x.grad(g);
   }
 }
 
@@ -410,10 +421,10 @@ template<class T, class G>
 void shallow_grad(T&& x, const G& g, const GradVisitor& visitor) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.shallowGrad(g, visitor);
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->shallowGrad(g, visitor);
+  } else {
+    x.shallowGrad(g, visitor);
   }
 }
 
@@ -421,10 +432,10 @@ template<class T>
 void deep_grad(T&& x, const GradVisitor& visitor) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.deepGrad(visitor);
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->deepGrad(visitor);
+  } else {
+    x.deepGrad(visitor);
   }
 }
 
@@ -432,10 +443,10 @@ template<class T>
 void constant(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     //
-  } else if constexpr (is_form_v<T>) {
-    x.constant();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     x->constant();
+  } else {
+    x.constant();
   }
 }
 
@@ -443,45 +454,64 @@ template<class T>
 bool is_constant(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     return true;
-  } else if constexpr (is_form_v<T>) {
-    return x.isConstant();
-  } else {
+  } else if constexpr (is_expression_v<T>) {
     return x->isConstant();
+  } else {
+    return x.isConstant();
   }
 }
 
 template<class T>
-auto box(T&& x) {
-  if constexpr (numbirch::is_numeric_v<T>) {
-    using U = typename std::decay_t<decltype(wait(eval(x)))>;
-    return Expression<U>(construct<BoxedValue<U>>(x));
-  } else if constexpr (is_form_v<T>) {
-    using U = typename std::decay_t<decltype(wait(eval(x)))>;
-    using V = typename std::decay_t<T>;
-    return Expression<U>(construct<BoxedForm<U,V>>(x));
+decltype(auto) peg(const T& x) {
+  if constexpr (is_form_v<T>) {
+    return x.peg();
+  } else {
+    return std::remove_const_t<std::remove_reference_t<T>>(x);
+  }
+}
+
+template<class T>
+decltype(auto) tag(const T& x) {
+  if constexpr (is_form_v<T>) {
+    return x.tag();
+  } else if constexpr (numbirch::is_arithmetic_v<T>) {
+    return std::remove_const_t<std::remove_reference_t<T>>(x);
   } else {
     return x;
   }
 }
 
+template<class T>
+decltype(auto) box(T&& x) {
+  using U = typename std::decay_t<decltype(wait(eval(x)))>;
+  using V = typename std::decay_t<decltype(peg(x))>;
+  if constexpr (numbirch::is_numeric_v<T>) {
+    return Expression<U>(BoxedValue<U>(std::forward<T>(x)));
+  } else if constexpr (is_form_v<T>) {
+    return Expression<U>(BoxedForm<U,V>(peg(std::forward<T>(x))));
+  } else {
+    return std::forward<T>(x);
+  }
+}
+
 template<class... Args>
-auto box(Args&&... args) {
+decltype(auto) box(Args&&... args) {
   return std::make_tuple(box(std::forward<Args>(args))...);
 }
 
 template<class T>
-auto wrap(T&& x) {
+decltype(auto) wrap(T&& x) {
   if constexpr (numbirch::is_numeric_v<T>) {
     return x;
   } else if constexpr (is_form_v<T>) {
     return box(x);
   } else {
-    return x;
+    return std::forward<T>(x);
   }
 }
 
 template<class... Args>
-auto wrap(Args&&... args) {
+decltype(auto) wrap(Args&&... args) {
   return std::make_tuple(wrap(std::forward<Args>(args))...);
 }
 

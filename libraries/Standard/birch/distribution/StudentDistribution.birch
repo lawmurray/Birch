@@ -1,7 +1,7 @@
 /**
  * Student's $t$-distribution.
  */
-final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
+final class StudentTDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     Distribution<Real> {
   /**
    * Degrees of freedom.
@@ -42,10 +42,6 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
     return cdf_student_t(x, value(k), value(μ), value(σ2));
   }
 
-  override function quantile(P:Real!) -> Real!? {
-    return quantile_student_t(P, value(k), value(μ), value(σ2));
-  }
-
   override function fix() {
     super.fix();
     constant(k);
@@ -54,7 +50,7 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
   }
 
   override function write(buffer:Buffer) {
-    buffer.set("class", "Student");
+    buffer.set("class", "StudentT");
     buffer.set("k", value(k));
     buffer.set("μ", value(μ));
     buffer.set("σ2", value(σ2));
@@ -64,19 +60,22 @@ final class StudentDistribution<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) <
 /**
  * Create Student's $t$-distribution.
  */
-function Student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) ->
+function StudentT<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) ->
     Distribution<Real> {
   return make_student(k, μ, σ2);
 }
 function make_student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
-  return construct<StudentDistribution<Arg1,Arg2,Arg3>>(k, μ, σ2);
+  return peg_student(peg(k), peg(μ), peg(σ2));
+}
+function peg_student<Arg1,Arg2,Arg3>(k:Arg1, μ:Arg2, σ2:Arg3) -> {
+  return StudentTDistribution<Arg1,Arg2,Arg3>(k, μ, σ2);
 }
 
 /**
  * Create Student's $t$-distribution.
  */
-function Student<Arg>(k:Arg) -> Distribution<Real> {
-  return Student(k, 0.0, 1.0);
+function StudentT<Arg>(k:Arg) -> Distribution<Real> {
+  return StudentT(k, 0.0, 1.0);
 }
 
 /*
@@ -148,34 +147,4 @@ function cdf_student_t<Arg1,Arg2>(x:Arg1, k:Arg2) -> {
 function cdf_student_t<Arg1,Arg2,Arg3,Arg4>(x:Arg1, k:Arg2, μ:Arg3,
     σ2:Arg4) -> {
   return cdf_student_t((x - μ)/sqrt(σ2), k);
-}
-
-/*
- * Quantile of a Student's $t$ distribution.
- *
- * @param P The cumulative probability.
- * @param k Degrees of freedom.
- *
- * @return the quantile.
- */
-function quantile_student_t<Arg1,Arg2>(P:Arg1, k:Arg2) -> {
-  cpp{{
-  return boost::math::quantile(boost::math::students_t_distribution<Real>(
-      wait(k)), wait(P));
-  }}
-}
-
-/*
- * Quantile of a Student's $t$ distribution with location and scale.
- *
- * @param P The cumulative probability.
- * @param k Degrees of freedom.
- * @param μ Location.
- * @param σ2 Squared scale.
- *
- * @return the quantile.
- */
-function quantile_student_t<Arg1,Arg2,Arg3,Arg4>(P:Arg1, k:Arg2, μ:Arg3,
-    σ2:Arg4) -> {
-  return quantile_student_t(P, k)*sqrt(σ2) + μ;
 }

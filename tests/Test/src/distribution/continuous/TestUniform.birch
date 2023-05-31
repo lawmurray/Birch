@@ -13,11 +13,11 @@ class TestUniform < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return vector(x.eval(), 1);
+    return x.eval();
   }
 
   override function backward() -> Real[_] {
-    return vector(x.eval(), 1);
+    return x.eval();
   }
 
   function marginal() -> Distribution<Real> {
