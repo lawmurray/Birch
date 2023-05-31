@@ -31,7 +31,7 @@ namespace membirch {
 class Any {
 public:
   using this_type_ = Any;
-  using base_type_ = MEMBIRCH_NO_BASE;
+  using base_type_ = void;
  
   friend class Marker;
   friend class Scanner;

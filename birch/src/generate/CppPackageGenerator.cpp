@@ -156,6 +156,20 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
+    /* structs */
+    for (auto o : sortedStructs) {
+      if (!o->isAlias()) {
+        auxDeclaration << o;
+      }
+    }
+
+    /* classes */
+    for (auto o : sortedClasses) {
+      if (!o->isAlias()) {
+        auxDeclaration << o;
+      }
+    }
+
     /* functions */
     for (auto o : functions) {
       auxDeclaration << o;
@@ -171,23 +185,36 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       auxDeclaration << o;
     }
 
-    /* structs */
-    for (auto o : sortedStructs) {
-      if (!o->isAlias()) {
-        auxDeclaration << o;
-      }
-    }
-
-    /* classes */
-    for (auto o : sortedClasses) {
-      if (!o->isAlias()) {
-        auxDeclaration << o;
-      }
-    }
-
     /* programs */
     for (auto o : programs) {
       auxDeclaration << o;
+    }
+
+    /* generic struct definitions */
+    for (auto o : structs) {
+      if (o->isGeneric() && !o->isAlias()) {
+        auxDefinition << o;
+      }
+    }
+
+    /* generic class definitions, generic member definitions */
+    for (auto o : classes) {
+      if (o->isGeneric() && !o->isAlias()) {
+        /* whole class (which may include generic members) */
+        auxDefinition << o;
+      } else {
+        /* just generic members of the class */
+        CppClassGenerator auxMember(base, level, false, true, includeLines,
+            o);
+
+        Gatherer<MemberFunction> memberFunctions;
+         o->accept(&memberFunctions);
+        for (auto o : memberFunctions) {
+          if (o->isGeneric()) {
+            auxMember << o;
+          }
+        }
+      }
     }
 
     /* generic function and operator definitions; those with deduced return
@@ -220,33 +247,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
     for (auto o : unaries) {
       if (o->isGeneric() && !o->returnType->isDeduced()) {
         auxDefinition << o;
-      }
-    }
-
-    /* generic struct definitions */
-    for (auto o : structs) {
-      if (o->isGeneric() && !o->isAlias()) {
-        auxDefinition << o;
-      }
-    }
-
-    /* generic class definitions, generic member definitions */
-    for (auto o : classes) {
-      if (o->isGeneric() && !o->isAlias()) {
-        /* whole class (which may include generic members) */
-        auxDefinition << o;
-      } else {
-        /* just generic members of the class */
-        CppClassGenerator auxMember(base, level, false, true, includeLines,
-            o);
-
-        Gatherer<MemberFunction> memberFunctions;
-         o->accept(&memberFunctions);
-        for (auto o : memberFunctions) {
-          if (o->isGeneric()) {
-            auxMember << o;
-          }
-        }
       }
     }
 

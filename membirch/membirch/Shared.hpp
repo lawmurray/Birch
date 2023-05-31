@@ -45,23 +45,22 @@ public:
    * Default constructor. Constructs a new referent using the default
    * constructor.
    */
+  template<class U = T, std::enable_if_t<std::is_constructible_v<U>,int> = 0>
   Shared() :
       Shared(new T(), false) {
     //
   }
 
   /**
-   * Constructor. Constructs a new referent with the given arguments. The
-   * first is a placeholder (pass [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place))
-   * to distinguish this constructor from copy and move constructors.
-   * 
-   * @note [`std::optional`](https://en.cppreference.com/w/cpp/utility/optional/)
-   * behaves similarly with regard to [`std::in_place`](https://en.cppreference.com/w/cpp/utility/in_place).
+   * Constructor. Constructs a new referent using a constructor taking the
+   * given arguments.
    */
-  template<class... Args>
-  Shared(std::in_place_t, Args&&... args) :
-      Shared(new T(std::forward<Args>(args)...), false) {
-    //
+  template<class Arg, class... Args, std::enable_if_t<
+      !std::is_same_v<Shared<T>,std::decay_t<Arg>>,int> = 0>
+  explicit Shared(Arg&& arg, Args&&... args) :
+      Shared(new T(std::forward<Arg>(arg), std::forward<Args>(args)...), false) {
+    // avoid use of std::is_constructible_v<T,Args...> in SFINAE here, as
+    // clang++ giving compile errors (as of version 14.0.0)
   }
 
   /**
@@ -75,6 +74,13 @@ public:
       ptr->incShared_();
     }
     pack(ptr, bridge);
+  }
+
+  /**
+   * Constructor.
+   */
+  Shared(std::nullptr_t) {
+    pack(nullptr, false);
   }
 
   /**
@@ -103,9 +109,18 @@ public:
   }
 
   /**
+   * Copy constructor.
+   * 
+   * This overload exists to disambiguate with Shared(Args&&...).
+   */
+  Shared(Shared& o) : Shared(const_cast<const Shared&>(o)) {
+    //
+  }
+
+  /**
    * Generic copy constructor.
    */
-  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
+  template<class U, std::enable_if_t<std::is_base_of_v<T,U>,int> = 0>
   Shared(const Shared<U>& o) {
     auto [ptr, bridge] = o.unpack();
     if (ptr) {
@@ -120,18 +135,30 @@ public:
   }
 
   /**
+   * Generic copy constructor.
+   * 
+   * This overload exists to disambiguate with Shared(Args&&...).
+   */
+  template<class U>
+  Shared(Shared<U>& o) : Shared(const_cast<const Shared<U>&>(o)) {
+    //
+  }
+
+  /**
    * Move constructor.
    */
-  Shared(Shared&& o) {
-    packed.store(o.packed.exchange(0));
+  Shared(Shared&& o) :
+      packed(o.packed.exchange(0)) {
+    //
   }
 
   /**
    * Generic move constructor.
    */
-  template<class U, std::enable_if_t<std::is_base_of<T,U>::value,int> = 0>
-  Shared(Shared<U>&& o) {
-    packed.store(o.packed.exchange(0));
+  template<class U, std::enable_if_t<std::is_base_of_v<T,U>,int> = 0>
+  Shared(Shared<U>&& o) :
+      packed(o.packed.exchange(0)) {
+    //
   }
 
   /**

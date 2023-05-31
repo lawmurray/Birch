@@ -211,7 +211,7 @@ void birch::CppGenerator::genInit(const T* o) {
     if (!inConstructor) {
       middle('(');
     }
-    middle("std::in_place, " << o->args);
+    middle(o->args);
     if (!inConstructor) {
       middle(')');
     }

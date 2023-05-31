@@ -14,25 +14,7 @@ auto make_object(Args&&... args) {
 }
 
 using no_base = void;
-[[maybe_unused]] static int no_members = 0;
 }
-
-/**
- * @def MEMBIRCH_NO_BASE
- * 
- * Used as argument to MEMBIRCH_STRUCT when there is no base struct, e.g.
- * `MEMBIRCH_STRUCT(Name, MEMBIRCH_NO_BASE)`.
- */
-#define MEMBIRCH_NO_BASE membirch::no_base
-
-/**
- * @def MEMBIRCH_NO_MEMBERS
- * 
- * Used as argument to MEMBIRCH_CLASS_MEMBERS or MEMBIRCH_STRUCT_MEMBERS when
- * there are no member variables, e.g.
- * `MEMBIRCH_CLASS_MEMBERS(MEMBIRCH_NO_MEMBERS)`.
- */
-#define MEMBIRCH_NO_MEMBERS membirch::no_members
 
 /**
  * @def MEMBIRCH_CLASS
@@ -60,9 +42,9 @@ using no_base = void;
  *
  *     MEMBIRCH_CLASS(A, B<T,U>)
  */
-#define MEMBIRCH_CLASS(Name, Base...) \
+#define MEMBIRCH_CLASS(Name, ...) \
   using this_type_ = Name; \
-  using base_type_ = Base; \
+  using base_type_ = __VA_ARGS__; \
   \
   friend class Marker; \
   friend class Scanner; \
@@ -91,7 +73,7 @@ using no_base = void;
  * Boilerplate macro for polymorphic classes to support lazy deep copy. The
  * arguments list all member variables of the class (but not those of a base
  * class, which should be listed in its own use of MEMBIRCH_CLASS_MEMBERS). If
- * there are no member variables, use `MEMBIRCH_CLASS_MEMBERS(MEMBIRCH_NO_MEMBERS)`.
+ * there are no member variables, use `MEMBIRCH_CLASS_MEMBERS()`.
  *
  * MEMBIRCH_CLASS_MEMBERS must be preceded by MEMBIRCH_CLASS, and should be in
  * a public section, e.g.:
@@ -105,7 +87,7 @@ using no_base = void;
  *       MEMBIRCH_CLASS_MEMBERS(x, y, z)
  *     };
  */
-#define MEMBIRCH_CLASS_MEMBERS(members...) \
+#define MEMBIRCH_CLASS_MEMBERS(...) \
   template<class V, class... Args, class T = base_type_, std::enable_if_t<std::is_void<T>::value,int> = 0> \
   auto accept_base_(V& visitor_, Args&&... args) { \
     return visitor_.visit(std::forward<Args>(args)...); \
@@ -118,33 +100,33 @@ using no_base = void;
   \
   virtual void accept_(membirch::Marker& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual void accept_(membirch::Scanner& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual void accept_(membirch::Reacher& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual void accept_(membirch::Collector& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual void accept_(membirch::BiconnectedCollector& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual std::tuple<int,int,int> accept_(membirch::Spanner& visitor_, const int i_, const int j_) override { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = accept_base_(visitor_, i_, j_); \
-    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_, members); \
+    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
@@ -154,7 +136,7 @@ using no_base = void;
   virtual std::tuple<int,int,int,int> accept_(membirch::Bridger& visitor_, const int j_, const int k_) override { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = accept_base_(visitor_, j_, k_); \
-    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_, members); \
+    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
@@ -164,17 +146,17 @@ using no_base = void;
   \
   virtual void accept_(membirch::Copier& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual void accept_(membirch::BiconnectedCopier& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   virtual void accept_(membirch::Destroyer& visitor_) override { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   }
 
 /**
@@ -184,7 +166,7 @@ using no_base = void;
  * The first argument is the name of the struct; this should exclude any
  * generic type arguments. The second argument is the base struct; this should
  * include any generic type arguments. If there is no base struct, use
- * `MEMBIRCH_STRUCT(Name, MEMBIRCH_NO_BASE)`.
+ * `MEMBIRCH_STRUCT(Name)`.
  *
  * MEMBIRCH_STRUCT must be followed by MEMBIRCH_STRUCT_MEMBERS, and should be
  * in a public section, e.g.:
@@ -203,9 +185,9 @@ using no_base = void;
  *
  *     MEMBIRCH_STRUCT(A, B<T,U>)
  */
-#define MEMBIRCH_STRUCT(Name, Base...) \
+#define MEMBIRCH_STRUCT(Name, ...) \
   using this_type_ = Name; \
-  using base_type_ = Base; \
+  using base_type_ = __VA_OPT__(std::conditional_t<true,__VA_ARGS__,)void __VA_OPT__(>); \
   \
   friend class Marker; \
   friend class Scanner; \
@@ -231,7 +213,7 @@ using no_base = void;
  * The arguments list all member variables of the struct (but not those of a
  * base struct, which should be listed in its own use of
  * MEMBIRCH_STRUCT_MEMBERS). If there are no member variables, use
- * `MEMBIRCH_STRUCT_MEMBERS(MEMBIRCH_NO_MEMBERS)`.
+ * `MEMBIRCH_STRUCT_MEMBERS()`.
  *
  * MEMBIRCH_STRUCT_MEMBERS must be preceded by MEMBIRCH_STRUCT, and should be
  * in a public section, e.g.:
@@ -245,7 +227,7 @@ using no_base = void;
  *       MEMBIRCH_STRUCT_MEMBERS(x, y, z)
  *     };
  */
-#define MEMBIRCH_STRUCT_MEMBERS(members...) \
+#define MEMBIRCH_STRUCT_MEMBERS(...) \
   template<class V, class... Args, class T = base_type_, std::enable_if_t<std::is_void<T>::value,int> = 0> \
   auto accept_base_(V& visitor_, Args&&... args) { \
     return visitor_.visit(std::forward<Args>(args)...); \
@@ -258,33 +240,33 @@ using no_base = void;
   \
   void accept_(membirch::Marker& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   void accept_(membirch::Scanner& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   void accept_(membirch::Reacher& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   void accept_(membirch::Collector& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   void accept_(membirch::BiconnectedCollector& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   std::tuple<int,int,int> accept_(membirch::Spanner& visitor_, const int i_, const int j_) { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = accept_base_(visitor_, i_, j_); \
-    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_, members); \
+    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
@@ -294,7 +276,7 @@ using no_base = void;
   std::tuple<int,int,int,int> accept_(membirch::Bridger& visitor_, const int j_, const int k_) { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = accept_base_(visitor_, j_, k_); \
-    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_, members); \
+    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
@@ -304,15 +286,15 @@ using no_base = void;
   \
   void accept_(membirch::Copier& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   void accept_(membirch::BiconnectedCopier& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   } \
   \
   void accept_(membirch::Destroyer& visitor_) { \
     accept_base_(visitor_); \
-    visitor_.visit(members); \
+    visitor_.visit(__VA_ARGS__); \
   }

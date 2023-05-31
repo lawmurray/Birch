@@ -42,10 +42,9 @@ void birch::CppStructGenerator::visit(const Struct* o) {
 
       /* boilerplate */
       genSourceLine(o->loc);
-      start("MEMBIRCH_STRUCT(" << o->name << ", ");
-      if (o->base->isEmpty()) {
-        middle("MEMBIRCH_NO_BASE");
-      } else {
+      start("MEMBIRCH_STRUCT(" << o->name);
+      if (!o->base->isEmpty()) {
+        middle(", ");
         genBase(o);
       }
       finish(')');
@@ -68,8 +67,6 @@ void birch::CppStructGenerator::visit(const Struct* o) {
           first = false;
           middle(o->name);
         }
-      } else {
-        middle("MEMBIRCH_NO_MEMBERS");
       }
       finish(')');
 
@@ -77,16 +74,6 @@ void birch::CppStructGenerator::visit(const Struct* o) {
        * allow struct objects to be dereferenced with unary `*` (an identity
        * operation) and members accessed through binary `->` (acting as if
        * `.`), simplifying code generation */
-      line("template<class... Args>");
-      line(o->name << "(std::in_place_t, Args&&... args) :");
-      in();
-      in();
-      line(o->name << "(std::forward<Args>(args)...) {");
-      out();
-      line("//");
-      out();
-      line("}\n");
-
       line("auto operator->() {");
       in();
       line("return this;");
@@ -109,7 +96,7 @@ void birch::CppStructGenerator::visit(const Struct* o) {
       middle("::");
     } else {
       genSourceLine(o->loc);
-      start("");
+      start("explicit ");
     }
     middle(o->name);
     middle('(' << o->params << ')');

@@ -76,8 +76,6 @@ void birch::CppClassGenerator::visit(const Class* o) {
           first = false;
           middle(o->name);
         }
-      } else {
-        middle("MEMBIRCH_NO_MEMBERS");
       }
       finish(')');
   
@@ -108,7 +106,7 @@ void birch::CppClassGenerator::visit(const Class* o) {
       middle("::");
     } else {
       genSourceLine(o->loc);
-      start("");
+      start("explicit ");
     }
     middle(o->name << '_');
     middle('(' << o->params << ')');
