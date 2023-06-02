@@ -132,6 +132,11 @@ hpp{{
 namespace birch {
 
 template<class Arg, class Element>
+struct is_expression<PackExpression<Arg,Element>> {
+  static constexpr bool value = true;
+};
+
+template<class Arg, class Element>
 int rows(const PackExpression<Arg,Element>& o) {
   return o->rows();
 }

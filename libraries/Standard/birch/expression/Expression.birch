@@ -413,6 +413,11 @@ hpp{{
 namespace birch {
 
 template<class Value>
+struct is_expression<Expression<Value>> {
+  static constexpr bool value = true;
+};
+
+template<class Value>
 int rows(const Expression<Value>& o) {
   return o->rows();
 }

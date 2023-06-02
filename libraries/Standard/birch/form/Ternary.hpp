@@ -6,7 +6,6 @@
 #include "birch/form/Form.hpp"
 
 #define BIRCH_TERNARY_FORM(This, ...) \
-  static constexpr bool is_form = true; \
   Left l; \
   Middle m; \
   Right r; \
@@ -48,6 +47,11 @@
   }
 
 #define BIRCH_TERNARY(This, f, ...) \
+  template<class Left, class Middle, class Right> \
+  struct is_form<This<Left,Middle,Right>> { \
+    static constexpr bool value = true; \
+  }; \
+  \
   template<class Left, class Middle, class Right> \
   auto value(const This<Left,Middle,Right>& o) { \
     return f(value(o.l), value(o.m), value(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \

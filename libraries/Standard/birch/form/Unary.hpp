@@ -46,6 +46,11 @@
 
 #define BIRCH_UNARY(This, f, ...) \
   template<class Middle> \
+  struct is_form<This<Middle>> { \
+    static constexpr bool value = true; \
+  }; \
+  \
+  template<class Middle> \
   void reset(This<Middle>& o) { \
     reset(o.m); \
   } \

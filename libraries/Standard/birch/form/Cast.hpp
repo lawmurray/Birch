@@ -13,6 +13,11 @@ struct Cast {
 };
 
 template<class To, class Middle>
+struct is_form<Cast<To,Middle>> {
+  static constexpr bool value = true;
+};
+
+template<class To, class Middle>
 int rows(const Cast<To,Middle>& o) {
   return rows(o.m);
 }

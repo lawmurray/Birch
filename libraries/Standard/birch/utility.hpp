@@ -37,18 +37,7 @@ inline constexpr bool is_future_v = is_future<std::decay_t<T>>::value;
  */
 template<class T>
 struct is_form {
-private:
-  template<class U>
-  static constexpr bool test(decltype(&U::is_form)) {
-    return true;
-  }
-  template<class>
-  static constexpr bool test(...) {
-    return false;
-  }
-
-public:
-  static constexpr bool value = test<T>(0);
+  static constexpr bool value = false;
 };
 template<class T>
 inline constexpr bool is_form_v = is_form<std::decay_t<T>>::value;
@@ -58,21 +47,7 @@ inline constexpr bool is_form_v = is_form<std::decay_t<T>>::value;
  */
 template<class T>
 struct is_expression {
-private:
-  template<class U>
-  static constexpr bool test(
-        typename std::decay_t<U>::value_type::Value_*) {
-    return std::is_base_of_v<
-        Expression_<typename std::decay_t<U>::value_type::Value_>,
-        typename std::decay_t<U>::value_type>;
-  }
-  template<class>
-  static constexpr bool test(...) {
-    return false;
-  }
-
-public:
-  static constexpr bool value = test<T>(0);
+  static constexpr bool value = false;
 };
 template<class T>
 inline constexpr bool is_expression_v = is_expression<std::decay_t<T>>::value;

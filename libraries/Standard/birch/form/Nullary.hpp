@@ -6,7 +6,6 @@
 #include "birch/form/Form.hpp"
 
 #define BIRCH_NULLARY_FORM(This, ...) \
-  static constexpr bool is_form = true; \
   __VA_OPT__(Integer __VA_ARGS__;) \
   \
   MEMBIRCH_STRUCT(This, void) \
@@ -24,6 +23,11 @@
   auto operator*() const; \
 
 #define BIRCH_NULLARY(This, f, ...) \
+  template<> \
+  struct is_form<This> { \
+    static constexpr bool value = true; \
+  }; \
+  \
   inline auto value(const This& o) { \
     return f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
   } \

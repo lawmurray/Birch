@@ -39,6 +39,11 @@ hpp{{
 namespace birch {
 
 template<class Value>
+struct is_expression<BoxedValue<Value>> {
+  static constexpr bool value = true;
+};
+
+template<class Value>
 int rows(const BoxedValue<Value>& o) {
   return o->rows();
 }

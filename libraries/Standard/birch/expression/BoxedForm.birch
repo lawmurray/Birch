@@ -49,6 +49,11 @@ hpp{{
 namespace birch {
 
 template<class Value, class Form>
+struct is_expression<BoxedForm<Value,Form>> {
+  static constexpr bool value = true;
+};
+
+template<class Value, class Form>
 int rows(const BoxedForm<Value,Form>& o) {
   return o->rows();
 }

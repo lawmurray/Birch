@@ -8,8 +8,6 @@ struct Random<Value> {
   phantom p;
 
   hpp{{
-  static constexpr bool is_form = true;
-
   /**
    * Variate value.
    */
@@ -218,6 +216,11 @@ struct Random<Value> {
 
 hpp{{
 namespace birch {
+
+template<class Value>
+struct is_form<Random<Value>> {
+  static constexpr bool value = true;
+};
 
 template<class Value>
 int rows(const Random<Value>& o) {
