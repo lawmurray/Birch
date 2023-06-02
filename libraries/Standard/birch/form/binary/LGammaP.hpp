@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct LGammaP {
-  BIRCH_BINARY_FORM(LGammaP, numbirch::lgamma)
-  BIRCH_BINARY_GRAD(numbirch::lgamma_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(LGammaP)
 };
+
+BIRCH_BINARY_SIZE(LGammaP)
+BIRCH_BINARY(LGammaP, numbirch::lgamma)
+BIRCH_BINARY_GRAD(LGammaP, numbirch::lgamma_grad)
 
 template<class Left, class Right>
 auto lgamma(const Left& l, const Right& r) {

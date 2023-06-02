@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Exp {
-  BIRCH_UNARY_FORM(Exp, numbirch::exp)
-  BIRCH_UNARY_GRAD(numbirch::exp_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Exp)
 };
+
+BIRCH_UNARY_SIZE(Exp)
+BIRCH_UNARY(Exp, numbirch::exp)
+BIRCH_UNARY_GRAD(Exp, numbirch::exp_grad)
 
 template<class Middle>
 auto exp(const Middle& m) {

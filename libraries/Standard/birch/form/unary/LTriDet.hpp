@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct LTriDet {
-  BIRCH_UNARY_FORM(LTriDet, numbirch::ltridet)
-  BIRCH_UNARY_GRAD(numbirch::ltridet_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(LTriDet)
 };
+
+BIRCH_UNARY_SIZE(LTriDet)
+BIRCH_UNARY(LTriDet, numbirch::ltridet)
+BIRCH_UNARY_GRAD(LTriDet, numbirch::ltridet_grad)
 
 template<class Middle>
 auto ltridet(const Middle& m) {

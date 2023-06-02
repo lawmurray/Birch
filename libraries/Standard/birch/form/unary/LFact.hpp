@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct LFact {
-  BIRCH_UNARY_FORM(LFact, numbirch::lfact)
-  BIRCH_UNARY_GRAD(numbirch::lfact_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(LFact)
 };
+
+BIRCH_UNARY_SIZE(LFact)
+BIRCH_UNARY(LFact, numbirch::lfact)
+BIRCH_UNARY_GRAD(LFact, numbirch::lfact_grad)
 
 template<class Middle>
 auto lfact(const Middle& m) {

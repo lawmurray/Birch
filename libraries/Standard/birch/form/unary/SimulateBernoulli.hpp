@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct SimulateBernoulli {
-  BIRCH_UNARY_FORM(SimulateBernoulli, numbirch::simulate_bernoulli)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(SimulateBernoulli)
 };
+
+BIRCH_UNARY_SIZE(SimulateBernoulli)
+BIRCH_UNARY(SimulateBernoulli, numbirch::simulate_bernoulli)
 
 template<class Middle>
 auto simulate_bernoulli(const Middle& m) {

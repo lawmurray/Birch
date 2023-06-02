@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Log {
-  BIRCH_UNARY_FORM(Log, numbirch::log)
-  BIRCH_UNARY_GRAD(numbirch::log_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Log)
 };
+
+BIRCH_UNARY_SIZE(Log)
+BIRCH_UNARY(Log, numbirch::log)
+BIRCH_UNARY_GRAD(Log, numbirch::log_grad)
 
 template<class Middle>
 auto log(const Middle& m) {

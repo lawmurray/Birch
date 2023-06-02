@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Mat {
-  BIRCH_UNARY_FORM(Mat, numbirch::mat, n)
-  BIRCH_UNARY_GRAD(numbirch::mat_grad, n)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Mat, n)
 };
+
+BIRCH_UNARY_SIZE(Mat)
+BIRCH_UNARY(Mat, numbirch::mat, n)
+BIRCH_UNARY_GRAD(Mat, numbirch::mat_grad, n)
 
 template<class Middle>
 auto mat(const Middle& m, const int n) {

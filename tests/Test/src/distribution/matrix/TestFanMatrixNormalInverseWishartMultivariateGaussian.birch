@@ -38,27 +38,27 @@ class TestFanMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
-    X.eval();
-    y[1].eval();
-    y[2].eval();
-    y[3].eval();
-    y[4].eval();
-    y[5].eval();
+    eval(Σ);
+    eval(X);
+    eval(y[1]);
+    eval(y[2]);
+    eval(y[3]);
+    eval(y[4]);
+    eval(y[5]);
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !y[5].hasValue();
-    y[5].eval();
-    y[4].eval();
-    y[3].eval();
-    y[2].eval();
-    y[1].eval();
+    eval(y[5]);
+    eval(y[4]);
+    eval(y[3]);
+    eval(y[2]);
+    eval(y[1]);
     assert !X.hasValue();
-    X.eval();
+    eval(X);
     assert !Σ.hasValue();
-    Σ.eval();
+    eval(Σ);
     return vectorize();
   }
 
@@ -69,19 +69,19 @@ class TestFanMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    z[k + 1.. k + p*p] <- eval(vec(Σ));
     k <- k + p*p;
-    z[k + 1.. k + n*p] <- vec(X.eval());
+    z[k + 1.. k + n*p] <- eval(vec(X));
     k <- k + n*p;
-    z[k + 1.. k + p] <- y[1].eval();
+    z[k + 1.. k + p] <- eval(y[1]);
     k <- k + p;
-    z[k + 1.. k + p] <- y[2].eval();
+    z[k + 1.. k + p] <- eval(y[2]);
     k <- k + p;
-    z[k + 1.. k + p] <- y[3].eval();
+    z[k + 1.. k + p] <- eval(y[3]);
     k <- k + p;
-    z[k + 1.. k + p] <- y[4].eval();
+    z[k + 1.. k + p] <- eval(y[4]);
     k <- k + p;
-    z[k + 1.. k + p] <- y[5].eval();
+    z[k + 1.. k + p] <- eval(y[5]);
     return z;
   }
 

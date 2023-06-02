@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct SimulateExponential {
-  BIRCH_UNARY_FORM(SimulateExponential, numbirch::simulate_exponential)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(SimulateExponential)
 };
+
+BIRCH_UNARY_SIZE(SimulateExponential)
+BIRCH_UNARY(SimulateExponential, numbirch::simulate_exponential)
 
 template<class Middle>
 auto simulate_exponential(const Middle& m) {

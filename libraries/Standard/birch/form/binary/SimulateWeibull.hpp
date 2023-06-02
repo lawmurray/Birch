@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct SimulateWeibull {
-  BIRCH_BINARY_FORM(SimulateWeibull, numbirch::simulate_weibull)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(SimulateWeibull)
 };
+
+BIRCH_BINARY_SIZE(SimulateWeibull)
+BIRCH_BINARY(SimulateWeibull, numbirch::simulate_weibull)
 
 template<class Left, class Right>
 auto simulate_weibull(const Left& l, const Right& r) {

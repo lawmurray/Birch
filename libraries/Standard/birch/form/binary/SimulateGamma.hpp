@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct SimulateGamma {
-  BIRCH_BINARY_FORM(SimulateGamma, numbirch::simulate_gamma)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(SimulateGamma)
 };
+
+BIRCH_BINARY_SIZE(SimulateGamma)
+BIRCH_BINARY(SimulateGamma, numbirch::simulate_gamma)
 
 template<class Left, class Right>
 auto simulate_gamma(const Left& l, const Right& r) {

@@ -17,17 +17,17 @@ class TestBetaBernoulli < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[2];
-    y[1] <- ρ.eval();
-    y[2] <- x.eval();
+    y[1] <- eval(ρ);
+    y[2] <- eval(x);
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
-    y[2] <- x.eval();
+    y[2] <- eval(x);
     assert !ρ.hasValue();
-    y[1] <- ρ.eval();
+    y[1] <- eval(ρ);
     return y;
   }
 

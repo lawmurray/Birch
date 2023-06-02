@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Min {
-  BIRCH_UNARY_FORM(Min, numbirch::min)
-  BIRCH_UNARY_GRAD(numbirch::min_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Min)
 };
+
+BIRCH_UNARY_SIZE(Min)
+BIRCH_UNARY(Min, numbirch::min)
+BIRCH_UNARY_GRAD(Min, numbirch::min_grad)
 
 template<class Middle>
 auto min(const Middle& m) {

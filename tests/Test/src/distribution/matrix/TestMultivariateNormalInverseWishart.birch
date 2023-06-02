@@ -21,16 +21,16 @@ class TestMultivariateNormalInverseWishart < TestModel {
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
-    x.eval();
+    eval(Σ);
+    eval(x);
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !x.hasValue();
-    x.eval();
+    eval(x);
     assert !Σ.hasValue();
-    Σ.eval();
+    eval(Σ);
     return vectorize();
   }
 

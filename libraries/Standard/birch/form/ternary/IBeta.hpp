@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Middle, class Right>
 struct IBeta {
-  BIRCH_TERNARY_FORM(IBeta, numbirch::ibeta)
-  BIRCH_FORM
+  BIRCH_TERNARY_FORM(IBeta)
 };
+
+BIRCH_TERNARY_SIZE(IBeta)
+BIRCH_TERNARY(IBeta, numbirch::ibeta)
 
 template<class Left, class Middle, class Right>
 auto ibeta(const Left& l, const Middle& m, const Right& r) {

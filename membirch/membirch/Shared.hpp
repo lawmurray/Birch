@@ -380,6 +380,22 @@ public:
   }
 
   /**
+   * Raw pointer.
+   */
+  template<class U, std::enable_if_t<std::is_base_of_v<U,T>,int> = 0>
+  operator U*() {
+    return get();
+  }
+
+  /**
+   * Raw pointer.
+   */
+  template<class U, std::enable_if_t<std::is_base_of_v<U,T>,int> = 0>
+  operator const U*() const {
+    return get();
+  }
+
+  /**
    * Call on referent.
    */
   template<class... Args>

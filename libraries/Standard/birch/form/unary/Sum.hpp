@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Sum {
-  BIRCH_UNARY_FORM(Sum, numbirch::sum)
-  BIRCH_UNARY_GRAD(numbirch::sum_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Sum)
 };
+
+BIRCH_UNARY_SIZE(Sum)
+BIRCH_UNARY(Sum, numbirch::sum)
+BIRCH_UNARY_GRAD(Sum, numbirch::sum_grad)
 
 template<class Middle>
 auto sum(const Middle& m) {

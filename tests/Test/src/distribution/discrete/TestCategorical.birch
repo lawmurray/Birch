@@ -11,11 +11,11 @@ class TestCategorical < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return x.eval();
+    return eval(x);
   }
 
   override function backward() -> Real[_] {
-    return x.eval();
+    return eval(x);
   }
 
   function marginal() -> Distribution<Integer> {

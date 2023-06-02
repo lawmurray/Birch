@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Max {
-  BIRCH_UNARY_FORM(Max, numbirch::max)
-  BIRCH_UNARY_GRAD(numbirch::max_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Max)
 };
+
+BIRCH_UNARY_SIZE(Max)
+BIRCH_UNARY(Max, numbirch::max)
+BIRCH_UNARY_GRAD(Max, numbirch::max_grad)
 
 template<class Middle>
 auto max(const Middle& m) {

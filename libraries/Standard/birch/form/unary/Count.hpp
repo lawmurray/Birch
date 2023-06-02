@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Count {
-  BIRCH_UNARY_FORM(Count, numbirch::count)
-  BIRCH_UNARY_GRAD(numbirch::count_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Count)
 };
+
+BIRCH_UNARY_SIZE(Count)
+BIRCH_UNARY(Count, numbirch::count)
+BIRCH_UNARY_GRAD(Count, numbirch::count_grad)
 
 template<class Middle>
 auto count(const Middle& m) {

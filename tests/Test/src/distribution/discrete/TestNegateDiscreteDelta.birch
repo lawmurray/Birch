@@ -21,20 +21,20 @@ class TestNegateDiscreteDelta < TestModel {
 
   override function forward() -> Real[_] {
     z:Real[size()];
-    z[1] <- ρ.eval();
-    z[2] <- x.eval();
-    z[3] <- y.eval();
+    z[1] <- eval(ρ);
+    z[2] <- eval(x);
+    z[3] <- eval(y);
     return z;
   }
 
   override function backward() -> Real[_] {
     z:Real[size()];
     assert !y.hasValue();
-    z[3] <- y.eval();
+    z[3] <- eval(y);
     assert !x.hasValue();
-    z[2] <- x.eval();
+    z[2] <- eval(x);
     assert !ρ.hasValue();
-    z[1] <- ρ.eval();
+    z[1] <- eval(ρ);
     return z;
   }
 

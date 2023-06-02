@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct TriOuter {
-  BIRCH_BINARY_FORM(TriOuter, numbirch::triouter)
-  BIRCH_BINARY_GRAD(numbirch::triouter_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(TriOuter)
 };
+
+BIRCH_BINARY_SIZE(TriOuter)
+BIRCH_BINARY(TriOuter, numbirch::triouter)
+BIRCH_BINARY_GRAD(TriOuter, numbirch::triouter_grad)
 
 template<class Left, class Right>
 auto triouter(const Left& l, const Right& r) {

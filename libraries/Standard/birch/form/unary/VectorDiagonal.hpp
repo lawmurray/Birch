@@ -9,25 +9,31 @@ namespace birch {
 
 template<class Middle>
 struct VectorDiagonal {
-  BIRCH_UNARY_FORM(VectorDiagonal, numbirch::diagonal)
-  BIRCH_UNARY_GRAD(numbirch::diagonal_grad)
-
-  int rows() const {
-    return length(peek());
-  }
-
-  int columns() const {
-    return length(peek());
-  }
-
-  int length() const {
-    return length(peek());
-  }
-
-  int size() const {
-    return pow(length(peek()), 2);
-  }
+  BIRCH_UNARY_FORM(VectorDiagonal)
 };
+
+BIRCH_UNARY(VectorDiagonal, numbirch::diagonal)
+BIRCH_UNARY_GRAD(VectorDiagonal, numbirch::diagonal_grad)
+
+template<class Middle>
+int rows(const VectorDiagonal<Middle>& o) {
+  return length(o.m);
+}
+
+template<class Middle>
+int columns(const VectorDiagonal<Middle>& o) {
+  return length(o.m);
+}
+
+template<class Middle>
+int length(const VectorDiagonal<Middle>& o) {
+  return length(o.m);
+}
+
+template<class Middle>
+int size(const VectorDiagonal<Middle>& o) {
+  return pow(length(o.m), 2);
+}
 
 template<class Middle>
 auto diagonal(const Middle& m) {

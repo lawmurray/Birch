@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Scal {
-  BIRCH_UNARY_FORM(Scal, numbirch::scal)
-  BIRCH_UNARY_GRAD(numbirch::scal_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Scal)
 };
+
+BIRCH_UNARY_SIZE(Scal)
+BIRCH_UNARY(Scal, numbirch::scal)
+BIRCH_UNARY_GRAD(Scal, numbirch::scal_grad)
 
 template<class Middle>
 auto scal(const Middle& m) {

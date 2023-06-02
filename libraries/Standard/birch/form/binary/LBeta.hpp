@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct LBeta {
-  BIRCH_BINARY_FORM(LBeta, numbirch::lbeta)
-  BIRCH_BINARY_GRAD(numbirch::lbeta_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(LBeta)
 };
+
+BIRCH_BINARY_SIZE(LBeta)
+BIRCH_BINARY(LBeta, numbirch::lbeta)
+BIRCH_BINARY_GRAD(LBeta, numbirch::lbeta_grad)
 
 template<class Left, class Right>
 auto lbeta(const Left& l, const Right& r) {

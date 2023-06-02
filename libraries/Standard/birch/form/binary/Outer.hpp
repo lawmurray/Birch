@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct Outer {
-  BIRCH_BINARY_FORM(Outer, numbirch::outer)
-  BIRCH_BINARY_GRAD(numbirch::outer_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(Outer)
 };
+
+BIRCH_BINARY_SIZE(Outer)
+BIRCH_BINARY(Outer, numbirch::outer)
+BIRCH_BINARY_GRAD(Outer, numbirch::outer_grad)
 
 template<class Left, class Right>
 auto outer(const Left& l, const Right& r) {

@@ -8,7 +8,6 @@ struct Random<Value> {
   phantom p;
 
   hpp{{
-  BIRCH_FORM
   static constexpr bool is_form = true;
 
   /**
@@ -22,11 +21,21 @@ struct Random<Value> {
   std::optional<Distribution<Value>> p;
 
   operator auto() const {
-    return value();
+    if (hasDistribution()) {
+      return getDistribution()->variate();
+    } else {
+      assert(x.has_value());
+      return *x;
+    }
   }
 
   auto operator*() const {
-    return wait(value());
+    if (hasDistribution()) {
+      return wait(getDistribution()->variate());
+    } else {
+      assert(x.has_value());
+      return wait(*x);
+    }
   }
 
   /**
@@ -50,7 +59,6 @@ struct Random<Value> {
       getDistribution()->assign(x);
     }
     this->x = x;
-    this->constant();
     return *this;
   }
 
@@ -98,103 +106,7 @@ struct Random<Value> {
     assert(hasMarginalized());
     return getDistribution()->getMarginalized();
   }
-
-  void reset() {
-    if (hasDistribution()) {
-      getDistribution()->reset();
-    }
-  }
-
-  void relink(const RelinkVisitor& visitor) {
-    if (hasDistribution()) {
-      getDistribution()->relink(visitor);
-    }
-  }
-
-  void constant() {
-    if (hasDistribution()) {
-      x = getDistribution()->variate();
-    }
-    assert(x.has_value());
-    this->p.reset();
-  }
-
-  void constant() const {
-    if (hasDistribution()) {
-      getDistribution()->variate();
-    }
-  }
-
-  bool isConstant() const {
-    return !hasDistribution() || getDistribution()->isConstant();
-  }
-
-  void clear() {
-    this->x.reset();
-  }
  
-  auto value() const {
-    if (hasDistribution()) {
-      return getDistribution()->variate();
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
- 
-  auto eval() const {
-    if (hasDistribution()) {
-      return getDistribution()->variateLazy();
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
- 
-  auto peek() const {
-    if (hasDistribution()) {
-      return getDistribution()->variateLazy();
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
- 
-  auto move(const MoveVisitor& visitor) const {
-    if (hasDistribution()) {
-      return getDistribution()->move(visitor);
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
-
-  auto peg() const {
-    return *this;
-  }
-
-  auto tag() const {
-    return *this;
-  }
-
-  void args(const ArgsVisitor& visitor) {
-    if (hasDistribution()) {
-      getDistribution()->args(visitor);
-    }
-  }
- 
-  template<class G>
-  void shallowGrad(const G& g, const GradVisitor& visitor) {
-    if (hasDistribution()) {
-      getDistribution()->grad(g, visitor);
-      clear();
-    }
-  }
- 
-  void deepGrad(const GradVisitor& visitor) {
-    //
-  }
-
   Delay graft() const {
     assert(hasDistribution());
     return *getDistribution()->graft();
@@ -280,7 +192,7 @@ struct Random<Value> {
 
   template<class Value>
   void Random<Value>::read(const Buffer& buffer) {
-    birch::optional_assign(*this, buffer->get<Value>());
+    optional_assign(*this, buffer->get<Value>());
   }
 
   template<class Value>
@@ -291,7 +203,7 @@ struct Random<Value> {
   template<class Value>
   void Random<Value>::write(const Buffer& buffer) {
     if (x || p) {
-      buffer->set(value());
+      buffer->set(value(*this));
     } else {
       buffer->setNil();
     }
@@ -303,3 +215,134 @@ struct Random<Value> {
   }
   }}
 }
+
+hpp{{
+namespace birch {
+
+template<class Value>
+int rows(const Random<Value>& o) {
+  return rows(eval(o));
+}
+
+template<class Value>
+int columns(const Random<Value>& o) {
+  return columns(eval(o));
+}
+
+template<class Value>
+int length(const Random<Value>& o) {
+  return length(eval(o));
+}
+
+template<class Value>
+int size(const Random<Value>& o) {
+  return size(eval(o));
+}
+
+template<class Value>
+auto value(const Random<Value>& o) {
+  if (o.hasDistribution()) {
+    return o.getDistribution()->variate();
+  } else {
+    assert(o.x.has_value());
+    return *o.x;
+  }
+}
+
+template<class Value>
+auto eval(const Random<Value>& o) {
+  if (o.hasDistribution()) {
+    return o.getDistribution()->variateLazy();
+  } else {
+    assert(o.x.has_value());
+    return *o.x;
+  }
+}
+
+template<class Value>
+auto peek(const Random<Value>& o) {
+  if (o.hasDistribution()) {
+    return o.getDistribution()->variateLazy();
+  } else {
+    assert(o.x.has_value());
+    return *o.x;
+  }
+}
+
+template<class Value>
+auto move(const Random<Value>& o, const MoveVisitor& visitor) {
+  if (o.hasDistribution()) {
+    return o.getDistribution()->move(visitor);
+  } else {
+    assert(o.x.has_value());
+    return *o.x;
+  }
+}
+
+template<class Value>
+auto peg(const Random<Value>& o) {
+  return o;
+}
+
+template<class Value>
+auto tag(const Random<Value>& o) {
+  return o;
+}
+
+template<class Value>
+void reset(Random<Value>& o) {
+  if (o.hasDistribution()) {
+    o.getDistribution()->reset();
+  }
+}
+
+template<class Value>
+void relink(Random<Value>& o, const RelinkVisitor& visitor) {
+  if (o.hasDistribution()) {
+    o.getDistribution()->relink(visitor);
+  }
+}
+
+template<class Value>
+void constant(Random<Value>& o) {
+  if (o.hasDistribution()) {
+    o.x = o.getDistribution()->variate();
+  }
+  assert(o.x.has_value());
+  o.p.reset();
+}
+
+template<class Value>
+void constant(const Random<Value>& o) {
+  if (o.hasDistribution()) {
+    o.getDistribution()->variate();
+  }
+}
+
+template<class Value>
+bool is_constant(const Random<Value>& o) {
+  return !o.hasDistribution() || o.getDistribution()->isConstant();
+}
+
+template<class Value>
+void args(const Random<Value>& o, const ArgsVisitor& visitor) {
+  if (o.hasDistribution()) {
+    o.getDistribution()->args(visitor);
+  }
+}
+
+template<class Value>
+void deep_grad(const Random<Value>& o, const GradVisitor& visitor) {
+  //
+}
+
+template<class Value, class G>
+void shallow_grad(const Random<Value>& o, const G& g, const GradVisitor& visitor) {
+  if (o.hasDistribution()) {
+    o.getDistribution()->grad(g, visitor);
+    const_cast<Random<Value>&>(o).x.reset();
+  }
+}
+
+}
+}}

@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct DotSelf {
-  BIRCH_UNARY_FORM(DotSelf, numbirch::dot)
-  BIRCH_UNARY_GRAD(numbirch::dot_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(DotSelf)
 };
+
+BIRCH_UNARY_SIZE(DotSelf)
+BIRCH_UNARY(DotSelf, numbirch::dot)
+BIRCH_UNARY_GRAD(DotSelf, numbirch::dot_grad)
 
 template<class Middle>
 auto dot(const Middle& m) {

@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Rectify {
-  BIRCH_UNARY_FORM(Rectify, numbirch::rectify)
-  BIRCH_UNARY_GRAD(numbirch::rectify_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Rectify)
 };
+
+BIRCH_UNARY_SIZE(Rectify)
+BIRCH_UNARY(Rectify, numbirch::rectify)
+BIRCH_UNARY_GRAD(Rectify, numbirch::rectify_grad)
 
 template<class Middle>
 auto rectify(const Middle& m) {

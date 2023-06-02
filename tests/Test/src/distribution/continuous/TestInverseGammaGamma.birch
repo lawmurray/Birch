@@ -18,17 +18,17 @@ class TestInverseGammaGamma < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[2];
-    y[1] <- θ.eval();
-    y[2] <- x.eval();
+    y[1] <- eval(θ);
+    y[2] <- eval(x);
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[2];
     assert !x.hasValue();
-    y[2] <- x.eval();
+    y[2] <- eval(x);
     assert !θ.hasValue();
-    y[1] <- θ.eval();
+    y[1] <- eval(θ);
     return y;
   }
 

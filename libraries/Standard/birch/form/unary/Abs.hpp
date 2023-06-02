@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Abs {
-  BIRCH_UNARY_FORM(Abs, numbirch::abs)
-  BIRCH_UNARY_GRAD(numbirch::abs_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Abs)
 };
+
+BIRCH_UNARY_SIZE(Abs)
+BIRCH_UNARY(Abs, numbirch::abs)
+BIRCH_UNARY_GRAD(Abs, numbirch::abs_grad)
 
 template<class Middle>
 auto abs(const Middle& m) {

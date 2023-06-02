@@ -14,17 +14,17 @@ class TestDirichletCategorical < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[6];
-    y[1..5] <- ρ.eval();
-    y[6] <- x.eval();
+    y[1..5] <- eval(ρ);
+    y[6] <- eval(x);
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[6];
     assert !x.hasValue();
-    y[6] <- x.eval();
+    y[6] <- eval(x);
     assert !ρ.hasValue();
-    y[1..5] <- ρ.eval();
+    y[1..5] <- eval(ρ);
     return y;
   }
 

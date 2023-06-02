@@ -22,11 +22,11 @@ class TestMatrixGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return vec(X.eval());
+    return eval(vec(X));
   }
 
   override function backward() -> Real[_] {
-    return vec(X.eval());
+    return eval(vec(X));
   }
 
   function marginal() -> Distribution<Real[_,_]> {

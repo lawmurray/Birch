@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct LCholDet {
-  BIRCH_UNARY_FORM(LCholDet, numbirch::lcholdet)
-  BIRCH_UNARY_GRAD(numbirch::lcholdet_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(LCholDet)
 };
+
+BIRCH_UNARY_SIZE(LCholDet)
+BIRCH_UNARY(LCholDet, numbirch::lcholdet)
+BIRCH_UNARY_GRAD(LCholDet, numbirch::lcholdet_grad)
 
 template<class Middle>
 auto lcholdet(const Middle& m) {

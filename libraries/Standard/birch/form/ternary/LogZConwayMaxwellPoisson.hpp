@@ -75,10 +75,12 @@ namespace birch {
 
 template<class Left, class Middle, class Right>
 struct LogZConwayMaxwellPoisson {
-  BIRCH_TERNARY_FORM(LogZConwayMaxwellPoisson, numbirch::logz_conway_maxwell_poisson)
-  BIRCH_TERNARY_GRAD(numbirch::logz_conway_maxwell_poisson_grad)
-  BIRCH_FORM
+  BIRCH_TERNARY_FORM(LogZConwayMaxwellPoisson)
 };
+
+BIRCH_TERNARY_SIZE(LogZConwayMaxwellPoisson)
+BIRCH_TERNARY(LogZConwayMaxwellPoisson, numbirch::logz_conway_maxwell_poisson)
+BIRCH_TERNARY_GRAD(LogZConwayMaxwellPoisson, numbirch::logz_conway_maxwell_poisson_grad)
 
 /**
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson

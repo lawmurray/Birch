@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Transpose {
-  BIRCH_UNARY_FORM(Transpose, numbirch::transpose)
-  BIRCH_UNARY_GRAD(numbirch::transpose_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Transpose)
 };
+
+BIRCH_UNARY_SIZE(Transpose)
+BIRCH_UNARY(Transpose, numbirch::transpose)
+BIRCH_UNARY_GRAD(Transpose, numbirch::transpose_grad)
 
 template<class Middle>
 auto transpose(const Middle& m) {

@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct LGamma {
-  BIRCH_UNARY_FORM(LGamma, numbirch::lgamma)
-  BIRCH_UNARY_GRAD(numbirch::lgamma_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(LGamma)
 };
+
+BIRCH_UNARY_SIZE(LGamma)
+BIRCH_UNARY(LGamma, numbirch::lgamma)
+BIRCH_UNARY_GRAD(LGamma, numbirch::lgamma_grad)
 
 template<class Middle>
 auto lgamma(const Middle& m) {

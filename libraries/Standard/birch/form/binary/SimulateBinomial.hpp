@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct SimulateBinomial {
-  BIRCH_BINARY_FORM(SimulateBinomial, numbirch::simulate_binomial)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(SimulateBinomial)
 };
+
+BIRCH_BINARY_SIZE(SimulateBinomial)
+BIRCH_BINARY(SimulateBinomial, numbirch::simulate_binomial)
 
 template<class Left, class Right>
 auto simulate_binomial(const Left& l, const Right& r) {

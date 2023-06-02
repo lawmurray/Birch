@@ -41,19 +41,19 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    V.eval();
-    X.eval();
-    y.eval();
+    eval(V);
+    eval(X);
+    eval(y);
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !y.hasValue();
-    y.eval();
+    eval(y);
     assert !X.hasValue();
-    X.eval();
+    eval(X);
     assert !V.hasValue();
-    V.eval();
+    eval(V);
     return vectorize();
   }
 
@@ -64,11 +64,11 @@ class TestLinearMatrixNormalInverseWishartMultivariateGaussian < TestModel {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(V.eval());
+    z[k + 1.. k + p*p] <- eval(vec(V));
     k <- k + p*p;
-    z[k + 1.. k + n*p] <- vec(X.eval());
+    z[k + 1.. k + n*p] <- eval(vec(X));
     k <- k + n*p;
-    z[k + 1.. k + p] <- y.eval();
+    z[k + 1.. k + p] <- eval(y);
     return z;
   }
 

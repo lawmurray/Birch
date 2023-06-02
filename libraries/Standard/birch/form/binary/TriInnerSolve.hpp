@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct TriInnerSolve {
-  BIRCH_BINARY_FORM(TriInnerSolve, numbirch::triinnersolve)
-  BIRCH_BINARY_GRAD(numbirch::triinnersolve_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(TriInnerSolve)
 };
+
+BIRCH_BINARY_SIZE(TriInnerSolve)
+BIRCH_BINARY(TriInnerSolve, numbirch::triinnersolve)
+BIRCH_BINARY_GRAD(TriInnerSolve, numbirch::triinnersolve_grad)
 
 template<class Left, class Right>
 auto triinnersolve(const Left& l, const Right& r) {

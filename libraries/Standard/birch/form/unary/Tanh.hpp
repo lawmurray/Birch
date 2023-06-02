@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Tanh {
-  BIRCH_UNARY_FORM(Tanh, numbirch::tanh)
-  BIRCH_UNARY_GRAD(numbirch::tanh_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Tanh)
 };
+
+BIRCH_UNARY_SIZE(Tanh)
+BIRCH_UNARY(Tanh, numbirch::tanh)
+BIRCH_UNARY_GRAD(Tanh, numbirch::tanh_grad)
 
 template<class Middle>
 auto tanh(const Middle& m) {

@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct Inner {
-  BIRCH_BINARY_FORM(Inner, numbirch::inner)
-  BIRCH_BINARY_GRAD(numbirch::inner_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(Inner)
 };
+
+BIRCH_BINARY_SIZE(Inner)
+BIRCH_BINARY(Inner, numbirch::inner)
+BIRCH_BINARY_GRAD(Inner, numbirch::inner_grad)
 
 template<class Left, class Right>
 auto inner(const Left& l, const Right& r) {

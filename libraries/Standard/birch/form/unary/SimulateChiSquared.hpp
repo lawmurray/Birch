@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct SimulateChiSquared {
-  BIRCH_UNARY_FORM(SimulateChiSquared, numbirch::simulate_chi_squared)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(SimulateChiSquared)
 };
+
+BIRCH_UNARY_SIZE(SimulateChiSquared)
+BIRCH_UNARY(SimulateChiSquared, numbirch::simulate_chi_squared)
 
 template<class Middle>
 auto simulate_chi_squared(const Middle& m) {

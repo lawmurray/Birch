@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct FrobeniusSelf {
-  BIRCH_UNARY_FORM(FrobeniusSelf, numbirch::frobenius)
-  BIRCH_UNARY_GRAD(numbirch::frobenius_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(FrobeniusSelf)
 };
+
+BIRCH_UNARY_SIZE(FrobeniusSelf)
+BIRCH_UNARY(FrobeniusSelf, numbirch::frobenius)
+BIRCH_UNARY_GRAD(FrobeniusSelf, numbirch::frobenius_grad)
 
 template<class Middle>
 auto frobenius(const Middle& m) {

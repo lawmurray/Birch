@@ -3,16 +3,18 @@
  */
 #pragma once
 
-#include "birch/form/Prefix.hpp"
+#include "birch/form/Unary.hpp"
 
 namespace birch {
 
 template<class Middle>
 struct Pos {
-  BIRCH_UNARY_FORM(Pos, numbirch::pos)
-  BIRCH_UNARY_GRAD(numbirch::pos_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Pos)
 };
+
+BIRCH_UNARY_SIZE(Pos)
+BIRCH_UNARY(Pos, numbirch::pos)
+BIRCH_UNARY_GRAD(Pos, numbirch::pos_grad)
 
 template<class Middle, std::enable_if_t<
     is_numerical_v<Middle> && !numbirch::is_arithmetic_v<Middle>,int> = 0>

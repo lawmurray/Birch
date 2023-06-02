@@ -9,25 +9,31 @@ namespace birch {
 
 template<class Middle>
 struct ScalarDiagonal {
-  BIRCH_UNARY_FORM(ScalarDiagonal, numbirch::diagonal, n)
-  BIRCH_UNARY_GRAD(numbirch::diagonal_grad, n)
-
-  int rows() const {
-    return n;
-  }
-
-  int columns() const {
-    return n;
-  }
-
-  int length() const {
-    return n;
-  }
-
-  int size() const {
-    return n*n;
-  }
+  BIRCH_UNARY_FORM(ScalarDiagonal, n)
 };
+
+BIRCH_UNARY(ScalarDiagonal, numbirch::diagonal, n)
+BIRCH_UNARY_GRAD(ScalarDiagonal, numbirch::diagonal_grad, n)
+
+template<class Middle>
+int rows(const ScalarDiagonal<Middle>& o) {
+  return o.n;
+}
+
+template<class Middle>
+int columns(const ScalarDiagonal<Middle>& o) {
+  return o.n;
+}
+
+template<class Middle>
+int length(const ScalarDiagonal<Middle>& o) {
+  return o.n;
+}
+
+template<class Middle>
+int size(const ScalarDiagonal<Middle>& o) {
+  return pow(o.n, 2);
+}
 
 template<class Middle>
 auto diagonal(const Middle& m, const int n) {

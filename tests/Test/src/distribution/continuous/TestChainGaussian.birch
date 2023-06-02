@@ -21,7 +21,7 @@ class TestChainGaussian < TestModel {
   override function forward() -> Real[_] {
     y:Real[5];
     for i in 1..5 {
-      y[i] <- x[i].eval();
+      y[i] <- eval(x[i]);
     }
     return y;
   }
@@ -30,7 +30,7 @@ class TestChainGaussian < TestModel {
     y:Real[5];
     for i in 0..4 {
       assert !x[5 - i].hasValue();
-      y[5 - i] <- x[5 - i].eval();
+      y[5 - i] <- eval(x[5 - i]);
     }
     return y;
   }

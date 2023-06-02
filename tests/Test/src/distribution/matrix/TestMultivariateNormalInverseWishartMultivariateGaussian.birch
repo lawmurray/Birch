@@ -28,19 +28,19 @@ class TestLinearMultivariateNormalInverseWishartMultivariateGaussian < TestModel
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
-    x.eval();
-    y.eval();
+    eval(Σ);
+    eval(x);
+    eval(y);
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !y.hasValue();
-    y.eval();
+    eval(y);
     assert !x.hasValue();
-    x.eval();
+    eval(x);
     assert !Σ.hasValue();
-    Σ.eval();
+    eval(Σ);
     return vectorize();
   }
 

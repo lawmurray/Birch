@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct SimulateGaussian {
-  BIRCH_BINARY_FORM(SimulateGaussian, numbirch::simulate_gaussian)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(SimulateGaussian)
 };
+
+BIRCH_BINARY_SIZE(SimulateGaussian)
+BIRCH_BINARY(SimulateGaussian, numbirch::simulate_gaussian)
 
 template<class Left, class Right>
 auto simulate_gaussian(const Left& l, const Right& r) {

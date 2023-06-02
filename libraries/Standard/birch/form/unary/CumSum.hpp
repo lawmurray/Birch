@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct CumSum {
-  BIRCH_UNARY_FORM(CumSum, numbirch::cumsum)
-  BIRCH_UNARY_GRAD(numbirch::cumsum_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(CumSum)
 };
+
+BIRCH_UNARY_SIZE(CumSum)
+BIRCH_UNARY(CumSum, numbirch::cumsum)
+BIRCH_UNARY_GRAD(CumSum, numbirch::cumsum_grad)
 
 template<class Middle>
 auto cumsum(const Middle& m) {

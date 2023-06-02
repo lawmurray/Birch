@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Round {
-  BIRCH_UNARY_FORM(Round, numbirch::round)
-  BIRCH_UNARY_GRAD(numbirch::round_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Round)
 };
+
+BIRCH_UNARY_SIZE(Round)
+BIRCH_UNARY(Round, numbirch::round)
+BIRCH_UNARY_GRAD(Round, numbirch::round_grad)
 
 template<class Middle>
 auto round(const Middle& m) {

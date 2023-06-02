@@ -9,25 +9,31 @@ namespace birch {
 
 template<class Middle>
 struct VectorFill {
-  BIRCH_UNARY_FORM(VectorFill, numbirch::fill, n)
-  BIRCH_UNARY_GRAD(numbirch::fill_grad, n)
-
-  int rows() const {
-    return n;
-  }
-
-  int columns() const {
-    return n;
-  }
-
-  int length() const {
-    return n;
-  }
-
-  int size() const {
-    return n;
-  }
+  BIRCH_UNARY_FORM(VectorFill, n)
 };
+
+BIRCH_UNARY(VectorFill, numbirch::fill, n)
+BIRCH_UNARY_GRAD(VectorFill, numbirch::fill_grad, n)
+
+template<class Middle>
+int rows(const VectorFill<Middle>& o) {
+  return o.n;
+}
+
+template<class Middle>
+int columns(const VectorFill<Middle>& o) {
+  return o.n;
+}
+
+template<class Middle>
+int length(const VectorFill<Middle>& o) {
+  return o.n;
+}
+
+template<class Middle>
+int size(const VectorFill<Middle>& o) {
+  return o.n;
+}
 
 template<class Middle>
 auto fill(const Middle& m, const int n) {

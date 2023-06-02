@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct SimulateWishart {
-  BIRCH_UNARY_FORM(SimulateWishart, numbirch::simulate_wishart, n)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(SimulateWishart, n)
 };
+
+BIRCH_UNARY_SIZE(SimulateWishart)
+BIRCH_UNARY(SimulateWishart, numbirch::simulate_wishart, n)
 
 template<class Middle>
 auto simulate_wishart(const Middle& m, const int n) {

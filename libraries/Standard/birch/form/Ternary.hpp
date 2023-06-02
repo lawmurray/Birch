@@ -5,7 +5,7 @@
 
 #include "birch/form/Form.hpp"
 
-#define BIRCH_TERNARY_FORM(This, f, ...) \
+#define BIRCH_TERNARY_FORM(This, ...) \
   static constexpr bool is_form = true; \
   Left l; \
   Middle m; \
@@ -23,88 +23,126 @@
     return this; \
   } \
   \
-  operator auto() const { \
-    return value(); \
+  operator auto() const; \
+  auto operator*() const;
+
+#define BIRCH_TERNARY_SIZE(This, ...) \
+  template<class Left, class Middle, class Right> \
+  int rows(const This<Left,Middle,Right>& o) { \
+    return rows(eval(o)); \
   } \
   \
-  auto operator*() const { \
-    return wait(value()); \
+  template<class Left, class Middle, class Right> \
+  int columns(const This<Left,Middle,Right>& o) { \
+    return columns(eval(o)); \
   } \
   \
-  void reset() { \
-    birch::reset(l); \
-    birch::reset(m); \
-    birch::reset(r); \
+  template<class Left, class Middle, class Right> \
+  int length(const This<Left,Middle,Right>& o) { \
+    return length(eval(o)); \
   } \
   \
-  void relink(const RelinkVisitor& visitor) { \
-    birch::relink(l, visitor); \
-    birch::relink(m, visitor); \
-    birch::relink(r, visitor); \
-  } \
-  \
-  void constant() const { \
-    birch::constant(l); \
-    birch::constant(m); \
-    birch::constant(r); \
-  } \
-  \
-  bool isConstant() const { \
-    return birch::is_constant(l) && birch::is_constant(m) && \
-        birch::is_constant(r); \
-  } \
-  \
-  void args(const ArgsVisitor& visitor) { \
-    birch::args(l, visitor); \
-    birch::args(m, visitor); \
-    birch::args(r, visitor); \
-  } \
-  \
-  void deepGrad(const GradVisitor& visitor) { \
-    birch::deep_grad(l, visitor); \
-    birch::deep_grad(m, visitor); \
-    birch::deep_grad(r, visitor); \
-  } \
-  \
-  auto value() const { \
-    return f(birch::value(l), birch::value(m), birch::value(r)__VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
-  auto eval() const { \
-    return f(birch::eval(l), birch::eval(m), birch::eval(r)__VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
-  auto peek() const { \
-    return f(birch::peek(l), birch::peek(m), birch::peek(r)__VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
-  auto move(const MoveVisitor& visitor) const { \
-    return f(birch::move(l, visitor), birch::move(m, visitor), birch::move(r, visitor)__VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
-  auto peg() const { \
-    using T = std::decay_t<decltype(birch::peg(l))>; \
-    using U = std::decay_t<decltype(birch::peg(m))>; \
-    using V = std::decay_t<decltype(birch::peg(r))>; \
-    return This<T,U,V>{birch::peg(l), birch::peg(m), birch::peg(r)__VA_OPT__(,) __VA_ARGS__}; \
-  } \
-  auto tag() const { \
-    using T = decltype(birch::tag(l)); \
-    using U = decltype(birch::tag(m)); \
-    using V = decltype(birch::tag(r)); \
-    return This<T,U,V>{birch::tag(l), birch::tag(m), birch::tag(r)__VA_OPT__(,) __VA_ARGS__}; \
+  template<class Left, class Middle, class Right> \
+  int size(const This<Left,Middle,Right>& o) { \
+    return size(eval(o)); \
   }
 
-#define BIRCH_TERNARY_GRAD(f_grad, ...) \
-  template<class G> \
-  void shallowGrad(const G& g, const GradVisitor& visitor) { \
-    auto x = birch::peek(*this); \
-    auto l1 = birch::peek(l); \
-    auto m1 = birch::peek(m); \
-    auto r1 = birch::peek(r); \
-    birch::shallow_grad(l, f_grad ## 1(g, x, l1, m1, r1 __VA_OPT__(,) __VA_ARGS__), visitor); \
-    birch::shallow_grad(m, f_grad ## 2(g, x, l1, m1, r1 __VA_OPT__(,) __VA_ARGS__), visitor); \
-    birch::shallow_grad(r, f_grad ## 3(g, x, l1, m1, r1 __VA_OPT__(,) __VA_ARGS__), visitor); \
+#define BIRCH_TERNARY(This, f, ...) \
+  template<class Left, class Middle, class Right> \
+  auto value(const This<Left,Middle,Right>& o) { \
+    return f(value(o.l), value(o.m), value(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  auto eval(const This<Left,Middle,Right>& o) { \
+    return f(eval(o.l), eval(o.m), eval(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  auto peek(const This<Left,Middle,Right>& o) { \
+    return f(peek(o.l), peek(o.m), peek(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  auto move(const This<Left,Middle,Right>& o, const MoveVisitor& visitor) { \
+    return f(move(o.l, visitor), move(o.m, visitor), move(o.r, visitor) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  auto peg(const This<Left,Middle,Right>& o) { \
+    using T = std::decay_t<decltype(peg(o.l))>; \
+    using U = std::decay_t<decltype(peg(o.m))>; \
+    using V = std::decay_t<decltype(peg(o.r))>; \
+    return This<T,U,V>{peg(o.l), peg(o.m), peg(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))}; \
+  } \
+  template<class Left, class Middle, class Right> \
+  auto tag(const This<Left,Middle,Right>& o) { \
+    using T = decltype(tag(o.l)); \
+    using U = decltype(tag(o.m)); \
+    using V = decltype(tag(o.r)); \
+    return This<T,U,V>{tag(o.l), tag(o.m), tag(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))}; \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  void reset(This<Left,Middle,Right>& o) { \
+    reset(o.l); \
+    reset(o.m); \
+    reset(o.r); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  void relink(This<Left,Middle,Right>& o, const RelinkVisitor& visitor) { \
+    relink(o.l, visitor); \
+    relink(o.m, visitor); \
+    relink(o.r, visitor); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  void constant(const This<Left,Middle,Right>& o) { \
+    constant(o.l); \
+    constant(o.m); \
+    constant(o.r); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  bool is_constant(const This<Left,Middle,Right>& o) { \
+    return is_constant(o.l) && is_constant(o.m) && is_constant(o.r); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  void args(This<Left,Middle,Right>& o, const ArgsVisitor& visitor) { \
+    args(o.l, visitor); \
+    args(o.m, visitor); \
+    args(o.r, visitor); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  void deep_grad(This<Left,Middle,Right>& o, const GradVisitor& visitor) { \
+    deep_grad(o.l, visitor); \
+    deep_grad(o.m, visitor); \
+    deep_grad(o.r, visitor); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  This<Left,Middle,Right>::operator auto() const { \
+    return f(value(l), value(m), value(r) __VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  template<class Left, class Middle, class Right> \
+  auto This<Left,Middle,Right>::operator*() const { \
+    return wait(f(value(l), value(m), value(r) __VA_OPT__(,) __VA_ARGS__)); \
+  }
+
+#define BIRCH_TERNARY_GRAD(This, f_grad, ...) \
+  template<class Left, class Middle, class Right, class G> \
+  void shallow_grad(This<Left,Middle,Right>& o, const G& g, const GradVisitor& visitor) { \
+    auto x = peek(o); \
+    auto l1 = peek(o.l); \
+    auto m1 = peek(o.m); \
+    auto r1 = peek(o.r); \
+    shallow_grad(o.l, f_grad ## 1(g, x, l1, m1, r1 __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))), visitor); \
+    shallow_grad(o.m, f_grad ## 2(g, x, l1, m1, r1 __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))), visitor); \
+    shallow_grad(o.r, f_grad ## 3(g, x, l1, m1, r1 __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))), visitor); \
   } 
 
 #define BIRCH_TERNARY_CONSTRUCT(This, ...) \

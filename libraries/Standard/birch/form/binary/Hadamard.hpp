@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct Hadamard {
-  BIRCH_BINARY_FORM(Hadamard, numbirch::hadamard)
-  BIRCH_BINARY_GRAD(numbirch::hadamard_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(Hadamard)
 };
+
+BIRCH_BINARY_SIZE(Hadamard)
+BIRCH_BINARY(Hadamard, numbirch::hadamard)
+BIRCH_BINARY_GRAD(Hadamard, numbirch::hadamard_grad)
 
 template<class Left, class Right>
 auto hadamard(const Left& l, const Right& r) {

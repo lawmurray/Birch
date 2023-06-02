@@ -18,28 +18,28 @@ class TestLongDiscreteDelta < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[size()];
-    y[1] <- x[1].eval();
-    y[2] <- x[2].eval();
-    y[3] <- x[3].eval();
-    y[4] <- x[4].eval();
-    y[5] <- x[5].eval();
-    y[6] <- s.eval();
+    y[1] <- eval(x[1]);
+    y[2] <- eval(x[2]);
+    y[3] <- eval(x[3]);
+    y[4] <- eval(x[4]);
+    y[5] <- eval(x[5]);
+    y[6] <- eval(s);
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[size()];
-    y[6] <- s.eval();
+    y[6] <- eval(s);
     assert !x[1].hasValue();
     assert !x[2].hasValue();
     assert !x[3].hasValue();
     assert !x[4].hasValue();
     assert !x[5].hasValue();
-    y[5] <- x[5].eval();
-    y[4] <- x[4].eval();
-    y[3] <- x[3].eval();
-    y[2] <- x[2].eval();
-    y[1] <- x[1].eval();
+    y[5] <- eval(x[5]);
+    y[4] <- eval(x[4]);
+    y[3] <- eval(x[3]);
+    y[2] <- eval(x[2]);
+    y[1] <- eval(x[1]);
     return y;
   }
 

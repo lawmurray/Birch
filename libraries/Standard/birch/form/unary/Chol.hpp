@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Chol {
-  BIRCH_UNARY_FORM(Chol, numbirch::chol)
-  BIRCH_UNARY_GRAD(numbirch::chol_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Chol)
 };
+
+BIRCH_UNARY_SIZE(Chol)
+BIRCH_UNARY(Chol, numbirch::chol)
+BIRCH_UNARY_GRAD(Chol, numbirch::chol_grad)
 
 template<class Middle>
 auto chol(const Middle& m) {

@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Iota {
-  BIRCH_UNARY_FORM(Iota, numbirch::iota, n)
-  BIRCH_UNARY_GRAD(numbirch::iota_grad, n)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Iota, n)
 };
+
+BIRCH_UNARY_SIZE(Iota)
+BIRCH_UNARY(Iota, numbirch::iota, n)
+BIRCH_UNARY_GRAD(Iota, numbirch::iota_grad, n)
 
 template<class Middle>
 auto iota(const Middle& m, const int n) {

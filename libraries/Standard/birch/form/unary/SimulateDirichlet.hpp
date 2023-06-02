@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct SimulateDirichlet {
-  BIRCH_UNARY_FORM(SimulateDirichlet, numbirch::simulate_dirichlet)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(SimulateDirichlet)
 };
+
+BIRCH_UNARY_SIZE(SimulateDirichlet)
+BIRCH_UNARY(SimulateDirichlet, numbirch::simulate_dirichlet)
 
 template<class Middle>
 auto simulate_dirichlet(const Middle& m) {

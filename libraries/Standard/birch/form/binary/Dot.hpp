@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct Dot {
-  BIRCH_BINARY_FORM(Dot, numbirch::dot)
-  BIRCH_BINARY_GRAD(numbirch::dot_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(Dot)
 };
+
+BIRCH_BINARY_SIZE(Dot)
+BIRCH_BINARY(Dot, numbirch::dot)
+BIRCH_BINARY_GRAD(Dot, numbirch::dot_grad)
 
 template<class Left, class Right>
 auto dot(const Left& l, const Right& r) {

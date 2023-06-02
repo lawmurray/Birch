@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct IsInf {
-  BIRCH_UNARY_FORM(IsInf, numbirch::isinf)
-  BIRCH_UNARY_GRAD(numbirch::isinf_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(IsInf)
 };
+
+BIRCH_UNARY_SIZE(IsInf)
+BIRCH_UNARY(IsInf, numbirch::isinf)
+BIRCH_UNARY_GRAD(IsInf, numbirch::isinf_grad)
 
 template<class Middle>
 auto isinf(const Middle& m) {

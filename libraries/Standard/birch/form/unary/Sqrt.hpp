@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Sqrt {
-  BIRCH_UNARY_FORM(Sqrt, numbirch::sqrt)
-  BIRCH_UNARY_GRAD(numbirch::sqrt_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Sqrt)
 };
+
+BIRCH_UNARY_SIZE(Sqrt)
+BIRCH_UNARY(Sqrt, numbirch::sqrt)
+BIRCH_UNARY_GRAD(Sqrt, numbirch::sqrt_grad)
 
 template<class Middle>
 auto sqrt(const Middle& m) {

@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct TriMul {
-  BIRCH_BINARY_FORM(TriMul, numbirch::trimul)
-  BIRCH_BINARY_GRAD(numbirch::trimul_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(TriMul)
 };
+
+BIRCH_BINARY_SIZE(TriMul)
+BIRCH_BINARY(TriMul, numbirch::trimul)
+BIRCH_BINARY_GRAD(TriMul, numbirch::trimul_grad)
 
 template<class Left, class Right>
 auto trimul(const Left& l, const Right& r) {

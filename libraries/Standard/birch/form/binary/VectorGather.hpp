@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct VectorGather {
-  BIRCH_BINARY_FORM(VectorGather, numbirch::gather)
-  BIRCH_BINARY_GRAD(numbirch::gather_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(VectorGather)
 };
+
+BIRCH_BINARY_SIZE(VectorGather)
+BIRCH_BINARY(VectorGather, numbirch::gather)
+BIRCH_BINARY_GRAD(VectorGather, numbirch::gather_grad)
 
 template<class Left, class Right>
 auto gather(const Left& l, const Right& r) {

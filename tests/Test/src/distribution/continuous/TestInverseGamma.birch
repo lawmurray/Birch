@@ -13,11 +13,11 @@ class TestInverseGamma < TestModel {
   }
 
   override function forward() -> Real[_] {
-    return σ2.eval();
+    return eval(σ2);
   }
 
   override function backward() -> Real[_] {
-    return σ2.eval();
+    return eval(σ2);
   }
 
   function marginal() -> Distribution<Real> {

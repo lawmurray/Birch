@@ -36,27 +36,27 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   }
 
   override function forward() -> Real[_] {
-    σ2.eval();
-    μ.eval();
-    x[1].eval();
-    x[2].eval();
-    x[3].eval();
-    x[4].eval();
-    x[5].eval();
+    eval(σ2);
+    eval(μ);
+    eval(x[1]);
+    eval(x[2]);
+    eval(x[3]);
+    eval(x[4]);
+    eval(x[5]);
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !x[5].hasValue();
-    x[5].eval();
-    x[4].eval();
-    x[3].eval();
-    x[2].eval();
-    x[1].eval();
+    eval(x[5]);
+    eval(x[4]);
+    eval(x[3]);
+    eval(x[2]);
+    eval(x[1]);
     assert !μ.hasValue();
-    μ.eval();
+    eval(μ);
     assert !σ2.hasValue();
-    σ2.eval();
+    eval(σ2);
     return vectorize();
   }
 
@@ -67,19 +67,19 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   function vectorize() -> Real[_] {
     y:Real[size()];
     let k <- 1;
-    y[k] <- σ2.value();
+    y[k] <- value(σ2);
     k <- k + 1;
-    y[k..(k + n - 1)] <- μ.eval();
+    y[k..(k + n - 1)] <- eval(μ);
     k <- k + n;
-    y[k..(k + n - 1)] <- x[1].eval();
+    y[k..(k + n - 1)] <- eval(x[1]);
     k <- k + n;
-    y[k..(k + n - 1)] <- x[2].eval();
+    y[k..(k + n - 1)] <- eval(x[2]);
     k <- k + n;
-    y[k..(k + n - 1)] <- x[3].eval();
+    y[k..(k + n - 1)] <- eval(x[3]);
     k <- k + n;
-    y[k..(k + n - 1)] <- x[4].eval();
+    y[k..(k + n - 1)] <- eval(x[4]);
     k <- k + n;
-    y[k..(k + n - 1)] <- x[5].eval();
+    y[k..(k + n - 1)] <- eval(x[5]);
     return y;
   }
 

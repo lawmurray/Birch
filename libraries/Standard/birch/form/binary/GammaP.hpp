@@ -9,10 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct GammaP {
-  BIRCH_BINARY_FORM(GammaP, numbirch::gamma_p)
-  BIRCH_NO_GRAD
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(GammaP)
 };
+
+BIRCH_BINARY_SIZE(GammaP)
+BIRCH_BINARY(GammaP, numbirch::gamma_p)
 
 template<class Left, class Right>
 auto gamma_p(const Left& l, const Right& r) {

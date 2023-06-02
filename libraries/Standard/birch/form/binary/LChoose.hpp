@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct LChoose {
-  BIRCH_BINARY_FORM(LChoose, numbirch::lchoose)
-  BIRCH_BINARY_GRAD(numbirch::lchoose_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(LChoose)
 };
+
+BIRCH_BINARY_SIZE(LChoose)
+BIRCH_BINARY(LChoose, numbirch::lchoose)
+BIRCH_BINARY_GRAD(LChoose, numbirch::lchoose_grad)
 
 template<class Left, class Right>
 auto lchoose(const Left& l, const Right& r) {

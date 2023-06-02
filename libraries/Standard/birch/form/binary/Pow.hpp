@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct Pow {
-  BIRCH_BINARY_FORM(Pow, numbirch::pow)
-  BIRCH_BINARY_GRAD(numbirch::pow_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(Pow)
 };
+
+BIRCH_BINARY_SIZE(Pow)
+BIRCH_BINARY(Pow, numbirch::pow)
+BIRCH_BINARY_GRAD(Pow, numbirch::pow_grad)
 
 template<class Left, class Right>
 auto pow(const Left& l, const Right& r) {

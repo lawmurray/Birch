@@ -68,16 +68,6 @@ void birch::CppPackageGenerator::visit(const Package* o) {
       line("#include <" << include.string() << '>');
     }
 
-    /* raw C++ code */
-    for (auto file : o->sources) {
-      for (auto o : *file->root) {
-        auto raw = dynamic_cast<const Raw*>(o);
-        if (raw) {
-          *this << raw;
-        }
-      }
-    }
-
     line("namespace birch {");
 
     /* forward struct type declarations */
@@ -150,6 +140,18 @@ void birch::CppPackageGenerator::visit(const Package* o) {
         finish(';');
       }
     }
+    line("}\n");  // close namespace
+
+    /* raw C++ code */
+    for (auto file : o->sources) {
+      for (auto o : *file->root) {
+        auto raw = dynamic_cast<const Raw*>(o);
+        if (raw) {
+          *this << raw;
+        }
+      }
+    }
+    line("namespace birch {");
 
     /* global variables */
     for (auto o : globals) {

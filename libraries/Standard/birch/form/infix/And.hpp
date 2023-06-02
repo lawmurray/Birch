@@ -3,16 +3,18 @@
  */
 #pragma once
 
-#include "birch/form/Infix.hpp"
+#include "birch/form/Binary.hpp"
 
 namespace birch {
 
 template<class Left, class Right>
 struct And {
-  BIRCH_BINARY_FORM(And, numbirch::logical_and)
-  BIRCH_BINARY_GRAD(numbirch::logical_and_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(And)
 };
+
+BIRCH_BINARY_SIZE(And)
+BIRCH_BINARY(And, numbirch::logical_and)
+BIRCH_BINARY_GRAD(And, numbirch::logical_and_grad)
 
 template<class Left, class Right, std::enable_if_t<
     is_numerical_v<Left> && is_numerical_v<Right> &&

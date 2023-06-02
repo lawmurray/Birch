@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Sin {
-  BIRCH_UNARY_FORM(Sin, numbirch::sin)
-  BIRCH_UNARY_GRAD(numbirch::sin_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Sin)
 };
+
+BIRCH_UNARY_SIZE(Sin)
+BIRCH_UNARY(Sin, numbirch::sin)
+BIRCH_UNARY_GRAD(Sin, numbirch::sin_grad)
 
 template<class Middle>
 auto sin(const Middle& m) {

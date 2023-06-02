@@ -31,20 +31,20 @@ class TestLinearMultivariateNormalInverseGammaGaussian < TestModel {
 
   override function forward() -> Real[_] {
     y:Real[n + 2];
-    y[1] <- σ2.eval();
-    y[2..(n + 1)] <- μ.eval();
-    y[n + 2] <- x.eval();
+    y[1] <- eval(σ2);
+    y[2..(n + 1)] <- eval(μ);
+    y[n + 2] <- eval(x);
     return y;
   }
 
   override function backward() -> Real[_] {
     y:Real[n + 2];
     assert !x.hasValue();
-    y[n + 2] <- x.eval();
+    y[n + 2] <- eval(x);
     assert !μ.hasValue();
-    y[2..(n + 1)] <- μ.eval();
+    y[2..(n + 1)] <- eval(μ);
     assert !σ2.hasValue();
-    y[1] <- σ2.eval();
+    y[1] <- eval(σ2);
     return y;
   }
 

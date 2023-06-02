@@ -3,27 +3,12 @@
  */
 #pragma once
 
-#include "birch/form/Form.hpp"
-
-#define BIRCH_FORM \
-  int rows() const { \
-    return birch::rows(eval()); \
-  } \
-  \
-  int columns() const { \
-    return birch::columns(eval()); \
-  } \
-  \
-  int length() const { \
-    return birch::length(eval()); \
-  } \
-  \
-  int size() const { \
-    return birch::size(eval()); \
-  }
-
-#define BIRCH_NO_GRAD \
-  template<class G> \
-  void shallowGrad(const G& g, const GradVisitor& visitor) { \
-    assert(false); \
-  }
+/*
+ * Add `o.` to the start of each argument, e.g. `BIRCH_O_DOT(a, b, c)` yields
+ * `o.a, o.b, o.c`.
+ */
+#define BIRCH_O_DOT3(arg) o.arg)
+#define BIRCH_O_DOT2(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT3(__VA_ARGS__))
+#define BIRCH_O_DOT1(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT2(__VA_ARGS__))
+#define BIRCH_O_DOT0(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT1(__VA_ARGS__))
+#define BIRCH_O_DOT(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT0(__VA_ARGS__))

@@ -16,13 +16,13 @@ class TestInverseWishart < TestModel {
   }
 
   override function forward() -> Real[_] {
-    Σ.eval();
+    eval(Σ);
     return vectorize();
   }
 
   override function backward() -> Real[_] {
     assert !Σ.hasValue();
-    Σ.eval();
+    eval(Σ);
     return vectorize();
   }
 
@@ -33,7 +33,7 @@ class TestInverseWishart < TestModel {
   function vectorize() -> Real[_] {
     z:Real[size()];
     let k <- 0;
-    z[k + 1.. k + p*p] <- vec(Σ.eval());
+    z[k + 1.. k + p*p] <- eval(vec(Σ));
     return z;
   }
 

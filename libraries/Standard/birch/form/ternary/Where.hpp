@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Middle, class Right>
 struct Where {
-  BIRCH_TERNARY_FORM(Where, numbirch::where)
-  BIRCH_TERNARY_GRAD(numbirch::where_grad)
-  BIRCH_FORM
+  BIRCH_TERNARY_FORM(Where)
 };
+
+BIRCH_TERNARY_SIZE(Where)
+BIRCH_TERNARY(Where, numbirch::where)
+BIRCH_TERNARY_GRAD(Where, numbirch::where_grad)
 
 template<class Left, class Middle, class Right>
 auto where(const Left& l, const Middle& m, const Right& r) {

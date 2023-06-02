@@ -9,10 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct Digamma {
-  BIRCH_UNARY_FORM(Digamma, numbirch::digamma)
-  BIRCH_NO_GRAD
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Digamma)
 };
+
+BIRCH_UNARY_SIZE(Digamma)
+BIRCH_UNARY(Digamma, numbirch::digamma)
 
 template<class Middle>
 auto digamma(const Middle& m) {

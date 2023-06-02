@@ -9,10 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct DigammaP {
-  BIRCH_BINARY_FORM(DigammaP, numbirch::digamma)
-  BIRCH_NO_GRAD
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(DigammaP)
 };
+
+BIRCH_BINARY_SIZE(DigammaP)
+BIRCH_BINARY(DigammaP, numbirch::digamma)
 
 template<class Left, class Right>
 auto digamma(const Left& l, const Right& r) {

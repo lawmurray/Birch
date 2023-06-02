@@ -8,25 +8,26 @@
 namespace birch {
 
 struct MatrixStandardGaussian {
-  BIRCH_NULLARY_FORM(MatrixStandardGaussian, numbirch::standard_gaussian, R, C)
-  BIRCH_NO_GRAD
-
-  int rows() const {
-    return R;
-  }
-
-  int columns() const {
-    return C;
-  }
-
-  int length() const {
-    return R;
-  }
-
-  int size() const {
-    return R*C;
-  }
+  BIRCH_NULLARY_FORM(MatrixStandardGaussian, R, C)
 };
+
+inline int rows(const MatrixStandardGaussian& o) {
+  return o.R;
+}
+
+inline int columns(const MatrixStandardGaussian& o) {
+  return o.C;
+}
+
+inline int length(const MatrixStandardGaussian& o) {
+  return o.R;
+}
+
+inline int size(const MatrixStandardGaussian& o) {
+  return o.R*o.C;
+}
+
+BIRCH_NULLARY(MatrixStandardGaussian, numbirch::standard_gaussian, R, C)
 
 inline auto standard_gaussian(const int R, const int C) {
   return BIRCH_NULLARY_CONSTRUCT(MatrixStandardGaussian, R, C);

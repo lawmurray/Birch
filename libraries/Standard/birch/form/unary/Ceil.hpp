@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct Ceil {
-  BIRCH_UNARY_FORM(Ceil, numbirch::ceil)
-  BIRCH_UNARY_GRAD(numbirch::ceil_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(Ceil)
 };
+
+BIRCH_UNARY_SIZE(Ceil)
+BIRCH_UNARY(Ceil, numbirch::ceil)
+BIRCH_UNARY_GRAD(Ceil, numbirch::ceil_grad)
 
 template<class Middle>
 auto ceil(const Middle& m) {

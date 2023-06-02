@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Middle>
 struct IsFinite {
-  BIRCH_UNARY_FORM(IsFinite, numbirch::isfinite)
-  BIRCH_UNARY_GRAD(numbirch::isfinite_grad)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(IsFinite)
 };
+
+BIRCH_UNARY_SIZE(IsFinite)
+BIRCH_UNARY(IsFinite, numbirch::isfinite)
+BIRCH_UNARY_GRAD(IsFinite, numbirch::isfinite_grad)
 
 template<class Middle>
 auto isfinite(const Middle& m) {

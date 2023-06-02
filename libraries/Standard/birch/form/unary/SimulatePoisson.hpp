@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Middle>
 struct SimulatePoisson {
-  BIRCH_UNARY_FORM(SimulatePoisson, numbirch::simulate_poisson)
-  BIRCH_FORM
+  BIRCH_UNARY_FORM(SimulatePoisson)
 };
+
+BIRCH_UNARY_SIZE(SimulatePoisson)
+BIRCH_UNARY(SimulatePoisson, numbirch::simulate_poisson)
 
 template<class Middle>
 auto simulate_poisson(const Middle& m) {

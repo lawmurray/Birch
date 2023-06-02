@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct CopySign {
-  BIRCH_BINARY_FORM(CopySign, numbirch::copysign)
-  BIRCH_BINARY_GRAD(numbirch::copysign_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(CopySign)
 };
+
+BIRCH_BINARY_SIZE(CopySign)
+BIRCH_BINARY(CopySign, numbirch::copysign)
+BIRCH_BINARY_GRAD(CopySign, numbirch::copysign_grad)
 
 template<class Left, class Right>
 auto copysign(const Left& l, const Right& r) {

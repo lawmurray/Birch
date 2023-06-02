@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct SimulateBeta {
-  BIRCH_BINARY_FORM(SimulateBeta, numbirch::simulate_beta)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(SimulateBeta)
 };
+
+BIRCH_BINARY_SIZE(SimulateBeta)
+BIRCH_BINARY(SimulateBeta, numbirch::simulate_beta)
 
 template<class Left, class Right>
 auto simulate_beta(const Left& l, const Right& r) {

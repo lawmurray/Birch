@@ -9,10 +9,12 @@ namespace birch {
 
 template<class Left, class Right>
 struct MatrixStack {
-  BIRCH_BINARY_FORM(MatrixStack, numbirch::stack)
-  BIRCH_BINARY_GRAD(numbirch::stack_grad)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(MatrixStack)
 };
+
+BIRCH_BINARY_SIZE(MatrixStack)
+BIRCH_BINARY(MatrixStack, numbirch::stack)
+BIRCH_BINARY_GRAD(MatrixStack, numbirch::stack_grad)
 
 template<class Left, class Right>
 auto stack(const Left& l, const Right& r) {

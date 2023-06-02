@@ -9,9 +9,11 @@ namespace birch {
 
 template<class Left, class Right>
 struct SimulateUniform {
-  BIRCH_BINARY_FORM(SimulateUniform, numbirch::simulate_uniform)
-  BIRCH_FORM
+  BIRCH_BINARY_FORM(SimulateUniform)
 };
+
+BIRCH_BINARY_SIZE(SimulateUniform)
+BIRCH_BINARY(SimulateUniform, numbirch::simulate_uniform)
 
 template<class Left, class Right>
 auto simulate_uniform(const Left& l, const Right& r) {
