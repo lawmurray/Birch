@@ -112,8 +112,8 @@ commands:
                   boost-dev \
                   sqlite-dev \
                   cairo-dev
-              else [[ "$CODENAME" =~ "default" || "$CODENAME" =~ "bench" || "$CODENAME" =~ "cover" ]]; then
-                zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
+              else
+                  zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
                   && zypper --non-interactive refresh \
                   && zypper --non-interactive update \
                   && zypper --non-interactive install --no-recommends \
