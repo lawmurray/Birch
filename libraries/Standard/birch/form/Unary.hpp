@@ -103,12 +103,12 @@
   template<class Middle> \
   auto peg(const This<Middle>& o) { \
     using T = std::decay_t<decltype(peg(o.m))>; \
-    return This<T>{peg(o.m) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))}; \
+    return This<T>{o}; \
   } \
   template<class Middle> \
   auto tag(const This<Middle>& o) { \
     using T = decltype(tag(o.m)); \
-    return This<T>{tag(o.m) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))}; \
+    return This<T>{o}; \
   } \
   \
   template<class Middle> \

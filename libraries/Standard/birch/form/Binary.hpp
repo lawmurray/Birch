@@ -75,14 +75,14 @@
   auto peg(const This<Left,Right>& o) { \
     using T = std::decay_t<decltype(peg(o.l))>; \
     using U = std::decay_t<decltype(peg(o.r))>; \
-    return This<T,U>{peg(o.l), peg(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))}; \
+    return This<T,U>{o}; \
   } \
   \
   template<class Left, class Right> \
   auto tag(const This<Left,Right>& o) { \
     using T = decltype(tag(o.l)); \
     using U = decltype(tag(o.r)); \
-    return This<T,U>{tag(o.l), tag(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))}; \
+    return This<T,U>{o}; \
   } \
   \
   template<class Left, class Right> \

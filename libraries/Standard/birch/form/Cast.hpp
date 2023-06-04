@@ -60,12 +60,12 @@ auto move(const Cast<To,Middle>& o, const MoveVisitor& visitor) {
 template<class To, class Middle>
 auto peg(const Cast<To,Middle>& o) {
   using T = std::decay_t<decltype(peg(o.m))>;
-  return Cast<To,T>{peg(o.m)};
+  return Cast<To,T>{o};
 }
 template<class To, class Middle>
 auto tag(const Cast<To,Middle>& o) {
   using T = decltype(tag(o.m));
-  return Cast<To,T>{tag(o.m)};
+  return Cast<To,T>{o};
 }
 
 template<class To, class Middle>

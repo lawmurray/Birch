@@ -45,11 +45,11 @@
   } \
   \
   inline auto peg(const This& o) { \
-    return This{__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))}; \
+    return o; \
   } \
   \
   inline auto tag(const This& o) { \
-    return This{__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))}; \
+    return o; \
   } \
   \
   static constexpr void reset(const This&) {} \
