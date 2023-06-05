@@ -37,19 +37,6 @@ executors:
       BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --enable-coverage --disable-optimize --disable-static --disable-single
     working_directory: /root/cover
 
-  alpine:
-    docker:
-      - image: alpine:latest
-    resource_class: large
-    shell: /bin/bash -eo pipefail   # Alpine defaults to ash, CircleCi requires bash for $BASH_ENV
-    environment:
-      CODENAME: alpine
-      OMP_NUM_THREADS: 4
-      CXXFLAGS: -O0 -Wall
-      MAKEFLAGS: -j8
-      BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single
-    working_directory: /root/alpine
-
   mac:
     macos:
       xcode: 13.4.1
@@ -67,7 +54,6 @@ commands:
     steps:
       - run:
           name: Install dependencies
-          shell: /bin/sh  # use default shell, preferred may not have been installed yet (e.g. on Alpine, ash to bash)
           command: |
               if [[ "$CODENAME" =~ "mac" ]]; then
                 HOMEBREW_NO_AUTO_UPDATE=1 brew remove --force --ignore-dependencies node node@14 tcl-tk  # avoids these being unnecessarily updated as dependents later
@@ -83,35 +69,6 @@ commands:
                     libomp \
                     cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
-              elif [[ "$CODENAME" =~ "alpine" ]]; then
-                apk update
-                apk add --no-cache \
-                  bash \
-                  git \
-                  openssh \
-                  gpg \
-                  gpg-agent \
-                  gpgv \
-                  coreutils \
-                  tar \
-                  gzip \
-                  curl \
-                  ca-certificates \
-                  binutils \
-                  elfutils \
-                  make \
-                  autoconf \
-                  automake \
-                  libtool \
-                  flex \
-                  bison \
-                  g++ \
-                  gdb \
-                  eigen-dev \
-                  yaml-dev \
-                  boost-dev \
-                  sqlite-dev \
-                  cairo-dev
               else
                   zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
                   && zypper --non-interactive refresh \
@@ -311,7 +268,6 @@ workflows:
               os:
                 - bench
                 - cover
-                - alpine
                 - mac
 
       - test:
@@ -320,7 +276,6 @@ workflows:
               os:
                 - bench
                 - cover
-                - alpine
                 - mac
           requires:
             - build-<< matrix.os >>
@@ -331,7 +286,6 @@ workflows:
               os:
                 - bench
                 - cover
-                - alpine
                 - mac
               dir:
                 - examples/Ecology
