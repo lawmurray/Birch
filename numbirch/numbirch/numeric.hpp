@@ -25,8 +25,8 @@ namespace numbirch {
  * 
  * @see hadamard()
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+template<numeric T, numeric U>
+requires is_scalar_v<T> || is_scalar_v<U>
 implicit_t<T,U> mul(const T& x, const U& y) {
   return hadamard(x, y);
 }
@@ -46,8 +46,8 @@ implicit_t<T,U> mul(const T& x, const U& y) {
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+template<numeric T, numeric U>
+requires is_scalar_v<T> || is_scalar_v<U>
 real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
   return hadamard_grad1(g, z, x, y);
@@ -68,8 +68,8 @@ real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U> && (is_scalar_v<T> || is_scalar_v<U>),int>>
+template<numeric T, numeric U>
+requires is_scalar_v<T> || is_scalar_v<U>
 real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y) {
   return hadamard_grad2(g, z, x, y);
@@ -226,8 +226,7 @@ Array<real,2> cholinv_grad(const Array<real,2>& g, const Array<real,2>& B,
  * 
  * @return Solution of $B$ in $SB = LL^\top B = Iy$.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,2> cholsolve(const Array<real,2>& L, const U& y);
 
 /**
@@ -245,8 +244,7 @@ Array<real,2> cholsolve(const Array<real,2>& L, const U& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y);
 
@@ -265,8 +263,7 @@ Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
  * 
  * @return Gradient with respect to  @p y.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y);
 
@@ -883,7 +880,7 @@ Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& L,
  * 
  * @return Result $B = A^\top$.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<T,2> transpose(const Array<T,2>& A);
 
 /**
@@ -897,7 +894,7 @@ Array<T,2> transpose(const Array<T,2>& A);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& B,
     const Array<T,2>& A);
 
@@ -910,7 +907,7 @@ Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& B,
  * 
  * @return Result $y = x$.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 T transpose(const T& x) {
   return x;
 }
@@ -926,7 +923,7 @@ T transpose(const T& x) {
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 real_t<T> transpose_grad(const real_t<T>& g, const T& y, const T& x) {
   return g;
 }
@@ -1078,8 +1075,7 @@ Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& C,
  * 
  * @return Solution of $B$ in $LB = Iy$.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,2> triinnersolve(const Array<real,2>& L, const U& y);
 
 /**
@@ -1096,8 +1092,7 @@ Array<real,2> triinnersolve(const Array<real,2>& L, const U& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y);
 
@@ -1115,8 +1110,7 @@ Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B
  * 
  * @return Gradient with respect to  @p y.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,0> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y);
 
@@ -1392,8 +1386,7 @@ Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& C,
  * 
  * @return Solution of $B$ in $LB = Iy$.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,2> trisolve(const Array<real,2>& L, const U& y);
 
 /**
@@ -1410,8 +1403,7 @@ Array<real,2> trisolve(const Array<real,2>& L, const U& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y);
 
@@ -1429,8 +1421,7 @@ Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
  * 
  * @return Gradient with respect to  @p y.
  */
-template<class U, class = std::enable_if_t<is_real_v<U> &&
-    is_scalar_v<U>,int>>
+template<real_scalar U>
 Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y);
 

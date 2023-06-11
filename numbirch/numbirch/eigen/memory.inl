@@ -8,7 +8,7 @@
 
 namespace numbirch {
 
-template<class T, class U, class>
+template<arithmetic T, arithmetic U>
 void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
     const int width, const int height) {
   for (int j = 0; j < height; ++j) {
@@ -18,7 +18,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
   }
 }
 
-template<class T, class U, class>
+template<arithmetic T, arithmetic U>
 void memset(T* dst, const int dpitch, const U value, const int width,
     const int height) {
   for (int j = 0; j < height; ++j) {
@@ -28,7 +28,7 @@ void memset(T* dst, const int dpitch, const U value, const int width,
   }
 }
 
-template<class T, class U, class>
+template<arithmetic T, arithmetic U>
 void memset(T* dst, const int dpitch, const U* value, const int width,
     const int height) {
   for (int j = 0; j < height; ++j) {

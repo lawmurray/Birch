@@ -68,7 +68,7 @@
     IBETA_SIG(f, T, NUMBIRCH_ARRAY(U, 0), NUMBIRCH_ARRAY(V, 1)) \
     IBETA_SIG(f, T, U, NUMBIRCH_ARRAY(V, 1))
 #define IBETA_SIG(f, T, U, V) \
-    template real_t<T,U,V> f<T,U,V,int>(const T&, const U&, const V&);
+    template real_t<T,U,V> f<T,U,V>(const T&, const U&, const V&);
 
 namespace numbirch {
 IBETA(ibeta)

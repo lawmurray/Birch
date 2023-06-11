@@ -42,10 +42,6 @@
 #define NUMBIRCH_ARRAY(T, D) Array<T,D>
 
 /**
- * @internal
- * 
- * @def NUMBIRCH_REAL
- * 
  * Macro to set the default floating point type. Valid values are `float` and
  * `double`.
  */
@@ -70,21 +66,45 @@ namespace numbirch {
 using real = NUMBIRCH_REAL;
 
 /**
- * @internal
- * 
- * @def PI
- * 
  * Value of pi.
  */
 static const real PI = 3.1415926535897932384626433832795;
 
+template<class T>
+struct value_s {
+  using type = T;
+};
+template<class T, int D>
+struct value_s<Array<T,D>> {
+  using type = T;
+};
+
 /**
- * @var is_bool_v
- * 
- * Is `T` type `bool`?
+ * Value type of a numeric type. For a basic type this is an identity
+ * function, for an array type it is the element type.
  * 
  * @ingroup trait
  */
+template<class T>
+using value_t = typename value_s<std::decay_t<T>>::type;
+
+template<class T>
+struct dimension {
+  static constexpr int value = 0;
+};
+template<class T, int D>
+struct dimension<Array<T,D>> {
+  static constexpr int value = D;
+};
+
+/**
+ * Dimension of a numeric type.
+ * 
+ * @ingroup trait
+ */
+template<class T>
+inline constexpr int dimension_v = dimension<std::decay_t<T>>::value;
+
 template<class T>
 struct is_bool {
   static constexpr bool value = false;
@@ -93,19 +113,17 @@ template<>
 struct is_bool<bool> {
   static constexpr bool value = true;
 };
-template<class T>
-inline constexpr bool is_bool_v = is_bool<std::decay_t<T>>::value;
 
 /**
- * @var is_int_v
- * 
- * Is `T` type `int`?
+ * Is `T` of Boolean type?
  * 
  * @ingroup trait
  * 
- * @see c.f. [std::is_integral]
- * (https://en.cppreference.com/w/cpp/types/is_int)
+ * The only Boolean type is `bool`.
  */
+template<class T>
+inline constexpr bool is_bool_v = is_bool<std::decay_t<T>>::value;
+
 template<class T>
 struct is_int {
   static constexpr bool value = false;
@@ -114,12 +132,30 @@ template<>
 struct is_int<int> {
   static constexpr bool value = true;
 };
+
+/**
+ * Is `T` an integral type?
+ * 
+ * @ingroup trait
+ * 
+ * The only integral type is `int`.
+ * 
+ * @see c.f. [std::is_integral]
+ * (https://en.cppreference.com/w/cpp/types/is_int)
+ */
 template<class T>
 inline constexpr bool is_int_v = is_int<std::decay_t<T>>::value;
 
+template<class T>
+struct is_real {
+  static constexpr bool value = false;
+};
+template<>
+struct is_real<real> {
+  static constexpr bool value = true;
+};
+
 /**
- * @var is_real_v
- * 
  * Is `T` a floating point type?
  * 
  * @ingroup trait
@@ -131,19 +167,15 @@ inline constexpr bool is_int_v = is_int<std::decay_t<T>>::value;
  * (https://en.cppreference.com/w/cpp/types/is_floating_point)
  */
 template<class T>
-struct is_real {
-  static constexpr bool value = false;
-};
-template<>
-struct is_real<real> {
-  static constexpr bool value = true;
-};
-template<class T>
 inline constexpr bool is_real_v = is_real<std::decay_t<T>>::value;
 
+template<class T>
+struct is_arithmetic {
+  static constexpr bool value = is_bool<T>::value || is_int<T>::value ||
+      is_real<T>::value;
+};
+
 /**
- * @var is_arithmetic_v
- * 
  * Is `T` an arithmetic type?
  * 
  * @ingroup trait
@@ -154,62 +186,8 @@ inline constexpr bool is_real_v = is_real<std::decay_t<T>>::value;
  * (https://en.cppreference.com/w/cpp/types/is_arithmetic)
  */
 template<class T>
-struct is_arithmetic {
-  static constexpr bool value = is_bool<T>::value || is_int<T>::value ||
-      is_real<T>::value;
-};
-template<class T>
 inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
 
-/**
- * @typedef value_t
- *
- * Value type of an arithmetic type. For a basic type this is an identity
- * function, for an array type it is the element type.
- * 
- * @ingroup trait
- */
-template<class T>
-struct value_s {
-  using type = T;
-};
-template<class T, int D>
-struct value_s<Array<T,D>> {
-  using type = T;
-};
-template<class T>
-using value_t = typename value_s<std::decay_t<T>>::type;
-
-/**
- * @var dimension_v
- *
- * Dimension of an arithmetic type.
- * 
- * @ingroup trait
- */
-template<class T>
-struct dimension {
-  static constexpr int value = 0;
-};
-template<class T, int D>
-struct dimension<Array<T,D>> {
-  static constexpr int value = D;
-};
-template<class T>
-inline constexpr int dimension_v = dimension<std::decay_t<T>>::value;
-
-/**
- * @var is_array_v
- * 
- * @tparam Args... Types.
- * 
- * Are all Args... array types?
- * 
- * @ingroup trait
- * 
- * An array type is any instantiation of Array, including one with zero
- * dimensions.
- */
 template<class Arg, class... Args>
 struct is_array {
   static constexpr bool value = is_array<Arg>::value &&
@@ -223,36 +201,98 @@ template<class T, int D>
 struct is_array<Array<T,D>> {
   static constexpr bool value = true;
 };
-template<class... Args>
-inline constexpr bool is_array_v = is_array<std::decay_t<Args>...>::value;
 
 /**
- * @var is_scalar_v
+ * Arithmetic type.
+ * 
+ * @ingroup trait
+ * 
+ * An arithmetic type is one of `bool`, `int`, or `real`.
+ * 
+ * @see is_bool, is_int, is_real, c.f. [std::is_arithmetic]
+ * (https://en.cppreference.com/w/cpp/types/is_arithmetic)
+ */
+template<class T>
+concept arithmetic = is_arithmetic_v<T>;
+
+/**
+ * Is `T` an array type?
  * 
  * @tparam Args... Types.
  * 
- * Are all Args... scalar types?
+ * Are all Args... array types?
+ * 
+ * @ingroup trait
+ * 
+ * An array type is any instantiation of Array, including one with zero
+ * dimensions.
+ */
+template<class... Args>
+inline constexpr bool is_array_v = is_array<std::decay_t<Args>...>::value;
+
+template<class T>
+struct is_scalar {
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
+      dimension<T>::value == 0;
+};
+
+/**
+ * Is `T` a scalar type?
  * 
  * @ingroup trait
  * 
  * A scalar type is any numeric type with zero dimensions.
  */
-template<class Arg, class... Args>
-struct is_scalar {
-  static constexpr bool value = is_scalar<Arg>::value &&
-      is_scalar<Args...>::value;
-};
 template<class T>
-struct is_scalar<T> {
-  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
-      dimension<T>::value == 0;
-};
-template<class... Args>
-inline constexpr bool is_scalar_v = is_scalar<std::decay_t<Args>...>::value;
+inline constexpr bool is_scalar_v = is_scalar<std::decay_t<T>>::value;
 
 /**
- * @var is_vector_v
+ * Scalar type.
  * 
+ * @ingroup trait
+ * 
+ * A scalar type is any numeric type with zero dimensions.
+ */
+template<class T>
+concept scalar = is_scalar_v<T>;
+
+/**
+ * Boolean scalar type.
+ * 
+ * @ingroup trait
+ * 
+ * A scalar with a Boolean value type.
+ */
+template<class T>
+concept bool_scalar = is_scalar_v<T> && is_bool_v<value_t<T>>;
+
+/**
+ * Integral scalar type.
+ * 
+ * @ingroup trait
+ * 
+ * A scalar with an integral value type.
+ */
+template<class T>
+concept int_scalar = is_scalar_v<T> && is_int_v<value_t<T>>;
+
+/**
+ * Real scalar type.
+ * 
+ * @ingroup trait
+ * 
+ * A scalar with a real value type.
+ */
+template<class T>
+concept real_scalar = is_scalar_v<T> && is_real_v<value_t<T>>;
+
+template<class T>
+struct is_vector {
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
+      dimension<T>::value == 1;
+};
+
+/**
  * Is `T` a vector type?
  * 
  * @ingroup trait
@@ -260,16 +300,25 @@ inline constexpr bool is_scalar_v = is_scalar<std::decay_t<Args>...>::value;
  * A vector type is any numeric type with one dimension.
  */
 template<class T>
-struct is_vector {
-  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
-      dimension<T>::value == 1;
-};
-template<class T>
 inline constexpr bool is_vector_v = is_vector<std::decay_t<T>>::value;
 
+template<class T>
+struct is_matrix {
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
+      dimension<T>::value == 2;
+};
+
 /**
- * @var is_matrix_v
+ * Vector type.
  * 
+ * @ingroup trait
+ * 
+ * A vector type is any numeric type with one dimension.
+ */
+template<class T>
+concept vector = is_vector_v<T>;
+
+/**
  * Is `T` a matrix type?
  * 
  * @ingroup trait
@@ -277,16 +326,24 @@ inline constexpr bool is_vector_v = is_vector<std::decay_t<T>>::value;
  * A matrix type is any numeric type with two dimensions.
  */
 template<class T>
-struct is_matrix {
-  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
-      dimension<T>::value == 2;
-};
-template<class T>
 inline constexpr bool is_matrix_v = is_matrix<std::decay_t<T>>::value;
 
+template<class T>
+struct is_numeric {
+  static constexpr bool value = is_array<T>::value || is_scalar<T>::value;
+};
+
 /**
- * @var is_numeric_v
+ * Matrix type.
  * 
+ * @ingroup trait
+ * 
+ * A matrix type is any numeric type with two dimensions.
+ */
+template<class T>
+concept matrix = is_matrix_v<T>;
+
+/**
  * Is `T` a numeric type?
  * 
  * @ingroup trait
@@ -296,24 +353,20 @@ inline constexpr bool is_matrix_v = is_matrix<std::decay_t<T>>::value;
  * @see is_array, is_scalar
  */
 template<class T>
-struct is_numeric {
-  static constexpr bool value = is_array<T>::value || is_scalar<T>::value;
-};
-template<class T>
 inline constexpr bool is_numeric_v = is_numeric<std::decay_t<T>>::value;
 
 /**
- * @typedef promote_t
- * 
- * Promoted arithmetic type for a collection of arithmetic types.
- * 
- * @tparam Args Arithmetic types.
- * 
- * Gives the type, among that collection, that is highest in the promotion
- * order (`bool` to `int` to `float` to `double`).
+ * Numeric type.
  * 
  * @ingroup trait
+ * 
+ * An numeric type is an array or scalar type.
+ * 
+ * @see is_numeric_v
  */
+template<class T>
+concept numeric = is_numeric_v<T>;
+
 template<class... Args>
 struct promote {
   using type = void;
@@ -395,23 +448,20 @@ template<class T>
 struct promote<T> {
   using type = T;
 };
-template<class... Args>
-using promote_t = typename promote<Args...>::type;
 
 /**
- * @typedef implicit_t
+ * Promoted arithmetic type for a collection of arithmetic types.
  * 
- * Implicit return type.
+ * @tparam Args Arithmetic types.
  * 
- * @tparam Args Numeric types.
- * 
- * For arithmetic types this works as promote_t. If one or more of the
- * numeric types is an array type, then gives an array type `Array<T,D>`
- * where `T` is the promotion of all the element types among all arguments,
- * and `D` the largest number of dimensions among all arguments.
+ * Gives the type, among that collection, that is highest in the promotion
+ * order (`bool` to `int` to `float` to `double`).
  * 
  * @ingroup trait
  */
+template<class... Args>
+using promote_t = typename promote<Args...>::type;
+
 template<class... Args>
 struct implicit {
   using type = void;
@@ -459,21 +509,22 @@ template<class T>
 struct implicit<T> {
   using type = T;
 };
-template<class... Args>
-using implicit_t = typename implicit<Args...>::type;
 
 /**
- * @typedef explicit_t
+ * Implicit return type.
  * 
- * Explicit override of return type.
- * 
- * @tparam R Arithmetic type.
  * @tparam Args Numeric types.
  * 
- * This works as for implicit_t, but overrides the element type with `R`.
+ * For arithmetic types this works as promote_t. If one or more of the
+ * numeric types is an array type, then gives an array type `Array<T,D>`
+ * where `T` is the promotion of all the element types among all arguments,
+ * and `D` the largest number of dimensions among all arguments.
  * 
  * @ingroup trait
  */
+template<class... Args>
+using implicit_t = typename implicit<Args...>::type;
+
 template<class... Args>
 struct explicit_s {
   using type = void;
@@ -490,14 +541,26 @@ template<class R, class T>
 struct explicit_s<R,T> {
   using type = R;
 };
+
+/**
+ * Explicit override of return type.
+ * 
+ * @tparam R Arithmetic type.
+ * @tparam Args Numeric types.
+ * 
+ * This works as for implicit_t, but overrides the element type with `R`.
+ * 
+ * @ingroup trait
+ */
 template<class R, class... Args>
 using explicit_t = typename explicit_s<R,Args...>::type;
 
+template<class... Args>
+struct real_s {
+  using type = typename explicit_s<real,Args...>::type;
+};
+
 /**
- * @typedef real_t
- * 
- * @ingroup trait
- * 
  * Floating point override of return type.
  * 
  * @tparam Args Numeric types.
@@ -508,17 +571,14 @@ using explicit_t = typename explicit_s<R,Args...>::type;
  * @ingroup trait
  */
 template<class... Args>
-struct real_s {
-  using type = typename explicit_s<real,Args...>::type;
-};
-template<class... Args>
 using real_t = typename real_s<Args...>::type;
 
+template<class... Args>
+struct int_s {
+  using type = typename explicit_s<int,Args...>::type;
+};
+
 /**
- * @typedef int_t
- * 
- * @ingroup trait
- * 
  * Integer override of return type.
  * 
  * @tparam Args Numeric types.
@@ -529,17 +589,14 @@ using real_t = typename real_s<Args...>::type;
  * @ingroup trait
  */
 template<class... Args>
-struct int_s {
-  using type = typename explicit_s<int,Args...>::type;
-};
-template<class... Args>
 using int_t = typename int_s<Args...>::type;
 
+template<class... Args>
+struct bool_s {
+  using type = typename explicit_s<bool,Args...>::type;
+};
+
 /**
- * @typedef bool_t
- * 
- * @ingroup trait
- * 
  * Boolean override of return type.
  * 
  * @tparam Args Numeric types.
@@ -550,15 +607,15 @@ using int_t = typename int_s<Args...>::type;
  * @ingroup trait
  */
 template<class... Args>
-struct bool_s {
-  using type = typename explicit_s<bool,Args...>::type;
-};
-template<class... Args>
 using bool_t = typename bool_s<Args...>::type;
 
+template<class T, class U>
+struct promotes_to {
+  static constexpr bool value = std::is_same<
+      promote_t<T,U>,std::decay_t<U>>::value;
+};
+
 /**
- * @internal
- * 
  * Does arithmetic type `T` promote to `U` under promotion rules?
  * 
  * @ingroup trait
@@ -567,20 +624,8 @@ using bool_t = typename bool_s<Args...>::type;
  * @tparam U Arithmetic type.
  */
 template<class T, class U>
-struct promotes_to {
-  static constexpr bool value = std::is_same<
-      promote_t<T,U>,std::decay_t<U>>::value;
-};
-template<class T, class U>
 inline constexpr bool promotes_to_v = promotes_to<T,U>::value;
 
-/**
- * @var all_numeric_v
- * 
- * Are all argument types numeric?
- * 
- * @ingroup trait
- */
 template<class... Args>
 struct all_numeric {
   //
@@ -594,16 +639,37 @@ struct all_numeric<Arg,Args...> {
   static const bool value = is_numeric<Arg>::value &&
       all_numeric<Args...>::value;
 };
-template<class... Args>
-inline constexpr bool all_numeric_v = all_numeric<Args...>::value;
 
 /**
- * @var all_integral_v
- * 
- * Are all argument types integral?
+ * Are all argument types numeric?
  * 
  * @ingroup trait
  */
+template<class... Args>
+inline constexpr bool all_numeric_v = all_numeric<Args...>::value;
+
+template<class... Args>
+struct all_scalar {
+  //
+};
+template<class Arg>
+struct all_scalar<Arg> {
+  static const bool value = is_scalar<Arg>::value;
+};
+template<class Arg, class... Args>
+struct all_scalar<Arg,Args...> {
+  static const bool value = is_scalar<Arg>::value &&
+      all_scalar<Args...>::value;
+};
+
+/**
+ * Are all argument types scalar?
+ * 
+ * @ingroup trait
+ */
+template<class... Args>
+inline constexpr bool all_scalar_v = all_scalar<Args...>::value;
+
 template<class... Args>
 struct all_integral {
   //
@@ -617,25 +683,27 @@ struct all_integral<Arg,Args...> {
   static const bool value = is_int<Arg>::value &&
       all_integral<Args...>::value;
 };
+
+/**
+ * Are all argument types integral?
+ * 
+ * @ingroup trait
+ */
 template<class... Args>
 inline constexpr bool all_integral_v = all_integral<Args...>::value;
 
 /**
- * @typedef pack_t
+ * Return type of pack().
  * 
  * @ingroup trait
- * 
- * Return type of pack().
  */
 template<class T, class U>
 using pack_t = Array<promote_t<value_t<T>,value_t<U>>,2>;
 
 /**
- * @typedef stack_t
+ * Return type of stack().
  * 
  * @ingroup trait
- * 
- * Return type of stack().
  */
 template<class T, class U>
 using stack_t = Array<promote_t<value_t<T>,value_t<U>>,
@@ -672,7 +740,7 @@ NUMBIRCH_HOST_DEVICE const T& get(const T* x, const int i = 0,
  * 
  * 0-based element of a scalar---just returns the scalar.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 NUMBIRCH_HOST_DEVICE T& get(T& x, const int i = 0, const int j = 0,
     const int ld = 0) {
   return x;
@@ -683,7 +751,7 @@ NUMBIRCH_HOST_DEVICE T& get(T& x, const int i = 0, const int j = 0,
  * 
  * 0-based element of a scalar---just returns the scalar.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 NUMBIRCH_HOST_DEVICE const T& get(const T& x, const int i = 0,
     const int j = 0, const int ld = 0) {
   return x;
@@ -704,7 +772,7 @@ constexpr auto value(const Array<T,0>& y) {
  * 
  * Value of a scalar.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 constexpr auto value(const T& y) {
   return y;
 }

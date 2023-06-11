@@ -44,7 +44,7 @@ void seed();
  * 
  * @return Variate.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 bool_t<T> simulate_bernoulli(const T& rho);
 
 /**
@@ -60,8 +60,7 @@ bool_t<T> simulate_bernoulli(const T& rho);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> simulate_beta(const T& alpha, const U& beta);
 
 /**
@@ -77,8 +76,7 @@ real_t<T,U> simulate_beta(const T& alpha, const U& beta);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 int_t<T,U> simulate_binomial(const T& n, const U& rho);
 
 /**
@@ -92,7 +90,7 @@ int_t<T,U> simulate_binomial(const T& n, const U& rho);
  * 
  * @return Variate.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> simulate_chi_squared(const T& nu);
 
 /**
@@ -106,7 +104,7 @@ real_t<T> simulate_chi_squared(const T& nu);
  * 
  * @return Variate.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> simulate_dirichlet(const T& alpha);
 
 /**
@@ -120,7 +118,7 @@ real_t<T> simulate_dirichlet(const T& alpha);
  * 
  * @return Variate.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> simulate_exponential(const T& lambda);
 
 /**
@@ -136,8 +134,7 @@ real_t<T> simulate_exponential(const T& lambda);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> simulate_gamma(const T& k, const U& theta);
 
 /**
@@ -153,8 +150,7 @@ real_t<T,U> simulate_gamma(const T& k, const U& theta);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
 
 /**
@@ -170,8 +166,7 @@ real_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
  * 
  * @return Number of failures before `k` number of successes are achieved.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 int_t<T,U> simulate_negative_binomial(const T& k, const U& rho);
 
 /**
@@ -185,7 +180,7 @@ int_t<T,U> simulate_negative_binomial(const T& k, const U& rho);
  * 
  * @return Variate.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 int_t<T> simulate_poisson(const T& lambda);
 
 /**
@@ -201,8 +196,7 @@ int_t<T> simulate_poisson(const T& lambda);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> simulate_uniform(const T& l, const U& u);
 
 /**
@@ -218,8 +212,7 @@ real_t<T,U> simulate_uniform(const T& l, const U& u);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 int_t<T,U> simulate_uniform_int(const T& l, const U& u);
 
 /**
@@ -235,8 +228,7 @@ int_t<T,U> simulate_uniform_int(const T& l, const U& u);
  * 
  * @return Variate.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> simulate_weibull(const T& k, const U& lambda);
 
 /**
@@ -251,7 +243,7 @@ real_t<T,U> simulate_weibull(const T& k, const U& lambda);
  * 
  * @return Variates.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<real,2> simulate_wishart(const T& nu, const int n);
 
 /**

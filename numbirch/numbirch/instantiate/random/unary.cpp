@@ -22,7 +22,7 @@
     RANDOM_UNARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     RANDOM_UNARY_SIG(f, R, T)
 #define RANDOM_UNARY_SIG(f, R, T) \
-    template R<T> f<T,int>(const T&);
+    template R<T> f<T>(const T&);
 
 #define RANDOM_UNARY_REAL(f) RANDOM_UNARY(f, real_t)
 #define RANDOM_UNARY_INT(f) RANDOM_UNARY(f, int_t)

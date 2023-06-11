@@ -17,8 +17,8 @@
     MEMSET_SIG(f, T, int) \
     MEMSET_SIG(f, T, bool)
 #define MEMSET_SIG(f, T, U) \
-    template void f<T,U,int>(T*, const int, const U, const int, const int); \
-    template void f<T,U,int>(T*, const int, const U*, const int, const int);
+    template void f<T,U>(T*, const int, const U, const int, const int); \
+    template void f<T,U>(T*, const int, const U*, const int, const int);
 
 namespace numbirch {
 MEMSET(memset)

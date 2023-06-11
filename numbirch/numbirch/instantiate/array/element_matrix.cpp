@@ -30,7 +30,7 @@
     ELEMENT_MATRIX_SIG(f, T, NUMBIRCH_ARRAY(U, 0), V) \
     ELEMENT_MATRIX_SIG(f, T, NUMBIRCH_ARRAY(U, 0), NUMBIRCH_ARRAY(V, 0))
 #define ELEMENT_MATRIX_SIG(f, T, U, V) \
-    template Array<T,0> f<T,U,V,int>(const Array<T,2>& x, const U& i, \
+    template Array<T,0> f<T,U,V>(const Array<T,2>& x, const U& i, \
         const V& j); \
     template Array<real,2> f##_grad1(const Array<real,0>& g, \
         const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j); \

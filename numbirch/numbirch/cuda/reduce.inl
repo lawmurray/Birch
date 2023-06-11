@@ -12,7 +12,7 @@
 
 namespace numbirch {
 
-template<class T, class>
+template<numeric T>
 Array<int,0> count(const T& x) {
   if constexpr (is_arithmetic_v<T>) {
     return count_functor()(x);
@@ -24,7 +24,7 @@ Array<int,0> count(const T& x) {
   }
 }
 
-template<class T, class>
+template<numeric T>
 Array<value_t<T>,0> sum(const T& x) {
   if constexpr (is_scalar_v<T>) {
     return x;

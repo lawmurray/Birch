@@ -13,7 +13,7 @@ void prefetch(const Array<T,D>& x) {
   //
 }
 
-template<class T, class = std::enable_if_t<is_arithmetic<T>::value,int>>
+template<arithmetic T>
 void prefetch(const T& x) {
   //
 }

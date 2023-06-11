@@ -17,7 +17,7 @@ namespace numbirch {
  * 
  * @return Result; zero for empty @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<int,0> count(const T& x);
 
 /**
@@ -33,7 +33,7 @@ Array<int,0> count(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> count_grad(const Array<real,0>& g, const Array<int,0>& y,
     const T& x);
 
@@ -48,7 +48,7 @@ real_t<T> count_grad(const Array<real,0>& g, const Array<int,0>& y,
  * 
  * @return Result; zero for empty @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<value_t<T>,0> sum(const T& x);
 
 /**
@@ -64,7 +64,7 @@ Array<value_t<T>,0> sum(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sum_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x);
 
@@ -79,7 +79,7 @@ real_t<T> sum_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
  * 
  * @return Result; zero for empty @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<value_t<T>,0> min(const T& x);
 
 /**
@@ -95,7 +95,7 @@ Array<value_t<T>,0> min(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x);
 
@@ -110,7 +110,7 @@ real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
  * 
  * @return Result; zero for empty @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<value_t<T>,0> max(const T& x);
 
 /**
@@ -126,7 +126,7 @@ Array<value_t<T>,0> max(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x);
 
@@ -141,7 +141,7 @@ real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T cumsum(const T& x);
 
 /**
@@ -157,7 +157,7 @@ T cumsum(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> cumsum_grad(const real_t<T>& g, const T& y, const T& x);
 
 }

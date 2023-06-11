@@ -26,7 +26,7 @@ void prefetch(const Array<T,D>& x) {
 /*
  * Prefetch a scalar onto device---null operation.
  */
-template<class T, class = std::enable_if_t<is_arithmetic<T>::value,int>>
+template<arithmetic T>
 void prefetch(const T& x) {
   //
 }

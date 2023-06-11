@@ -19,7 +19,7 @@
     UNARY_GRAD_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     UNARY_GRAD_SIG(f, R, T)
 #define UNARY_GRAD_SIG(f, R, T) \
-    template real_t<T> f<T,int>(const real_t<T>&, const R<T>&, const T&);
+    template real_t<T> f<T>(const real_t<T>&, const R<T>&, const T&);
 
 #define UNARY_ARITHMETIC_GRAD(f) UNARY_GRAD(f, implicit_t)
 #define UNARY_REAL_GRAD(f) UNARY_GRAD(f, real_t)

@@ -43,7 +43,7 @@ Array<real,2> cholinv_grad(const Array<real,2>& g, const Array<real,2>& B,
   return cholsolve_grad1(g, B, L, real(1));
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   auto gy = cholsolve(L, g);
@@ -52,7 +52,7 @@ Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
   return gL;
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   return sum(cholsolve(L, g));
@@ -222,7 +222,7 @@ Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& L,
   return phi(g);
 }
 
-template<class T, class>
+template<arithmetic T>
 Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& B,
     const Array<T,2>& A) {
   return transpose(g);
@@ -262,13 +262,13 @@ Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& C,
   return trimul(L, g);
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   return tri(outer(neg(B), trisolve(L, g)));
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,0> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   return sum(trisolve(L, g));
@@ -342,13 +342,13 @@ Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& C,
   return tri(inner(g, A));
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   return tri(outer(triinnersolve(L, g), neg(B)));
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
     const Array<real,2>& L, const U& y) {
   return sum(triinnersolve(L, g));

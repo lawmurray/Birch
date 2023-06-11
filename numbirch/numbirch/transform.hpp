@@ -17,7 +17,7 @@ namespace numbirch {
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 bool_t<T> logical_not(const T& x);
 
 /**
@@ -33,7 +33,7 @@ bool_t<T> logical_not(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> logical_not_grad(const real_t<T>& g, const bool_t<T>& y,
     const T& x);
 
@@ -50,8 +50,7 @@ real_t<T> logical_not_grad(const real_t<T>& g, const bool_t<T>& y,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> logical_and(const T& x, const U& y);
 
 /**
@@ -69,8 +68,7 @@ bool_t<T,U> logical_and(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, 
     const T& x, const U& y);
 
@@ -89,8 +87,7 @@ real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> logical_and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -107,8 +104,7 @@ real_t<U> logical_and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> logical_or(const T& x, const U& y);
 
 /**
@@ -127,8 +123,7 @@ bool_t<T,U> logical_or(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -148,8 +143,7 @@ real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> logical_or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -166,8 +160,7 @@ real_t<U> logical_or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> equal(const T& x, const U& y);
 
 /**
@@ -185,8 +178,7 @@ bool_t<T,U> equal(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
@@ -205,8 +197,7 @@ real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  * 
  * @return Gradient with respect to  @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
@@ -223,8 +214,7 @@ real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> not_equal(const T& x, const U& y);
 
 /**
@@ -242,8 +232,7 @@ bool_t<T,U> not_equal(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -262,8 +251,7 @@ real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -280,8 +268,7 @@ real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> less(const T& x, const U& y);
 
 /**
@@ -299,8 +286,7 @@ bool_t<T,U> less(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
@@ -319,8 +305,7 @@ real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
     const U& y);
 
@@ -337,8 +322,7 @@ real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> less_or_equal(const T& x, const U& y);
 
 /**
@@ -356,8 +340,7 @@ bool_t<T,U> less_or_equal(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -376,8 +359,7 @@ real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -394,8 +376,7 @@ real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> greater(const T& x, const U& y);
 
 /**
@@ -413,8 +394,7 @@ bool_t<T,U> greater(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -433,8 +413,7 @@ real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -451,8 +430,7 @@ real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 bool_t<T,U> greater_or_equal(const T& x, const U& y);
 
 /**
@@ -470,8 +448,7 @@ bool_t<T,U> greater_or_equal(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -490,8 +467,7 @@ real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
     const T& x, const U& y);
 
@@ -506,7 +482,7 @@ real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T abs(const T& x);
 
 /**
@@ -522,7 +498,7 @@ T abs(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> abs_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
@@ -536,7 +512,7 @@ real_t<T> abs_grad(const real_t<T>& g, const T& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> acos(const T& x);
 
 /**
@@ -552,7 +528,7 @@ real_t<T> acos(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -568,8 +544,7 @@ real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 implicit_t<T,U> add(const T& x, const U& y);
 
 /**
@@ -587,8 +562,7 @@ implicit_t<T,U> add(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> add_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -607,8 +581,7 @@ real_t<T> add_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> add_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -623,7 +596,7 @@ real_t<U> add_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> asin(const T& x);
 
 /**
@@ -639,7 +612,7 @@ real_t<T> asin(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -653,7 +626,7 @@ real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> atan(const T& x);
 
 /**
@@ -669,7 +642,7 @@ real_t<T> atan(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -684,8 +657,7 @@ real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Copy of @p x, with element type @p R.
  */
-template<class R, class T, class = std::enable_if_t<is_arithmetic_v<R> &&
-   is_numeric_v<T>,int>>
+template<arithmetic R, numeric T>
 explicit_t<R,T> cast(const T& x);
 
 /**
@@ -701,7 +673,7 @@ explicit_t<R,T> cast(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class R, class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<arithmetic R, numeric T>
 real_t<T> cast_grad(const real_t<T>& g, const R& y, const T& x) {
   return g;
 }
@@ -717,7 +689,7 @@ real_t<T> cast_grad(const real_t<T>& g, const R& y, const T& x) {
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T ceil(const T& x);
 
 /**
@@ -733,7 +705,7 @@ T ceil(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
@@ -749,8 +721,7 @@ real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x);
  * 
  * @return Result with the absolute values of @p x but signs of @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 implicit_t<T,U> copysign(const T& x, const U& y);
 
 /**
@@ -768,8 +739,7 @@ implicit_t<T,U> copysign(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> copysign_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -788,8 +758,7 @@ real_t<T> copysign_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> copysign_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -804,7 +773,7 @@ real_t<U> copysign_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> cos(const T& x);
 
 /**
@@ -820,7 +789,7 @@ real_t<T> cos(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -834,7 +803,7 @@ real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> cosh(const T& x);
 
 /**
@@ -850,7 +819,7 @@ real_t<T> cosh(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -864,7 +833,7 @@ real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> digamma(const T& x);
 
 /**
@@ -880,8 +849,7 @@ real_t<T> digamma(const T& x);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> digamma(const T& x, const U& y);
 
 /**
@@ -897,8 +865,7 @@ real_t<T,U> digamma(const T& x, const U& y);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 implicit_t<T,U> div(const T& x, const U& y);
 
 /**
@@ -916,8 +883,7 @@ implicit_t<T,U> div(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> div_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -936,8 +902,7 @@ real_t<T> div_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> div_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -952,7 +917,7 @@ real_t<U> div_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> erf(const T& x);
 
 /**
@@ -968,7 +933,7 @@ real_t<T> erf(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> erf_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -982,7 +947,7 @@ real_t<T> erf_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> exp(const T& x);
 
 /**
@@ -998,7 +963,7 @@ real_t<T> exp(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1012,7 +977,7 @@ real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> expm1(const T& x);
 
 /**
@@ -1028,7 +993,7 @@ real_t<T> expm1(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1042,7 +1007,7 @@ real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T floor(const T& x);
 
 /**
@@ -1058,7 +1023,7 @@ T floor(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> floor_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
@@ -1074,8 +1039,7 @@ real_t<T> floor_grad(const real_t<T>& g, const T& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> gamma_p(const T& x, const U& y);
 
 /**
@@ -1091,8 +1055,7 @@ real_t<T,U> gamma_p(const T& x, const U& y);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> gamma_q(const T& x, const U& y);
 
 /**
@@ -1108,8 +1071,7 @@ real_t<T,U> gamma_q(const T& x, const U& y);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 implicit_t<T,U> hadamard(const T& x, const U& y);
 
 /**
@@ -1127,8 +1089,7 @@ implicit_t<T,U> hadamard(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -1147,8 +1108,7 @@ real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
     const T& x, const U& y);
 
@@ -1167,8 +1127,7 @@ real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+template<numeric T, numeric U, numeric V>
 real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
 
 /**
@@ -1182,7 +1141,7 @@ real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 bool_t<T> isfinite(const T& x);
 
 /**
@@ -1198,7 +1157,7 @@ bool_t<T> isfinite(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
@@ -1212,7 +1171,7 @@ real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 bool_t<T> isinf(const T& x);
 
 /**
@@ -1228,7 +1187,7 @@ bool_t<T> isinf(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> isinf_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
@@ -1242,7 +1201,7 @@ real_t<T> isinf_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 bool_t<T> isnan(const T& x);
 
 /**
@@ -1258,7 +1217,7 @@ bool_t<T> isnan(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> isnan_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
 
 /**
@@ -1274,8 +1233,7 @@ real_t<T> isnan_grad(const real_t<T>& g, const bool_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> lbeta(const T& x, const U& y);
 
 /**
@@ -1293,8 +1251,7 @@ real_t<T,U> lbeta(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> lbeta_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1313,8 +1270,7 @@ real_t<T> lbeta_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> lbeta_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1331,8 +1287,7 @@ real_t<U> lbeta_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> lchoose(const T& x, const U& y);
 
 /**
@@ -1350,8 +1305,7 @@ real_t<T,U> lchoose(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> lchoose_grad1(const real_t<T,U>& g, const real_t<T,U>& z,
     const T& x, const U& y);
 
@@ -1370,8 +1324,7 @@ real_t<T> lchoose_grad1(const real_t<T,U>& g, const real_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> lchoose_grad2(const real_t<T,U>& g, const real_t<T,U>& z,
     const T& x, const U& y);
 
@@ -1386,7 +1339,7 @@ real_t<U> lchoose_grad2(const real_t<T,U>& g, const real_t<T,U>& z,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> lfact(const T& x);
 
 /**
@@ -1402,7 +1355,7 @@ real_t<T> lfact(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1416,7 +1369,7 @@ real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> lgamma(const T& x);
 
 /**
@@ -1432,7 +1385,7 @@ real_t<T> lgamma(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1448,8 +1401,7 @@ real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> lgamma(const T& x, const U& y);
 
 /**
@@ -1467,8 +1419,7 @@ real_t<T,U> lgamma(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> lgamma_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1487,8 +1438,7 @@ real_t<T> lgamma_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> lgamma_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1503,7 +1453,7 @@ real_t<U> lgamma_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> log(const T& x);
 
 /**
@@ -1519,7 +1469,7 @@ real_t<T> log(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1533,7 +1483,7 @@ real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> log1p(const T& x);
 
 /**
@@ -1549,7 +1499,7 @@ real_t<T> log1p(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1563,7 +1513,7 @@ real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T neg(const T& x);
 
 /**
@@ -1579,7 +1529,7 @@ T neg(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> neg_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
@@ -1593,7 +1543,7 @@ real_t<T> neg_grad(const real_t<T>& g, const T& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T pos(const T& x) {
   return x;
 }
@@ -1611,7 +1561,7 @@ T pos(const T& x) {
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> pos_grad(const real_t<T>& g, const T& y, const T& x) {
   return g;
 }
@@ -1629,8 +1579,7 @@ real_t<T> pos_grad(const real_t<T>& g, const T& y, const T& x) {
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T,U> pow(const T& x, const U& y);
 
 /**
@@ -1648,8 +1597,7 @@ real_t<T,U> pow(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> pow_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1668,8 +1616,7 @@ real_t<T> pow_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> pow_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1684,7 +1631,7 @@ real_t<U> pow_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T rectify(const T& x);
 
 /**
@@ -1700,7 +1647,7 @@ T rectify(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> rectify_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
@@ -1714,7 +1661,7 @@ real_t<T> rectify_grad(const real_t<T>& g, const T& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 T round(const T& x);
 
 /**
@@ -1730,7 +1677,7 @@ T round(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> round_grad(const real_t<T>& g, const T& y, const T& x);
 
 /**
@@ -1744,7 +1691,7 @@ real_t<T> round_grad(const real_t<T>& g, const T& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sin(const T& x);
 
 /**
@@ -1760,7 +1707,7 @@ real_t<T> sin(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sin_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1774,7 +1721,7 @@ real_t<T> sin_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sinh(const T& x);
 
 /**
@@ -1790,7 +1737,7 @@ real_t<T> sinh(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sinh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1804,7 +1751,7 @@ real_t<T> sinh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sqrt(const T& x);
 
 /**
@@ -1820,7 +1767,7 @@ real_t<T> sqrt(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1836,8 +1783,7 @@ real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 implicit_t<T,U> sub(const T& x, const U& y);
 
 /**
@@ -1855,8 +1801,7 @@ implicit_t<T,U> sub(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> sub_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1875,8 +1820,7 @@ real_t<T> sub_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> sub_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
     const U& y);
 
@@ -1891,7 +1835,7 @@ real_t<U> sub_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> tan(const T& x);
 
 /**
@@ -1907,7 +1851,7 @@ real_t<T> tan(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1921,7 +1865,7 @@ real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Result.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> tanh(const T& x);
 
 /**
@@ -1937,7 +1881,7 @@ real_t<T> tanh(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
@@ -1955,8 +1899,7 @@ real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
  * 
  * @return Where @p x is true, elements of @p y, elsewhere elements of @p z.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+template<numeric T, numeric U, numeric V>
 implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
 
 /**
@@ -1976,8 +1919,7 @@ implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+template<numeric T, numeric U, numeric V>
 real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
     const T& x, const U& y, const V& z);
 
@@ -1998,8 +1940,7 @@ real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+template<numeric T, numeric U, numeric V>
 real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
     const T& x, const U& y, const V& z);
 
@@ -2020,8 +1961,7 @@ real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_numeric_v<T> && is_numeric_v<U> && is_numeric_v<V>,int>>
+template<numeric T, numeric U, numeric V>
 real_t<V> where_grad3(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
     const T& x, const U& y, const V& z);
 

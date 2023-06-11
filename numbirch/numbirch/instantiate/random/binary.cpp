@@ -37,7 +37,7 @@
     RANDOM_BINARY_SIG(f, R, T, NUMBIRCH_ARRAY(U, 1))
 
 #define RANDOM_BINARY_SIG(f, R, T, U) \
-    template R<T,U> f<T,U,int>(const T&, const U&);
+    template R<T,U> f<T,U>(const T&, const U&);
 
 #define RANDOM_BINARY_REAL(f) RANDOM_BINARY(f, real_t)
 #define RANDOM_BINARY_INT(f) RANDOM_BINARY(f, int_t)

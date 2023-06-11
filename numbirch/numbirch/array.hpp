@@ -28,7 +28,7 @@ int length(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<scalar T>
 constexpr int length(const T& x) {
   return 1;
 }
@@ -50,7 +50,7 @@ int rows(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<scalar T>
 constexpr int rows(const T& x) {
   return 1;
 }
@@ -72,7 +72,7 @@ int columns(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 constexpr int columns(const T& x) {
   return 1;
 }
@@ -94,7 +94,7 @@ int width(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 constexpr int width(const T& x) {
   return 1;
 }
@@ -113,7 +113,7 @@ int width(const Arg& arg, const Args&... args) {
   if constexpr (is_scalar_v<Arg>) {
     return width(args...);
   } else {
-    assert((width(arg) == width(args...) || is_scalar_v<Args...>) &&
+    assert((width(arg) == width(args...) || all_scalar_v<Args...>) &&
         "incompatible widths");
     return width(arg);
   }
@@ -136,7 +136,7 @@ int height(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<scalar T>
 constexpr int height(const T& x) {
   return 1;
 }
@@ -155,7 +155,7 @@ int height(const Arg& arg, const Args&... args) {
   if constexpr (is_scalar_v<Arg>) {
     return height(args...);
   } else {
-    assert((height(arg) == height(args...) || is_scalar_v<Args...>) &&
+    assert((height(arg) == height(args...) || all_scalar_v<Args...>) &&
         "incompatible heights");
     return height(arg);
   }
@@ -178,7 +178,7 @@ int stride(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<scalar T>
 constexpr int stride(const T& x) {
   return 0;
 }
@@ -200,7 +200,7 @@ int size(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<scalar T>
 constexpr int size(const T& x) {
   return 1;
 }
@@ -222,7 +222,7 @@ Shape<D> shape(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, class = std::enable_if_t<is_scalar<T>::value,int>>
+template<scalar T>
 Shape<0> shape(const T& x) {
   return make_shape();
 }
@@ -252,7 +252,7 @@ inline const T* buffer(const Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, std::enable_if_t<is_arithmetic_v<T>,int> = 0>
+template<arithmetic T>
 T buffer(const T& x) {
   return x;
 }
@@ -276,8 +276,7 @@ bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
  * 
  * @ingroup array
  */
-template<class T, int D, class U, class = std::enable_if_t<
-    is_scalar<U>::value,int>>
+template<class T, int D, scalar U>
 constexpr bool conforms(const Array<T,D>& x, const U& y) {
   return D == 0;
 }
@@ -288,8 +287,7 @@ constexpr bool conforms(const Array<T,D>& x, const U& y) {
  * 
  * @ingroup array
  */
-template<class T, class U, int D, class = std::enable_if_t<
-    is_scalar<T>::value,int>>
+template<scalar T, class U, int D>
 constexpr bool conforms(const T& x, const Array<U,D>& y) {
   return D == 0;
 }
@@ -299,8 +297,7 @@ constexpr bool conforms(const T& x, const Array<U,D>& y) {
  * 
  * @ingroup array
  */
-template<class T, class U, class = std::enable_if_t<is_scalar<T>::value &&
-    is_scalar<U>::value,int>>
+template<scalar T, scalar U>
 constexpr bool conforms(const T& x, const U& y) {
   return true;
 }
@@ -317,7 +314,7 @@ constexpr bool conforms(const T& x, const U& y) {
  * 
  * @return Vector.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<value_t<T>,1> fill(const T& x, const int n);
 
 /**
@@ -334,7 +331,7 @@ Array<value_t<T>,1> fill(const T& x, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x, const int n);
 
@@ -351,7 +348,7 @@ Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * 
  * @return Matrix.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<value_t<T>,2> fill(const T& x, const int m, const int n);
 
 /**
@@ -369,7 +366,7 @@ Array<value_t<T>,2> fill(const T& x, const int m, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<real,0> fill_grad(const Array<real,2>& g, const Array<value_t<T>,2>& C,
     const T& x, const int m, const int n);
 
@@ -386,7 +383,7 @@ Array<real,0> fill_grad(const Array<real,2>& g, const Array<value_t<T>,2>& C,
  * 
  * @return Vector.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<value_t<T>,1> iota(const T& x, const int n);
 
 /**
@@ -403,7 +400,7 @@ Array<value_t<T>,1> iota(const T& x, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<real,0> iota_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x, const int n);
 
@@ -419,7 +416,7 @@ Array<real,0> iota_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * 
  * @return Diagonal matrix.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<value_t<T>,2> diagonal(const T& x, const int n);
 
 /**
@@ -436,7 +433,7 @@ Array<value_t<T>,2> diagonal(const T& x, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_scalar_v<T>,int>>
+template<scalar T>
 Array<real,0> diagonal_grad(const Array<real,2>& g,
     const Array<value_t<T>,2>& y, const T& x, const int n);
 
@@ -451,7 +448,7 @@ Array<real,0> diagonal_grad(const Array<real,2>& g,
  * 
  * @return Diagonal matrix.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<T,2> diagonal(const Array<T,1>& x);
 
 /**
@@ -467,7 +464,7 @@ Array<T,2> diagonal(const Array<T,1>& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
     const Array<T,1>& x);
 
@@ -484,8 +481,7 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
  * 
  * @return Element.
  */
-template<class T, class U, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
+template<arithmetic T, int_scalar U>
 Array<T,0> element(const Array<T,1>& x, const U& i);
 
 /**
@@ -503,8 +499,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U> && is_int_v<value_t<U>>,int>>
+template<arithmetic T, int_scalar U>
 Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,1>& x, const U& i);
 
@@ -523,8 +518,7 @@ Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
  * 
  * @return Gradient with respect to @p i.
  */
-template<class T, class U, class = std::enable_if_t<is_arithmetic_v<T> &&
-    is_scalar_v<U> && is_int_v<value_t<U>>,int>>
+template<arithmetic T, int_scalar U>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,1>& x, const U& i);
 
@@ -543,9 +537,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
  * 
  * @return Element.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<arithmetic T, int_scalar U, int_scalar V>
 Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
 
 /**
@@ -565,9 +557,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<arithmetic T, int_scalar U, int_scalar V>
 Array<real,2> element_grad1(const Array<real,0>& g,
     const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j);
 
@@ -588,9 +578,7 @@ Array<real,2> element_grad1(const Array<real,0>& g,
  * 
  * @return Gradient with respect to @p i.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<arithmetic T, int_scalar U, int_scalar V>
 real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,2>& A, const U& i, const V& j);
 
@@ -611,9 +599,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
  * 
  * @return Gradient with respect to @p j.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_arithmetic_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<arithmetic T, int_scalar U, int_scalar V>
 real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
     const Array<T,2>& A, const U& i, const V& j);
 
@@ -632,8 +618,7 @@ real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
  * 
  * @return Single-entry vector.
  */
-template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
+template<scalar T, int_scalar U>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 
 /**
@@ -652,8 +637,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
+template<scalar T, int_scalar U>
 Array<real,0> single_grad1(const Array<real,1>& g,
     const Array<value_t<T>,1>& y, const T& x, const U& i, const int n);
 
@@ -673,8 +657,7 @@ Array<real,0> single_grad1(const Array<real,1>& g,
  * 
  * @return Gradient with respect to @p i.
  */
-template<class T, class U, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_int_v<value_t<U>>,int>>
+template<scalar T, int_scalar U>
 real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x, const U& i, const int n);
 
@@ -696,9 +679,7 @@ real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * 
  * @return Single-entry matrix.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<scalar T, int_scalar U, int_scalar V>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n);
 
@@ -721,9 +702,7 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<scalar T, int_scalar U, int_scalar V>
 Array<real,0> single_grad1(const Array<real,2>& g,
     const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j,
     const int m, const int n);
@@ -747,9 +726,7 @@ Array<real,0> single_grad1(const Array<real,2>& g,
  * 
  * @return Gradient with respect to @p i.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<scalar T, int_scalar U, int_scalar V>
 real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
     const T& x, const U& i, const V& j, const int m, const int n);
 
@@ -772,9 +749,7 @@ real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
  * 
  * @return Gradient with respect to @p j.
  */
-template<class T, class U, class V, class = std::enable_if_t<
-    is_scalar_v<T> && is_scalar_v<U> && is_scalar_v<V> &&
-    is_int_v<value_t<U>> && is_int_v<value_t<V>>,int>>
+template<scalar T, int_scalar U, int_scalar V>
 real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
     const T& x, const U& i, const V& j, const int m, const int n);
 
@@ -796,8 +771,7 @@ real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
  * of @p x plus the number of columns of @p y. The result always has two
  * dimensions.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 pack_t<T,U> pack(const T& x, const U& y);
 
 /**
@@ -815,8 +789,7 @@ pack_t<T,U> pack(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
     const T& x, const U& y);
 
@@ -835,8 +808,7 @@ real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
     const T& x, const U& y);
 
@@ -858,8 +830,7 @@ real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
  * plus the number of rows of @p y. The result has two dimensions if at least
  * one of the arguments has two dimensions, and one dimension otherwise.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 stack_t<T,U> stack(const T& x, const U& y);
 
 /**
@@ -877,8 +848,7 @@ stack_t<T,U> stack(const T& x, const U& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
     const T& x, const U& y);
 
@@ -897,8 +867,7 @@ real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class U, class = std::enable_if_t<is_numeric_v<T> &&
-    is_numeric_v<U>,int>>
+template<numeric T, numeric U>
 real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
     const T& x, const U& y);
 
@@ -915,7 +884,7 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
  * or matrix with a single element then returns that element as though a
  * slice.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<value_t<T>,0> scal(const T& x);
 
 /**
@@ -931,7 +900,7 @@ Array<value_t<T>,0> scal(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> scal_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x);
 
@@ -948,7 +917,7 @@ real_t<T> scal_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
  * @p x is a vector then returns it as-is. If @p x is a matrix then forms a
  * vector by stacking its columns atop one another.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<value_t<T>,1> vec(const T& x);
 
 /**
@@ -964,7 +933,7 @@ Array<value_t<T>,1> vec(const T& x);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
     const T& x);
 
@@ -985,7 +954,7 @@ real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
  * matrix. If @p x is a matrix then reshapes it to the given number of columns
  * as if calling `mat(vec(x), n)`.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 Array<value_t<T>,2> mat(const T& x, const int n);
 
 /**
@@ -1002,7 +971,7 @@ Array<value_t<T>,2> mat(const T& x, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_numeric_v<T>,int>>
+template<numeric T>
 real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
     const T& x, const int n);
 
@@ -1020,7 +989,7 @@ real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
  * 
  * @see scatter
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
 
 /**
@@ -1037,7 +1006,7 @@ Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y);
 
@@ -1055,7 +1024,7 @@ Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y);
 
@@ -1074,7 +1043,7 @@ Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
  * 
  * @see scatter, gather
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
     const Array<int,2>& J);
 
@@ -1093,7 +1062,7 @@ Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J);
 
@@ -1112,7 +1081,7 @@ Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p I.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J);
 
@@ -1131,7 +1100,7 @@ Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p J.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J);
 
@@ -1163,7 +1132,7 @@ Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& C,
  * 
  * @see gather
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
 
 /**
@@ -1181,7 +1150,7 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y, const int n);
 
@@ -1200,7 +1169,7 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
  * 
  * @return Gradient with respect to @p y.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y, const int n);
 
@@ -1223,7 +1192,7 @@ Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
  * 
  * @see gather, scatter
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
     const Array<int,2>& J, const int m, const int n);
 
@@ -1244,7 +1213,7 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
  * 
  * @return Gradient with respect to @p A.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
     const int m, const int n);
@@ -1266,7 +1235,7 @@ Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p I.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
     const int m, const int n);
@@ -1288,7 +1257,7 @@ Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
  * 
  * @return Gradient with respect to @p J.
  */
-template<class T, class = std::enable_if_t<is_arithmetic_v<T>,int>>
+template<arithmetic T>
 Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& C,
     const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
     const int m, const int n);

@@ -17,7 +17,7 @@
     MEMCPY_SIG(f, T, int) \
     MEMCPY_SIG(f, T, bool)
 #define MEMCPY_SIG(f, T, U) \
-    template void f<T,U,int>(T*, const int, const U*, const int, const int, \
+    template void f<T,U>(T*, const int, const U*, const int, const int, \
         const int);
 
 namespace numbirch {

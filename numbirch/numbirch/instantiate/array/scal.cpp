@@ -19,7 +19,7 @@
     SCAL_SIG(f, NUMBIRCH_ARRAY(T, 1)) \
     SCAL_SIG(f, NUMBIRCH_ARRAY(T, 2))
 #define SCAL_SIG(f, T) \
-    template Array<value_t<T>,0> f<T,int>(const T& x); \
+    template Array<value_t<T>,0> f<T>(const T& x); \
     template real_t<T> f##_grad(const Array<real,0>& g, \
         const Array<value_t<T>,0>& y, const T& x);
 namespace numbirch {

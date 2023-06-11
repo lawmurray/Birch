@@ -43,7 +43,7 @@ Array<real,2> chol(const Array<real,2>& S) {
   return L;
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(make_shape(rows(L), columns(L)));
@@ -171,7 +171,7 @@ Array<real,2> phi(const Array<real,2>& A) {
   return L;
 }
 
-template<class T, class>
+template<arithmetic T>
 Array<T,2> transpose(const Array<T,2>& A) {
   Array<T,2> B(make_shape(columns(A), rows(A)));
   auto A1 = make_eigen(A);
@@ -208,7 +208,7 @@ Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B) {
   return C;
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
@@ -272,7 +272,7 @@ Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L) {
   return C;
 }
 
-template<class U, class>
+template<real_scalar U>
 Array<real,2> trisolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(make_shape(rows(L), columns(L)));

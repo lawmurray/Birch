@@ -33,7 +33,7 @@
     BINARY_SIG(f, R, NUMBIRCH_ARRAY(T, 1), U) \
     BINARY_SIG(f, R, T, NUMBIRCH_ARRAY(U, 1))
 #define BINARY_SIG(f, R, T, U) \
-    template R<T,U> f<T,U,int>(const T&, const U&);
+    template R<T,U> f<T,U>(const T&, const U&);
 
 #define BINARY_ARITHMETIC(f) BINARY(f, implicit_t)
 #define BINARY_REAL(f) BINARY(f, real_t)

@@ -19,7 +19,7 @@
     UNARY_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     UNARY_SIG(f, R, T)
 #define UNARY_SIG(f, R, T) \
-    template R<T> f<T,int>(const T&);
+    template R<T> f<T>(const T&);
 
 #define UNARY_ARITHMETIC(f) UNARY(f, implicit_t)
 #define UNARY_REAL(f) UNARY(f, real_t)

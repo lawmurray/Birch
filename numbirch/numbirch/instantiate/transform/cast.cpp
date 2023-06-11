@@ -25,7 +25,7 @@
     CAST_SIG(f, R, NUMBIRCH_ARRAY(T, 0)) \
     CAST_SIG(f, R, T)
 #define CAST_SIG(f, R, T) \
-    template explicit_t<R,T> f<R,T,int>(const T&);
+    template explicit_t<R,T> f<R,T>(const T&);
 
 namespace numbirch {
 CAST(cast)

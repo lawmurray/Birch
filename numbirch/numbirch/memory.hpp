@@ -94,8 +94,7 @@ void memcpy(void* dst, const void* src, size_t n);
  * @param width Width of each batch, in elements.
  * @param height Number of batches.
  */
-template<class T, class U, class = std::enable_if_t<std::is_arithmetic_v<T> &&
-    std::is_arithmetic_v<U>,int>>
+template<arithmetic T, arithmetic U>
 void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
     const int width, const int height);
 
@@ -105,6 +104,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
  * @ingroup memory
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param[out] dst Destination.
  * @param dpitch Stride between batches of `dst`, in elements.
@@ -112,8 +112,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
  * @param width Width of each batch, in elements.
  * @param height Number of batches.
  */
-template<class T, class U, class = std::enable_if_t<
-    std::is_arithmetic_v<T>,int>>
+template<arithmetic T, arithmetic U>
 void memset(T* dst, const int dpitch, const U value, const int width,
     const int height);
 
@@ -123,6 +122,7 @@ void memset(T* dst, const int dpitch, const U value, const int width,
  * @ingroup memory
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param[out] dst Destination.
  * @param dpitch Stride between batches of `dst`, in elements.
@@ -130,8 +130,7 @@ void memset(T* dst, const int dpitch, const U value, const int width,
  * @param width Width of each batch, in elements.
  * @param height Number of batches.
  */
-template<class T, class U, class = std::enable_if_t<
-    std::is_arithmetic_v<T>,int>>
+template<arithmetic T, arithmetic U>
 void memset(T* dst, const int dpitch, const U* value, const int width,
     const int height);
 

@@ -19,7 +19,7 @@
     MAT_SIG(f, NUMBIRCH_ARRAY(T, 1)) \
     MAT_SIG(f, NUMBIRCH_ARRAY(T, 2))
 #define MAT_SIG(f, T) \
-    template Array<value_t<T>,2> f<T,int>(const T& x, const int n); \
+    template Array<value_t<T>,2> f<T>(const T& x, const int n); \
     template real_t<T> f##_grad(const Array<real,2>& g, \
         const Array<value_t<T>,2>& y, const T& x, const int n);
 
