@@ -211,20 +211,6 @@ struct is_arithmetic {
 template<class T>
 inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
 
-template<class Arg, class... Args>
-struct is_array {
-  static constexpr bool value = is_array<Arg>::value &&
-      is_array<Args...>::value;
-};
-template<class T>
-struct is_array<T> {
-  static constexpr bool value = false;
-};
-template<class T, int D>
-struct is_array<Array<T,D>> {
-  static constexpr bool value = true;
-};
-
 /**
  * Arithmetic type.
  * 
@@ -238,20 +224,25 @@ struct is_array<Array<T,D>> {
 template<class T>
 concept arithmetic = is_arithmetic_v<T>;
 
+template<class T>
+struct is_array {
+  static constexpr bool value = false;
+};
+template<class T, int D>
+struct is_array<Array<T,D>> {
+  static constexpr bool value = true;
+};
+
 /**
  * Is `T` an array type?
- * 
- * @tparam Args... Types.
- * 
- * Are all Args... array types?
  * 
  * @ingroup trait
  * 
  * An array type is any instantiation of Array, including one with zero
  * dimensions.
  */
-template<class... Args>
-inline constexpr bool is_array_v = is_array<std::decay_t<Args>...>::value;
+template<class T>
+inline constexpr bool is_array_v = is_array<std::decay_t<T>>::value;
 
 /**
  * Array type.
