@@ -23,14 +23,14 @@
 #include <cstddef>
 #include <cstring>
 
-namespace numbirch::array {
+namespace numbirch::disable_adl {
 using namespace numbirch;
 }
 namespace numbirch {
-using namespace numbirch::array;
+using namespace numbirch::disable_adl;
 }
 
-namespace numbirch::array {
+namespace numbirch::disable_adl {
 /**
  * Multidimensional array with copy-on-write.
  * 

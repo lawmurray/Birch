@@ -50,12 +50,12 @@
 #endif
 
 namespace numbirch {
-  namespace array {
+  namespace disable_adl {
     template<class T, int D> class ArrayCOW;
     template<class T, int D> class Array;
   }
-  using array::ArrayCOW;
-  using array::Array;
+  using disable_adl::ArrayCOW;
+  using disable_adl::Array;
 
 /**
  * Default floating point type. This is set to the value of the macro
@@ -96,6 +96,29 @@ template<class T, int D>
 struct dimension<Array<T,D>> {
   static constexpr int value = D;
 };
+
+template<class T>
+struct is_future {
+  static constexpr bool value = false;
+};
+template<class T>
+struct is_future<numbirch::Array<T,0>> {
+  static constexpr bool value = true;
+};
+
+/**
+ * Is `T` a future type?
+ * 
+ * @ingroup trait
+ */
+template<class T>
+inline constexpr bool is_future_v = is_future<std::decay_t<T>>::value;
+
+/**
+ * Future type.
+ */
+template<class T>
+concept future = is_future_v<T>;
 
 /**
  * Dimension of a numeric type.
@@ -230,6 +253,17 @@ concept arithmetic = is_arithmetic_v<T>;
 template<class... Args>
 inline constexpr bool is_array_v = is_array<std::decay_t<Args>...>::value;
 
+/**
+ * Array type.
+ * 
+ * @ingroup trait
+ * 
+ * An array type is any instantiation of Array, including one with zero
+ * dimensions.
+ */
+template<class T>
+concept array = is_array_v<T>;
+
 template<class T>
 struct is_scalar {
   static constexpr bool value = is_arithmetic_v<value_t<T>> &&
@@ -302,12 +336,6 @@ struct is_vector {
 template<class T>
 inline constexpr bool is_vector_v = is_vector<std::decay_t<T>>::value;
 
-template<class T>
-struct is_matrix {
-  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
-      dimension<T>::value == 2;
-};
-
 /**
  * Vector type.
  * 
@@ -317,6 +345,12 @@ struct is_matrix {
  */
 template<class T>
 concept vector = is_vector_v<T>;
+
+template<class T>
+struct is_matrix {
+  static constexpr bool value = is_arithmetic_v<value_t<T>> &&
+      dimension<T>::value == 2;
+};
 
 /**
  * Is `T` a matrix type?
@@ -328,11 +362,6 @@ concept vector = is_vector_v<T>;
 template<class T>
 inline constexpr bool is_matrix_v = is_matrix<std::decay_t<T>>::value;
 
-template<class T>
-struct is_numeric {
-  static constexpr bool value = is_array<T>::value || is_scalar<T>::value;
-};
-
 /**
  * Matrix type.
  * 
@@ -342,6 +371,11 @@ struct is_numeric {
  */
 template<class T>
 concept matrix = is_matrix_v<T>;
+
+template<class T>
+struct is_numeric {
+  static constexpr bool value = is_array<T>::value || is_scalar<T>::value;
+};
 
 /**
  * Is `T` a numeric type?

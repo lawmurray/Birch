@@ -22,16 +22,16 @@
 #include <cstddef>
 #include <cstring>
 
-namespace numbirch::array {
+namespace numbirch::disable_adl {
 using namespace numbirch;
 }
 namespace numbirch {
-using namespace numbirch::array;
+using namespace numbirch::disable_adl;
 }
 
-namespace numbirch::array {
+namespace numbirch::disable_adl {
 /**
- * Array of array.
+ * Multidimensional array.
  * 
  * @ingroup array
  * 
@@ -411,21 +411,21 @@ public:
   }
 
   /**
-   * Whole array.
+   * Whole array as slice.
    */
   Array<T,D> slice() {
-    return Array<T,D>(buf, streamAlloc, stream, shp);
+    return Array(buf, bytes, streamAlloc, stream, shp);
   }
 
   /**
-   * Whole array.
+   * Whole array as slice.
    */
   Array<T,D> slice() const {
-    return Array<T,D>(buf, streamAlloc, stream, shp);
+    return Array(buf, bytes, streamAlloc, stream, shp);
   }
 
   /**
-   * Array.
+   * Slice of array.
    *
    * @tparam Args Argument types.
    * 
@@ -464,7 +464,7 @@ public:
   }
 
   /**
-   * Dice.
+   * Dice of array.
    * 
    * @param args Indices defining the element to select. The indices are
    * 1-based.
@@ -516,8 +516,6 @@ public:
   }
 
   /**
-   * @internal
-   * 
    * Convert to matrix.
    * 
    * @param n Number of columns.
