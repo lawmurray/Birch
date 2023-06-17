@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "birch/form/Form.hpp"
 #include "birch/form/Memo.hpp"
 
 #define BIRCH_UNARY_FORM(This, ...) \
