@@ -15,6 +15,30 @@
   MEMBIRCH_STRUCT(This) \
   MEMBIRCH_STRUCT_MEMBERS(l, m, r) \
   \
+  This(const This&) = default; \
+  This(This&&) = default; \
+  \
+  template<argument T1, argument U1, argument V1> \
+  This(T1&& l, U1&& m, V1&& r __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
+      l(std::forward<T1>(l)), \
+      m(std::forward<U1>(m)), \
+      r(std::forward<V1>(r)) \
+      __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1, argument U1, argument V1> \
+  This(const This<T1,U1,V1>& o) : \
+      l(o.l), \
+      m(o.m), \
+      r(o.r) \
+      __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1, argument U1, argument V1> \
+  This(This<T1,U1,V1>&& o) : \
+     l(std::move(o.l)), \
+     m(std::move(o.m)), \
+     r(std::move(o.r)) \
+     __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
+  \
   auto operator->() { \
     return this; \
   } \
@@ -54,6 +78,11 @@
   }; \
   \
   template<argument Left, argument Middle, argument Right> \
+  struct peg_s<This<Left,Middle,Right>> { \
+    using type = This<peg_t<Left>,peg_t<Middle>,peg_t<Right>>; \
+  }; \
+  \
+  template<argument Left, argument Middle, argument Right> \
   auto value(const This<Left,Middle,Right>& o) { \
     return numbirch::f(value(o.l), value(o.m), value(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
   } \
@@ -71,14 +100,6 @@
   template<argument Left, argument Middle, argument Right> \
   auto move(const This<Left,Middle,Right>& o, const MoveVisitor& visitor) { \
     return numbirch::f(move(o.l, visitor), move(o.m, visitor), move(o.r, visitor) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  template<argument Left, argument Middle, argument Right> \
-  auto peg(const This<Left,Middle,Right>& o) { \
-    using T = std::decay_t<decltype(peg(o.l))>; \
-    using U = std::decay_t<decltype(peg(o.m))>; \
-    using V = std::decay_t<decltype(peg(o.r))>; \
-    return This<T,U,V>{peg(o.l), peg(o.m), peg(o.r)}; \
   } \
   \
   template<argument Left, argument Middle, argument Right> \

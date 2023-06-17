@@ -138,11 +138,6 @@ auto move(const StackExpression<Arg,Element>& o, const MoveVisitor& visitor) {
 }
 
 template<class Arg, class Element>
-auto peg(const StackExpression<Arg,Element>& o) {
-  return o;
-}
-
-template<class Arg, class Element>
 void reset(const StackExpression<Arg,Element>& o) {
   o->reset();
 }

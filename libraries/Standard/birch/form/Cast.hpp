@@ -31,6 +31,11 @@ struct is_form<Cast<To,Middle>> {
   static constexpr bool value = true;
 };
 
+template<argument To, argument Middle>
+struct peg_s<Cast<To,Middle>> {
+  using type = Cast<To,peg_t<Middle>>;
+};
+
 template<class To, argument Middle>
 int rows(const Cast<To,Middle>& o) {
   return rows(o.m);
@@ -69,12 +74,6 @@ auto peek(const Cast<To,Middle>& o) {
 template<class To, argument Middle>
 auto move(const Cast<To,Middle>& o, const MoveVisitor& visitor) {
   return numbirch::cast<To>(move(o.m, visitor));
-}
-
-template<class To, argument Middle>
-auto peg(const Cast<To,Middle>& o) {
-  using T = std::decay_t<decltype(peg(o.m))>;
-  return Cast<To,T>{o};
 }
 
 template<class To, argument Middle>

@@ -316,8 +316,29 @@ struct tag<T> {
 template<argument T>
 using tag_t = typename tag<T>::type;
 
+template<class T>
+struct peg_s {
+  using type = void;
+};
+template<arithmetic T>
+struct peg_s<T> {
+  using type = std::decay_t<T>;
+};
+template<array T>
+struct peg_s<T> {
+  using type = std::decay_t<T>;
+};
+// template<form T>
+// struct peg_s<T> {
+//   static_assert(false, "internal error: peg_s must be specialized for this form type.");
+// };
+template<expression T>
+struct peg_s<T> {
+  using type = std::decay_t<T>;
+};
+
 /**
- * Argument wrapper function for construction of delayed expressions. The
+ * Argument wrapper type for construction of delayed expressions. The
  * following conversions occur:
  * 
  * | Type                 | Conversion       |
@@ -326,13 +347,19 @@ using tag_t = typename tag<T>::type;
  * | Form reference       | Form value       |
  * | Expression reference | Expression value |
  * 
- * `peg()` is used to solidify a form assembled with tag, and possibly
- * rewritten, turning references into values to ensure that there are no
- * dangling references.
+ * The purpose of `peg_t` is to solidify a form assembled with tag, and
+ * possibly rewritten, turning references into values to ensure that there are
+ * no dangling references.
  */
 template<argument T>
-decltype(auto) peg(T&& x) {
-  return std::decay_t<T>(std::forward<T>(x));
+using peg_t = typename peg_s<std::decay_t<T>>::type;
+
+/**
+ * Argument wrapper function for construction of delayed expressions.
+ */
+template<argument T>
+peg_t<T> peg(T&& x) {
+  return peg_t<T>(std::forward<T>(x));
 }
 
 /**
@@ -351,14 +378,15 @@ decltype(auto) peg(T&& x) {
 template<argument T>
 decltype(auto) box(T&& x) {
   using U = std::decay_t<decltype(wait(eval(x)))>;
-  using V = std::decay_t<decltype(peg(x))>;
+  using V = peg_t<T>;
   if constexpr (numeric<T>) {
     return Expression<U>(BoxedValue<U>(std::forward<T>(x)));
   } else if constexpr (form<T>) {
-    return Expression<U>(BoxedForm<U,V>(peg(std::forward<T>(x))));
-  } else {
-    static_assert(expression<T>);
+    return Expression<U>(BoxedForm<U,V>(V(std::forward<T>(x))));
+  } else if constexpr (expression<T>) {
     return std::decay_t<T>(std::forward<T>(x));
+  } else {
+    //static_assert(false, "internal error: argument type that is not numeric, form, or expression type");
   }
 }
 

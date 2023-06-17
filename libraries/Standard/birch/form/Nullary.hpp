@@ -29,6 +29,11 @@
     static constexpr bool value = true; \
   }; \
   \
+  template<> \
+  struct peg_s<This> { \
+    using type = This; \
+  }; \
+  \
   inline auto value(const This& o) { \
     return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
   } \
@@ -43,10 +48,6 @@
   \
   inline auto move(const This& o, const MoveVisitor& visitor) { \
     return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  inline auto peg(const This& o) { \
-    return o; \
   } \
   \
   static constexpr void reset(const This&) {} \

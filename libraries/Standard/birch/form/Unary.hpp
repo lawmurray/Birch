@@ -13,6 +13,25 @@
   MEMBIRCH_STRUCT(This) \
   MEMBIRCH_STRUCT_MEMBERS(m) \
   \
+  This(const This&) = default;  \
+  This(This&&) = default; \
+  \
+  template<argument T1> \
+  requires std::same_as<std::decay_t<T1>,std::decay_t<Middle>> \
+  This(T1&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
+      m(std::forward<T1>(m)) \
+      __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1> \
+  This(const This<T1>& o) : \
+      m(o.m) \
+      __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1> \
+  This(This<T1>&& o) : \
+     m(std::move(o.m)) \
+     __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
+  \
   auto operator->() { \
     return this; \
   } \
@@ -49,6 +68,11 @@
   template<argument Middle> \
   struct is_form<This<Middle>> { \
     static constexpr bool value = true; \
+  }; \
+  \
+  template<argument Middle> \
+  struct peg_s<This<Middle>> { \
+    using type = This<peg_t<Middle>>; \
   }; \
   \
   template<argument Middle> \
@@ -102,12 +126,6 @@
   } \
   \
   template<argument Middle> \
-  auto peg(const This<Middle>& o) { \
-    using T = std::decay_t<decltype(peg(o.m))>; \
-    return This<T>{peg(o.m)}; \
-  } \
-  \
-  template<argument Middle> \
   This<Middle>::operator auto() const { \
     return numbirch::f(value(m) __VA_OPT__(,) __VA_ARGS__); \
   } \
@@ -120,8 +138,8 @@
   template<argument Middle> \
   auto f(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) { \
     using TagMiddle = tag_t<Middle>; \
-    return This<TagMiddle>{std::forward<Middle>(m) \
-        __VA_OPT__(,) __VA_ARGS__}; \
+    return This<TagMiddle>(std::forward<Middle>(m) \
+        __VA_OPT__(,) __VA_ARGS__); \
   }
 
 #define BIRCH_UNARY_GRAD(This, f_grad, ...) \

@@ -58,6 +58,11 @@ struct is_form<Memo<Middle>> {
 };
 
 template<argument Middle>
+struct peg_s<Memo<Middle>> {
+  using type = Memo<peg_t<Middle>>;
+};
+
+template<argument Middle>
 int rows(const Memo<Middle>& o) {
   return rows(eval(o));
 }
@@ -138,11 +143,6 @@ auto move(const Memo<Middle>& o, const MoveVisitor& visitor) {
     o.set(value(o.m));
   }
   return slice(o.x);
-}
-
-template<argument Middle>
-auto peg(const Memo<Middle>& o) {
-  return o;
 }
 
 template<argument Middle>

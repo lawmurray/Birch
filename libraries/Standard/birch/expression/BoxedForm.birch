@@ -94,11 +94,6 @@ auto move(const BoxedForm<Value,Form>& o, const MoveVisitor& visitor) {
 }
 
 template<class Value, class Form>
-auto peg(const BoxedForm<Value,Form>& o) {
-  return o;
-}
-
-template<class Value, class Form>
 void reset(const BoxedForm<Value,Form>& o) {
   o->reset();
 }

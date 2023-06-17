@@ -223,6 +223,11 @@ struct is_form<Random<Value>> {
 };
 
 template<class Value>
+struct peg_s<Random<Value>> {
+  using type = Random<Value>;
+};
+
+template<class Value>
 int rows(const Random<Value>& o) {
   return rows(eval(o));
 }
@@ -280,11 +285,6 @@ auto move(const Random<Value>& o, const MoveVisitor& visitor) {
     assert(o.x.has_value());
     return *o.x;
   }
-}
-
-template<class Value>
-auto peg(const Random<Value>& o) {
-  return o;
 }
 
 template<class Value>

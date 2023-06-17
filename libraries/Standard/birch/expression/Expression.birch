@@ -458,11 +458,6 @@ auto move(const Expression<Value>& o, const MoveVisitor& visitor) {
 }
 
 template<class Value>
-auto peg(const Expression<Value>& o) {
-  return o;
-}
-
-template<class Value>
 void reset(const Expression<Value>& o) {
   o->reset();
 }

@@ -14,6 +14,27 @@
   MEMBIRCH_STRUCT(This) \
   MEMBIRCH_STRUCT_MEMBERS(l, r) \
   \
+  This(const This&) = default; \
+  This(This&&) = default; \
+  \
+  template<argument T1, argument U1> \
+  This(T1&& l, U1&& r __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
+      l(std::forward<T1>(l)), \
+      r(std::forward<U1>(r)) \
+      __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1, argument U1> \
+  This(const This<T1,U1>& o) : \
+      l(o.l), \
+      r(o.r) \
+      __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1, argument U1> \
+  This(This<T1,U1>&& o) : \
+     l(std::move(o.l)), \
+     r(std::move(o.r)) \
+     __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
+  \
   auto operator->() { \
     return this; \
   } \
@@ -53,6 +74,11 @@
   }; \
   \
   template<argument Left, argument Right> \
+  struct peg_s<This<Left,Right>> { \
+    using type = This<peg_t<Left>,peg_t<Right>>; \
+  }; \
+  \
+  template<argument Left, argument Right> \
   auto value(const This<Left,Right>& o) { \
     return numbirch::f(value(o.l), value(o.r) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
   } \
@@ -70,13 +96,6 @@
   template<argument Left, argument Right> \
   auto move(const This<Left,Right>& o, const MoveVisitor& visitor) { \
     return numbirch::f(move(o.l, visitor), move(o.r, visitor) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  template<argument Left, argument Right> \
-  auto peg(const This<Left,Right>& o) { \
-    using T = std::decay_t<decltype(peg(o.l))>; \
-    using U = std::decay_t<decltype(peg(o.r))>; \
-    return This<T,U>{peg(o.l), peg(o.r)}; \
   } \
   \
   template<argument Left, argument Right> \
@@ -129,8 +148,8 @@
   auto f(Left&& l, Right&& r __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) { \
     using TagLeft = tag_t<Left>; \
     using TagRight = tag_t<Right>; \
-    return This<TagLeft,TagRight>{std::forward<Left>(l), \
-        std::forward<Right>(r) __VA_OPT__(,) __VA_ARGS__}; \
+    return This<TagLeft,TagRight>(std::forward<Left>(l), \
+        std::forward<Right>(r) __VA_OPT__(,) __VA_ARGS__); \
   }
 
 #define BIRCH_BINARY_GRAD(This, f_grad, ...) \

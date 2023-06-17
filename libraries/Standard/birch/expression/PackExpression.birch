@@ -177,11 +177,6 @@ auto move(const PackExpression<Arg,Element>& o, const MoveVisitor& visitor) {
 }
 
 template<class Arg, class Element>
-auto peg(const PackExpression<Arg,Element>& o) {
-  return o;
-}
-
-template<class Arg, class Element>
 void reset(const PackExpression<Arg,Element>& o) {
   o->reset();
 }
