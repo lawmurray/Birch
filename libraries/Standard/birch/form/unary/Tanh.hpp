@@ -7,22 +7,13 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct Tanh {
   BIRCH_UNARY_FORM(Tanh)
 };
 
 BIRCH_UNARY_SIZE(Tanh)
-BIRCH_UNARY(Tanh, numbirch::tanh)
-BIRCH_UNARY_GRAD(Tanh, numbirch::tanh_grad)
-
-template<class Middle>
-auto tanh(const Middle& m) {
-  if constexpr (numbirch::is_arithmetic_v<Middle>) {
-    return numbirch::tanh(m);
-  } else {
-    return BIRCH_UNARY_CONSTRUCT(Tanh);
-  }
-}
+BIRCH_UNARY(Tanh, tanh)
+BIRCH_UNARY_GRAD(Tanh, tanh_grad)
 
 }

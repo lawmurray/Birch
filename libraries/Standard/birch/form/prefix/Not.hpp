@@ -7,19 +7,19 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct Not {
   BIRCH_UNARY_FORM(Not)
 };
 
 BIRCH_UNARY_SIZE(Not)
-BIRCH_UNARY(Not, numbirch::logical_not)
-BIRCH_UNARY_GRAD(Not, numbirch::logical_not_grad)
+BIRCH_UNARY(Not, logical_not)
+BIRCH_UNARY_GRAD(Not, logical_not_grad)
 
-template<class Middle, std::enable_if_t<
-    is_numerical_v<Middle> && !numbirch::is_arithmetic_v<Middle>,int> = 0>
-auto operator!(const Middle& m) {
-  return BIRCH_UNARY_CONSTRUCT(Not);
+template<argument Middle>
+requires (!numbirch::arithmetic<Middle>)
+auto operator!(Middle&& m) {
+  return logical_not(std::forward<Middle>(m));
 }
 
 }

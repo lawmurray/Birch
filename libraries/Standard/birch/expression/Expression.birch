@@ -463,17 +463,12 @@ auto peg(const Expression<Value>& o) {
 }
 
 template<class Value>
-auto tag(const Expression<Value>& o) {
-  return o;
-}
-
-template<class Value>
-void reset(Expression<Value>& o) {
+void reset(const Expression<Value>& o) {
   o->reset();
 }
 
 template<class Value>
-void relink(Expression<Value>& o, const RelinkVisitor& visitor) {
+void relink(const Expression<Value>& o, const RelinkVisitor& visitor) {
   o->relink(visitor);
 }
 

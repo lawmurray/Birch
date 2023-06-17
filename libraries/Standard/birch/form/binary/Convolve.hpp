@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct Convolve {
   BIRCH_BINARY_FORM(Convolve)
 };
 
 BIRCH_BINARY_SIZE(Convolve)
-BIRCH_BINARY(Convolve, numbirch::convolve)
-BIRCH_BINARY_GRAD(Convolve, numbirch::convolve_grad)
-
-template<class Left, class Right>
-auto convolve(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(Convolve);
-}
+BIRCH_BINARY(Convolve, convolve)
+BIRCH_BINARY_GRAD(Convolve, convolve_grad)
 
 }

@@ -7,21 +7,19 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct Or {
   BIRCH_BINARY_FORM(Or)
 };
 
 BIRCH_BINARY_SIZE(Or)
-BIRCH_BINARY(Or, numbirch::logical_or)
-BIRCH_BINARY_GRAD(Or, numbirch::logical_or_grad)
+BIRCH_BINARY(Or, logical_or)
+BIRCH_BINARY_GRAD(Or, logical_or_grad)
 
-template<class Left, class Right, std::enable_if_t<
-    is_numerical_v<Left> && is_numerical_v<Right> &&
-    !(numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>),
-    int> = 0>
-auto operator||(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(Or);
+template<argument Left, argument Right>
+requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)
+auto operator||(Left&& l, Right&& r) {
+  return logical_or(std::forward<Left>(l), std::forward<Right>(r));
 }
 
 }

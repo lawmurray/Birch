@@ -27,10 +27,6 @@ inline int size(const MatrixStandardGaussian& o) {
   return o.R*o.C;
 }
 
-BIRCH_NULLARY(MatrixStandardGaussian, numbirch::standard_gaussian, R, C)
-
-inline auto standard_gaussian(const int R, const int C) {
-  return BIRCH_NULLARY_CONSTRUCT(MatrixStandardGaussian, R, C);
-}
+BIRCH_NULLARY(MatrixStandardGaussian, standard_gaussian, R, C)
 
 }

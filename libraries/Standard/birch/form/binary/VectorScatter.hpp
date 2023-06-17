@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct VectorScatter {
   BIRCH_BINARY_FORM(VectorScatter, n)
 };
 
 BIRCH_BINARY_SIZE(VectorScatter)
-BIRCH_BINARY(VectorScatter, numbirch::scatter, n)
-BIRCH_BINARY_GRAD(VectorScatter, numbirch::scatter_grad, n)
-
-template<class Left, class Right>
-auto scatter(const Left& l, const Right& r, const int n) {
-  return BIRCH_BINARY_CONSTRUCT(VectorScatter, n);
-}
+BIRCH_BINARY(VectorScatter, scatter, n)
+BIRCH_BINARY_GRAD(VectorScatter, scatter_grad, n)
 
 }

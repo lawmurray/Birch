@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct Vec {
   BIRCH_UNARY_FORM(Vec)
 };
 
 BIRCH_UNARY_SIZE(Vec)
-BIRCH_UNARY(Vec, numbirch::vec)
-BIRCH_UNARY_GRAD(Vec, numbirch::vec_grad)
-
-template<class Middle>
-auto vec(const Middle& m) {
-  return BIRCH_UNARY_CONSTRUCT(Vec);
-}
+BIRCH_UNARY(Vec, vec)
+BIRCH_UNARY_GRAD(Vec, vec_grad)
 
 }

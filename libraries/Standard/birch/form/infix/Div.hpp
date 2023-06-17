@@ -7,21 +7,19 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct Div {
   BIRCH_BINARY_FORM(Div)
 };
 
 BIRCH_BINARY_SIZE(Div)
-BIRCH_BINARY(Div, numbirch::div)
-BIRCH_BINARY_GRAD(Div, numbirch::div_grad)
+BIRCH_BINARY(Div, div)
+BIRCH_BINARY_GRAD(Div, div_grad)
 
-template<class Left, class Right, std::enable_if_t<
-    is_numerical_v<Left> && is_numerical_v<Right> &&
-    !(numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>),
-    int> = 0>
-auto operator/(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(Div);
+template<argument Left, argument Right>
+requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)
+auto operator/(Left&& l, Right&& r) {
+  return div(std::forward<Left>(l), std::forward<Right>(r));
 }
 
 }

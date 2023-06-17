@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct FrobeniusSelf {
   BIRCH_UNARY_FORM(FrobeniusSelf)
 };
 
 BIRCH_UNARY_SIZE(FrobeniusSelf)
-BIRCH_UNARY(FrobeniusSelf, numbirch::frobenius)
-BIRCH_UNARY_GRAD(FrobeniusSelf, numbirch::frobenius_grad)
-
-template<class Middle>
-auto frobenius(const Middle& m) {
-  return BIRCH_UNARY_CONSTRUCT(FrobeniusSelf);
-}
+BIRCH_UNARY(FrobeniusSelf, frobenius)
+BIRCH_UNARY_GRAD(FrobeniusSelf, frobenius_grad)
 
 }

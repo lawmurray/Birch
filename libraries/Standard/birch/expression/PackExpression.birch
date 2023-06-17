@@ -182,17 +182,12 @@ auto peg(const PackExpression<Arg,Element>& o) {
 }
 
 template<class Arg, class Element>
-auto tag(const PackExpression<Arg,Element>& o) {
-  return o;
-}
-
-template<class Arg, class Element>
-void reset(PackExpression<Arg,Element>& o) {
+void reset(const PackExpression<Arg,Element>& o) {
   o->reset();
 }
 
 template<class Arg, class Element>
-void relink(PackExpression<Arg,Element>& o, const RelinkVisitor& visitor) {
+void relink(const PackExpression<Arg,Element>& o, const RelinkVisitor& visitor) {
   o->relink(visitor);
 }
 

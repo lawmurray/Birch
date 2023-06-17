@@ -99,17 +99,12 @@ auto peg(const BoxedForm<Value,Form>& o) {
 }
 
 template<class Value, class Form>
-auto tag(const BoxedForm<Value,Form>& o) {
-  return o;
-}
-
-template<class Value, class Form>
-void reset(BoxedForm<Value,Form>& o) {
+void reset(const BoxedForm<Value,Form>& o) {
   o->reset();
 }
 
 template<class Value, class Form>
-void relink(BoxedForm<Value,Form>& o, const RelinkVisitor& visitor) {
+void relink(const BoxedForm<Value,Form>& o, const RelinkVisitor& visitor) {
   o->relink(visitor);
 }
 

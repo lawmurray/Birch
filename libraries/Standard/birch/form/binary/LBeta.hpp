@@ -7,22 +7,13 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct LBeta {
   BIRCH_BINARY_FORM(LBeta)
 };
 
 BIRCH_BINARY_SIZE(LBeta)
-BIRCH_BINARY(LBeta, numbirch::lbeta)
-BIRCH_BINARY_GRAD(LBeta, numbirch::lbeta_grad)
-
-template<class Left, class Right>
-auto lbeta(const Left& l, const Right& r) {
-  if constexpr (numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>) {
-    return numbirch::lbeta(l, r);
-  } else {
-    return BIRCH_BINARY_CONSTRUCT(LBeta);
-  }
-}
+BIRCH_BINARY(LBeta, lbeta)
+BIRCH_BINARY_GRAD(LBeta, lbeta_grad)
 
 }

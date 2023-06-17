@@ -7,21 +7,19 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct LessOrEqual {
   BIRCH_BINARY_FORM(LessOrEqual)
 };
 
 BIRCH_BINARY_SIZE(LessOrEqual)
-BIRCH_BINARY(LessOrEqual, numbirch::less_or_equal)
-BIRCH_BINARY_GRAD(LessOrEqual, numbirch::less_or_equal_grad)
+BIRCH_BINARY(LessOrEqual, less_or_equal)
+BIRCH_BINARY_GRAD(LessOrEqual, less_or_equal_grad)
 
-template<class Left, class Right, std::enable_if_t<
-    is_numerical_v<Left> && is_numerical_v<Right> &&
-    !(numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>),
-    int> = 0>
-auto operator<=(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(LessOrEqual);
+template<argument Left, argument Right>
+requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)
+auto operator<=(Left&& l, Right&& r) {
+  return less_or_equal(std::forward<Left>(l), std::forward<Right>(r));
 }
 
 }

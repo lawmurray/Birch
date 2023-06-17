@@ -4,6 +4,7 @@
 #pragma once
 
 #include "birch/form/Cast.hpp"
+#include "birch/form/Memo.hpp"
 
 #include "birch/form/unary/Abs.hpp"
 #include "birch/form/unary/Acos.hpp"

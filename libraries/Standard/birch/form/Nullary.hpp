@@ -4,6 +4,7 @@
 #pragma once
 
 #include "birch/form/Form.hpp"
+#include "birch/form/Memo.hpp"
 
 #define BIRCH_NULLARY_FORM(This, ...) \
   __VA_OPT__(Integer __VA_ARGS__;) \
@@ -29,26 +30,22 @@
   }; \
   \
   inline auto value(const This& o) { \
-    return f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
+    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
   } \
   \
   inline auto eval(const This& o) { \
-    return f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
+    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
   } \
   \
   inline auto peek(const This& o) { \
-    return f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
+    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
   } \
   \
   inline auto move(const This& o, const MoveVisitor& visitor) { \
-    return f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
+    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
   } \
   \
   inline auto peg(const This& o) { \
-    return o; \
-  } \
-  \
-  inline auto tag(const This& o) { \
     return o; \
   } \
   \
@@ -60,11 +57,15 @@
   static constexpr void deep_grad(const This&, const GradVisitor&) {} \
   \
   inline This::operator auto() const { \
-    return f(__VA_ARGS__); \
+    return numbirch::f(__VA_ARGS__); \
   } \
   \
   inline auto This::operator*() const { \
-    return wait(f(__VA_ARGS__)); \
+    return wait(numbirch::f(__VA_ARGS__)); \
+  } \
+  \
+  inline auto f(__VA_OPT__(BIRCH_INT(__VA_ARGS__))) { \
+    return This{__VA_ARGS__}; \
   }
 
 #define BIRCH_NULLARY_SIZE(This, ...) \
@@ -82,11 +83,8 @@
   \
   inline int size(const This& o) { \
     return size(eval(o)); \
-  }
+  } \
 
 #define BIRCH_NULLARY_GRAD(This, f_grad, ...) \
   template<class G> \
   static constexpr void shallow_grad(const This&, const G&, __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__)), const GradVisitor&) {}
-
-#define BIRCH_NULLARY_CONSTRUCT(This, ...) \
-  This{__VA_ARGS__}

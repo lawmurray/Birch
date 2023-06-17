@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct LDet {
   BIRCH_UNARY_FORM(LDet)
 };
 
 BIRCH_UNARY_SIZE(LDet)
-BIRCH_UNARY(LDet, numbirch::ldet)
-BIRCH_UNARY_GRAD(LDet, numbirch::ldet_grad)
-
-template<class Middle>
-auto ldet(const Middle& m) {
-  return BIRCH_UNARY_CONSTRUCT(LDet);
-}
+BIRCH_UNARY(LDet, ldet)
+BIRCH_UNARY_GRAD(LDet, ldet_grad)
 
 }

@@ -143,17 +143,12 @@ auto peg(const StackExpression<Arg,Element>& o) {
 }
 
 template<class Arg, class Element>
-auto tag(const StackExpression<Arg,Element>& o) {
-  return o;
-}
-
-template<class Arg, class Element>
-void reset(StackExpression<Arg,Element>& o) {
+void reset(const StackExpression<Arg,Element>& o) {
   o->reset();
 }
 
 template<class Arg, class Element>
-void relink(StackExpression<Arg,Element>& o, const RelinkVisitor& visitor) {
+void relink(const StackExpression<Arg,Element>& o, const RelinkVisitor& visitor) {
   o->relink(visitor);
 }
 

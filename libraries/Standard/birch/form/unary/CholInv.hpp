@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct CholInv {
   BIRCH_UNARY_FORM(CholInv)
 };
 
 BIRCH_UNARY_SIZE(CholInv)
-BIRCH_UNARY(CholInv, numbirch::cholinv)
-BIRCH_UNARY_GRAD(CholInv, numbirch::cholinv_grad)
-
-template<class Middle>
-auto cholinv(const Middle& m) {
-  return BIRCH_UNARY_CONSTRUCT(CholInv);
-}
+BIRCH_UNARY(CholInv, cholinv)
+BIRCH_UNARY_GRAD(CholInv, cholinv_grad)
 
 }

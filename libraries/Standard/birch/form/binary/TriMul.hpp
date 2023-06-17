@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct TriMul {
   BIRCH_BINARY_FORM(TriMul)
 };
 
 BIRCH_BINARY_SIZE(TriMul)
-BIRCH_BINARY(TriMul, numbirch::trimul)
-BIRCH_BINARY_GRAD(TriMul, numbirch::trimul_grad)
-
-template<class Left, class Right>
-auto trimul(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(TriMul);
-}
+BIRCH_BINARY(TriMul, trimul)
+BIRCH_BINARY_GRAD(TriMul, trimul_grad)
 
 }

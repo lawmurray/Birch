@@ -27,10 +27,6 @@ inline int size(const VectorStandardGaussian& o) {
   return o.n;
 }
 
-BIRCH_NULLARY(VectorStandardGaussian, numbirch::standard_gaussian, n)
-
-inline auto standard_gaussian(const int n) {
-  return BIRCH_NULLARY_CONSTRUCT(VectorStandardGaussian, n);
-}
+BIRCH_NULLARY(VectorStandardGaussian, standard_gaussian, n)
 
 }

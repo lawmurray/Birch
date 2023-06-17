@@ -5,32 +5,28 @@
 
 namespace birch {
 /**
- * Is `T` an array type?
+ * Future type.
  */
 template<class T>
-struct is_array {
-  static constexpr bool value = false;
-};
-template<class T, int D>
-struct is_array<numbirch::Array<T,D>> {
-  static constexpr bool value = true;
-};
-template<class T>
-inline constexpr bool is_array_v = is_array<std::decay_t<T>>::value;
+concept future = numbirch::future<T>;
 
 /**
- * Is `T` a future type?
+ * Arithmetic type.
  */
 template<class T>
-struct is_future {
-  static constexpr bool value = false;
-};
+concept arithmetic = numbirch::arithmetic<T>;
+
+/**
+ * Array type.
+ */
 template<class T>
-struct is_future<numbirch::Array<T,0>> {
-  static constexpr bool value = true;
-};
+concept array = numbirch::array<T>;
+
+/**
+ * Numeric type.
+ */
 template<class T>
-inline constexpr bool is_future_v = is_future<std::decay_t<T>>::value;
+concept numeric = numbirch::numeric<T>;
 
 /**
  * Is `T` a form type?
@@ -43,6 +39,12 @@ template<class T>
 inline constexpr bool is_form_v = is_form<std::decay_t<T>>::value;
 
 /**
+ * Form type.
+ */
+template<class T>
+concept form = is_form_v<T>;
+
+/**
  * Is `T` an expression type?
  */
 template<class T>
@@ -53,15 +55,18 @@ template<class T>
 inline constexpr bool is_expression_v = is_expression<std::decay_t<T>>::value;
 
 /**
- * Is `T` either of arithmetic, array, form, or expression type?
+ * Expression type.
  */
 template<class T>
-struct is_numerical {
-  static constexpr bool value = numbirch::is_numeric_v<T> || is_form_v<T> ||
-      is_expression_v<T>;
-};
+concept expression = is_expression_v<T>;
+
+/**
+ * Argument type.
+ * 
+ * An argument type is a numeric, form, or expression type.
+ */
 template<class T>
-inline constexpr bool is_numerical_v = is_numerical<std::decay_t<T>>::value;
+concept argument = numeric<T> || form<T> || expression<T>;
 
 /**
  * Make a shared object.
@@ -197,7 +202,7 @@ std::optional<To> optional_cast(const std::optional<From>& from) {
 
 template<class T>
 decltype(auto) wait(T&& x) {
-  if constexpr (is_future_v<T>) {
+  if constexpr (future<T>) {
     return x.value();
   } else {
     return std::forward<T>(x);
@@ -209,103 +214,187 @@ using numbirch::columns;
 using numbirch::length;
 using numbirch::size;
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr decltype(auto) value(T&& x) {
   return std::forward<T>(x);
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr decltype(auto) eval(T&& x) {
   return std::forward<T>(x);
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr decltype(auto) peek(T&& x) {
   return std::forward<T>(x);
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr decltype(auto) move(T&& x, const MoveVisitor& visitor) {
   return std::forward<T>(x);
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr void args(const T& x, const ArgsVisitor& visitor) {
   //
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-constexpr void reset(T& x) {
+template<numeric T>
+constexpr void reset(const T& x) {
   //
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-constexpr void relink(T& x, const RelinkVisitor& visitor) {
+template<numeric T>
+constexpr void relink(const T& x, const RelinkVisitor& visitor) {
   //
 }
 
-template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-constexpr void grad(T& x, const G& g) {
+template<numeric T, numeric G>
+constexpr void grad(const T& x, const G& g) {
   //
 }
 
-template<class T, class G, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-constexpr void shallow_grad(T& x, const G& g, const GradVisitor& visitor) {
+template<numeric T, numeric G>
+constexpr void shallow_grad(const T& x, const G& g,
+    const GradVisitor& visitor) {
   //
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
-constexpr void deep_grad(T& x, const GradVisitor& visitor) {
+template<numeric T>
+constexpr void deep_grad(const T& x, const GradVisitor& visitor) {
   //
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr void constant(const T& x) {
   //
 }
 
-template<class T, std::enable_if_t<numbirch::is_numeric_v<T>,int> = 0>
+template<numeric T>
 constexpr bool is_constant(const T& x) {
   return true;
 }
 
 template<class T>
-constexpr decltype(auto) peg(const T& x) {
-  return std::remove_const_t<std::remove_reference_t<T>>(x);
+struct tag {
+  using type = void;
+};
+template<arithmetic T>
+struct tag<T> {
+  using type = std::decay_t<T>;
+};
+template<array T>
+struct tag<T> {
+  using type = T;
+};
+template<form T>
+struct tag<T> {
+  using type = std::decay_t<T>;
+};
+template<expression T>
+struct tag<T> {
+  using type = T;
+};
+
+/**
+ * Argument wrapper type for construction of delayed expressions. The
+ * following conversions occur:
+ * 
+ * | Type                 | Conversion           |
+ * | -------------------- | -------------------- |
+ * | Arithmetic reference | Arithmetic value     |
+ * | Array reference      | Array reference      |
+ * | Form reference       | Form value           |
+ * | Expression reference | Expression reference |
+ * 
+ * The purpose of `tag_t` is to allow the construction of forms without the
+ * overhead of relatively expensive object copies, such as for arrays (which
+ * require an allocate and copy, or copy-on-write bookkeeping), or shared
+ * pointers (reference counting and atomic operations). Forms can then be
+ * rewritten at compile time.
+ */
+template<argument T>
+using tag_t = typename tag<T>::type;
+
+/**
+ * Argument wrapper function for construction of delayed expressions. The
+ * following conversions occur:
+ * 
+ * | Type                 | Conversion       |
+ * | -------------------- | ---------------- |
+ * | Numeric reference    | Numeric value    |
+ * | Form reference       | Form value       |
+ * | Expression reference | Expression value |
+ * 
+ * `peg()` is used to solidify a form assembled with tag, and possibly
+ * rewritten, turning references into values to ensure that there are no
+ * dangling references.
+ */
+template<argument T>
+decltype(auto) peg(T&& x) {
+  return std::decay_t<T>(std::forward<T>(x));
 }
 
-template<class T>
-constexpr decltype(auto) tag(const T& x) {
-  return std::remove_const_t<std::remove_reference_t<T>>(x);
-}
-
-template<class T>
+/**
+ * Argument wrapper function for construction of delayed expressions. The
+ * following conversions occur:
+ * 
+ * | Type                 | Conversion       |
+ * | -------------------- | ---------------- |
+ * | Numeric reference    | Expression value |
+ * | Form reference       | Expression value |
+ * | Expression reference | Expression value |
+ * 
+ * `box()` is used for type erasure of delayed expressions, such as complex
+ * forms.
+ */
+template<argument T>
 decltype(auto) box(T&& x) {
-  using U = typename std::decay_t<decltype(wait(eval(x)))>;
-  using V = typename std::decay_t<decltype(peg(x))>;
-  if constexpr (numbirch::is_numeric_v<T>) {
+  using U = std::decay_t<decltype(wait(eval(x)))>;
+  using V = std::decay_t<decltype(peg(x))>;
+  if constexpr (numeric<T>) {
     return Expression<U>(BoxedValue<U>(std::forward<T>(x)));
-  } else if constexpr (is_form_v<T>) {
+  } else if constexpr (form<T>) {
     return Expression<U>(BoxedForm<U,V>(peg(std::forward<T>(x))));
   } else {
-    return Expression<U>(std::forward<T>(x));
+    static_assert(expression<T>);
+    return std::decay_t<T>(std::forward<T>(x));
   }
 }
 
+/**
+ * Apply `box()` to multiple arguments and return as a tuple.
+ */
 template<class... Args>
 decltype(auto) box(Args&&... args) {
   return std::make_tuple(box(std::forward<Args>(args))...);
 }
 
+/**
+ * Argument wrapper function for construction of delayed expressions. The
+ * following conversions occur:
+ * 
+ * | Type                 | Conversion       |
+ * | -------------------- | ---------------- |
+ * | Numeric reference    | Numeric value    |
+ * | Form reference       | Expression value |
+ * | Expression reference | Expression value |
+ * 
+ * `wrap()` is used for partial type erasure of delayed expressions, boxing
+ * forms, which can become quite complex, while preserving numeric arguments.
+ */
 template<class T>
 decltype(auto) wrap(T&& x) {
-  if constexpr (is_form_v<T>) {
+  if constexpr (form<T>) {
     return box(std::forward<T>(x));
   } else {
-    return std::forward<T>(x);
+    return std::decay_t<T>(std::forward<T>(x));
   }
 }
 
+/**
+ * Apply `wrap()` to multiple arguments and return as a tuple.
+ */
 template<class... Args>
 decltype(auto) wrap(Args&&... args) {
   return std::make_tuple(wrap(std::forward<Args>(args))...);

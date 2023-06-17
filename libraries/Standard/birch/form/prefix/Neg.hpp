@@ -7,19 +7,19 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct Neg {
   BIRCH_UNARY_FORM(Neg)
 };
 
 BIRCH_UNARY_SIZE(Neg)
-BIRCH_UNARY(Neg, numbirch::neg)
-BIRCH_UNARY_GRAD(Neg, numbirch::neg_grad)
+BIRCH_UNARY(Neg, neg)
+BIRCH_UNARY_GRAD(Neg, neg_grad)
 
-template<class Middle, std::enable_if_t<
-    is_numerical_v<Middle> && !numbirch::is_arithmetic_v<Middle>,int> = 0>
-auto operator-(const Middle& m) {
-  return BIRCH_UNARY_CONSTRUCT(Neg);
+template<argument Middle>
+requires (!numbirch::arithmetic<Middle>)
+auto operator-(Middle&& m) {
+  return neg(std::forward<Middle>(m));
 }
 
 }

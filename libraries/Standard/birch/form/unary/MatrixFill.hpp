@@ -7,37 +7,32 @@
 
 namespace birch {
 
-template<class Middle>
+template<argument Middle>
 struct MatrixFill {
   BIRCH_UNARY_FORM(MatrixFill, R, C)
 };
 
-BIRCH_UNARY(MatrixFill, numbirch::fill, R, C)
-BIRCH_UNARY_GRAD(MatrixFill, numbirch::fill_grad, R, C)
+BIRCH_UNARY(MatrixFill, fill, R, C)
+BIRCH_UNARY_GRAD(MatrixFill, fill_grad, R, C)
 
-template<class Middle>
+template<argument Middle>
 int rows(const MatrixFill<Middle>& o) {
   return o.R;
 }
 
-template<class Middle>
+template<argument Middle>
 int columns(const MatrixFill<Middle>& o) {
   return o.C;
 }
 
-template<class Middle>
+template<argument Middle>
 int length(const MatrixFill<Middle>& o) {
   return o.R;
 }
 
-template<class Middle>
+template<argument Middle>
 int size(const MatrixFill<Middle>& o) {
   return o.R*o.C;
-}
-
-template<class Middle>
-auto fill(const Middle& m, const int R, const int C) {
-  return BIRCH_UNARY_CONSTRUCT(MatrixFill, R, C);
 }
 
 }

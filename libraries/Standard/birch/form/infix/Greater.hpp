@@ -7,21 +7,19 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct Greater {
   BIRCH_BINARY_FORM(Greater)
 };
 
 BIRCH_BINARY_SIZE(Greater)
-BIRCH_BINARY(Greater, numbirch::greater)
-BIRCH_BINARY_GRAD(Greater, numbirch::greater_grad)
+BIRCH_BINARY(Greater, greater)
+BIRCH_BINARY_GRAD(Greater, greater_grad)
 
-template<class Left, class Right, std::enable_if_t<
-    is_numerical_v<Left> && is_numerical_v<Right> &&
-    !(numbirch::is_arithmetic_v<Left> && numbirch::is_arithmetic_v<Right>),
-    int> = 0>
-auto operator>(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(Greater);
+template<argument Left, argument Right>
+requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)
+auto operator>(Left&& l, Right&& r) {
+  return greater(std::forward<Left>(l), std::forward<Right>(r));
 }
 
 }

@@ -100,9 +100,8 @@ function simulate_multinomial(n:Integer, ρ:Real[_], Z:Real) -> Integer[_] {
   let x <- vector(0, D);
 
   while i > 0 {
-    let u <- simulate_uniform(0.0, 1.0);
-    lnMax <- lnMax + log(u)/i;
-    u <- Z*exp(lnMax);
+    lnMax <- lnMax + log(simulate_uniform(0.0, 1.0))/i;
+    u:Real <- Z*exp(lnMax);
     while u < Z - R {
       j <- j - 1;
       R <- R + ρ[j];

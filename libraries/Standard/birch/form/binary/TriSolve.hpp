@@ -7,18 +7,13 @@
 
 namespace birch {
 
-template<class Left, class Right>
+template<argument Left, argument Right>
 struct TriSolve {
   BIRCH_BINARY_FORM(TriSolve)
 };
 
 BIRCH_BINARY_SIZE(TriSolve)
-BIRCH_BINARY(TriSolve, numbirch::trisolve)
-BIRCH_BINARY_GRAD(TriSolve, numbirch::trisolve_grad)
-
-template<class Left, class Right>
-auto trisolve(const Left& l, const Right& r) {
-  return BIRCH_BINARY_CONSTRUCT(TriSolve);
-}
+BIRCH_BINARY(TriSolve, trisolve)
+BIRCH_BINARY_GRAD(TriSolve, trisolve_grad)
 
 }

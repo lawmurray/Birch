@@ -6,6 +6,16 @@
 #include "birch/form/Ternary.hpp"
 
 namespace numbirch {
+/**
+ * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
+ * distribution truncated on a finite interval $[0,n]$.
+ *
+ * @param l Mode.
+ * @param m Dispersion.
+ * @param r Truncation point.
+ *
+ * @return Logarithm of normalizing constant.
+ */
 inline real logz_conway_maxwell_poisson(const real& μ, const real& ν,
     const int& n) {
   /* to avoid taking exp() of large negative values, renormalize each term in
@@ -73,35 +83,13 @@ inline auto logz_conway_maxwell_poisson_grad3(const Gradient& g,
 
 namespace birch {
 
-template<class Left, class Middle, class Right>
+template<argument Left, argument Middle, argument Right>
 struct LogZConwayMaxwellPoisson {
   BIRCH_TERNARY_FORM(LogZConwayMaxwellPoisson)
 };
 
 BIRCH_TERNARY_SIZE(LogZConwayMaxwellPoisson)
-BIRCH_TERNARY(LogZConwayMaxwellPoisson, numbirch::logz_conway_maxwell_poisson)
-BIRCH_TERNARY_GRAD(LogZConwayMaxwellPoisson, numbirch::logz_conway_maxwell_poisson_grad)
-
-/**
- * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
- * distribution truncated on a finite interval $[0,n]$.
- *
- * @param l Mode.
- * @param m Dispersion.
- * @param r Truncation point.
- *
- * @return Logarithm of normalizing constant.
- */
-template<class Left, class Middle, class Right>
-auto logz_conway_maxwell_poisson(const Left& l, const Middle& m,
-    const Right& r) {
-  if constexpr (numbirch::is_arithmetic_v<Left> &&
-      numbirch::is_arithmetic_v<Middle> &&
-      numbirch::is_arithmetic_v<Right>) {
-    return numbirch::logz_conway_maxwell_poisson(l, m, r);
-  } else {
-    return BIRCH_TERNARY_CONSTRUCT(LogZConwayMaxwellPoisson);
-  }
-}
+BIRCH_TERNARY(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson)
+BIRCH_TERNARY_GRAD(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson_grad)
 
 }

@@ -288,11 +288,6 @@ auto peg(const Random<Value>& o) {
 }
 
 template<class Value>
-auto tag(const Random<Value>& o) {
-  return o;
-}
-
-template<class Value>
 void reset(Random<Value>& o) {
   if (o.hasDistribution()) {
     o.getDistribution()->reset();
