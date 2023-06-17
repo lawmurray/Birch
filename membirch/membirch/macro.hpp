@@ -46,18 +46,18 @@ using no_base = void;
   using this_type_ = Name; \
   using base_type_ = __VA_ARGS__; \
   \
-  friend class Marker; \
-  friend class Scanner; \
-  friend class Reacher; \
-  friend class Collector; \
-  friend class BiconnectedCollector; \
-  friend class Spanner; \
-  friend class Bridger; \
-  friend class Copier; \
-  friend class Memo; \
-  friend class BiconnectedCopier; \
-  friend class BiconnectedMemo; \
-  friend class Destroyer; \
+  friend class membirch::Marker; \
+  friend class membirch::Scanner; \
+  friend class membirch::Reacher; \
+  friend class membirch::Collector; \
+  friend class membirch::BiconnectedCollector; \
+  friend class membirch::Spanner; \
+  friend class membirch::Bridger; \
+  friend class membirch::Copier; \
+  friend class membirch::Memo; \
+  friend class membirch::BiconnectedCopier; \
+  friend class membirch::BiconnectedMemo; \
+  friend class membirch::Destroyer; \
   \
   virtual const char* getClassName_() const override { \
     return #Name; \
@@ -189,18 +189,18 @@ using no_base = void;
   using this_type_ = Name; \
   using base_type_ = __VA_OPT__(std::conditional_t<true,__VA_ARGS__,)void __VA_OPT__(>); \
   \
-  friend class Marker; \
-  friend class Scanner; \
-  friend class Reacher; \
-  friend class Collector; \
-  friend class BiconnectedCollector; \
-  friend class Spanner; \
-  friend class Bridger; \
-  friend class Copier; \
-  friend class Memo; \
-  friend class BiconnectedCopier; \
-  friend class BiconnectedMemo; \
-  friend class Destroyer; \
+  friend class membirch::Marker; \
+  friend class membirch::Scanner; \
+  friend class membirch::Reacher; \
+  friend class membirch::Collector; \
+  friend class membirch::BiconnectedCollector; \
+  friend class membirch::Spanner; \
+  friend class membirch::Bridger; \
+  friend class membirch::Copier; \
+  friend class membirch::Memo; \
+  friend class membirch::BiconnectedCopier; \
+  friend class membirch::BiconnectedMemo; \
+  friend class membirch::Destroyer; \
   \
   const char* getClassName_() const { \
     return #Name; \
