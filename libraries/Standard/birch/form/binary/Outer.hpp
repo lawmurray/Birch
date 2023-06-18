@@ -10,10 +10,12 @@ namespace birch {
 template<argument Left, argument Right>
 struct Outer {
   BIRCH_BINARY_FORM(Outer)
+  BIRCH_BINARY_SIZE(Outer)
+  BIRCH_BINARY_EVAL(Outer, outer)
+  BIRCH_BINARY_GRAD(Outer, outer_grad)
 };
 
-BIRCH_BINARY_SIZE(Outer)
-BIRCH_BINARY(Outer, outer)
-BIRCH_BINARY_GRAD(Outer, outer_grad)
+BIRCH_BINARY_TYPE(Outer)
+BIRCH_BINARY_CALL(Outer, outer)
 
 }

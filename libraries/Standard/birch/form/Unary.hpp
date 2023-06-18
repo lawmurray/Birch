@@ -15,21 +15,24 @@
   This(const This&) = default;  \
   This(This&&) = default; \
   \
-  template<argument T1> \
-  requires std::same_as<std::decay_t<T1>,std::decay_t<Middle>> \
-  This(T1&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
-      m(std::forward<T1>(m)) \
-      __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  This(const Middle& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
+      m(m) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
   \
-  template<argument T1> \
-  This(const This<T1>& o) : \
-      m(o.m) \
-      __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  This(Middle& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) \
+      requires (!std::same_as<const Middle&,Middle&>) : \
+      m(m) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
   \
-  template<argument T1> \
-  This(This<T1>&& o) : \
-     m(std::move(o.m)) \
-     __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
+  This(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) \
+      requires (!std::same_as<const Middle&,Middle&&>) : \
+      m(std::move(m)) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument O> \
+  This(const O& o) : \
+      m(o.m) __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument O> \
+  This(O&& o) : \
+     m(std::move(o.m)) __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
   \
   auto operator->() { \
     return this; \
@@ -39,31 +42,88 @@
     return this; \
   } \
   \
-  operator auto() const; \
-  auto operator*() const;
-
-#define BIRCH_UNARY_SIZE(This, ...) \
-  template<argument Middle> \
-  int rows(const This<Middle>& o) { \
-    return rows(eval(o)); \
+  void reset() { \
+    birch::reset(m); \
   } \
   \
-  template<argument Middle> \
-  int columns(const This<Middle>& o) { \
-    return columns(eval(o)); \
+  void relink(const RelinkVisitor& visitor) { \
+    birch::relink(m, visitor); \
   } \
   \
-  template<argument Middle> \
-  int length(const This<Middle>& o) { \
-    return length(eval(o)); \
+  void constant() const { \
+    birch::constant(m); \
   } \
   \
-  template<argument Middle> \
-  int size(const This<Middle>& o) { \
-    return size(eval(o)); \
+  bool isConstant() const { \
+    return birch::is_constant(m); \
+  } \
+  \
+  void args(const ArgsVisitor& visitor) const { \
+    birch::args(m, visitor); \
+  } \
+  \
+  void deepGrad(const GradVisitor& visitor) const { \
+    birch::deep_grad(m, visitor); \
   }
 
-#define BIRCH_UNARY(This, f, ...) \
+#define BIRCH_UNARY_SIZE(This, ...) \
+  int rows() const { \
+    return birch::rows(eval()); \
+  } \
+  \
+  int columns() const { \
+    return birch::columns(eval()); \
+  } \
+  \
+  int length() const { \
+    return birch::length(eval()); \
+  } \
+  \
+  int size() const { \
+    return birch::size(eval()); \
+  }
+
+#define BIRCH_UNARY_EVAL(This, f, ...) \
+  auto value() const { \
+    return numbirch::f(birch::value(m) __VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  auto eval() const { \
+    return numbirch::f(birch::eval(m) __VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  auto peek() const { \
+    return numbirch::f(birch::peek(m) __VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  auto move(const MoveVisitor& visitor) const { \
+    return numbirch::f(birch::move(m, visitor) __VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  operator auto() const { \
+    return value(); \
+  } \
+  \
+  auto operator*() const { \
+    return wait(value()); \
+  }
+
+#define BIRCH_UNARY_GRAD(This, f_grad, ...) \
+  template<class G> \
+  void shallowGrad(const G& g, const GradVisitor& visitor) const { \
+    birch::shallow_grad(m, numbirch::f_grad(g, peek(), birch::peek(m) \
+        __VA_OPT__(,) __VA_ARGS__), visitor); \
+  }
+
+#define BIRCH_UNARY_CALL(This, f, ...) \
+  template<argument Middle> \
+  auto f(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) { \
+    using TagMiddle = tag_t<Middle>; \
+    return This<TagMiddle>(std::forward<Middle>(m) \
+        __VA_OPT__(,) __VA_ARGS__); \
+  }
+
+#define BIRCH_UNARY_TYPE(This, ...) \
   template<argument Middle> \
   struct is_form<This<Middle>> { \
     static constexpr bool value = true; \
@@ -72,77 +132,4 @@
   template<argument Middle> \
   struct peg_s<This<Middle>> { \
     using type = This<peg_t<Middle>>; \
-  }; \
-  \
-  template<argument Middle> \
-  void reset(This<Middle>& o) { \
-    reset(o.m); \
-  } \
-  \
-  template<argument Middle> \
-  void relink(This<Middle>& o, const RelinkVisitor& visitor) { \
-    relink(o.m, visitor); \
-  } \
-  \
-  template<argument Middle> \
-  void constant(const This<Middle>& o) { \
-    constant(o.m); \
-  } \
-  \
-  template<argument Middle> \
-  bool is_constant(const This<Middle>& o) { \
-    return is_constant(o.m); \
-  } \
-  \
-  template<argument Middle> \
-  void args(This<Middle>& o, const ArgsVisitor& visitor) { \
-    args(o.m, visitor); \
-  } \
-  \
-  template<argument Middle> \
-  void deep_grad(This<Middle>& o, const GradVisitor& visitor) { \
-    deep_grad(o.m, visitor); \
-  } \
-  \
-  template<argument Middle> \
-  auto value(const This<Middle>& o) { \
-    return numbirch::f(value(o.m) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  template<argument Middle> \
-  auto eval(const This<Middle>& o) { \
-    return numbirch::f(eval(o.m) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  template<argument Middle> \
-  auto peek(const This<Middle>& o) { \
-    return numbirch::f(peek(o.m) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  template<argument Middle> \
-  auto move(const This<Middle>& o, const MoveVisitor& visitor) { \
-    return numbirch::f(move(o.m, visitor) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  template<argument Middle> \
-  This<Middle>::operator auto() const { \
-    return numbirch::f(value(m) __VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
-  template<argument Middle> \
-  auto This<Middle>::operator*() const { \
-    return wait(numbirch::f(value(m) __VA_OPT__(,) __VA_ARGS__)); \
-  } \
-  \
-  template<argument Middle> \
-  auto f(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) { \
-    using TagMiddle = tag_t<Middle>; \
-    return This<TagMiddle>(std::forward<Middle>(m) \
-        __VA_OPT__(,) __VA_ARGS__); \
-  }
-
-#define BIRCH_UNARY_GRAD(This, f_grad, ...) \
-  template<argument Middle, class G> \
-  void shallow_grad(This<Middle>& o, const G& g, const GradVisitor& visitor) { \
-    shallow_grad(o.m, numbirch::f_grad(g, peek(o), peek(o.m) __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__))), visitor); \
-  }
+  };

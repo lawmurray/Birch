@@ -10,11 +10,13 @@ namespace birch {
 template<argument Left, argument Right>
 struct Less {
   BIRCH_BINARY_FORM(Less)
+  BIRCH_BINARY_SIZE(Less)
+  BIRCH_BINARY_EVAL(Less, less)
+  BIRCH_BINARY_GRAD(Less, less_grad)
 };
 
-BIRCH_BINARY_SIZE(Less)
-BIRCH_BINARY(Less, less)
-BIRCH_BINARY_GRAD(Less, less_grad)
+BIRCH_BINARY_TYPE(Less)
+BIRCH_BINARY_CALL(Less, less)
 
 template<argument Left, argument Right>
 requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)

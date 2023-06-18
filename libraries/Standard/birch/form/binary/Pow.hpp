@@ -10,10 +10,12 @@ namespace birch {
 template<argument Left, argument Right>
 struct Pow {
   BIRCH_BINARY_FORM(Pow)
+  BIRCH_BINARY_SIZE(Pow)
+  BIRCH_BINARY_EVAL(Pow, pow)
+  BIRCH_BINARY_GRAD(Pow, pow_grad)
 };
 
-BIRCH_BINARY_SIZE(Pow)
-BIRCH_BINARY(Pow, pow)
-BIRCH_BINARY_GRAD(Pow, pow_grad)
+BIRCH_BINARY_TYPE(Pow)
+BIRCH_BINARY_CALL(Pow, pow)
 
 }

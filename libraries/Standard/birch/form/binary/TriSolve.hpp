@@ -10,10 +10,12 @@ namespace birch {
 template<argument Left, argument Right>
 struct TriSolve {
   BIRCH_BINARY_FORM(TriSolve)
+  BIRCH_BINARY_SIZE(TriSolve)
+  BIRCH_BINARY_EVAL(TriSolve, trisolve)
+  BIRCH_BINARY_GRAD(TriSolve, trisolve_grad)
 };
 
-BIRCH_BINARY_SIZE(TriSolve)
-BIRCH_BINARY(TriSolve, trisolve)
-BIRCH_BINARY_GRAD(TriSolve, trisolve_grad)
+BIRCH_BINARY_TYPE(TriSolve)
+BIRCH_BINARY_CALL(TriSolve, trisolve)
 
 }

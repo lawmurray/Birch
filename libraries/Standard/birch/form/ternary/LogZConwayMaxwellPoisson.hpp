@@ -86,10 +86,12 @@ namespace birch {
 template<argument Left, argument Middle, argument Right>
 struct LogZConwayMaxwellPoisson {
   BIRCH_TERNARY_FORM(LogZConwayMaxwellPoisson)
+  BIRCH_TERNARY_SIZE(LogZConwayMaxwellPoisson)
+  BIRCH_TERNARY_EVAL(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson)
+  BIRCH_TERNARY_GRAD(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson_grad)
 };
 
-BIRCH_TERNARY_SIZE(LogZConwayMaxwellPoisson)
-BIRCH_TERNARY(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson)
-BIRCH_TERNARY_GRAD(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson_grad)
+BIRCH_TERNARY_TYPE(LogZConwayMaxwellPoisson)
+BIRCH_TERNARY_CALL(LogZConwayMaxwellPoisson, logz_conway_maxwell_poisson)
 
 }

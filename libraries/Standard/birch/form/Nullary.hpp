@@ -19,10 +19,66 @@
     return this; \
   } \
   \
-  operator auto() const; \
-  auto operator*() const; \
+  static constexpr void reset() {} \
+  static constexpr void relink(const RelinkVisitor&) {} \
+  static constexpr void constant() {} \
+  static constexpr bool isConstant() { return true; } \
+  static constexpr void args(const ArgsVisitor&) {} \
+  static constexpr void deepGrad(const GradVisitor&) {}
 
-#define BIRCH_NULLARY(This, f, ...) \
+#define BIRCH_NULLARY_SIZE(This, ...) \
+  int rows() const { \
+    return rows(eval()); \
+  } \
+  \
+  int columns() const { \
+    return columns(eval()); \
+  } \
+  \
+  int length() const { \
+    return length(eval()); \
+  } \
+  \
+  int size() const { \
+    return size(eval()); \
+  }
+
+#define BIRCH_NULLARY_EVAL(This, f, ...) \
+  auto value() const { \
+    return numbirch::f(__VA_ARGS__); \
+  } \
+  \
+  auto eval() const { \
+    return numbirch::f(__VA_ARGS__); \
+  } \
+  \
+  auto peek() const { \
+    return numbirch::f(__VA_ARGS__); \
+  } \
+  \
+  auto move(const MoveVisitor& visitor) const { \
+    return numbirch::f(__VA_ARGS__); \
+  } \
+  \
+  operator auto() const { \
+    return value(); \
+  } \
+  \
+  auto operator*() const { \
+    return wait(value()); \
+  }
+
+#define BIRCH_NULLARY_GRAD(This, f_grad, ...) \
+  template<class G> \
+  static constexpr void shallowGrad(const G&, __VA_OPT__(,) __VA_ARGS__, \
+      const GradVisitor&) const {}
+
+#define BIRCH_NULLARY_CALL(This, f, ...) \
+  inline auto f(__VA_OPT__(BIRCH_INT(__VA_ARGS__))) { \
+    return This{__VA_ARGS__}; \
+  }
+
+#define BIRCH_NULLARY_TYPE(This, ...) \
   template<> \
   struct is_form<This> { \
     static constexpr bool value = true; \
@@ -31,60 +87,4 @@
   template<> \
   struct peg_s<This> { \
     using type = This; \
-  }; \
-  \
-  inline auto value(const This& o) { \
-    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  inline auto eval(const This& o) { \
-    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  inline auto peek(const This& o) { \
-    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  inline auto move(const This& o, const MoveVisitor& visitor) { \
-    return numbirch::f(__VA_OPT__(BIRCH_O_DOT(__VA_ARGS__))); \
-  } \
-  \
-  static constexpr void reset(const This&) {} \
-  static constexpr void relink(const This&, const RelinkVisitor&) {} \
-  static constexpr void constant(const This&) {} \
-  static constexpr bool is_constant(const This&) { return true; } \
-  static constexpr void args(const This&, const ArgsVisitor&) {} \
-  static constexpr void deep_grad(const This&, const GradVisitor&) {} \
-  \
-  inline This::operator auto() const { \
-    return numbirch::f(__VA_ARGS__); \
-  } \
-  \
-  inline auto This::operator*() const { \
-    return wait(numbirch::f(__VA_ARGS__)); \
-  } \
-  \
-  inline auto f(__VA_OPT__(BIRCH_INT(__VA_ARGS__))) { \
-    return This{__VA_ARGS__}; \
-  }
-
-#define BIRCH_NULLARY_SIZE(This, ...) \
-  inline int rows(const This& o) { \
-    return rows(eval(o)); \
-  } \
-  \
-  inline int columns(const This& o) { \
-    return columns(eval(o)); \
-  } \
-  \
-  inline int length(const This& o) { \
-    return length(eval(o)); \
-  } \
-  \
-  inline int size(const This& o) { \
-    return size(eval(o)); \
-  } \
-
-#define BIRCH_NULLARY_GRAD(This, f_grad, ...) \
-  template<class G> \
-  static constexpr void shallow_grad(const This&, const G&, __VA_OPT__(, BIRCH_O_DOT(__VA_ARGS__)), const GradVisitor&) {}
+  };

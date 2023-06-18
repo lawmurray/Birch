@@ -9,24 +9,26 @@ namespace birch {
 
 struct VectorStandardGaussian {
   BIRCH_NULLARY_FORM(VectorStandardGaussian, n)
+  BIRCH_NULLARY_EVAL(VectorStandardGaussian, standard_gaussian, n)
+
+  int rows() const {
+    return n;
+  }
+
+  int columns() const {
+    return n;
+  }
+
+  int length() const {
+    return n;
+  }
+
+  int size() const {
+    return n;
+  }
 };
 
-inline int rows(const VectorStandardGaussian& o) {
-  return o.n;
-}
-
-inline int columns(const VectorStandardGaussian& o) {
-  return o.n;
-}
-
-inline int length(const VectorStandardGaussian& o) {
-  return o.n;
-}
-
-inline int size(const VectorStandardGaussian& o) {
-  return o.n;
-}
-
-BIRCH_NULLARY(VectorStandardGaussian, standard_gaussian, n)
+BIRCH_NULLARY_TYPE(VectorStandardGaussian)
+BIRCH_NULLARY_CALL(VectorStandardGaussian, standard_gaussian, m)
 
 }

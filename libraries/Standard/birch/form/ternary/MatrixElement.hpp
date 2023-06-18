@@ -10,10 +10,12 @@ namespace birch {
 template<argument Left, argument Middle, argument Right>
 struct MatrixElement {
   BIRCH_TERNARY_FORM(MatrixElement)
+  BIRCH_TERNARY_SIZE(MatrixElement)
+  BIRCH_TERNARY_EVAL(MatrixElement, element)
+  BIRCH_TERNARY_GRAD(MatrixElement, element_grad)
 };
 
-BIRCH_TERNARY_SIZE(MatrixElement)
-BIRCH_TERNARY(MatrixElement, element)
-BIRCH_TERNARY_GRAD(MatrixElement, element_grad)
+BIRCH_TERNARY_TYPE(MatrixElement)
+BIRCH_TERNARY_CALL(MatrixElement, element)
 
 }

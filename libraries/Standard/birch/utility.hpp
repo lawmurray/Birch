@@ -259,70 +259,180 @@ decltype(auto) wait(T&& x) {
   }
 }
 
-using numbirch::rows;
-using numbirch::columns;
-using numbirch::length;
-using numbirch::size;
-
-template<numeric T>
-constexpr decltype(auto) value(T&& x) {
-  return std::forward<T>(x);
+template<argument T>
+int rows(T&& x) {
+  if constexpr (numeric<T>) {
+    return numbirch::rows(std::forward<T>(x));
+  } else if constexpr (form<T>) {
+    return x.rows();
+  } else if constexpr (expression<T>) {
+    return x->rows();
+  }
 }
 
-template<numeric T>
-constexpr decltype(auto) eval(T&& x) {
-  return std::forward<T>(x);
+template<argument T>
+int columns(T&& x) {
+  if constexpr (numeric<T>) {
+    return numbirch::columns(std::forward<T>(x));
+  } else if constexpr (form<T>) {
+    return x.columns();
+  } else if constexpr (expression<T>) {
+    return x->columns();
+  }
 }
 
-template<numeric T>
-constexpr decltype(auto) peek(T&& x) {
-  return std::forward<T>(x);
+template<argument T>
+int length(T&& x) {
+  if constexpr (numeric<T>) {
+    return numbirch::length(std::forward<T>(x));
+  } else if constexpr (form<T>) {
+    return x.length();
+  } else if constexpr (expression<T>) {
+    return x->length();
+  }
 }
 
-template<numeric T>
-constexpr decltype(auto) move(T&& x, const MoveVisitor& visitor) {
-  return std::forward<T>(x);
+template<argument T>
+int size(T&& x) {
+  if constexpr (numeric<T>) {
+    return numbirch::size(std::forward<T>(x));
+  } else if constexpr (form<T>) {
+    return x.size();
+  } else if constexpr (expression<T>) {
+    return x->size();
+  }
 }
 
-template<numeric T>
-constexpr void args(const T& x, const ArgsVisitor& visitor) {
-  //
+template<argument T>
+decltype(auto) value(T&& x) {
+  if constexpr (numeric<T>) {
+    return std::forward<T>(x);
+  } else if constexpr (form<T>) {
+    return x.value();
+  } else if constexpr (expression<T>) {
+    return x->value();
+  }
 }
 
-template<numeric T>
-constexpr void reset(const T& x) {
-  //
+template<argument T>
+decltype(auto) eval(T&& x) {
+  if constexpr (numeric<T>) {
+    return std::forward<T>(x);
+  } else if constexpr (form<T>) {
+    return x.eval();
+  } else if constexpr (expression<T>) {
+    return x->eval();
+  }
 }
 
-template<numeric T>
-constexpr void relink(const T& x, const RelinkVisitor& visitor) {
-  //
+template<argument T>
+decltype(auto) peek(T&& x) {
+  if constexpr (numeric<T>) {
+    return std::forward<T>(x);
+  } else if constexpr (form<T>) {
+    return x.peek();
+  } else if constexpr (expression<T>) {
+    return x->peek();
+  }
 }
 
-template<numeric T, numeric G>
-constexpr void grad(const T& x, const G& g) {
-  //
+template<argument T>
+decltype(auto) move(T&& x, const MoveVisitor& visitor) {
+  if constexpr (numeric<T>) {
+    return std::forward<T>(x);
+  } else if constexpr (form<T>) {
+    return x.move(visitor);
+  } else if constexpr (expression<T>) {
+    return x->move(visitor);
+  }
 }
 
-template<numeric T, numeric G>
-constexpr void shallow_grad(const T& x, const G& g,
-    const GradVisitor& visitor) {
-  //
+template<argument T>
+void args(const T& x, const ArgsVisitor& visitor) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.args(visitor);
+  } else if constexpr (expression<T>) {
+    x->args(visitor);
+  }
 }
 
-template<numeric T>
-constexpr void deep_grad(const T& x, const GradVisitor& visitor) {
-  //
+template<argument T>
+void reset(T& x) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.reset();
+  } else if constexpr (expression<T>) {
+    x->reset();
+  }
 }
 
-template<numeric T>
-constexpr void constant(const T& x) {
-  //
+template<argument T>
+void relink(T& x, const RelinkVisitor& visitor) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.relink(visitor);
+  } else if constexpr (expression<T>) {
+    x->relink(visitor);
+  }
 }
 
-template<numeric T>
-constexpr bool is_constant(const T& x) {
-  return true;
+template<argument T, numeric G>
+void grad(const T& x, const G& g) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.grad(g);
+  } else if constexpr (expression<T>) {
+    x->grad(g);
+  }
+}
+
+template<argument T, numeric G>
+void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.shallowGrad(g, visitor);
+  } else if constexpr (expression<T>) {
+    x->shallowGrad(g, visitor);
+  }
+}
+
+template<argument T>
+void deep_grad(const T& x, const GradVisitor& visitor) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.deepGrad(visitor);
+  } else if constexpr (expression<T>) {
+    x->deepGrad(visitor);
+  }
+}
+
+template<argument T>
+void constant(const T& x) {
+  if constexpr (numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.constant();
+  } else if constexpr (expression<T>) {
+    x->constant();
+  }
+}
+
+template<argument T>
+bool is_constant(const T& x) {
+  if constexpr (numeric<T>) {
+    return true;
+  } else if constexpr (form<T>) {
+    return x.isConstant();
+  } else if constexpr (expression<T>) {
+    return x->isConstant();
+  }
 }
 
 template<class T>
@@ -378,10 +488,6 @@ template<array T>
 struct peg_s<T> {
   using type = std::decay_t<T>;
 };
-// template<form T>
-// struct peg_s<T> {
-//   static_assert(false, "internal error: peg_s must be specialized for this form type.");
-// };
 template<expression T>
 struct peg_s<T> {
   using type = std::decay_t<T>;
@@ -435,8 +541,6 @@ decltype(auto) box(T&& x) {
     return Expression<U>(BoxedForm<U,V>(V(std::forward<T>(x))));
   } else if constexpr (expression<T>) {
     return std::decay_t<T>(std::forward<T>(x));
-  } else {
-    //static_assert(false, "internal error: argument type that is not numeric, form, or expression type");
   }
 }
 
