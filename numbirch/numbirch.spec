@@ -29,6 +29,8 @@ Requires: %{name}-devel == %{version}
 %description devel-static
 Static libraries for Numbirch.
 
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 37
+
 %package -n lib%{name}-cuda-0_0_0
 Summary: Shared libraries for NumBirch with CUDA backend
 %description -n lib%{name}-cuda-0_0_0
@@ -45,6 +47,8 @@ Summary: Static libraries for NumBirch with CUDA backend
 Requires: %{name}-cuda-devel == %{version}
 %description cuda-devel-static
 Static libraries for Numbirch with CUDA backend.
+
+%endif
 
 %prep
 %setup -n %{name}-%{version}
@@ -63,12 +67,14 @@ export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$CPLUS_INCL
 export LIBRARY_PATH=/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:/usr/local/lib64:/usr/local/lib:$LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 37
 mkdir -p cuda
 cd cuda
 %configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
 %make_build
 strip --strip-unneeded .libs/*.so .libs/*.a
 cd ..
+%endif
 
 mkdir -p eigen
 cd eigen
@@ -79,9 +85,11 @@ cd ..
 
 %install
 
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 37
 cd cuda
 %make_install
 cd ..
+%endif
 
 cd eigen
 %make_install
@@ -106,6 +114,11 @@ cd ..
 %{_libdir}/lib%{name}-single.a
 %{_libdir}/lib%{name}.a
 
+%exclude %{_libdir}/lib%{name}-single.la
+%exclude %{_libdir}/lib%{name}.la
+
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 37
+
 %files -n lib%{name}-cuda-0_0_0
 %license LICENSE
 %{_libdir}/lib%{name}-cuda-single-%{version}.so
@@ -121,10 +134,10 @@ cd ..
 %{_libdir}/lib%{name}-cuda-single.a
 %{_libdir}/lib%{name}-cuda.a
 
-%exclude %{_libdir}/lib%{name}-single.la
-%exclude %{_libdir}/lib%{name}.la
 %exclude %{_libdir}/lib%{name}-cuda-single.la
 %exclude %{_libdir}/lib%{name}-cuda.la
+
+%endif
 
 %changelog
 * Fri Dec 2 2022 Lawrence Murray <lawrence@indii.org> - 1:0.0.0-1
