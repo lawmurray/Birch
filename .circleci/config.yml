@@ -220,7 +220,6 @@ jobs:
           root: ..
           paths:
             - << parameters.os >>
-      - codecov
       - end_if_pull_request
 
   test:
@@ -234,7 +233,11 @@ jobs:
           at: ..
       - build_birch:
           dir: tests/Test
-      - codecov
+      - when:
+          condition:
+            equal: [<< parameters.os >>, cover]
+          steps:
+            - codecov        
       - end_if_pull_request
 
   example:
@@ -251,7 +254,11 @@ jobs:
           at: ..
       - build_birch:
           dir: << parameters.dir >>
-      - codecov
+      - when:
+          condition:
+            equal: [<< parameters.os >>, cover]
+          steps:
+            - codecov        
       - end_if_pull_request
 
 workflows:
