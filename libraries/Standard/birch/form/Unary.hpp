@@ -23,7 +23,8 @@
       m(m) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
   \
   This(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) \
-      requires (!std::same_as<const Middle&,Middle&&>) : \
+      requires (!std::same_as<const Middle&,Middle&&> && \
+          !std::same_as<Middle&,Middle&&>) : \
       m(std::move(m)) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
   \
   template<argument O> \
