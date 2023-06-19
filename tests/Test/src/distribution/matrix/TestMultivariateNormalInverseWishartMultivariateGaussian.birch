@@ -13,10 +13,10 @@ class TestLinearMultivariateNormalInverseWishartMultivariateGaussian < TestModel
 
   override function initialize() {
     k <- simulate_uniform(3.0, 10.0) + n;
-    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
     a <- simulate_uniform(-2.0, 2.0);
-    μ <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
-    c <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
+    μ <- vector_lambda(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n);
+    c <- vector_lambda(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n);
 
     Ψ <- outer(Ψ) + diagonal(1.0e-1, n);
   }

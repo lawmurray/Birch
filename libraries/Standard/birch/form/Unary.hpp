@@ -31,6 +31,10 @@
       m(o.m) __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
   \
   template<argument O> \
+  This(O& o) : \
+      m(o.m) __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument O> \
   This(O&& o) : \
      m(std::move(o.m)) __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
   \

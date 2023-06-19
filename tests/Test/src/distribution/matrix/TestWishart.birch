@@ -6,7 +6,7 @@ class TestWishart < TestModel {
   k:Real;
 
   override function initialize() {
-    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, p, p);
     k <- simulate_uniform(3.0, 10.0) + p;
     Ψ <- outer(Ψ) + diagonal(1.0e-1, p);
   }

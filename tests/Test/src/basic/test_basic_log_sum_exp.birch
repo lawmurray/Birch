@@ -12,7 +12,7 @@ program test_basic_log_sum_exp() {
 
   /* compare with common two-pass algorithm */
   let y <- log_sum_exp_twopass(w);
-  let ess <- exp(2.0*y - log_sum_exp_twopass(2.0*w));
+  let ess <- value(exp(2.0*y - log_sum_exp_twopass(2.0*w)));
   if !check_ess_log_sum_exp(w, ess, y) {
     exit(1);
   }
@@ -26,7 +26,7 @@ program test_basic_log_sum_exp() {
   }
 
   /* check underflow */
-  w <- [1.0e-20, log(1.0e-20)];
+  w <- [1.0e-20, value(log(1.0e-20))];
   y <- 2.0e-20;
   ess <- 1.0;
   if !check_ess_log_sum_exp(w, ess, y) {

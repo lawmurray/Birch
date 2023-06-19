@@ -16,13 +16,13 @@ class TestFanMultivariateNormalInverseGammaMultivariateGaussian < TestModel {
   override function initialize() {
     α <- simulate_uniform(3.0, 10.0);
     β <- simulate_uniform(0.1, 10.0);
-    m <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
-    Σ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+    m <- vector_lambda(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n);
+    Σ <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
     Σ <- outer(Σ) + diagonal(1.0e-2, n);
     for i in 1..5 {
-      A[i] <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, n);
-      c[i] <- vector_lambda(\(i:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n);
-      let S <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+      A[i] <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n, n);
+      c[i] <- vector_lambda(\(i:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n);
+      let S <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
       Ψ[i] <- outer(S) + diagonal(1.0e-2, n);
     }
   }

@@ -30,4 +30,7 @@ struct VectorFill {
   }
 };
 
+BIRCH_UNARY_TYPE(VectorFill)
+BIRCH_UNARY_CALL(VectorFill, fill, n)
+
 }

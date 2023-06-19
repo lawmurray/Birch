@@ -16,12 +16,12 @@ class TestLinearMatrixNormalInverseWishartMatrixGaussian < TestModel {
 
   override function initialize() {
     k <- simulate_uniform(3.0, 10.0) + p;
-    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, p, p);
-    A <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-    M <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
-    C <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-10.0, 10.0); }, n, p);
-    U <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
-    V <- matrix_lambda(\(i:Integer, j:Integer) -> { return simulate_uniform(-2.0, 2.0); }, n, n);
+    Ψ <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, p, p);
+    A <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
+    M <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n, p);
+    C <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-10.0, 10.0); }, n, p);
+    U <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
+    V <- matrix_lambda(\(i:Integer, j:Integer) -> Real { return simulate_uniform(-2.0, 2.0); }, n, n);
 
     Ψ <- outer(Ψ) + diagonal(1.0e-1, p);
     U <- outer(U) + diagonal(1.0e-2, n);

@@ -39,7 +39,7 @@ function test_pdf<TestModelType>(m:TestModelType, N:Integer, S:Integer,
  */
 function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
   /* simulate, counting the occurrence of each value */
-  let k <- 0;
+  k:Integer <- 0;
   for n in 1..N {
     if lazy {
       k <- k + π.simulateLazy()!;
@@ -50,7 +50,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
 
   /* compare pdf to count */
   let failed <- false;
-  let ε <- 2.0/sqrt(N);
+  let ε <- value(2.0/sqrt(N));
   let p <- 0.0;
   let q <- 0.0;
   if lazy {
@@ -60,7 +60,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
     p <- π.logpdf(true);
     q <- π.logpdf(false);
   }
-  let δ <- abs(exp(p) - cast<Real>(k)/N);
+  let δ <- value(abs(exp(p) - cast<Real>(k)/N));
   if 100 < N && !(δ <= ε) {  // careful of nans
     failed <- true;
     stderr.print("***failed*** on value true, " + δ + " > " + ε + "\n");
@@ -137,8 +137,8 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
     } else {
       p <- π.logpdf(x);
     }
-    let δ <- abs(exp(p) - cast<Real>(count[x - from!! + 1])/N);
-    let ε <- 2.0/sqrt(N);
+    let δ <- value(abs(exp(p) - cast<Real>(count[x - from!! + 1])/N));
+    let ε <- value(2.0/sqrt(N));
     if 100 < N && !(δ <= ε) {  // careful of nans
       failed <- true;
       stderr.print("***failed*** on value " + x + ", " + δ + " > " + ε + "\n");
@@ -225,7 +225,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
       /* final state */
       x2[n] <- x;
     }
-    let raccepts <- sum(a)!/Real(N*S);  // overall acceptance rate
+    raccepts:Real <- sum(a)!/Real(N*S);  // overall acceptance rate
     if last {
       /* that was the last iteration, so now done */
       done <- true;
@@ -260,7 +260,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
 function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
     lazy:Boolean) {  
   /* iid samples */
-  D:Integer <- 0;
+  let D <- 0;
   if lazy {
     D <- rows(π.simulateLazy());
   } else {
@@ -430,7 +430,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
       /* step n-th chain S times */
       for s in 1..S {
         let x' <~ MultivariateGaussian(vec(X), Σ);
-        let X' <- mat(x', C)!;
+        let X' <- value(mat(x', C))!;
         let l' <- 0.0;
         if lazy {
           l' <- π.logpdfLazy(X');
@@ -449,7 +449,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
       /* final state */
       X2[n,1..R*C] <- vec(X);
     }
-    let raccepts <- sum(a)!/Real(N*S);  // overall acceptance rate
+    let raccepts <- value(sum(a)/Real(N*S))!;  // overall acceptance rate
     if last {
       /* that was the last iteration, so now done */
       done <- true;
