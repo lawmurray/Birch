@@ -19,6 +19,14 @@
     return this; \
   } \
   \
+  operator auto() const { \
+    return value(); \
+  } \
+  \
+  auto operator*() const { \
+    return wait(value()); \
+  } \
+  \
   static constexpr void reset() {} \
   static constexpr void relink(const RelinkVisitor&) {} \
   static constexpr void constant() {} \
@@ -58,14 +66,6 @@
   \
   auto move(const MoveVisitor& visitor) const { \
     return numbirch::f(__VA_ARGS__); \
-  } \
-  \
-  operator auto() const { \
-    return value(); \
-  } \
-  \
-  auto operator*() const { \
-    return wait(value()); \
   }
 
 #define BIRCH_NULLARY_GRAD(This, f_grad, ...) \

@@ -42,8 +42,8 @@ struct Random<Value> {
    * Copy assignment.
    */
   Random& operator=(const Random& o) {
-    if (hasDistribution()) {
-      setDistribution(*p);
+    if (o.hasDistribution()) {
+      setDistribution(o.getDistribution());
     } else {
       this->x = x;
     }

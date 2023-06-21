@@ -46,6 +46,14 @@
     return this; \
   } \
   \
+  operator auto() const { \
+    return value(); \
+  } \
+  \
+  auto operator*() const { \
+    return wait(value()); \
+  } \
+  \
   void reset() { \
     birch::reset(l); \
     birch::reset(m); \
@@ -116,14 +124,6 @@
   auto move(const MoveVisitor& visitor) const { \
     return numbirch::f(birch::move(l, visitor), birch::move(m, visitor), \
         birch::move(r, visitor) __VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
-  operator auto() const { \
-    return value(); \
-  } \
-  \
-  auto operator*() const { \
-    return wait(value()); \
   }
 
 #define BIRCH_TERNARY_GRAD(This, f_grad, ...) \
