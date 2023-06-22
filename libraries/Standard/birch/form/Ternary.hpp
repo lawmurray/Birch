@@ -32,13 +32,6 @@
       __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
   \
   template<argument T1, argument U1, argument V1> \
-  This(This<T1,U1,V1>& o) : \
-      l(o.l), \
-      m(o.m), \
-      r(o.r) \
-     __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
-  \
-  template<argument T1, argument U1, argument V1> \
   This(This<T1,U1,V1>&& o) : \
      l(std::forward<decltype(o.l)>(o.l)), \
      m(std::forward<decltype(o.m)>(o.m)), \
