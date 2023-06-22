@@ -86,10 +86,6 @@ function peg_uniform_integer<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   return UniformIntegerDistribution<Arg1,Arg2>(l, u);
 }
 
-hpp{{
-//using numbirch::simulate_uniform_int;
-}}
-
 /*
  * Observe an integer uniform variate.
  *

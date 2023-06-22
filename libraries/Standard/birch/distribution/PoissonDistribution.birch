@@ -59,10 +59,6 @@ function peg_poisson<Arg>(λ:Arg) -> Distribution<Integer> {
   return PoissonDistribution<Arg>(λ);
 }
 
-hpp{{
-//using numbirch::simulate_poisson;
-}}
-
 /*
  * Observe a Poisson variate.
  *

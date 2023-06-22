@@ -79,10 +79,6 @@ function peg_beta<Arg1,Arg2>(α:Arg1, β:Arg2) -> {
   return BetaDistribution<Arg1,Arg2>(α, β);
 }
 
-hpp{{
-//using numbirch::simulate_beta;
-}}
-
 /*
  * Observe a beta variate.
  *

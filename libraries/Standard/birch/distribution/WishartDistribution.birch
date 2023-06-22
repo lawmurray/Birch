@@ -58,10 +58,6 @@ function peg_wishart<Arg1,Arg2>(Ψ:Arg1, k:Arg2) -> {
   return WishartDistribution<Arg1,Arg2>(Ψ, k);
 }
 
-hpp{{
-//using numbirch::simulate_wishart;
-}}
-
 /*
  * Simulate a Wishart distribution.
  *

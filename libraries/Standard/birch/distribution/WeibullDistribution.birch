@@ -67,10 +67,6 @@ function peg_weibull<Arg1,Arg2>(k:Arg1, λ:Arg2) -> {
   return WeibullDistribution<Arg1,Arg2>(k, λ);
 }
 
-hpp{{
-//using numbirch::simulate_weibull;
-}}
-
 /*
  * Observe a Weibull variate.
  *

@@ -74,10 +74,6 @@ function peg_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
   return UniformDistribution<Arg1,Arg2>(l, u);
 }
 
-hpp{{
-//using numbirch::simulate_uniform;
-}}
-
 /*
  * Observe a uniform variate.
  *

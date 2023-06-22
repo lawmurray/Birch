@@ -68,10 +68,6 @@ function peg_negative_binomial<Arg1,Arg2>(k:Arg1, ρ:Arg2) -> {
   return NegativeBinomialDistribution<Arg1,Arg2>(k, ρ);
 }
 
-hpp{{
-//using numbirch::simulate_negative_binomial;
-}}
-
 /*
  * Observe a negative binomial variate.
  *

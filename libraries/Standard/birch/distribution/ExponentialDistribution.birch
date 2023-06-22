@@ -59,10 +59,6 @@ function peg_exponential<Arg>(λ:Arg) -> {
   return ExponentialDistribution<Arg>(λ);
 }
 
-hpp{{
-//using numbirch::simulate_exponential;
-}}
-
 /*
  * Observe an exponential variate.
  *

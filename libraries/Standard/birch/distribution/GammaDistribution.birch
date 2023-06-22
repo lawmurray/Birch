@@ -75,10 +75,6 @@ function peg_gamma<Arg1,Arg2>(k:Arg1, θ:Arg2) -> {
   return GammaDistribution<Arg1,Arg2>(k, θ);
 }
 
-hpp{{
-//using numbirch::simulate_gamma;
-}}
-
 /*
  * Observe a gamma variate.
  *
