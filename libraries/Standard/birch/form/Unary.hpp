@@ -37,7 +37,7 @@
   \
   template<argument O> \
   This(O&& o) : \
-     m(std::move(o.m)) __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
+     m(std::forward<decltype(o.m)>(o.m)) __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
   \
   auto operator->() { \
     return this; \
@@ -132,6 +132,11 @@
   template<argument Middle> \
   struct is_form<This<Middle>> { \
     static constexpr bool value = true; \
+  }; \
+  \
+  template<argument Middle> \
+  struct tag_s<This<Middle>> { \
+    using type = This<tag_t<Middle>>; \
   }; \
   \
   template<argument Middle> \

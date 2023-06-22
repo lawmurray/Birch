@@ -29,9 +29,15 @@
       __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
   \
   template<argument T1, argument U1> \
+  This(This<T1,U1>& o) : \
+      l(o.l), \
+      r(o.r) \
+      __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
+  \
+  template<argument T1, argument U1> \
   This(This<T1,U1>&& o) : \
-     l(std::move(o.l)), \
-     r(std::move(o.r)) \
+     l(std::forward<decltype(o.l)>(o.l)), \
+     r(std::forward<decltype(o.r)>(o.r)) \
      __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
   \
   auto operator->() { \
@@ -142,6 +148,11 @@
   template<argument Left, argument Right> \
   struct is_form<This<Left,Right>> { \
     static constexpr bool value = true; \
+  }; \
+  \
+  template<argument Left, argument Right> \
+  struct tag_s<This<Left,Right>> { \
+    using type = This<tag_t<Left>,tag_t<Right>>; \
   }; \
   \
   template<argument Left, argument Right> \

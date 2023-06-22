@@ -58,6 +58,11 @@ struct is_form<Memo<Middle>> {
 };
 
 template<argument Middle>
+struct tag_s<Memo<Middle>> {
+  using type = Memo<tag_t<Middle>>;
+};
+
+template<argument Middle>
 struct peg_s<Memo<Middle>> {
   using type = Memo<peg_t<Middle>>;
 };

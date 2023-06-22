@@ -21,6 +21,11 @@ struct is_form<Cast<To,Middle>> {
 };
 
 template<arithmetic To, argument Middle>
+struct tag_s<Cast<To,Middle>> {
+  using type = Cast<To,tag_t<Middle>>;
+};
+
+template<arithmetic To, argument Middle>
 struct peg_s<Cast<To,Middle>> {
   using type = Cast<To,peg_t<Middle>>;
 };

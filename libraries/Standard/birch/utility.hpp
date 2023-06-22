@@ -436,23 +436,19 @@ bool is_constant(const T& x) {
 }
 
 template<class T>
-struct tag {
+struct tag_s {
   using type = void;
 };
 template<arithmetic T>
-struct tag<T> {
+struct tag_s<T> {
   using type = std::decay_t<T>;
 };
 template<array T>
-struct tag<T> {
+struct tag_s<T> {
   using type = T;
 };
-template<form T>
-struct tag<T> {
-  using type = std::decay_t<T>;
-};
 template<expression T>
-struct tag<T> {
+struct tag_s<T> {
   using type = T;
 };
 
@@ -474,7 +470,7 @@ struct tag<T> {
  * rewritten at compile time.
  */
 template<argument T>
-using tag_t = typename tag<T>::type;
+using tag_t = typename tag_s<std::decay_t<T>>::type;
 
 template<class T>
 struct peg_s {

@@ -85,6 +85,11 @@
   }; \
   \
   template<> \
+  struct tag_s<This> { \
+    using type = This; \
+  }; \
+  \
+  template<> \
   struct peg_s<This> { \
     using type = This; \
   };
