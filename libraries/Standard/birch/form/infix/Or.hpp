@@ -70,10 +70,7 @@ struct Or {
 BIRCH_BINARY_TYPE(Or)
 BIRCH_BINARY_CALL(Or, logical_or)
 
-template<argument Left, argument Right>
-requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)
-auto operator||(Left&& l, Right&& r) {
-  return logical_or(std::forward<Left>(l), std::forward<Right>(r));
-}
+/* principle of least surprise: do not overload || as it will not short
+ * circuit, leading to unintuitive errors */
 
 }

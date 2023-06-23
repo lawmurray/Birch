@@ -127,7 +127,7 @@ function simulate_conway_maxwell_poisson<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
  */
 function logpdf_conway_maxwell_poisson<Arg1,Arg2,Arg3,Arg4>(x:Arg1, μ:Arg2,
     ν:Arg3, n:Arg4) -> {
-  return where(0 <= x && x <= n, x*ν*log(μ) - ν*lfact(x) -
+  return where(logical_and(0 <= x, x <= n), x*ν*log(μ) - ν*lfact(x) -
       logz_conway_maxwell_poisson(μ, ν, n), -inf);
 }
 

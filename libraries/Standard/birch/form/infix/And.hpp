@@ -70,10 +70,7 @@ struct And {
 BIRCH_BINARY_TYPE(And)
 BIRCH_BINARY_CALL(And, logical_and)
 
-template<argument Left, argument Right>
-requires (!numbirch::arithmetic<Left> || !numbirch::arithmetic<Right>)
-auto operator&&(Left&& l, Right&& r) {
-  return logical_and(std::forward<Left>(l), std::forward<Right>(r));
-}
+/* principle of least surprise: do not overload && as it will not short
+ * circuit, leading to unintuitive errors */
 
 }

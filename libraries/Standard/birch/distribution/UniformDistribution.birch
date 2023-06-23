@@ -84,7 +84,7 @@ function peg_uniform<Arg1,Arg2>(l:Arg1, u:Arg2) -> {
  * @return the log probability density.
  */
 function logpdf_uniform<Arg1,Arg2,Arg3>(x:Arg1, l:Arg2, u:Arg3) -> {
-  return where(l <= x && x <= u, -log(u - l), -inf);
+  return where(logical_and(l <= x, x <= u), -log(u - l), -inf);
 }
 
 /*
