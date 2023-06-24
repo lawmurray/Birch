@@ -75,7 +75,7 @@ final class Multi < Model {
         let N <- y.size();
         let p <- o.getDistribution();
         let q <- vector_lambda(\(n:Integer) -> { return p.pdf(y[n]); }, N);
-        let Q <- sum(q);
+        let Q <- sum(q)!;
         if Q > 0.0 {
           q <- q/Q;
           let n <~ Categorical(q);  // propose observation to associate with
@@ -99,7 +99,7 @@ final class Multi < Model {
   }
 
   function generate(t:Integer) {
-    let N <~ Poisson(θ.μ);
+    N:Integer <~ Poisson(θ.μ);
     for n in 1..(N + 1) {
       y[n] <- vector(0.0, 2);
       y[n][1] <~ Uniform(θ.l, θ.u);
