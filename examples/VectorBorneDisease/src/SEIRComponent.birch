@@ -97,7 +97,7 @@ final class SEIRComponent {
      * meant is "all survive" regardless of the population size, and so do
      * not evaluate these, ensuring we don't get -inf weights for mismatching
      * numbers of trials (population sizes) */
-    if !μ.hasValue() || μ.value() != 1.0 {
+    if !μ.hasValue() || μ.value()! != 1.0 {
       s[t] <~ Binomial(s[t], μ);
       e[t] <~ Binomial(e[t], μ);
       i[t] <~ Binomial(i[t], μ);
@@ -105,7 +105,7 @@ final class SEIRComponent {
     }
 
     /* births */
-    if !ν.hasValue() || ν.value() != 0.0 {
+    if !ν.hasValue() || ν.value()! != 0.0 {
       Δs[t] <~ Binomial(n, ν);
       s[t] <- s[t] + Δs[t];
     }

@@ -61,7 +61,7 @@ final class YapDengueModel < Model {
       h.Δr[t] <- 0;
       
       let u <~ Uniform(-1.0, 2.0);
-      m.s[t] <- n*pow(10.0, u);
+      m.s[t] <- n*pow(10.0, u!);
       m.e[t] <- 0;
       m.i[t] <- 0;
       m.r[t] <- 0;
