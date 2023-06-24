@@ -15,6 +15,7 @@
 #include <initializer_list>
 #include <memory>
 #include <atomic>
+#include <iostream>
 
 #include <cassert>
 #include <cstdlib>
@@ -687,9 +688,9 @@ public:
    * 
    * @param value The value.
    * 
-   * push() is typically used when initializing vectors of unknown length on
-   * host. It works by extending the array by one with a realloc(), then
-   * pushing the new value.
+   * The allocation is doubled in size if necessary, using realloc(), in
+   * expectation of further uses; push() is typically used to fill vectors of
+   * unknown length, such as when reading from a stream.
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
   void push(const T& value) {
@@ -700,23 +701,24 @@ public:
     size_t newbytes = newvol*sizeof(T);
 
     if (newbytes > oldbytes) {
-      /* must enlarge the allocation; because  use cases for push() often
+      /* must enlarge the allocation; because use cases for push() often
        * see it called multiple times in succession, overallocate to reduce
        * the need for reallocation on subsequent push() */
       newbytes = std::max<size_t>(2*oldbytes, 64u);
       if (buf) {
         stream_finish(streamAlloc, stream);
-        buf = static_cast<T*>(numbirch::realloc(buf, oldbytes, newbytes));
+        buf = static_cast<T*>(realloc(buf, oldbytes, newbytes));
       } else {
         buf = static_cast<T*>(malloc(newbytes));
         streamAlloc = stream_get();
       }
+      bytes = newbytes;
     }
 
     /* set new element; dicing preferable to slicing here given that the
      * typical use case for push() is reading from a file */
-    dice(oldvol) = value;
     shp.extend(1);
+    buf[shp.offset(length())] = value;
   }
 
 private:
