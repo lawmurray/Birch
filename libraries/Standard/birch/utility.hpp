@@ -450,7 +450,7 @@ struct tag_s<T> {
 };
 template<form T>
 struct tag_s<T> {
-  using type = tag_s<std::decay_t<T>>::type;  // specialized for this
+  using type = typename tag_s<std::decay_t<T>>::type;  // specialized for this
 };
 template<expression T>
 struct tag_s<T> {
@@ -492,7 +492,7 @@ struct peg_s<T> {
 };
 template<form T>
 struct peg_s<T> {
-  using type = peg_s<std::decay_t<T>>::type;  // specialized for this
+  using type = typename peg_s<std::decay_t<T>>::type;  // specialized for this
 };
 template<expression T>
 struct peg_s<T> {
