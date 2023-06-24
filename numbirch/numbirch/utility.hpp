@@ -194,8 +194,7 @@ inline constexpr bool is_real_v = is_real<std::decay_t<T>>::value;
 
 template<class T>
 struct is_arithmetic {
-  static constexpr bool value = is_bool<T>::value || is_int<T>::value ||
-      is_real<T>::value;
+  static constexpr bool value = is_bool_v<T> || is_int_v<T> || is_real_v<T>;
 };
 
 /**
