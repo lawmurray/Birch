@@ -8,11 +8,11 @@ final class DirichletCategoricalDistribution<Arg>(α:Arg) < Distribution<Integer
   α:Arg <- α;
 
   override function simulate() -> Integer! {
-    return simulate_dirichlet_categorical(value(α));
+    return value(simulate_dirichlet_categorical(α));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_dirichlet_categorical(eval(α));
+    return eval(simulate_dirichlet_categorical(α));
   }
 
   override function logpdf(x:Integer!) -> Real! {
@@ -67,12 +67,6 @@ function Categorical(ρ:Random<Real[_]>) -> Distribution<Integer> {
     let p_ρ <- ρ.graft();
     let α <- p_ρ.getDirichlet()!;
     let p <- make_dirichlet_categorical(α);
-    p_ρ.setMarginalized(p);
-    return p;
-  } else if ρ.isRestaurant() {
-    let p_ρ <- ρ.graft();
-    let (α, θ, n) <- p_ρ.getRestaurant()!;
-    let p <- make_restaurant_categorical(α, θ, n);
     p_ρ.setMarginalized(p);
     return p;
   } else {

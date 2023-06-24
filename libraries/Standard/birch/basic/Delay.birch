@@ -347,15 +347,6 @@ abstract class Delay {
     return nil;
   }
 
-  function isRestaurant() -> Boolean {
-    return false;
-  }
-
-  function getRestaurant() -> (Expression<Real>, Expression<Real>,
-      Expression<Integer[_]>)? {
-    return nil;
-  }
-
   function isMultivariateGaussian() -> Boolean {
     return false;
   }

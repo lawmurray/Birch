@@ -24,12 +24,11 @@ final class AddDiscreteDeltaDistribution<Arg1,Arg2>(p:Arg1, q:Arg2,
   b:Integer! <- b;
 
   override function simulate() -> Integer! {
-    return simulate_add_discrete_delta(value(p), value(q), value(a),
-        value(b));
+    return value(simulate_add_discrete_delta(p, q, a, b));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_add_discrete_delta(eval(p), eval(q), eval(a), eval(b));
+    return eval(simulate_add_discrete_delta(p, q, a, b));
   }
 
   override function logpdf(x:Integer!) -> Real! {

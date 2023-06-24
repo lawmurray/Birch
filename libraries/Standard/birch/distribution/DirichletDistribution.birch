@@ -8,11 +8,11 @@ final class DirichletDistribution<Arg>(α:Arg) < Distribution<Real[_]> {
   α:Arg <- α;
 
   override function simulate() -> Real[_] {
-    return simulate_dirichlet(value(α));
+    return value(simulate_dirichlet(α));
   }
   
   override function simulateLazy() -> Real[_] {
-    return simulate_dirichlet(eval(α));
+    return eval(simulate_dirichlet(α));
   }
 
   override function logpdf(x:Real[_]) -> Real! {

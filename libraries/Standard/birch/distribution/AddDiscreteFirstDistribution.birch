@@ -22,11 +22,11 @@ final class AddDiscreteFirstDistribution<Arg1>(p:Arg1, a:Integer!,
   b:Integer! <- b;
   
   override function simulate() -> Integer! {
-    return simulate_add_discrete_first(value(p), value(a), value(b));
+    return value(simulate_add_discrete_first(p, a, b));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_add_discrete_first(eval(p), eval(a), eval(b));
+    return eval(simulate_add_discrete_first(p, a, b));
   }
 
   override function logpdf(x:Integer!) -> Real! {

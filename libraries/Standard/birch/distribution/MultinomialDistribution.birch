@@ -14,11 +14,11 @@ final class MultinomialDistribution<Arg1,Arg2>(n:Arg1, ρ:Arg2) <
   ρ:Arg2 <- ρ;
 
   override function simulate() -> Integer[_] {
-    return simulate_multinomial(value(n), value(ρ));
+    return value(simulate_multinomial(n, ρ));
   }
 
   override function simulateLazy() -> Integer[_] {
-    return simulate_multinomial(eval(n), eval(ρ));
+    return eval(simulate_multinomial(n, ρ));
   }
 
   override function logpdf(x:Integer[_]) -> Real! {

@@ -29,11 +29,11 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
   n:Arg3 <- n;
 
   override function simulate() -> Integer! {
-    return simulate_conway_maxwell_poisson(value(μ), value(ν), value(n));
+    return value(simulate_conway_maxwell_poisson(μ, ν, n));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_conway_maxwell_poisson(eval(μ), eval(ν), eval(n));
+    return eval(simulate_conway_maxwell_poisson(μ, ν, n));
   }
 
   override function logpdf(x:Integer!) -> Real! {
@@ -45,7 +45,7 @@ class ConwayMaxwellPoissonDistribution<Arg1,Arg2,Arg3>(μ:Arg1, ν:Arg2,
   }
 
   override function cdf(x:Integer!) -> Real!? {
-    return cdf_conway_maxwell_poisson(x, value(μ), value(ν), value(n));
+    return value(cdf_conway_maxwell_poisson(x, μ, ν, n));
   }
 
   override function hoist() -> Expression<Real> {

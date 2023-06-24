@@ -11,11 +11,11 @@ final class CategoricalDistribution<Arg>(ρ:Arg) <
   ρ:Arg <- ρ;
 
   override function simulate() -> Integer! {
-    return simulate_categorical(value(ρ));
+    return value(simulate_categorical(ρ));
   }
 
   override function simulateLazy() -> Integer! {
-    return simulate_categorical(eval(ρ));
+    return eval(simulate_categorical(ρ));
   }
 
   override function logpdf(x:Integer!) -> Real! {

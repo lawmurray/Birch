@@ -222,10 +222,6 @@ struct Random<Value> {
     return hasDistribution() && getDistribution()->getUpdated()->isDirichlet();
   }
 
-  bool isRestaurant() const {
-    return hasDistribution() && getDistribution()->getUpdated()->isRestaurant();
-  }
-
   bool isMultivariateGaussian() const {
     return hasDistribution() && getDistribution()->getUpdated()->isMultivariateGaussian();
   }

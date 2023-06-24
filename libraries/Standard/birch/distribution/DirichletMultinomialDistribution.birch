@@ -14,11 +14,11 @@ final class DirichletMultinomialDistribution<Arg1,Arg2>(n:Arg1, α:Arg2) <
   α:Arg2 <- α;
 
   override function simulate() -> Integer[_] {
-    return simulate_dirichlet_multinomial(value(n), value(α));
+    return value(simulate_dirichlet_multinomial(n, α));
   }
 
   override function simulateLazy() -> Integer[_] {
-    return simulate_dirichlet_multinomial(eval(n), eval(α));
+    return eval(simulate_dirichlet_multinomial(n, α));
   }
 
   override function logpdf(x:Integer[_]) -> Real! {
@@ -81,7 +81,7 @@ function Multinomial<Arg>(n:Arg, ρ:Random<Real[_]>) ->
  * @param n Number of trials.
  * @param α Concentrations.
  */
-function simulate_dirichlet_multinomial(n:Integer, α:Real[_]) -> Integer[_] {
+function simulate_dirichlet_multinomial<Arg1,Arg2>(n:Arg1, α:Arg2) -> {
   return simulate_multinomial(n, simulate_dirichlet(α));
 }
 
