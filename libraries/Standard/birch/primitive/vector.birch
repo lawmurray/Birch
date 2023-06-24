@@ -13,7 +13,9 @@
 function vector_lambda<Lambda>(λ:Lambda, length:Integer) -> {
   cpp{{
   using T = std::decay_t<decltype(wait(λ(1)))>;
-  return numbirch::Array<T,1>(λ, numbirch::make_shape(length));
+  return numbirch::Array<T,1>([&](const int64_t s) {
+        return λ(s + 1);
+      }, numbirch::make_shape(length));
   }}
 }
 
