@@ -445,11 +445,17 @@ struct tag_s<T> {
 };
 template<array T>
 struct tag_s<T> {
-  using type = T;
+  using type = std::conditional_t<std::is_rvalue_reference_v<T>,T,
+      std::add_lvalue_reference_t<std::add_const_t<T>>>;
+};
+template<form T>
+struct tag_s<T> {
+  using type = tag_s<std::decay_t<T>>::type;  // specialized for this
 };
 template<expression T>
 struct tag_s<T> {
-  using type = T;
+  using type = std::conditional_t<std::is_rvalue_reference_v<T>,T,
+      std::add_lvalue_reference_t<std::add_const_t<T>>>;
 };
 
 /**
@@ -470,7 +476,7 @@ struct tag_s<T> {
  * rewritten at compile time.
  */
 template<argument T>
-using tag_t = typename tag_s<std::decay_t<T>>::type;
+using tag_t = typename tag_s<T>::type;
 
 template<class T>
 struct peg_s {
@@ -483,6 +489,10 @@ struct peg_s<T> {
 template<array T>
 struct peg_s<T> {
   using type = std::decay_t<T>;
+};
+template<form T>
+struct peg_s<T> {
+  using type = peg_s<std::decay_t<T>>::type;  // specialized for this
 };
 template<expression T>
 struct peg_s<T> {
@@ -504,7 +514,7 @@ struct peg_s<T> {
  * no dangling references.
  */
 template<argument T>
-using peg_t = typename peg_s<std::decay_t<T>>::type;
+using peg_t = typename peg_s<T>::type;
 
 /**
  * Argument wrapper function for construction of delayed expressions.

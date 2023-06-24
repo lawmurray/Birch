@@ -33,7 +33,7 @@ struct peg_s<Cast<To,Middle>> {
 template<class To, argument Middle>
 auto cast(Middle&& m) {
   using TagMiddle = tag_t<Middle>;
-  return Cast<To,TagMiddle>(std::forward<Middle>(m));
+  return Cast<To,TagMiddle>(std::in_place, std::forward<Middle>(m));
 }
 
 }

@@ -15,29 +15,20 @@
   This(const This&) = default;  \
   This(This&&) = default; \
   \
-  This(const Middle& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
-      m(m) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  template<argument T1> \
+  This(std::in_place_t, T1&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) : \
+      m(std::forward<T1>(m)) \
+      __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
   \
-  This(Middle& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) \
-      requires (!std::same_as<const Middle&,Middle&>) : \
-      m(m) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
+  template<argument... Args> /* parameter pack to support Cast<To,Middle> */ \
+  This(const This<Args...>& o) : \
+      m(o.m) \
+      __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
   \
-  This(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) \
-      requires (!std::same_as<const Middle&,Middle&&> && \
-          !std::same_as<Middle&,Middle&&>) : \
-      m(std::move(m)) __VA_OPT__(, BIRCH_INIT(__VA_ARGS__)) {} \
-  \
-  template<argument O> \
-  This(const O& o) : \
-      m(o.m) __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
-  \
-  template<argument O> \
-  This(O& o) : \
-      m(o.m) __VA_OPT__(, BIRCH_COPY_INIT(__VA_ARGS__)) {} \
-  \
-  template<argument O> \
-  This(O&& o) : \
-     m(std::forward<decltype(o.m)>(o.m)) __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
+  template<argument... Args> /* parameter pack to support Cast<To,Middle> */ \
+  This(This<Args...>&& o) : \
+      m(std::forward<decltype(o.m)>(o.m)) \
+     __VA_OPT__(, BIRCH_MOVE_INIT(__VA_ARGS__)) {} \
   \
   auto operator->() { \
     return this; \
@@ -124,7 +115,7 @@
   template<argument Middle> \
   auto f(Middle&& m __VA_OPT__(, BIRCH_INT(__VA_ARGS__))) { \
     using TagMiddle = tag_t<Middle>; \
-    return This<TagMiddle>(std::forward<Middle>(m) \
+    return This<TagMiddle>(std::in_place, std::forward<Middle>(m) \
         __VA_OPT__(,) __VA_ARGS__); \
   }
 
