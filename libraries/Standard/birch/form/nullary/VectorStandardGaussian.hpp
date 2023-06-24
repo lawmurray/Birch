@@ -9,6 +9,7 @@ namespace birch {
 
 struct VectorStandardGaussian {
   BIRCH_NULLARY_EVAL(VectorStandardGaussian, standard_gaussian, n)
+  BIRCH_NULLARY_GRAD(Abs)
   BIRCH_NULLARY_FORM(VectorStandardGaussian, n)
 
   int rows() const {

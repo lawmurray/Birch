@@ -68,10 +68,10 @@
     return numbirch::f(__VA_ARGS__); \
   }
 
-#define BIRCH_NULLARY_GRAD(This, f_grad, ...) \
+#define BIRCH_NULLARY_GRAD(This, ...) \
   template<class G> \
-  static constexpr void shallowGrad(const G&, __VA_OPT__(,) __VA_ARGS__, \
-      const GradVisitor&) const {}
+  static constexpr void shallowGrad(const G& __VA_OPT__(,) __VA_ARGS__, \
+      const GradVisitor&) {}
 
 #define BIRCH_NULLARY_CALL(This, f, ...) \
   inline auto f(__VA_OPT__(BIRCH_INT(__VA_ARGS__))) { \
