@@ -80,7 +80,7 @@ if $checks; then
   AC_OPENMP
   CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
   AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
-  AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])])
+  AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_LIB([omp], [omp_get_thread_num], [], [], [])])
   AC_CHECK_HEADERS([eigen3/unsupported/Eigen/SpecialFunctions], [], [AC_CHECK_HEADERS([unsupported/Eigen/SpecialFunctions], [], [AC_MSG_ERROR([required Eigen header not found.])], [AC_INCLUDES_DEFAULT])], [AC_INCLUDES_DEFAULT])
 
   # Checks for build-specific requirements

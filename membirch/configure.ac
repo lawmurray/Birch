@@ -27,7 +27,7 @@ CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"
 if $checks; then
   # Checks for libraries
   AC_CHECK_LIB([atomic], [main], [], [], [])
-  AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_SEARCH_LIBS([omp_get_thread_num], [omp], [], [], [])])
+  AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_LIB([omp], [omp_get_thread_num], [], [], [])])
 
   # Checks for headers
   AS_IF([test "$OPENMP_CXXFLAGS" != ""], [AC_CHECK_HEADERS([omp.h], [], [], [AC_INCLUDES_DEFAULT])])
