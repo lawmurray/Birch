@@ -1443,7 +1443,7 @@ void birch::Driver::readFiles(const std::string& key) {
           throw DriverException(std::string("file name ") + path.string() +
             " in build configuration contains whitespace, which is not supported.");
         }
-        if (!path.stem().compare(tarName) == 0) {
+        if (path.stem().compare(tarName) != 0) {
           auto inserted = allFiles.insert(path);
           if (!inserted.second) {
             warn(path.string() + " repeated in build configuration.");
