@@ -45,7 +45,7 @@ struct Random<Value> {
     if (o.hasDistribution()) {
       setDistribution(o.getDistribution());
     } else {
-      this->x = x;
+      this->x = o.x;
     }
     return *this;
   }
@@ -57,8 +57,9 @@ struct Random<Value> {
     assert(!this->x.has_value());
     if (hasDistribution()) {
       getDistribution()->assign(x);
+    } else {
+      this->x = x;
     }
-    this->x = x;
     return *this;
   }
 
