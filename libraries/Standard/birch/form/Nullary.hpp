@@ -32,7 +32,17 @@
   static constexpr void constant() {} \
   static constexpr bool isConstant() { return true; } \
   static constexpr void args(const ArgsVisitor&) {} \
-  static constexpr void deepGrad(const GradVisitor&) {}
+  static constexpr void deepGrad(const GradVisitor&) {} \
+  \
+  template<class Buffer> \
+  void write(const Buffer& buffer) const { \
+    buffer->set(value()); \
+  } \
+  \
+  template<class Buffer> \
+  void write(const Integer t, const Buffer& buffer) const { \
+    buffer->set(value()); \
+  }
 
 #define BIRCH_NULLARY_SIZE(This, ...) \
   int rows() const { \

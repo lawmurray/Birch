@@ -86,6 +86,16 @@
     birch::deep_grad(l, visitor); \
     birch::deep_grad(m, visitor); \
     birch::deep_grad(r, visitor); \
+  } \
+  \
+  template<class Buffer> \
+  void write(const Buffer& buffer) const { \
+    buffer->set(value()); \
+  } \
+  \
+  template<class Buffer> \
+  void write(const Integer t, const Buffer& buffer) const { \
+    buffer->set(value()); \
   }
 
 #define BIRCH_TERNARY_SIZE(This, ...) \

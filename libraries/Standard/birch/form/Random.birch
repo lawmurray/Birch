@@ -21,21 +21,11 @@ struct Random<Value> {
   BIRCH_UNARY_SIZE(Random)
 
   operator auto() const {
-    if (hasDistribution()) {
-      return getDistribution()->variate();
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
+    return value();
   }
 
   auto operator*() const {
-    if (hasDistribution()) {
-      return wait(getDistribution()->variate());
-    } else {
-      assert(x.has_value());
-      return wait(*x);
-    }
+    return wait(value());
   }
 
   /**
@@ -253,8 +243,8 @@ struct Random<Value> {
 
   void read(const Buffer& buffer);
   void read(const Integer t, const Buffer& buffer);
-  void write(const Buffer& buffer);
-  void write(const Integer t, const Buffer& buffer);
+  void write(const Buffer& buffer) const;
+  void write(const Integer t, const Buffer& buffer) const;
   }}
 
   cpp{{
@@ -280,16 +270,16 @@ struct Random<Value> {
   }
 
   template<class Value>
-  void Random<Value>::write(const Buffer& buffer) {
-    if (x || p) {
-      buffer->set(value(*this));
+  void Random<Value>::write(const Buffer& buffer) const {
+    if (x.has_value() || p.has_value()) {
+      buffer->set(value());
     } else {
       buffer->setNil();
     }
   }
 
   template<class Value>
-  void Random<Value>::write(const Integer t, const Buffer& buffer) {
+  void Random<Value>::write(const Integer t, const Buffer& buffer) const {
     return write(buffer);
   }
   }}

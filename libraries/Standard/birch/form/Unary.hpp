@@ -68,6 +68,16 @@
   \
   void deepGrad(const GradVisitor& visitor) const { \
     birch::deep_grad(m, visitor); \
+  } \
+  \
+  template<class Buffer> \
+  void write(const Buffer& buffer) const { \
+    buffer->set(value()); \
+  } \
+  \
+  template<class Buffer> \
+  void write(const Integer t, const Buffer& buffer) const { \
+    buffer->set(value()); \
   }
 
 #define BIRCH_UNARY_SIZE(This, ...) \
