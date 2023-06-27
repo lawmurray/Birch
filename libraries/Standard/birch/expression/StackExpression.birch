@@ -5,7 +5,7 @@
  * @tparam Arg Argument type, e.g. `Real` or `Expression<Real>`.
  * @param Element Result element type, e.g. `Real`.
  */
-final class StackExpression<Arg,Element> < Expression<Element[_]>(nil, false) {
+final class StackExpression<Arg,Element> < DoExpression<Element[_]> {
   /**
    * Arguments.
    */

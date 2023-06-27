@@ -99,111 +99,54 @@
  * by calling `peek()`. These memoized intermediate results are cleared again
  * as `grad()` progresses.
  */
-abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
-  /**
-   * Memoized result.
-   */
-  x:Value!? <- x;
-
-  /**
-   * Accumulated upstream gradient.
-   */
-  phantom g;
+abstract class Expression<Value> {  
   hpp{{
-  std::optional<numbirch::Array<Real,numbirch::Future<Value>::ndims>> g;
+  using Gradient = numbirch::Array<Real,numbirch::Future<Value>::ndims>;
   }}
 
   /**
-   * Count of number of parents, set by trace().
-   */
-  linkCount:Integer <- 0;
-
-  /**
-   * Counter used to obtain pre- and post-order traversals of the expression
-   * graph.
-   */
-  visitCount:Integer <- 0;
-
-  /**
-   * Number of arguments.
-   */
-  argsCount:Integer <- 0;
-
-  /**
    * Is this a constant expression?
    */
-  flagConstant:Boolean <- flagConstant;
-  
-  /**
-   * Is this a constant expression?
-   */
-  final function isConstant() -> Boolean {
-    return flagConstant;
-  }
+  abstract function isConstant() -> Boolean;
 
   /**
    * Does this have a value?
    */
-  final function hasValue() -> Boolean {
-    return x?;
-  }
+  abstract function hasValue() -> Boolean;
 
   /**
    * Number of rows in result.
    */
-  final function rows() -> Integer {
-    return global.rows(eval());
-  }
+  abstract function rows() -> Integer;
   
   /**
    * Number of columns in result.
    */
-  final function columns() -> Integer {
-    return global.columns(eval());
-  }
+  abstract function columns() -> Integer;
 
   /**
    * Length of result. This is synonymous with `rows()`.
    */
-  final function length() -> Integer {
-    return global.length(eval());
-  }
+  abstract function length() -> Integer;
 
   /**
    * Size of result. This is equal to `rows()*columns()`.
    */
-  final function size() -> Integer {
-    return global.size(eval());
-  }
+  abstract function size() -> Integer;
 
   /**
    * Evaluate and render constant.
    *
    * @return The result.
    */
-  final function value() -> Value! {
-    /* need to call eval() before constant() for Random in particular; a
-     * Random may have an associated distribution from which it is yet to
-     * simulate, constant() will remove this */
-    eval();
-    constant();
-    assert x?;
-    return x!;
-  }
+  abstract function value() -> Value!;
 
   /**
    * Evaluate.
    *
    * @return The result.
    */
-  final function eval() -> Value! {
-    if !x? && !flagConstant {
-      doEval();
-    }
-    assert x?;
-    return x!;
-  }
-  abstract function doEval();
+  abstract function eval() -> Value!;
 
   /**
    * Re-evaluate, ignoring memoization. This is used instead of evaluate after
@@ -211,54 +154,16 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    *
    * @return The result.
    */
-  final function move(x:Real[_]) -> Value! {
-    assert global.length(x) == argsCount;
-    visitor:MoveVisitor(x);
-    return move(visitor);
-  }
-  final function move(visitor:MoveVisitor) -> Value! {
-    if !flagConstant {
-      visitCount <- visitCount + 1;
-      if visitCount == 1 {
-        doMove(visitor);
-      }
-      if visitCount >= linkCount {
-        assert visitCount == linkCount;
-        visitCount <- 0;  // reset for next time
-      }
-    }
-    assert x?;
-    return x!;
-  }
-  function doMove(visitor:MoveVisitor) {
-    //
-  }
+  abstract function move(x:Real[_]) -> Value!;
+  abstract function move(visitor:MoveVisitor) -> Value!;
 
   /**
    * Vectorize arguments.
    *
    * @return Vectorized arguments.
    */
-  final function args() -> Real[_] {
-    visitor:ArgsVisitor(argsCount);
-    args(visitor);
-    return visitor.x;
-  }
-  final function args(visitor:ArgsVisitor) {
-    if !flagConstant {
-      visitCount <- visitCount + 1;
-      if visitCount == 1 {
-        doArgs(visitor);
-      }
-      if visitCount >= linkCount {
-        assert visitCount == linkCount;
-        visitCount <- 0;  // reset for next time
-      }
-    }
-  }
-  function doArgs(visitor:ArgsVisitor) {
-    //
-  }
+  abstract function args() -> Real[_];
+  abstract function args(visitor:ArgsVisitor);
 
   /**
    * Evaluate gradient with respect to arguments. Clears memos at fine-grain.
@@ -286,7 +191,7 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * {\partial x_{i-1}}\left(x_{i-1}\right),$$
    *
    * and passes the result to the next step in the chain, which encodes
-   * $f_{i-1}$. The argument that encodes $x_0$ keeps the final result---it
+   * $f_{i-1}$. The argument that encodes $x_0$ keeps the abstract result---it
    * is a `Random` object.
    *
    * Reverse-mode automatic differentiation is used. The previous call to
@@ -305,55 +210,17 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * mechanism results in automatic differentiation of complexity $O(N)$ in
    * the number of updates, as opposed to $O(N^2)$ otherwise.
    */
-  final function grad() -> Real[_] {
-    cpp{{
-    numbirch::Array g(Real(1), numbirch::shape(*x));
-    }}
-    return grad(g);
-  }
-  final function grad<Gradient>(g:Gradient) -> Real[_] {
-    visitor:GradVisitor(argsCount);
-    shallowGrad(g, visitor);
-    deepGrad(visitor);
-    return visitor.g;
-
-  }
-  final function shallowGrad<Gradient>(g:Gradient, visitor:GradVisitor) {
-    if !flagConstant {
-      visitCount <- visitCount + 1;
-      if visitCount == 1 {
-        /* (re-)start accumulation */
-        this.g <- g;
-      } else {
-        /* continue accumulation */
-        this.g <- this.g! + g;
-      }
-    }
-  }
-  abstract function doShallowGrad(visitor:GradVisitor);
-
-  final function deepGrad(visitor:GradVisitor) {
-    if !flagConstant && visitCount >= linkCount {
-      assert visitCount == linkCount;
-      visitCount <- 0;  // reset for next time
-      doShallowGrad(visitor);
-      this.g <- nil;  // clear intermediate gradient to save memory
-      doDeepGrad(visitor);
-    }
-  }
-  abstract function doDeepGrad(visitor:GradVisitor);
+  abstract function grad() -> Real[_];
+  abstract function grad(g:Gradient) -> Real[_];
+  abstract function shallowGrad(g:Gradient, visitor:GradVisitor);
+  abstract function deepGrad(visitor:GradVisitor);
 
   /**
    * Evaluate.
    *
    * @return The result.
    */
-  final function peek() -> Value! {
-    /* forms use peek() for fine-grain memoization, but this terminates at
-     * the nearest Expression objects; so here should behave as for eval(),
-     * reverting to coarse-grain memoization */
-    return eval();
-  }
+  abstract function peek() -> Value!;
 
   /**
    * Trace an expression before calling grad() or move(). This traces through
@@ -362,51 +229,14 @@ abstract class Expression<Value>(x:Value!?, flagConstant:Boolean) {
    * execution of grad() and move(), as these counts ensure that each node in
    * the graph is visited exactly once.
    */
-  final function trace() {
-    reset();
-    visitor:RelinkVisitor;
-    relink(visitor);
-  }
-  final function reset() {
-    assert visitCount == 0;
-    g <- nil;
-    linkCount <- 0;
-    argsCount <- 0;
-    if !flagConstant {
-      doReset();
-    }
-  }
-  abstract function doReset();
-
-  final function relink(visitor:RelinkVisitor) {
-    assert visitCount == 0;
-    if !flagConstant {
-      linkCount <- linkCount + 1;
-      if linkCount == 1 {
-        doRelink(visitor);
-        argsCount <- visitor.n;
-      }
-    }
-  }
-  abstract function doRelink(visitor:RelinkVisitor);
+  abstract function trace();
+  abstract function reset();
+  abstract function relink(visitor:RelinkVisitor);
 
   /**
    * Render the entire expression constant.
    */
-  final function constant() {
-    if !flagConstant {
-      g <- nil;
-      linkCount <- 0;
-      visitCount <- 0;
-      flagConstant <- true;
-      doConstant();
-    }
-  }
-  abstract function doConstant();
-
-  override function write(buffer:Buffer) {
-    buffer.set(value()!);
-  }
+  abstract function constant();
 }
 
 hpp{{

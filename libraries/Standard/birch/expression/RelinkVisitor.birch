@@ -3,7 +3,7 @@
  */
 final class RelinkVisitor {
   /**
-   * Numbr of arguments.
+   * Number of arguments.
    */
   n:Integer <- 0;
 

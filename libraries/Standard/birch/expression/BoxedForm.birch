@@ -5,7 +5,7 @@
  * @param Value Result type.
  * @param Form Form form.
  */
-final class BoxedForm<Value,Form>(f:Form) < Expression<Value>(nil, false) {
+final class BoxedForm<Value,Form>(f:Form) < DoExpression<Value> {
   /**
    * Expression form.
    */

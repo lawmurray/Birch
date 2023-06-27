@@ -6,7 +6,7 @@
  * `Real[_]` or `Expression<Real[_,_]>`.
  * @param Element Result element type, e.g. `Real`.
  */
-final class PackExpression<Arg,Element> < Expression<Element[_,_]>(nil, false) {
+final class PackExpression<Arg,Element> < DoExpression<Element[_,_]> {
   /**
    * Arguments.
    */

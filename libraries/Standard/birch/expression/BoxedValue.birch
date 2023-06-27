@@ -1,36 +1,117 @@
 /**
  * Boxed value.
  */
-final acyclic class BoxedValue<Value>(x:Value!) < Expression<Value>(x, true) {  
-  override function doEval() {
+final acyclic class BoxedValue<Value> < Expression<Value> {  
+  hpp{{
+  using Gradient = typename base_type_::Gradient;
+  const numbirch::Future<Value> x;
+
+  BoxedValue_(const numbirch::Future<Value>& x) :
+      x(x) {
+    //
+  }
+  }}
+
+  final override function isConstant() -> Boolean {
+    return true;
+  }
+
+  final override function hasValue() -> Boolean {
+    return true;
+  }
+
+  final override function rows() -> Integer {
+    cpp{{
+    return birch::rows(x);
+    }}
+  }
+  
+  final override function columns() -> Integer {
+    cpp{{
+    return birch::columns(x);
+    }}
+  }
+
+  final override function length() -> Integer {
+    cpp{{
+    return birch::length(x);
+    }}
+  }
+
+  final override function size() -> Integer {
+    cpp{{
+    return birch::size(x);
+    }}
+  }
+
+  final override function value() -> Value! {
+    cpp{{
+    return x;
+    }}
+  }
+
+  final override function eval() -> Value! {
+    cpp{{
+    return x;
+    }}
+  }
+
+  final function move(x:Real[_]) -> Value! {
+    assert global.length(x) == 0;
+    cpp{{
+    return *this->x;
+    }}
+  }
+
+  final override function move(visitor:MoveVisitor) -> Value! {
+    cpp{{
+    return x;
+    }}
+  }
+
+  final override function args() -> Real[_] {
+    return vector(0.0, 0);
+  }
+
+  final override function args(visitor:ArgsVisitor) {
     //
   }
 
-  override function doMove(visitor:MoveVisitor) {
+  final override function grad() -> Real[_] {
+    return vector(0.0, 0);
+  }
+
+  final override function grad(g:Gradient) -> Real[_] {
+    return vector(0.0, 0);
+  }
+
+  final override function shallowGrad(g:Gradient, visitor:GradVisitor) {
     //
   }
 
-  override function doArgs(visitor:ArgsVisitor) {
+  final override function deepGrad(visitor:GradVisitor) {
     //
   }
 
-  override function doDeepGrad(visitor:GradVisitor) {
+  final override function peek() -> Value! {
+    cpp{{
+    return x;
+    }}
+  }
+
+  final override function trace() {
     //
   }
 
-  override function doShallowGrad(visitor:GradVisitor) {
+  final override function reset() {
     //
   }
 
-  override function doReset() {
+  final override function relink(visitor:RelinkVisitor) {
     //
   }
 
-  override function doRelink(visitor:RelinkVisitor) {
-    //
-  }
-
-  override function doConstant() {
+  final override function constant() {
     //
   }
 }
