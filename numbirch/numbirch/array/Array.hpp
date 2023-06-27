@@ -7,7 +7,6 @@
 #include "numbirch/utility.hpp"
 #include "numbirch/array/Shape.hpp"
 #include "numbirch/array/Iterator.hpp"
-#include "numbirch/array/Atomic.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -15,7 +14,6 @@
 #include <initializer_list>
 #include <memory>
 #include <atomic>
-#include <iostream>
 
 #include <cassert>
 #include <cstdlib>
@@ -68,16 +66,13 @@ public:
    * Constructor with reference count initialization.
    * 
    * @param shp Shape.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    */
-  Array(const Shape<D>& shp, const int r = 0) :
+  Array(const Shape<D>& shp) :
       buf(shp.volume() > 0 ? static_cast<T*>(malloc(shp.volume()*sizeof(T))) : nullptr),
       bytes(shp.volume()*sizeof(T)),
       streamAlloc(stream_get()),
       stream(stream_get()),
       shp(shp),
-      r(r),
       own(true) {
     //
   }
@@ -87,11 +82,9 @@ public:
    *
    * @param value Fill value.
    * @param shp Shape.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    */
-  Array(const T& value, const Shape<D>& shp, const int r = 0) :
-      Array(shp, r) {
+  Array(const T& value, const Shape<D>& shp) :
+      Array(shp) {
     stream_join(stream);
     memset(buf, stride(), value, width(), height());
     stream = stream_get();
@@ -102,12 +95,10 @@ public:
    *
    * @param value Fill value.
    * @param shp Shape.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    */
   template<class U>
-  Array(const Array<U,0>& value, const Shape<D>& shp, const int r = 0) :
-      Array(shp, r) {
+  Array(const Array<U,0>& value, const Shape<D>& shp) :
+      Array(shp) {
     stream_join(stream);
     memset(buf, stride(), value.buffer(), width(), height());
     stream = stream_get();
@@ -119,12 +110,10 @@ public:
    * @param l Lambda called to construct each element. Argument is a 1-based
    * serial index.
    * @param shp Shape.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    */
   template<class L, std::enable_if_t<std::is_invocable_r_v<T,L,int>,int> = 0>
-  Array(const L& l, const Shape<D>& shp, const int r = 0) :
-      Array(shp, r) {
+  Array(const L& l, const Shape<D>& shp) :
+      Array(shp) {
     for (int64_t i = 0; i < size(); ++i) {
       buf[shp.serial(i)] = l(i);
     }
@@ -134,14 +123,12 @@ public:
    * Constructor.
    * 
    * @param value Fill value.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    * 
    * Constructs an array of the given number of dimensions, with a single
    * element set to @p value.
    */
-  Array(const T& value, const int r = 0) :
-      Array(value, make_shape<D>(1, 1), r) {
+  Array(const T& value) :
+      Array(value, make_shape<D>(1, 1)) {
     //
   }
 
@@ -149,15 +136,13 @@ public:
    * Constructor.
    * 
    * @param value Fill value.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    * 
    * Constructs an array of the given number of dimensions, with a single
    * element set to @p value.
    */
   template<class U>
-  Array(const Array<U,0>& value, const int r = 0) :
-      Array(value, make_shape<D>(1, 1), r) {
+  Array(const Array<U,0>& value) :
+      Array(value, make_shape<D>(1, 1)) {
     //
   }
 
@@ -165,11 +150,9 @@ public:
    * Constructor.
    *
    * @param values Values.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    */
   template<int E = D, std::enable_if_t<E == 1,int> = 0>
-  Array(const std::initializer_list<T>& values, const int r = 0) :
+  Array(const std::initializer_list<T>& values) :
       Array(make_shape(values.size())) {
     int i = 0;
     for (auto x : values) {
@@ -181,12 +164,9 @@ public:
    * Constructor.
    *
    * @param values Values.
-   * @param r Initial reference count. Typically zero, unless this is for a
-   * shared array.
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
-  Array(const std::initializer_list<std::initializer_list<T>>& values,
-      const int r = 0) :
+  Array(const std::initializer_list<std::initializer_list<T>>& values) :
       Array(make_shape(values.size(), values.begin()->size())) {
     int i = 0;
     for (auto row : values) {
@@ -203,8 +183,8 @@ public:
    * @param r Reference count. Typically zero, unless this is being used by a
    * shared array.
    */
-  Array(const Array& o, const int r = 0) :
-      Array(o.shp, r) {
+  Array(const Array& o) :
+      Array(o.shp) {
     stream_join(stream);
     stream_join(o.stream);
     memcpy(buf, stride(), o.buf, o.stride(), width(), height());
@@ -219,13 +199,12 @@ public:
    * @param r Reference count. Typically zero, unless this is being used by a
    * shared array.
    */
-  Array(Array&& o, const int r = 0) :
+  Array(Array&& o) :
       buf(nullptr),
       bytes(0),
       streamAlloc(stream_get()),
       stream(stream_get()),
       shp(),
-      r(r),
       own(true) {
     if (o.own) {
       /* transfer ownership */
@@ -263,7 +242,6 @@ public:
    * Copy assignment.
    */
   Array& operator=(const Array& o) {
-    assert(numShared() <= 1);
     assert(own || conforms(o));
     if (own && !conforms(o)) {
       /* as this owns the buffer, a resize is allowed */
@@ -285,7 +263,6 @@ public:
    */
   template<class U>
   Array& operator=(const Array<U,D>& o) {
-    assert(numShared() <= 1);
     assert(own || conforms(o));
     if (own && !conforms(o)) {
       /* as this owns the buffer, a resize is allowed */
@@ -308,7 +285,6 @@ public:
    * @param o Source object.
    */
   Array& operator=(Array&& o) {
-    assert(numShared() <= 1);
     if (own && o.own) {
       /* swap */
       std::swap(buf, o.buf);
@@ -327,7 +303,6 @@ public:
    * Value assignment (fill).
    */
   Array& operator=(const T& value) {
-    assert(numShared() <= 1);
     stream_join(stream);
     memset(buf, stride(), value, width(), height());
     stream = stream_get();
@@ -339,7 +314,6 @@ public:
    */
   template<class U, int E = D, std::enable_if_t<E != 0,int> = 0>
   Array& operator=(const Array<U,0>& value) {
-    assert(numShared() <= 1);
     stream_join(stream);
     memset(buf, stride(), value.buffer(), width(), height());
     stream = stream_get();
@@ -738,32 +712,8 @@ private:
       streamAlloc(streamAlloc),
       stream(stream),
       shp(shp),
-      r(0),
       own(false) {
     //
-  }
-
-  /**
-   * Reference count.
-   */
-  int numShared() const {
-    return r.load();
-  }
-
-  /**
-   * Increment the reference count.
-   */
-  void incShared() {
-    assert(numShared() > 0);
-    r.increment();
-  }
-
-  /**
-   * Decrement the reference count and return the new value.
-   */
-  int decShared() {
-    assert(numShared() > 0);
-    return --r;
   }
 
   /**
@@ -791,11 +741,6 @@ private:
    * Shape.
    */
   Shape<D> shp;
-
-  /**
-   * Reference count.
-   */
-  Atomic<int> r;
 
   /**
    * Does this own the buffer?

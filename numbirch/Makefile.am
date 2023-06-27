@@ -140,8 +140,6 @@ include_HEADERS = numbirch/numbirch.hpp
 
 nobase_include_HEADERS = \
   numbirch/array/Array.hpp \
-  numbirch/array/ArrayCOW.hpp \
-  numbirch/array/Atomic.hpp \
   numbirch/array/Future.hpp \
   numbirch/array/Iterator.hpp \
   numbirch/array/Matrix.hpp \

@@ -632,7 +632,7 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
 template<arithmetic T>
 Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
     const Array<T,1>& x, const Array<int,1>& y, const int n) {
-  return Array<real,1>(shape(y), real(0));
+  return Array<real,1>(real(0), shape(y));
 }
 
 template<arithmetic T>
