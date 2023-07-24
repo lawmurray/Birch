@@ -1,0 +1,227 @@
+/**
+ * Non-constant expression.
+ */
+abstract class DoExpression<Value> < Expression<Value> {
+  hpp{{
+  using Gradient = typename base_type_::Gradient;
+  }}
+
+  /**
+   * Memoized result.
+   */
+  x:Value!?;
+
+  /**
+   * Accumulated upstream gradient.
+   */
+  g:Gradient?;
+
+  /**
+   * Count of number of parents, set by trace().
+   */
+  linkCount:Integer <- 0;
+
+  /**
+   * Counter used to obtain pre- and post-order traversals of the expression
+   * graph.
+   */
+  visitCount:Integer <- 0;
+
+  /**
+   * Number of arguments.
+   */
+  argsCount:Integer <- 0;
+
+  /**
+   * Is this a constant expression?
+   */
+  flagConstant:Boolean <- false;
+  
+  final override function isConstant() -> Boolean {
+    return flagConstant;
+  }
+
+  final override function hasValue() -> Boolean {
+    return x?;
+  }
+
+  final override function rows() -> Integer {
+    return global.rows(eval());
+  }
+
+  final override function columns() -> Integer {
+    return global.columns(eval());
+  }
+
+  final override function length() -> Integer {
+    return global.length(eval());
+  }
+
+  final override function size() -> Integer {
+    return global.size(eval());
+  }
+
+  final override function value() -> Value! {
+    eval();
+    constant();
+    assert x?;
+    return x!;
+  }
+
+  final override function eval() -> Value! {
+    if !x? && !flagConstant {
+      doEval();
+    }
+    assert x?;
+    return x!;
+  }
+  abstract function doEval();
+
+  final override function move(x:Real[_]) -> Value! {
+    assert global.length(x) == argsCount;
+    visitor:MoveVisitor(x);
+    return move(visitor);
+  }
+  final override function move(visitor:MoveVisitor) -> Value! {
+    if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        doMove(visitor);
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+      }
+    }
+    assert x?;
+    return x!;
+  }
+  function doMove(visitor:MoveVisitor) {
+    //
+  }
+
+  final override function args() -> Real[_] {
+    visitor:ArgsVisitor(argsCount);
+    args(visitor);
+    return visitor.x;
+  }
+
+  final override function args(visitor:ArgsVisitor) {
+    if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        doArgs(visitor);
+      }
+      if visitCount >= linkCount {
+        assert visitCount == linkCount;
+        visitCount <- 0;  // reset for next time
+      }
+    }
+  }
+  function doArgs(visitor:ArgsVisitor) {
+    //
+  }
+
+  final override function grad() -> Real[_] {
+    cpp{{
+    numbirch::Array g(Real(1), numbirch::shape(*x));
+    }}
+    return grad(g);
+  }
+
+  final override function grad(g:Gradient) -> Real[_] {
+    visitor:GradVisitor(argsCount);
+    shallowGrad(g, visitor);
+    deepGrad(visitor);
+    return visitor.g;
+  }
+
+  final override function shallowGrad(g:Gradient, visitor:GradVisitor) {
+    if !flagConstant {
+      visitCount <- visitCount + 1;
+      if visitCount == 1 {
+        /* (re-)start accumulation */
+        this.g <- g;
+      } else {
+        /* continue accumulation */
+        this.g <- this.g! + g;
+      }
+    }
+  }
+  abstract function doShallowGrad(visitor:GradVisitor);
+
+  final override function deepGrad(visitor:GradVisitor) {
+    if !flagConstant && visitCount >= linkCount {
+      assert visitCount == linkCount;
+      visitCount <- 0;  // reset for next time
+      doShallowGrad(visitor);
+      this.g <- nil;  // clear intermediate gradient to save memory
+      doDeepGrad(visitor);
+    }
+  }
+  abstract function doDeepGrad(visitor:GradVisitor);
+
+  final override function peek() -> Value! {
+    /* forms use peek() for fine-grain memoization, but this terminates at
+     * the nearest Expression objects; so here should behave as for eval(),
+     * reverting to coarse-grain memoization */
+    return eval();
+  }
+
+  final override function trace() {
+    reset();
+    visitor:RelinkVisitor;
+    relink(visitor);
+  }
+  final override function reset() {
+    assert visitCount == 0;
+    g <- nil;
+    linkCount <- 0;
+    argsCount <- 0;
+    if !flagConstant {
+      doReset();
+    }
+  }
+  abstract function doReset();
+
+  final override function relink(visitor:RelinkVisitor) {
+    assert visitCount == 0;
+    if !flagConstant {
+      linkCount <- linkCount + 1;
+      if linkCount == 1 {
+        doRelink(visitor);
+        argsCount <- visitor.n;
+      }
+    }
+  }
+  abstract function doRelink(visitor:RelinkVisitor);
+
+  /**
+   * Render the entire expression constant.
+   */
+  final override function constant() {
+    if !flagConstant {
+      g <- nil;
+      linkCount <- 0;
+      visitCount <- 0;
+      flagConstant <- true;
+      doConstant();
+    }
+  }
+  abstract function doConstant();
+
+  override function write(buffer:Buffer) {
+    buffer.set(value()!);
+  }
+}
+
+hpp{{
+namespace birch {
+
+template<class Value>
+struct is_expression<DoExpression<Value>> {
+  static constexpr bool value = true;
+};
+
+}
+}}
