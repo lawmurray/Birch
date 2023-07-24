@@ -228,8 +228,12 @@ Array<real,0> dot(const Array<real,1>& x, const Array<real,1>& y) {
 }
 
 Array<real,0> frobenius(const Array<real,2>& x, const Array<real,2>& y) {
-  ///@todo Avoid temporary
-  return sum(hadamard(x, y));
+  if (x.contiguous() && y.contiguous()) {
+    return dot(vec(x), vec(y));
+  } else {
+    ///@todo Avoid temporary
+    return sum(hadamard(x, y));
+  }
 }
 
 Array<real,1> inner(const Array<real,2>& A, const Array<real,1>& x) {
