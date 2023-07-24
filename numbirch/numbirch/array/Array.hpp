@@ -7,6 +7,7 @@
 #include "numbirch/utility.hpp"
 #include "numbirch/array/Shape.hpp"
 #include "numbirch/array/Iterator.hpp"
+#include "numbirch/array/Lock.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -40,7 +41,6 @@ namespace numbirch::disable_adl {
 template<class T, int D>
 class Array {
   template<class U, int E> friend class Array;
-  template<class U, int E> friend class ArrayCOW;
 public:
   static_assert(std::is_arithmetic_v<T>, "Array is only for arithmetic types");
   static_assert(!std::is_const_v<T>, "Array cannot have a const value type");
@@ -70,8 +70,8 @@ public:
   Array(const Shape<D>& shp) :
       buf(shp.volume() > 0 ? static_cast<T*>(malloc(shp.volume()*sizeof(T))) : nullptr),
       bytes(shp.volume()*sizeof(T)),
-      streamAlloc(stream_get()),
-      stream(stream_get()),
+      strmAlloc(stream_get()),
+      strm(stream_get()),
       shp(shp),
       own(true) {
     //
@@ -85,9 +85,7 @@ public:
    */
   Array(const T& value, const Shape<D>& shp) :
       Array(shp) {
-    stream_join(stream);
     memset(buf, stride(), value, width(), height());
-    stream = stream_get();
   }
 
   /**
@@ -99,9 +97,8 @@ public:
   template<class U>
   Array(const Array<U,0>& value, const Shape<D>& shp) :
       Array(shp) {
-    stream_join(stream);
+    Lock lock(value);
     memset(buf, stride(), value.buffer(), width(), height());
-    stream = stream_get();
   }
 
   /**
@@ -185,11 +182,8 @@ public:
    */
   Array(const Array& o) :
       Array(o.shp) {
-    stream_join(stream);
-    stream_join(o.stream);
+    Lock lock(o);
     memcpy(buf, stride(), o.buf, o.stride(), width(), height());
-    stream = stream_get();
-    const_cast<Array&>(o).stream = stream_get();
   }
 
   /**
@@ -202,16 +196,16 @@ public:
   Array(Array&& o) :
       buf(nullptr),
       bytes(0),
-      streamAlloc(stream_get()),
-      stream(stream_get()),
+      strmAlloc(stream_get()),
+      strm(stream_get()),
       shp(),
       own(true) {
     if (o.own) {
       /* transfer ownership */
       std::swap(buf, o.buf);
       std::swap(bytes, o.bytes);
-      std::swap(streamAlloc, o.streamAlloc);
-      std::swap(stream, o.stream);
+      std::swap(strmAlloc, o.strmAlloc);
+      std::swap(strm, o.strm);
       std::swap(shp, o.shp);
     } else {
       /* copy */
@@ -219,11 +213,8 @@ public:
       shp = o.shp;
       if (bytes) {
         buf = static_cast<T*>(malloc(bytes));
-        stream_join(stream);
-        stream_join(o.stream);
+        Lock lock(o);
         memcpy(buf, stride(), o.buf, o.stride(), width(), height());
-        stream = stream_get();
-        const_cast<Array&>(o).stream = stream_get();
       }
     }
   }
@@ -233,7 +224,7 @@ public:
    */
   ~Array() {
     if (own) {
-      stream_finish(streamAlloc, stream);
+      stream_finish(strmAlloc, strm);
       free(buf, bytes);
     }
   }
@@ -245,16 +236,13 @@ public:
     assert(own || conforms(o));
     if (own && !conforms(o)) {
       /* as this owns the buffer, a resize is allowed */
-      stream_finish(streamAlloc, stream);
+      stream_finish(strmAlloc, strm);
       buf = static_cast<T*>(realloc(buf, bytes, o.bytes));
       bytes = o.bytes;
       shp = o.shp;
     }
-    stream_join(stream);
-    stream_join(o.stream);
+    Lock lock(*this, o);
     memcpy(buf, stride(), o.buf, o.stride(), width(), height());
-    stream = stream_get();
-    const_cast<Array&>(o).stream = stream_get();
     return *this;
   }
 
@@ -266,16 +254,13 @@ public:
     assert(own || conforms(o));
     if (own && !conforms(o)) {
       /* as this owns the buffer, a resize is allowed */
-      stream_finish(streamAlloc, stream);
+      stream_finish(strmAlloc, strm);
       buf = static_cast<T*>(realloc(buf, bytes, o.bytes*sizeof(T)/sizeof(U)));
       bytes = o.bytes*sizeof(T)/sizeof(U);
       shp = o.shp;
     }
-    stream_join(stream);
-    stream_join(o.stream);
+    Lock lock(*this, o);
     memcpy(buf, stride(), o.buf, o.stride(), width(), height());
-    stream = stream_get();
-    const_cast<Array<U,D>&>(o).stream = stream_get();
     return *this;
   }
 
@@ -289,8 +274,8 @@ public:
       /* swap */
       std::swap(buf, o.buf);
       std::swap(bytes, o.bytes);
-      std::swap(streamAlloc, o.streamAlloc);
-      std::swap(stream, o.stream);
+      std::swap(strmAlloc, o.strmAlloc);
+      std::swap(strm, o.strm);
       std::swap(shp, o.shp);
     } else {
       /* copy */
@@ -303,9 +288,8 @@ public:
    * Value assignment (fill).
    */
   Array& operator=(const T& value) {
-    stream_join(stream);
+    Lock lock(*this);
     memset(buf, stride(), value, width(), height());
-    stream = stream_get();
     return *this;
   }
 
@@ -314,9 +298,8 @@ public:
    */
   template<class U, int E = D, std::enable_if_t<E != 0,int> = 0>
   Array& operator=(const Array<U,0>& value) {
-    stream_join(stream);
+    Lock lock(*this, value);
     memset(buf, stride(), value.buffer(), width(), height());
-    stream = stream_get();
     return *this;
   }
 
@@ -379,6 +362,7 @@ public:
    */
   auto value() const {
     if constexpr (D == 0) {
+      stream_wait(strm);
       return *buf;
     } else {
       return *this;
@@ -389,14 +373,14 @@ public:
    * Whole array as slice.
    */
   Array<T,D> slice() {
-    return Array(buf, bytes, streamAlloc, stream, shp);
+    return Array(buf, bytes, strmAlloc, strm, shp);
   }
 
   /**
    * Whole array as slice.
    */
   Array<T,D> slice() const {
-    return Array(buf, bytes, streamAlloc, stream, shp);
+    return Array(buf, bytes, strmAlloc, strm, shp);
   }
 
   /**
@@ -423,7 +407,7 @@ public:
     auto offset = shp.offset(args...);
     auto range = shp.range(args...);
     return Array<T,range.dims()>(buf + offset, range.volume()*sizeof(T),
-        streamAlloc, stream, range);
+        strmAlloc, strm, range);
   }
 
   /**
@@ -435,7 +419,7 @@ public:
     auto offset = shp.offset(args...);
     auto range = shp.range(args...);
     return Array<T,range.dims()>(buf + offset, range.volume()*sizeof(T),
-        streamAlloc, stream, range);
+        strmAlloc, strm, range);
   }
 
   /**
@@ -452,7 +436,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D && D != 0 &&
       all_integral_v<Args...>,int> = 0>
   T& dice(const Args... args) {
-    stream_wait(stream);
+    stream_wait(strm);
     return buf[shp.offset(args...)];
   }
 
@@ -462,7 +446,7 @@ public:
   template<class... Args, std::enable_if_t<sizeof...(Args) == D && D != 0 &&
       all_integral_v<Args...>,int> = 0>
   const T& dice(const Args... args) const {
-    stream_wait(stream);
+    stream_wait(strm);
     return buf[shp.offset(args...)];
   }
 
@@ -474,7 +458,7 @@ public:
       return *this;
     } else {
       assert(size() == 1);
-      return Array<T,0>(buf, bytes, streamAlloc, stream, make_shape());
+      return Array<T,0>(buf, bytes, strmAlloc, strm, make_shape());
     }
   }
 
@@ -486,7 +470,7 @@ public:
       return *this;
     } else {
       assert(contiguous());
-      return Array<T,1>(buf, bytes, streamAlloc, stream, make_shape(size()));
+      return Array<T,1>(buf, bytes, strmAlloc, strm, make_shape(size()));
     }
   }
 
@@ -502,7 +486,7 @@ public:
       assert(contiguous());
       assert(size() % n == 0);
       int m = size()/n;
-      return Array<T,2>(buf, bytes, streamAlloc, stream, make_shape(m, n));
+      return Array<T,2>(buf, bytes, strmAlloc, strm, make_shape(m, n));
     }
   }
 
@@ -511,7 +495,7 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() {
-    return Array<T,1>(buf, bytes, streamAlloc, stream, shp.diagonal());
+    return Array<T,1>(buf, bytes, strmAlloc, strm, shp.diagonal());
   }
 
   /**
@@ -519,7 +503,7 @@ public:
    */
   template<int E = D, std::enable_if_t<E == 2,int> = 0>
   Array<T,1> diagonal() const {
-    return Array<T,1>(buf, bytes, streamAlloc, stream, shp.diagonal());
+    return Array<T,1>(buf, bytes, strmAlloc, strm, shp.diagonal());
   }
 
   /**
@@ -534,6 +518,13 @@ public:
    */
   const T* buffer() const {
     return buf;
+  }
+
+  /**
+   * Stream.
+   */
+  void* stream() const {
+    return strm;
   }
 
   /**
@@ -680,11 +671,11 @@ public:
        * the need for reallocation on subsequent push() */
       newbytes = std::max<size_t>(2*oldbytes, 64u);
       if (buf) {
-        stream_finish(streamAlloc, stream);
+        stream_finish(strmAlloc, strm);
         buf = static_cast<T*>(realloc(buf, oldbytes, newbytes));
       } else {
         buf = static_cast<T*>(malloc(newbytes));
-        streamAlloc = stream_get();
+        strmAlloc = stream_get();
       }
       bytes = newbytes;
     }
@@ -701,16 +692,16 @@ private:
    * 
    * @param buf Buffer.
    * @param bytes Number of bytes.
-   * @param streamAlloc Stream of allocation.
-   * @param stream Stream of last operation.
+   * @param strmAlloc Stream of allocation.
+   * @param strm Stream of last operation.
    * @param shp Shape.
    */
-  Array(T* buf, const size_t bytes, void* streamAlloc, void* stream,
+  Array(T* buf, const size_t bytes, void* strmAlloc, void* strm,
       const Shape<D>& shp) :
       buf(buf),
       bytes(bytes),
-      streamAlloc(streamAlloc),
-      stream(stream),
+      strmAlloc(strmAlloc),
+      strm(strm),
       shp(shp),
       own(false) {
     //
@@ -722,20 +713,19 @@ private:
   T* buf;
 
   /**
-   * Number of bytes allocated. When nonzero, the array is the owner of the
-   * buffer.
+   * Number of bytes allocated.
    */
   size_t bytes;
 
   /**
    * Stream of allocation.
    */
-  void* streamAlloc;
+  mutable void* strmAlloc;
 
   /**
    * Stream of last operation.
    */
-  void* stream;
+  mutable void* strm;
 
   /**
    * Shape.
@@ -753,18 +743,12 @@ Array(const std::initializer_list<std::initializer_list<T>>&) ->
     Array<std::decay_t<T>,2>;
 
 template<class T>
-Array(const std::initializer_list<T>&) ->
-    Array<std::decay_t<T>,1>;
+Array(const std::initializer_list<T>&) -> Array<std::decay_t<T>,1>;
 
 template<class T>
-Array(const T& value) ->
-    Array<std::decay_t<T>,0>;
+Array(const T& value) -> Array<std::decay_t<T>,0>;
 
 template<class T, int D>
-Array(const T& value, const Shape<D>& shape) ->
-    Array<std::decay_t<T>,D>;
-
-template<class T, int D>
-Array(const ArrayCOW<T,D>& a) -> Array<T,D>;
+Array(const T& value, const Shape<D>& shape) -> Array<std::decay_t<T>,D>;
 
 }

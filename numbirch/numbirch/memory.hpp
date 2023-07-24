@@ -169,4 +169,32 @@ void stream_join(void* stream);
  */
 void stream_finish(void* streamAlloc, void* stream);
 
+/**
+ * Lock the scheduling mutex for exclusive ownership.
+ * 
+ * @ingroup memory
+ */
+void lock();
+
+/**
+ * Unlock the scheduling mutex for exclusive ownership.
+ * 
+ * @ingroup memory
+ */
+void unlock();
+
+/**
+ * Lock the scheduling mutex for shared ownership.
+ * 
+ * @ingroup memory
+ */
+void lock_shared();
+
+/**
+ * Unlock the scheduling mutex for shared ownership.
+ * 
+ * @ingroup memory
+ */
+void unlock_shared();
+
 }

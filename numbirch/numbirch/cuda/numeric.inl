@@ -13,9 +13,9 @@
 #include "numbirch/transform.hpp"
 #include "numbirch/reduce.hpp"
 #include "numbirch/memory.hpp"
-
 #include "numbirch/common/transform.inl"
 #include "numbirch/cuda/transform.inl"
+#include "numbirch/array/Lock.hpp"
 
 namespace numbirch {
 /*
@@ -122,9 +122,8 @@ void nan_on_error(T& A, const Array<int,0>& info) {
 
 Array<real,1> mul(const Array<real,2>& A, const Array<real,1>& x) {
   assert(columns(A) == length(x));
-  prefetch(A);
-  prefetch(x);
   Array<real,1> y(make_shape(rows(A)));
+  Lock lock(A, x);
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_N, rows(A), columns(A),
       scalar<T>::one, buffer(A), stride(A), buffer(x), stride(x), scalar<T>::zero,
       buffer(y), stride(y)));
@@ -136,6 +135,7 @@ Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B) {
   prefetch(A);
   prefetch(B);
   Array<real,2> C(make_shape(rows(A), columns(B)));
+  Lock lock(A, B);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N,
       rows(C), columns(C), columns(A), scalar<T>::one, buffer(A), stride(A),
       buffer(B), stride(B), scalar<T>::zero, buffer(C), stride(C)));
@@ -145,7 +145,7 @@ Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B) {
 Array<real,2> chol(const Array<real,2>& S) {
   assert(rows(S) == columns(S));
   prefetch(S);
-  Array<real,2> L(tri(S));
+  Array<real,2> L(tri(S));  // will lock S
   Array<int,0> info;
 
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0;
@@ -173,6 +173,7 @@ Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
   Array<real,2> B(diagonal(y, rows(L)));
   Array<int,0> info;
 
+  Lock lock(L);
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
       buffer(L), stride(L), cusolver<T>::CUDA_R, buffer(B), stride(B),
@@ -185,9 +186,10 @@ Array<real,1> cholsolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(columns(L) == length(y));
   prefetch(L);
   prefetch(y);
-  Array<real,1> x(y, true);
+  Array<real,1> x(y);
   Array<int,0> info;
 
+  Lock lock(L);
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, length(x), 1, cusolver<T>::CUDA_R, buffer(L),
       stride(L), cusolver<T>::CUDA_R, buffer(x), length(x), buffer(info)));
@@ -199,9 +201,10 @@ Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(columns(L) == rows(C));
   prefetch(L);
   prefetch(C);
-  Array<real,2> B(C, true);
+  Array<real,2> B(C);
   Array<int,0> info;
 
+  Lock lock(L);
   CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
       buffer(L), stride(L), cusolver<T>::CUDA_R, buffer(B), stride(B),
@@ -217,6 +220,7 @@ Array<real,0> dot(const Array<real,1>& x, const Array<real,1>& y) {
   if (length(x) == 0) {
     z = T(0);
   } else {
+    Lock lock(x, y);
     CUBLAS_CHECK(cublas<T>::dot(cublasHandle, length(x), buffer(x), stride(x),
         buffer(y), stride(y), buffer(z)));
   }
@@ -233,6 +237,7 @@ Array<real,1> inner(const Array<real,2>& A, const Array<real,1>& x) {
   prefetch(A);
   prefetch(x);
   Array<real,1> y(make_shape(columns(A)));
+  Lock lock(A, x);
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_T, rows(A), columns(A),
       scalar<T>::one, buffer(A), stride(A), buffer(x), stride(x), scalar<T>::zero,
       buffer(y), stride(y)));
@@ -244,6 +249,7 @@ Array<real,2> inner(const Array<real,2>& A, const Array<real,2>& B) {
   prefetch(A);
   prefetch(B);
   Array<real,2> C(make_shape(columns(A), columns(B)));
+  Lock lock(A, B);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
       rows(C), columns(C), rows(A), scalar<T>::one, buffer(A), stride(A),
       buffer(B), stride(B), scalar<T>::zero, buffer(C), stride(C)));
@@ -261,21 +267,22 @@ Array<real,2> inv(const Array<real,2>& A) {
   size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0,
       ipivBytes = sizeof(int64_t)*std::min(rows(LU), columns(LU));
   CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, buffer(LU),
-      stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+      cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R,
+      buffer(LU), stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
       &bufferOnHostBytes));
   void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
   void* bufferOnHost = host_malloc(bufferOnHostBytes);
   auto ipiv = (int64_t*)device_malloc(ipivBytes);
 
   CUSOLVER_CHECK(cusolverDnXgetrf(cusolverDnHandle, cusolverDnParams,
-      rows(LU), columns(LU), cusolver<T>::CUDA_R, buffer(LU), stride(LU), ipiv,
-      cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes, bufferOnHost,
-      bufferOnHostBytes, buffer(info)));
+      rows(LU), columns(LU), cusolver<T>::CUDA_R, buffer(LU), stride(LU),
+      ipiv, cusolver<T>::CUDA_R, bufferOnDevice, bufferOnDeviceBytes,
+      bufferOnHost, bufferOnHostBytes, buffer(info)));
   nan_on_error(LU, info);
   CUSOLVER_CHECK(cusolverDnXgetrs(cusolverDnHandle, cusolverDnParams,
       CUBLAS_OP_N, rows(B), columns(B), cusolver<T>::CUDA_R, buffer(LU),
-      stride(LU), ipiv, cusolver<T>::CUDA_R, buffer(B), stride(B), buffer(info)));
+      stride(LU), ipiv, cusolver<T>::CUDA_R, buffer(B), stride(B),
+      buffer(info)));
 
   device_free(ipiv, ipivBytes);
   device_free(bufferOnDevice, bufferOnDeviceBytes);
@@ -296,8 +303,8 @@ Array<real,0> ldet(const Array<real,2>& A) {
     size_t bufferOnDeviceBytes = 0, bufferOnHostBytes = 0,
         ipivBytes = sizeof(int64_t)*rows(LU);
     CUSOLVER_CHECK(cusolverDnXgetrf_bufferSize(cusolverDnHandle,
-        cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R, buffer(LU),
-        stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
+        cusolverDnParams, rows(LU), columns(LU), cusolver<T>::CUDA_R,
+        buffer(LU), stride(LU), cusolver<T>::CUDA_R, &bufferOnDeviceBytes,
         &bufferOnHostBytes));
     void* bufferOnDevice = device_malloc(bufferOnDeviceBytes);
     void* bufferOnHost = host_malloc(bufferOnHostBytes);
@@ -334,6 +341,7 @@ Array<real,2> outer(const Array<real,1>& x, const Array<real,1>& y) {
    * stride between elements becomes the stride between columns; to create the
    * outer product, the first matrix is transposed to a single-column matrix,
    * while the second is not */
+  Lock lock(x, y);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
       rows(A), columns(A), 1, scalar<T>::one, buffer(x), stride(x), buffer(y),
       stride(y), scalar<T>::zero, buffer(A), stride(A)));
@@ -345,6 +353,7 @@ Array<real,2> outer(const Array<real,2>& A, const Array<real,2>& B) {
   prefetch(A);
   prefetch(B);
   Array<real,2> C(make_shape(rows(A), rows(B)));
+  Lock lock(A, B);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T,
       rows(C), columns(C), columns(A), scalar<T>::one, buffer(A), stride(A),
       buffer(B), stride(B), scalar<T>::zero, buffer(C), stride(C)));
@@ -358,6 +367,7 @@ Array<real,2> phi(const Array<real,2>& A) {
   Array<real,2> B(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
+  Lock lock(A);
   CUDA_LAUNCH(kernel_phi<<<grid,block,0,stream>>>(m, n, buffer(A), stride(A),
       buffer(B), stride(B)));
   return B;
@@ -380,6 +390,7 @@ Array<T,2> transpose(const Array<T,2>& A) {
 
   size_t shared = CUDA_TRANSPOSE_SIZE*CUDA_TRANSPOSE_SIZE*sizeof(T);
 
+  Lock lock(A);
   CUDA_LAUNCH(kernel_transpose<<<grid,block,shared,stream>>>(rows(B),
       columns(B), buffer(A), stride(A), buffer(B), stride(B)));
   return B;
@@ -392,6 +403,7 @@ Array<real,2> tri(const Array<real,2>& A) {
   Array<real,2> B(make_shape(m, n));
   auto grid = make_grid(m, n);
   auto block = make_block(m, n);
+  Lock lock(A);
   CUDA_LAUNCH(kernel_tri<<<grid,block,0,stream>>>(m, n, buffer(A), stride(A),
       buffer(B), stride(B)));
   return B;
@@ -402,10 +414,11 @@ Array<real,1> triinner(const Array<real,2>& L, const Array<real,1>& x) {
   assert(columns(L) == length(x));
   prefetch(L);
   prefetch(x);
-  Array<real,1> y(x, true);
+  Array<real,1> y(x);
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
-      CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), buffer(L), stride(L), buffer(y),
-      stride(y)));
+      CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(L), buffer(L), stride(L),
+      buffer(y), stride(y)));
   return y;
 }
 
@@ -415,6 +428,7 @@ Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B) {
   prefetch(L);
   prefetch(B);
   Array<real,2> C(make_shape(rows(B), columns(B)));
+  Lock lock(L, B);
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(B),
       columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B), stride(B),
@@ -426,7 +440,7 @@ template<real_scalar U>
 Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(diagonal(y, rows(L)));
-
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
       rows(B), columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B),
@@ -437,8 +451,8 @@ Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
 Array<real,1> triinnersolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
-  Array<real,1> x(y, true);
-
+  Array<real,1> x(y);
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, length(x), buffer(L), stride(L),
       buffer(x), stride(x)));
@@ -448,8 +462,8 @@ Array<real,1> triinnersolve(const Array<real,2>& L, const Array<real,1>& y) {
 Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
-  Array<real,2> B(C, true);
-
+  Array<real,2> B(C);
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
       rows(B), columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B),
@@ -462,10 +476,11 @@ Array<real,1> trimul(const Array<real,2>& L, const Array<real,1>& x) {
   assert(columns(L) == length(x));
   prefetch(L);
   prefetch(x);
-  Array<real,1> y(x, true);
+  Array<real,1> y(x);
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
-      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), buffer(L), stride(L), buffer(y),
-      stride(y)));
+      CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(L), buffer(L), stride(L),
+      buffer(y), stride(y)));
   return y;
 }
 
@@ -475,6 +490,7 @@ Array<real,2> trimul(const Array<real,2>& L, const Array<real,2>& B) {
   prefetch(L);
   prefetch(B);
   Array<real,2> C(make_shape(rows(B), columns(B)));
+  Lock lock(L, B);
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, rows(B),
       columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B), stride(B),
@@ -488,6 +504,7 @@ Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L) {
   prefetch(A);
   prefetch(L);
   Array<real,2> C(make_shape(rows(A), rows(L)));
+  Lock lock(A, L);
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT, rows(C),
       columns(C), scalar<T>::one, buffer(L), stride(L), buffer(A), stride(A),
@@ -499,7 +516,7 @@ template<real_scalar U>
 Array<real,2> trisolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(diagonal(y, rows(L)));
-
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
       rows(B), columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B),
@@ -510,8 +527,8 @@ Array<real,2> trisolve(const Array<real,2>& L, const U& y) {
 Array<real,1> trisolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
-  Array<real,1> x(y, true);
-
+  Array<real,1> x(y);
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trsv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
       CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT, length(x), buffer(L), stride(L),
       buffer(x), stride(x)));
@@ -521,8 +538,8 @@ Array<real,1> trisolve(const Array<real,2>& L, const Array<real,1>& y) {
 Array<real,2> trisolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
-  Array<real,2> B(C, true);
-
+  Array<real,2> B(C);
+  Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
       CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
       rows(B), columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B),

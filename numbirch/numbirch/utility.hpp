@@ -204,8 +204,7 @@ struct is_arithmetic {
  * 
  * An arithmetic type is one of `bool`, `int`, or `real`.
  * 
- * @see is_bool, is_int, is_real, c.f. [std::is_arithmetic]
- * (https://en.cppreference.com/w/cpp/types/is_arithmetic)
+ * @see is_bool, is_int, is_real, c.f. [std::is_arithmetic](https://en.cppreference.com/w/cpp/types/is_arithmetic)
  */
 template<class T>
 inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
@@ -217,8 +216,7 @@ inline constexpr bool is_arithmetic_v = is_arithmetic<std::decay_t<T>>::value;
  * 
  * An arithmetic type is one of `bool`, `int`, or `real`.
  * 
- * @see is_bool, is_int, is_real, c.f. [std::is_arithmetic]
- * (https://en.cppreference.com/w/cpp/types/is_arithmetic)
+ * @see is_bool, is_int, is_real, c.f. [std::is_arithmetic](https://en.cppreference.com/w/cpp/types/is_arithmetic)
  */
 template<class T>
 concept arithmetic = is_arithmetic_v<T>;
@@ -372,7 +370,7 @@ struct is_numeric {
  * 
  * @ingroup trait
  * 
- * An numeric type is an array or scalar type.
+ * A numeric type is an array or scalar type.
  * 
  * @see is_array, is_scalar
  */
@@ -384,7 +382,7 @@ inline constexpr bool is_numeric_v = is_numeric<std::decay_t<T>>::value;
  * 
  * @ingroup trait
  * 
- * An numeric type is an array or scalar type.
+ * A numeric type is an array or scalar type.
  * 
  * @see is_numeric_v
  */

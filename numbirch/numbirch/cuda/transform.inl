@@ -84,6 +84,7 @@ auto transform(const T& x, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
+      Lock lock(x);
       CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, buffer(x),
           stride(x), buffer(y), stride(y), f));
     }
@@ -119,6 +120,7 @@ auto transform(const T& x, const U& y, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
+      Lock lock(x, y);
       CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, buffer(x),
           stride(x), buffer(y), stride(y), buffer(z), stride(z), f));
     }
@@ -156,6 +158,7 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
     if (m > 0 && n > 0) {
       auto grid = make_grid(m, n);
       auto block = make_block(m, n);
+      Lock lock(x, y, z);
       CUDA_LAUNCH(kernel_transform<<<grid,block,0,stream>>>(m, n, buffer(x),
           stride(x), buffer(y), stride(y), buffer(z), stride(z), buffer(a),
           stride(a), f));

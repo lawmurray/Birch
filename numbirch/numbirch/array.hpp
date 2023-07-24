@@ -233,7 +233,7 @@ Shape<0> shape(const T& x) {
  * @ingroup array
  */
 template<class T, int D>
-inline T* buffer(Array<T,D>& x) {
+T* buffer(Array<T,D>& x) {
   return x.buffer();
 }
 
@@ -243,7 +243,7 @@ inline T* buffer(Array<T,D>& x) {
  * @ingroup array
  */
 template<class T, int D>
-inline const T* buffer(const Array<T,D>& x) {
+const T* buffer(const Array<T,D>& x) {
   return x.buffer();
 }
 
@@ -255,6 +255,26 @@ inline const T* buffer(const Array<T,D>& x) {
 template<arithmetic T>
 T buffer(const T& x) {
   return x;
+}
+
+/**
+ * Stream of an array.
+ * 
+ * @ingroup array
+ */
+template<class T, int D>
+void*& stream(const Array<T,D>& x) {
+  return x.stream();
+}
+
+/**
+ * Stream of a scalar.
+ * 
+ * @ingroup array
+ */
+template<arithmetic T>
+void* stream(const T& x) {
+  return nullptr;
 }
 
 /**

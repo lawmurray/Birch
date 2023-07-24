@@ -58,4 +58,20 @@ void stream_finish(void* streamAlloc, void* stream) {
   //
 }
 
+void lock() {
+  //
+}
+
+void unlock() {
+  //
+}
+
+void lock_shared() {
+  //
+}
+
+void unlock_shared() {
+  //
+}
+
 }

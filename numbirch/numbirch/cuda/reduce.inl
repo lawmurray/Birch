@@ -40,8 +40,11 @@ Array<value_t<T>,0> sum(const T& x) {
     CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y, dst, size(x),
         stream));
     tmp = device_malloc(bytes);
-    CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y, buffer(z), size(x),
-        stream));
+    {
+      Lock lock(x);
+      CUDA_CHECK(cub::DeviceReduce::Sum(tmp, bytes, y, buffer(z), size(x),
+          stream));
+    }
     device_free(tmp, bytes);
     return z;
   }

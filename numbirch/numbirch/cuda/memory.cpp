@@ -9,6 +9,8 @@
 #include "numbirch/cuda/curand.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
 
+#include <shared_mutex>
+
 /*
  * Disable retention of extents by jemalloc. This is critical as the custom
  * extent hooks for the CUDA backend allocate physical memory---which should
@@ -17,6 +19,10 @@
 const char* numbirch_malloc_conf = "retain:false";
 
 namespace numbirch {
+/**
+ * Scheduling mutex.
+ */
+static std::shared_mutex scheduling_mutex;
 
 void init() {
   cuda_init();
@@ -141,7 +147,6 @@ void stream_join(void* s) {
     /* ensure that the most recent write completes before reading */
     CUDA_CHECK(cudaEventRecord(event, t));
     CUDA_CHECK(cudaStreamWaitEvent(stream, event));
-    s = stream;
   }
 }
 
@@ -149,10 +154,26 @@ void stream_finish(void* streamAlloc, void* stream) {
   auto s = static_cast<cudaStream_t>(streamAlloc);
   auto t = static_cast<cudaStream_t>(stream);
   if (s != t) {
-    /* ensure that the most recent write completes before reuse */
+    /* ensure that the most recent operation completes before reuse */
     CUDA_CHECK(cudaEventRecord(event, t));
     CUDA_CHECK(cudaStreamWaitEvent(s, event));
   }
+}
+
+void lock() {
+  scheduling_mutex.lock();
+}
+
+void unlock() {
+  scheduling_mutex.unlock();
+}
+
+void lock_shared() {
+  scheduling_mutex.lock_shared();
+}
+
+void unlock_shared() {
+  scheduling_mutex.unlock_shared();
 }
 
 }
