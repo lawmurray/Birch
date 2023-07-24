@@ -31,7 +31,6 @@ Array<value_t<T>,0> sum(const T& x) {
   } else if (size(x) == 0) {
     return value_t<T>(0);
   } else {
-    prefetch(x);
     Array<value_t<T>,0> z;
     auto y = make_cub(x);
     void* tmp = nullptr;

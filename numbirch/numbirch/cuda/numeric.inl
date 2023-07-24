@@ -132,8 +132,6 @@ Array<real,1> mul(const Array<real,2>& A, const Array<real,1>& x) {
 
 Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B) {
   assert(columns(A) == rows(B));
-  prefetch(A);
-  prefetch(B);
   Array<real,2> C(make_shape(rows(A), columns(B)));
   Lock lock(A, B);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_N,
@@ -144,7 +142,6 @@ Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B) {
 
 Array<real,2> chol(const Array<real,2>& S) {
   assert(rows(S) == columns(S));
-  prefetch(S);
   Array<real,2> L(tri(S));  // will lock S
   Array<int,0> info;
 
@@ -169,7 +166,6 @@ Array<real,2> chol(const Array<real,2>& S) {
 template<real_scalar U>
 Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
   assert(rows(L) == columns(L));
-  prefetch(L);
   Array<real,2> B(diagonal(y, rows(L)));
   Array<int,0> info;
 
@@ -184,8 +180,6 @@ Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
 Array<real,1> cholsolve(const Array<real,2>& L, const Array<real,1>& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
-  prefetch(L);
-  prefetch(y);
   Array<real,1> x(y);
   Array<int,0> info;
 
@@ -199,8 +193,6 @@ Array<real,1> cholsolve(const Array<real,2>& L, const Array<real,1>& y) {
 Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,2>& C) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(C));
-  prefetch(L);
-  prefetch(C);
   Array<real,2> B(C);
   Array<int,0> info;
 
@@ -214,8 +206,6 @@ Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,2>& C) {
 
 Array<real,0> dot(const Array<real,1>& x, const Array<real,1>& y) {
   assert(length(x) == length(y));
-  prefetch(x);
-  prefetch(y);
   Array<real,0> z;
   if (length(x) == 0) {
     z = T(0);
@@ -238,8 +228,6 @@ Array<real,0> frobenius(const Array<real,2>& x, const Array<real,2>& y) {
 
 Array<real,1> inner(const Array<real,2>& A, const Array<real,1>& x) {
   assert(rows(A) == length(x));
-  prefetch(A);
-  prefetch(x);
   Array<real,1> y(make_shape(columns(A)));
   Lock lock(A, x);
   CUBLAS_CHECK(cublas<T>::gemv(cublasHandle, CUBLAS_OP_T, rows(A), columns(A),
@@ -250,8 +238,6 @@ Array<real,1> inner(const Array<real,2>& A, const Array<real,1>& x) {
 
 Array<real,2> inner(const Array<real,2>& A, const Array<real,2>& B) {
   assert(rows(A) == rows(B));
-  prefetch(A);
-  prefetch(B);
   Array<real,2> C(make_shape(columns(A), columns(B)));
   Lock lock(A, B);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_T, CUBLAS_OP_N,
@@ -262,7 +248,6 @@ Array<real,2> inner(const Array<real,2>& A, const Array<real,2>& B) {
 
 Array<real,2> inv(const Array<real,2>& A) {
   assert(rows(A) == columns(A));
-  prefetch(A);
   Array<real,2> LU(A);
   Array<real,2> B(diagonal(T(1.0), rows(A)));
   Array<int,0> info;
@@ -295,7 +280,6 @@ Array<real,2> inv(const Array<real,2>& A) {
 }
 
 Array<real,0> ldet(const Array<real,2>& A) {
-  prefetch(A);
   Array<real,0> ldet;
   if (size(A) == 0) {
     ldet = T(0);
@@ -337,8 +321,6 @@ Array<real,0> ldet(const Array<real,2>& A) {
 }
 
 Array<real,2> outer(const Array<real,1>& x, const Array<real,1>& y) {
-  prefetch(x);
-  prefetch(y);
   Array<real,2> A(make_shape(length(x), length(y)));
 
   /* here, the two vectors are interpreted as single-row matrices, so that the
@@ -354,8 +336,6 @@ Array<real,2> outer(const Array<real,1>& x, const Array<real,1>& y) {
 
 Array<real,2> outer(const Array<real,2>& A, const Array<real,2>& B) {
   assert(columns(A) == columns(B));
-  prefetch(A);
-  prefetch(B);
   Array<real,2> C(make_shape(rows(A), rows(B)));
   Lock lock(A, B);
   CUBLAS_CHECK(cublas<T>::gemm(cublasHandle, CUBLAS_OP_N, CUBLAS_OP_T,
@@ -365,7 +345,6 @@ Array<real,2> outer(const Array<real,2>& A, const Array<real,2>& B) {
 }
 
 Array<real,2> phi(const Array<real,2>& A) {
-  prefetch(A);
   auto m = rows(A);
   auto n = columns(A);
   Array<real,2> B(make_shape(m, n));
@@ -379,7 +358,6 @@ Array<real,2> phi(const Array<real,2>& A) {
 
 template<arithmetic T>
 Array<T,2> transpose(const Array<T,2>& A) {
-  prefetch(A);
   Array<T,2> B(make_shape(columns(A), rows(A)));
 
   dim3 block;
@@ -401,7 +379,6 @@ Array<T,2> transpose(const Array<T,2>& A) {
 }
 
 Array<real,2> tri(const Array<real,2>& A) {
-  prefetch(A);
   auto m = rows(A);
   auto n = columns(A);
   Array<real,2> B(make_shape(m, n));
@@ -416,8 +393,6 @@ Array<real,2> tri(const Array<real,2>& A) {
 Array<real,1> triinner(const Array<real,2>& L, const Array<real,1>& x) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(x));
-  prefetch(L);
-  prefetch(x);
   Array<real,1> y(x);
   Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
@@ -429,8 +404,6 @@ Array<real,1> triinner(const Array<real,2>& L, const Array<real,1>& x) {
 Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(B));
-  prefetch(L);
-  prefetch(B);
   Array<real,2> C(make_shape(rows(B), columns(B)));
   Lock lock(L, B);
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
@@ -478,8 +451,6 @@ Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,2>& C) {
 Array<real,1> trimul(const Array<real,2>& L, const Array<real,1>& x) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(x));
-  prefetch(L);
-  prefetch(x);
   Array<real,1> y(x);
   Lock lock(L);
   CUBLAS_CHECK(cublas<T>::trmv(cublasHandle, CUBLAS_FILL_MODE_LOWER,
@@ -491,8 +462,6 @@ Array<real,1> trimul(const Array<real,2>& L, const Array<real,1>& x) {
 Array<real,2> trimul(const Array<real,2>& L, const Array<real,2>& B) {
   assert(rows(L) == columns(L));
   assert(columns(L) == rows(B));
-  prefetch(L);
-  prefetch(B);
   Array<real,2> C(make_shape(rows(B), columns(B)));
   Lock lock(L, B);
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_LEFT,
@@ -505,8 +474,6 @@ Array<real,2> trimul(const Array<real,2>& L, const Array<real,2>& B) {
 Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L) {
   assert(rows(L) == columns(L));
   assert(columns(A) == columns(L));
-  prefetch(A);
-  prefetch(L);
   Array<real,2> C(make_shape(rows(A), rows(L)));
   Lock lock(A, L);
   CUBLAS_CHECK(cublas<T>::trmm(cublasHandle, CUBLAS_SIDE_RIGHT,

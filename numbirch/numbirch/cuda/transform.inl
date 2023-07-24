@@ -9,29 +9,6 @@
 
 namespace numbirch {
 /*
- * Prefetch an array onto device.
- */
-template<class T, int D>
-void prefetch(const Array<T,D>& x) {
-  /* when the array is a view, its memory may not be contiguous, so that
-   * prefetching the whole array may not make sense, nor prefetching small
-   * sections with multiple calls; to keep it simple, only the full array is
-   * prefetched, and only if the view contains at least half the elements */
-  // if (volume(x) > 0 && size(x) >= volume(x)/2) {
-  //   CUDA_CHECK(cudaMemPrefetchAsync(buffer(x), volume(x)*sizeof(T), device,
-  //       stream));
-  // }
-}
-
-/*
- * Prefetch a scalar onto device---null operation.
- */
-template<arithmetic T>
-void prefetch(const T& x) {
-  //
-}
-
-/*
  * For-each.
  */
 template<class Functor>

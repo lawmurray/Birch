@@ -8,16 +8,6 @@
 #include "numbirch/utility.hpp"
 
 namespace numbirch {
-template<class T, int D>
-void prefetch(const Array<T,D>& x) {
-  //
-}
-
-template<arithmetic T>
-void prefetch(const T& x) {
-  //
-}
-
 /*
  * For-each.
  */
