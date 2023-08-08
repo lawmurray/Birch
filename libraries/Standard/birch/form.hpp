@@ -122,7 +122,7 @@
 #include "birch/form/prefix/Pos.hpp"
 
 #include "birch/form/ternary/IBeta.hpp"
-#include "birch/form/ternary/LogZConwayMaxwellPoisson.hpp"
+#include "birch/form/ternary/LZConwayMaxwellPoisson.hpp"
 #include "birch/form/ternary/MatrixElement.hpp"
 #include "birch/form/ternary/MatrixGather.hpp"
 #include "birch/form/ternary/MatrixScatter.hpp"

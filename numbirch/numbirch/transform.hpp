@@ -1503,6 +1503,72 @@ template<numeric T>
 real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x);
 
 /**
+ * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
+ * distribution truncated on a finite interval $[0,n]$.
+ * 
+ * @ingroup transform
+ *
+ * @param l Mode.
+ * @param m Dispersion.
+ * @param r Truncation point.
+ *
+ * @return Logarithm of normalizing constant.
+ */
+template<numeric T, numeric U, numeric V>
+real_t<T,U,V> lz_conway_maxwell_poisson(const T& μ, const U& ν, const V& n);
+
+/**
+ * Gradient of lz_conway_maxwell_poisson().
+ * 
+ * @ingroup transform_grad
+ *
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
+ *
+ * @return Gradient with respect to @p μ.
+ */
+template<numeric T, numeric U, numeric V>
+real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g,
+    const real_t<T,U,V>& x, const T& μ, const U& ν, const V& n);
+
+/**
+ * Gradient of lz_conway_maxwell_poisson().
+ * 
+ * @ingroup transform_grad
+ *
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
+ *
+ * @return Gradient with respect to @p ν.
+ */
+template<numeric T, numeric U, numeric V>
+real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g,
+    const real_t<T,U,V>& x, const T& μ, const U& ν, const V& n);
+
+/**
+ * Gradient of lz_conway_maxwell_poisson().
+ * 
+ * @ingroup transform_grad
+ *
+ * @param g Gradient with respect to result.
+ * @param y Result.
+ * @param μ Mode.
+ * @param ν Dispersion.
+ * @param n Truncation point.
+ *
+ * @return Gradient with respect to @p n.
+ */
+template<numeric T, numeric U, numeric V>
+real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g,
+    const real_t<T,U,V>& x, const T& μ, const U& ν, const V& n);
+
+/**
  * Negation.
  * 
  * @ingroup transform

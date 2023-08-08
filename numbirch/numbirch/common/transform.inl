@@ -638,6 +638,67 @@ struct ibeta_functor {
   }
 };
 
+struct lz_conway_maxwell_poisson_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real μ, const real ν,
+      const int n) const {
+    /* to avoid taking exp() of large negative values, renormalize each term in
+     * this sum using the maximum term, which is the unnormalized log
+     * probability at the mode; this is similar to log_sum_exp() */
+    auto log_λ = ν*log(μ);
+    auto mode = std::min(μ, cast<real>(n));
+    auto mx = mode*log_λ - ν*lfact(mode);
+
+    /* sum renormalized terms for x in 0..n */
+    auto log_xf = real(0.0);  // accumulator of log(x!)
+    auto Z = exp(-(mx));  // x = 0 case
+    for (int x = 1; x <= n; ++x) {
+      log_xf = log_xf + log(x);
+      Z = Z + exp(x*log_λ - ν*log_xf - mx);
+    }
+    return mx + log(Z);
+  }
+};
+
+struct lz_conway_maxwell_poisson_grad1_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real μ,
+      const real ν, const int n) const {
+    auto log_λ = ν*log(μ);
+    auto mx = μ*log_λ - ν*lfact(μ);  // renormalizer
+    auto log_xf = real(0.0);  // accumulator of lfact(x)
+    auto z = real(0.0);
+    auto Z = exp(-(mx));  // for x == 0
+    auto gλ = real(0.0);
+    for (int x = 1; x <= n; ++x) {
+      log_xf = log_xf + log(x);
+      z = exp(x*log_λ - ν*log_xf - mx);
+      Z = Z + z;
+      gλ = gλ + x*z;
+    }
+    return g*gλ*ν/(μ*Z);
+  }
+};
+
+struct lz_conway_maxwell_poisson_grad2_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real μ,
+      const real ν, const int n) const {
+    auto log_λ = ν*log(μ);
+    auto mx = μ*log_λ - ν*lfact(μ);  // renormalizer
+    auto log_xf = real(0.0);  // accumulator of lfact(x)
+    auto z = real(0.0);
+    auto Z = exp(-(mx));  // for x == 0
+    auto gλ = real(0.0);
+    auto gν = real(0.0);
+    for (int x = 1; x <= int(n); ++x) {
+      log_xf = log_xf + log(x);
+      z = exp(x*log_λ - ν*log_xf - mx);
+      Z = Z + z;
+      gλ = gλ + x*z;
+      gν = gν - log_xf*z;
+    }
+    return g*(gν + gλ*log(μ))/Z;
+  }
+};
+
 struct where_functor {
   template<class T, class U, class V>
   NUMBIRCH_HOST_DEVICE promote_t<T,U,V> operator()(const T x, const U y,
@@ -1017,6 +1078,48 @@ real_t<T,U,V> ibeta(const T& x, const U& y, const V& z) {
   return transform(x, y, z, ibeta_functor());
 }
 
+template<numeric T, numeric U>
+implicit_t<T,U> hadamard(const T& x, const U& y) {
+  /* optimizations for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<T> && std::is_same_v<implicit_t<T,U>,U>) {
+    if (x == T(1)) {
+      return y;
+    }
+  } else if constexpr (is_arithmetic_v<U> &&
+      std::is_same_v<implicit_t<T,U>,T>) {
+    if (y == U(1)) {
+      return x;
+    }
+  }
+  return transform(x, y, hadamard_functor());
+}
+
+template<numeric T, numeric U>
+real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
+  /* optimization for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<U>) {
+    if (y == U(1)) {
+      return g;
+    }
+  }
+  return aggregate<dimension_v<T>>(transform(g, x, y,
+      hadamard_grad1_functor()));
+}
+
+template<numeric T, numeric U>
+real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
+    const T& x, const U& y) {
+  /* optimization for multiplication of scalar one */
+  if constexpr (is_arithmetic_v<T>) {
+    if (x == T(1)) {
+      return g;
+    }
+  }
+  return aggregate<dimension_v<U>>(transform(g, x, y,
+      hadamard_grad2_functor()));
+}
+
 template<numeric T>
 bool_t<T> isfinite(const T& x) {
   return transform(x, isfinite_functor());
@@ -1143,46 +1246,29 @@ real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
   return transform(g, x, log1p_grad_functor());
 }
 
-template<numeric T, numeric U>
-implicit_t<T,U> hadamard(const T& x, const U& y) {
-  /* optimizations for multiplication of scalar one */
-  if constexpr (is_arithmetic_v<T> && std::is_same_v<implicit_t<T,U>,U>) {
-    if (x == T(1)) {
-      return y;
-    }
-  } else if constexpr (is_arithmetic_v<U> &&
-      std::is_same_v<implicit_t<T,U>,T>) {
-    if (y == U(1)) {
-      return x;
-    }
-  }
-  return transform(x, y, hadamard_functor());
+template<numeric T, numeric U, numeric V>
+real_t<T,U,V> lz_conway_maxwell_poisson(const T& μ, const U& ν, const V& n) {
+  return transform(μ, ν, n, lz_conway_maxwell_poisson_functor());
 }
 
-template<numeric T, numeric U>
-real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
-  /* optimization for multiplication of scalar one */
-  if constexpr (is_arithmetic_v<U>) {
-    if (y == U(1)) {
-      return g;
-    }
-  }
-  return aggregate<dimension_v<T>>(transform(g, x, y,
-      hadamard_grad1_functor()));
+template<numeric T, numeric U, numeric V>
+real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g,
+    const real_t<T,U,V>& y, const T& μ, const U& ν, const V& n) {
+  return aggregate<dimension_v<T>>(transform(g, μ, ν, n,
+      lz_conway_maxwell_poisson_grad1_functor()));
 }
 
-template<numeric T, numeric U>
-real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
-  /* optimization for multiplication of scalar one */
-  if constexpr (is_arithmetic_v<T>) {
-    if (x == T(1)) {
-      return g;
-    }
-  }
-  return aggregate<dimension_v<U>>(transform(g, x, y,
-      hadamard_grad2_functor()));
+template<numeric T, numeric U, numeric V>
+real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g,
+    const real_t<T,U,V>& y, const T& μ, const U& ν, const V& n) {
+  return aggregate<dimension_v<U>>(transform(g, μ, ν, n,
+      lz_conway_maxwell_poisson_grad2_functor()));
+}
+
+template<numeric T, numeric U, numeric V>
+real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g,
+    const real_t<T,U,V>& y, const T& μ, const U& ν, const V& n) {
+  return Array(real(0), shape(n));
 }
 
 template<numeric T>

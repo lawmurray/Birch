@@ -114,4 +114,35 @@ auto transform(const T& x, const U& y, const V& z, Functor f) {
   }
 }
 
+/*
+ * Quaternary transform.
+ */
+template<class T, class U, class V, class W, class R, class Functor>
+void kernel_transform(const int m, const int n, const T A, const int ldA,
+    const U B, const int ldB, const V C, const int ldC, const W D,
+    const int ldD, R E, const int ldE, Functor f) {
+  for (int j = 0; j < n; ++j) {
+    for (int i = 0; i < m; ++i) {
+      get(E, i, j, ldE) = f(get(A, i, j, ldA), get(B, i, j, ldB),
+          get(C, i, j, ldC), get(D, i, j, ldD));
+    }
+  }
+}
+template<class T, class U, class V, class W, class Functor>
+auto transform(const T& x, const U& y, const V& z, const W& a, Functor f) {
+  if constexpr (is_arithmetic_v<T> && is_arithmetic_v<U> &&
+      is_arithmetic_v<V> && is_arithmetic_v<W>) {
+    return f(x, y, z, a);
+  } else {
+    using R = decltype(f(value_t<T>(),value_t<U>(),value_t<V>(),value_t<W>()));
+    constexpr int D = dimension_v<implicit_t<T,U,V,W>>;
+    auto m = width(x, y, z, a);
+    auto n = height(x, y, z, a);
+    auto b = Array<R,D>(make_shape<D>(m, n));
+    kernel_transform(m, n, buffer(x), stride(x), buffer(y), stride(y),
+        buffer(z), stride(z), buffer(a), stride(a), buffer(b), stride(b), f);
+    return b;
+  }
+}
+
 }

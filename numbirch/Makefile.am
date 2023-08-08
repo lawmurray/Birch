@@ -37,7 +37,8 @@ SOURCES =  \
     numbirch/instantiate/transform/binary.cpp \
     numbirch/instantiate/transform/binary_grad.cpp \
     numbirch/instantiate/transform/cast.cpp \
-    numbirch/instantiate/transform/ibeta.cpp \
+    numbirch/instantiate/transform/ternary.cpp \
+    numbirch/instantiate/transform/ternary_grad.cpp \
     numbirch/instantiate/transform/unary.cpp \
     numbirch/instantiate/transform/unary_grad.cpp \
     numbirch/instantiate/transform/where.cpp \
