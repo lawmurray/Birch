@@ -32,7 +32,8 @@ SOURCES =  \
     numbirch/instantiate/reduce/cumsum_grad.cpp \
     numbirch/instantiate/reduce/count.cpp \
     numbirch/instantiate/reduce/count_grad.cpp \
-    numbirch/instantiate/reduce/sum.cpp \
+    numbirch/instantiate/reduce/reduce.cpp \
+    numbirch/instantiate/reduce/reduce_grad.cpp \
     numbirch/instantiate/reduce/sum_grad.cpp \
     numbirch/instantiate/transform/binary.cpp \
     numbirch/instantiate/transform/binary_grad.cpp \

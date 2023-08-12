@@ -9,18 +9,18 @@
 #include "numbirch/eigen/reduce.inl"
 #endif
 
-#define REDUCE_CUMSUM(f) \
-    REDUCE_CUMSUM_FIRST(f, real) \
-    REDUCE_CUMSUM_FIRST(f, int) \
-    REDUCE_CUMSUM_FIRST(f, bool)
-#define REDUCE_CUMSUM_FIRST(f, T) \
-    REDUCE_CUMSUM_SIG(f, NUMBIRCH_ARRAY(T, 2)) \
-    REDUCE_CUMSUM_SIG(f, NUMBIRCH_ARRAY(T, 1)) \
-    REDUCE_CUMSUM_SIG(f, NUMBIRCH_ARRAY(T, 0)) \
-    REDUCE_CUMSUM_SIG(f, T)
-#define REDUCE_CUMSUM_SIG(f, T) \
+#define CUMSUM(f) \
+    CUMSUM_FIRST(f, real) \
+    CUMSUM_FIRST(f, int) \
+    CUMSUM_FIRST(f, bool)
+#define CUMSUM_FIRST(f, T) \
+    CUMSUM_SIG(f, NUMBIRCH_ARRAY(T, 2)) \
+    CUMSUM_SIG(f, NUMBIRCH_ARRAY(T, 1)) \
+    CUMSUM_SIG(f, NUMBIRCH_ARRAY(T, 0)) \
+    CUMSUM_SIG(f, T)
+#define CUMSUM_SIG(f, T) \
     template T f(const T&);
 
 namespace numbirch {
-REDUCE_CUMSUM(cumsum)
+CUMSUM(cumsum)
 }

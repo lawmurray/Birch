@@ -155,8 +155,7 @@ Array<value_t<T>,1> fill(const T& x, const int n) {
 }
 
 template<scalar T>
-Array<real,0> fill_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x, const int n) {
+Array<real,0> fill_grad(const Array<real,1>& g, const T& x, const int n) {
   return sum(g);
 }
 
@@ -168,8 +167,8 @@ Array<value_t<T>,2> fill(const T& x, const int m, const int n) {
 }
 
 template<scalar T>
-Array<real,0> fill_grad(const Array<real,2>& g, const Array<value_t<T>,2>& C,
-    const T& x, const int m, const int n) {
+Array<real,0> fill_grad(const Array<real,2>& g, const T& x, const int m,
+    const int n) {
   return sum(g);
 }
 
@@ -181,8 +180,7 @@ Array<value_t<T>,1> iota(const T& x, const int n) {
 }
 
 template<scalar T>
-Array<real,0> iota_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x, const int n) {
+Array<real,0> iota_grad(const Array<real,1>& g, const T& x, const int n) {
   return sum(g);
 }
 
@@ -194,8 +192,7 @@ Array<value_t<T>,2> diagonal(const T& x, const int n) {
 }
 
 template<scalar T>
-Array<real,0> diagonal_grad(const Array<real,2>& g,
-    const Array<value_t<T>,2>& y, const T& x, const int n) {
+Array<real,0> diagonal_grad(const Array<real,2>& g, const T& x, const int n) {
   return sum(g.diagonal());
 }
 
@@ -207,8 +204,7 @@ Array<T,2> diagonal(const Array<T,1>& x) {
 }
 
 template<arithmetic T>
-Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,2>& y,
-    const Array<T,1>& x) {
+Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,1>& x) {
   return g.diagonal();
 }
 
@@ -221,14 +217,13 @@ Array<T,0> element(const Array<T,1>& x, const U& i) {
 }
 
 template<arithmetic T, int_scalar U>
-Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,1>& x, const U& i) {
+Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
+    const U& i) {
   return single(g, i, length(x));
 }
 
 template<arithmetic T, int_scalar U>
-real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,1>& x, const U& i) {
+real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i) {
   return real(0);
 }
 
@@ -241,20 +236,20 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j) {
 }
 
 template<arithmetic T, int_scalar U, int_scalar V>
-Array<real,2> element_grad1(const Array<real,0>& g,
-    const Array<T,0>& y, const Array<T,2>& A, const U& i, const V& j) {
+Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
+    const U& i, const V& j) {
   return single(g, i, j, rows(A), columns(A));
 }
 
 template<arithmetic T, int_scalar U, int_scalar V>
-real element_grad2(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,2>& A, const U& i, const V& j) {
+real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
+    const V& j) {
   return real(0);
 }
 
 template<arithmetic T, int_scalar U, int_scalar V>
-real element_grad3(const Array<real,0>& g, const Array<T,0>& y,
-    const Array<T,2>& A, const U& i, const V& j) {
+real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
+    const V& j) {
   return real(0);
 }
 
@@ -266,14 +261,14 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n) {
 }
 
 template<scalar T, int_scalar U>
-Array<real,0> single_grad1(const Array<real,1>& g,
-    const Array<value_t<T>,1>& y, const T& x, const U& i, const int n) {
+Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
+    const int n) {
   return element(g, i);
 }
 
 template<scalar T, int_scalar U>
-real single_grad2(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x, const U& i, const int n) {
+real single_grad2(const Array<real,1>& g, const T& x, const U& i,
+    const int n) {
   return real(0);
 }
 
@@ -287,21 +282,20 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
 }
 
 template<scalar T, int_scalar U, int_scalar V>
-Array<real,0> single_grad1(const Array<real,2>& g,
-    const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j,
-    const int m, const int n) {
+Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
+    const V& j, const int m, const int n) {
   return element(g, i, j);
 }
 
 template<scalar T, int_scalar U, int_scalar V>
-real single_grad2(const Array<real,2>& g, const Array<value_t<T>,2>& A,
-    const T& x, const U& i, const V& j, const int m, const int n) {
+real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
+    const int m, const int n) {
   return real(0);
 }
 
 template<scalar T, int_scalar U, int_scalar V>
-real single_grad3(const Array<real,2>& g, const Array<value_t<T>,2>& A,
-    const T& x, const U& i, const V& j, const int m, const int n) {
+real single_grad3(const Array<real,2>& g, const T& x, const U& i, const V& j,
+    const int m, const int n) {
   return real(0);
 }
 
@@ -349,8 +343,7 @@ pack_t<T,U> pack(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const T& x, const U& y) {
   assert(rows(x) == rows(y));
   [[maybe_unused]] auto r = rows(x);
   [[maybe_unused]] auto cx = columns(x);
@@ -366,8 +359,7 @@ real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
 }
 
 template<numeric T, numeric U>
-real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const pack_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const T& x, const U& y) {
   assert(rows(x) == rows(y));
   [[maybe_unused]] auto r = rows(x);
   [[maybe_unused]] auto cx = columns(x);
@@ -443,8 +435,7 @@ stack_t<T,U> stack(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const T& x, const U& y) {
   assert(columns(x) == columns(y));
   [[maybe_unused]] auto rx = rows(x);
   [[maybe_unused]] auto c = columns(x);
@@ -468,8 +459,7 @@ real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
 }
 
 template<numeric T, numeric U>
-real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const stack_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const T& x, const U& y) {
   assert(columns(x) == columns(y));
   [[maybe_unused]] auto rx = rows(x);
   [[maybe_unused]] auto ry = rows(y);
@@ -503,8 +493,7 @@ Array<value_t<T>,0> scal(const T& x) {
 }
 
 template<numeric T>
-real_t<T> scal_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
-    const T& x) {
+real_t<T> scal_grad(const Array<real,0>& g, const T& x) {
   if constexpr (is_scalar_v<T>) {
     return g.scal();
   } else if constexpr (is_vector_v<T>) {
@@ -529,8 +518,7 @@ Array<value_t<T>,1> vec(const T& x) {
 }
 
 template<numeric T>
-real_t<T> vec_grad(const Array<real,1>& g, const Array<value_t<T>,1>& y,
-    const T& x) {
+real_t<T> vec_grad(const Array<real,1>& g, const T& x) {
   if constexpr (is_scalar_v<T>) {
     return g.scal();
   } else if constexpr (is_vector_v<T>) {
@@ -556,8 +544,7 @@ Array<value_t<T>,2> mat(const T& x, const int n) {
 }
 
 template<numeric T>
-real_t<T> mat_grad(const Array<real,2>& g, const Array<value_t<T>,2>& y,
-    const T& x, const int n) {
+real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n) {
   if constexpr (is_scalar_v<T>) {
     return g.scal();
   } else if constexpr (is_vector_v<T>) {
@@ -576,14 +563,14 @@ Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y) {
 }
 
 template<arithmetic T>
-Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y) {
+Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
+    const Array<int,1>& y) {
   return scatter(g, y, length(x));
 }
 
 template<arithmetic T>
-Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y) {
+Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
+    const Array<int,1>& y) {
   return fill(real(0), length(y));
 }
 
@@ -597,20 +584,20 @@ Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
 }
 
 template<arithmetic T>
-Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
+Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
+    const Array<int,2>& I, const Array<int,2>& J) {
   return scatter(G, I, J, rows(A), columns(A));
 }
 
 template<arithmetic T>
-Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
+Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
+    const Array<int,2>& I, const Array<int,2>& J) {
   return fill(real(0), rows(I), columns(I));
 }
 
 template<arithmetic T>
-Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J) {
+Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
+    const Array<int,2>& I, const Array<int,2>& J) {
   return fill(real(0), rows(J), columns(J));
 }
 
@@ -624,14 +611,14 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n) {
 }
 
 template<arithmetic T>
-Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y, const int n) {
+Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
+    const Array<int,1>& y, const int n) {
   return gather(g, y);
 }
 
 template<arithmetic T>
-Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& z,
-    const Array<T,1>& x, const Array<int,1>& y, const int n) {
+Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
+    const Array<int,1>& y, const int n) {
   return Array<real,1>(real(0), shape(y));
 }
 
@@ -647,23 +634,20 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
 }
 
 template<arithmetic T>
-Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
-    const int m, const int n) {
+Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
+    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n) {
   return gather(G, I, J);
 }
 
 template<arithmetic T>
-Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
-    const int m, const int n) {
+Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
+    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n) {
   return fill(real(0), rows(I), columns(I));
 }
 
 template<arithmetic T>
-Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& C,
-    const Array<T,2>& A, const Array<int,2>& I, const Array<int,2>& J,
-    const int m, const int n) {
+Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& A,
+    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n) {
   return fill(real(0), rows(J), columns(J));
 }
 

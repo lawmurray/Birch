@@ -28,8 +28,8 @@
 #define ELEMENT_VECTOR_SIG(f, T, U) \
     template Array<T,0> f<T,U>(const Array<T,1>& x, const U& i); \
     template Array<real,1> f##_grad1(const Array<real,0>& g, \
-        const Array<T,0>& y, const Array<T,1>& x, const U& i); \
-    template real f##_grad2(const Array<real,0>& g, const Array<T,0>& y, \
+        const Array<T,1>& x, const U& i); \
+    template real f##_grad2(const Array<real,0>& g, \
         const Array<T,1>& x, const U& i);
 
 namespace numbirch {

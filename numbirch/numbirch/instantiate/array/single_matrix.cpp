@@ -37,13 +37,13 @@
     template Array<value_t<T>,2> f<T,U,V>(const T& x, const U& i, \
         const V& j, const int m, const int n); \
     template Array<real,0> f##_grad1(const Array<real,2>& g, \
-        const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j, \
+        const T& x, const U& i, const V& j, \
         const int m, const int n); \
     template real f##_grad2(const Array<real,2>& g, \
-        const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j, \
+        const T& x, const U& i, const V& j, \
         const int m, const int n); \
     template real f##_grad3(const Array<real,2>& g, \
-        const Array<value_t<T>,2>& A, const T& x, const U& i, const V& j, \
+        const T& x, const U& i, const V& j, \
         const int m, const int n);
 
 namespace numbirch {

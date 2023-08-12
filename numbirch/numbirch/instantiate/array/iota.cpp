@@ -19,7 +19,7 @@
 #define IOTA_SIG(f, T) \
     template Array<value_t<T>,1> f<T>(const T& x, const int n); \
     template Array<real,0> f##_grad<T>(const Array<real,1>& g, \
-        const Array<value_t<T>,1>& y, const T& x, const int n);
+        const T& x, const int n);
 
 namespace numbirch {
 IOTA(iota)

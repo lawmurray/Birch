@@ -68,9 +68,9 @@
     TERNARY_GRAD_SIG(f, T, NUMBIRCH_ARRAY(U, 0), NUMBIRCH_ARRAY(V, 1)) \
     TERNARY_GRAD_SIG(f, T, U, NUMBIRCH_ARRAY(V, 1))
 #define TERNARY_GRAD_SIG(f, T, U, V) \
-    template real_t<T> f##_grad1<T,U,V>(const real_t<T,U,V>&, const real_t<T,U,V>&, const T&, const U&, const V&); \
-    template real_t<U> f##_grad2<T,U,V>(const real_t<T,U,V>&, const real_t<T,U,V>&, const T&, const U&, const V&); \
-    template real_t<V> f##_grad3<T,U,V>(const real_t<T,U,V>&, const real_t<T,U,V>&, const T&, const U&, const V&);
+    template real_t<T> f##_grad1<T,U,V>(const real_t<T,U,V>&, const T&, const U&, const V&); \
+    template real_t<U> f##_grad2<T,U,V>(const real_t<T,U,V>&, const T&, const U&, const V&); \
+    template real_t<V> f##_grad3<T,U,V>(const real_t<T,U,V>&, const T&, const U&, const V&);
 
 namespace numbirch {
 TERNARY_GRAD(lz_conway_maxwell_poisson)

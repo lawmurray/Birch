@@ -30,8 +30,8 @@ template Array<bool,2> transpose<bool>(const Array<bool,2>&);
 template Array<int,2> transpose<int>(const Array<int,2>&);
 template Array<real,2> transpose<real>(const Array<real,2>&);
 
-template Array<real,2> transpose_grad<bool>(const Array<real,2>&, const Array<bool,2>&, const Array<bool,2>&);
-template Array<real,2> transpose_grad<int>(const Array<real,2>&, const Array<int,2>&, const Array<int,2>&);
-template Array<real,2> transpose_grad<real>(const Array<real,2>&, const Array<real,2>&, const Array<real,2>&);
+template Array<real,2> transpose_grad<bool>(const Array<real,2>&,const Array<bool,2>&);
+template Array<real,2> transpose_grad<int>(const Array<real,2>&, const Array<int,2>&);
+template Array<real,2> transpose_grad<real>(const Array<real,2>&, const Array<real,2>&);
 
 }

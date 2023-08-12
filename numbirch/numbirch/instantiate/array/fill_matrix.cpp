@@ -20,7 +20,7 @@
     template Array<value_t<T>,2> f<T>(const T& x, const int m, \
         const int n); \
     template Array<real,0> f##_grad(const Array<real,2>& g, \
-        const Array<value_t<T>,2>& C, const T& x, const int m, const int n);
+        const T& x, const int m, const int n);
 
 namespace numbirch {
 FILL(fill)

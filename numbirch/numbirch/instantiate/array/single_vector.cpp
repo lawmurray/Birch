@@ -31,9 +31,9 @@
     template Array<value_t<T>,1> f<T,U>(const T& x, const U& i, \
         const int n); \
     template Array<real,0> f##_grad1(const Array<real,1>& g, \
-        const Array<value_t<T>,1>& y, const T& x, const U& i, const int n); \
+        const T& x, const U& i, const int n); \
     template real f##_grad2(const Array<real,1>& g, \
-        const Array<value_t<T>,1>& y, const T& x, const U& i, const int n);
+        const T& x, const U& i, const int n);
 
 namespace numbirch {
 SINGLE_VECTOR(single)

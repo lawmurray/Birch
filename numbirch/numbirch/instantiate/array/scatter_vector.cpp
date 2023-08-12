@@ -17,11 +17,9 @@
     template Array<T,1> f<T>(const Array<T,1>& x, const Array<int,1>& y, \
         const int n); \
     template Array<real,1> f##_grad1(const Array<real,1>& g, \
-        const Array<T,1>& z, const Array<T,1>& x, const Array<int,1>& y, \
-        const int n); \
+        const Array<T,1>& x, const Array<int,1>& y, const int n); \
     template Array<real,1> f##_grad2(const Array<real,1>& g, \
-        const Array<T,1>& z, const Array<T,1>& x, const Array<int,1>& y, \
-        const int n);
+        const Array<T,1>& x, const Array<int,1>& y, const int n);
 
 namespace numbirch {
 SCATTER_VECTOR(scatter)

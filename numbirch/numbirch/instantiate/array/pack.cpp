@@ -38,9 +38,9 @@
 #define PACK_SIG(f, T, U) \
     template pack_t<T,U> f(const T& x, const U& y); \
     template real_t<T> f##_grad1(const real_t<pack_t<T,U>>& g, \
-        const pack_t<T,U>& z, const T& x, const U& y); \
+        const T& x, const U& y); \
     template real_t<U> f##_grad2(const real_t<pack_t<T,U>>& g, \
-        const pack_t<T,U>& z, const T& x, const U& y);
+        const T& x, const U& y);
 
 namespace numbirch {
 PACK(pack)

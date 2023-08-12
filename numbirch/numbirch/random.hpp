@@ -289,14 +289,13 @@ Array<real,1> convolve(const Array<real,1>& p, const Array<real,1>& q);
  * @ingroup random
  * 
  * @param g Gradient with respect to probability vector of the sum.
- * @param r Probability vector of the sum.
  * @param p Probability vector for first random variable.
  * @param q Probability vector for second random variable.
  * 
  * @return Gradient with respect to @p p.
  */
-Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
-    const Array<real,1>& p, const Array<real,1>& q);
+Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& p,
+    const Array<real,1>& q);
 
 /**
  * Gradient of convolve().
@@ -304,13 +303,12 @@ Array<real,1> convolve_grad1(const Array<real,1>& g, const Array<real,1>& r,
  * @ingroup random
  * 
  * @param g Gradient with respect to probability vector of the sum.
- * @param r Probability vector of the sum.
  * @param p Probability vector for first random variable.
  * @param q Probability vector for second random variable.
  * 
  * @return Gradient with respect to @p q.
  */
-Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& r,
-    const Array<real,1>& p, const Array<real,1>& q);
+Array<real,1> convolve_grad2(const Array<real,1>& g, const Array<real,1>& p,
+    const Array<real,1>& q);
 
 }

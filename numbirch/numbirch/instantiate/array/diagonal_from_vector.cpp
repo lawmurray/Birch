@@ -16,7 +16,7 @@
 #define DIAGONAL_SIG(f, T) \
     template Array<T,2> f(const Array<T,1>& x); \
     template Array<real,1> f##_grad(const Array<real,2>& g, \
-        const Array<T,2>& y, const Array<T,1>& x);
+        const Array<T,1>& x);
 
 namespace numbirch {
 DIAGONAL(diagonal)

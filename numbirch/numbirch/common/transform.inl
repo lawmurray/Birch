@@ -264,9 +264,21 @@ struct exp_functor {
   }
 };
 
+struct exp_grad_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
+    return g*std::exp(x);
+  }
+};
+
 struct expm1_functor {
   NUMBIRCH_HOST_DEVICE real operator()(const real x) const {
     return std::expm1(x);
+  }
+};
+
+struct expm1_grad_functor {
+  NUMBIRCH_HOST_DEVICE real operator()(const real g, const real x) const {
+    return g*std::expm1(x);
   }
 };
 
@@ -727,8 +739,7 @@ bool_t<T> logical_not(const T& x) {
 }
 
 template<numeric T>
-real_t<T> logical_not_grad(const real_t<T>& g, const bool_t<T>& y,
-    const T& x) {
+real_t<T> logical_not_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -738,14 +749,12 @@ bool_t<T,U> logical_and(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> logical_and_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> logical_and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> logical_and_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -755,14 +764,12 @@ bool_t<T,U> logical_or(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> logical_or_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> logical_or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> logical_or_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -772,14 +779,12 @@ bool_t<T,U> equal(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> equal_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> equal_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -789,14 +794,12 @@ bool_t<T,U> not_equal(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> not_equal_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> not_equal_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -806,14 +809,12 @@ bool_t<T,U> less(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> less_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> less_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -823,14 +824,12 @@ bool_t<T,U> less_or_equal(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -840,14 +839,12 @@ bool_t<T,U> greater(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> greater_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> greater_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -857,14 +854,14 @@ bool_t<T,U> greater_or_equal(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const T& x,
+    const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, zero_grad_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const T& x,
+    const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, zero_grad_functor()));
 }
 
@@ -874,7 +871,7 @@ T abs(const T& x) {
 }
 
 template<numeric T>
-real_t<T> abs_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> abs_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, abs_grad_functor());
 }
 
@@ -884,7 +881,7 @@ real_t<T> acos(const T& x) {
 }
 
 template<numeric T>
-real_t<T> acos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> acos_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, acos_grad_functor());
 }
 
@@ -905,14 +902,12 @@ implicit_t<T,U> add(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> add_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> add_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(g);
 }
 
 template<numeric T, numeric U>
-real_t<U> add_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> add_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(g);
 }
 
@@ -922,7 +917,7 @@ real_t<T> asin(const T& x) {
 }
 
 template<numeric T>
-real_t<T> asin_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> asin_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, asin_grad_functor());
 }
 
@@ -932,7 +927,7 @@ real_t<T> atan(const T& x) {
 }
 
 template<numeric T>
-real_t<T> atan_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> atan_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, atan_grad_functor());
 }
 
@@ -947,7 +942,7 @@ T ceil(const T& x) {
 }
 
 template<numeric T>
-real_t<T> ceil_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> ceil_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -957,15 +952,13 @@ implicit_t<T,U> copysign(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> copysign_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> copysign_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y,
       copysign_grad1_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> copysign_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> copysign_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y,
       copysign_grad2_functor()));
 }
@@ -976,7 +969,7 @@ real_t<T> cos(const T& x) {
 }
 
 template<numeric T>
-real_t<T> cos_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> cos_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, cos_grad_functor());
 }
 
@@ -986,7 +979,7 @@ real_t<T> cosh(const T& x) {
 }
 
 template<numeric T>
-real_t<T> cosh_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> cosh_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, cosh_grad_functor());
 }
 
@@ -1012,14 +1005,12 @@ implicit_t<T,U> div(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> div_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> div_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, div_grad1_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> div_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> div_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, div_grad2_functor()));
 }
 
@@ -1029,7 +1020,7 @@ real_t<T> erf(const T& x) {
 }
 
 template<numeric T>
-real_t<T> erf_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> erf_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, erf_grad_functor());
 }
 
@@ -1039,8 +1030,8 @@ real_t<T> exp(const T& x) {
 }
 
 template<numeric T>
-real_t<T> exp_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return hadamard(g, y);
+real_t<T> exp_grad(const real_t<T>& g, const T& x) {
+  return transform(g, x, exp_grad_functor());
 }
 
 template<numeric T>
@@ -1049,8 +1040,8 @@ real_t<T> expm1(const T& x) {
 }
 
 template<numeric T>
-real_t<T> expm1_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
-  return hadamard(g, y);
+real_t<T> expm1_grad(const real_t<T>& g, const T& x) {
+  return transform(g, x, expm1_grad_functor());
 }
 
 template<numeric T>
@@ -1059,7 +1050,7 @@ T floor(const T& x) {
 }
 
 template<numeric T>
-real_t<T> floor_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> floor_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -1095,8 +1086,7 @@ implicit_t<T,U> hadamard(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> hadamard_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   /* optimization for multiplication of scalar one */
   if constexpr (is_arithmetic_v<U>) {
     if (y == U(1)) {
@@ -1108,8 +1098,7 @@ real_t<T> hadamard_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
 }
 
 template<numeric T, numeric U>
-real_t<U> hadamard_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> hadamard_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   /* optimization for multiplication of scalar one */
   if constexpr (is_arithmetic_v<T>) {
     if (x == T(1)) {
@@ -1126,7 +1115,7 @@ bool_t<T> isfinite(const T& x) {
 }
 
 template<numeric T>
-real_t<T> isfinite_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+real_t<T> isfinite_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -1136,7 +1125,7 @@ bool_t<T> isinf(const T& x) {
 }
 
 template<numeric T>
-real_t<T> isinf_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+real_t<T> isinf_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -1146,7 +1135,7 @@ bool_t<T> isnan(const T& x) {
 }
 
 template<numeric T>
-real_t<T> isnan_grad(const real_t<T>& g, const bool_t<T>& y, const T& x) {
+real_t<T> isnan_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -1156,13 +1145,13 @@ real_t<T,U> lbeta(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> lbeta_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+real_t<T> lbeta_grad1(const real_t<T,U>& g, const T& x,
     const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, lbeta_grad1_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> lbeta_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
+real_t<U> lbeta_grad2(const real_t<T,U>& g, const T& x,
     const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, lbeta_grad2_functor()));
 }
@@ -1173,15 +1162,13 @@ real_t<T,U> lchoose(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> lchoose_grad1(const real_t<T,U>& g, const real_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> lchoose_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y,
       lchoose_grad1_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> lchoose_grad2(const real_t<T,U>& g, const real_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> lchoose_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y,
       lchoose_grad2_functor()));
 }
@@ -1192,7 +1179,7 @@ real_t<T> lfact(const T& x) {
 }
 
 template<numeric T>
-real_t<T> lfact_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> lfact_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, lfact_grad_functor());
 }
 
@@ -1202,7 +1189,7 @@ real_t<T> lgamma(const T& x) {
 }
 
 template<numeric T>
-real_t<T> lgamma_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> lgamma_grad(const real_t<T>& g, const T& x) {
   return transform(g, x,
       lgamma_grad_functor());
 }
@@ -1213,15 +1200,13 @@ real_t<T,U> lgamma(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> lgamma_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> lgamma_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y,
       lgamma_grad1_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> lgamma_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> lgamma_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y,
       lgamma_grad2_functor()));
 }
@@ -1232,7 +1217,7 @@ real_t<T> log(const T& x) {
 }
 
 template<numeric T>
-real_t<T> log_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> log_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, log_grad_functor());
 }
 
@@ -1242,7 +1227,7 @@ real_t<T> log1p(const T& x) {
 }
 
 template<numeric T>
-real_t<T> log1p_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> log1p_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, log1p_grad_functor());
 }
 
@@ -1252,22 +1237,22 @@ real_t<T,U,V> lz_conway_maxwell_poisson(const T& μ, const U& ν, const V& n) {
 }
 
 template<numeric T, numeric U, numeric V>
-real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g,
-    const real_t<T,U,V>& y, const T& μ, const U& ν, const V& n) {
+real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g, const T& μ,
+    const U& ν, const V& n) {
   return aggregate<dimension_v<T>>(transform(g, μ, ν, n,
       lz_conway_maxwell_poisson_grad1_functor()));
 }
 
 template<numeric T, numeric U, numeric V>
-real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g,
-    const real_t<T,U,V>& y, const T& μ, const U& ν, const V& n) {
+real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g, const T& μ,
+    const U& ν, const V& n) {
   return aggregate<dimension_v<U>>(transform(g, μ, ν, n,
       lz_conway_maxwell_poisson_grad2_functor()));
 }
 
 template<numeric T, numeric U, numeric V>
-real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g,
-    const real_t<T,U,V>& y, const T& μ, const U& ν, const V& n) {
+real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g, const T& μ,
+    const U& ν, const V& n) {
   return Array(real(0), shape(n));
 }
 
@@ -1277,7 +1262,7 @@ T neg(const T& x) {
 }
 
 template<numeric T>
-real_t<T> neg_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> neg_grad(const real_t<T>& g, const T& x) {
   return neg(g);
 }
 
@@ -1287,14 +1272,12 @@ real_t<T,U> pow(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> pow_grad1(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<T> pow_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(transform(g, x, y, pow_grad1_functor()));
 }
 
 template<numeric T, numeric U>
-real_t<U> pow_grad2(const real_t<T,U>& g, const real_t<T,U>& z, const T& x,
-    const U& y) {
+real_t<U> pow_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<U>>(transform(g, x, y, pow_grad2_functor()));
 }
 
@@ -1304,7 +1287,7 @@ T rectify(const T& x) {
 }
 
 template<numeric T>
-real_t<T> rectify_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> rectify_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, rectify_grad_functor());
 }
 
@@ -1314,7 +1297,7 @@ T round(const T& x) {
 }
 
 template<numeric T>
-real_t<T> round_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> round_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, zero_grad_functor());
 }
 
@@ -1324,8 +1307,7 @@ real_t<T> sin(const T& x) {
 }
 
 template<numeric T>
-real_t<T> sin_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> sin_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, sin_grad_functor());
 }
 
@@ -1335,8 +1317,7 @@ real_t<T> sinh(const T& x) {
 }
 
 template<numeric T>
-real_t<T> sinh_grad(const real_t<T>& g, const real_t<T>& y,
-    const T& x) {
+real_t<T> sinh_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, sinh_grad_functor());
 }
 
@@ -1346,7 +1327,7 @@ real_t<T> sqrt(const T& x) {
 }
 
 template<numeric T>
-real_t<T> sqrt_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> sqrt_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, sqrt_grad_functor());
 }
 
@@ -1362,14 +1343,12 @@ implicit_t<T,U> sub(const T& x, const U& y) {
 }
 
 template<numeric T, numeric U>
-real_t<T> sub_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<T> sub_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return aggregate<dimension_v<T>>(g);
 }
 
 template<numeric T, numeric U>
-real_t<U> sub_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
+real_t<U> sub_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return neg(aggregate<dimension_v<U>>(g));
 }
 
@@ -1379,7 +1358,7 @@ real_t<T> tan(const T& x) {
 }
 
 template<numeric T>
-real_t<T> tan_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> tan_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, tan_grad_functor());
 }
 
@@ -1389,7 +1368,7 @@ real_t<T> tanh(const T& x) {
 }
 
 template<numeric T>
-real_t<T> tanh_grad(const real_t<T>& g, const real_t<T>& y, const T& x) {
+real_t<T> tanh_grad(const real_t<T>& g, const T& x) {
   return transform(g, x, tanh_grad_functor());
 }
 
@@ -1399,20 +1378,20 @@ implicit_t<T,U,V> where(const T& x, const U& y, const V& z) {
 }
 
 template<numeric T, numeric U, numeric V>
-real_t<T> where_grad1(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
-    const T& x, const U& y, const V& z) {
+real_t<T> where_grad1(const real_t<T,U,V>& g, const T& x, const U& y,
+    const V& z) {
   return Array(real(0), shape(x));
 }
 
 template<numeric T, numeric U, numeric V>
-real_t<U> where_grad2(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
-    const T& x, const U& y, const V& z) {
+real_t<U> where_grad2(const real_t<T,U,V>& g, const T& x, const U& y,
+    const V& z) {
   return aggregate<dimension_v<U>>(where(x, g, real(0)));
 }
 
 template<numeric T, numeric U, numeric V>
-real_t<V> where_grad3(const real_t<U,V>& g, const implicit_t<T,U,V>& r,
-    const T& x, const U& y, const V& z) {
+real_t<V> where_grad3(const real_t<T,U,V>& g, const T& x, const U& y,
+    const V& z) {
   return aggregate<dimension_v<V>>(where(x, real(0), g));
 }
 

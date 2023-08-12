@@ -69,12 +69,12 @@
     WHERE_SIG(f, T, U, NUMBIRCH_ARRAY(V, 1))
 #define WHERE_SIG(f, T, U, V) \
     template implicit_t<T,U,V> f<T,U,V>(const T&, const U&, const V&); \
-    template real_t<T> f ## _grad1<T,U,V>(const real_t<U,V>& g, \
-        const implicit_t<T,U,V>& r, const T& x, const U& y, const V& z); \
-    template real_t<U> f ## _grad2<T,U,V>(const real_t<U,V>& g, \
-        const implicit_t<T,U,V>& r, const T& x, const U& y, const V& z); \
-    template real_t<V> f ## _grad3<T,U,V>(const real_t<U,V>& g, \
-        const implicit_t<T,U,V>& r, const T& x, const U& y, const V& z); \
+    template real_t<T> f ## _grad1<T,U,V>(const real_t<T,U,V>& g, \
+        const T& x, const U& y, const V& z); \
+    template real_t<U> f ## _grad2<T,U,V>(const real_t<T,U,V>& g, \
+        const T& x, const U& y, const V& z); \
+    template real_t<V> f ## _grad3<T,U,V>(const real_t<T,U,V>& g, \
+        const T& x, const U& y, const V& z); \
 
 namespace numbirch {
 WHERE(where)

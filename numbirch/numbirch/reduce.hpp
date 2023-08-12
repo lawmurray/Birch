@@ -28,14 +28,12 @@ Array<int,0> count(const T& x);
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> count_grad(const Array<real,0>& g, const Array<int,0>& y,
-    const T& x);
+real_t<T> count_grad(const Array<real,0>& g, const T& x);
 
 /**
  * Sum elements.
@@ -59,14 +57,12 @@ Array<value_t<T>,0> sum(const T& x);
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> sum_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
-    const T& x);
+real_t<T> sum_grad(const Array<real,0>& g, const T& x);
 
 /**
  * Minimum element.
@@ -90,7 +86,6 @@ Array<value_t<T>,0> min(const T& x);
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
@@ -121,7 +116,6 @@ Array<value_t<T>,0> max(const T& x);
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
@@ -152,12 +146,11 @@ T cumsum(const T& x);
  * @tparam T Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param y Result.
  * @param x Argument.
  * 
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> cumsum_grad(const real_t<T>& g, const T& y, const T& x);
+real_t<T> cumsum_grad(const real_t<T>& g, const T& x);
 
 }

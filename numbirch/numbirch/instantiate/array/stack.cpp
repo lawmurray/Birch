@@ -37,9 +37,9 @@
 #define STACK_SIG(f, T, U) \
     template stack_t<T,U> f(const T& x, const U& y); \
     template real_t<T> f##_grad1(const real_t<stack_t<T,U>>& g, \
-        const stack_t<T,U>& z, const T& x, const U& y); \
+        const T& x, const U& y); \
     template real_t<U> f##_grad2(const real_t<stack_t<T,U>>& g, \
-        const stack_t<T,U>& z, const T& x, const U& y);
+        const T& x, const U& y);
 
 namespace numbirch {
 STACK(stack)

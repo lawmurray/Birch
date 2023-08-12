@@ -40,7 +40,6 @@ implicit_t<T,U> mul(const T& x, const U& y) {
  * @tparam U Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param z Result.
  * @param x Argument.
  * @param y Argument.
  * 
@@ -48,9 +47,8 @@ implicit_t<T,U> mul(const T& x, const U& y) {
  */
 template<numeric T, numeric U>
 requires is_scalar_v<T> || is_scalar_v<U>
-real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
-  return hadamard_grad1(g, z, x, y);
+real_t<T> mul_grad1(const real_t<T,U>& g, const T& x, const U& y) {
+  return hadamard_grad1(g, x, y);
 }
 
 /**
@@ -62,7 +60,6 @@ real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  * @tparam U Numeric type.
  * 
  * @param g Gradient with respect to result.
- * @param z Result.
  * @param x Argument.
  * @param y Argument.
  * 
@@ -70,9 +67,8 @@ real_t<T> mul_grad1(const real_t<T,U>& g, const implicit_t<T,U>& z,
  */
 template<numeric T, numeric U>
 requires is_scalar_v<T> || is_scalar_v<U>
-real_t<U> mul_grad2(const real_t<T,U>& g, const implicit_t<T,U>& z,
-    const T& x, const U& y) {
-  return hadamard_grad2(g, z, x, y);
+real_t<U> mul_grad2(const real_t<T,U>& g, const T& x, const U& y) {
+  return hadamard_grad2(g, x, y);
 }
 
 /**
@@ -93,14 +89,13 @@ Array<real,1> mul(const Array<real,2>& A, const Array<real,1>& x);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = Ax$.
  * @param A Matrix $A$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> mul_grad1(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& A, const Array<real,1>& x);
+Array<real,2> mul_grad1(const Array<real,1>& g, const Array<real,2>& A,
+    const Array<real,1>& x);
 
 /**
  * Gradient of mul().
@@ -108,14 +103,13 @@ Array<real,2> mul_grad1(const Array<real,1>& g, const Array<real,1>& y,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = Ax$.
  * @param A Matrix $A$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> mul_grad2(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& A, const Array<real,1>& x);
+Array<real,1> mul_grad2(const Array<real,1>& g, const Array<real,2>& A,
+    const Array<real,1>& x);
 
 /**
  * Matrix-matrix multiplication.
@@ -135,14 +129,13 @@ Array<real,2> mul(const Array<real,2>& A, const Array<real,2>& B);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = AB$.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> mul_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> mul_grad1(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Gradient of mul().
@@ -150,14 +143,13 @@ Array<real,2> mul_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = AB$.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p B.
  */
-Array<real,2> mul_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> mul_grad2(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Cholesky factorization of a symmetric positive definite matrix.
@@ -374,13 +366,11 @@ Array<real,0> dot(const Array<real,1>& x);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param z Result $z = x^\top x$ as a scalar.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> dot_grad(const Array<real,0>& g, const Array<real,0>& z,
-    const Array<real,1>& x);
+Array<real,1> dot_grad(const Array<real,0>& g, const Array<real,1>& x);
 
 /**
  * Vector-vector dot product.
@@ -400,14 +390,13 @@ Array<real,0> dot(const Array<real,1>& x, const Array<real,1>& y);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param z Result $z = x^\top y$ as a scalar.
  * @param x Vector $x$.
  * @param y Vector $y$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> dot_grad1(const Array<real,0>& g, const Array<real,0>& z,
-    const Array<real,1>& x, const Array<real,1>& y);
+Array<real,1> dot_grad1(const Array<real,0>& g, const Array<real,1>& x,
+    const Array<real,1>& y);
 
 /**
  * Gradient of dot().
@@ -415,14 +404,13 @@ Array<real,1> dot_grad1(const Array<real,0>& g, const Array<real,0>& z,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param z Result $z = x^\top y$ as a scalar.
  * @param x Vector $x$.
  * @param y Vector $y$.
  * 
  * @return Gradient with respect to @p y.
  */
-Array<real,1> dot_grad2(const Array<real,0>& g, const Array<real,0>& z,
-    const Array<real,1>& x, const Array<real,1>& y);
+Array<real,1> dot_grad2(const Array<real,0>& g, const Array<real,1>& x,
+    const Array<real,1>& y);
 
 /**
  * Matrix Frobenius product.
@@ -442,14 +430,11 @@ Array<real,0> frobenius(const Array<real,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param z Result $z = \langle A, A \rangle_\mathrm{F} =
- * \mathrm{Tr}(A^\top A) = \sum_{ij} A_{ij}^2$ as a scalar.
  * @param A Matrix $A$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> frobenius_grad(const Array<real,0>& g, const Array<real,0>& z,
-    const Array<real,2>& A);
+Array<real,2> frobenius_grad(const Array<real,0>& g, const Array<real,2>& A);
 
 /**
  * Matrix-matrix Frobenius product.
@@ -470,15 +455,13 @@ Array<real,0> frobenius(const Array<real,2>& A, const Array<real,2>& B);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param z Result $z = \langle A, B \rangle_\mathrm{F} =
- * \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}$ as a scalar.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> frobenius_grad1(const Array<real,0>& g, const Array<real,0>& z,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> frobenius_grad1(const Array<real,0>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Gradient of frobenius().
@@ -486,15 +469,13 @@ Array<real,2> frobenius_grad1(const Array<real,0>& g, const Array<real,0>& z,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param z Result $z = \langle A, B \rangle_\mathrm{F} =
- * \mathrm{Tr}(A^\top B) = \sum_{ij} A_{ij} B_{ij}$ as a scalar.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p B.
  */
-Array<real,2> frobenius_grad2(const Array<real,0>& g, const Array<real,0>& z,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> frobenius_grad2(const Array<real,0>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Matrix-vector inner product.
@@ -514,14 +495,13 @@ Array<real,1> inner(const Array<real,2>& A, const Array<real,1>& x);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = A^\top x$.
  * @param A Matrix $A$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> inner_grad1(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& A, const Array<real,1>& x);
+Array<real,2> inner_grad1(const Array<real,1>& g, const Array<real,2>& A,
+    const Array<real,1>& x);
 
 /**
  * Gradient of inner().
@@ -529,14 +509,13 @@ Array<real,2> inner_grad1(const Array<real,1>& g, const Array<real,1>& y,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = A^\top x$.
  * @param A Matrix $A$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> inner_grad2(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& A, const Array<real,1>& x);
+Array<real,1> inner_grad2(const Array<real,1>& g, const Array<real,2>& A,
+    const Array<real,1>& x);
 
 /**
  * Matrix inner product.
@@ -555,13 +534,11 @@ Array<real,2> inner(const Array<real,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param B Result $B = A^\top A$.
  * @param A Matrix $A$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> inner_grad(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& A);
+Array<real,2> inner_grad(const Array<real,2>& g, const Array<real,2>& A);
 
 /**
  * Matrix-matrix inner product.
@@ -581,14 +558,13 @@ Array<real,2> inner(const Array<real,2>& A, const Array<real,2>& B);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = A^\top B$.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> inner_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> inner_grad1(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Gradient of inner().
@@ -596,14 +572,13 @@ Array<real,2> inner_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = A^\top B$.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p B.
  */
-Array<real,2> inner_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> inner_grad2(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Inverse of a square matrix.
@@ -651,14 +626,12 @@ Array<real,0> lcholdet(const Array<real,2>& L);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param d Result $d = \log(\det S)$.
  * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
  * definite matrix $S = LL^\top$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> lcholdet_grad(const Array<real,0>& g, const Array<real,0>& d,
-    const Array<real,2>& L);
+Array<real,2> lcholdet_grad(const Array<real,0>& g, const Array<real,2>& L);
 
 /**
  * Logarithm of the absolute value of the determinant of a square matrix.
@@ -677,13 +650,11 @@ Array<real,0> ldet(const Array<real,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param d Result $d = \log |\det A|$.
  * @param A Matrix.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> ldet_grad(const Array<real,0>& g, const Array<real,0>& d,
-    const Array<real,2>& A);
+Array<real,2> ldet_grad(const Array<real,0>& g, const Array<real,2>& A);
 
 /**
  * Logarithm of the absolute value of the determinant of a lower-triangular
@@ -703,13 +674,11 @@ Array<real,0> ltridet(const Array<real,2>& L);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param d Result $\log|\det L|$.
  * @param L Lower-triangular matrix $L$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> ltridet_grad(const Array<real,0>& g, const Array<real,0>& d,
-    const Array<real,2>& L);
+Array<real,2> ltridet_grad(const Array<real,0>& g, const Array<real,2>& L);
 
 /**
  * Vector outer product.
@@ -728,13 +697,11 @@ Array<real,2> outer(const Array<real,1>& x);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param B Result $B = xx^\top$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> outer_grad(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,1>& x);
+Array<real,1> outer_grad(const Array<real,2>& g, const Array<real,1>& x);
 
 /**
  * Vector-vector outer product.
@@ -754,14 +721,13 @@ Array<real,2> outer(const Array<real,1>& x, const Array<real,1>& y);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = xy^\top$.
  * @param x Vector $x$.
  * @param y Vector $y$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> outer_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,1>& x, const Array<real,1>& y);
+Array<real,1> outer_grad1(const Array<real,2>& g, const Array<real,1>& x,
+    const Array<real,1>& y);
 
 /**
  * Gradient of outer().
@@ -769,14 +735,13 @@ Array<real,1> outer_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = xy^\top$.
  * @param x Vector $x$.
  * @param y Vector $y$.
  * 
  * @return Gradient with respect to @p y.
  */
-Array<real,1> outer_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,1>& x, const Array<real,1>& y);
+Array<real,1> outer_grad2(const Array<real,2>& g, const Array<real,1>& x,
+    const Array<real,1>& y);
 
 /**
  * Matrix outer product.
@@ -795,13 +760,11 @@ Array<real,2> outer(const Array<real,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param B Result $B = AA^\top$.
  * @param A Matrix $A$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> outer_grad(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& A);
+Array<real,2> outer_grad(const Array<real,2>& g, const Array<real,2>& A);
 
 /**
  * Matrix-matrix outer product.
@@ -821,14 +784,13 @@ Array<real,2> outer(const Array<real,2>& A, const Array<real,2>& B);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = AB^\top$.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> outer_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> outer_grad1(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Gradient of outer().
@@ -836,14 +798,13 @@ Array<real,2> outer_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = AB^\top$.
  * @param A Matrix $A$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p A and @p B.
  */
-Array<real,2> outer_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& B);
+Array<real,2> outer_grad2(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& B);
 
 /**
  * Extract the lower triangle and half the diagonal of a matrix.
@@ -863,13 +824,11 @@ Array<real,2> phi(const Array<real,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param L Lower triangle and half the diagonal of $A$.
  * @param A Matrix $S$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& L,
-    const Array<real,2>& A);
+Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& A);
 
 /**
  * Matrix transpose.
@@ -889,14 +848,12 @@ Array<T,2> transpose(const Array<T,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param B Result $B = A^\top$.
  * @param A Matrix $A$.
  * 
  * @return Gradient with respect to @p A.
  */
 template<arithmetic T>
-Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& B,
-    const Array<T,2>& A);
+Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A);
 
 /**
  * Scalar transpose.
@@ -918,13 +875,12 @@ T transpose(const T& x) {
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = x$.
  * @param x Scalar $x$.
  * 
  * @return Gradient with respect to @p x.
  */
 template<scalar T>
-real_t<T> transpose_grad(const real_t<T>& g, const T& y, const T& x) {
+real_t<T> transpose_grad(const real_t<T>& g, const T& x) {
   return g;
 }
 
@@ -946,13 +902,11 @@ Array<real,2> tri(const Array<real,2>& A);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param L Lower triangle and diagonal of $A$.
  * @param A Matrix $S$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> tri_grad(const Array<real,2>& g, const Array<real,2>& L,
-    const Array<real,2>& A);
+Array<real,2> tri_grad(const Array<real,2>& g, const Array<real,2>& A);
 
 /**
  * Lower-triangular-matrix-vector inner product.
@@ -972,14 +926,13 @@ Array<real,1> triinner(const Array<real,2>& L, const Array<real,1>& x);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = L^\top x$.
  * @param L Lower-triangular matrix $L$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triinner_grad1(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& L, const Array<real,1>& x);
+Array<real,2> triinner_grad1(const Array<real,1>& g, const Array<real,2>& L,
+    const Array<real,1>& x);
 
 /**
  * Gradient of triinner().
@@ -987,14 +940,13 @@ Array<real,2> triinner_grad1(const Array<real,1>& g, const Array<real,1>& y,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = L^\top x$.
  * @param L Lower-triangular matrix $L$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p x.
  */
-Array<real,1> triinner_grad2(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& L, const Array<real,1>& x);
+Array<real,1> triinner_grad2(const Array<real,1>& g, const Array<real,2>& L,
+    const Array<real,1>& x);
 
 /**
  * Lower-triangular-matrix inner product.
@@ -1013,13 +965,11 @@ Array<real,2> triinner(const Array<real,2>& L);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = L^\top L$.
  * @param L Lower-triangular matrix $L$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triinner_grad(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& L);
+Array<real,2> triinner_grad(const Array<real,2>& g, const Array<real,2>& L);
 
 /**
  * Lower-triangular-matrix-matrix inner product.
@@ -1039,14 +989,13 @@ Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = L^\top B$.
  * @param L Lower-triangular matrix $L$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triinner_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& L, const Array<real,2>& B);
+Array<real,2> triinner_grad1(const Array<real,2>& g, const Array<real,2>& L,
+    const Array<real,2>& B);
 
 /**
  * Gradient of triinner().
@@ -1054,14 +1003,13 @@ Array<real,2> triinner_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = L^\top B$.
  * @param L Lower-triangular matrix $L$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p B.
  */
-Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& L, const Array<real,2>& B);
+Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& L,
+    const Array<real,2>& B);
 
 /**
  * Lower-triangular-matrix-scalar inner solve.
@@ -1241,14 +1189,13 @@ Array<real,1> trimul(const Array<real,2>& L, const Array<real,1>& x);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = Lx$.
  * @param L Lower-triangular matrix $L$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> trimul_grad1(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& L, const Array<real,1>& x);
+Array<real,2> trimul_grad1(const Array<real,1>& g, const Array<real,2>& L,
+    const Array<real,1>& x);
 
 /**
  * Gradient of trimul().
@@ -1256,14 +1203,13 @@ Array<real,2> trimul_grad1(const Array<real,1>& g, const Array<real,1>& y,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param y Result $y = Lx$.
  * @param L Lower-triangular matrix $L$.
  * @param x Vector $x$.
  * 
  * @return Gradient with respect to @p L and @p x.
  */
-Array<real,1> trimul_grad2(const Array<real,1>& g, const Array<real,1>& y,
-    const Array<real,2>& L, const Array<real,1>& x);
+Array<real,1> trimul_grad2(const Array<real,1>& g, const Array<real,2>& L,
+    const Array<real,1>& x);
 
 /**
  * Lower-triangular-matrix-matrix product.
@@ -1283,14 +1229,13 @@ Array<real,2> trimul(const Array<real,2>& L, const Array<real,2>& B);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = LB$.
  * @param L Lower-triangular matrix $L$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> trimul_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& L, const Array<real,2>& B);
+Array<real,2> trimul_grad1(const Array<real,2>& g, const Array<real,2>& L,
+    const Array<real,2>& B);
 
 /**
  * Gradient of trimul().
@@ -1298,14 +1243,13 @@ Array<real,2> trimul_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = LB$.
  * @param L Lower-triangular matrix $L$.
  * @param B Matrix $B$.
  * 
  * @return Gradient with respect to @p B.
  */
-Array<real,2> trimul_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& L, const Array<real,2>& B);
+Array<real,2> trimul_grad2(const Array<real,2>& g, const Array<real,2>& L,
+    const Array<real,2>& B);
 
 /**
  * Lower-triangular-matrix outer product.
@@ -1324,13 +1268,11 @@ Array<real,2> triouter(const Array<real,2>& L);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = LL^\top$.
  * @param L Lower-triangular matrix $L$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triouter_grad(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& L);
+Array<real,2> triouter_grad(const Array<real,2>& g, const Array<real,2>& L);
 
 /**
  * Matrix-lower-triangular-matrix outer product.
@@ -1350,14 +1292,13 @@ Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L);
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = AL^\top$.
  * @param A Matrix $A$.
  * @param L Lower-triangular matrix $L$.
  * 
  * @return Gradient with respect to @p A.
  */
-Array<real,2> triouter_grad1(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& L);
+Array<real,2> triouter_grad1(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& L);
 
 /**
  * Gradient of triouter().
@@ -1365,14 +1306,13 @@ Array<real,2> triouter_grad1(const Array<real,2>& g, const Array<real,2>& C,
  * @ingroup linalg_grad
  * 
  * @param g Gradient with respect to result.
- * @param C Result $C = AL^\top$.
  * @param A Matrix $A$.
  * @param L Lower-triangular matrix $L$.
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& C,
-    const Array<real,2>& A, const Array<real,2>& L);
+Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& A,
+    const Array<real,2>& L);
 
 /**
  * Lower-triangular-matrix-scalar solve.

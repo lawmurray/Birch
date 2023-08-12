@@ -73,4 +73,5 @@
 namespace numbirch {
 TERNARY(ibeta)
 TERNARY(lz_conway_maxwell_poisson)
+
 }

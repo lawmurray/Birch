@@ -21,7 +21,7 @@
 #define MAT_SIG(f, T) \
     template Array<value_t<T>,2> f<T>(const T& x, const int n); \
     template real_t<T> f##_grad(const Array<real,2>& g, \
-        const Array<value_t<T>,2>& y, const T& x, const int n);
+        const T& x, const int n);
 
 namespace numbirch {
 MAT(mat)
