@@ -91,7 +91,7 @@ using no_base = void;
   template<class V_, class... Args_, class T_ = base_type_, \
       std::enable_if_t<std::is_void_v<T_>,int> = 0> \
   auto accept_base_(V_& visitor_, Args_&&... args_) { \
-    return visitor_.visit(std::forward<Args_>(args)...); \
+    return visitor_.visit(std::forward<Args_>(args_)...); \
   } \
   \
   template<class V_, class... Args_, class T_ = base_type_, \
