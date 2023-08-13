@@ -4,11 +4,11 @@
 #pragma once
 
 namespace membirch {
-template<class T, class ...Args, std::enable_if_t<!std::is_abstract<T>::value,int> = 0>
+template<class T, class ...Args, std::enable_if_t<!std::is_abstract_v<T>,int> = 0>
 auto make_object(Args&&... args) {
   return new T(std::forward<Args>(args)...);
 } 
-template<class T, class ...Args, std::enable_if_t<std::is_abstract<T>::value,int> = 0>
+template<class T, class ...Args, std::enable_if_t<std::is_abstract_v<T>,int> = 0>
 auto make_object(Args&&... args) {
   return nullptr;
 }
@@ -88,14 +88,16 @@ using no_base = void;
  *     };
  */
 #define MEMBIRCH_CLASS_MEMBERS(...) \
-  template<class V, class... Args, class T = base_type_, std::enable_if_t<std::is_void<T>::value,int> = 0> \
-  auto accept_base_(V& visitor_, Args&&... args) { \
-    return visitor_.visit(std::forward<Args>(args)...); \
+  template<class V_, class... Args_, class T_ = base_type_, \
+      std::enable_if_t<std::is_void_v<T_>,int> = 0> \
+  auto accept_base_(V_& visitor_, Args_&&... args_) { \
+    return visitor_.visit(std::forward<Args_>(args)...); \
   } \
   \
-  template<class V, class... Args, class T = base_type_, std::enable_if_t<!std::is_void<T>::value,int> = 0> \
-  auto accept_base_(V& visitor_, Args&&... args) { \
-    return T::accept_(visitor_, std::forward<Args>(args)...); \
+  template<class V_, class... Args_, class T_ = base_type_, \
+      std::enable_if_t<!std::is_void_v<T_>,int> = 0> \
+  auto accept_base_(V_& visitor_, Args_&&... args_) { \
+    return T_::accept_(visitor_, std::forward<Args_>(args_)...); \
   } \
   \
   virtual void accept_(membirch::Marker& visitor_) override { \
@@ -123,20 +125,24 @@ using no_base = void;
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  virtual std::tuple<int,int,int> accept_(membirch::Spanner& visitor_, const int i_, const int j_) override { \
+  virtual std::tuple<int,int,int> accept_(membirch::Spanner& visitor_, \
+      const int i_, const int j_) override { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = accept_base_(visitor_, i_, j_); \
-    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ __VA_OPT__(,) __VA_ARGS__); \
+    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ \
+        __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
     return std::make_tuple(l_, h_, m_); \
   } \
   \
-  virtual std::tuple<int,int,int,int> accept_(membirch::Bridger& visitor_, const int j_, const int k_) override { \
+  virtual std::tuple<int,int,int,int> accept_(membirch::Bridger& visitor_, \
+      const int j_, const int k_) override { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = accept_base_(visitor_, j_, k_); \
-    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ __VA_OPT__(,) __VA_ARGS__); \
+    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ \
+        __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
@@ -228,14 +234,16 @@ using no_base = void;
  *     };
  */
 #define MEMBIRCH_STRUCT_MEMBERS(...) \
-  template<class V, class... Args, class T = base_type_, std::enable_if_t<std::is_void<T>::value,int> = 0> \
-  auto accept_base_(V& visitor_, Args&&... args) { \
-    return visitor_.visit(std::forward<Args>(args)...); \
+  template<class V_, class... Args_, class T_ = base_type_, \
+      std::enable_if_t<std::is_void_v<T_>,int> = 0> \
+  auto accept_base_(V_& visitor_, Args_&&... args_) { \
+    return visitor_.visit(std::forward<Args_>(args_)...); \
   } \
   \
-  template<class V, class... Args, class T = base_type_, std::enable_if_t<!std::is_void<T>::value,int> = 0> \
-  auto accept_base_(V& visitor_, Args&&... args) { \
-    return T::accept_(visitor_, std::forward<Args>(args)...); \
+  template<class V_, class... Args_, class T_ = base_type_, \
+      std::enable_if_t<!std::is_void_v<T_>,int> = 0> \
+  auto accept_base_(V_& visitor_, Args_&&... args_) { \
+    return T_::accept_(visitor_, std::forward<Args_>(args_)...); \
   } \
   \
   void accept_(membirch::Marker& visitor_) { \
@@ -263,20 +271,24 @@ using no_base = void;
     visitor_.visit(__VA_ARGS__); \
   } \
   \
-  std::tuple<int,int,int> accept_(membirch::Spanner& visitor_, const int i_, const int j_) { \
+  std::tuple<int,int,int> accept_(membirch::Spanner& visitor_, const int i_, \
+      const int j_) { \
     int l_, h_, m_, l1_, h1_, m1_; \
     std::tie(l_, h_, m_) = accept_base_(visitor_, i_, j_); \
-    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ __VA_OPT__(,) __VA_ARGS__); \
+    std::tie(l1_, h1_, m1_) = visitor_.visit(i_, j_ + m_ \
+        __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
     return std::make_tuple(l_, h_, m_); \
   } \
   \
-  std::tuple<int,int,int,int> accept_(membirch::Bridger& visitor_, const int j_, const int k_) { \
+  std::tuple<int,int,int,int> accept_(membirch::Bridger& visitor_, \
+      const int j_, const int k_) { \
     int l_, h_, m_, n_, l1_, h1_, m1_, n1_; \
     std::tie(l_, h_, m_, n_) = accept_base_(visitor_, j_, k_); \
-    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ __VA_OPT__(,) __VA_ARGS__); \
+    std::tie(l1_, h1_, m1_, n1_) = visitor_.visit(j_ + m_, k_ + n_ \
+        __VA_OPT__(,) __VA_ARGS__); \
     l_ = std::min(l_, l1_); \
     h_ = std::max(h_, h1_); \
     m_ += m1_; \
