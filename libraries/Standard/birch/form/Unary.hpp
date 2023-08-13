@@ -114,10 +114,17 @@
     return numbirch::f(birch::move(m, visitor) __VA_OPT__(,) __VA_ARGS__); \
   }
 
-#define BIRCH_UNARY_GRAD(This, f_grad, ...) \
+#define BIRCH_UNARY_GRAD_WITH_RESULT(This, f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) const { \
     birch::shallow_grad(m, numbirch::f_grad(g, peek(), birch::peek(m) \
+        __VA_OPT__(,) __VA_ARGS__), visitor); \
+  }
+
+#define BIRCH_UNARY_GRAD(This, f_grad, ...) \
+  template<class G> \
+  void shallowGrad(const G& g, const GradVisitor& visitor) const { \
+    birch::shallow_grad(m, numbirch::f_grad(g, birch::peek(m) \
         __VA_OPT__(,) __VA_ARGS__), visitor); \
   }
 

@@ -19,7 +19,7 @@ struct Memo {
   /**
    * Memoized form.
    */
-  Middle m;
+  mutable Middle m;
  
   auto operator->() {
     return this;
@@ -37,7 +37,7 @@ struct Memo {
    * value.
    */
   void set(const value_type& x) const {
-    const_cast<Memo*>(this)->x = x;
+    this->x = x;
   }
 
   /**
@@ -45,7 +45,7 @@ struct Memo {
    * value.
    */
   void set(value_type&& x) const {
-    const_cast<Memo*>(this)->x = std::move(x);
+    this->x = std::move(x);
   }
 
   MEMBIRCH_STRUCT(Memo)

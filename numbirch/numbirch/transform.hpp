@@ -33,8 +33,7 @@ bool_t<T> logical_not(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> logical_not_grad(const real_t<T>& g, const bool_t<T>& y,
-    const T& x);
+real_t<T> logical_not_grad(const real_t<T>& g, const T& x);
 
 /**
  * Element-wise logical `and`.
@@ -67,8 +66,7 @@ bool_t<T,U> logical_and(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, 
-    const T& x, const U& y);
+real_t<T> logical_and_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of logical_and().
@@ -85,8 +83,7 @@ real_t<T> logical_and_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> logical_and_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<U> logical_and_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise logical `or`.
@@ -120,8 +117,7 @@ bool_t<T,U> logical_or(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<T> logical_or_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of logical_or().
@@ -139,8 +135,7 @@ real_t<T> logical_or_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> logical_or_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<U> logical_or_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise equal to comparison.
@@ -173,8 +168,7 @@ bool_t<T,U> equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<T> equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of equal().
@@ -191,8 +185,7 @@ real_t<T> equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  * @return Gradient with respect to  @p y.
  */
 template<numeric T, numeric U>
-real_t<U> equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<U> equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise not equal to comparison.
@@ -225,8 +218,7 @@ bool_t<T,U> not_equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<T> not_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of not_equal().
@@ -243,8 +235,7 @@ real_t<T> not_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> not_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<U> not_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise less than comparison.
@@ -277,8 +268,7 @@ bool_t<T,U> less(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<T> less_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of less().
@@ -295,8 +285,7 @@ real_t<T> less_grad1(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> less_grad2(const real_t<T,U>& g, const bool_t<T,U>& z, const T& x,
-    const U& y);
+real_t<U> less_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise less than or equal to comparison.
@@ -329,8 +318,7 @@ bool_t<T,U> less_or_equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of less_or_equal().
@@ -347,8 +335,7 @@ real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise greater than comparison.
@@ -381,8 +368,7 @@ bool_t<T,U> greater(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<T> greater_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of greater().
@@ -399,8 +385,7 @@ real_t<T> greater_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> greater_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<U> greater_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise greater than or equal to comparison.
@@ -433,8 +418,8 @@ bool_t<T,U> greater_or_equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const T& x,
+    const U& y);
 
 /**
  * Gradient of greater_or_equal().
@@ -451,8 +436,8 @@ real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const bool_t<T,U>& z,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const bool_t<T,U>& z,
-    const T& x, const U& y);
+real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const T& x,
+    const U& y);
 
 /**
  * Absolute value.

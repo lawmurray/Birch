@@ -12,7 +12,7 @@ struct Min {
   BIRCH_UNARY_FORM(Min)
   BIRCH_UNARY_SIZE(Min)
   BIRCH_UNARY_EVAL(Min, min)
-  BIRCH_UNARY_GRAD(Min, min_grad)
+  BIRCH_UNARY_GRAD_WITH_RESULT(Min, min_grad)
 };
 
 BIRCH_UNARY_TYPE(Min)

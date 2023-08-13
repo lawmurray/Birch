@@ -12,7 +12,7 @@ struct TriSolve {
   BIRCH_BINARY_FORM(TriSolve)
   BIRCH_BINARY_SIZE(TriSolve)
   BIRCH_BINARY_EVAL(TriSolve, trisolve)
-  BIRCH_BINARY_GRAD(TriSolve, trisolve_grad)
+  BIRCH_BINARY_GRAD_WITH_RESULT(TriSolve, trisolve_grad)
 };
 
 BIRCH_BINARY_TYPE(TriSolve)
