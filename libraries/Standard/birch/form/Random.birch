@@ -159,7 +159,7 @@ struct Random<Value> {
   }
 
   bool isConstant() const {
-    return !hasDistribution() || getDistribution()->isConstant();
+    return !hasDistribution();
   }
 
   void args(const ArgsVisitor& visitor) const {

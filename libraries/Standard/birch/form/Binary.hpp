@@ -132,10 +132,14 @@
   void shallowGrad(const G& g, const GradVisitor& visitor) const { \
     auto l1 = birch::peek(l); \
     auto r1 = birch::peek(r); \
-    birch::shallow_grad(l, numbirch::f_grad ## 1(g, l1, r1 \
-        __VA_OPT__(,) __VA_ARGS__), visitor); \
-    birch::shallow_grad(r, numbirch::f_grad ## 2(g, l1, r1 \
-        __VA_OPT__(,) __VA_ARGS__), visitor); \
+    if (!is_constant(l)) { \
+      birch::shallow_grad(l, numbirch::f_grad ## 1(g, l1, r1 \
+          __VA_OPT__(,) __VA_ARGS__), visitor); \
+    } \
+    if (!is_constant(r)) { \
+      birch::shallow_grad(r, numbirch::f_grad ## 2(g, l1, r1 \
+          __VA_OPT__(,) __VA_ARGS__), visitor); \
+    } \
   }
 
 #define BIRCH_BINARY_GRAD_WITH_RESULT(This, f_grad, ...) \
@@ -144,10 +148,14 @@
     auto x = peek(); \
     auto l1 = birch::peek(l); \
     auto r1 = birch::peek(r); \
-    birch::shallow_grad(l, numbirch::f_grad ## 1(g, x, l1, r1 \
-        __VA_OPT__(,) __VA_ARGS__), visitor); \
-    birch::shallow_grad(r, numbirch::f_grad ## 2(g, x, l1, r1 \
-        __VA_OPT__(,) __VA_ARGS__), visitor); \
+    if (!is_constant(l)) { \
+      birch::shallow_grad(l, numbirch::f_grad ## 1(g, x, l1, r1 \
+          __VA_OPT__(,) __VA_ARGS__), visitor); \
+    } \
+    if (!is_constant(r)) { \
+      birch::shallow_grad(r, numbirch::f_grad ## 2(g, x, l1, r1 \
+          __VA_OPT__(,) __VA_ARGS__), visitor); \
+    } \
   }
 
 #define BIRCH_BINARY_CALL(This, f, ...) \
