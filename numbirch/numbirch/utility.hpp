@@ -51,10 +51,8 @@
 
 namespace numbirch {
   namespace disable_adl {
-    template<class T, int D> class ArrayCOW;
     template<class T, int D> class Array;
   }
-  using disable_adl::ArrayCOW;
   using disable_adl::Array;
 
 /**
@@ -278,36 +276,6 @@ inline constexpr bool is_scalar_v = is_scalar<std::decay_t<T>>::value;
 template<class T>
 concept scalar = is_scalar_v<T>;
 
-/**
- * Boolean scalar type.
- * 
- * @ingroup trait
- * 
- * A scalar with a Boolean value type.
- */
-template<class T>
-concept bool_scalar = is_scalar_v<T> && is_bool_v<value_t<T>>;
-
-/**
- * Integral scalar type.
- * 
- * @ingroup trait
- * 
- * A scalar with an integral value type.
- */
-template<class T>
-concept int_scalar = is_scalar_v<T> && is_int_v<value_t<T>>;
-
-/**
- * Real scalar type.
- * 
- * @ingroup trait
- * 
- * A scalar with a real value type.
- */
-template<class T>
-concept real_scalar = is_scalar_v<T> && is_real_v<value_t<T>>;
-
 template<class T>
 struct is_vector {
   static constexpr bool value = is_arithmetic_v<value_t<T>> &&
@@ -488,12 +456,6 @@ template<class... Args>
 struct implicit {
   using type = void;
 };
-template<class T, class U, class... Args>
-struct implicit<T,U,Args...> {
-  using type = typename implicit<typename implicit<std::decay_t<T>,
-      std::decay_t<U>>::type,Args...>::type;
-};
-
 template<class T, int D, class U, int E>
 struct implicit<Array<T,D>,Array<U,E>> {
   using type = void;
@@ -514,22 +476,30 @@ template<class T, class U>
 struct implicit<Array<T,0>,Array<U,0>> {
   using type = Array<typename promote<T,U>::type,0>;
 };
-template<class T, int D, class U>
+template<class T, int D, arithmetic U>
 struct implicit<Array<T,D>,U> {
   using type = Array<typename promote<T,U>::type,D>;
 };
-template<class T, class U, int D>
+template<arithmetic T, class U, int D>
 struct implicit<T,Array<U,D>> {
   using type = Array<typename promote<T,U>::type,D>;
 };
-
-template<class T, class U>
+template<arithmetic T, arithmetic U>
 struct implicit<T,U> {
   using type = typename promote<T,U>::type;
 };
 template<class T>
 struct implicit<T> {
   using type = T;
+};
+template<class T>
+struct implicit<T,void> {
+  using type = void;
+};
+template<class T, class... Args>
+struct implicit<T,Args...> {
+  using type = typename implicit<std::decay_t<T>,
+      typename implicit<Args...>::type>::type;
 };
 
 /**

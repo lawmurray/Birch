@@ -43,8 +43,17 @@ Array<real,2> chol(const Array<real,2>& S) {
   return L;
 }
 
-template<real_scalar U>
-Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
+Array<real,2> cholsolve(const Array<real,2>& L, const real& y) {
+  assert(rows(L) == columns(L));
+  Array<real,2> B(make_shape(rows(L), columns(L)));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
+  auto B1 = make_eigen(B);
+  B1.noalias() = U1.solve(L1.solve(value(y)*B1.Identity(rows(B), columns(B))));
+  return B;
+}
+
+Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,0>& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(make_shape(rows(L), columns(L)));
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
@@ -208,8 +217,7 @@ Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B) {
   return C;
 }
 
-template<real_scalar U>
-Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
+Array<real,2> triinnersolve(const Array<real,2>& L, const real& y) {
   assert(rows(L) == columns(L));
   assert(columns(L) == length(y));
   Array<real,2> B(make_shape(rows(L), columns(L)));
@@ -217,7 +225,16 @@ Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
   auto B1 = make_eigen(B);
   B1.noalias() = U1.solve(value(y)*B1.Identity(rows(B), columns(B)));
   return B;
+}
 
+Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,0>& y) {
+  assert(rows(L) == columns(L));
+  assert(columns(L) == length(y));
+  Array<real,2> B(make_shape(rows(L), columns(L)));
+  auto U1 = make_eigen(L).transpose().template triangularView<Eigen::Upper>();
+  auto B1 = make_eigen(B);
+  B1.noalias() = U1.solve(value(y)*B1.Identity(rows(B), columns(B)));
+  return B;
 }
 
 Array<real,1> triinnersolve(const Array<real,2>& L, const Array<real,1>& y) {
@@ -272,8 +289,16 @@ Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L) {
   return C;
 }
 
-template<real_scalar U>
-Array<real,2> trisolve(const Array<real,2>& L, const U& y) {
+Array<real,2> trisolve(const Array<real,2>& L, const real& y) {
+  assert(rows(L) == columns(L));
+  Array<real,2> B(make_shape(rows(L), columns(L)));
+  auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();
+  auto B1 = make_eigen(B);
+  B1.noalias() = L1.solve(value(y)*B1.Identity(rows(B), columns(B)));
+  return B;
+}
+
+Array<real,2> trisolve(const Array<real,2>& L, const Array<real,0>& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(make_shape(rows(L), columns(L)));
   auto L1 = make_eigen(L).template triangularView<Eigen::Lower>();

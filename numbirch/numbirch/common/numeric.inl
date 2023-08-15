@@ -43,18 +43,29 @@ Array<real,2> cholinv_grad(const Array<real,2>& g, const Array<real,2>& B,
   return cholsolve_grad1(g, B, L, real(1));
 }
 
-template<real_scalar U>
 Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y) {
+    const Array<real,2>& L, const real& y) {
   auto gy = cholsolve(L, g);
   auto gS = outer(gy, neg(B));
   auto gL = tri(mul(add(gS, transpose(gS)), L));
   return gL;
 }
 
-template<real_scalar U>
 Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y) {
+    const Array<real,2>& L, const real& y) {
+  return sum(cholsolve(L, g));
+}
+
+Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y) {
+  auto gy = cholsolve(L, g);
+  auto gS = outer(gy, neg(B));
+  auto gL = tri(mul(add(gS, transpose(gS)), L));
+  return gL;
+}
+
+Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y) {
   return sum(cholsolve(L, g));
 }
 
@@ -250,15 +261,23 @@ Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& L,
   return trimul(L, g);
 }
 
-template<real_scalar U>
 Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y) {
+    const Array<real,2>& L, const real& y) {
   return tri(outer(neg(B), trisolve(L, g)));
 }
 
-template<real_scalar U>
+Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y) {
+  return tri(outer(neg(B), trisolve(L, g)));
+}
+
 Array<real,0> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y) {
+    const Array<real,2>& L, const real& y) {
+  return sum(trisolve(L, g));
+}
+
+Array<real,0> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y) {
   return sum(trisolve(L, g));
 }
 
@@ -329,15 +348,23 @@ Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& A,
   return tri(inner(g, A));
 }
 
-template<real_scalar U>
 Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y) {
+    const Array<real,2>& L, const real& y) {
   return tri(outer(triinnersolve(L, g), neg(B)));
 }
 
-template<real_scalar U>
 Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y) {
+    const Array<real,2>& L, const real& y) {
+  return sum(triinnersolve(L, g));
+}
+
+Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y) {
+  return tri(outer(triinnersolve(L, g), neg(B)));
+}
+
+Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y) {
   return sum(triinnersolve(L, g));
 }
 

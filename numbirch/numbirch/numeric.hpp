@@ -210,23 +210,18 @@ Array<real,2> cholinv_grad(const Array<real,2>& g, const Array<real,2>& B,
  * 
  * @ingroup linalg
  * 
- * @tparam U Floating point scalar type.
- * 
  * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
  * definite matrix $S = LL^\top$.
  * @param y Scalar $y$.
  * 
  * @return Solution of $B$ in $SB = LL^\top B = Iy$.
  */
-template<real_scalar U>
-Array<real,2> cholsolve(const Array<real,2>& L, const U& y);
+Array<real,2> cholsolve(const Array<real,2>& L, const real& y);
 
 /**
  * Gradient of cholsolve().
  * 
  * @ingroup linalg_grad
- * 
- * @tparam U Floating point scalar type.
  * 
  * @param g Gradient with respect to result.
  * @param B Solution of $B$ in $SB = LL^\top B = Iy$.
@@ -236,16 +231,13 @@ Array<real,2> cholsolve(const Array<real,2>& L, const U& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<real_scalar U>
 Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y);
+    const Array<real,2>& L, const real& y);
 
 /**
  * Gradient of cholsolve().
  * 
  * @ingroup linalg_grad
- * 
- * @tparam U Floating point scalar type.
  * 
  * @param g Gradient with respect to result.
  * @param B Solution of $B$ in $SB = LL^\top B = Iy$.
@@ -255,9 +247,53 @@ Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
  * 
  * @return Gradient with respect to  @p y.
  */
-template<real_scalar U>
 Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y);
+    const Array<real,2>& L, const real& y);
+
+/**
+ * Matrix-scalar solve via the Cholesky factorization.
+ * 
+ * @ingroup linalg
+ * 
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $SB = LL^\top B = Iy$.
+ */
+Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,0>& y);
+
+/**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $SB = LL^\top B = Iy$.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+Array<real,2> cholsolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y);
+
+/**
+ * Gradient of cholsolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $SB = LL^\top B = Iy$.
+ * @param L Lower-triangular Cholesky factor $L$ of the symmetric positive
+ * definite matrix $S = LL^\top$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to  @p y.
+ */
+Array<real,0> cholsolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y);
 
 /**
  * Matrix-vector solve via the Cholesky factorization.
@@ -1016,22 +1052,17 @@ Array<real,2> triinner_grad2(const Array<real,2>& g, const Array<real,2>& L,
  * 
  * @ingroup linalg
  * 
- * @tparam U Floating point scalar type.
- * 
  * @param L Lower-triangular matrix $L$.
  * @param y Scalar $y$.
  * 
  * @return Solution of $B$ in $LB = Iy$.
  */
-template<real_scalar U>
-Array<real,2> triinnersolve(const Array<real,2>& L, const U& y);
+Array<real,2> triinnersolve(const Array<real,2>& L, const real& y);
 
 /**
  * Gradient of triinnersolve().
  * 
  * @ingroup linalg_grad
- * 
- * @tparam U Floating point scalar type.
  * 
  * @param g Gradient with respect to result.
  * @param B Solution of $B$ in $LB = Iy$.
@@ -1040,16 +1071,13 @@ Array<real,2> triinnersolve(const Array<real,2>& L, const U& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<real_scalar U>
-Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y);
+Array<real,2> triinnersolve_grad1(const Array<real,2>& g,
+    const Array<real,2>& B, const Array<real,2>& L, const real& y);
 
 /**
  * Gradient of triinnersolve().
  * 
  * @ingroup linalg_grad
- * 
- * @tparam U Floating point scalar type.
  * 
  * @param g Gradient with respect to result.
  * @param B Solution of $B$ in $LB = Iy$.
@@ -1058,9 +1086,50 @@ Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B
  * 
  * @return Gradient with respect to  @p y.
  */
-template<real_scalar U>
-Array<real,0> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y);
+Array<real,0> triinnersolve_grad2(const Array<real,2>& g,
+    const Array<real,2>& B, const Array<real,2>& L, const real& y);
+
+/**
+ * Lower-triangular-matrix-scalar inner solve.
+ * 
+ * @ingroup linalg
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $LB = Iy$.
+ */
+Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,0>& y);
+
+/**
+ * Gradient of triinnersolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+Array<real,2> triinnersolve_grad1(const Array<real,2>& g,
+    const Array<real,2>& B, const Array<real,2>& L, const Array<real,0>& y);
+
+/**
+ * Gradient of triinnersolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to  @p y.
+ */
+Array<real,0> triinnersolve_grad2(const Array<real,2>& g,
+    const Array<real,2>& B, const Array<real,2>& L, const Array<real,0>& y);
 
 /**
  * Lower-triangular-matrix-vector inner solve.
@@ -1086,8 +1155,8 @@ Array<real,1> triinnersolve(const Array<real,2>& L, const Array<real,1>& x);
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triinnersolve_grad1(const Array<real,1>& g, const Array<real,1>& x,
-    const Array<real,2>& L, const Array<real,1>& y);
+Array<real,2> triinnersolve_grad1(const Array<real,1>& g,
+    const Array<real,1>& x, const Array<real,2>& L, const Array<real,1>& y);
 
 /**
  * Gradient of triinnersolve().
@@ -1101,8 +1170,8 @@ Array<real,2> triinnersolve_grad1(const Array<real,1>& g, const Array<real,1>& x
  * 
  * @return Gradient with respect to @p y.
  */
-Array<real,1> triinnersolve_grad2(const Array<real,1>& g, const Array<real,1>& x,
-    const Array<real,2>& L, const Array<real,1>& y);
+Array<real,1> triinnersolve_grad2(const Array<real,1>& g,
+    const Array<real,1>& x, const Array<real,2>& L, const Array<real,1>& y);
 
 /**
  * Lower-triangular-matrix-matrix inner solve.
@@ -1128,8 +1197,8 @@ Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,2>& C);
  * 
  * @return Gradient with respect to @p L.
  */
-Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const Array<real,2>& C);
+Array<real,2> triinnersolve_grad1(const Array<real,2>& g,
+    const Array<real,2>& B, const Array<real,2>& L, const Array<real,2>& C);
 
 /**
  * Gradient of triinnersolve().
@@ -1143,8 +1212,8 @@ Array<real,2> triinnersolve_grad1(const Array<real,2>& g, const Array<real,2>& B
  * 
  * @return Gradient with respect to @p C.
  */
-Array<real,2> triinnersolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const Array<real,2>& C);
+Array<real,2> triinnersolve_grad2(const Array<real,2>& g,
+    const Array<real,2>& B, const Array<real,2>& L, const Array<real,2>& C);
 
 /**
  * Inverse of a triangular matrix.
@@ -1319,22 +1388,17 @@ Array<real,2> triouter_grad2(const Array<real,2>& g, const Array<real,2>& A,
  * 
  * @ingroup linalg
  * 
- * @tparam U Floating point scalar type.
- * 
  * @param L Lower-triangular matrix $L$.
  * @param y Scalar $y$.
  * 
  * @return Solution of $B$ in $LB = Iy$.
  */
-template<real_scalar U>
-Array<real,2> trisolve(const Array<real,2>& L, const U& y);
+Array<real,2> trisolve(const Array<real,2>& L, const real& y);
 
 /**
  * Gradient of trisolve().
  * 
  * @ingroup linalg_grad
- * 
- * @tparam U Floating point scalar type.
  * 
  * @param g Gradient with respect to result.
  * @param B Solution of $B$ in $LB = Iy$.
@@ -1343,16 +1407,13 @@ Array<real,2> trisolve(const Array<real,2>& L, const U& y);
  * 
  * @return Gradient with respect to @p L.
  */
-template<real_scalar U>
 Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y);
+    const Array<real,2>& L, const real& y);
 
 /**
  * Gradient of trisolve().
  * 
  * @ingroup linalg_grad
- * 
- * @tparam U Floating point scalar type.
  * 
  * @param g Gradient with respect to result.
  * @param B Solution of $B$ in $LB = Iy$.
@@ -1361,9 +1422,50 @@ Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
  * 
  * @return Gradient with respect to  @p y.
  */
-template<real_scalar U>
 Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
-    const Array<real,2>& L, const U& y);
+    const Array<real,2>& L, const real& y);
+
+/**
+ * Lower-triangular-matrix-scalar solve.
+ * 
+ * @ingroup linalg
+ * 
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Solution of $B$ in $LB = Iy$.
+ */
+Array<real,2> trisolve(const Array<real,2>& L, const Array<real,0>& y);
+
+/**
+ * Gradient of trisolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to @p L.
+ */
+Array<real,2> trisolve_grad1(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y);
+
+/**
+ * Gradient of trisolve().
+ * 
+ * @ingroup linalg_grad
+ * 
+ * @param g Gradient with respect to result.
+ * @param B Solution of $B$ in $LB = Iy$.
+ * @param L Lower-triangular matrix $L$.
+ * @param y Scalar $y$.
+ * 
+ * @return Gradient with respect to  @p y.
+ */
+Array<real,0> trisolve_grad2(const Array<real,2>& g, const Array<real,2>& B,
+    const Array<real,2>& L, const Array<real,0>& y);
 
 /**
  * Lower-triangular-matrix-vector solve.

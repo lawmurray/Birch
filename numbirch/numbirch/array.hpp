@@ -18,7 +18,7 @@ namespace numbirch {
  * 
  * @see Array::length()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int length(const Array<T,D>& x) {
   return x.length();
 }
@@ -40,7 +40,7 @@ constexpr int length(const T& x) {
  * 
  * @see Array::rows()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int rows(const Array<T,D>& x) {
   return x.rows();
 }
@@ -62,7 +62,7 @@ constexpr int rows(const T& x) {
  * 
  * @see Array::columns()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int columns(const Array<T,D>& x) {
   return x.columns();
 }
@@ -84,7 +84,7 @@ constexpr int columns(const T& x) {
  * 
  * @see Array::width()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int width(const Array<T,D>& x) {
   return x.width();
 }
@@ -126,7 +126,7 @@ int width(const Arg& arg, const Args&... args) {
  * 
  * @see Array::height()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int height(const Array<T,D>& x) {
   return x.height();
 }
@@ -168,7 +168,7 @@ int height(const Arg& arg, const Args&... args) {
  * 
  * @see Array::stride()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int stride(const Array<T,D>& x) {
   return x.stride();
 }
@@ -190,7 +190,7 @@ constexpr int stride(const T& x) {
  * 
  * @see Array::size()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 int size(const Array<T,D>& x) {
   return x.size();
 }
@@ -212,7 +212,7 @@ constexpr int size(const T& x) {
  * 
  * @see Array::shape()
  */
-template<class T, int D>
+template<arithmetic T, int D>
 Shape<D> shape(const Array<T,D>& x) {
   return x.shape();
 }
@@ -232,7 +232,7 @@ Shape<0> shape(const T& x) {
  * 
  * @ingroup array
  */
-template<class T, int D>
+template<arithmetic T, int D>
 T* buffer(Array<T,D>& x) {
   return x.buffer();
 }
@@ -242,7 +242,7 @@ T* buffer(Array<T,D>& x) {
  * 
  * @ingroup array
  */
-template<class T, int D>
+template<arithmetic T, int D>
 const T* buffer(const Array<T,D>& x) {
   return x.buffer();
 }
@@ -262,7 +262,7 @@ T buffer(const T& x) {
  * 
  * @ingroup array
  */
-template<class T, int D>
+template<arithmetic T, int D>
 void*& stream(const Array<T,D>& x) {
   return x.stream();
 }
@@ -285,7 +285,7 @@ void* stream(const T& x) {
  * 
  * @see Array::conforms()
  */
-template<class T, int D, class U, int E>
+template<arithmetic T, int D, arithmetic U, int E>
 bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
   return x.conforms(y);
 }
@@ -296,7 +296,7 @@ bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
  * 
  * @ingroup array
  */
-template<class T, int D, scalar U>
+template<arithmetic T, int D, scalar U>
 constexpr bool conforms(const Array<T,D>& x, const U& y) {
   return D == 0;
 }
@@ -492,7 +492,7 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,1>& x);
  * 
  * @return Element.
  */
-template<arithmetic T, int_scalar U>
+template<arithmetic T, scalar U>
 Array<T,0> element(const Array<T,1>& x, const U& i);
 
 /**
@@ -509,7 +509,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
  * 
  * @return Gradient with respect to @p x.
  */
-template<arithmetic T, int_scalar U>
+template<arithmetic T, scalar U>
 Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
     const U& i);
 
@@ -527,7 +527,7 @@ Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
  * 
  * @return Gradient with respect to @p i.
  */
-template<arithmetic T, int_scalar U>
+template<arithmetic T, scalar U>
 real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i);
 
 /**
@@ -545,7 +545,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i);
  * 
  * @return Element.
  */
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
 
 /**
@@ -564,7 +564,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
  * 
  * @return Gradient with respect to @p A.
  */
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
     const U& i, const V& j);
 
@@ -584,7 +584,7 @@ Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
  * 
  * @return Gradient with respect to @p i.
  */
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
     const V& j);
 
@@ -604,7 +604,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
  * 
  * @return Gradient with respect to @p j.
  */
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
     const V& j);
 
@@ -623,7 +623,7 @@ real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
  * 
  * @return Single-entry vector.
  */
-template<scalar T, int_scalar U>
+template<scalar T, scalar U>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 
 /**
@@ -641,7 +641,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<scalar T, int_scalar U>
+template<scalar T, scalar U>
 Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
     const int n);
 
@@ -660,7 +660,7 @@ Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
  * 
  * @return Gradient with respect to @p i.
  */
-template<scalar T, int_scalar U>
+template<scalar T, scalar U>
 real single_grad2(const Array<real,1>& g, const T& x, const U& i,
     const int n);
 
@@ -682,7 +682,7 @@ real single_grad2(const Array<real,1>& g, const T& x, const U& i,
  * 
  * @return Single-entry matrix.
  */
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n);
 
@@ -704,7 +704,7 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  * 
  * @return Gradient with respect to @p x.
  */
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
     const V& j, const int m, const int n);
 
@@ -726,7 +726,7 @@ Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
  * 
  * @return Gradient with respect to @p i.
  */
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
     const int m, const int n);
 
@@ -748,7 +748,7 @@ real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
  * 
  * @return Gradient with respect to @p j.
  */
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 real single_grad3(const Array<real,2>& g, const T& x, const U& i, const V& j,
     const int m, const int n);
 
@@ -966,6 +966,7 @@ real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n);
  * @ingroup array
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x Source.
  * @param y Indices.
@@ -974,8 +975,8 @@ real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n);
  * 
  * @see scatter
  */
-template<arithmetic T>
-Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
+template<arithmetic T, arithmetic U>
+Array<T,1> gather(const Array<T,1>& x, const Array<U,1>& y);
 
 /**
  * Gradient of gather().
@@ -983,6 +984,7 @@ Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param g Gradient with respect to result.
  * @param x Source.
@@ -990,9 +992,9 @@ Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y);
  * 
  * @return Gradient with respect to @p x.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y);
+    const Array<U,1>& y);
 
 /**
  * Gradient of gather().
@@ -1000,6 +1002,7 @@ Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param g Gradient with respect to result.
  * @param x Source.
@@ -1007,9 +1010,9 @@ Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y);
+    const Array<U,1>& y);
 
 /**
  * Matrix gather.
@@ -1017,6 +1020,8 @@ Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
  * @ingroup array
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param A Source.
  * @param I Row indices.
@@ -1026,9 +1031,9 @@ Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
  * 
  * @see scatter, gather
  */
-template<arithmetic T>
-Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
-    const Array<int,2>& J);
+template<arithmetic T, arithmetic U, arithmetic V>
+Array<T,2> gather(const Array<T,2>& A, const Array<U,2>& I,
+    const Array<V,2>& J);
 
 /**
  * Gradient of gather().
@@ -1036,6 +1041,8 @@ Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param G Gradient with respect to result.
  * @param A Source.
@@ -1044,9 +1051,9 @@ Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
  * 
  * @return Gradient with respect to @p A.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J);
+    const Array<U,2>& I, const Array<V,2>& J);
 
 /**
  * Gradient of gather().
@@ -1054,6 +1061,8 @@ Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param G Gradient with respect to result.
  * @param A Source.
@@ -1062,9 +1071,9 @@ Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
  * 
  * @return Gradient with respect to @p I.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J);
+    const Array<U,2>& I, const Array<V,2>& J);
 
 /**
  * Gradient of gather().
@@ -1072,6 +1081,8 @@ Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param G Gradient with respect to result.
  * @param A Source.
@@ -1080,9 +1091,9 @@ Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
  * 
  * @return Gradient with respect to @p J.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J);
+    const Array<U,2>& I, const Array<V,2>& J);
 
 /**
  * Vector scatter.
@@ -1090,6 +1101,7 @@ Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
  * @ingroup array
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param x Source.
  * @param y Indices.
@@ -1112,8 +1124,8 @@ Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
  * 
  * @see gather
  */
-template<arithmetic T>
-Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
+template<arithmetic T, arithmetic U>
+Array<T,1> scatter(const Array<T,1>& x, const Array<U,1>& y, const int n);
 
 /**
  * Gradient of scatter().
@@ -1121,6 +1133,7 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param g Gradient with respect to result.
  * @param x Source.
@@ -1129,9 +1142,9 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n);
  * 
  * @return Gradient with respect to @p x.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y, const int n);
+    const Array<U,1>& y, const int n);
 
 /**
  * Gradient of scatter().
@@ -1139,6 +1152,7 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
  * 
  * @param g Gradient with respect to result.
  * @param x Source.
@@ -1147,9 +1161,9 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
  * 
  * @return Gradient with respect to @p y.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y, const int n);
+    const Array<U,1>& y, const int n);
 
 /**
  * Matrix scatter.
@@ -1157,6 +1171,8 @@ Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
  * @ingroup array
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param A Source.
  * @param I Row indices.
@@ -1170,9 +1186,9 @@ Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
  * 
  * @see gather, scatter
  */
-template<arithmetic T>
-Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
-    const Array<int,2>& J, const int m, const int n);
+template<arithmetic T, arithmetic U, arithmetic V>
+Array<T,2> scatter(const Array<T,2>& A, const Array<U,2>& I,
+    const Array<V,2>& J, const int m, const int n);
 
 /**
  * Gradient of scatter().
@@ -1180,6 +1196,8 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param G Gradient with respect to result.
  * @param A Source.
@@ -1190,9 +1208,9 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
  * 
  * @return Gradient with respect to @p A.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n);
+    const Array<U,2>& I, const Array<V,2>& J, const int m, const int n);
 
 /**
  * Gradient of scatter().
@@ -1200,6 +1218,8 @@ Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param G Gradient with respect to result.
  * @param A Source.
@@ -1210,9 +1230,9 @@ Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
  * 
  * @return Gradient with respect to @p I.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n);
+    const Array<U,2>& I, const Array<V,2>& J, const int m, const int n);
 
 /**
  * Gradient of scatter().
@@ -1220,6 +1240,8 @@ Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
  * @ingroup array_grad
  * 
  * @tparam T Arithmetic type.
+ * @tparam U Arithmetic type.
+ * @tparam V Arithmetic type.
  * 
  * @param G Gradient with respect to result.
  * @param A Source.
@@ -1230,8 +1252,8 @@ Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
  * 
  * @return Gradient with respect to @p J.
  */
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n);
+    const Array<U,2>& I, const Array<V,2>& J, const int m, const int n);
 
 }

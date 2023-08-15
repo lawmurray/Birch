@@ -163,8 +163,20 @@ Array<real,2> chol(const Array<real,2>& S) {
   return L;
 }
 
-template<real_scalar U>
-Array<real,2> cholsolve(const Array<real,2>& L, const U& y) {
+Array<real,2> cholsolve(const Array<real,2>& L, const real& y) {
+  assert(rows(L) == columns(L));
+  Array<real,2> B(diagonal(y, rows(L)));
+  Array<int,0> info;
+
+  Lock lock(L);
+  CUSOLVER_CHECK(cusolverDnXpotrs(cusolverDnHandle, cusolverDnParams,
+      CUBLAS_FILL_MODE_LOWER, rows(B), columns(B), cusolver<T>::CUDA_R,
+      buffer(L), stride(L), cusolver<T>::CUDA_R, buffer(B), stride(B),
+      buffer(info)));      
+  return B;
+}
+
+Array<real,2> cholsolve(const Array<real,2>& L, const Array<real,0>& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(diagonal(y, rows(L)));
   Array<int,0> info;
@@ -413,8 +425,18 @@ Array<real,2> triinner(const Array<real,2>& L, const Array<real,2>& B) {
   return C;
 }
 
-template<real_scalar U>
-Array<real,2> triinnersolve(const Array<real,2>& L, const U& y) {
+Array<real,2> triinnersolve(const Array<real,2>& L, const real& y) {
+  assert(rows(L) == columns(L));
+  Array<real,2> B(diagonal(y, rows(L)));
+  Lock lock(L);
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_T, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B),
+      stride(B)));
+  return B;
+}
+
+Array<real,2> triinnersolve(const Array<real,2>& L, const Array<real,0>& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(diagonal(y, rows(L)));
   Lock lock(L);
@@ -483,8 +505,18 @@ Array<real,2> triouter(const Array<real,2>& A, const Array<real,2>& L) {
   return C;
 }
 
-template<real_scalar U>
-Array<real,2> trisolve(const Array<real,2>& L, const U& y) {
+Array<real,2> trisolve(const Array<real,2>& L, const real& y) {
+  assert(rows(L) == columns(L));
+  Array<real,2> B(diagonal(y, rows(L)));
+  Lock lock(L);
+  CUBLAS_CHECK(cublas<T>::trsm(cublasHandle, CUBLAS_SIDE_LEFT,
+      CUBLAS_FILL_MODE_LOWER, CUBLAS_OP_N, CUBLAS_DIAG_NON_UNIT,
+      rows(B), columns(B), scalar<T>::one, buffer(L), stride(L), buffer(B),
+      stride(B)));
+  return B;
+}
+
+Array<real,2> trisolve(const Array<real,2>& L, const Array<real,0>& y) {
   assert(rows(L) == columns(L));
   Array<real,2> B(diagonal(y, rows(L)));
   Lock lock(L);

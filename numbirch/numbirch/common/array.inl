@@ -208,7 +208,7 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,1>& x) {
   return g.diagonal();
 }
 
-template<arithmetic T, int_scalar U>
+template<arithmetic T, scalar U>
 Array<T,0> element(const Array<T,1>& x, const U& i) {
   Array<T,0> z;
   for_each(1, 1, gather_functor{buffer(x), stride(x), 1, 0, buffer(i),
@@ -216,18 +216,18 @@ Array<T,0> element(const Array<T,1>& x, const U& i) {
   return z;
 }
 
-template<arithmetic T, int_scalar U>
+template<arithmetic T, scalar U>
 Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
     const U& i) {
   return single(g, i, length(x));
 }
 
-template<arithmetic T, int_scalar U>
+template<arithmetic T, scalar U>
 real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i) {
   return real(0);
 }
 
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 Array<T,0> element(const Array<T,2>& A, const U& i, const V& j) {
   Array<T,0> z;
   for_each(1, 1, gather_functor{buffer(A), stride(A), buffer(i), stride(i),
@@ -235,44 +235,44 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j) {
   return z;
 }
 
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
     const U& i, const V& j) {
   return single(g, i, j, rows(A), columns(A));
 }
 
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
     const V& j) {
   return real(0);
 }
 
-template<arithmetic T, int_scalar U, int_scalar V>
+template<arithmetic T, scalar U, scalar V>
 real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
     const V& j) {
   return real(0);
 }
 
-template<scalar T, int_scalar U>
+template<scalar T, scalar U>
 Array<value_t<T>,1> single(const T& x, const U& i, const int n) {
   Array<value_t<T>,1> y(make_shape(n));
   for_each(n, single_functor{buffer(x), 1, buffer(i), buffer(y), stride(y)});
   return y;
 }
 
-template<scalar T, int_scalar U>
+template<scalar T, scalar U>
 Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
     const int n) {
   return element(g, i);
 }
 
-template<scalar T, int_scalar U>
+template<scalar T, scalar U>
 real single_grad2(const Array<real,1>& g, const T& x, const U& i,
     const int n) {
   return real(0);
 }
 
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n) {
   Array<value_t<T>,2> Y(make_shape(m, n));
@@ -281,19 +281,19 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
   return Y;
 }
 
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
     const V& j, const int m, const int n) {
   return element(g, i, j);
 }
 
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
     const int m, const int n) {
   return real(0);
 }
 
-template<scalar T, int_scalar U, int_scalar V>
+template<scalar T, scalar U, scalar V>
 real single_grad3(const Array<real,2>& g, const T& x, const U& i, const V& j,
     const int m, const int n) {
   return real(0);
@@ -554,55 +554,55 @@ real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n) {
   }
 }
 
-template<arithmetic T>
-Array<T,1> gather(const Array<T,1>& x, const Array<int,1>& y) {
+template<arithmetic T, arithmetic U>
+Array<T,1> gather(const Array<T,1>& x, const Array<U,1>& y) {
   Array<T,1> z(shape(y));
   for_each(length(y), gather_functor{buffer(x), stride(x), 1, 0, buffer(y),
       stride(y), buffer(z), stride(z)});
   return z;
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y) {
+    const Array<U,1>& y) {
   return scatter(g, y, length(x));
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y) {
+    const Array<U,1>& y) {
   return fill(real(0), length(y));
 }
 
-template<arithmetic T>
-Array<T,2> gather(const Array<T,2>& A, const Array<int,2>& I,
-    const Array<int,2>& J) {
+template<arithmetic T, arithmetic U, arithmetic V>
+Array<T,2> gather(const Array<T,2>& A, const Array<U,2>& I,
+    const Array<V,2>& J) {
   Array<T,2> C(shape(I));
   for_each(rows(I), columns(I), gather_functor{buffer(A), stride(A),
       buffer(I), stride(I), buffer(J), stride(J), buffer(C), stride(C)});
   return C;
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J) {
+    const Array<U,2>& I, const Array<V,2>& J) {
   return scatter(G, I, J, rows(A), columns(A));
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J) {
+    const Array<U,2>& I, const Array<V,2>& J) {
   return fill(real(0), rows(I), columns(I));
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J) {
+    const Array<U,2>& I, const Array<V,2>& J) {
   return fill(real(0), rows(J), columns(J));
 }
 
-template<arithmetic T>
-Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n) {
+template<arithmetic T, arithmetic U>
+Array<T,1> scatter(const Array<T,1>& x, const Array<U,1>& y, const int n) {
   assert(conforms(x, y));
   auto z = fill(T(0), n);
   for_each(length(x), scatter_functor{buffer(x), stride(x), 1, 0, buffer(y),
@@ -610,21 +610,21 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<int,1>& y, const int n) {
   return z;
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y, const int n) {
+    const Array<U,1>& y, const int n) {
   return gather(g, y);
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U>
 Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
-    const Array<int,1>& y, const int n) {
+    const Array<U,1>& y, const int n) {
   return Array<real,1>(real(0), shape(y));
 }
 
-template<arithmetic T>
-Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
-    const Array<int,2>& J, const int m, const int n) {
+template<arithmetic T, arithmetic U, arithmetic V>
+Array<T,2> scatter(const Array<T,2>& A, const Array<U,2>& I,
+    const Array<V,2>& J, const int m, const int n) {
   assert(conforms(A, I));
   assert(conforms(A, J));
   auto C = fill(T(0), m, n);
@@ -633,21 +633,21 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<int,2>& I,
   return C;
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n) {
+    const Array<U,2>& I, const Array<V,2>& J, const int m, const int n) {
   return gather(G, I, J);
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n) {
+    const Array<U,2>& I, const Array<V,2>& J, const int m, const int n) {
   return fill(real(0), rows(I), columns(I));
 }
 
-template<arithmetic T>
+template<arithmetic T, arithmetic U, arithmetic V>
 Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& A,
-    const Array<int,2>& I, const Array<int,2>& J, const int m, const int n) {
+    const Array<U,2>& I, const Array<V,2>& J, const int m, const int n) {
   return fill(real(0), rows(J), columns(J));
 }
 

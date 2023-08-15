@@ -4,46 +4,12 @@ AM_CXXFLAGS = -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
 
 SOURCES =  \
     numbirch/common/random.cpp \
-    numbirch/instantiate/array/diagonal_from_scalar.cpp \
-    numbirch/instantiate/array/diagonal_from_vector.cpp \
-    numbirch/instantiate/array/element_matrix.cpp \
-    numbirch/instantiate/array/element_vector.cpp \
-    numbirch/instantiate/array/fill_matrix.cpp \
-    numbirch/instantiate/array/fill_vector.cpp \
-    numbirch/instantiate/array/gather_matrix.cpp \
-    numbirch/instantiate/array/gather_vector.cpp \
-    numbirch/instantiate/array/iota.cpp \
-    numbirch/instantiate/array/mat.cpp \
-    numbirch/instantiate/array/pack.cpp \
-    numbirch/instantiate/array/scal.cpp \
-    numbirch/instantiate/array/scatter_matrix.cpp \
-    numbirch/instantiate/array/scatter_vector.cpp \
-    numbirch/instantiate/array/single_matrix.cpp \
-    numbirch/instantiate/array/single_vector.cpp \
-    numbirch/instantiate/array/stack.cpp \
-    numbirch/instantiate/array/vec.cpp \
-    numbirch/instantiate/memory/memcpy.cpp \
-    numbirch/instantiate/memory/memset.cpp \
-    numbirch/instantiate/random/binary.cpp \
-    numbirch/instantiate/random/simulate_wishart.cpp \
-    numbirch/instantiate/random/standard_gaussian.cpp \
-    numbirch/instantiate/random/unary.cpp \
-    numbirch/instantiate/reduce/cumsum.cpp \
-    numbirch/instantiate/reduce/cumsum_grad.cpp \
-    numbirch/instantiate/reduce/count.cpp \
-    numbirch/instantiate/reduce/count_grad.cpp \
-    numbirch/instantiate/reduce/reduce.cpp \
-    numbirch/instantiate/reduce/reduce_grad.cpp \
-    numbirch/instantiate/reduce/sum_grad.cpp \
-    numbirch/instantiate/transform/binary.cpp \
-    numbirch/instantiate/transform/binary_grad.cpp \
-    numbirch/instantiate/transform/cast.cpp \
-    numbirch/instantiate/transform/ternary.cpp \
-    numbirch/instantiate/transform/ternary_grad.cpp \
-    numbirch/instantiate/transform/unary.cpp \
-    numbirch/instantiate/transform/unary_grad.cpp \
-    numbirch/instantiate/transform/where.cpp \
-    numbirch/instantiate/numeric.cpp
+    numbirch/instantiate/array.cpp \
+    numbirch/instantiate/memory.cpp \
+    numbirch/instantiate/numeric.cpp \
+    numbirch/instantiate/random.cpp \
+    numbirch/instantiate/reduce.cpp \
+    numbirch/instantiate/transform.cpp
 
 ONEAPI_CPPFLAGS = -DBACKEND_ONEAPI \
     -Wno-deprecated-declarations \
@@ -180,6 +146,7 @@ noinst_HEADERS = \
   numbirch/eigen/random.inl \
   numbirch/eigen/reduce.inl \
   numbirch/eigen/transform.inl \
+  numbirch/instantiate/instantiate.hpp \
   numbirch/jemalloc/jemalloc.hpp \
   numbirch/oneapi/dpl.hpp \
   numbirch/oneapi/numeric.hpp \
