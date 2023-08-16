@@ -12,7 +12,7 @@
 
 namespace numbirch {
 
-NUMBIRCH_KEEP void instantiate6() {
+NUMBIRCH_KEEP static void instantiate() {
   /* unary functions */
   std::visit([]<class T>(T x) {
     abs(x);

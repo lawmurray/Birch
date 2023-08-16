@@ -13,7 +13,7 @@
 
 namespace numbirch {
 
-NUMBIRCH_KEEP void instantiate1() {
+NUMBIRCH_KEEP static void instantiate() {
   std::visit([]<class T>(T x) {
     diagonal(x, 0);
     fill(x, 0, 0);

@@ -12,7 +12,7 @@
 
 namespace numbirch {
 
-NUMBIRCH_KEEP void instantiate3() {
+NUMBIRCH_KEEP static void instantiate() {
   std::visit([]<class T>(T A) {
     transpose(A);
 

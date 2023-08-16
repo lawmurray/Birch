@@ -15,7 +15,7 @@
 
 namespace numbirch {
 
-NUMBIRCH_KEEP void instantiate4() {
+NUMBIRCH_KEEP static void instantiate() {
   /* unary functions */
   std::visit([]<class T>(T x) {
     simulate_bernoulli(x);
