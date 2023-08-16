@@ -15,7 +15,7 @@
 
 namespace numbirch {
 
-[[maybe_unused]] static void instantiate() {
+NUMBIRCH_KEEP static void instantiate() {
   std::visit([]<class T>(T x) {
     count(x);
     cumsum(x);

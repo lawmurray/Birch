@@ -32,14 +32,11 @@
 #define NUMBIRCH_CONSTANT
 #endif
 
-/**
- * @internal
- * 
- * @def NUMBIRCH_ARRAY
- * 
- * Assembles the type `Array<T,D>`.
- */
-#define NUMBIRCH_ARRAY(T, D) Array<T,D>
+#ifdef __GNUC__
+#define NUMBIRCH_KEEP __attribute__((noipa,used))
+#else
+#define NUMBIRCH_KEEP __attribute__((noinline,used))
+#endif
 
 /**
  * Macro to set the default floating point type. Valid values are `float` and

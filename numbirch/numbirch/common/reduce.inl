@@ -47,29 +47,29 @@ struct max_grad_functor {
 };
 
 template<numeric T>
-real_t<T> count_grad(const Array<real,0>& g, const T& x) {
+NUMBIRCH_KEEP real_t<T> count_grad(const Array<real,0>& g, const T& x) {
   return transform(g, x, count_grad_functor());
 }
 
 template<numeric T>
-real_t<T> sum_grad(const Array<real,0>& g, const T& x) {
+NUMBIRCH_KEEP real_t<T> sum_grad(const Array<real,0>& g, const T& x) {
   return transform(g, x, sum_grad_functor());
 }
 
 template<numeric T>
-real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
+NUMBIRCH_KEEP real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x) {
   return transform(g, y, x, min_grad_functor());
 }
 
 template<numeric T>
-real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
+NUMBIRCH_KEEP real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x) {
   return transform(g, y, x, max_grad_functor());
 }
 
 template<numeric T>
-real_t<T> cumsum_grad(const real_t<T>& g, const T& x) {
+NUMBIRCH_KEEP real_t<T> cumsum_grad(const real_t<T>& g, const T& x) {
   return sub(sum(g), sub(cumsum(g), g));
 }
 

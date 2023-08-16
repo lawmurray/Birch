@@ -9,7 +9,7 @@
 namespace numbirch {
 
 template<arithmetic T, arithmetic U>
-void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
+NUMBIRCH_KEEP void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
     const int width, const int height) {
   for (int j = 0; j < height; ++j) {
     for (int i = 0; i < width; ++i) {
@@ -19,7 +19,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
 }
 
 template<arithmetic T, arithmetic U>
-void memset(T* dst, const int dpitch, const U value, const int width,
+NUMBIRCH_KEEP void memset(T* dst, const int dpitch, const U value, const int width,
     const int height) {
   for (int j = 0; j < height; ++j) {
     for (int i = 0; i < width; ++i) {
@@ -29,7 +29,7 @@ void memset(T* dst, const int dpitch, const U value, const int width,
 }
 
 template<arithmetic T, arithmetic U>
-void memset(T* dst, const int dpitch, const U* value, const int width,
+NUMBIRCH_KEEP void memset(T* dst, const int dpitch, const U* value, const int width,
     const int height) {
   for (int j = 0; j < height; ++j) {
     for (int i = 0; i < width; ++i) {

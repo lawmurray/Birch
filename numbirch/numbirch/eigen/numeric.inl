@@ -181,7 +181,7 @@ Array<real,2> phi(const Array<real,2>& A) {
 }
 
 template<arithmetic T>
-Array<T,2> transpose(const Array<T,2>& A) {
+NUMBIRCH_KEEP Array<T,2> transpose(const Array<T,2>& A) {
   Array<T,2> B(make_shape(columns(A), rows(A)));
   auto A1 = make_eigen(A);
   auto B1 = make_eigen(B);

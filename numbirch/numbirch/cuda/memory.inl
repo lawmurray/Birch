@@ -34,7 +34,7 @@ __global__ void kernel_memset(T* dst, const int dpitch, const U value,
 }
 
 template<arithmetic T, arithmetic U>
-void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
+NUMBIRCH_KEEP void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
     const int width, const int height) {
   if (width > 0 && height > 0) {
     auto grid = make_grid(width, height);
@@ -45,7 +45,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
 }
 
 template<arithmetic T, arithmetic U>
-void memset(T* dst, const int dpitch, const U value, const int width,
+NUMBIRCH_KEEP void memset(T* dst, const int dpitch, const U value, const int width,
     const int height) {
   if (width > 0 && height > 0) {
     auto grid = make_grid(width, height);
@@ -56,7 +56,7 @@ void memset(T* dst, const int dpitch, const U value, const int width,
 }
 
 template<arithmetic T, arithmetic U>
-void memset(T* dst, const int dpitch, const U* value, const int width,
+NUMBIRCH_KEEP void memset(T* dst, const int dpitch, const U* value, const int width,
     const int height) {
   if (width > 0 && height > 0) {
     auto grid = make_grid(width, height);

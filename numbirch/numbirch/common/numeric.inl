@@ -225,7 +225,7 @@ Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& A) {
 }
 
 template<arithmetic T>
-Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A) {
+NUMBIRCH_KEEP Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A) {
   return transpose(g);
 }
 

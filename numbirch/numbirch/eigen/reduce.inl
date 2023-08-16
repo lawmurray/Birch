@@ -11,7 +11,7 @@
 namespace numbirch {
 
 template<numeric T>
-Array<int,0> count(const T& x) {
+NUMBIRCH_KEEP Array<int,0> count(const T& x) {
   if constexpr (is_arithmetic_v<T>) {
     return count_functor()(x);
   } else if (size(x) == 0) {
@@ -22,7 +22,7 @@ Array<int,0> count(const T& x) {
 }
 
 template<numeric T>
-Array<value_t<T>,0> sum(const T& x) {
+NUMBIRCH_KEEP Array<value_t<T>,0> sum(const T& x) {
   if constexpr (is_scalar_v<T>) {
     return x;
   } else if (size(x) == 0) {
@@ -33,7 +33,7 @@ Array<value_t<T>,0> sum(const T& x) {
 }
 
 template<numeric T>
-Array<value_t<T>,0> min(const T& x) {
+NUMBIRCH_KEEP Array<value_t<T>,0> min(const T& x) {
   if constexpr (is_scalar_v<T>) {
     return x;
   } else if (size(x) == 0) {
@@ -44,7 +44,7 @@ Array<value_t<T>,0> min(const T& x) {
 }
 
 template<numeric T>
-Array<value_t<T>,0> max(const T& x) {
+NUMBIRCH_KEEP Array<value_t<T>,0> max(const T& x) {
   if constexpr (is_scalar_v<T>) {
     return x;
   } else if (size(x) == 0) {
@@ -55,7 +55,7 @@ Array<value_t<T>,0> max(const T& x) {
 }
 
 template<numeric T>
-T cumsum(const T& x) {
+NUMBIRCH_KEEP T cumsum(const T& x) {
   if constexpr (is_scalar_v<T>) {
     return x;
   } else if (size(x) == 0) {

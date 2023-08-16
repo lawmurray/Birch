@@ -12,7 +12,7 @@
 
 namespace numbirch {
 
-[[maybe_unused]] static void instantiate() {
+NUMBIRCH_KEEP void instantiate6() {
   /* unary functions */
   std::visit([]<class T>(T x) {
     abs(x);
@@ -48,7 +48,7 @@ namespace numbirch {
     tan(x);
     tanh(x);
 
-    real_t<T> g;
+    real_t<T> g{};
     abs_grad(g, x);
     acos_grad(g, x);
     asin_grad(g, x);
@@ -103,7 +103,7 @@ namespace numbirch {
       pow(x, y);
       sub(x, y);
 
-      real_t<T,U> g;
+      real_t<T,U> g{};
       add_grad1(g, x, y);
       add_grad2(g, x, y);
       copysign_grad1(g, x, y);
@@ -149,7 +149,7 @@ namespace numbirch {
       lz_conway_maxwell_poisson(x, y, z);
       where(x, y, z);
 
-      real_t<T,U,real> g;
+      real_t<T,U,real> g{};
       lz_conway_maxwell_poisson_grad1(g, x, y, z);
       lz_conway_maxwell_poisson_grad2(g, x, y, z);
       lz_conway_maxwell_poisson_grad3(g, x, y, z);
