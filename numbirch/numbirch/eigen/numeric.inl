@@ -5,7 +5,6 @@
 
 #include "numbirch/utility.hpp"
 #include "numbirch/eigen/eigen.hpp"
-#include "numbirch/numeric.hpp"
 
 namespace numbirch {
 
@@ -187,6 +186,11 @@ NUMBIRCH_KEEP Array<T,2> transpose(const Array<T,2>& A) {
   auto B1 = make_eigen(B);
   B1.noalias() = A1.transpose();
   return B;
+}
+
+template<arithmetic T>
+NUMBIRCH_KEEP Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A) {
+  return transpose(g);
 }
 
 Array<real,2> tri(const Array<real,2>& A) {

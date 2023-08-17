@@ -95,7 +95,7 @@ void memcpy(void* dst, const void* src, size_t n);
  * @param height Number of batches.
  */
 template<arithmetic T, arithmetic U>
-void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
+NUMBIRCH_KEEP void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
     const int width, const int height);
 
 /**
@@ -113,7 +113,7 @@ void memcpy(T* dst, const int dpitch, const U* src, const int spitch,
  * @param height Number of batches.
  */
 template<arithmetic T, arithmetic U>
-void memset(T* dst, const int dpitch, const U value, const int width,
+NUMBIRCH_KEEP void memset(T* dst, const int dpitch, const U value, const int width,
     const int height);
 
 /**
@@ -131,7 +131,7 @@ void memset(T* dst, const int dpitch, const U value, const int width,
  * @param height Number of batches.
  */
 template<arithmetic T, arithmetic U>
-void memset(T* dst, const int dpitch, const U* value, const int width,
+NUMBIRCH_KEEP void memset(T* dst, const int dpitch, const U* value, const int width,
     const int height);
 
 /**

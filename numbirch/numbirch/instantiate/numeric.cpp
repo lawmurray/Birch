@@ -1,7 +1,6 @@
 /**
  * @file
  */
-#include "numbirch/common/numeric.inl"
 #ifdef BACKEND_CUDA
 #include "numbirch/cuda/numeric.inl"
 #endif

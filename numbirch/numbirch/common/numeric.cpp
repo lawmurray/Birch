@@ -1,6 +1,6 @@
-
-#pragma once
-
+/**
+ * @file
+ */
 #include "numbirch/numeric.hpp"
 #include "numbirch/array.hpp"
 #include "numbirch/transform.hpp"
@@ -222,11 +222,6 @@ Array<real,2> outer_grad2(const Array<real,2>& g, const Array<real,2>& A,
 
 Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& A) {
   return phi(g);
-}
-
-template<arithmetic T>
-NUMBIRCH_KEEP Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A) {
-  return transpose(g);
 }
 
 Array<real,2> tri_grad(const Array<real,2>& g, const Array<real,2>& A) {

@@ -18,7 +18,7 @@ namespace numbirch {
  * @return Result; zero for empty @p x.
  */
 template<numeric T>
-Array<int,0> count(const T& x);
+NUMBIRCH_KEEP Array<int,0> count(const T& x);
 
 /**
  * Gradient of count().
@@ -33,7 +33,7 @@ Array<int,0> count(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> count_grad(const Array<real,0>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> count_grad(const Array<real,0>& g, const T& x);
 
 /**
  * Sum elements.
@@ -47,7 +47,7 @@ real_t<T> count_grad(const Array<real,0>& g, const T& x);
  * @return Result; zero for empty @p x.
  */
 template<numeric T>
-Array<value_t<T>,0> sum(const T& x);
+NUMBIRCH_KEEP Array<value_t<T>,0> sum(const T& x);
 
 /**
  * Gradient of sum().
@@ -62,7 +62,7 @@ Array<value_t<T>,0> sum(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> sum_grad(const Array<real,0>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> sum_grad(const Array<real,0>& g, const T& x);
 
 /**
  * Minimum element.
@@ -76,7 +76,7 @@ real_t<T> sum_grad(const Array<real,0>& g, const T& x);
  * @return Result; zero for empty @p x.
  */
 template<numeric T>
-Array<value_t<T>,0> min(const T& x);
+NUMBIRCH_KEEP Array<value_t<T>,0> min(const T& x);
 
 /**
  * Gradient of min().
@@ -91,7 +91,7 @@ Array<value_t<T>,0> min(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
+NUMBIRCH_KEEP real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x);
 
 /**
@@ -106,7 +106,7 @@ real_t<T> min_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
  * @return Result; zero for empty @p x.
  */
 template<numeric T>
-Array<value_t<T>,0> max(const T& x);
+NUMBIRCH_KEEP Array<value_t<T>,0> max(const T& x);
 
 /**
  * Gradient of max().
@@ -121,7 +121,7 @@ Array<value_t<T>,0> max(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
+NUMBIRCH_KEEP real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
     const T& x);
 
 /**
@@ -136,7 +136,7 @@ real_t<T> max_grad(const Array<real,0>& g, const Array<value_t<T>,0>& y,
  * @return Result.
  */
 template<numeric T>
-T cumsum(const T& x);
+NUMBIRCH_KEEP T cumsum(const T& x);
 
 /**
  * Gradient of cumsum().
@@ -151,6 +151,6 @@ T cumsum(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> cumsum_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> cumsum_grad(const real_t<T>& g, const T& x);
 
 }

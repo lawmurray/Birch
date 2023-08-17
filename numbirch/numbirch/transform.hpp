@@ -18,7 +18,7 @@ namespace numbirch {
  * @return Result.
  */
 template<numeric T>
-bool_t<T> logical_not(const T& x);
+NUMBIRCH_KEEP bool_t<T> logical_not(const T& x);
 
 /**
  * Gradient of logical_not().
@@ -33,7 +33,7 @@ bool_t<T> logical_not(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> logical_not_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> logical_not_grad(const real_t<T>& g, const T& x);
 
 /**
  * Element-wise logical `and`.
@@ -49,7 +49,7 @@ real_t<T> logical_not_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> logical_and(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> logical_and(const T& x, const U& y);
 
 /**
  * Gradient of logical_and().
@@ -66,7 +66,7 @@ bool_t<T,U> logical_and(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> logical_and_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> logical_and_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of logical_and().
@@ -83,7 +83,7 @@ real_t<T> logical_and_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> logical_and_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> logical_and_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise logical `or`.
@@ -99,7 +99,7 @@ real_t<U> logical_and_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> logical_or(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> logical_or(const T& x, const U& y);
 
 /**
  * Gradient of logical_or().
@@ -117,7 +117,7 @@ bool_t<T,U> logical_or(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> logical_or_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> logical_or_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of logical_or().
@@ -135,7 +135,7 @@ real_t<T> logical_or_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> logical_or_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> logical_or_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise equal to comparison.
@@ -151,7 +151,7 @@ real_t<U> logical_or_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> equal(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> equal(const T& x, const U& y);
 
 /**
  * Gradient of equal().
@@ -168,7 +168,7 @@ bool_t<T,U> equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of equal().
@@ -185,7 +185,7 @@ real_t<T> equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to  @p y.
  */
 template<numeric T, numeric U>
-real_t<U> equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise not equal to comparison.
@@ -201,7 +201,7 @@ real_t<U> equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> not_equal(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> not_equal(const T& x, const U& y);
 
 /**
  * Gradient of not_equal().
@@ -218,7 +218,7 @@ bool_t<T,U> not_equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> not_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> not_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of not_equal().
@@ -235,7 +235,7 @@ real_t<T> not_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> not_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> not_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise less than comparison.
@@ -251,7 +251,7 @@ real_t<U> not_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> less(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> less(const T& x, const U& y);
 
 /**
  * Gradient of less().
@@ -268,7 +268,7 @@ bool_t<T,U> less(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> less_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> less_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of less().
@@ -285,7 +285,7 @@ real_t<T> less_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> less_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> less_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise less than or equal to comparison.
@@ -301,7 +301,7 @@ real_t<U> less_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> less_or_equal(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> less_or_equal(const T& x, const U& y);
 
 /**
  * Gradient of less_or_equal().
@@ -318,7 +318,7 @@ bool_t<T,U> less_or_equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of less_or_equal().
@@ -335,7 +335,7 @@ real_t<T> less_or_equal_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise greater than comparison.
@@ -351,7 +351,7 @@ real_t<U> less_or_equal_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> greater(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> greater(const T& x, const U& y);
 
 /**
  * Gradient of greater().
@@ -368,7 +368,7 @@ bool_t<T,U> greater(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> greater_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> greater_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of greater().
@@ -385,7 +385,7 @@ real_t<T> greater_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> greater_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> greater_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Element-wise greater than or equal to comparison.
@@ -401,7 +401,7 @@ real_t<U> greater_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-bool_t<T,U> greater_or_equal(const T& x, const U& y);
+NUMBIRCH_KEEP bool_t<T,U> greater_or_equal(const T& x, const U& y);
 
 /**
  * Gradient of greater_or_equal().
@@ -418,7 +418,7 @@ bool_t<T,U> greater_or_equal(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const T& x,
+NUMBIRCH_KEEP real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const T& x,
     const U& y);
 
 /**
@@ -436,7 +436,7 @@ real_t<T> greater_or_equal_grad1(const real_t<T,U>& g, const T& x,
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const T& x,
+NUMBIRCH_KEEP real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const T& x,
     const U& y);
 
 /**
@@ -451,7 +451,7 @@ real_t<U> greater_or_equal_grad2(const real_t<T,U>& g, const T& x,
  * @return Result.
  */
 template<numeric T>
-T abs(const T& x);
+NUMBIRCH_KEEP T abs(const T& x);
 
 /**
  * Gradient of abs().
@@ -466,7 +466,7 @@ T abs(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> abs_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> abs_grad(const real_t<T>& g, const T& x);
 
 /**
  * Arc cosine.
@@ -480,7 +480,7 @@ real_t<T> abs_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> acos(const T& x);
+NUMBIRCH_KEEP real_t<T> acos(const T& x);
 
 /**
  * Gradient of acos().
@@ -495,7 +495,7 @@ real_t<T> acos(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> acos_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> acos_grad(const real_t<T>& g, const T& x);
 
 /**
  * Element-wise addition.
@@ -511,7 +511,7 @@ real_t<T> acos_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-implicit_t<T,U> add(const T& x, const U& y);
+NUMBIRCH_KEEP implicit_t<T,U> add(const T& x, const U& y);
 
 /**
  * Gradient of add().
@@ -528,7 +528,7 @@ implicit_t<T,U> add(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> add_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> add_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of add().
@@ -545,7 +545,7 @@ real_t<T> add_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> add_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> add_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Arc sine.
@@ -559,7 +559,7 @@ real_t<U> add_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-real_t<T> asin(const T& x);
+NUMBIRCH_KEEP real_t<T> asin(const T& x);
 
 /**
  * Gradient of asin().
@@ -574,7 +574,7 @@ real_t<T> asin(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> asin_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> asin_grad(const real_t<T>& g, const T& x);
 
 /**
  * Arc tangent.
@@ -588,7 +588,7 @@ real_t<T> asin_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> atan(const T& x);
+NUMBIRCH_KEEP real_t<T> atan(const T& x);
 
 /**
  * Gradient of atan().
@@ -603,7 +603,7 @@ real_t<T> atan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> atan_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> atan_grad(const real_t<T>& g, const T& x);
 
 /**
  * Cast.
@@ -618,7 +618,7 @@ real_t<T> atan_grad(const real_t<T>& g, const T& x);
  * @return Copy of @p x, with element type @p R.
  */
 template<arithmetic R, numeric T>
-explicit_t<R,T> cast(const T& x);
+NUMBIRCH_KEEP explicit_t<R,T> cast(const T& x);
 
 /**
  * Gradient of cast().
@@ -633,7 +633,7 @@ explicit_t<R,T> cast(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<arithmetic R, numeric T>
-real_t<T> cast_grad(const real_t<T>& g, const R& y, const T& x) {
+NUMBIRCH_KEEP real_t<T> cast_grad(const real_t<T>& g, const R& y, const T& x) {
   return g;
 }
 
@@ -649,7 +649,7 @@ real_t<T> cast_grad(const real_t<T>& g, const R& y, const T& x) {
  * @return Result.
  */
 template<numeric T>
-T ceil(const T& x);
+NUMBIRCH_KEEP T ceil(const T& x);
 
 /**
  * Gradient of ceil().
@@ -664,7 +664,7 @@ T ceil(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> ceil_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> ceil_grad(const real_t<T>& g, const T& x);
 
 /**
  * Copy sign.
@@ -680,7 +680,7 @@ real_t<T> ceil_grad(const real_t<T>& g, const T& x);
  * @return Result with the absolute values of @p x but signs of @p y.
  */
 template<numeric T, numeric U>
-implicit_t<T,U> copysign(const T& x, const U& y);
+NUMBIRCH_KEEP implicit_t<T,U> copysign(const T& x, const U& y);
 
 /**
  * Gradient of copysign().
@@ -697,7 +697,7 @@ implicit_t<T,U> copysign(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> copysign_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> copysign_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of copysign().
@@ -714,7 +714,7 @@ real_t<T> copysign_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> copysign_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> copysign_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Cosine.
@@ -728,7 +728,7 @@ real_t<U> copysign_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-real_t<T> cos(const T& x);
+NUMBIRCH_KEEP real_t<T> cos(const T& x);
 
 /**
  * Gradient of cos().
@@ -743,7 +743,7 @@ real_t<T> cos(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> cos_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> cos_grad(const real_t<T>& g, const T& x);
 
 /**
  * Hyperbolic cosine.
@@ -757,7 +757,7 @@ real_t<T> cos_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> cosh(const T& x);
+NUMBIRCH_KEEP real_t<T> cosh(const T& x);
 
 /**
  * Gradient of cosh().
@@ -772,7 +772,7 @@ real_t<T> cosh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> cosh_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> cosh_grad(const real_t<T>& g, const T& x);
 
 /**
  * Digamma.
@@ -786,7 +786,7 @@ real_t<T> cosh_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> digamma(const T& x);
+NUMBIRCH_KEEP real_t<T> digamma(const T& x);
 
 /**
  * Multivariate digamma.
@@ -802,7 +802,7 @@ real_t<T> digamma(const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> digamma(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> digamma(const T& x, const U& y);
 
 /**
  * Element-wise division.
@@ -818,7 +818,7 @@ real_t<T,U> digamma(const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-implicit_t<T,U> div(const T& x, const U& y);
+NUMBIRCH_KEEP implicit_t<T,U> div(const T& x, const U& y);
 
 /**
  * Gradient of div().
@@ -835,7 +835,7 @@ implicit_t<T,U> div(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> div_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> div_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of div().
@@ -852,7 +852,7 @@ real_t<T> div_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> div_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> div_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Error function.
@@ -866,7 +866,7 @@ real_t<U> div_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-real_t<T> erf(const T& x);
+NUMBIRCH_KEEP real_t<T> erf(const T& x);
 
 /**
  * Gradient of erf().
@@ -881,7 +881,7 @@ real_t<T> erf(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> erf_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> erf_grad(const real_t<T>& g, const T& x);
 
 /**
  * Exponential.
@@ -895,7 +895,7 @@ real_t<T> erf_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> exp(const T& x);
+NUMBIRCH_KEEP real_t<T> exp(const T& x);
 
 /**
  * Gradient of exp().
@@ -910,7 +910,7 @@ real_t<T> exp(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> exp_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> exp_grad(const real_t<T>& g, const T& x);
 
 /**
  * Exponential of argument, minus one.
@@ -924,7 +924,7 @@ real_t<T> exp_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> expm1(const T& x);
+NUMBIRCH_KEEP real_t<T> expm1(const T& x);
 
 /**
  * Gradient of expm1().
@@ -939,7 +939,7 @@ real_t<T> expm1(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> expm1_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> expm1_grad(const real_t<T>& g, const T& x);
 
 /**
  * Round to largest integer value not greater than argument.
@@ -953,7 +953,7 @@ real_t<T> expm1_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-T floor(const T& x);
+NUMBIRCH_KEEP T floor(const T& x);
 
 /**
  * Gradient of floor().
@@ -968,7 +968,7 @@ T floor(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> floor_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> floor_grad(const real_t<T>& g, const T& x);
 
 /**
  * Normalized lower incomplete gamma.
@@ -984,7 +984,7 @@ real_t<T> floor_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> gamma_p(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> gamma_p(const T& x, const U& y);
 
 /**
  * Normalized upper incomplete gamma.
@@ -1000,7 +1000,7 @@ real_t<T,U> gamma_p(const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> gamma_q(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> gamma_q(const T& x, const U& y);
 
 /**
  * Element-wise multiplication (Hadamard product).
@@ -1016,7 +1016,7 @@ real_t<T,U> gamma_q(const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-implicit_t<T,U> hadamard(const T& x, const U& y);
+NUMBIRCH_KEEP implicit_t<T,U> hadamard(const T& x, const U& y);
 
 /**
  * Gradient of hadamard().
@@ -1033,7 +1033,7 @@ implicit_t<T,U> hadamard(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> hadamard_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> hadamard_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of hadamard().
@@ -1050,7 +1050,7 @@ real_t<T> hadamard_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> hadamard_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> hadamard_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Normalized incomplete beta.
@@ -1068,7 +1068,7 @@ real_t<U> hadamard_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U, numeric V>
-real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
+NUMBIRCH_KEEP real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
 
 /**
  * Is value finite?
@@ -1082,7 +1082,7 @@ real_t<T,U,V> ibeta(const T& x, const U& y, const V& z);
  * @return Result.
  */
 template<numeric T>
-bool_t<T> isfinite(const T& x);
+NUMBIRCH_KEEP bool_t<T> isfinite(const T& x);
 
 /**
  * Gradient of isfinite().
@@ -1097,7 +1097,7 @@ bool_t<T> isfinite(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> isfinite_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> isfinite_grad(const real_t<T>& g, const T& x);
 
 /**
  * Is value infinite?
@@ -1111,7 +1111,7 @@ real_t<T> isfinite_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-bool_t<T> isinf(const T& x);
+NUMBIRCH_KEEP bool_t<T> isinf(const T& x);
 
 /**
  * Gradient of isinf().
@@ -1126,7 +1126,7 @@ bool_t<T> isinf(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> isinf_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> isinf_grad(const real_t<T>& g, const T& x);
 
 /**
  * Is value NaN?
@@ -1140,7 +1140,7 @@ real_t<T> isinf_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-bool_t<T> isnan(const T& x);
+NUMBIRCH_KEEP bool_t<T> isnan(const T& x);
 
 /**
  * Gradient of isnan().
@@ -1155,7 +1155,7 @@ bool_t<T> isnan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> isnan_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> isnan_grad(const real_t<T>& g, const T& x);
 
 /**
  * Logarithm of the beta function.
@@ -1171,7 +1171,7 @@ real_t<T> isnan_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> lbeta(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> lbeta(const T& x, const U& y);
 
 /**
  * Gradient of lbeta().
@@ -1188,7 +1188,7 @@ real_t<T,U> lbeta(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> lbeta_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> lbeta_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of lbeta().
@@ -1205,7 +1205,7 @@ real_t<T> lbeta_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> lbeta_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> lbeta_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Logarithm of the binomial coefficient.
@@ -1221,7 +1221,7 @@ real_t<U> lbeta_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> lchoose(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> lchoose(const T& x, const U& y);
 
 /**
  * Gradient of lchoose().
@@ -1238,7 +1238,7 @@ real_t<T,U> lchoose(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> lchoose_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> lchoose_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of lchoose().
@@ -1255,7 +1255,7 @@ real_t<T> lchoose_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> lchoose_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> lchoose_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Logarithm of the factorial function.
@@ -1269,7 +1269,7 @@ real_t<U> lchoose_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-real_t<T> lfact(const T& x);
+NUMBIRCH_KEEP real_t<T> lfact(const T& x);
 
 /**
  * Gradient of lfact().
@@ -1284,7 +1284,7 @@ real_t<T> lfact(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> lfact_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> lfact_grad(const real_t<T>& g, const T& x);
 
 /**
  * Logarithm of the gamma function.
@@ -1298,7 +1298,7 @@ real_t<T> lfact_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> lgamma(const T& x);
+NUMBIRCH_KEEP real_t<T> lgamma(const T& x);
 
 /**
  * Gradient of lgamma().
@@ -1313,7 +1313,7 @@ real_t<T> lgamma(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> lgamma_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> lgamma_grad(const real_t<T>& g, const T& x);
 
 /**
  * Logarithm of the multivariate gamma function.
@@ -1329,7 +1329,7 @@ real_t<T> lgamma_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> lgamma(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> lgamma(const T& x, const U& y);
 
 /**
  * Gradient of lgamma().
@@ -1346,7 +1346,7 @@ real_t<T,U> lgamma(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> lgamma_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> lgamma_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of lgamma().
@@ -1363,7 +1363,7 @@ real_t<T> lgamma_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> lgamma_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> lgamma_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Logarithm.
@@ -1377,7 +1377,7 @@ real_t<U> lgamma_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-real_t<T> log(const T& x);
+NUMBIRCH_KEEP real_t<T> log(const T& x);
 
 /**
  * Gradient of log().
@@ -1392,7 +1392,7 @@ real_t<T> log(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> log_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> log_grad(const real_t<T>& g, const T& x);
 
 /**
  * Logarithm of one plus argument.
@@ -1406,7 +1406,7 @@ real_t<T> log_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> log1p(const T& x);
+NUMBIRCH_KEEP real_t<T> log1p(const T& x);
 
 /**
  * Gradient of log1p().
@@ -1421,7 +1421,7 @@ real_t<T> log1p(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> log1p_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> log1p_grad(const real_t<T>& g, const T& x);
 
 /**
  * Logarithm of the normalizing constant of a Conway-Maxwell-Poisson
@@ -1436,7 +1436,7 @@ real_t<T> log1p_grad(const real_t<T>& g, const T& x);
  * @return Logarithm of normalizing constant.
  */
 template<numeric T, numeric U, numeric V>
-real_t<T,U,V> lz_conway_maxwell_poisson(const T& μ, const U& ν, const V& n);
+NUMBIRCH_KEEP real_t<T,U,V> lz_conway_maxwell_poisson(const T& μ, const U& ν, const V& n);
 
 /**
  * Gradient of lz_conway_maxwell_poisson().
@@ -1451,7 +1451,7 @@ real_t<T,U,V> lz_conway_maxwell_poisson(const T& μ, const U& ν, const V& n);
  * @return Gradient with respect to @p μ.
  */
 template<numeric T, numeric U, numeric V>
-real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g,
+NUMBIRCH_KEEP real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g,
     const T& μ, const U& ν, const V& n);
 
 /**
@@ -1467,7 +1467,7 @@ real_t<T> lz_conway_maxwell_poisson_grad1(const real_t<T,U,V>& g,
  * @return Gradient with respect to @p ν.
  */
 template<numeric T, numeric U, numeric V>
-real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g,
+NUMBIRCH_KEEP real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g,
     const T& μ, const U& ν, const V& n);
 
 /**
@@ -1483,7 +1483,7 @@ real_t<U> lz_conway_maxwell_poisson_grad2(const real_t<T,U,V>& g,
  * @return Gradient with respect to @p n.
  */
 template<numeric T, numeric U, numeric V>
-real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g,
+NUMBIRCH_KEEP real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g,
     const T& μ, const U& ν, const V& n);
 
 /**
@@ -1498,7 +1498,7 @@ real_t<V> lz_conway_maxwell_poisson_grad3(const real_t<T,U,V>& g,
  * @return Result.
  */
 template<numeric T>
-T neg(const T& x);
+NUMBIRCH_KEEP T neg(const T& x);
 
 /**
  * Gradient of neg().
@@ -1513,7 +1513,7 @@ T neg(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> neg_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> neg_grad(const real_t<T>& g, const T& x);
 
 /**
  * Unary plus.
@@ -1527,7 +1527,7 @@ real_t<T> neg_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-T pos(const T& x) {
+NUMBIRCH_KEEP T pos(const T& x) {
   return x;
 }
 
@@ -1544,7 +1544,7 @@ T pos(const T& x) {
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> pos_grad(const real_t<T>& g, const T& x) {
+NUMBIRCH_KEEP real_t<T> pos_grad(const real_t<T>& g, const T& x) {
   return g;
 }
 
@@ -1562,7 +1562,7 @@ real_t<T> pos_grad(const real_t<T>& g, const T& x) {
  * @return Result.
  */
 template<numeric T, numeric U>
-real_t<T,U> pow(const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T,U> pow(const T& x, const U& y);
 
 /**
  * Gradient of pow().
@@ -1579,7 +1579,7 @@ real_t<T,U> pow(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> pow_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> pow_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of pow().
@@ -1596,7 +1596,7 @@ real_t<T> pow_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> pow_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> pow_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Rectification.
@@ -1610,7 +1610,7 @@ real_t<U> pow_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-T rectify(const T& x);
+NUMBIRCH_KEEP T rectify(const T& x);
 
 /**
  * Gradient of rectify().
@@ -1625,7 +1625,7 @@ T rectify(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> rectify_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> rectify_grad(const real_t<T>& g, const T& x);
 
 /**
  * Round to nearest integer value.
@@ -1639,7 +1639,7 @@ real_t<T> rectify_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-T round(const T& x);
+NUMBIRCH_KEEP T round(const T& x);
 
 /**
  * Gradient of round().
@@ -1654,7 +1654,7 @@ T round(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> round_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> round_grad(const real_t<T>& g, const T& x);
 
 /**
  * Sine.
@@ -1668,7 +1668,7 @@ real_t<T> round_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> sin(const T& x);
+NUMBIRCH_KEEP real_t<T> sin(const T& x);
 
 /**
  * Gradient of sin().
@@ -1683,7 +1683,7 @@ real_t<T> sin(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> sin_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> sin_grad(const real_t<T>& g, const T& x);
 
 /**
  * Hyperbolic sine.
@@ -1697,7 +1697,7 @@ real_t<T> sin_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> sinh(const T& x);
+NUMBIRCH_KEEP real_t<T> sinh(const T& x);
 
 /**
  * Gradient of sinh().
@@ -1712,7 +1712,7 @@ real_t<T> sinh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> sinh_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> sinh_grad(const real_t<T>& g, const T& x);
 
 /**
  * Square root.
@@ -1726,7 +1726,7 @@ real_t<T> sinh_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> sqrt(const T& x);
+NUMBIRCH_KEEP real_t<T> sqrt(const T& x);
 
 /**
  * Gradient of sqrt().
@@ -1741,7 +1741,7 @@ real_t<T> sqrt(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> sqrt_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> sqrt_grad(const real_t<T>& g, const T& x);
 
 /**
  * Element-wise subtraction.
@@ -1757,7 +1757,7 @@ real_t<T> sqrt_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T, numeric U>
-implicit_t<T,U> sub(const T& x, const U& y);
+NUMBIRCH_KEEP implicit_t<T,U> sub(const T& x, const U& y);
 
 /**
  * Gradient of sub().
@@ -1774,7 +1774,7 @@ implicit_t<T,U> sub(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> sub_grad1(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> sub_grad1(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Gradient of sub().
@@ -1791,7 +1791,7 @@ real_t<T> sub_grad1(const real_t<T,U>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> sub_grad2(const real_t<T,U>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> sub_grad2(const real_t<T,U>& g, const T& x, const U& y);
 
 /**
  * Tangent.
@@ -1805,7 +1805,7 @@ real_t<U> sub_grad2(const real_t<T,U>& g, const T& x, const U& y);
  * @return Result.
  */
 template<numeric T>
-real_t<T> tan(const T& x);
+NUMBIRCH_KEEP real_t<T> tan(const T& x);
 
 /**
  * Gradient of tan().
@@ -1820,7 +1820,7 @@ real_t<T> tan(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> tan_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> tan_grad(const real_t<T>& g, const T& x);
 
 /**
  * Hyperbolic tangent.
@@ -1834,7 +1834,7 @@ real_t<T> tan_grad(const real_t<T>& g, const T& x);
  * @return Result.
  */
 template<numeric T>
-real_t<T> tanh(const T& x);
+NUMBIRCH_KEEP real_t<T> tanh(const T& x);
 
 /**
  * Gradient of tanh().
@@ -1849,7 +1849,7 @@ real_t<T> tanh(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> tanh_grad(const real_t<T>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> tanh_grad(const real_t<T>& g, const T& x);
 
 /**
  * Conditional.
@@ -1867,7 +1867,7 @@ real_t<T> tanh_grad(const real_t<T>& g, const T& x);
  * @return Where @p x is true, elements of @p y, elsewhere elements of @p z.
  */
 template<numeric T, numeric U, numeric V>
-implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
+NUMBIRCH_KEEP implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
 
 /**
  * Gradient of where().
@@ -1887,7 +1887,7 @@ implicit_t<T,U,V> where(const T& x, const U& y, const V& z);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U, numeric V>
-real_t<T> where_grad1(const real_t<T,U,V>& g, const T& x, const U& y,
+NUMBIRCH_KEEP real_t<T> where_grad1(const real_t<T,U,V>& g, const T& x, const U& y,
     const V& z);
 
 /**
@@ -1908,7 +1908,7 @@ real_t<T> where_grad1(const real_t<T,U,V>& g, const T& x, const U& y,
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U, numeric V>
-real_t<U> where_grad2(const real_t<T,U,V>& g, const T& x, const U& y,
+NUMBIRCH_KEEP real_t<U> where_grad2(const real_t<T,U,V>& g, const T& x, const U& y,
     const V& z);
 
 /**
@@ -1929,7 +1929,7 @@ real_t<U> where_grad2(const real_t<T,U,V>& g, const T& x, const U& y,
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U, numeric V>
-real_t<V> where_grad3(const real_t<T,U,V>& g, const T& x, const U& y,
+NUMBIRCH_KEEP real_t<V> where_grad3(const real_t<T,U,V>& g, const T& x, const U& y,
     const V& z);
 
 }

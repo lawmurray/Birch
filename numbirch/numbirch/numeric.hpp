@@ -27,7 +27,7 @@ namespace numbirch {
  */
 template<numeric T, numeric U>
 requires is_scalar_v<T> || is_scalar_v<U>
-implicit_t<T,U> mul(const T& x, const U& y) {
+NUMBIRCH_KEEP implicit_t<T,U> mul(const T& x, const U& y) {
   return hadamard(x, y);
 }
 
@@ -47,7 +47,7 @@ implicit_t<T,U> mul(const T& x, const U& y) {
  */
 template<numeric T, numeric U>
 requires is_scalar_v<T> || is_scalar_v<U>
-real_t<T> mul_grad1(const real_t<T,U>& g, const T& x, const U& y) {
+NUMBIRCH_KEEP real_t<T> mul_grad1(const real_t<T,U>& g, const T& x, const U& y) {
   return hadamard_grad1(g, x, y);
 }
 
@@ -67,7 +67,7 @@ real_t<T> mul_grad1(const real_t<T,U>& g, const T& x, const U& y) {
  */
 template<numeric T, numeric U>
 requires is_scalar_v<T> || is_scalar_v<U>
-real_t<U> mul_grad2(const real_t<T,U>& g, const T& x, const U& y) {
+NUMBIRCH_KEEP real_t<U> mul_grad2(const real_t<T,U>& g, const T& x, const U& y) {
   return hadamard_grad2(g, x, y);
 }
 
@@ -876,7 +876,7 @@ Array<real,2> phi_grad(const Array<real,2>& g, const Array<real,2>& A);
  * @return Result $B = A^\top$.
  */
 template<arithmetic T>
-Array<T,2> transpose(const Array<T,2>& A);
+NUMBIRCH_KEEP Array<T,2> transpose(const Array<T,2>& A);
 
 /**
  * Gradient of transpose().
@@ -889,7 +889,7 @@ Array<T,2> transpose(const Array<T,2>& A);
  * @return Gradient with respect to @p A.
  */
 template<arithmetic T>
-Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A);
+NUMBIRCH_KEEP Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A);
 
 /**
  * Scalar transpose.
@@ -901,7 +901,7 @@ Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A);
  * @return Result $y = x$.
  */
 template<scalar T>
-T transpose(const T& x) {
+NUMBIRCH_KEEP T transpose(const T& x) {
   return x;
 }
 
@@ -916,7 +916,7 @@ T transpose(const T& x) {
  * @return Gradient with respect to @p x.
  */
 template<scalar T>
-real_t<T> transpose_grad(const real_t<T>& g, const T& x) {
+NUMBIRCH_KEEP real_t<T> transpose_grad(const real_t<T>& g, const T& x) {
   return g;
 }
 

@@ -45,7 +45,7 @@ void seed();
  * @return Variate.
  */
 template<numeric T>
-bool_t<T> simulate_bernoulli(const T& rho);
+NUMBIRCH_KEEP bool_t<T> simulate_bernoulli(const T& rho);
 
 /**
  * Simulate a beta distribution.
@@ -61,7 +61,7 @@ bool_t<T> simulate_bernoulli(const T& rho);
  * @return Variate.
  */
 template<numeric T, numeric U>
-real_t<T,U> simulate_beta(const T& alpha, const U& beta);
+NUMBIRCH_KEEP real_t<T,U> simulate_beta(const T& alpha, const U& beta);
 
 /**
  * Simulate a binomial distribution.
@@ -77,7 +77,7 @@ real_t<T,U> simulate_beta(const T& alpha, const U& beta);
  * @return Variate.
  */
 template<numeric T, numeric U>
-int_t<T,U> simulate_binomial(const T& n, const U& rho);
+NUMBIRCH_KEEP int_t<T,U> simulate_binomial(const T& n, const U& rho);
 
 /**
  * Simulate a $\chi^2$ distribution.
@@ -91,7 +91,7 @@ int_t<T,U> simulate_binomial(const T& n, const U& rho);
  * @return Variate.
  */
 template<numeric T>
-real_t<T> simulate_chi_squared(const T& nu);
+NUMBIRCH_KEEP real_t<T> simulate_chi_squared(const T& nu);
 
 /**
  * Simulate a Dirichlet distribution.
@@ -105,7 +105,7 @@ real_t<T> simulate_chi_squared(const T& nu);
  * @return Variate.
  */
 template<numeric T>
-real_t<T> simulate_dirichlet(const T& alpha);
+NUMBIRCH_KEEP real_t<T> simulate_dirichlet(const T& alpha);
 
 /**
  * Simulate an exponential distribution.
@@ -119,7 +119,7 @@ real_t<T> simulate_dirichlet(const T& alpha);
  * @return Variate.
  */
 template<numeric T>
-real_t<T> simulate_exponential(const T& lambda);
+NUMBIRCH_KEEP real_t<T> simulate_exponential(const T& lambda);
 
 /**
  * Simulate a gamma distribution.
@@ -135,7 +135,7 @@ real_t<T> simulate_exponential(const T& lambda);
  * @return Variate.
  */
 template<numeric T, numeric U>
-real_t<T,U> simulate_gamma(const T& k, const U& theta);
+NUMBIRCH_KEEP real_t<T,U> simulate_gamma(const T& k, const U& theta);
 
 /**
  * Simulate a Gaussian distribution.
@@ -151,7 +151,7 @@ real_t<T,U> simulate_gamma(const T& k, const U& theta);
  * @return Variate.
  */
 template<numeric T, numeric U>
-real_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
+NUMBIRCH_KEEP real_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
 
 /**
  * Simulate a negative binomial distribution.
@@ -167,7 +167,7 @@ real_t<T,U> simulate_gaussian(const T& mu, const U& sigma2);
  * @return Number of failures before `k` number of successes are achieved.
  */
 template<numeric T, numeric U>
-int_t<T,U> simulate_negative_binomial(const T& k, const U& rho);
+NUMBIRCH_KEEP int_t<T,U> simulate_negative_binomial(const T& k, const U& rho);
 
 /**
  * Simulate a Poisson distribution.
@@ -181,7 +181,7 @@ int_t<T,U> simulate_negative_binomial(const T& k, const U& rho);
  * @return Variate.
  */
 template<numeric T>
-int_t<T> simulate_poisson(const T& lambda);
+NUMBIRCH_KEEP int_t<T> simulate_poisson(const T& lambda);
 
 /**
  * Simulate a uniform distribution.
@@ -197,7 +197,7 @@ int_t<T> simulate_poisson(const T& lambda);
  * @return Variate.
  */
 template<numeric T, numeric U>
-real_t<T,U> simulate_uniform(const T& l, const U& u);
+NUMBIRCH_KEEP real_t<T,U> simulate_uniform(const T& l, const U& u);
 
 /**
  * Simulate a uniform distribution over integers.
@@ -213,7 +213,7 @@ real_t<T,U> simulate_uniform(const T& l, const U& u);
  * @return Variate.
  */
 template<numeric T, numeric U>
-int_t<T,U> simulate_uniform_int(const T& l, const U& u);
+NUMBIRCH_KEEP int_t<T,U> simulate_uniform_int(const T& l, const U& u);
 
 /**
  * Simulate a Weibull distribution.
@@ -229,7 +229,7 @@ int_t<T,U> simulate_uniform_int(const T& l, const U& u);
  * @return Variate.
  */
 template<numeric T, numeric U>
-real_t<T,U> simulate_weibull(const T& k, const U& lambda);
+NUMBIRCH_KEEP real_t<T,U> simulate_weibull(const T& k, const U& lambda);
 
 /**
  * Simulate a Wishart distribution (with scale one).
@@ -244,7 +244,7 @@ real_t<T,U> simulate_weibull(const T& k, const U& lambda);
  * @return Variates.
  */
 template<scalar T>
-Array<real,2> simulate_wishart(const T& nu, const int n);
+NUMBIRCH_KEEP Array<real,2> simulate_wishart(const T& nu, const int n);
 
 /**
  * Create vector of standard Gaussian variates (mean zero, variance one).

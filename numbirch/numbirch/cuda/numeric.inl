@@ -9,7 +9,6 @@
 #include "numbirch/cuda/cusolver.hpp"
 #include "numbirch/cuda/cub.hpp"
 #include "numbirch/jemalloc/jemalloc.hpp"
-#include "numbirch/numeric.hpp"
 #include "numbirch/transform.hpp"
 #include "numbirch/reduce.hpp"
 #include "numbirch/memory.hpp"
@@ -388,6 +387,11 @@ NUMBIRCH_KEEP Array<T,2> transpose(const Array<T,2>& A) {
   CUDA_LAUNCH(kernel_transpose<<<grid,block,shared,stream>>>(rows(B),
       columns(B), buffer(A), stride(A), buffer(B), stride(B)));
   return B;
+}
+
+template<arithmetic T>
+NUMBIRCH_KEEP Array<real,2> transpose_grad(const Array<real,2>& g, const Array<T,2>& A) {
+  return transpose(g);
 }
 
 Array<real,2> tri(const Array<real,2>& A) {

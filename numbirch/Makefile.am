@@ -3,6 +3,7 @@ AM_CXXFLAGS = -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS=1
 # ^ BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS set to avoid valgrind issues
 
 SOURCES =  \
+    numbirch/common/numeric.cpp \
     numbirch/common/random.cpp \
     numbirch/instantiate/array.cpp \
     numbirch/instantiate/memory.cpp \

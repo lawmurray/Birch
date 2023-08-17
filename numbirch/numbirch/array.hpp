@@ -335,7 +335,7 @@ constexpr bool conforms(const T& x, const U& y) {
  * @return Vector.
  */
 template<scalar T>
-Array<value_t<T>,1> fill(const T& x, const int n);
+NUMBIRCH_KEEP Array<value_t<T>,1> fill(const T& x, const int n);
 
 /**
  * Gradient of fill().
@@ -351,7 +351,7 @@ Array<value_t<T>,1> fill(const T& x, const int n);
  * @return Gradient with respect to @p x.
  */
 template<scalar T>
-Array<real,0> fill_grad(const Array<real,1>& g, const T& x, const int n);
+NUMBIRCH_KEEP Array<real,0> fill_grad(const Array<real,1>& g, const T& x, const int n);
 
 /**
  * Construct a matrix filled with a given value.
@@ -367,7 +367,7 @@ Array<real,0> fill_grad(const Array<real,1>& g, const T& x, const int n);
  * @return Matrix.
  */
 template<scalar T>
-Array<value_t<T>,2> fill(const T& x, const int m, const int n);
+NUMBIRCH_KEEP Array<value_t<T>,2> fill(const T& x, const int m, const int n);
 
 /**
  * Gradient of fill().
@@ -384,7 +384,7 @@ Array<value_t<T>,2> fill(const T& x, const int m, const int n);
  * @return Gradient with respect to @p x.
  */
 template<scalar T>
-Array<real,0> fill_grad(const Array<real,2>& g, const T& x, const int m,
+NUMBIRCH_KEEP Array<real,0> fill_grad(const Array<real,2>& g, const T& x, const int m,
     const int n);
 
 /**
@@ -401,7 +401,7 @@ Array<real,0> fill_grad(const Array<real,2>& g, const T& x, const int m,
  * @return Vector.
  */
 template<scalar T>
-Array<value_t<T>,1> iota(const T& x, const int n);
+NUMBIRCH_KEEP Array<value_t<T>,1> iota(const T& x, const int n);
 
 /**
  * Gradient of iota().
@@ -417,7 +417,7 @@ Array<value_t<T>,1> iota(const T& x, const int n);
  * @return Gradient with respect to @p x.
  */
 template<scalar T>
-Array<real,0> iota_grad(const Array<real,1>& g, const T& x, const int n);
+NUMBIRCH_KEEP Array<real,0> iota_grad(const Array<real,1>& g, const T& x, const int n);
 
 /**
  * Construct diagonal matrix, filling the diagonal with a given scalar.
@@ -432,7 +432,7 @@ Array<real,0> iota_grad(const Array<real,1>& g, const T& x, const int n);
  * @return Diagonal matrix.
  */
 template<scalar T>
-Array<value_t<T>,2> diagonal(const T& x, const int n);
+NUMBIRCH_KEEP Array<value_t<T>,2> diagonal(const T& x, const int n);
 
 /**
  * Gradient of diagonal().
@@ -448,7 +448,7 @@ Array<value_t<T>,2> diagonal(const T& x, const int n);
  * @return Gradient with respect to @p x.
  */
 template<scalar T>
-Array<real,0> diagonal_grad(const Array<real,2>& g, const T& x, const int n);
+NUMBIRCH_KEEP Array<real,0> diagonal_grad(const Array<real,2>& g, const T& x, const int n);
 
 /**
  * Construct diagonal matrix, setting the diagonal to a given vector.
@@ -462,7 +462,7 @@ Array<real,0> diagonal_grad(const Array<real,2>& g, const T& x, const int n);
  * @return Diagonal matrix.
  */
 template<arithmetic T>
-Array<T,2> diagonal(const Array<T,1>& x);
+NUMBIRCH_KEEP Array<T,2> diagonal(const Array<T,1>& x);
 
 /**
  * Gradient of diagonal().
@@ -477,7 +477,7 @@ Array<T,2> diagonal(const Array<T,1>& x);
  * @return Gradient with respect to @p x.
  */
 template<arithmetic T>
-Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,1>& x);
+NUMBIRCH_KEEP Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,1>& x);
 
 /**
  * Element of a vector.
@@ -493,7 +493,7 @@ Array<real,1> diagonal_grad(const Array<real,2>& g, const Array<T,1>& x);
  * @return Element.
  */
 template<arithmetic T, scalar U>
-Array<T,0> element(const Array<T,1>& x, const U& i);
+NUMBIRCH_KEEP Array<T,0> element(const Array<T,1>& x, const U& i);
 
 /**
  * Gradient of element().
@@ -510,7 +510,7 @@ Array<T,0> element(const Array<T,1>& x, const U& i);
  * @return Gradient with respect to @p x.
  */
 template<arithmetic T, scalar U>
-Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
+NUMBIRCH_KEEP Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
     const U& i);
 
 /**
@@ -528,7 +528,7 @@ Array<real,1> element_grad1(const Array<real,0>& g, const Array<T,1>& x,
  * @return Gradient with respect to @p i.
  */
 template<arithmetic T, scalar U>
-real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i);
+NUMBIRCH_KEEP real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i);
 
 /**
  * Element of a matrix.
@@ -546,7 +546,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,1>& x, const U& i);
  * @return Element.
  */
 template<arithmetic T, scalar U, scalar V>
-Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
+NUMBIRCH_KEEP Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
 
 /**
  * Gradient of element().
@@ -565,7 +565,7 @@ Array<T,0> element(const Array<T,2>& A, const U& i, const V& j);
  * @return Gradient with respect to @p A.
  */
 template<arithmetic T, scalar U, scalar V>
-Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
     const U& i, const V& j);
 
 /**
@@ -585,7 +585,7 @@ Array<real,2> element_grad1(const Array<real,0>& g, const Array<T,2>& A,
  * @return Gradient with respect to @p i.
  */
 template<arithmetic T, scalar U, scalar V>
-real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
+NUMBIRCH_KEEP real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
     const V& j);
 
 /**
@@ -605,7 +605,7 @@ real element_grad2(const Array<real,0>& g, const Array<T,2>& A, const U& i,
  * @return Gradient with respect to @p j.
  */
 template<arithmetic T, scalar U, scalar V>
-real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
+NUMBIRCH_KEEP real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
     const V& j);
 
 /**
@@ -624,7 +624,7 @@ real element_grad3(const Array<real,0>& g, const Array<T,2>& A, const U& i,
  * @return Single-entry vector.
  */
 template<scalar T, scalar U>
-Array<value_t<T>,1> single(const T& x, const U& i, const int n);
+NUMBIRCH_KEEP Array<value_t<T>,1> single(const T& x, const U& i, const int n);
 
 /**
  * Gradient of single().
@@ -642,7 +642,7 @@ Array<value_t<T>,1> single(const T& x, const U& i, const int n);
  * @return Gradient with respect to @p x.
  */
 template<scalar T, scalar U>
-Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
+NUMBIRCH_KEEP Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
     const int n);
 
 /**
@@ -661,7 +661,7 @@ Array<real,0> single_grad1(const Array<real,1>& g, const T& x, const U& i,
  * @return Gradient with respect to @p i.
  */
 template<scalar T, scalar U>
-real single_grad2(const Array<real,1>& g, const T& x, const U& i,
+NUMBIRCH_KEEP real single_grad2(const Array<real,1>& g, const T& x, const U& i,
     const int n);
 
 /**
@@ -683,7 +683,7 @@ real single_grad2(const Array<real,1>& g, const T& x, const U& i,
  * @return Single-entry matrix.
  */
 template<scalar T, scalar U, scalar V>
-Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
+NUMBIRCH_KEEP Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
     const int n);
 
 /**
@@ -705,7 +705,7 @@ Array<value_t<T>,2> single(const T& x, const U& i, const V& j, const int m,
  * @return Gradient with respect to @p x.
  */
 template<scalar T, scalar U, scalar V>
-Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
+NUMBIRCH_KEEP Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
     const V& j, const int m, const int n);
 
 /**
@@ -727,7 +727,7 @@ Array<real,0> single_grad1(const Array<real,2>& g, const T& x, const U& i,
  * @return Gradient with respect to @p i.
  */
 template<scalar T, scalar U, scalar V>
-real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
+NUMBIRCH_KEEP real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
     const int m, const int n);
 
 /**
@@ -749,7 +749,7 @@ real single_grad2(const Array<real,2>& g, const T& x, const U& i, const V& j,
  * @return Gradient with respect to @p j.
  */
 template<scalar T, scalar U, scalar V>
-real single_grad3(const Array<real,2>& g, const T& x, const U& i, const V& j,
+NUMBIRCH_KEEP real single_grad3(const Array<real,2>& g, const T& x, const U& i, const V& j,
     const int m, const int n);
 
 /**
@@ -771,7 +771,7 @@ real single_grad3(const Array<real,2>& g, const T& x, const U& i, const V& j,
  * dimensions.
  */
 template<numeric T, numeric U>
-pack_t<T,U> pack(const T& x, const U& y);
+NUMBIRCH_KEEP pack_t<T,U> pack(const T& x, const U& y);
 
 /**
  * Gradient of pack().
@@ -788,7 +788,7 @@ pack_t<T,U> pack(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const T& x, const U& y);
 
 /**
  * Gradient of pack().
@@ -805,7 +805,7 @@ real_t<T> pack_grad1(const real_t<pack_t<T,U>>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const T& x, const U& y);
 
 /**
  * Stack two arrays atop one another, concatenating their columns.
@@ -826,7 +826,7 @@ real_t<U> pack_grad2(const real_t<pack_t<T,U>>& g, const T& x, const U& y);
  * one of the arguments has two dimensions, and one dimension otherwise.
  */
 template<numeric T, numeric U>
-stack_t<T,U> stack(const T& x, const U& y);
+NUMBIRCH_KEEP stack_t<T,U> stack(const T& x, const U& y);
 
 /**
  * Gradient of stack().
@@ -843,7 +843,7 @@ stack_t<T,U> stack(const T& x, const U& y);
  * @return Gradient with respect to @p x.
  */
 template<numeric T, numeric U>
-real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const T& x, const U& y);
 
 /**
  * Gradient of stack().
@@ -860,7 +860,7 @@ real_t<T> stack_grad1(const real_t<stack_t<T,U>>& g, const T& x, const U& y);
  * @return Gradient with respect to @p y.
  */
 template<numeric T, numeric U>
-real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const T& x, const U& y);
+NUMBIRCH_KEEP real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const T& x, const U& y);
 
 /**
  * Scalarize.
@@ -876,7 +876,7 @@ real_t<U> stack_grad2(const real_t<stack_t<T,U>>& g, const T& x, const U& y);
  * slice.
  */
 template<numeric T>
-Array<value_t<T>,0> scal(const T& x);
+NUMBIRCH_KEEP Array<value_t<T>,0> scal(const T& x);
 
 /**
  * Gradient of scal().
@@ -891,7 +891,7 @@ Array<value_t<T>,0> scal(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> scal_grad(const Array<real,0>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> scal_grad(const Array<real,0>& g, const T& x);
 
 /**
  * Vectorize.
@@ -907,7 +907,7 @@ real_t<T> scal_grad(const Array<real,0>& g, const T& x);
  * vector by stacking its columns atop one another.
  */
 template<numeric T>
-Array<value_t<T>,1> vec(const T& x);
+NUMBIRCH_KEEP Array<value_t<T>,1> vec(const T& x);
 
 /**
  * Gradient of vec().
@@ -922,7 +922,7 @@ Array<value_t<T>,1> vec(const T& x);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> vec_grad(const Array<real,1>& g, const T& x);
+NUMBIRCH_KEEP real_t<T> vec_grad(const Array<real,1>& g, const T& x);
 
 /**
  * Matrixize.
@@ -942,7 +942,7 @@ real_t<T> vec_grad(const Array<real,1>& g, const T& x);
  * as if calling `mat(vec(x), n)`.
  */
 template<numeric T>
-Array<value_t<T>,2> mat(const T& x, const int n);
+NUMBIRCH_KEEP Array<value_t<T>,2> mat(const T& x, const int n);
 
 /**
  * Gradient of mat().
@@ -958,7 +958,7 @@ Array<value_t<T>,2> mat(const T& x, const int n);
  * @return Gradient with respect to @p x.
  */
 template<numeric T>
-real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n);
+NUMBIRCH_KEEP real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n);
 
 /**
  * Vector gather.
@@ -976,7 +976,7 @@ real_t<T> mat_grad(const Array<real,2>& g, const T& x, const int n);
  * @see scatter
  */
 template<arithmetic T, arithmetic U>
-Array<T,1> gather(const Array<T,1>& x, const Array<U,1>& y);
+NUMBIRCH_KEEP Array<T,1> gather(const Array<T,1>& x, const Array<U,1>& y);
 
 /**
  * Gradient of gather().
@@ -993,7 +993,7 @@ Array<T,1> gather(const Array<T,1>& x, const Array<U,1>& y);
  * @return Gradient with respect to @p x.
  */
 template<arithmetic T, arithmetic U>
-Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
+NUMBIRCH_KEEP Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
     const Array<U,1>& y);
 
 /**
@@ -1011,7 +1011,7 @@ Array<real,1> gather_grad1(const Array<real,1>& g, const Array<T,1>& x,
  * @return Gradient with respect to @p y.
  */
 template<arithmetic T, arithmetic U>
-Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
+NUMBIRCH_KEEP Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
     const Array<U,1>& y);
 
 /**
@@ -1032,7 +1032,7 @@ Array<real,1> gather_grad2(const Array<real,1>& g, const Array<T,1>& x,
  * @see scatter, gather
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<T,2> gather(const Array<T,2>& A, const Array<U,2>& I,
+NUMBIRCH_KEEP Array<T,2> gather(const Array<T,2>& A, const Array<U,2>& I,
     const Array<V,2>& J);
 
 /**
@@ -1052,7 +1052,7 @@ Array<T,2> gather(const Array<T,2>& A, const Array<U,2>& I,
  * @return Gradient with respect to @p A.
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
     const Array<U,2>& I, const Array<V,2>& J);
 
 /**
@@ -1072,7 +1072,7 @@ Array<real,2> gather_grad1(const Array<real,2>& G, const Array<T,2>& A,
  * @return Gradient with respect to @p I.
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
     const Array<U,2>& I, const Array<V,2>& J);
 
 /**
@@ -1092,7 +1092,7 @@ Array<real,2> gather_grad2(const Array<real,2>& G, const Array<T,2>& A,
  * @return Gradient with respect to @p J.
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
     const Array<U,2>& I, const Array<V,2>& J);
 
 /**
@@ -1125,7 +1125,7 @@ Array<real,2> gather_grad3(const Array<real,2>& G, const Array<T,2>& A,
  * @see gather
  */
 template<arithmetic T, arithmetic U>
-Array<T,1> scatter(const Array<T,1>& x, const Array<U,1>& y, const int n);
+NUMBIRCH_KEEP Array<T,1> scatter(const Array<T,1>& x, const Array<U,1>& y, const int n);
 
 /**
  * Gradient of scatter().
@@ -1143,7 +1143,7 @@ Array<T,1> scatter(const Array<T,1>& x, const Array<U,1>& y, const int n);
  * @return Gradient with respect to @p x.
  */
 template<arithmetic T, arithmetic U>
-Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
+NUMBIRCH_KEEP Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
     const Array<U,1>& y, const int n);
 
 /**
@@ -1162,7 +1162,7 @@ Array<real,1> scatter_grad1(const Array<real,1>& g, const Array<T,1>& x,
  * @return Gradient with respect to @p y.
  */
 template<arithmetic T, arithmetic U>
-Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
+NUMBIRCH_KEEP Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
     const Array<U,1>& y, const int n);
 
 /**
@@ -1187,7 +1187,7 @@ Array<real,1> scatter_grad2(const Array<real,1>& g, const Array<T,1>& x,
  * @see gather, scatter
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<T,2> scatter(const Array<T,2>& A, const Array<U,2>& I,
+NUMBIRCH_KEEP Array<T,2> scatter(const Array<T,2>& A, const Array<U,2>& I,
     const Array<V,2>& J, const int m, const int n);
 
 /**
@@ -1209,7 +1209,7 @@ Array<T,2> scatter(const Array<T,2>& A, const Array<U,2>& I,
  * @return Gradient with respect to @p A.
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
     const Array<U,2>& I, const Array<V,2>& J, const int m, const int n);
 
 /**
@@ -1231,7 +1231,7 @@ Array<real,2> scatter_grad1(const Array<real,2>& G, const Array<T,2>& A,
  * @return Gradient with respect to @p I.
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
     const Array<U,2>& I, const Array<V,2>& J, const int m, const int n);
 
 /**
@@ -1253,7 +1253,7 @@ Array<real,2> scatter_grad2(const Array<real,2>& G, const Array<T,2>& A,
  * @return Gradient with respect to @p J.
  */
 template<arithmetic T, arithmetic U, arithmetic V>
-Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& A,
+NUMBIRCH_KEEP Array<real,2> scatter_grad3(const Array<real,2>& G, const Array<T,2>& A,
     const Array<U,2>& I, const Array<V,2>& J, const int m, const int n);
 
 }
