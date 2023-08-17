@@ -19,7 +19,7 @@ void* extent_alloc(extent_hooks_t *extent_hooks, void *new_addr, size_t size,
     new_addr = sycl::malloc_shared(size, queue);
   }
   if (*zero) {
-    queue.memset(new_addr, 0, size);
+    queue.set(new_addr, 0, size);
   }
   queue.wait();
   return new_addr;
@@ -43,7 +43,7 @@ void* device_extent_alloc(extent_hooks_t *extent_hooks, void *new_addr,
     new_addr = sycl::malloc_shared(size, queue);
   }
   if (*zero) {
-    queue.memset(new_addr, 0, size);
+    queue.set(new_addr, 0, size);
   }
   queue.wait();
   return new_addr;

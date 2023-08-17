@@ -32,10 +32,10 @@
 #define NUMBIRCH_CONSTANT
 #endif
 
-#if defined(__GNUC__) && !defined(__clang__)
-#define NUMBIRCH_KEEP __attribute__((noipa,used))
+#if __has_attribute(noipa)
+#define NUMBIRCH_KEEP __attribute__((used,retain,noipa))
 #else
-#define NUMBIRCH_KEEP __attribute__((noinline,used))
+#define NUMBIRCH_KEEP __attribute__((used,retain,noinline))
 #endif
 
 /**

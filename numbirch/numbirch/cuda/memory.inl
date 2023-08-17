@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include "numbirch/memory.hpp"
 #include "numbirch/utility.hpp"
 #include "numbirch/cuda/cuda.hpp"
 
