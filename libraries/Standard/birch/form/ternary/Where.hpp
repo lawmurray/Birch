@@ -41,19 +41,7 @@ struct Where {
       return numbirch::where(birch::eval(l), birch::eval(m), birch::eval(r));
     }
   }
- 
-  value_t peek() const {
-    if constexpr (std::same_as<Left,bool>) {
-      if (birch::peek(l)) {
-        return birch::peek(m);
-      } else {
-        return birch::peek(r);
-      }
-    } else {
-      return numbirch::where(birch::peek(l), birch::peek(m), birch::peek(r));
-    }
-  }
- 
+  
   value_t move(const MoveVisitor& visitor) const {
     if constexpr (std::same_as<Left,bool>) {
       if (birch::move(l, visitor)) {

@@ -135,14 +135,6 @@ auto eval(const Memo<Middle>& o) {
 }
 
 template<argument Middle>
-auto peek(const Memo<Middle>& o) {
-  if (!o.x) {
-    o.set(value(o.m));
-  }
-  return slice(o.x);
-}
-
-template<argument Middle>
 auto move(const Memo<Middle>& o, const MoveVisitor& visitor) {
   if (!o.x) {
     o.set(value(o.m));

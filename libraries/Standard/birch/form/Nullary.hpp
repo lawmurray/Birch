@@ -70,10 +70,6 @@
     return numbirch::f(__VA_ARGS__); \
   } \
   \
-  auto peek() const { \
-    return numbirch::f(__VA_ARGS__); \
-  } \
-  \
   auto move(const MoveVisitor& visitor) const { \
     return numbirch::f(__VA_ARGS__); \
   }

@@ -116,15 +116,6 @@ struct Random<Value> {
     }
   }
 
-  auto peek() const {
-    if (hasDistribution()) {
-      return getDistribution()->variateLazy();
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
-
   auto move(const MoveVisitor& visitor) const {
     if (hasDistribution()) {
       return getDistribution()->move(visitor);

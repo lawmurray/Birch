@@ -41,18 +41,6 @@ struct Or {
     }
   }
  
-  value_t peek() const {
-    if constexpr (std::same_as<Left,bool>) {
-      if (birch::peek(l)) {
-        return true;
-      } else {
-        return birch::peek(r);
-      }
-    } else {
-      return numbirch::logical_or(birch::peek(l), birch::peek(r));
-    }
-  }
- 
   value_t move(const MoveVisitor& visitor) const {
     if constexpr (std::same_as<Left,bool>) {
       if (birch::move(l, visitor)) {

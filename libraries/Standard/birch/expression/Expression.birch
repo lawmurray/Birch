@@ -90,14 +90,6 @@
  * allow the value of `x` to be later changed to a negative value, and the
  * program would lack self-consistency, as it executed `doThis()` instead of
  * `doThat()` based on the previous value.
- *
- * ### Checkpoints and memoization
- *
- * `eval()` memoizes only at checkpoints defined by `Expression` objects. This
- * reduces memory use. Internally, `grad()` benefits from re-evaluating
- * expressions between checkpoints to memoize intermediate results. It does so
- * by calling `peek()`. These memoized intermediate results are cleared again
- * as `grad()` progresses.
  */
 abstract class Expression<Value> {  
   hpp{{
@@ -214,13 +206,6 @@ abstract class Expression<Value> {
   abstract function grad(g:Gradient) -> Real[_];
   abstract function shallowGrad(g:Gradient, visitor:GradVisitor);
   abstract function deepGrad(visitor:GradVisitor);
-
-  /**
-   * Evaluate.
-   *
-   * @return The result.
-   */
-  abstract function peek() -> Value!;
 
   /**
    * Trace an expression before calling grad() or move(). This traces through

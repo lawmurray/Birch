@@ -161,13 +161,6 @@ abstract class DoExpression<Value> < Expression<Value> {
   }
   abstract function doDeepGrad(visitor:GradVisitor);
 
-  final override function peek() -> Value! {
-    /* forms use peek() for fine-grain memoization, but this terminates at
-     * the nearest Expression objects; so here should behave as for eval(),
-     * reverting to coarse-grain memoization */
-    return eval();
-  }
-
   final override function trace() {
     reset();
     visitor:RelinkVisitor;

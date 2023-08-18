@@ -117,11 +117,6 @@
         __VA_OPT__(,) __VA_ARGS__); \
   } \
   \
-  auto peek() const { \
-    return numbirch::f(birch::peek(l), birch::peek(r) \
-        __VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
   auto move(const MoveVisitor& visitor) const { \
     return numbirch::f(birch::move(l, visitor), birch::move(r, visitor) \
         __VA_OPT__(,) __VA_ARGS__); \
@@ -130,8 +125,8 @@
 #define BIRCH_BINARY_GRAD(This, f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) const { \
-    auto l1 = birch::peek(l); \
-    auto r1 = birch::peek(r); \
+    auto l1 = birch::eval(l); \
+    auto r1 = birch::eval(r); \
     if (!is_constant(l)) { \
       birch::shallow_grad(l, numbirch::f_grad ## 1(g, l1, r1 \
           __VA_OPT__(,) __VA_ARGS__), visitor); \
@@ -145,9 +140,9 @@
 #define BIRCH_BINARY_GRAD_WITH_RESULT(This, f_grad, ...) \
   template<class G> \
   void shallowGrad(const G& g, const GradVisitor& visitor) const { \
-    auto x = peek(); \
-    auto l1 = birch::peek(l); \
-    auto r1 = birch::peek(r); \
+    auto x = eval(); \
+    auto l1 = birch::eval(l); \
+    auto r1 = birch::eval(r); \
     if (!is_constant(l)) { \
       birch::shallow_grad(l, numbirch::f_grad ## 1(g, x, l1, r1 \
           __VA_OPT__(,) __VA_ARGS__), visitor); \

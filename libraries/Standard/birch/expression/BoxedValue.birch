@@ -93,12 +93,6 @@ final acyclic class BoxedValue<Value> < Expression<Value> {
     //
   }
 
-  final override function peek() -> Value! {
-    cpp{{
-    return x;
-    }}
-  }
-
   final override function trace() {
     //
   }
