@@ -27,7 +27,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let B <- R;  // number of bootstrap resamples
   let nfails <- 0;
   let ntests <- 2*C - 1;
-  let α <- 0.002;  // p-value for failure
+  let α <- 0.001;  // p-value for failure
   let l <- vector(1, R);
   let u <- vector(2*R, R);
 
