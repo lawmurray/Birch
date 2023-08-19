@@ -53,10 +53,6 @@ abstract class DoExpression<Value> < Expression<Value> {
     return global.columns(eval());
   }
 
-  final override function length() -> Integer {
-    return global.length(eval());
-  }
-
   final override function size() -> Integer {
     return global.size(eval());
   }

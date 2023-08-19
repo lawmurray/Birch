@@ -54,10 +54,6 @@
     return columns(eval()); \
   } \
   \
-  int length() const { \
-    return length(eval()); \
-  } \
-  \
   int size() const { \
     return size(eval()); \
   }

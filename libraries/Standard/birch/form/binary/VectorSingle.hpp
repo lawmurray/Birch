@@ -21,10 +21,6 @@ struct VectorSingle {
     return 1;
   }
 
-  int length() const {
-    return n;
-  }
-
   int size() const {
     return n;
   }

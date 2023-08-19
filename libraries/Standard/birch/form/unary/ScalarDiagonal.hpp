@@ -21,10 +21,6 @@ struct ScalarDiagonal {
     return n;
   }
 
-  int length() const {
-    return n;
-  }
-
   int size() const {
     return n*n;
   }

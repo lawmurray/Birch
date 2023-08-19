@@ -283,13 +283,7 @@ int columns(T&& x) {
 
 template<argument T>
 int length(T&& x) {
-  if constexpr (numeric<T>) {
-    return numbirch::length(std::forward<T>(x));
-  } else if constexpr (form<T>) {
-    return x.length();
-  } else if constexpr (expression<T>) {
-    return x->length();
-  }
+  return rows(std::forward<T>(x));
 }
 
 template<argument T>

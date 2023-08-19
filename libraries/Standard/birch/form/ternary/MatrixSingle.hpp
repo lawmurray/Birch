@@ -21,10 +21,6 @@ struct MatrixSingle {
     return C;
   }
 
-  int length() const {
-    return R;
-  }
-
   int size() const {
     return R*C;
   }

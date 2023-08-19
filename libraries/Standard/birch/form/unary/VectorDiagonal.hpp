@@ -21,10 +21,6 @@ struct VectorDiagonal {
     return length(m);
   }
 
-  int length() const {
-    return length(m);
-  }
-
   int size() const {
     return pow(length(m), 2);
   }

@@ -93,10 +93,6 @@
     return birch::columns(eval()); \
   } \
   \
-  int length() const { \
-    return birch::length(eval()); \
-  } \
-  \
   int size() const { \
     return birch::size(eval()); \
   }
