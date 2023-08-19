@@ -10,25 +10,20 @@ function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {
   X1:Real[N,D];
   X2:Real[N,D];
 
+  m.initialize();
   parallel for n in 1..N {
     let forward <- Handler(false, lazy, true);
     let backward <- Handler(true, lazy, true);
 
-    /* initialize consistently between forward and backward versions */
-    let m' <- copy(m);
-    with forward {
-      m'.initialize();
-    }
-
     /* simulate forward */
-    let f <- copy(m');
+    let f <- copy(m);
     with forward {
       f.simulate();
       X1[n,1..D] <- f.forward();
     }
 
     /* simulate backward */
-    let b <- copy(m');
+    let b <- copy(m);
     with backward {
       b.simulate();
       X2[n,1..D] <- b.backward();

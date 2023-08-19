@@ -21,11 +21,11 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
   //   with γ = 1.0e-3 and ε = 1.0e-2, that "99.9% of gradients computed are
   //   within 1% of the finite difference approximation"
 
+  m.initialize();
   parallel for n in 1..N {
     let h <- Handler(backward, true, true);
     let m' <- copy(m);
     with h {
-      m'.initialize();
       m'.simulate();
       if backward {
         m'.backward();

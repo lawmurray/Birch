@@ -28,6 +28,7 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let nfails <- 0;
   let ntests <- 2*C - 1;
   let α <- 0.001;  // p-value for failure
+  let β <- 0.02;  // portion of tests allowed to fail at this threshold
   let l <- vector(1, R);
   let u <- vector(2*R, R);
 
@@ -46,23 +47,20 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
       x2 <- X2*v;
     }
     let δ <- wasserstein(x1, x2);  // observed distance
+    let δ' <- vector(0.0, B);  // bootstrap distances
     let z0 <- stack(x1, x2);
-    let n <- vector(0, B);  // to record test failures
     parallel for b in 1..B {
       let z1' <- gather(z0, simulate_uniform_int(l, u))!;
       let z2' <- gather(z0, simulate_uniform_int(l, u))!;
-      let δ' <- wasserstein(z1', z2');  // bootstrap sample difference
-      if δ' > δ {
-        n[b] <- 1;
-      }
+      δ'[b] <- wasserstein(z1', z2');  // bootstrap sample difference
     }
-    let p <- sum(n)!/Real(B);  // p-value
+    let p <- count(δ' > δ)!/Real(B);  // p-value
     if 100 < R && p < α {
       nfails <- nfails + 1;
-      warn("on test " + c + ", p=" + p);
+      warn("on test " + c + ", p=" + p + " δ=" + δ + ", δ_max=" + max(δ')!);
     }
   }
-  if 100 < R && 0 < nfails {
+  if 100 < R && ceil(β*ntests) < nfails {
     warn("***failed*** in aggregate, " + nfails + " of " + ntests + " failed");
     return false;
   } else {

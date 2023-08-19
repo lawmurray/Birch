@@ -1,3 +1,19 @@
+function mean(x:Real[_]) -> Real {
+  return sum(x)!/Real(length(x));
+}
+
+function cov(x:Real[_], μ:Real) -> Real {
+  return dot(x - μ)!/(length(x) - 1.0);
+}
+
+function mean(X:Real[_,_]) -> Real[_] {
+  return X*vector(1.0/columns(X), columns(X));
+}
+
+function cov(X:Real[_,_], μ:Real[_]) -> Real[_,_] {
+  return outer(X - outer(μ, vector(1.0, columns(X))))/(columns(X) - 1.0);
+}
+
 /*
  * Test the pdf of a model.
  *
@@ -85,7 +101,7 @@ function test_pdf(π:Distribution<Boolean>, N:Integer, lazy:Boolean) {
  * @param N Number of samples.
  * @param lazy Use lazy version?
  */
-function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {  
+function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
   /* lower bound on interval */
   let from <- π.lower();
   if !from? {
@@ -159,7 +175,7 @@ function test_pdf(π:Distribution<Integer>, N:Integer, lazy:Boolean) {
  * @param N Number of (short) chains.
  * @param S Number of steps in each chain.
  */
-function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {  
+function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   /* iid samples */
   x1:Real[N];
   for n in 1..N {
@@ -171,20 +187,16 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
   }
   
   /* compute the shape for a Gaussian proposal using iid samples */
-  let μ <- 0.0;
-  let σ2 <- 0.0;
+  x:Real[N*S];
   for n in 1..N*S {
-    let x <- 0.0;
     if lazy {
-      x <- π.simulateLazy();
+      x[n] <- π.simulateLazy();
     } else {
-      x <- π.simulate();
+      x[n] <- π.simulate();
     }
-    μ <- μ + x;
-    σ2 <- σ2 + x*x;
   }
-  μ <- μ/(N*S);
-  σ2 <- (σ2/(N*S) - μ*μ)*pow(2.4, 2.0);
+  let μ <- mean(x);
+  let σ2 <- cov(x, μ);
 
   /* draw Metropolis samples using pdf */
   x2:Real[N];
@@ -258,7 +270,7 @@ function test_pdf(π:Distribution<Real>, N:Integer, S:Integer, lazy:Boolean) {
  * @param S Number of steps in each chain.
  */
 function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
-    lazy:Boolean) {  
+    lazy:Boolean) {
   /* iid samples */
   let D <- 0;
   if lazy {
@@ -276,24 +288,16 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
   }
   
   /* compute the shape for a Gaussian proposal using iid samples */
-  μ:Real[D];
-  Σ:Real[D,D];
-  do {
-    μ <- 0.0;
-    Σ <- 0.0;
-    for n in 1..N*S {
-      x:Real[_];
-      if lazy {
-        x <- π.simulateLazy();
-      } else {
-        x <- π.simulate();
-      }
-      μ <- μ + x;
-      Σ <- Σ + outer(x);
+  X:Real[D,N*D*S];
+  parallel for n in 1..N*S*D {
+    if lazy {
+      X[1..D,n] <- π.simulateLazy();
+    } else {
+      X[1..D,n] <- π.simulate();
     }
-    μ <- μ/(N*S);
-    Σ <- (Σ/(N*S) - outer(μ))*pow(2.4, 2.0)/D;
-  } while N >= 100 && sum(isfinite(chol(Σ)))! == 0.0;
+  }
+  let μ <- mean(X);
+  let Σ <- cov(X, μ);
   
   /* draw Metropolis samples using pdf */
   X2:Real[N,D];
@@ -390,24 +394,16 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
   }
   
   /* compute the shape for a Gaussian proposal using iid samples */
-  μ:Real[R*C];
-  Σ:Real[R*C,R*C];
-  do {
-    μ <- 0.0;
-    Σ <- 0.0;
-    for n in 1..N*S {
-      x:Real[_];
-      if lazy {
-        x <- vec(π.simulateLazy());
-      } else {
-        x <- vec(π.simulate());
-      }
-      μ <- μ + x;
-      Σ <- Σ + outer(x);
+  X:Real[R*C,N*S*R*C];
+  parallel for n in 1..N*S*R*C {
+    if lazy {
+      X[1..R*C,n] <- vec(π.simulateLazy());
+    } else {
+      X[1..R*C,n] <- vec(π.simulate());
     }
-    μ <- μ/(N*S);
-    Σ <- (Σ/(N*S) - outer(μ))*pow(2.4, 2.0)/(R*C);
-  } while N >= 100 && sum(isfinite(chol(Σ)))! == 0;
+  }
+  let μ <- mean(X);
+  let Σ <- cov(X, μ);
 
   /* draw Metropolis samples using pdf */
   X2:Real[N,R*C];
