@@ -278,12 +278,12 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
   } else {
     D <- rows(π.simulate());
   }
-  X1:Real[N,D];
+  X1:Real[D,N];
   parallel for n in 1..N {
     if lazy {
-      X1[n,1..D] <- π.simulateLazy();
+      X1[1..D,n] <- π.simulateLazy();
     } else {
-      X1[n,1..D] <- π.simulate();
+      X1[1..D,n] <- π.simulate();
     }
   }
   
@@ -300,7 +300,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
   let Σ <- cov(X, μ);
   
   /* draw Metropolis samples using pdf */
-  X2:Real[N,D];
+  X2:Real[D,N];
   let last <- false;  // are on the last iteration?
   let done <- false;  // are we done?
   do {
@@ -336,7 +336,7 @@ function test_pdf(π:Distribution<Real[_]>, N:Integer, S:Integer,
       }
 
       /* final state */
-      X2[n,1..D] <- x;
+      X2[1..D,n] <- x;
     }
     let raccepts <- sum(a)!/Real(N*S);  // overall acceptance rate
     if last {
@@ -384,12 +384,12 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
   }
   
   /* iid samples */
-  X1:Real[N,R*C];
+  X1:Real[R*C,N];
   parallel for n in 1..N {
     if lazy {
-      X1[n,1..R*C] <- vec(π.simulateLazy());
+      X1[1..R*C,n] <- vec(π.simulateLazy());
     } else {
-      X1[n,1..R*C] <- vec(π.simulate());
+      X1[1..R*C,n] <- vec(π.simulate());
     }
   }
   
@@ -406,7 +406,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
   let Σ <- cov(X, μ);
 
   /* draw Metropolis samples using pdf */
-  X2:Real[N,R*C];
+  X2:Real[R*C,N];
   let last <- false;  // are on the last iteration?
   let done <- false;  // are we done?
   do {
@@ -443,7 +443,7 @@ function test_pdf(π:Distribution<Real[_,_]>, N:Integer, S:Integer,
       }
 
       /* final state */
-      X2[n,1..R*C] <- vec(X);
+      X2[1..R*C,n] <- vec(X);
     }
     let raccepts <- value(sum(a)/Real(N*S))!;  // overall acceptance rate
     if last {

@@ -193,19 +193,26 @@ function systematic_cumulative_offspring(W:Real[_]) -> Integer[_] {
 /*
  * Convert an offspring vector into an ancestry vector.
  */
-function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
-  let N <- length(o);
-  let i <- 1;
+function offspring_to_ancestors(o:Integer[_], N:Integer) -> Integer[_] {
   a:Integer[N];
-  for n in 1..N {
+  let i <- 1;
+  for n in 1..length(o) {
     for j in 1..o[n] {
       a[i] <- n;
       i <- i + 1;
+      assert i <= N + 1;
     }
   }
   assert i == N + 1;
   assert is_sorted(a);
   return a;
+}
+
+/*
+ * Convert an offspring vector into an ancestry vector.
+ */
+function offspring_to_ancestors(o:Integer[_]) -> Integer[_] {
+  return offspring_to_ancestors(o, length(o));
 }
 
 /*

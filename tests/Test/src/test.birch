@@ -7,7 +7,7 @@
  * Return: Did the test pass?
  */
 function pass(x1:Real[_], x2:Real[_]) -> Boolean {
-  return pass(mat(x1, 1), mat(x2, 1));
+  return pass(mat(x1, length(x1)), mat(x2, length(x2)));
 }
 
 /*
@@ -26,38 +26,48 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
   let C <- columns(X1);
   let B <- R;  // number of bootstrap resamples
   let nfails <- 0;
-  let ntests <- 2*C - 1;
+  let ntests <- 2*R - 1;
   let α <- 0.001;  // p-value for failure
   let β <- 0.02;  // portion of tests allowed to fail at this threshold
-  let l <- vector(1, R);
-  let u <- vector(2*R, R);
+  let l <- vector(1, C);
+  let u <- vector(2*C, C);
 
-  for c in 1..ntests {
+  for r in 1..ntests {
     x1:Real[_];
     x2:Real[_];
-    if c <= C {
+    z0:Real[_];
+    if r <= R {
       /* test marginal */
-      x1 <- X1[1..R,c];
-      x2 <- X2[1..R,c];
+      x1 <- X1[r,1..C];
+      x2 <- X2[r,1..C];
     } else {
       /* test random projection */
-      let v <~ MultivariateGaussian(0.0, 1.0, C);
+      let v <~ MultivariateGaussian(0.0, 1.0, R);
       v <- v/sqrt(dot(v));
-      x1 <- X1*v;
-      x2 <- X2*v;
+      x1 <- inner(X1, v);
+      x2 <- inner(X2, v);
     }
-    let δ <- wasserstein(x1, x2);  // observed distance
+    z0 <- sort(stack(x1, x2)!);
+
+    let δ <- wasserstein(sort(x1), sort(x2));  // observed distance
     let δ' <- vector(0.0, B);  // bootstrap distances
-    let z0 <- stack(x1, x2);
+    let ρ <- vector(1.0/(2*C), 2*C);  // probability vector
     parallel for b in 1..B {
-      let z1' <- gather(z0, simulate_uniform_int(l, u))!;
-      let z2' <- gather(z0, simulate_uniform_int(l, u))!;
-      δ'[b] <- wasserstein(z1', z2');  // bootstrap sample difference
+      /* bootstrap sample indices, in sorted order */
+      let u1 <- offspring_to_ancestors(simulate_multinomial(C, ρ), C);
+      let u2 <- offspring_to_ancestors(simulate_multinomial(C, ρ), C);
+
+      /* gather samples, z0 is sorted above, as is u1 and u2 */
+      let z1' <- gather(z0, u1)!;
+      let z2' <- gather(z0, u2)!;
+
+      /* distance between bootstrap samples */
+      δ'[b] <- wasserstein(z1', z2');
     }
     let p <- count(δ' > δ)!/Real(B);  // p-value
     if 100 < R && p < α {
       nfails <- nfails + 1;
-      warn("on test " + c + ", p=" + p + " δ=" + δ + ", δ_max=" + max(δ')!);
+      warn("on test " + r + ", p=" + p + " δ=" + δ + ", δ_max=" + max(δ')!);
     }
   }
   if 100 < R && ceil(β*ntests) < nfails {
@@ -78,5 +88,5 @@ function pass(X1:Real[_,_], X2:Real[_,_]) -> Boolean {
  * Return: 1-Wasserstein distance between `x1` and `x2`.
  */
 function wasserstein(x1:Real[_], x2:Real[_]) -> Real {
-  return sum(abs(sort(x1) - sort(x2)))!/length(x1);
+  return sum(abs(x1 - x2))!/length(x1);
 }

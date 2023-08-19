@@ -7,8 +7,8 @@
  */
 function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {  
   let D <- m.size();  
-  X1:Real[N,D];
-  X2:Real[N,D];
+  X1:Real[D,N];
+  X2:Real[D,N];
 
   m.initialize();
   parallel for n in 1..N {
@@ -19,14 +19,14 @@ function test_conjugacy(m:TestModel, N:Integer, lazy:Boolean) {
     let f <- copy(m);
     with forward {
       f.simulate();
-      X1[n,1..D] <- f.forward();
+      X1[1..D,n] <- f.forward();
     }
 
     /* simulate backward */
     let b <- copy(m);
     with backward {
       b.simulate();
-      X2[n,1..D] <- b.backward();
+      X2[1..D,n] <- b.backward();
     }
   }
   
