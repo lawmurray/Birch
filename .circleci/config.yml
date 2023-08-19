@@ -11,7 +11,7 @@ executors:
     environment:
       CODENAME: bench
       OMP_NUM_THREADS: 4
-      CXXFLAGS: -O3 -flto -march=native -Wall
+      CXXFLAGS: -O3 -flto=auto -march=native -Wall
       MAKEFLAGS: -j8
       CONFIGURE_FLAGS: --disable-assert
       BIRCH_FLAGS: --unit=dir --arch=native --jobs=8 --enable-verbose --disable-assert --disable-debug --disable-static --disable-single

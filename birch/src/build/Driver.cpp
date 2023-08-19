@@ -456,8 +456,8 @@ void birch::Driver::configure() {
       cxxflags << " -g";
     }
     if (enableOptimize) {
-      cflags << " -O3 -flto";
-      cxxflags << " -O3 -flto";
+      cflags << " -O3 -flto=auto";
+      cxxflags << " -O3 -flto=auto";
     }
     if (enableCoverage) {
       cflags << " -fno-inline --coverage";
