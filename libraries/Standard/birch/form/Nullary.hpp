@@ -62,12 +62,13 @@
   }
 
 #define BIRCH_NULLARY_EVAL(This, f, ...) \
-  auto value() const { \
+  auto eval() const { \
     return numbirch::f(__VA_ARGS__); \
   } \
   \
-  auto eval() const { \
-    return numbirch::f(__VA_ARGS__); \
+  auto value() const { \
+    constant(); \
+    return eval(); \
   } \
   \
   auto move(const MoveVisitor& visitor) const { \

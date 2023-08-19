@@ -107,14 +107,14 @@
   }
 
 #define BIRCH_BINARY_EVAL(This, f, ...) \
-  auto value() const { \
-    return numbirch::f(birch::value(l), birch::value(r) \
-        __VA_OPT__(,) __VA_ARGS__); \
-  } \
-  \
   auto eval() const { \
     return numbirch::f(birch::eval(l), birch::eval(r) \
         __VA_OPT__(,) __VA_ARGS__); \
+  } \
+  \
+  auto value() const { \
+    constant(); \
+    return eval(); \
   } \
   \
   auto move(const MoveVisitor& visitor) const { \

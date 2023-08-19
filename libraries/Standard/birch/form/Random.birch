@@ -98,15 +98,6 @@ struct Random<Value> {
     return getDistribution()->getMarginalized();
   }
  
-  auto value() const {
-    if (hasDistribution()) {
-      return getDistribution()->variate();
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
-
   auto eval() const {
     if (hasDistribution()) {
       return getDistribution()->variateLazy();
@@ -114,6 +105,11 @@ struct Random<Value> {
       assert(x.has_value());
       return *x;
     }
+  }
+
+  auto value() const {
+    constant();
+    return eval();
   }
 
   auto move(const MoveVisitor& visitor) const {

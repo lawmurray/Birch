@@ -18,15 +18,8 @@ struct Or {
   using value_t = decltype(numbirch::logical_or(birch::value(l), birch::value(r)));
 
   value_t value() const {
-    if constexpr (std::same_as<Left,bool>) {
-      if (birch::value(l)) {
-        return true;
-      } else {
-        return birch::value(r);
-      }
-    } else {
-      return numbirch::logical_or(birch::value(l), birch::value(r));
-    }
+    constant();
+    return eval();
   }
  
   value_t eval() const {

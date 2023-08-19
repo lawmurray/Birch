@@ -61,18 +61,11 @@ abstract class DoExpression<Value> < Expression<Value> {
     return global.size(eval());
   }
 
-  final override function value() -> Value! {
-    eval();
-    constant();
-    assert x?;
-    return x!;
-  }
-
   final override function eval() -> Value! {
-    if !x? && !flagConstant {
+    if !x? {
       doEval();
+      assert x?;
     }
-    assert x?;
     return x!;
   }
   abstract function doEval();
@@ -194,6 +187,7 @@ abstract class DoExpression<Value> < Expression<Value> {
    */
   final override function constant() {
     if !flagConstant {
+      eval();  // ensure result is memoized
       g <- nil;
       linkCount <- 0;
       visitCount <- 0;
@@ -204,7 +198,7 @@ abstract class DoExpression<Value> < Expression<Value> {
   abstract function doConstant();
 
   override function write(buffer:Buffer) {
-    buffer.set(value()!);
+    buffer.set(this.value()!);
   }
 }
 

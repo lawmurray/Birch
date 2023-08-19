@@ -127,18 +127,21 @@ abstract class Expression<Value> {
   abstract function size() -> Integer;
 
   /**
-   * Evaluate and render constant.
-   *
-   * @return The result.
-   */
-  abstract function value() -> Value!;
-
-  /**
    * Evaluate.
    *
    * @return The result.
    */
   abstract function eval() -> Value!;
+
+  /**
+   * Evaluate and render constant.
+   *
+   * @return The result.
+   */
+  final function value() -> Value! {
+    constant();
+    return eval();
+  }
 
   /**
    * Re-evaluate, ignoring memoization. This is used instead of evaluate after

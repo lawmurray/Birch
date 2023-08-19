@@ -19,15 +19,8 @@ struct Where {
       birch::value(r)));
 
   value_t value() const {
-    if constexpr (std::same_as<Left,bool>) {
-      if (birch::value(l)) {
-        return birch::value(m);
-      } else {
-        return birch::value(r);
-      }
-    } else {
-      return numbirch::where(birch::value(l), birch::value(m), birch::value(r));
-    }
+    constant();
+    return eval();
   }
  
   value_t eval() const {

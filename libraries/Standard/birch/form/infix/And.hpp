@@ -18,15 +18,8 @@ struct And {
   using value_t = decltype(numbirch::logical_and(birch::value(l), birch::value(r)));
 
   value_t value() const {
-    if constexpr (std::same_as<Left,bool>) {
-      if (birch::value(l)) {
-        return birch::value(r);
-      } else {
-        return false;
-      }
-    } else {
-      return numbirch::logical_and(birch::value(l), birch::value(r));
-    }
+    constant();
+    return eval();
   }
  
   value_t eval() const {

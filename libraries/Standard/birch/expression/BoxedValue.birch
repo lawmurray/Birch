@@ -44,12 +44,6 @@ final acyclic class BoxedValue<Value> < Expression<Value> {
     }}
   }
 
-  final override function value() -> Value! {
-    cpp{{
-    return x;
-    }}
-  }
-
   final override function eval() -> Value! {
     cpp{{
     return x;
