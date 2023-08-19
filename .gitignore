@@ -3,3 +3,8 @@
 /docs/membirch/
 /docs/libraries/
 /docs/index.md
+configure~
+configure.log
+configure.lineno
+.cache
+
