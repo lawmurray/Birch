@@ -326,13 +326,13 @@ decltype(auto) eval(T&& x) {
 }
 
 template<argument T>
-decltype(auto) move(T&& x, const MoveVisitor& visitor) {
+void move(T&& x, const MoveVisitor& visitor) {
   if constexpr (numeric<T>) {
-    return std::forward<T>(x);
+    //
   } else if constexpr (form<T>) {
-    return x.move(visitor);
+    x.move(visitor);
   } else if constexpr (expression<T>) {
-    return x->move(visitor);
+    x->move(visitor);
   }
 }
 

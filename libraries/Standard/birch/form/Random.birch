@@ -112,15 +112,6 @@ struct Random<Value> {
     return eval();
   }
 
-  auto move(const MoveVisitor& visitor) const {
-    if (hasDistribution()) {
-      return getDistribution()->move(visitor);
-    } else {
-      assert(x.has_value());
-      return *x;
-    }
-  }
-
   void reset() {
     if (hasDistribution()) {
       getDistribution()->reset();
@@ -149,6 +140,12 @@ struct Random<Value> {
     return !hasDistribution();
   }
 
+  void move(const MoveVisitor& visitor) const {
+    if (hasDistribution()) {
+      getDistribution()->move(visitor);
+    }
+  }
+
   void args(const ArgsVisitor& visitor) const {
     if (hasDistribution()) {
       getDistribution()->args(visitor);
@@ -163,7 +160,6 @@ struct Random<Value> {
   void shallowGrad(const G& g, const GradVisitor& visitor) const {
     if (hasDistribution()) {
       getDistribution()->grad(g, visitor);
-      const_cast<Random*>(this)->x.reset();
     }
   }
 

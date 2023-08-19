@@ -15,8 +15,8 @@ class LangevinKernel < Kernel {
       let π <- m.hoist();
       if π? {
         π!.trace();
-        let p <- π!.eval();
         let x <- π!.args();
+        let p <- π!.eval();
         let g <- π!.grad();
         let μ <- eval(x + g*scale);  // mean of proposal from initial state
         let accept <- true;  // was most recent proposal accepted?
@@ -24,7 +24,8 @@ class LangevinKernel < Kernel {
         for k in 1..nmoves {
           /* proposed state */
           let x' <- eval(μ + standard_gaussian(n)*sqrt(2.0*scale));
-          let p' <- π!.move(x');
+          π!.move(x');
+          let p' <- π!.eval();
           let g' <- π!.grad();
           let μ' <- eval(x' + g'*scale);
 

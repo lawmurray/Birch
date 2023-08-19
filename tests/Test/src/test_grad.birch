@@ -38,7 +38,7 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
     let π <- h.hoist()!;
     π.trace();
     
-    let p <- eval(π);
+    eval(π)!;
     let x <- π.args();
     let g <- π.grad();
 
@@ -52,9 +52,11 @@ function test_grad(m:TestModel, N:Integer, backward:Boolean) {
         let y <- x;
         let z <- x;
         y[i] <- y[i] - 0.5*Δ';
+        π.move(y);
+        let q <- eval(π)!;
         z[i] <- z[i] + 0.5*Δ';
-        let q <- π.move(y)!;
-        let r <- π.move(z)!;
+        π.move(z);
+        let r <- eval(π)!;
         let fd <- (r - q)/Δ';
         let δ <- abs(g[i] - fd);
         let pass <- δ <= ε*min(abs(g[i]), abs(fd));

@@ -31,6 +31,7 @@
   static constexpr void relink(const RelinkVisitor&) {} \
   static constexpr void constant() {} \
   static constexpr bool isConstant() { return true; } \
+  static constexpr void move(const MoveVisitor&) {} \
   static constexpr void args(const ArgsVisitor&) {} \
   static constexpr void deepGrad(const GradVisitor&) {} \
   \
@@ -69,10 +70,6 @@
   auto value() const { \
     constant(); \
     return eval(); \
-  } \
-  \
-  auto move(const MoveVisitor& visitor) const { \
-    return numbirch::f(__VA_ARGS__); \
   }
 
 #define BIRCH_NULLARY_GRAD(This, ...) \

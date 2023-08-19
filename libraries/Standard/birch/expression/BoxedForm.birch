@@ -16,7 +16,7 @@ final class BoxedForm<Value,Form>(f:Form) < DoExpression<Value> {
   }
 
   override function doMove(visitor:MoveVisitor) {
-    this.x <- global.move(f!, visitor);
+    global.move(f!, visitor);
   }
 
   override function doArgs(visitor:ArgsVisitor) {

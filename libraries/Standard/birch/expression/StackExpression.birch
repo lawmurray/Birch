@@ -34,14 +34,9 @@ final class StackExpression<Arg,Element> < DoExpression<Element[_]> {
 
   override function doMove(visitor:MoveVisitor) {
     let R <- m.size();
-    x:Element[R];
     for r in 1..R {
-      let y <- global.move(m[r], visitor);
-      cpp{{
-      x.slice(r) = y;
-      }}
+      global.move(m[r], visitor);
     }
-    this.x <- x;
   }
 
   override function doArgs(visitor:ArgsVisitor) {

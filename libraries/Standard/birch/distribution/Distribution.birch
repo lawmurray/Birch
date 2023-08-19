@@ -259,9 +259,9 @@ abstract class Distribution<Value> < Delay {
     }
   }
 
-  final function move(visitor:MoveVisitor) -> Value! {
+  final function move(visitor:MoveVisitor) {
     if this.hasUpdated() {
-      return this.getUpdatedDistribution().move(visitor);
+      this.getUpdatedDistribution().move(visitor);
     } else if !flagPinned {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
@@ -272,8 +272,6 @@ abstract class Distribution<Value> < Delay {
         visitCount <- 0;  // reset for next time
       }
     }
-    assert x?;
-    return x!;
   }
 
   final function args(visitor:ArgsVisitor) {

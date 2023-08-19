@@ -33,19 +33,6 @@ struct Or {
       return numbirch::logical_or(birch::eval(l), birch::eval(r));
     }
   }
- 
-  value_t move(const MoveVisitor& visitor) const {
-    if constexpr (std::same_as<Left,bool>) {
-      if (birch::move(l, visitor)) {
-        return true;
-      } else {
-        return birch::move(r, visitor);
-      }
-    } else {
-      return numbirch::logical_or(birch::move(l, visitor),
-          birch::move(r, visitor));
-    }
-  }
 };
 
 BIRCH_BINARY_TYPE(Or)

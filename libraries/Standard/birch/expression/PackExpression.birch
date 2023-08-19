@@ -45,25 +45,8 @@ final class PackExpression<Arg,Element> < DoExpression<Element[_,_]> {
   }
 
   override function doMove(visitor:MoveVisitor) {
-    if m.empty() {
-      this.x <- matrix<Element>(0, 0, 0);
-    } else {
-      let R <- rows(m[1]);
-      let C <- columns(m[1]);
-      for k in 2..m.size() {
-        assert rows(m[k]) == R;
-        C <- C + columns(m[k]);
-      }
-
-      x:Element[R,C];
-      let c <- 0;
-      for k in 1..m.size() {
-        let n <- columns(m[k]);
-        x[1..R,(c + 1)..(c + n)] <- mat(global.move(m[k], visitor), n);
-        c <- c + n;
-      }
-      assert c == C;
-      this.x <- x;
+    for k in 1..m.size() {
+      global.move(m[k], visitor);
     }
   }
 

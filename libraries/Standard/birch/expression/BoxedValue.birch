@@ -50,17 +50,12 @@ final acyclic class BoxedValue<Value> < Expression<Value> {
     }}
   }
 
-  final function move(x:Real[_]) -> Value! {
+  final function move(x:Real[_]) {
     assert global.length(x) == 0;
-    cpp{{
-    return *this->x;
-    }}
   }
 
-  final override function move(visitor:MoveVisitor) -> Value! {
-    cpp{{
-    return x;
-    }}
+  final override function move(visitor:MoveVisitor) {
+    //
   }
 
   final override function args() -> Real[_] {

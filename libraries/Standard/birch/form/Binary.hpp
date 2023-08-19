@@ -69,6 +69,11 @@
     return birch::is_constant(l) && birch::is_constant(r); \
   } \
   \
+  void move(const MoveVisitor& visitor) const { \
+    birch::move(l, visitor); \
+    birch::move(r, visitor); \
+  } \
+  \
   void args(const ArgsVisitor& visitor) const { \
     birch::args(l, visitor); \
     birch::args(r, visitor); \
@@ -115,11 +120,6 @@
   auto value() const { \
     constant(); \
     return eval(); \
-  } \
-  \
-  auto move(const MoveVisitor& visitor) const { \
-    return numbirch::f(birch::move(l, visitor), birch::move(r, visitor) \
-        __VA_OPT__(,) __VA_ARGS__); \
   }
 
 #define BIRCH_BINARY_GRAD(This, f_grad, ...) \

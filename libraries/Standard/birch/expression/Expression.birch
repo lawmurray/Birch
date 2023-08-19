@@ -149,8 +149,8 @@ abstract class Expression<Value> {
    *
    * @return The result.
    */
-  abstract function move(x:Real[_]) -> Value!;
-  abstract function move(visitor:MoveVisitor) -> Value!;
+  abstract function move(x:Real[_]);
+  abstract function move(visitor:MoveVisitor);
 
   /**
    * Vectorize arguments.

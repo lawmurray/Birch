@@ -109,6 +109,12 @@ bool is_constant(const Memo<Middle>& o) {
 }
 
 template<argument Middle>
+void move(const Memo<Middle>& o, const MoveVisitor& visitor) {
+  move(o.m, visitor);
+  o.set(eval(o.m));  // update memoized result
+}
+
+template<argument Middle>
 void args(Memo<Middle>& o, const ArgsVisitor& visitor) {
   args(o.m, visitor);
 }
@@ -129,15 +135,7 @@ auto value(const Memo<Middle>& o) {
 template<argument Middle>
 auto eval(const Memo<Middle>& o) {
   if (!o.x) {
-    o.set(value(o.m));
-  }
-  return slice(o.x);
-}
-
-template<argument Middle>
-auto move(const Memo<Middle>& o, const MoveVisitor& visitor) {
-  if (!o.x) {
-    o.set(value(o.m));
+    o.set(eval(o.m));
   }
   return slice(o.x);
 }

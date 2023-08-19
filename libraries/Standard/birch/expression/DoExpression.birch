@@ -70,24 +70,23 @@ abstract class DoExpression<Value> < Expression<Value> {
   }
   abstract function doEval();
 
-  final override function move(x:Real[_]) -> Value! {
+  final override function move(x:Real[_]) {
     assert global.length(x) == argsCount;
     visitor:MoveVisitor(x);
-    return move(visitor);
+    move(visitor);
   }
-  final override function move(visitor:MoveVisitor) -> Value! {
+  final override function move(visitor:MoveVisitor) {
     if !flagConstant {
       visitCount <- visitCount + 1;
       if visitCount == 1 {
         doMove(visitor);
+        doEval();  // update memoized result
       }
       if visitCount >= linkCount {
         assert visitCount == linkCount;
         visitCount <- 0;  // reset for next time
       }
     }
-    assert x?;
-    return x!;
   }
   function doMove(visitor:MoveVisitor) {
     //
