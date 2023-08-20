@@ -52,10 +52,6 @@
   \
   int columns() const { \
     return columns(eval()); \
-  } \
-  \
-  int size() const { \
-    return size(eval()); \
   }
 
 #define BIRCH_NULLARY_EVAL(This, f, ...) \

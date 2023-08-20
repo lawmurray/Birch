@@ -117,18 +117,6 @@ abstract class Expression<Value> {
   abstract function columns() -> Integer;
 
   /**
-   * Length of result. This is synonymous with `rows()`.
-   */
-  final function length() -> Integer {
-    return rows();
-  }
-
-  /**
-   * Size of result. This is equal to `rows()*columns()`.
-   */
-  abstract function size() -> Integer;
-
-  /**
    * Evaluate.
    *
    * @return The result.

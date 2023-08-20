@@ -20,10 +20,6 @@ struct ScalarDiagonal {
   int columns() const {
     return n;
   }
-
-  int size() const {
-    return n*n;
-  }
 };
 
 BIRCH_UNARY_TYPE(ScalarDiagonal)

@@ -20,10 +20,6 @@ struct MatrixFill {
   int columns() const {
     return C;
   }
-
-  int size() const {
-    return R*C;
-  }
 };
 
 BIRCH_UNARY_TYPE(MatrixFill)

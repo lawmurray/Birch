@@ -17,12 +17,8 @@ struct VectorFill {
     return n;
   }
 
-  int columns() const {
-    return n;
-  }
-
-  int size() const {
-    return n;
+  static constexpr int columns() {
+    return 1;
   }
 };
 

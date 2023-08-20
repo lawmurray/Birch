@@ -19,10 +19,6 @@ struct MatrixStandardGaussian {
   int columns() const {
     return C;
   }
-
-  int size() const {
-    return R*C;
-  }
 };
 
 BIRCH_NULLARY_TYPE(MatrixStandardGaussian)

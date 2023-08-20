@@ -20,10 +20,6 @@ struct MatrixScatter {
   int columns() const {
     return C;
   }
-
-  int size() const {
-    return R*C;
-  }
 };
 
 BIRCH_TERNARY_TYPE(MatrixScatter)

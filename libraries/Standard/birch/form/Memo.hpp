@@ -78,11 +78,6 @@ int columns(const Memo<Middle>& o) {
 }
 
 template<argument Middle>
-int size(const Memo<Middle>& o) {
-  return size(eval(o));
-}
-
-template<argument Middle>
 void reset(Memo<Middle>& o) {
   o.x.reset();
   reset(o.m);

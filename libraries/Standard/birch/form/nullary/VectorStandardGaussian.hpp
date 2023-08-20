@@ -19,10 +19,6 @@ struct VectorStandardGaussian {
   int columns() const {
     return n;
   }
-
-  int size() const {
-    return n;
-  }
 };
 
 BIRCH_NULLARY_TYPE(VectorStandardGaussian)

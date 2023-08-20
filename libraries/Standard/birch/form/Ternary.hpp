@@ -111,10 +111,6 @@
   \
   int columns() const { \
     return birch::columns(eval()); \
-  } \
-  \
-  int size() const { \
-    return birch::size(eval()); \
   }
 
 #define BIRCH_TERNARY_EVAL(This, f, ...) \

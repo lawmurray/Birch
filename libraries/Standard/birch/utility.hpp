@@ -260,9 +260,9 @@ decltype(auto) wait(T&& x) {
 }
 
 template<argument T>
-int rows(T&& x) {
+int rows(const T& x) {
   if constexpr (numeric<T>) {
-    return numbirch::rows(std::forward<T>(x));
+    return numbirch::rows(x);
   } else if constexpr (form<T>) {
     return x.rows();
   } else if constexpr (expression<T>) {
@@ -271,9 +271,9 @@ int rows(T&& x) {
 }
 
 template<argument T>
-int columns(T&& x) {
+int columns(const T& x) {
   if constexpr (numeric<T>) {
-    return numbirch::columns(std::forward<T>(x));
+    return numbirch::columns(x);
   } else if constexpr (form<T>) {
     return x.columns();
   } else if constexpr (expression<T>) {
@@ -282,19 +282,13 @@ int columns(T&& x) {
 }
 
 template<argument T>
-int length(T&& x) {
-  return rows(std::forward<T>(x));
+int length(const T& x) {
+  return rows(x);
 }
 
 template<argument T>
-int size(T&& x) {
-  if constexpr (numeric<T>) {
-    return numbirch::size(std::forward<T>(x));
-  } else if constexpr (form<T>) {
-    return x.size();
-  } else if constexpr (expression<T>) {
-    return x->size();
-  }
+int size(const T& x) {
+  return rows(x)*columns(x);
 }
 
 template<argument T>

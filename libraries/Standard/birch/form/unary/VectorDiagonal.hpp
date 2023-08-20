@@ -20,10 +20,6 @@ struct VectorDiagonal {
   int columns() const {
     return length(m);
   }
-
-  int size() const {
-    return pow(length(m), 2);
-  }
 };
 
 BIRCH_UNARY_TYPE(VectorDiagonal)

@@ -17,12 +17,8 @@ struct VectorScatter {
     return n;
   }
 
-  int columns() const {
+  static constexpr int columns() {
     return 1;
-  }
-
-  int size() const {
-    return n;
   }
 };
 

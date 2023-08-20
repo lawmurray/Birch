@@ -32,12 +32,6 @@ final acyclic class BoxedValue<Value> < Expression<Value> {
     }}
   }
 
-  final override function size() -> Integer {
-    cpp{{
-    return birch::size(x);
-    }}
-  }
-
   final override function eval() -> Value! {
     cpp{{
     return x;
