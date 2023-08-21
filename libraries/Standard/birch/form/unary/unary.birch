@@ -26,10 +26,6 @@ operator<Arg> (!x:Not<Arg>) -> Arg {
  */
 function abs(x:NumberLike) -> NumberLike;
 
-function abs<Arg>(x:Abs<Arg>) -> Abs<Arg> {
-  return x;
-}
-
 /**
  * Arc cosine.
  */
@@ -308,10 +304,6 @@ function ltridet<Arg>(L:VectorDiagonal<Arg>) -> {
  * Logarithm.
  */
 function log(x:NumberLike) -> RealLike;
-
-function log<Arg>(x:Exp<Arg>) -> Arg {
-  return x.m;
-}
 
 /**
  * Logarithm of one plus argument.

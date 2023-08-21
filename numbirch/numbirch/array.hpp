@@ -12,91 +12,107 @@
 
 namespace numbirch {
 /**
- * Length of an array.
+ * Number of rows.
  * 
  * @ingroup array
- * 
- * @see Array::length()
  */
-template<arithmetic T, int D>
-int length(const Array<T,D>& x) {
-  return x.length();
+template<numeric T>
+int rows(const T& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return 1;
+  } else {
+    return x.rows();
+  }
 }
 
 /**
- * Length of a scalar---i.e. 1.
+ * Broadcast rows of several arrays and/or scalars.
  * 
  * @ingroup array
+ * 
+ * @return If all arguments are scalars then 1. If one or more arguments are
+ * arrays, their number of dimensions and rows must match and that number of
+ * rows is returned; scalars are broadcast in this case and do not affect the
+ * result.
  */
-template<scalar T>
-constexpr int length(const T& x) {
-  return 1;
+template<class Arg, class... Args>
+int rows(const Arg& arg, const Args&... args) {
+  if constexpr (is_scalar_v<Arg>) {
+    return rows(args...);
+  } else {
+    assert((rows(arg) == rows(args...) || all_scalar_v<Args...>) &&
+        "incompatible rows");
+    return rows(arg);
+  }
 }
 
 /**
- * Number of rows in array.
+ * Number of columns.
  * 
  * @ingroup array
- * 
- * @see Array::rows()
  */
-template<arithmetic T, int D>
-int rows(const Array<T,D>& x) {
-  return x.rows();
+template<numeric T>
+int columns(const T& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return 1;
+  } else {
+    return x.columns();
+  }
 }
 
 /**
- * Number of rows in scalar---i.e. 1.
+ * Broadcast columns of several arrays and/or scalars.
  * 
  * @ingroup array
+ * 
+ * @return If all arguments are scalars then 1. If one or more arguments are
+ * arrays, their number of dimensions and columns must match and that number
+ * of columns is returned; scalars are broadcast in this case and do not
+ * affect the result.
  */
-template<scalar T>
-constexpr int rows(const T& x) {
-  return 1;
+template<class Arg, class... Args>
+int columns(const Arg& arg, const Args&... args) {
+  if constexpr (is_scalar_v<Arg>) {
+    return columns(args...);
+  } else {
+    assert((columns(arg) == columns(args...) || all_scalar_v<Args...>) &&
+        "incompatible columns");
+    return columns(arg);
+  }
 }
 
 /**
- * Number of columns in array.
+ * Length.
  * 
  * @ingroup array
- * 
- * @see Array::columns()
  */
-template<arithmetic T, int D>
-int columns(const Array<T,D>& x) {
-  return x.columns();
+template<numeric T>
+int length(const T& x) {
+  return rows(x);
 }
 
 /**
- * Number of columns in scalar---i.e. 1.
+ * Size.
  * 
  * @ingroup array
  */
-template<scalar T>
-constexpr int columns(const T& x) {
-  return 1;
+template<numeric T>
+int size(const T& x) {
+  return rows(x)*columns(x);
 }
 
 /**
- * Width of array.
- * 
- * @ingroup array
- * 
- * @see Array::width()
- */
-template<arithmetic T, int D>
-int width(const Array<T,D>& x) {
-  return x.width();
-}
-
-/**
- * Width of scalar---i.e. 1.
+ * Width.
  * 
  * @ingroup array
  */
-template<scalar T>
-constexpr int width(const T& x) {
-  return 1;
+template<numeric T>
+int width(const T& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return 1;
+  } else {
+    return x.width();
+  }
 }
 
 /**
@@ -120,25 +136,17 @@ int width(const Arg& arg, const Args&... args) {
 }
 
 /**
- * Height of array.
- * 
- * @ingroup array
- * 
- * @see Array::height()
- */
-template<arithmetic T, int D>
-int height(const Array<T,D>& x) {
-  return x.height();
-}
-
-/**
- * Height of scalar---i.e. 1.
+ * Height.
  * 
  * @ingroup array
  */
-template<scalar T>
-constexpr int height(const T& x) {
-  return 1;
+template<numeric T>
+int height(const T& x) {
+  if constexpr (is_scalar_v<T>) {
+    return 1;
+  } else {
+    return x.height();
+  }
 }
 
 /**
@@ -162,164 +170,69 @@ int height(const Arg& arg, const Args&... args) {
 }
 
 /**
- * Stride of an array.
+ * Stride.
  * 
  * @ingroup array
- * 
- * @see Array::stride()
  */
-template<arithmetic T, int D>
-int stride(const Array<T,D>& x) {
-  return x.stride();
+template<numeric T>
+int stride(const T& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return 0;
+  } else {
+    return x.stride();
+  }
 }
 
 /**
- * Stride of a scalar---i.e. 0, although typically ignored by functions.
+ * Shape.
  * 
  * @ingroup array
  */
-template<scalar T>
-constexpr int stride(const T& x) {
-  return 0;
+template<numeric T>
+auto shape(const T& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return make_shape();
+  } else {
+    return x.shape();
+  }
 }
 
 /**
- * Size of an array.
+ * Buffer.
  * 
  * @ingroup array
- * 
- * @see Array::size()
  */
-template<arithmetic T, int D>
-int size(const Array<T,D>& x) {
-  return x.size();
+template<numeric T>
+decltype(auto) buffer(T&& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return x;
+  } else {
+    return x.buffer();
+  }
 }
 
 /**
- * Size of a scalar---i.e. 1.
+ * Stream.
  * 
  * @ingroup array
  */
-template<scalar T>
-constexpr int size(const T& x) {
-  return 1;
+template<numeric T>
+decltype(auto) stream(T&& x) {
+  if constexpr (is_arithmetic_v<T>) {
+    return nullptr;
+  } else {
+    return x.stream();
+  }
 }
 
 /**
- * Shape of an array.
- * 
- * @ingroup array
- * 
- * @see Array::shape()
- */
-template<arithmetic T, int D>
-Shape<D> shape(const Array<T,D>& x) {
-  return x.shape();
-}
-
-/**
- * Shape of a scalar.
+ * Do the shapes of two numerics conform?
  * 
  * @ingroup array
  */
-template<scalar T>
-Shape<0> shape(const T& x) {
-  return make_shape();
-}
-
-/**
- * Buffer of an array.
- * 
- * @ingroup array
- */
-template<arithmetic T, int D>
-T* buffer(Array<T,D>& x) {
-  return x.buffer();
-}
-
-/**
- * Buffer of an array.
- * 
- * @ingroup array
- */
-template<arithmetic T, int D>
-const T* buffer(const Array<T,D>& x) {
-  return x.buffer();
-}
-
-/**
- * Buffer of a scalar for a slice operation---just the scalar itself.
- * 
- * @ingroup array
- */
-template<arithmetic T>
-T buffer(const T& x) {
-  return x;
-}
-
-/**
- * Stream of an array.
- * 
- * @ingroup array
- */
-template<arithmetic T, int D>
-void*& stream(const Array<T,D>& x) {
-  return x.stream();
-}
-
-/**
- * Stream of a scalar.
- * 
- * @ingroup array
- */
-template<arithmetic T>
-void* stream(const T& x) {
-  return nullptr;
-}
-
-/**
- * Do the shapes of two arrays conform?---Yes, if they have the same number of
- * dimensions and same length along them.
- * 
- * @ingroup array
- * 
- * @see Array::conforms()
- */
-template<arithmetic T, int D, arithmetic U, int E>
-bool conforms(const Array<T,D>& x, const Array<U,E>& y) {
-  return x.conforms(y);
-}
-
-/**
- * Does the shape of an array conform with that of a scalar?---Yes, if it has
- * zero dimensions.
- * 
- * @ingroup array
- */
-template<arithmetic T, int D, scalar U>
-constexpr bool conforms(const Array<T,D>& x, const U& y) {
-  return D == 0;
-}
-
-/**
- * Does the shape of an array conform with that of a scalar?---Yes, if it has
- * zero dimensions.
- * 
- * @ingroup array
- */
-template<scalar T, class U, int D>
-constexpr bool conforms(const T& x, const Array<U,D>& y) {
-  return D == 0;
-}
-
-/**
- * Do the shapes of two scalars conform?---Yes.
- * 
- * @ingroup array
- */
-template<scalar T, scalar U>
-constexpr bool conforms(const T& x, const U& y) {
-  return true;
+template<numeric T, numeric U>
+bool conforms(const T& x, const U& y) {
+  return shape(x).conforms(shape(y));
 }
 
 /**
