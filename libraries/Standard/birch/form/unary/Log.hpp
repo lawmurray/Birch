@@ -8,28 +8,12 @@
 namespace birch {
 
 struct LogOp {
-  template<class... Args>
-  static auto eval(const Args&... args) {
-    return numbirch::log(birch::eval(args)...);
-  }
-
-  template<class G, class... Args>
-  static auto grad1(G&& g, const Args&... args) {
-    return numbirch::log_grad(std::forward<G>(g), birch::eval(args)...);
-  }
-
-  template<class... Args>
-  static int rows(const Args&... args) {
-    return birch::rows(args...);
-  }
-
-  template<class... Args>
-  static int columns(const Args&... args) {
-    return birch::columns(args...);
-  }
+  BIRCH_TRANSFORM_EVAL(log)
+  BIRCH_TRANSFORM_UNARY_GRAD(log_grad)
+  BIRCH_TRANSFORM_SIZE
 };
 
-template<class T>
+template<argument T>
 using Log = Form<LogOp,T>;
 
 template<argument T>

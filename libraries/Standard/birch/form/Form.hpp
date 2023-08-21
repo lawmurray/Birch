@@ -5,6 +5,52 @@
 
 #include "birch/form/Base.hpp"
 
+#define BIRCH_TRANSFORM_EVAL(f) \
+  template<class... Args> \
+  static auto eval(const Args&... args) { \
+    return numbirch::f(birch::eval(args)...); \
+  }
+
+#define BIRCH_TRANSFORM_UNARY_GRAD(grad) \
+  template<class G, class... Args> \
+  static auto grad1(G&& g, const Args&... args) { \
+    return numbirch::grad(std::forward<G>(g), birch::eval(args)...); \
+  }
+
+#define BIRCH_TRANSFORM_BINARY_GRAD(grad) \
+  template<class G, class... Args> \
+  static auto grad1(G&& g, const Args&... args) { \
+    return numbirch::grad ## 1(std::forward<G>(g), birch::eval(args)...); \
+  } \
+  template<class G, class... Args> \
+  static auto grad2(G&& g, const Args&... args) { \
+    return numbirch::grad ## 2(std::forward<G>(g), birch::eval(args)...); \
+  }
+
+#define BIRCH_TRANSFORM_TERNARY_GRAD(grad) \
+  template<class G, class... Args> \
+  static auto grad1(G&& g, const Args&... args) { \
+    return numbirch::grad ## 1(std::forward<G>(g), birch::eval(args)...); \
+  } \
+  template<class G, class... Args> \
+  static auto grad2(G&& g, const Args&... args) { \
+    return numbirch::grad ## 2(std::forward<G>(g), birch::eval(args)...); \
+  } \
+  template<class G, class... Args> \
+  static auto grad3(G&& g, const Args&... args) { \
+    return numbirch::grad ## 3(std::forward<G>(g), birch::eval(args)...); \
+  }
+
+#define BIRCH_TRANSFORM_SIZE \
+  template<class... Args> \
+  static int rows(const Args&... args) { \
+    return birch::rows(args...); \
+  } \
+  template<class... Args> \
+  static int columns(const Args&... args) { \
+    return birch::columns(args...); \
+  }
+
 namespace birch {
 
 template<class Op, class... Args>
