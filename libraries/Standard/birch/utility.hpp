@@ -3,81 +3,7 @@
  */
 #pragma once
 
-/*
- * Add `o.` to the start of each argument, e.g. `BIRCH_O_DOT(a, b, c)` yields
- * `o.a, o.b, o.c`.
- */
-#define BIRCH_O_DOT3(arg) o.arg
-#define BIRCH_O_DOT2(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT3(__VA_ARGS__))
-#define BIRCH_O_DOT1(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT2(__VA_ARGS__))
-#define BIRCH_O_DOT0(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT1(__VA_ARGS__))
-#define BIRCH_O_DOT(arg, ...) o.arg __VA_OPT__(, BIRCH_O_DOT0(__VA_ARGS__))
-
-/*
- * Add `Integer ` to the start of each argument, e.g. `BIRCH_INT(a, b, c)` yields
- * `Integer a, Integer b, Integer c`.
- */
-#define BIRCH_INT3(arg) Integer arg
-#define BIRCH_INT2(arg, ...) Integer arg __VA_OPT__(, BIRCH_INT3(__VA_ARGS__))
-#define BIRCH_INT1(arg, ...) Integer arg __VA_OPT__(, BIRCH_INT2(__VA_ARGS__))
-#define BIRCH_INT0(arg, ...) Integer arg __VA_OPT__(, BIRCH_INT1(__VA_ARGS__))
-#define BIRCH_INT(arg, ...) Integer arg __VA_OPT__(, BIRCH_INT0(__VA_ARGS__))
-
-/*
- * Convert arguments to initializer list, e.g. `BIRCH_INIT(a, b, c)` yields
- * `a(a), b(b), c(c)`.
- */
-#define BIRCH_INIT3(arg) arg(arg)
-#define BIRCH_INIT2(arg, ...) arg(arg) __VA_OPT__(, BIRCH_INIT3(__VA_ARGS__))
-#define BIRCH_INIT1(arg, ...) arg(arg) __VA_OPT__(, BIRCH_INIT2(__VA_ARGS__))
-#define BIRCH_INIT0(arg, ...) arg(arg) __VA_OPT__(, BIRCH_INIT1(__VA_ARGS__))
-#define BIRCH_INIT(arg, ...) arg(arg) __VA_OPT__(, BIRCH_INIT0(__VA_ARGS__))
-
-/*
- * Convert arguments to copy initializer list, e.g. `BIRCH_COPY_INIT(a, b, c)`
- * yields `a(o.a), b(o.b), c(o.c)`.
- */
-#define BIRCH_COPY_INIT3(arg) arg(o.arg)
-#define BIRCH_COPY_INIT2(arg, ...) arg(o.arg) __VA_OPT__(, BIRCH_COPY_INIT3(__VA_ARGS__))
-#define BIRCH_COPY_INIT1(arg, ...) arg(o.arg) __VA_OPT__(, BIRCH_COPY_INIT2(__VA_ARGS__))
-#define BIRCH_COPY_INIT0(arg, ...) arg(o.arg) __VA_OPT__(, BIRCH_COPY_INIT1(__VA_ARGS__))
-#define BIRCH_COPY_INIT(arg, ...) arg(o.arg) __VA_OPT__(, BIRCH_COPY_INIT0(__VA_ARGS__))
-
-/*
- * Convert arguments to move initializer list, e.g. `BIRCH_COPY_INIT(a, b, c)`
- * yields `a(std::move(o.a)), b(std::move(o.b)), c(std::move(o.c))`.
- */
-#define BIRCH_MOVE_INIT3(arg) arg(std::move(o.arg))
-#define BIRCH_MOVE_INIT2(arg, ...) arg(std::move(o.arg)) __VA_OPT__(, BIRCH_MOVE_INIT3(__VA_ARGS__))
-#define BIRCH_MOVE_INIT1(arg, ...) arg(std::move(o.arg)) __VA_OPT__(, BIRCH_MOVE_INIT2(__VA_ARGS__))
-#define BIRCH_MOVE_INIT0(arg, ...) arg(std::move(o.arg)) __VA_OPT__(, BIRCH_MOVE_INIT1(__VA_ARGS__))
-#define BIRCH_MOVE_INIT(arg, ...) arg(std::move(o.arg)) __VA_OPT__(, BIRCH_MOVE_INIT0(__VA_ARGS__))
-
 namespace birch {
-/**
- * Future type.
- */
-template<class T>
-concept future = numbirch::future<T>;
-
-/**
- * Arithmetic type.
- */
-template<class T>
-concept arithmetic = numbirch::arithmetic<T>;
-
-/**
- * Array type.
- */
-template<class T>
-concept array = numbirch::array<T>;
-
-/**
- * Numeric type.
- */
-template<class T>
-concept numeric = numbirch::numeric<T>;
-
 /**
  * Is `T` a form type?
  */
@@ -116,7 +42,7 @@ concept expression = is_expression_v<T>;
  * An argument type is a numeric, form, or expression type.
  */
 template<class T>
-concept argument = numeric<T> || form<T> || expression<T>;
+concept argument = numbirch::numeric<T> || form<T> || expression<T>;
 
 /**
  * Make a shared object.
@@ -252,7 +178,7 @@ std::optional<To> optional_cast(const std::optional<From>& from) {
 
 template<class T>
 decltype(auto) wait(T&& x) {
-  if constexpr (future<T>) {
+  if constexpr (numbirch::future<T>) {
     return x.value();
   } else {
     return std::forward<T>(x);
@@ -260,8 +186,129 @@ decltype(auto) wait(T&& x) {
 }
 
 template<argument T>
+decltype(auto) value(T&& x) {
+  if constexpr (numbirch::numeric<T>) {
+    return std::forward<T>(x);
+  } else if constexpr (form<T>) {
+    return x.value();
+  } else if constexpr (expression<T>) {
+    return x->value();
+  }
+}
+
+template<argument T>
+decltype(auto) eval(T&& x) {
+  if constexpr (numbirch::numeric<T>) {
+    return std::forward<T>(x);
+  } else if constexpr (form<T>) {
+    return x.eval();
+  } else if constexpr (expression<T>) {
+    return x->eval();
+  }
+}
+
+template<argument T>
+void move(T&& x, const MoveVisitor& visitor) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.move(visitor);
+  } else if constexpr (expression<T>) {
+    x->move(visitor);
+  }
+}
+
+template<argument T>
+void args(const T& x, const ArgsVisitor& visitor) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.args(visitor);
+  } else if constexpr (expression<T>) {
+    x->args(visitor);
+  }
+}
+
+template<argument T>
+void reset(T& x) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.reset();
+  } else if constexpr (expression<T>) {
+    x->reset();
+  }
+}
+
+template<argument T>
+void relink(T& x, const RelinkVisitor& visitor) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.relink(visitor);
+  } else if constexpr (expression<T>) {
+    x->relink(visitor);
+  }
+}
+
+template<argument T, numbirch::numeric G>
+void grad(const T& x, const G& g) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.grad(g);
+  } else if constexpr (expression<T>) {
+    x->grad(g);
+  }
+}
+
+template<argument T, numbirch::numeric G>
+void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.shallowGrad(g, visitor);
+  } else if constexpr (expression<T>) {
+    x->shallowGrad(g, visitor);
+  }
+}
+
+template<argument T>
+void deep_grad(const T& x, const GradVisitor& visitor) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.deepGrad(visitor);
+  } else if constexpr (expression<T>) {
+    x->deepGrad(visitor);
+  }
+}
+
+template<argument T>
+void constant(const T& x) {
+  if constexpr (numbirch::numeric<T>) {
+    //
+  } else if constexpr (form<T>) {
+    x.constant();
+  } else if constexpr (expression<T>) {
+    x->constant();
+  }
+}
+
+template<argument T>
+bool is_constant(const T& x) {
+  if constexpr (numbirch::numeric<T>) {
+    return true;
+  } else if constexpr (form<T>) {
+    return x.isConstant();
+  } else if constexpr (expression<T>) {
+    return x->isConstant();
+  }
+}
+
+template<argument T>
 int rows(const T& x) {
-  if constexpr (numeric<T>) {
+  if constexpr (numbirch::numeric<T>) {
     return numbirch::rows(x);
   } else if constexpr (form<T>) {
     return x.rows();
@@ -270,14 +317,38 @@ int rows(const T& x) {
   }
 }
 
+template<class Arg, class... Args>
+int rows(const Arg& arg, const Args&... args) {
+  if constexpr (numbirch::is_scalar_v<decltype(eval(arg))>) {
+    return rows(args...);
+  } else {
+    assert((rows(arg) == rows(args...) ||
+        numbirch::all_scalar_v<decltype(eval(args))...>) &&
+        "incompatible rows");
+    return rows(arg);
+  }
+}
+
 template<argument T>
 int columns(const T& x) {
-  if constexpr (numeric<T>) {
+  if constexpr (numbirch::numeric<T>) {
     return numbirch::columns(x);
   } else if constexpr (form<T>) {
     return x.columns();
   } else if constexpr (expression<T>) {
     return x->columns();
+  }
+}
+
+template<class Arg, class... Args>
+int columns(const Arg& arg, const Args&... args) {
+  if constexpr (numbirch::is_scalar_v<decltype(eval(arg))>) {
+    return columns(args...);
+  } else {
+    assert((columns(arg) == columns(args...) ||
+        numbirch::all_scalar_v<decltype(eval(args))...>) &&
+        "incompatible columns");
+    return columns(arg);
   }
 }
 
@@ -291,136 +362,15 @@ int size(const T& x) {
   return rows(x)*columns(x);
 }
 
-template<argument T>
-decltype(auto) value(T&& x) {
-  if constexpr (numeric<T>) {
-    return std::forward<T>(x);
-  } else if constexpr (form<T>) {
-    return x.value();
-  } else if constexpr (expression<T>) {
-    return x->value();
-  }
-}
-
-template<argument T>
-decltype(auto) eval(T&& x) {
-  if constexpr (numeric<T>) {
-    return std::forward<T>(x);
-  } else if constexpr (form<T>) {
-    return x.eval();
-  } else if constexpr (expression<T>) {
-    return x->eval();
-  }
-}
-
-template<argument T>
-void move(T&& x, const MoveVisitor& visitor) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.move(visitor);
-  } else if constexpr (expression<T>) {
-    x->move(visitor);
-  }
-}
-
-template<argument T>
-void args(const T& x, const ArgsVisitor& visitor) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.args(visitor);
-  } else if constexpr (expression<T>) {
-    x->args(visitor);
-  }
-}
-
-template<argument T>
-void reset(T& x) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.reset();
-  } else if constexpr (expression<T>) {
-    x->reset();
-  }
-}
-
-template<argument T>
-void relink(T& x, const RelinkVisitor& visitor) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.relink(visitor);
-  } else if constexpr (expression<T>) {
-    x->relink(visitor);
-  }
-}
-
-template<argument T, numeric G>
-void grad(const T& x, const G& g) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.grad(g);
-  } else if constexpr (expression<T>) {
-    x->grad(g);
-  }
-}
-
-template<argument T, numeric G>
-void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.shallowGrad(g, visitor);
-  } else if constexpr (expression<T>) {
-    x->shallowGrad(g, visitor);
-  }
-}
-
-template<argument T>
-void deep_grad(const T& x, const GradVisitor& visitor) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.deepGrad(visitor);
-  } else if constexpr (expression<T>) {
-    x->deepGrad(visitor);
-  }
-}
-
-template<argument T>
-void constant(const T& x) {
-  if constexpr (numeric<T>) {
-    //
-  } else if constexpr (form<T>) {
-    x.constant();
-  } else if constexpr (expression<T>) {
-    x->constant();
-  }
-}
-
-template<argument T>
-bool is_constant(const T& x) {
-  if constexpr (numeric<T>) {
-    return true;
-  } else if constexpr (form<T>) {
-    return x.isConstant();
-  } else if constexpr (expression<T>) {
-    return x->isConstant();
-  }
-}
-
 template<class T>
 struct tag_s {
   using type = void;
 };
-template<arithmetic T>
+template<numbirch::arithmetic T>
 struct tag_s<T> {
   using type = std::decay_t<T>;
 };
-template<array T>
+template<numbirch::array T>
 struct tag_s<T> {
   using type = std::conditional_t<std::is_rvalue_reference_v<T>,T,
       std::add_lvalue_reference_t<std::add_const_t<T>>>;
@@ -459,11 +409,11 @@ template<class T>
 struct peg_s {
   using type = void;
 };
-template<arithmetic T>
+template<numbirch::arithmetic T>
 struct peg_s<T> {
   using type = std::decay_t<T>;
 };
-template<array T>
+template<numbirch::array T>
 struct peg_s<T> {
   using type = std::decay_t<T>;
 };
@@ -518,7 +468,7 @@ template<argument T>
 decltype(auto) box(T&& x) {
   using U = std::decay_t<decltype(wait(eval(x)))>;
   using V = peg_t<T>;
-  if constexpr (numeric<T>) {
+  if constexpr (numbirch::numeric<T>) {
     return Expression<U>(BoxedValue<U>(std::forward<T>(x)));
   } else if constexpr (form<T>) {
     return Expression<U>(BoxedForm<U,V>(V(std::forward<T>(x))));

@@ -18,7 +18,13 @@ struct Random<Value> {
    */
   std::optional<Distribution<Value>> p;
 
-  BIRCH_UNARY_SIZE(Random)
+  int rows() const {
+    return birch::rows(eval());
+  }
+
+  int columns() const {
+    return birch::columns(eval());
+  }
 
   operator auto() const {
     return value();

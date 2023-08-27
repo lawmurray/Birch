@@ -118,11 +118,11 @@ function peg_multivariate_normal_inverse_gamma_multivariate_gaussian<
 function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     Random<Real[_]>>,Arg2>, Σ:Mul<Arg3,Random<Real>>) ->
     Distribution<Real[_]> {
-  let A <- μ.l.l;
-  let m <- μ.l.r;
-  let c <- μ.r;
-  let Ω <- Σ.l;
-  let ω2 <- Σ.r;
+  let A <- μ.l().l();
+  let m <- μ.l().r();
+  let c <- μ.r();
+  let Ω <- Σ.l();
+  let ω2 <- Σ.r();
   if ω2.isInverseGamma() && m.isMultivariateNormalInverseGamma() &&
       ω2.hasMarginalized() && ω2.getMarginalized().getUpdated() ==
       m.getDistribution().getUpdated() {

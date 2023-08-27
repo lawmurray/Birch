@@ -5,52 +5,6 @@
 
 #include "birch/form/Base.hpp"
 
-#define BIRCH_TRANSFORM_EVAL(f) \
-  template<class... Args> \
-  static auto eval(const Args&... args) { \
-    return numbirch::f(birch::eval(args)...); \
-  }
-
-#define BIRCH_TRANSFORM_UNARY_GRAD(grad) \
-  template<class G, class... Args> \
-  static auto grad1(G&& g, const Args&... args) { \
-    return numbirch::grad(std::forward<G>(g), birch::eval(args)...); \
-  }
-
-#define BIRCH_TRANSFORM_BINARY_GRAD(grad) \
-  template<class G, class... Args> \
-  static auto grad1(G&& g, const Args&... args) { \
-    return numbirch::grad ## 1(std::forward<G>(g), birch::eval(args)...); \
-  } \
-  template<class G, class... Args> \
-  static auto grad2(G&& g, const Args&... args) { \
-    return numbirch::grad ## 2(std::forward<G>(g), birch::eval(args)...); \
-  }
-
-#define BIRCH_TRANSFORM_TERNARY_GRAD(grad) \
-  template<class G, class... Args> \
-  static auto grad1(G&& g, const Args&... args) { \
-    return numbirch::grad ## 1(std::forward<G>(g), birch::eval(args)...); \
-  } \
-  template<class G, class... Args> \
-  static auto grad2(G&& g, const Args&... args) { \
-    return numbirch::grad ## 2(std::forward<G>(g), birch::eval(args)...); \
-  } \
-  template<class G, class... Args> \
-  static auto grad3(G&& g, const Args&... args) { \
-    return numbirch::grad ## 3(std::forward<G>(g), birch::eval(args)...); \
-  }
-
-#define BIRCH_TRANSFORM_SIZE \
-  template<class... Args> \
-  static int rows(const Args&... args) { \
-    return birch::rows(args...); \
-  } \
-  template<class... Args> \
-  static int columns(const Args&... args) { \
-    return birch::columns(args...); \
-  }
-
 namespace birch {
 
 template<class Op, class... Args>
@@ -117,30 +71,48 @@ struct Form : public Base<Args...> {
      * of the number of arguments; may also be more cache efficient */
     constexpr int argc = std::tuple_size_v<decltype(this->tup)>;
     if constexpr (argc > 2) {
-      auto& arg = std::get<2>(this->tup);
-      if (!is_constant(arg)) {
-        std::apply([&](const Args&... args) {
-              shallow_grad(arg, Op::grad3(g, args...), visitor);
-            }, this->tup);
+      if constexpr (!numbirch::numeric<std::tuple_element_t<2,std::tuple<Args...>>>) {
+        auto& arg = std::get<2>(this->tup);
+        if (!is_constant(arg)) {
+          shallow_grad(arg, std::apply([&](const Args&... args) {
+                return Op::grad3(g, args...);
+              }, this->tup), visitor);
+        }
       }
     }
     if constexpr (argc > 1) {
-      auto& arg = std::get<1>(this->tup);
-      if (!is_constant(arg)) {
-        std::apply([&](const Args&... args) {
-              shallow_grad(arg, Op::grad2(g, args...), visitor);
-            }, this->tup);
+      if constexpr (!numbirch::numeric<std::tuple_element_t<1,std::tuple<Args...>>>) {
+        auto& arg = std::get<1>(this->tup);
+        if (!is_constant(arg)) {
+          shallow_grad(arg, std::apply([&](const Args&... args) {
+                return Op::grad2(g, args...);
+              }, this->tup), visitor);
+        }
       }
     }
     if constexpr (argc > 0) {
-      auto& arg = std::get<0>(this->tup);
-      if (!is_constant(arg)) {
-        std::apply([&](const Args&... args) {
-              shallow_grad(arg, Op::grad1(std::forward<G>(g), args...), visitor);
-            }, this->tup);
+      if constexpr (!numbirch::numeric<std::tuple_element_t<0,std::tuple<Args...>>>) {
+        auto& arg = std::get<0>(this->tup);
+        if (!is_constant(arg)) {
+          shallow_grad(arg, std::apply([&](const Args&... args) {
+                return Op::grad1(std::forward<G>(g), args...);
+              }, this->tup), visitor);
+        }
       }
     }
   } 
+
+  int rows() const {
+    return std::apply([](const Args&... args) {
+        return Op::rows(args...); },
+        this->tup);
+  }
+
+  int columns() const {
+    return std::apply([](const Args&... args) {
+        return Op::columns(args...); },
+        this->tup);
+  }
 
   template<class Buffer>
   void write(const Buffer& buffer) const {

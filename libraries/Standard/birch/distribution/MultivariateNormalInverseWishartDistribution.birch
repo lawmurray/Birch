@@ -103,8 +103,8 @@ function peg_multivariate_normal_inverse_wishart<Arg1,Arg2,Arg3,Arg4>(
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
-  let σ2 <- Σ.l;
-  let Ω <- Σ.r;
+  let σ2 <- Σ.l();
+  let Ω <- Σ.r();
   if Ω.isInverseWishart() {
     let p_Ω <- Ω.graft();
     let (Ψ, k) <- p_Ω.getInverseWishart()!;

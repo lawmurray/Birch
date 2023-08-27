@@ -3,7 +3,8 @@
  */
 #pragma once
 
-#include "birch/form/Ternary.hpp"
+#include "birch/basic.hpp"
+#include "birch/utility.hpp"
 
 namespace birch {
 
@@ -38,6 +39,18 @@ struct Base {
 
   Base(const Base&) = default;
   Base(Base&&) = default;
+
+  auto& l() const {
+    return std::get<0>(tup);
+  }
+
+  auto& m() const {
+    return std::get<0>(tup);
+  }
+
+  auto& r() const {
+    return std::get<1>(tup);
+  }
 
   void reset() {
     std::apply([](auto&&... args) {

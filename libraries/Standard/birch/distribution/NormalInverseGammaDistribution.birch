@@ -127,8 +127,8 @@ function peg_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1, λ:Arg2,
  */
 function Gaussian<Arg1,Arg2>(μ:Arg1, σ2:Mul<Arg2,Random<Real>>) ->
     Distribution<Real> {
-  let ω2 <- σ2.l;
-  let τ2 <- σ2.r;
+  let ω2 <- σ2.l();
+  let τ2 <- σ2.r();
   if τ2.isInverseGamma() {
     let p_τ2 <- τ2.graft();
     let (α, β) <- p_τ2.getInverseGamma()!;
