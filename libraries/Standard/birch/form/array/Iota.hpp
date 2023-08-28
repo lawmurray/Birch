@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct IotaOp {
-  template<class T>
-  static auto eval(const T& x, const int n) {
-    return numbirch::iota(birch::eval(x), n);
+template<argument T>
+struct Iota : public Form<T,int> {
+  BIRCH_FORM
+  
+  auto eval() const {
+    return numbirch::iota(birch::eval(this->x), this->y);
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x, const int n) {
-    return numbirch::iota_grad(std::forward<G>(g), birch::eval(x), n);
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::iota_grad(std::forward<G>(g),
+          birch::eval(this->x), this->y), visitor);
+    }
   }
 
-  template<class T>
-  static int rows(const T& x, const int n) {
-    return n;
+  int rows() const {
+    return this->y;
   }
 
-  template<class T>
-  static constexpr int columns(const T& x, const int n) {
+  int columns() const {
     return 1;
   }
 };
 
 template<argument T>
-using Iota = Form<IotaOp,T,int>;
+struct is_form<Iota<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<Iota<T>> {
+  using type = Iota<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<Iota<T>> {
+  using type = Iota<peg_t<T>>;
+};
 
 template<argument T>
 auto iota(T&& x, const int n) {
-  return Iota<tag_t<T>>(std::in_place, std::forward<T>(x), n);
+  return Iota<tag_t<T>>{{tag(std::forward<T>(x)), n}};
 }
 
 }

@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct LTriDetOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::ltridet(birch::eval(x));
+template<argument T>
+struct LTriDet : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::ltridet(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::ltridet_grad(std::forward<G>(g), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::ltridet_grad(std::forward<G>(g),
+          birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static constexpr int rows(const T& x) {
+  static constexpr int rows() {
     return 1;
   }
 
-  template<class T>
-  static constexpr int columns(const T& x) {
+  static constexpr int columns() {
     return 1;
   }
 };
 
-template<class T>
-using LTriDet = Form<LTriDetOp,T>;
+template<argument T>
+struct is_form<LTriDet<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<LTriDet<T>> {
+  using type = LTriDet<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<LTriDet<T>> {
+  using type = LTriDet<peg_t<T>>;
+};
 
 template<argument T>
 auto ltridet(T&& x) {
-  return LTriDet<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return LTriDet<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }
@@ -48,12 +63,12 @@ namespace birch {
 
 template<argument T>
 auto ltridet(const Diagonal<T,int>& x) {
-  return std::get<1>(x.tup)*log(std::get<0>(x.tup));
+  return x.y*log(x.x);
 }
 
 template<argument T>
 auto ltridet(const Diagonal<T>& x) {
-  return sum(log(std::get<0>(x.tup)));
+  return sum(log(x.x));
 }
 
 }

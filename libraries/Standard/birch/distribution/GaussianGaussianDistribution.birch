@@ -98,9 +98,9 @@ function peg_gaussian_gaussian<Arg1,Arg2,Arg3,Arg4,Arg5>(a:Arg1, μ:Arg2,
  */
 function Gaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,Random<Real>>,Arg2>,
     σ2:Arg3) -> Distribution<Real> {
-  let a <- μ.l().l();
-  let m <- μ.l().r();
-  let c <- μ.r();
+  let a <- μ.x.x;
+  let m <- μ.x.y;
+  let c <- μ.y;
   if m.isGaussian() {
     let p_m <- m.graft();
     let (m1, ω2) <- p_m.getGaussian()!;
@@ -125,7 +125,7 @@ function Gaussian<Arg1,Arg2>(μ:Mul<Arg1,Random<Real>>, σ2:Arg2) ->
  */
 function Gaussian<Arg1,Arg2>(μ:Add<Random<Real>,Arg1>, σ2:Arg2) ->
     Distribution<Real> {
-  return Gaussian(1.0*μ.l() + μ.r(), σ2);
+  return Gaussian(1.0*μ.x + μ.y, σ2);
 }
 
 /**

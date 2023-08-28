@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct CountOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::count(birch::eval(x));
+template<argument T>
+struct Count : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::count(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::count_grad(std::forward<G>(g), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::count_grad(std::forward<G>(g),
+          birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static constexpr int rows(const T& x) {
+  static constexpr int rows() {
     return 1;
   }
 
-  template<class T>
-  static constexpr int columns(const T& x) {
+  static constexpr int columns() {
     return 1;
   }
 };
 
 template<argument T>
-using Count = Form<CountOp,T>;
+struct is_form<Count<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<Count<T>> {
+  using type = Count<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<Count<T>> {
+  using type = Count<peg_t<T>>;
+};
 
 template<argument T>
 auto count(T&& x) {
-  return Count<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return Count<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }

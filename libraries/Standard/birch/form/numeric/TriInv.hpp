@@ -7,40 +7,54 @@
 
 namespace birch {
 
-struct TriInvOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::triinv(birch::eval(x));
+template<argument T>
+struct TriInv : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::triinv(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::triinv_grad(std::forward<G>(g), eval(x),
-        birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::triinv_grad(std::forward<G>(g),
+          eval(), birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
-template<class T>
-using TriInv = Form<TriInvOp,T>;
+template<argument T>
+struct is_form<TriInv<T>> {
+  static constexpr bool value = true;
+};
 
-template<class T>
+template<argument T>
+struct tag_s<TriInv<T>> {
+  using type = TriInv<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<TriInv<T>> {
+  using type = TriInv<peg_t<T>>;
+};
+
+template<argument T>
 auto triinv(T&& x) {
-  return TriInv<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return TriInv<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 template<argument T>
 auto triinv(const TriInv<T>& x) {
-  return std::get<0>(x.tup);
+  return x.x;
 }
 
 }
@@ -50,14 +64,14 @@ auto triinv(const TriInv<T>& x) {
 
 namespace birch {
 
-template<class T>
+template<argument T>
 auto triinv(const Diagonal<T,int>& x) {
-  return diagonal(1.0/std::get<0>(x.tup), std::get<1>(x.tup));
+  return diagonal(1.0/x.x, x.y);
 }
 
-template<class T>
+template<argument T>
 auto triinv(const Diagonal<T>& x) {
-  return diagonal(1.0/std::get<0>(x.tup));
+  return diagonal(1.0/x.x);
 }
 
 }

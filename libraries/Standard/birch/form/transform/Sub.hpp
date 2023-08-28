@@ -7,42 +7,53 @@
 
 namespace birch {
 
-struct SubOp {
-  template<class T, class U>
-  static auto eval(const T& x, const U& y) {
-    return numbirch::sub(birch::eval(x), birch::eval(y));
+template<argument T, argument U>
+struct Sub : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::sub(birch::eval(this->x), birch::eval(this->y));
   }
 
-  template<class G, class T, class U>
-  static auto grad1(G&& g, const T& x, const U& y) {
-    return numbirch::sub_grad1(std::forward<G>(g), birch::eval(x),
-        birch::eval(y));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::sub_grad1(g,
+          birch::eval(this->x), birch::eval(this->y)), visitor);
+    }
+    if (!birch::is_constant(this->y)) {
+      birch::shallow_grad(this->y, numbirch::sub_grad2(std::forward<G>(g),
+          birch::eval(this->x), birch::eval(this->y)), visitor);
+    }
   }
 
-  template<class G, class T, class U>
-  static auto grad2(G&& g, const T& x, const U& y) {
-    return numbirch::sub_grad2(std::forward<G>(g), birch::eval(x),
-        birch::eval(y));
+  int rows() const {
+    return birch::rows(this->x, this->y);
   }
 
-  template<class T, class U>
-  static int rows(const T& x, const U& y) {
-    return birch::rows(x, y);
-  }
-
-  template<class T, class U>
-  static int columns(const T& x, const U& y) {
-    return birch::columns(x, y);
+  int columns() const {
+    return birch::columns(this->x, this->y);
   }
 };
 
 template<argument T, argument U>
-using Sub = Form<SubOp,T,U>;
+struct is_form<Sub<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<Sub<T,U>> {
+  using type = Sub<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<Sub<T,U>> {
+  using type = Sub<peg_t<T>,peg_t<U>>;
+};
 
 template<argument T, argument U>
 auto sub(T&& x, U&& y) {
-  return Sub<tag_t<T>,tag_t<U>>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y));
+  return Sub<tag_t<T>,tag_t<U>>{{tag(std::forward<T>(x)), tag(std::forward<U>(y))}};
 }
 
 template<argument T, argument U>
@@ -60,29 +71,25 @@ namespace birch {
 template<argument T, argument U>
 requires (numbirch::arithmetic<decltype(eval(std::declval<U>()))>)
 auto operator-(const Fill<T,int>& x, U&& y) {
-  return fill(std::get<0>(x.tup) - std::forward<U>(y),
-      std::get<1>(x.tup));
+  return fill(x.x - std::forward<U>(y), x.y);
 }
 
 template<argument T, argument U>
 requires (numbirch::arithmetic<decltype(eval(std::declval<T>()))>)
 auto operator-(T&& x, const Fill<U,int>& y) {
-  return fill(std::forward<T>(x) - std::get<0>(y.tup),
-      std::get<1>(y.tup));
+  return fill(std::forward<T>(x) - y.x, y.y);
 }
 
 template<argument T, argument U>
 requires (numbirch::arithmetic<decltype(eval(std::declval<U>()))>)
 auto operator-(const Fill<T,int,int>& x, U&& y) {
-  return fill(std::get<0>(x.tup) - std::forward<U>(y),
-      std::get<1>(x.tup), std::get<2>(x.tup));
+  return fill(x.x - std::forward<U>(y), x.y, x.z);
 }
 
 template<argument T, argument U>
 requires (numbirch::arithmetic<decltype(eval(std::declval<T>()))>)
 auto operator-(T&& x, const Fill<U,int,int>& y) {
-  return fill(std::forward<T>(x) - std::get<0>(y.tup),
-      std::get<1>(y.tup), std::get<2>(y.tup));
+  return fill(std::forward<T>(x) - y.x, y.y, y.z);
 }
 
 }

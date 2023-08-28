@@ -7,59 +7,69 @@
 
 namespace birch {
 
-struct FillOp {
-  template<class T>
-  static auto eval(const T& x, const int n) {
-    return numbirch::fill(birch::eval(x), n);
+template<argument T, argument U, argument V = Empty>
+struct Fill : public Form<T,U,V> {
+  BIRCH_FORM
+  
+  auto eval() const {
+    if constexpr (empty<V>) {
+      return numbirch::fill(birch::eval(this->x), this->y);
+    } else {
+      return numbirch::fill(birch::eval(this->x), this->y, this->z);
+    }
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x, const int n) {
-    return numbirch::fill_grad(std::forward<G>(g), birch::eval(x), n);
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if constexpr (empty<V>) {
+      if (!birch::is_constant(this->x)) {
+        birch::shallow_grad(this->x, numbirch::fill_grad(g,
+            birch::eval(this->x), this->y), visitor);
+      }
+    } else {
+      if (!birch::is_constant(this->x)) {
+        birch::shallow_grad(this->x, numbirch::fill_grad(g,
+            birch::eval(this->x), this->y, this->z), visitor);
+      }
+    }
   }
 
-  template<class T>
-  static int rows(const T& x, const int n) {
-    return n;
+  int rows() const {
+    return this->y;
   }
 
-  template<class T>
-  static constexpr int columns(const T& x, const int n) {
-    return 1;
-  }
-
-  template<class T>
-  static auto eval(const T& x, const int m, const int n) {
-    return numbirch::fill(birch::eval(x), m, n);
-  }
-
-  template<class G, class T>
-  static auto grad(G&& g, const T& x, const int m, const int n) {
-    return numbirch::fill_grad(std::forward<G>(g), birch::eval(x), m, n);
-  }
-
-  template<class T>
-  static int rows(const T& x, const int m, const int n) {
-    return m;
-  }
-
-  template<class T>
-  static int columns(const T& x, const int m, const int n) {
-    return n;
+  int columns() const {
+    if constexpr (empty<V>) {
+      return 1;
+    } else {
+      return this->z;
+    }
   }
 };
 
-template<argument... Args>
-using Fill = Form<FillOp,Args...>;
+template<argument T, argument U, argument V>
+struct is_form<Fill<T,U,V>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U, argument V>
+struct tag_s<Fill<T,U,V>> {
+  using type = Fill<tag_t<T>,tag_t<U>,tag_t<V>>;
+};
+
+template<argument T, argument U, argument V>
+struct peg_s<Fill<T,U,V>> {
+  using type = Fill<peg_t<T>,peg_t<U>,peg_t<V>>;
+};
 
 template<argument T>
 auto fill(T&& x, const int n) {
-  return Fill<tag_t<T>,int>(std::in_place, std::forward<T>(x), n);
+  return Fill<tag_t<T>,int>{{tag(std::forward<T>(x)), n}};
 }
 
 template<argument T>
 auto fill(T&& x, const int m, const int n) {
-  return Fill<tag_t<T>,int,int>(std::in_place, std::forward<T>(x), m, n);
+  return Fill<tag_t<T>,int,int>{{tag(std::forward<T>(x)), m, n}};
 }
 
 }

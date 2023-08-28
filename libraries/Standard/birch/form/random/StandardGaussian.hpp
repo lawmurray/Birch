@@ -7,41 +7,52 @@
 
 namespace birch {
 
-struct StandardGaussianOp {
-  static auto eval(const int n) {
-    return numbirch::standard_gaussian(n);
+template<argument T, argument U = Empty>
+struct StandardGaussian : public Form<T,U> {
+  BIRCH_FORM
+  
+  auto eval() const {
+    if constexpr (empty<U>) {
+      return numbirch::standard_gaussian(this->x);
+    } else {
+      return numbirch::standard_gaussian(this->x, this->y);
+    }
   }
 
-  static int rows(const int n) {
-    return n;
+  int rows() const {
+    return this->x;
   }
 
-  static constexpr int columns(const int n) {
-    return 1;
-  }
-
-  static auto eval(const int m, const int n) {
-    return numbirch::standard_gaussian(m, n);
-  }
-
-  static int rows(const int m, const int n) {
-    return m;
-  }
-
-  static int columns(const int m, const int n) {
-    return n;
+  int columns() const {
+    if constexpr (empty<U>) {
+      return 1;
+    } else {
+      return this->y;
+    }
   }
 };
 
-template<argument... Args>
-using StandardGaussian = Form<StandardGaussianOp,Args...>;
+template<argument T, argument U>
+struct is_form<StandardGaussian<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<StandardGaussian<T,U>> {
+  using type = StandardGaussian<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<StandardGaussian<T,U>> {
+  using type = StandardGaussian<peg_t<T>,peg_t<U>>;
+};
 
 inline auto standard_gaussian(const int n) {
-  return StandardGaussian<int>(std::in_place, n);
+  return StandardGaussian<int>{{n}};
 }
 
 inline auto standard_gaussian(const int m, const int n) {
-  return StandardGaussian<int,int>(std::in_place, m, n);
+  return StandardGaussian<int,int>{{m, n}};
 }
 
 }

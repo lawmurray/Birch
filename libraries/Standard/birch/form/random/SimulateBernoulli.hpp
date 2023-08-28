@@ -7,29 +7,41 @@
 
 namespace birch {
 
-struct SimulateBernoulliOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::simulate_bernoulli(birch::eval(x));
+template<argument T>
+struct SimulateBernoulli : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::simulate_bernoulli(birch::eval(this->x));
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T>
-using SimulateBernoulli = Form<SimulateBernoulliOp,T>;
+struct is_form<SimulateBernoulli<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<SimulateBernoulli<T>> {
+  using type = SimulateBernoulli<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<SimulateBernoulli<T>> {
+  using type = SimulateBernoulli<peg_t<T>>;
+};
 
 template<argument T>
 auto simulate_bernoulli(T&& x) {
-  return SimulateBernoulli<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return SimulateBernoulli<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }

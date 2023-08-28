@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct LCholDetOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::lcholdet(birch::eval(x));
+template<argument T>
+struct LCholDet : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::lcholdet(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::lcholdet_grad(std::forward<G>(g), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::lcholdet_grad(std::forward<G>(g),
+          birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static constexpr int rows(const T& x) {
+  static constexpr int rows() {
     return 1;
   }
 
-  template<class T>
-  static constexpr int columns(const T& x) {
+  static constexpr int columns() {
     return 1;
   }
 };
 
-template<class T>
-using LCholDet = Form<LCholDetOp,T>;
+template<argument T>
+struct is_form<LCholDet<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<LCholDet<T>> {
+  using type = LCholDet<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<LCholDet<T>> {
+  using type = LCholDet<peg_t<T>>;
+};
 
 template<argument T>
 auto lcholdet(T&& x) {
-  return LCholDet<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return LCholDet<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }
@@ -48,12 +63,12 @@ namespace birch {
 
 template<argument T>
 auto lcholdet(const Diagonal<T,int>& x) {
-  return 2.0*std::get<1>(x.tup)*log(std::get<0>(x.tup));
+  return 2.0*x.y*log(x.x);
 }
 
 template<argument T>
 auto lcholdet(const Diagonal<T>& x) {
-  return 2.0*sum(log(std::get<0>(x.tup)));
+  return 2.0*sum(log(x.x));
 }
 
 }

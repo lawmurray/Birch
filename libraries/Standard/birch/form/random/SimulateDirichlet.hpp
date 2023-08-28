@@ -7,29 +7,41 @@
 
 namespace birch {
 
-struct SimulateDirichletOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::simulate_dirichlet(birch::eval(x));
+template<argument T>
+struct SimulateDirichlet : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::simulate_dirichlet(birch::eval(this->x));
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T>
-using SimulateDirichlet = Form<SimulateDirichletOp,T>;
+struct is_form<SimulateDirichlet<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<SimulateDirichlet<T>> {
+  using type = SimulateDirichlet<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<SimulateDirichlet<T>> {
+  using type = SimulateDirichlet<peg_t<T>>;
+};
 
 template<argument T>
 auto simulate_dirichlet(T&& x) {
-  return SimulateDirichlet<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return SimulateDirichlet<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }

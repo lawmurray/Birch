@@ -150,8 +150,8 @@ function peg_multivariate_normal_inverse_gamma<Arg1,Arg2,Arg3,Arg4>(ν:Arg1,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Arg1,
     Σ:Mul<Arg2,Random<Real>>) -> Distribution<Real[_]> {
-  let Ω <- Σ.l();
-  let ω2 <- Σ.r();
+  let Ω <- Σ.x;
+  let ω2 <- Σ.y;
   if ω2.isInverseGamma() {
     let p_ω2 <- ω2.graft();
     let (α, β) <- p_ω2.getInverseGamma()!;

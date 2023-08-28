@@ -7,63 +7,77 @@
 
 namespace birch {
 
-struct DiagonalOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::diagonal(birch::eval(x));
+template<argument T, argument U = Empty>
+struct Diagonal : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    if constexpr (empty<U>) {
+      return numbirch::diagonal(birch::eval(this->x));
+    } else {
+      return numbirch::diagonal(birch::eval(this->x), this->y);
+    }
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::diagonal_grad(std::forward<G>(g), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if constexpr (empty<U>) {
+      if (!birch::is_constant(this->x)) {
+        birch::shallow_grad(this->x, numbirch::diagonal_grad(std::forward<G>(g),
+            birch::eval(this->x)), visitor);
+      }
+    } else {
+      if (!birch::is_constant(this->x)) {
+        birch::shallow_grad(this->x, numbirch::diagonal_grad(std::forward<G>(g),
+            birch::eval(this->x), this->y), visitor);
+      }
+    }
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return rows(x);
+  int rows() const {
+    if constexpr (empty<U>) {
+      return rows(this->x);
+    } else {
+      return this->y;
+    }
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return rows(x);
-  }
-
-  template<class T>
-  static auto eval(const T& x, const int n) {
-    return numbirch::diagonal(birch::eval(x), n);
-  }
-
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x, const int n) {
-    return numbirch::diagonal_grad(std::forward<G>(g), birch::eval(x), n);
-  }
-
-  template<class T>
-  static int rows(const T& x, const int n) {
-    return n;
-  }
-
-  template<class T>
-  static int columns(const T& x, const int n) {
-    return n;
+  int columns() const {
+    if constexpr (empty<U>) {
+      return columns(this->x);
+    } else {
+      return this->y;
+    }
   }
 };
 
-template<argument... Args>
-using Diagonal = Form<DiagonalOp,Args...>;
+template<argument T, argument U>
+struct is_form<Diagonal<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<Diagonal<T,U>> {
+  using type = Diagonal<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<Diagonal<T,U>> {
+  using type = Diagonal<peg_t<T>,peg_t<U>>;
+};
 
 template<argument T>
 auto diagonal(T&& x) {
-  return Diagonal<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return Diagonal<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 template<argument T>
 auto diagonal(T&& x, const int n) {
-  return Diagonal<tag_t<T>,int>(std::in_place, std::forward<T>(x), n);
+  return Diagonal<tag_t<T>,int>{{tag(std::forward<T>(x)), n}};
 }
 
 inline auto identity(const int n) {
-  return Diagonal<Real,int>(std::in_place, Real(1.0), n);
+  return Diagonal<Real,int>{{1.0, n}};
 }
 
 }

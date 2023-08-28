@@ -117,9 +117,9 @@ function peg_matrix_normal_inverse_wishart_matrix_gaussian<Arg1,Arg2,
  */
 function MatrixGaussian<Arg1,Arg2,Arg3>(M:Add<Mul<Arg1,Random<Real[_,_]>>,
     Arg2>, Σ:Arg3, Ψ:Random<Real[_,_]>) -> Distribution<Real[_,_]> {
-  let A <- M.l().l();
-  let M1 <- M.l().r();
-  let C <- M.r();
+  let A <- M.x.x;
+  let M1 <- M.x.y;
+  let C <- M.y;
   if Ψ.isInverseWishart() && M1.isMatrixNormalInverseWishart() &&
       Ψ.hasMarginalized() && Ψ.getMarginalized().getUpdated() ==
       M1.getDistribution().getUpdated() {

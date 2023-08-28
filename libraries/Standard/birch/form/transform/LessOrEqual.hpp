@@ -7,42 +7,54 @@
 
 namespace birch {
 
-struct LessOrEqualOp {
-  template<class T, class U>
-  static auto eval(const T& x, const U& y) {
-    return numbirch::less_or_equal(birch::eval(x), birch::eval(y));
+template<argument T, argument U>
+struct LessOrEqual : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::less_or_equal(birch::eval(this->x), birch::eval(this->y));
   }
 
-  template<class G, class T, class U>
-  static auto grad1(G&& g, const T& x, const U& y) {
-    return numbirch::less_grad1(std::forward<G>(g), birch::eval(x),
-        birch::eval(y));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::less_or_equal_grad1(g,
+          birch::eval(this->x), birch::eval(this->y)), visitor);
+    }
+    if (!birch::is_constant(this->y)) {
+      birch::shallow_grad(this->y, numbirch::less_or_equal_grad2(std::forward<G>(g),
+          birch::eval(this->x), birch::eval(this->y)), visitor);
+    }
   }
 
-  template<class G, class T, class U>
-  static auto grad2(G&& g, const T& x, const U& y) {
-    return numbirch::less_grad2(std::forward<G>(g), birch::eval(x),
-        birch::eval(y));
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
-  }
-
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T, argument U>
-using LessOrEqual = Form<LessOrEqualOp,T,U>;
+struct is_form<LessOrEqual<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<LessOrEqual<T,U>> {
+  using type = LessOrEqual<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<LessOrEqual<T,U>> {
+  using type = LessOrEqual<peg_t<T>,peg_t<U>>;
+};
 
 template<argument T, argument U>
 auto less_or_equal(T&& x, U&& y) {
-  return LessOrEqual<tag_t<T>,tag_t<U>>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y));
+  return LessOrEqual<tag_t<T>,tag_t<U>>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y))}};
 }
 
 template<argument T, argument U>

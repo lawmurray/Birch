@@ -7,30 +7,42 @@
 
 namespace birch {
 
-struct GammaQOp {
-  template<class T, class U>
-  static auto eval(const T& x, const U& y) {
-    return numbirch::gamma_q(birch::eval(x), birch::eval(y));
+template<argument T, argument U>
+struct GammaQ : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::gamma_q(birch::eval(this->x), birch::eval(this->y));
   }
 
-  template<class T, class U>
-  static int rows(const T& x, const U& y) {
-    return birch::rows(x, y);
+  int rows() const {
+    return birch::rows(this->x, this->y);
   }
 
-  template<class T, class U>
-  static int columns(const T& x, const U& y) {
-    return birch::columns(x, y);
+  int columns() const {
+    return birch::columns(this->x, this->y);
   }
 };
 
 template<argument T, argument U>
-using GammaQ = Form<GammaQOp,T,U>;
+struct is_form<GammaQ<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<GammaQ<T,U>> {
+  using type = GammaQ<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<GammaQ<T,U>> {
+  using type = GammaQ<peg_t<T>,peg_t<U>>;
+};
 
 template<argument T, argument U>
 auto gamma_q(T&& x, U&& y) {
-  return GammaQ<tag_t<T>,tag_t<U>>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y));
+  return GammaQ<tag_t<T>,tag_t<U>>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y))}};
 }
 
 }

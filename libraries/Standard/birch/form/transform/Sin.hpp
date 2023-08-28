@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct SinOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::sin(birch::eval(x));
+template<argument T>
+struct Sin : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::sin(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::sin_grad(std::forward<G>(g), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::sin_grad(std::forward<G>(g),
+          birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T>
-using Sin = Form<SinOp,T>;
+struct is_form<Sin<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<Sin<T>> {
+  using type = Sin<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<Sin<T>> {
+  using type = Sin<peg_t<T>>;
+};
 
 template<argument T>
 auto sin(T&& x) {
-  return Sin<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return Sin<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }

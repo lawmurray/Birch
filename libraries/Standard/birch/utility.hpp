@@ -5,6 +5,22 @@
 
 namespace birch {
 /**
+ * Is `T` a random type?
+ */
+template<class T>
+struct is_random {
+  static constexpr bool value = false;
+};
+template<class T>
+inline constexpr bool is_random_v = is_random<std::decay_t<T>>::value;
+
+/**
+ * Random type.
+ */
+template<class T>
+concept random = is_random_v<T>;
+
+/**
  * Is `T` a form type?
  */
 template<class T>
@@ -37,12 +53,29 @@ template<class T>
 concept expression = is_expression_v<T>;
 
 /**
+ * Is `T` an empty type?
+ */
+template<class T>
+struct is_empty {
+  static constexpr bool value = false;
+};
+template<class T>
+inline constexpr bool is_empty_v = is_empty<std::decay_t<T>>::value;
+
+/**
+ * Empty type.
+ */
+template<class T>
+concept empty = is_empty_v<T>;
+
+/**
  * Argument type.
  * 
  * An argument type is a numeric, form, or expression type.
  */
 template<class T>
-concept argument = numbirch::numeric<T> || form<T> || expression<T>;
+concept argument = numbirch::numeric<T> || random<T> || form<T> ||
+    expression<T> || empty<T>;
 
 /**
  * Make a shared object.
@@ -189,7 +222,7 @@ template<argument T>
 decltype(auto) value(T&& x) {
   if constexpr (numbirch::numeric<T>) {
     return std::forward<T>(x);
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     return x.value();
   } else if constexpr (expression<T>) {
     return x->value();
@@ -200,7 +233,7 @@ template<argument T>
 decltype(auto) eval(T&& x) {
   if constexpr (numbirch::numeric<T>) {
     return std::forward<T>(x);
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     return x.eval();
   } else if constexpr (expression<T>) {
     return x->eval();
@@ -211,7 +244,7 @@ template<argument T>
 void move(T&& x, const MoveVisitor& visitor) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.move(visitor);
   } else if constexpr (expression<T>) {
     x->move(visitor);
@@ -222,7 +255,7 @@ template<argument T>
 void args(const T& x, const ArgsVisitor& visitor) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.args(visitor);
   } else if constexpr (expression<T>) {
     x->args(visitor);
@@ -233,7 +266,7 @@ template<argument T>
 void reset(T& x) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.reset();
   } else if constexpr (expression<T>) {
     x->reset();
@@ -244,7 +277,7 @@ template<argument T>
 void relink(T& x, const RelinkVisitor& visitor) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.relink(visitor);
   } else if constexpr (expression<T>) {
     x->relink(visitor);
@@ -255,7 +288,7 @@ template<argument T, numbirch::numeric G>
 void grad(const T& x, const G& g) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.grad(g);
   } else if constexpr (expression<T>) {
     x->grad(g);
@@ -266,7 +299,7 @@ template<argument T, numbirch::numeric G>
 void shallow_grad(const T& x, const G& g, const GradVisitor& visitor) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.shallowGrad(g, visitor);
   } else if constexpr (expression<T>) {
     x->shallowGrad(g, visitor);
@@ -277,7 +310,7 @@ template<argument T>
 void deep_grad(const T& x, const GradVisitor& visitor) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.deepGrad(visitor);
   } else if constexpr (expression<T>) {
     x->deepGrad(visitor);
@@ -288,7 +321,7 @@ template<argument T>
 void constant(const T& x) {
   if constexpr (numbirch::numeric<T>) {
     //
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     x.constant();
   } else if constexpr (expression<T>) {
     x->constant();
@@ -299,10 +332,12 @@ template<argument T>
 bool is_constant(const T& x) {
   if constexpr (numbirch::numeric<T>) {
     return true;
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     return x.isConstant();
   } else if constexpr (expression<T>) {
     return x->isConstant();
+  } else {
+    return true;
   }
 }
 
@@ -310,10 +345,12 @@ template<argument T>
 int rows(const T& x) {
   if constexpr (numbirch::numeric<T>) {
     return numbirch::rows(x);
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     return x.rows();
   } else if constexpr (expression<T>) {
     return x->rows();
+  } else {
+    return 0;
   }
 }
 
@@ -333,10 +370,12 @@ template<argument T>
 int columns(const T& x) {
   if constexpr (numbirch::numeric<T>) {
     return numbirch::columns(x);
-  } else if constexpr (form<T>) {
+  } else if constexpr (form<T> || random<T>) {
     return x.columns();
   } else if constexpr (expression<T>) {
     return x->columns();
+  } else {
+    return 0;
   }
 }
 
@@ -375,6 +414,11 @@ struct tag_s<T> {
   using type = std::conditional_t<std::is_rvalue_reference_v<T>,T,
       std::add_lvalue_reference_t<std::add_const_t<T>>>;
 };
+template<random T>
+struct tag_s<T> {
+  using type = std::conditional_t<std::is_rvalue_reference_v<T>,T,
+      std::add_lvalue_reference_t<std::add_const_t<T>>>;
+};
 template<form T>
 struct tag_s<T> {
   using type = typename tag_s<std::decay_t<T>>::type;  // specialized for this
@@ -405,6 +449,32 @@ struct tag_s<T> {
 template<argument T>
 using tag_t = typename tag_s<T>::type;
 
+/**
+ * Argument wrapper function for construction of delayed expressions.
+ */
+template<argument T>
+tag_t<T> tag(T&& x) {
+  if constexpr (form<T>) {
+    /* aggregate initialization for empty arguments requires {} not tag(x),
+     * which we can't do syntactically, so use a compile-time conditional to
+     * only initialize the non-empty arguments */
+    using D = std::decay_t<T>;
+    if constexpr (empty<typename D::U1>) {
+      return tag_t<T>{{tag(x.x)}};
+    } else if constexpr (empty<typename D::V1>) {
+      return tag_t<T>{{tag(x.x), tag(x.y)}};
+    } else if constexpr (empty<typename D::W1>) {
+      return tag_t<T>{{tag(x.x), tag(x.y), tag(x.z)}};
+    } else if constexpr (empty<typename D::X1>) {
+      return tag_t<T>{{tag(x.x), tag(x.y), tag(x.z), tag(x.a)}};
+    } else {
+      return tag_t<T>{{tag(x.x), tag(x.y), tag(x.z), tag(x.a), tag(x.b)}};
+    }
+  } else {
+    return tag_t<T>(std::forward<T>(x));
+  }
+}
+
 template<class T>
 struct peg_s {
   using type = void;
@@ -414,6 +484,10 @@ struct peg_s<T> {
   using type = std::decay_t<T>;
 };
 template<numbirch::array T>
+struct peg_s<T> {
+  using type = std::decay_t<T>;
+};
+template<random T>
 struct peg_s<T> {
   using type = std::decay_t<T>;
 };
@@ -448,7 +522,25 @@ using peg_t = typename peg_s<T>::type;
  */
 template<argument T>
 peg_t<T> peg(T&& x) {
-  return peg_t<T>(std::forward<T>(x));
+  if constexpr (form<T>) {
+    /* aggregate initialization for empty arguments requires {} not peg(x),
+     * which we can't do syntactically, so use a compile-time conditional to
+     * only initialize the non-empty arguments */
+    using D = std::decay_t<T>;
+    if constexpr (empty<typename D::U1>) {
+      return peg_t<T>{{peg(x.x)}};
+    } else if constexpr (empty<typename D::V1>) {
+      return peg_t<T>{{peg(x.x), peg(x.y)}};
+    } else if constexpr (empty<typename D::W1>) {
+      return peg_t<T>{{peg(x.x), peg(x.y), peg(x.z)}};
+    } else if constexpr (empty<typename D::X1>) {
+      return peg_t<T>{{peg(x.x), peg(x.y), peg(x.z), peg(x.a)}};
+    } else {
+      return peg_t<T>{{peg(x.x), peg(x.y), peg(x.z), peg(x.a), peg(x.b)}};
+    }
+  } else {
+    return peg_t<T>(std::forward<T>(x));
+  }
 }
 
 /**
@@ -466,12 +558,11 @@ peg_t<T> peg(T&& x) {
  */
 template<argument T>
 decltype(auto) box(T&& x) {
-  using U = std::decay_t<decltype(wait(eval(x)))>;
-  using V = peg_t<T>;
+  using R = std::decay_t<decltype(wait(eval(x)))>;
   if constexpr (numbirch::numeric<T>) {
-    return Expression<U>(BoxedValue<U>(std::forward<T>(x)));
-  } else if constexpr (form<T>) {
-    return Expression<U>(BoxedForm<U,V>(V(std::forward<T>(x))));
+    return Expression<R>(BoxedValue<R>(std::forward<T>(x)));
+  } else if constexpr (form<T> || random<T>) {
+    return Expression<R>(BoxedForm<R,peg_t<T>>(peg(x)));
   } else if constexpr (expression<T>) {
     return std::decay_t<T>(std::forward<T>(x));
   }

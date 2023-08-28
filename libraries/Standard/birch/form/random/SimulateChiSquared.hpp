@@ -7,29 +7,41 @@
 
 namespace birch {
 
-struct SimulateChiSquaredOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::simulate_chi_squared(birch::eval(x));
+template<argument T>
+struct SimulateChiSquared : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::simulate_chi_squared(birch::eval(this->x));
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T>
-using SimulateChiSquared = Form<SimulateChiSquaredOp,T>;
+struct is_form<SimulateChiSquared<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<SimulateChiSquared<T>> {
+  using type = SimulateChiSquared<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<SimulateChiSquared<T>> {
+  using type = SimulateChiSquared<peg_t<T>>;
+};
 
 template<argument T>
 auto simulate_chi_squared(T&& x) {
-  return SimulateChiSquared<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return SimulateChiSquared<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }

@@ -7,29 +7,41 @@
 
 namespace birch {
 
-struct SimulatePoissonOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::simulate_poisson(birch::eval(x));
+template<argument T>
+struct SimulatePoisson : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::simulate_poisson(birch::eval(this->x));
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T>
-using SimulatePoisson = Form<SimulatePoissonOp,T>;
+struct is_form<SimulatePoisson<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<SimulatePoisson<T>> {
+  using type = SimulatePoisson<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<SimulatePoisson<T>> {
+  using type = SimulatePoisson<peg_t<T>>;
+};
 
 template<argument T>
 auto simulate_poisson(T&& x) {
-  return SimulatePoisson<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return SimulatePoisson<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }

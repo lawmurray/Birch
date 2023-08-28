@@ -7,88 +7,93 @@
 
 namespace birch {
 
-struct SingleOp {
-  template<class T, class U>
-  static auto eval(const T& x, const U& y, const int n) {
-    return numbirch::single(birch::eval(x), birch::eval(y), n);
+template<argument T, argument U, argument V, argument W = Empty,
+    argument X = Empty>
+struct Single : public Form<T,U,V,W,X> {
+  BIRCH_FORM
+  
+  auto eval() const {
+    if constexpr (empty<W>) {
+      return numbirch::single(birch::eval(this->x), birch::eval(this->y),
+          this->z);
+    } else {
+      return numbirch::single(birch::eval(this->x), birch::eval(this->y),
+          birch::eval(this->z), this->a, this->b);
+    }
   }
 
-  template<class G, class T, class U>
-  static auto grad1(G&& g, const T& x, const U& y, const int n) {
-    return numbirch::single_grad1(std::forward<G>(g), birch::eval(x),
-        birch::eval(y), n);
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if constexpr (empty<W>) {
+      if (!birch::is_constant(this->x)) {
+        birch::shallow_grad(this->x, numbirch::single_grad1(g,
+            birch::eval(this->x), birch::eval(this->y), this->z), visitor);
+      }
+      if (!birch::is_constant(this->y)) {
+        birch::shallow_grad(this->y, numbirch::single_grad2(std::forward<G>(g),
+            birch::eval(this->x), birch::eval(this->y), this->z), visitor);
+      }
+    } else {
+      if (!birch::is_constant(this->x)) {
+        birch::shallow_grad(this->x, numbirch::single_grad1(g,
+            birch::eval(this->x), birch::eval(this->y), birch::eval(this->z),
+            this->a, this->b), visitor);
+      }
+      if (!birch::is_constant(this->y)) {
+        birch::shallow_grad(this->y, numbirch::single_grad2(std::forward<G>(g),
+            birch::eval(this->x), birch::eval(this->y), birch::eval(this->z),
+            this->a, this->b), visitor);
+      }
+      if (!birch::is_constant(this->z)) {
+        birch::shallow_grad(this->z, numbirch::single_grad3(std::forward<G>(g),
+            birch::eval(this->x), birch::eval(this->y), birch::eval(this->z),
+            this->a, this->b), visitor);
+      }
+    }
   }
 
-  template<class G, class T, class U>
-  static auto grad2(G&& g, const T& x, const U& y, const int n) {
-    return numbirch::single_grad2(std::forward<G>(g), birch::eval(x),
-        birch::eval(y), n);
+  int rows() const {
+    if constexpr (empty<W>) {
+      return this->z;
+    } else {
+      return this->a;
+    }
   }
 
-  template<class T, class U>
-  static int rows(const T& x, const U& y, const int n) {
-    return n;
-  }
-
-  template<class T, class U>
-  static constexpr int columns(const T& x, const U& y, const int n) {
-    return 1;
-  }
-
-  template<class T, class U, class V>
-  static auto eval(const T& x, const U& y, const V& z, const int m,
-      const int n) {
-    return numbirch::single(birch::eval(x), birch::eval(y), birch::eval(z),
-        m, n);
-  }
-
-  template<class G, class T, class U, class V>
-  static auto grad1(G&& g, const T& x, const U& y, const V& z, const int m,
-      const int n) {
-    return numbirch::single_grad1(std::forward<G>(g), birch::eval(x),
-        birch::eval(y), birch::eval(z), m, n);
-  }
-
-  template<class G, class T, class U, class V>
-  static auto grad2(G&& g, const T& x, const U& y, const V& z, const int m,
-      const int n) {
-    return numbirch::single_grad2(std::forward<G>(g), birch::eval(x),
-        birch::eval(y), birch::eval(z), m, n);
-  }
-
-  template<class G, class T, class U, class V>
-  static auto grad3(G&& g, const T& x, const U& y, const V& z, const int m,
-      const int n) {
-    return numbirch::single_grad3(std::forward<G>(g), birch::eval(x),
-        birch::eval(y), birch::eval(z), m, n);
-  }
-
-  template<class T, class U, class V>
-  static int rows(const T& x, const U& y, const V& z, const int m,
-      const int n) {
-    return m;
-  }
-
-  template<class T, class U, class V>
-  static int columns(const T& x, const U& y, const V& z, const int m,
-      const int n) {
-    return n;
+  int columns() const {
+    if constexpr (empty<W>) {
+      return 1;
+    } else {
+      return this->b;
+    }
   }
 };
 
-template<argument... Args>
-using Single = Form<SingleOp,Args...>;
+template<argument T, argument U, argument V, argument W, argument X>
+struct is_form<Single<T,U,V,W,X>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U, argument V, argument W, argument X>
+struct tag_s<Single<T,U,V,W,X>> {
+  using type = Single<tag_t<T>,tag_t<U>,tag_t<V>,tag_t<W>,tag_t<X>>;
+};
+
+template<argument T, argument U, argument V, argument W, argument X>
+struct peg_s<Single<T,U,V,W,X>> {
+  using type = Single<peg_t<T>,peg_t<U>,peg_t<V>,peg_t<W>,peg_t<X>>;
+};
 
 template<argument T, argument U>
 auto single(T&& x, U&& y, const int n) {
-  return Single<tag_t<T>,tag_t<U>,int>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y), n);
+  return Single<tag_t<T>,tag_t<U>,int>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y)), n}};
 }
 
 template<argument T, argument U, argument V>
 auto single(T&& x, U&& y, V&& z, const int m, const int n) {
-  return Single<tag_t<T>,tag_t<U>,tag_t<V>,int,int>(std::in_place,
-      std::forward<T>(x), std::forward<U>(y), std::forward<V>(z), m, n);
+  return Single<tag_t<T>,tag_t<U>,tag_t<V>,int,int>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y)), tag(std::forward<V>(z)), m, n}};
 }
 
 }

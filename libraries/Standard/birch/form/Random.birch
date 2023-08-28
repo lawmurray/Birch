@@ -162,7 +162,7 @@ struct Random<Value> {
     //
   }
 
-  template<class G>
+  template<numbirch::numeric G>
   void shallowGrad(const G& g, const GradVisitor& visitor) const {
     if (hasDistribution()) {
       getDistribution()->grad(g, visitor);
@@ -278,18 +278,8 @@ hpp{{
 namespace birch {
 
 template<class Value>
-struct is_form<Random<Value>> {
+struct is_random<Random<Value>> {
   static constexpr bool value = true;
-};
-
-template<class Value>
-struct tag_s<Random<Value>> {
-  using type = Random<Value>;
-};
-
-template<class Value>
-struct peg_s<Random<Value>> {
-  using type = Random<Value>;
 };
 
 }

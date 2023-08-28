@@ -7,50 +7,59 @@
 
 namespace birch {
 
-struct DigammaOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::digamma(birch::eval(x));
+template<argument T, argument U = Empty>
+struct Digamma : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    if constexpr (empty<U>) {
+      return numbirch::digamma(birch::eval(this->x));
+    } else {
+      return numbirch::digamma(birch::eval(this->x), birch::eval(this->y));
+    }
   }
 
-  template<class T, class U>
-  static auto eval(const T& x, const U& y) {
-    return numbirch::digamma(birch::eval(x), birch::eval(y));
+  int rows() const {
+    if constexpr (empty<U>) {
+      return birch::rows(this->x);
+    } else {
+      return birch::rows(this->x, this->y);
+    }
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
-  }
-
-  template<class T, class U>
-  static int rows(const T& x, const U& y) {
-    return birch::rows(x, y);
-  }
-
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
-  }
-
-  template<class T, class U>
-  static int columns(const T& x, const U& y) {
-    return birch::columns(x, y);
+  int columns() const {
+    if constexpr (empty<U>) {
+      return birch::columns(this->x);
+    } else {
+      return birch::columns(this->x, this->y);
+    }
   }
 };
 
-template<argument... Args>
-using Digamma = Form<DigammaOp,Args...>;
+template<argument T, argument U>
+struct is_form<Digamma<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<Digamma<T,U>> {
+  using type = Digamma<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<Digamma<T,U>> {
+  using type = Digamma<peg_t<T>,peg_t<U>>;
+};
 
 template<argument T>
 auto digamma(T&& x) {
-  return Digamma<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return Digamma<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 template<argument T, argument U>
 auto digamma(T&& x, U&& y) {
-  return Digamma<tag_t<T>,tag_t<U>>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y));
+  return Digamma<tag_t<T>,tag_t<U>>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y))}};
 }
 
 }

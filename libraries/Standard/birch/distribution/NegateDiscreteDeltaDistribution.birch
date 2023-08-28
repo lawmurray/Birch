@@ -82,7 +82,7 @@ function peg_negate_discrete_delta<Arg1>(p:Arg1, l:Integer!) -> {
  * Create delta distribution.
  */
 function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
-  let m <- μ.m();
+  let m <- μ.x;
   if m.isBoundedDiscrete() {
     let p_m <- m.graft();
     let (p, l) <- p_m.getBoundedDiscrete()!;
@@ -98,6 +98,6 @@ function Delta(μ:Neg<Random<Integer>>) -> Distribution<Integer> {
  * Create delta distribution.
  */
 function Delta<Arg>(μ:Neg<Arg>) -> Distribution<Integer> {
-  let m ~ Delta(μ.m());
+  let m ~ Delta(μ.x);
   return Delta(-m);
 }

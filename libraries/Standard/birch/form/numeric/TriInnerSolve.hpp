@@ -7,50 +7,62 @@
 
 namespace birch {
 
-struct TriInnerSolveOp {
-  template<class T, class U>
-  static auto eval(const T& x, const U& y) {
-    return numbirch::triinnersolve(birch::eval(x), birch::eval(y));
+template<argument T, argument U>
+struct TriInnerSolve : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::triinnersolve(birch::eval(this->x), birch::eval(this->y));
   }
 
-  template<class G, class T, class U>
-  static auto grad1(G&& g, const T& x, const U& y) {
-    return numbirch::triinnersolve_grad1(std::forward<G>(g), eval(x, y),
-        birch::eval(x), birch::eval(y));
-  }
-
-  template<class G, class T, class U>
-  static auto grad2(G&& g, const T& x, const U& y) {
-    return numbirch::triinnersolve_grad2(std::forward<G>(g), eval(x, y),
-        birch::eval(x), birch::eval(y));
-  }
-
-  template<class T, class U>
-  static int rows(const T& x, const U& y) {
-    if constexpr (numbirch::scalar<decltype(birch::eval(y))>) {
-      return birch::columns(x);
-    } else {
-      return birch::rows(y);
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::triinnersolve_grad1(std::forward<G>(g),
+          eval(), birch::eval(this->x), birch::eval(this->y)), visitor);
+    }
+    if (!birch::is_constant(this->y)) {
+      birch::shallow_grad(this->y, numbirch::triinnersolve_grad2(std::forward<G>(g),
+          eval(), birch::eval(this->x), birch::eval(this->y)), visitor);
     }
   }
 
-  template<class T, class U>
-  static int columns(const T& x, const U& y) {
-    if constexpr (numbirch::scalar<decltype(birch::eval(y))>) {
-      return birch::rows(x);
+  int rows() const {
+    if constexpr (numbirch::scalar<decltype(birch::eval(this->y))>) {
+      return birch::rows(this->x);
     } else {
-      return birch::columns(y);
+      return birch::rows(this->y);
+    }
+  }
+
+  int columns() const {
+    if constexpr (numbirch::scalar<decltype(birch::eval(this->y))>) {
+      return birch::columns(this->x);
+    } else {
+      return birch::columns(this->y);
     }
   }
 };
 
-template<class T, class U>
-using TriInnerSolve = Form<TriInnerSolveOp,T,U>;
+template<argument T, argument U>
+struct is_form<TriInnerSolve<T,U>> {
+  static constexpr bool value = true;
+};
 
-template<class T, class U>
+template<argument T, argument U>
+struct tag_s<TriInnerSolve<T,U>> {
+  using type = TriInnerSolve<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<TriInnerSolve<T,U>> {
+  using type = TriInnerSolve<peg_t<T>,peg_t<U>>;
+};
+
+template<argument T, argument U>
 auto triinnersolve(T&& x, U&& y) {
-  return TriInnerSolve<tag_t<T>,tag_t<U>>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y));
+  return TriInnerSolve<tag_t<T>,tag_t<U>>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y))}};
 }
 
 }

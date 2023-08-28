@@ -7,29 +7,41 @@
 
 namespace birch {
 
-struct SimulateWishartOp {
-  template<class T>
-  static auto eval(const T& x, const int n) {
-    return numbirch::simulate_wishart(birch::eval(x), n);
+template<argument T>
+struct SimulateWishart : public Form<T,int> {
+  BIRCH_FORM
+  
+  auto eval() const {
+    return numbirch::simulate_wishart(birch::eval(this->x), this->y);
   }
 
-  template<class T>
-  static int rows(const T& x, const int n) {
-    return n;
+  int rows() const {
+    return this->y;
   }
 
-  template<class T>
-  static int columns(const T& x, const int n) {
-    return n;
+  int columns() const {
+    return this->y;
   }
 };
 
 template<argument T>
-using SimulateWishart = Form<SimulateWishartOp,T,int>;
+struct is_form<SimulateWishart<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<SimulateWishart<T>> {
+  using type = SimulateWishart<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<SimulateWishart<T>> {
+  using type = SimulateWishart<peg_t<T>>;
+};
 
 template<argument T>
 auto simulate_wishart(T&& x, const int n) {
-  return SimulateWishart<tag_t<T>>(std::in_place, std::forward<T>(x), n);
+  return SimulateWishart<tag_t<T>>{{tag(std::forward<T>(x)), n}};
 }
 
 }

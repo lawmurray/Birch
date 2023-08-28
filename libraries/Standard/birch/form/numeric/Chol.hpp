@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct CholOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::chol(birch::eval(x));
+template<argument T>
+struct Chol : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::chol(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::chol_grad(std::forward<G>(g), eval(x), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::chol_grad(std::forward<G>(g),
+          eval(), birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
-template<class T>
-using Chol = Form<CholOp,T>;
+template<argument T>
+struct is_form<Chol<T>> {
+  static constexpr bool value = true;
+};
 
-template<class T>
+template<argument T>
+struct tag_s<Chol<T>> {
+  using type = Chol<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<Chol<T>> {
+  using type = Chol<peg_t<T>>;
+};
+
+template<argument T>
 auto chol(T&& x) {
-  return Chol<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return Chol<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 }
@@ -44,14 +59,14 @@ auto chol(T&& x) {
 
 namespace birch {
 
-template<class T>
+template<argument T>
 auto chol(const Diagonal<T,int>& x) {
-  return diagonal(sqrt(std::get<0>(x.tup)), std::get<1>(x.tup));
+  return diagonal(sqrt(x.x), x.y);
 }
 
-template<class T>
+template<argument T>
 auto chol(const Diagonal<T>& x) {
-  return diagonal(sqrt(std::get<0>(x.tup)));
+  return diagonal(sqrt(x.x));
 }
 
 }

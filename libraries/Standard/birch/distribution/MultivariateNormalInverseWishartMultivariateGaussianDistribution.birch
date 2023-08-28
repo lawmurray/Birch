@@ -115,11 +115,11 @@ function peg_multivariate_normal_inverse_wishart_multivariate_gaussian<
 function MultivariateGaussian<Arg1,Arg2,Arg3>(
       μ:Add<Mul<Arg1,Random<Real[_]>>,Arg2>,
       Σ:Mul<Arg3,Random<Real[_,_]>>) -> Distribution<Real[_]> {
-  let A <- μ.l().l();
-  let m <- μ.l().r();
-  let c <- μ.r();
-  let ω2 <- Σ.l();
-  let Ω <- Σ.r();
+  let A <- μ.x.x;
+  let m <- μ.x.y;
+  let c <- μ.y;
+  let ω2 <- Σ.x;
+  let Ω <- Σ.y;
   if Ω.isInverseWishart() && m.isMultivariateNormalInverseWishart() &&
       Ω.hasMarginalized() && Ω.getMarginalized().getUpdated() ==
       m.getDistribution().getUpdated() {
@@ -150,7 +150,7 @@ function MultivariateGaussian<Arg1,Arg2,Arg3>(
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Add<Random<Real[_]>,Arg1>,
     Σ:Mul<Arg2,Random<Real[_,_]>>) -> Distribution<Real[_]> {
-  return MultivariateGaussian(1.0*μ.l() + μ.r(), Σ);
+  return MultivariateGaussian(1.0*μ.x + μ.y, Σ);
 }
 
 /**
@@ -183,7 +183,7 @@ function MultivariateGaussian<Arg1,Arg2>(
  */
 function MultivariateGaussian<Arg1>(μ:Add<Random<Real[_]>,Arg1>,
     Σ:Random<Real[_,_]>) -> Distribution<Real[_]> {
-  return MultivariateGaussian(1.0*μ.l() + μ.r(), 1.0*Σ);
+  return MultivariateGaussian(1.0*μ.x + μ.y, 1.0*Σ);
 }
 
 /**

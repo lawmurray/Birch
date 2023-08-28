@@ -3,141 +3,109 @@
  */
 #pragma once
 
-#include "birch/form/Base.hpp"
+#include "birch/form/Empty.hpp"
+
+#define BIRCH_FORM \
+  auto operator->() { \
+    return this; \
+  } \
+  auto operator->() const { \
+    return this; \
+  } \
+  operator auto() const { \
+    return value(); \
+  } \
+  auto operator*() const { \
+    return wait(value()); \
+  } \
+  auto value() const { \
+    this->constant(); \
+    return eval(); \
+  } \
+  template<class Buffer> \
+  void write(const Buffer& buffer) const { \
+    buffer->set(value()); \
+  } \
+  template<class Buffer> \
+  void write(const Integer t, const Buffer& buffer) const { \
+    buffer->set(value()); \
+  }
 
 namespace birch {
 
-template<class Op, class... Args>
-struct Form : public Base<Args...> {
-  MEMBIRCH_STRUCT(Form, Base<Args...>)
-  MEMBIRCH_STRUCT_MEMBERS()
+template<argument T = Empty, argument U = Empty, class V = Empty,
+    class W = Empty, class X = Empty>
+struct Form {
+  using T1 = T;
+  using U1 = U;
+  using V1 = V;
+  using W1 = W;
+  using X1 = X;
 
-  template<class... Args1>
-  Form(std::in_place_t, Args1&&... args) :
-      Base<Args...>(std::in_place, std::forward<Args1>(args)...) {
-    //
-  }
+  [[no_unique_address]] T x;
+  [[no_unique_address]] U y;
+  [[no_unique_address]] V z;
+  [[no_unique_address]] W a;
+  [[no_unique_address]] X b;
+ 
+  MEMBIRCH_STRUCT(Form)
+  MEMBIRCH_STRUCT_MEMBERS(x, y, z, a, b)
 
-  template<class... Args1>
-  Form(const Form<Op,Args1...>& o) :
-      Base<Args...>(o) {
-    //
-  }
-
-  template<class... Args1>
-  Form(Form<Op,Args1...>&& o) :
-      Base<Args...>(std::forward<Form<Op,Args1...>>(o)) {
-    //
-  }
-
-  Form(const Form&) = default;
-  Form(Form&&) = default;
-
-  auto operator->() {
-    return this;
+  void reset() {
+    birch::reset(x);
+    birch::reset(y);
+    birch::reset(z);
+    birch::reset(a);
+    birch::reset(b);
   }
  
-  auto operator->() const {
-    return this;
+  void relink(const RelinkVisitor& visitor) {
+    birch::relink(x, visitor);
+    birch::relink(y, visitor);
+    birch::relink(z, visitor);
+    birch::relink(a, visitor);
+    birch::relink(b, visitor);
   }
  
-  operator auto() const {
-    return value();
+  void constant() const {
+    birch::constant(x);
+    birch::constant(y);
+    birch::constant(z);
+    birch::constant(a);
+    birch::constant(b);
   }
  
-  auto operator*() const {
-    return wait(value());
-  }
-
-  auto value() const {
-    this->constant();
-    return eval();
-  }
-
-  auto eval() const {
-    return std::apply([](const Args&... args) {
-        return Op::eval(args...); },
-        this->tup);
-  }
-
-  template<class G, class T>
-  void shallowGrad(G&& g, T&& x, const GradVisitor& visitor) const {
-    shallowGrad(std::forward<G>(g), visitor);
-  }
-
-  template<class G>
-  void shallowGrad(G&& g, const GradVisitor& visitor) const {
-    /* work in reverse, so that we can std::forward<G>(g) once regardless
-     * of the number of arguments; may also be more cache efficient */
-    constexpr int argc = std::tuple_size_v<decltype(this->tup)>;
-    if constexpr (argc > 2) {
-      if constexpr (!numbirch::numeric<std::tuple_element_t<2,std::tuple<Args...>>>) {
-        auto& arg = std::get<2>(this->tup);
-        if (!is_constant(arg)) {
-          shallow_grad(arg, std::apply([&](const Args&... args) {
-                return Op::grad3(g, args...);
-              }, this->tup), visitor);
-        }
-      }
-    }
-    if constexpr (argc > 1) {
-      if constexpr (!numbirch::numeric<std::tuple_element_t<1,std::tuple<Args...>>>) {
-        auto& arg = std::get<1>(this->tup);
-        if (!is_constant(arg)) {
-          shallow_grad(arg, std::apply([&](const Args&... args) {
-                return Op::grad2(g, args...);
-              }, this->tup), visitor);
-        }
-      }
-    }
-    if constexpr (argc > 0) {
-      if constexpr (!numbirch::numeric<std::tuple_element_t<0,std::tuple<Args...>>>) {
-        auto& arg = std::get<0>(this->tup);
-        if (!is_constant(arg)) {
-          shallow_grad(arg, std::apply([&](const Args&... args) {
-                return Op::grad1(std::forward<G>(g), args...);
-              }, this->tup), visitor);
-        }
-      }
-    }
-  } 
-
-  int rows() const {
-    return std::apply([](const Args&... args) {
-        return Op::rows(args...); },
-        this->tup);
-  }
-
-  int columns() const {
-    return std::apply([](const Args&... args) {
-        return Op::columns(args...); },
-        this->tup);
-  }
-
-  template<class Buffer>
-  void write(const Buffer& buffer) const {
-    buffer->set(value());
-  }
+  bool isConstant() const {
+    return is_constant(x) &&
+        is_constant(y) &&
+        is_constant(z) &&
+        is_constant(a) &&
+        is_constant(b);
+ }
  
-  template<class Buffer>
-  void write(const Integer t, const Buffer& buffer) const {
-    buffer->set(value());
+  void move(const MoveVisitor& visitor) const {
+    birch::move(x, visitor);
+    birch::move(y, visitor);
+    birch::move(z, visitor);
+    birch::move(a, visitor);
+    birch::move(b, visitor);
   }
-};
 
-template<class Op, class... Args>
-struct is_form<Form<Op,Args...>> {
-  static constexpr bool value = true;
-};
+  void args(const ArgsVisitor& visitor) const {
+    birch::args(x, visitor);
+    birch::args(y, visitor);
+    birch::args(z, visitor);
+    birch::args(a, visitor);
+    birch::args(b, visitor);
+  }
 
-template<class Op, class... Args>
-struct tag_s<Form<Op,Args...>> {
-  using type = Form<Op,tag_t<Args>...>;
-};
-
-template<class Op, class... Args>
-struct peg_s<Form<Op,Args...>> {
-  using type = Form<Op,peg_t<Args>...>;
+  void deepGrad(const GradVisitor& visitor) const {
+    birch::deep_grad(x, visitor);
+    birch::deep_grad(y, visitor);
+    birch::deep_grad(z, visitor);
+    birch::deep_grad(a, visitor);
+    birch::deep_grad(b, visitor);
+  }
 };
 
 }

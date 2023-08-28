@@ -7,50 +7,62 @@
 
 namespace birch {
 
-struct CholSolveOp {
-  template<class T, class U>
-  static auto eval(const T& x, const U& y) {
-    return numbirch::cholsolve(birch::eval(x), birch::eval(y));
+template<argument T, argument U>
+struct CholSolve : public Form<T,U> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::cholsolve(birch::eval(this->x), birch::eval(this->y));
   }
 
-  template<class G, class T, class U>
-  static auto grad1(G&& g, const T& x, const U& y) {
-    return numbirch::cholsolve_grad1(std::forward<G>(g), eval(x, y),
-        birch::eval(x), birch::eval(y));
-  }
-
-  template<class G, class T, class U>
-  static auto grad2(G&& g, const T& x, const U& y) {
-    return numbirch::cholsolve_grad2(std::forward<G>(g), eval(x, y),
-        birch::eval(x), birch::eval(y));
-  }
-
-  template<class T, class U>
-  static int rows(const T& x, const U& y) {
-    if constexpr (numbirch::scalar<decltype(birch::eval(y))>) {
-      return birch::rows(x);
-    } else {
-      return birch::rows(y);
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::cholsolve_grad1(std::forward<G>(g),
+          eval(), birch::eval(this->x), birch::eval(this->y)), visitor);
+    }
+    if (!birch::is_constant(this->y)) {
+      birch::shallow_grad(this->y, numbirch::cholsolve_grad2(std::forward<G>(g),
+          eval(), birch::eval(this->x), birch::eval(this->y)), visitor);
     }
   }
 
-  template<class T, class U>
-  static int columns(const T& x, const U& y) {
-    if constexpr (numbirch::scalar<decltype(birch::eval(y))>) {
-      return birch::columns(x);
+  int rows() const {
+    if constexpr (numbirch::scalar<decltype(birch::eval(this->y))>) {
+      return birch::rows(this->x);
     } else {
-      return birch::columns(y);
+      return birch::rows(this->y);
+    }
+  }
+
+  int columns() const {
+    if constexpr (numbirch::scalar<decltype(birch::eval(this->y))>) {
+      return birch::columns(this->x);
+    } else {
+      return birch::columns(this->y);
     }
   }
 };
 
 template<argument T, argument U>
-using CholSolve = Form<CholSolveOp,T,U>;
+struct is_form<CholSolve<T,U>> {
+  static constexpr bool value = true;
+};
+
+template<argument T, argument U>
+struct tag_s<CholSolve<T,U>> {
+  using type = CholSolve<tag_t<T>,tag_t<U>>;
+};
+
+template<argument T, argument U>
+struct peg_s<CholSolve<T,U>> {
+  using type = CholSolve<peg_t<T>,peg_t<U>>;
+};
 
 template<argument T, argument U>
 auto cholsolve(T&& x, U&& y) {
-  return CholSolve<tag_t<T>,tag_t<U>>(std::in_place, std::forward<T>(x),
-      std::forward<U>(y));
+  return CholSolve<tag_t<T>,tag_t<U>>{{tag(std::forward<T>(x)),
+      tag(std::forward<U>(y))}};
 }
 
 }
@@ -62,7 +74,7 @@ namespace birch {
 
 template<argument T, argument U>
 auto cholsolve(const Diagonal<T,int>& x, U&& y) {
-  return y/pow(std::get<0>(x.tup), 2.0);
+  return y/pow(x.x, 2.0);
 }
 
 }

@@ -22,13 +22,13 @@ final acyclic class BoxedValue<Value> < Expression<Value> {
 
   final override function rows() -> Integer {
     cpp{{
-    return birch::rows(x);
+    return birch::rows(this->x);
     }}
   }
   
   final override function columns() -> Integer {
     cpp{{
-    return birch::columns(x);
+    return birch::columns(this->x);
     }}
   }
 

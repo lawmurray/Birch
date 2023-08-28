@@ -7,34 +7,49 @@
 
 namespace birch {
 
-struct FloorOp {
-  template<class T>
-  static auto eval(const T& x) {
-    return numbirch::floor(birch::eval(x));
+template<argument T>
+struct Floor : public Form<T> {
+  BIRCH_FORM
+
+  auto eval() const {
+    return numbirch::floor(birch::eval(this->x));
   }
 
-  template<class G, class T>
-  static auto grad1(G&& g, const T& x) {
-    return numbirch::floor_grad(std::forward<G>(g), birch::eval(x));
+  template<numbirch::numeric G>
+  void shallowGrad(G&& g, const GradVisitor& visitor) const {
+    if (!birch::is_constant(this->x)) {
+      birch::shallow_grad(this->x, numbirch::floor_grad(std::forward<G>(g),
+          birch::eval(this->x)), visitor);
+    }
   }
 
-  template<class T>
-  static int rows(const T& x) {
-    return birch::rows(x);
+  int rows() const {
+    return birch::rows(this->x);
   }
 
-  template<class T>
-  static int columns(const T& x) {
-    return birch::columns(x);
+  int columns() const {
+    return birch::columns(this->x);
   }
 };
 
 template<argument T>
-using Floor = Form<FloorOp,T>;
+struct is_form<Floor<T>> {
+  static constexpr bool value = true;
+};
+
+template<argument T>
+struct tag_s<Floor<T>> {
+  using type = Floor<tag_t<T>>;
+};
+
+template<argument T>
+struct peg_s<Floor<T>> {
+  using type = Floor<peg_t<T>>;
+};
 
 template<argument T>
 auto floor(T&& x) {
-  return Floor<tag_t<T>>(std::in_place, std::forward<T>(x));
+  return Floor<tag_t<T>>{{tag(std::forward<T>(x))}};
 }
 
 template<argument T>

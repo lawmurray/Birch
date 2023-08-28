@@ -104,9 +104,9 @@ function peg_multivariate_gaussian_multivariate_gaussian<Arg1,Arg2,
  */
 function MultivariateGaussian<Arg1,Arg2,Arg3>(μ:Add<Mul<Arg1,
     Random<Real[_]>>,Arg2>, Σ:Arg3) -> Distribution<Real[_]> {
-  let A <- μ.l().l();
-  let m <- μ.l().r();
-  let c <- μ.r();
+  let A <- μ.x.x;
+  let m <- μ.x.y;
+  let c <- μ.y;
   if m.isMultivariateGaussian() {
     let p_m <- m.graft();
     let (μ1, Σ1) <- p_m.getMultivariateGaussian()!;
@@ -132,7 +132,7 @@ function MultivariateGaussian<Arg1,Arg2>(μ:Mul<Arg1,Random<Real[_]>>,
  */
 function MultivariateGaussian<Arg1,Arg2>(μ:Add<Random<Real[_]>,Arg1>,
     Σ:Arg2) -> Distribution<Real[_]> {
-  return MultivariateGaussian(1.0*μ.l() + μ.r(), Σ);
+  return MultivariateGaussian(1.0*μ.x + μ.y, Σ);
 }
 
 /**
