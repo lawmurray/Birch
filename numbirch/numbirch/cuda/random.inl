@@ -245,29 +245,6 @@ struct simulate_weibull_functor {
   }
 };
 
-template<class T>
-struct standard_gaussian_functor {
-  T A;
-  const int ldA;
-  curandState_t* rngs;
-  standard_gaussian_functor(T A, const int ldA) :
-      A(A), ldA(ldA), rngs(numbirch::rngs) {
-    //
-  }
-  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) {
-    real& a = get(A, i, j, ldA);
-    #ifndef __CUDA_ARCH__
-    a = std::normal_distribution<real>()(stl<real>::rng());
-    #else
-    if constexpr (std::is_same_v<real,double>) {
-      a = curand_normal_double(curand_rng(rngs));
-    } else {
-      a = curand_normal(curand_rng(rngs));
-    }
-    #endif
-  }
-};
-
 template<class T, class U>
 struct simulate_wishart_functor {
   T k;
@@ -314,6 +291,52 @@ struct simulate_wishart_functor {
       /* in upper triangle */
       s = real(0.0);
     }
+  }
+};
+
+template<class T>
+struct standard_gaussian_functor {
+  T A;
+  const int ldA;
+  curandState_t* rngs;
+  standard_gaussian_functor(T A, const int ldA) :
+      A(A), ldA(ldA), rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) {
+    real& a = get(A, i, j, ldA);
+    #ifndef __CUDA_ARCH__
+    a = std::normal_distribution<real>()(stl<real>::rng());
+    #else
+    if constexpr (std::is_same_v<real,double>) {
+      a = curand_normal_double(curand_rng(rngs));
+    } else {
+      a = curand_normal(curand_rng(rngs));
+    }
+    #endif
+  }
+};
+
+template<class T>
+struct standard_uniform_functor {
+  T A;
+  const int ldA;
+  curandState_t* rngs;
+  standard_uniform_functor(T A, const int ldA) :
+      A(A), ldA(ldA), rngs(numbirch::rngs) {
+    //
+  }
+  NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) {
+    real& a = get(A, i, j, ldA);
+    #ifndef __CUDA_ARCH__
+    a = std::uniform_real_distribution<real>()(stl<real>::rng());
+    #else
+    if constexpr (std::is_same_v<real,double>) {
+      a = curand_uniform_double(curand_rng(rngs));
+    } else {
+      a = curand_uniform(curand_rng(rngs));
+    }
+    #endif
   }
 };
 

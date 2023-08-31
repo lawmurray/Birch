@@ -270,6 +270,29 @@ Array<real,1> standard_gaussian(const int n);
 Array<real,2> standard_gaussian(const int m, const int n);
 
 /**
+ * Create vector of standard uniform variates (between zero and one).
+ *
+ * @ingroup random
+ * 
+ * @param n Number of elements.
+ * 
+ * @return Variates.
+ */
+Array<real,1> standard_uniform(const int n);
+
+/**
+ * Create matrix of standard uniform variates (between zero and one).
+ *
+ * @ingroup random
+ * 
+ * @param m Number of rows.
+ * @param n Number of columns.
+ * 
+ * @return Variates.
+ */
+Array<real,2> standard_uniform(const int m, const int n);
+
+/**
  * Convolve probabilities for the sum of two discrete random variables.
  * 
  * @ingroup random

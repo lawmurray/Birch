@@ -86,19 +86,6 @@ struct simulate_weibull_functor {
   }
 };
 
-struct standard_gaussian_functor {
-  real* A;
-  const int ldA;
-  std::normal_distribution<real> p;
-  standard_gaussian_functor(real* A, const int ldA) :
-      A(A), ldA(ldA) {
-    //
-  }
-  void operator()(const int i, const int j) {
-    get(A, i, j, ldA) = p(stl<real>::rng());
-  }
-};
-
 template<class T>
 struct simulate_wishart_functor {
   T k;
@@ -124,6 +111,32 @@ struct simulate_wishart_functor {
       /* in upper triangle */
       s = real(0.0);
     }
+  }
+};
+
+struct standard_gaussian_functor {
+  real* A;
+  const int ldA;
+  std::normal_distribution<real> p;
+  standard_gaussian_functor(real* A, const int ldA) :
+      A(A), ldA(ldA) {
+    //
+  }
+  void operator()(const int i, const int j) {
+    get(A, i, j, ldA) = p(stl<real>::rng());
+  }
+};
+
+struct standard_uniform_functor {
+  real* A;
+  const int ldA;
+  std::uniform_real_distribution<real> p;
+  standard_uniform_functor(real* A, const int ldA) :
+      A(A), ldA(ldA) {
+    //
+  }
+  void operator()(const int i, const int j) {
+    get(A, i, j, ldA) = p(stl<real>::rng());
   }
 };
 

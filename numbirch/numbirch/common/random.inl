@@ -94,4 +94,16 @@ NUMBIRCH_KEEP Array<real,2> standard_gaussian(const int m, const int n) {
   return X;
 }
 
+NUMBIRCH_KEEP Array<real,1> standard_uniform(const int n) {
+  Array<real,1> x(make_shape(n));
+  for_each(n, standard_uniform_functor(buffer(x), stride(x)));
+  return x;
+}
+
+NUMBIRCH_KEEP Array<real,2> standard_uniform(const int m, const int n) {
+  Array<real,2> X(make_shape(m, n));
+  for_each(m, n, standard_uniform_functor(buffer(X), stride(X)));
+  return X;
+}
+
 }
