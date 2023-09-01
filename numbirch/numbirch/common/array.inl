@@ -59,7 +59,7 @@ struct single_functor {
   const int ldA;
 
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
-    get(A, i, j, ldA) = (i == get(k) - 1 && j == get(l) - 1) ? get(x) : 0;
+    get(A, i, j, ldA) = (i == get(k) && j == get(l)) ? get(x) : 0;
   }
 };
 template<class T, class U, class V, class W>
@@ -105,7 +105,7 @@ struct gather_functor {
   const int ldC;
 
   NUMBIRCH_HOST_DEVICE auto operator()(const int i, const int j) const {
-    get(C, i, j, ldC) = get(A, get(I, i, j, ldI) - 1, get(J, i, j, ldJ) - 1, ldA);
+    get(C, i, j, ldC) = get(A, get(I, i, j, ldI), get(J, i, j, ldJ), ldA);
   }
 };
 template<class T, class U, class V, class W>
@@ -123,8 +123,8 @@ struct scatter_functor {
   const int ldC;
 
   NUMBIRCH_HOST_DEVICE void operator()(const int i, const int j) const {
-    int k = get(I, i, j, ldI) - 1;
-    int l = get(J, i, j, ldJ) - 1;
+    int k = get(I, i, j, ldI);
+    int l = get(J, i, j, ldJ);
     assert(0 <= k);
     assert(0 <= l);
     auto& c = get(C, k, l, ldC);

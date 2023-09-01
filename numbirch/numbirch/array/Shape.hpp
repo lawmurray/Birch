@@ -167,10 +167,10 @@ public:
   }
 
   Shape<1> range(const std::pair<int,int>& range) const {
-    assert(1 <= range.first && range.first <= n &&
+    assert(0 <= range.first && range.first < n &&
         "start of range out of bounds");
     assert(range.second <= n && "end of range out of bounds");
-    int len = std::max(0, range.second - range.first + 1);
+    int len = std::max(0, range.second - range.first);
     return Shape<1>(len, inc);
   }
 
@@ -183,8 +183,8 @@ public:
   }
 
   int64_t offset(const int i) const {
-    assert(1 <= i && i <= n && "index out of bounds");
-    return (i - 1)*int64_t(inc);
+    assert(0 <= i && i < n && "index out of bounds");
+    return i*int64_t(inc);
   }
 
   /**
@@ -330,29 +330,29 @@ public:
 
   Shape<2> range(const std::pair<int,int>& rows,
      const std::pair<int,int>& cols) const {
-    assert(1 <= rows.first && rows.first <= m &&
+    assert(0 <= rows.first && rows.first < m &&
         "start of row range out of bounds");
     assert(rows.second <= m && "end of row range out of bounds");
-    assert(1 <= cols.first && cols.first <= n &&
+    assert(0 <= cols.first && cols.first < n &&
         "start of column range out of bounds");
     assert(cols.second <= n && "end of column range out of bounds");
-    int r = std::max(0, rows.second - rows.first + 1);
-    int c = std::max(0, cols.second - cols.first + 1);
+    int r = std::max(0, rows.second - rows.first);
+    int c = std::max(0, cols.second - cols.first);
     return Shape<2>(r, c, ld);
   }
 
   Shape<1> range(const std::pair<int,int>& rows, const int j) const {
-    assert(1 <= rows.first && rows.first <= m &&
+    assert(0 <= rows.first && rows.first < m &&
         "start of row range out of bounds");
     assert(rows.second <= m && "end of row range out of bounds");
-    assert(1 <= j && j <= n && "column index out of bounds");
-    int r = std::max(0, rows.second - rows.first + 1);
+    assert(0 <= j && j < n && "column index out of bounds");
+    int r = std::max(0, rows.second - rows.first);
     return Shape<1>(r);
   }
 
   Shape<1> range(const int i, const std::pair<int,int>& cols) const {
-    assert(1 <= i && i <= m && "row index out of bounds");
-    assert(1 <= cols.first && cols.first <= n &&
+    assert(0 <= i && i < m && "row index out of bounds");
+    assert(0 <= cols.first && cols.first < n &&
         "start of column range out of bounds");
     assert(cols.second <= n && "end of column range out of bounds");
     int c = std::max(0, cols.second - cols.first + 1);
@@ -360,8 +360,8 @@ public:
   }
 
   Shape<0> range(const int i, const int j) const {
-    assert(1 <= i && i <= m && "row index out of bounds");
-    assert(1 <= j && j <= n && "column index out of bounds");
+    assert(0 <= i && i < m && "row index out of bounds");
+    assert(0 <= j && j < n && "column index out of bounds");
     return Shape<0>();
   }
 
@@ -379,9 +379,9 @@ public:
   }
 
   int64_t offset(const int i, const int j) const {
-    assert(1 <= i && i <= m && "row index out of bounds");
-    assert(1 <= j && j <= n && "column index out of bounds");
-    return (i - 1) + int64_t(ld)*(j - 1);
+    assert(0 <= i && i < m && "row index out of bounds");
+    assert(0 <= j && j < n && "column index out of bounds");
+    return i + int64_t(ld)*j;
   }
 
 private:
