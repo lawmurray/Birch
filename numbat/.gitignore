@@ -1,14 +1,12 @@
 /autom4te.cache/
-/docs/html/
 /aclocal.m4
+/common.am
 /compile
 /config.cache
 /config.guess
-/config.log
 /config.status
 /config.sub
 /configure
-/configure~
 /depcomp
 /install-sh
 /libtool
@@ -17,11 +15,6 @@
 /Makefile.in
 /missing
 /.autotools
-/m4/libtool.m4
-/m4/ltoptions.m4
-/m4/ltsugar.m4
-/m4/ltversion.m4
-/m4/lt~obsolete.m4
 .libs
 .deps
 .dirstamp
