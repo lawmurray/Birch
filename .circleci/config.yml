@@ -85,6 +85,7 @@ commands:
                   ca-certificates \
                   binutils \
                   elfutils \
+                  awk \
                   make \
                   autoconf \
                   automake \
