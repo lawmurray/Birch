@@ -261,7 +261,7 @@ jobs:
       - end_if_pull_request
 
   deploy:
-    executor: linux
+    executor: bench
     steps:
       - run:
           name: Trigger package update
