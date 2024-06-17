@@ -260,6 +260,17 @@ jobs:
       - codecov
       - end_if_pull_request
 
+  deploy:
+    executor: linux
+    steps:
+      - run:
+          name: Trigger package update
+          command: |
+              curl -X POST https://circleci.com/api/v2/project/gh/lawmurray/download.indii.org/pipeline \
+                --header "Circle-Token: $CIRCLE_TOKEN" \
+                --header "content-type: application/json" \
+                --data '{"branch": "main"}'
+
 workflows:
   all:
     jobs:
@@ -297,3 +308,12 @@ workflows:
                 - examples/VectorBorneDisease
           requires:
             - test-<< matrix.os >>
+
+      - deploy:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - example
