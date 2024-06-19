@@ -62,6 +62,8 @@ commands:
                     coreutils \
                     gnu-time \
                     lcov \
+                    autoconf \
+                    automake \
                     libtool \
                     flex \
                     boost \
