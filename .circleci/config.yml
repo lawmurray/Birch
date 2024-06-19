@@ -40,7 +40,6 @@ executors:
   mac:
     macos:
       xcode: 14.2.0
-    resource_class: macos.m1.medium.gen1
     environment:
       CODENAME: mac
       OMP_NUM_THREADS: 4
