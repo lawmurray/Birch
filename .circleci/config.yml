@@ -68,6 +68,7 @@ commands:
                     flex \
                     boost \
                     eigen \
+                    libyaml \
                     libomp \
                     cairo
                 echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
