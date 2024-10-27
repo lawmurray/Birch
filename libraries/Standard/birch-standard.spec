@@ -5,7 +5,7 @@ Summary: Standard library for the Birch probabilistic programming language
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: Apache-2.0
 Group: Development/Libraries/C and C++
-URL: https://birch.sh
+URL: https://birch-lang.org
 Source0: birch-standard-%{version}.tar.gz
 %if 0%{?suse_version}
 %endif

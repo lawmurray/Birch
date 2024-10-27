@@ -1,5 +1,5 @@
 site_name: 'Birch Documentation'
-site_url: https://docs.birch.sh
+site_url: https://docs.birch-lang.org
 site_description: 'An open source probabilistic programming language that combines automatic differentiation, automatic marginalization, automatic conjugacy, and a Sequential Monte Carlo (SMC) inference engine.'
 repo_url: https://github.com/lawmurray/Birch
 repo_name: lawmurray/Birch

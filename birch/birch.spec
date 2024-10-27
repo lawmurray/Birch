@@ -5,7 +5,7 @@ Summary: A universal probabilistic programming language
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: Apache-2.0
 Group: Development/Languages/C and C++
-URL: https://birch.sh
+URL: https://birch-lang.org
 Source0: %{name}-%{version}.tar.gz
 
 %if 0%{?suse_version} || 0%{?fedora} || 0%{?rhel_version} || 0%{?centos_version}

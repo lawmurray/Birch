@@ -43,7 +43,7 @@ function get_handler() -> Handler {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`with`](https://www.birch.sh/language/probability/) statement, which
+ *     [`with`](https://www.birch-lang.org/language/probability/) statement, which
  *     is hard-wired to call this on exit to restore the previous handler.
  */
 function set_handler(handler:Handler) {
@@ -61,7 +61,7 @@ function set_handler(handler:Handler) {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`with`](https://www.birch.sh/language/probability/) statement, which
+ *     [`with`](https://www.birch-lang.org/language/probability/) statement, which
  *     is hard-wired to call this on entry to set the new handler.
  */
 function swap_handler(handler:Handler) -> Handler {
@@ -83,7 +83,7 @@ function swap_handler(handler:Handler) -> Handler {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     [`~`](https://www.birch-lang.org/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
 function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
@@ -100,7 +100,7 @@ function handle_assume<Left,Right>(x:Left, p:Right) -> Left {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`~`](https://www.birch.sh/language/probability/) operator, which is
+ *     [`~`](https://www.birch-lang.org/language/probability/) operator, which is
  *     hard-wired to call this internally. This particular version is used
  *     when a newly declared variable is initialized with the `~` operator.
  */
@@ -118,7 +118,7 @@ function handle_assume<Right>(p:Right) -> Random<Right.Value> {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
+ *     [`<~`](https://www.birch-lang.org/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
 function handle_simulate<Left,Right>(x:Left, p:Right) -> Left {
@@ -134,7 +134,7 @@ function handle_simulate<Left,Right>(x:Left, p:Right) -> Left {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`<~`](https://www.birch.sh/language/probability/) operator, which is
+ *     [`<~`](https://www.birch-lang.org/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
 function handle_simulate<Right>(p:Right) -> Right.Value {
@@ -151,7 +151,7 @@ function handle_simulate<Right>(p:Right) -> Right.Value {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`~>`](https://www.birch.sh/language/probability/) operator, which is
+ *     [`~>`](https://www.birch-lang.org/language/probability/) operator, which is
  *     hard-wired to call this internally.
  */
 function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
@@ -165,7 +165,7 @@ function handle_observe<Left,Right>(x:Left, p:Right) -> Left {
  *
  * @attention
  *     Typically one does not call this directly, but rather uses the
- *     [`factor`](https://www.birch.sh/language/probability/) statement, which
+ *     [`factor`](https://www.birch-lang.org/language/probability/) statement, which
  *     is hard-wired to call this internally.
  */
 function handle_factor<Arg>(w:Arg) {

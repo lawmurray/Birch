@@ -50,7 +50,7 @@ A consistent code style is important for readability and maintainability. A good
 
 * To improve readability, put spaces around low precedence operators, and not around high precedence operators. For example, write `a*b + c`, or `a/b - c`, not `a * b + c` or `a/b-c`.
 
-* If a class or function should show up in the [documentation](https://docs.birch.sh), use a documentation comment (`/** ... */`) with the following template:
+* If a class or function should show up in the [documentation](https://docs.birch-lang.org), use a documentation comment (`/** ... */`) with the following template:
 
   ```
   /**

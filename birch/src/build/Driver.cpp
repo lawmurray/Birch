@@ -918,7 +918,7 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/init/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/init/" << std::endl;
     } else if (command.compare("audit") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -928,7 +928,7 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/audit/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/audit/" << std::endl;
     } else if (command.compare("bootstrap") == 0 ||
         command.compare("configure") == 0 ||
         command.compare("build") == 0 ||
@@ -1002,10 +1002,10 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/bootstrap/" << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/configure/" << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/build/" << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/install/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/bootstrap/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/configure/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/build/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/install/" << std::endl;
     } else if (command.compare("uninstall") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -1015,7 +1015,7 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/uninstall/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/uninstall/" << std::endl;
     } else if (command.compare("dist") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -1025,7 +1025,7 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/dist/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/dist/" << std::endl;
     } else if (command.compare("docs") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -1035,7 +1035,7 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/docs/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/docs/" << std::endl;
     } else if (command.compare("clean") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -1045,7 +1045,7 @@ void birch::Driver::help() {
       std::cout << std::endl;
       std::cout << "More information is available at:" << std::endl;
       std::cout << std::endl;
-      std::cout << "  https://docs.birch.sh/libraries/Standard/programs/clean/" << std::endl;
+      std::cout << "  https://docs.birch-lang.org/libraries/Standard/programs/clean/" << std::endl;
     } else if (command.compare("help") == 0) {
       std::cout << "Usage:" << std::endl;
       std::cout << std::endl;
@@ -1085,7 +1085,7 @@ void birch::Driver::help() {
     std::cout << std::endl;
     std::cout << "More information is available at:" << std::endl;
     std::cout << std::endl;
-    std::cout << "  https://docs.birch.sh/" << std::endl;
+    std::cout << "  https://docs.birch-lang.org/" << std::endl;
   }
   std::cout << std::endl;
 }

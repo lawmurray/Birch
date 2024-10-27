@@ -5,7 +5,7 @@ pkgver=0.0.0
 pkgrel=1
 pkgdesc="Standard library for the Birch probabilistic programming language"
 arch=('x86_64')
-url="https://birch.sh"
+url="https://birch-lang.org"
 license=('Apache-2.0')
 makedepends=('gcc' 'autoconf' 'automake' 'libtool' "birch>=$pkgver" "membirch>=$pkgver" "numbirch>=$pkgver" 'libyaml' 'boost' 'libcurl-compat' 'gzip')
 depends=("membirch>=$pkgver" "numbirch>=$pkgver" 'libyaml' 'boost')
