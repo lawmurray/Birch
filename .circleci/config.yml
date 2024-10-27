@@ -140,7 +140,7 @@ commands:
           name: Produce coverage report
           command: lcov --directory . --no-external --capture -o cov.info || echo
       - codecov/upload:
-          file: cov.info
+          files: cov.info
 
   build_cpp:
     description: Build a C++ package
