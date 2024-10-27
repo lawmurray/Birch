@@ -39,7 +39,7 @@ executors:
 
   mac:
     macos:
-      xcode: 16.0.0
+      xcode: 15.4.0
     environment:
       CODENAME: mac
       OMP_NUM_THREADS: 4
