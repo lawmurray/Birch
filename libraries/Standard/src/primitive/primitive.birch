@@ -444,7 +444,7 @@ function is_sorted<Type>(x:Type[_]) -> Boolean {
 function sort<Type>(x:Type[_]) -> Type[_] {
   let y <- x;
   cpp{{
-  std::sort(y.begin(), y.end());
+  std::stable_sort(y.begin(), y.end());
   }}
   return y;
 }

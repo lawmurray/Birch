@@ -23,6 +23,10 @@ public:
   using const_reference = const T&;
   using iterator_category = std::random_access_iterator_tag;
 
+  ArrayIterator() : buf(nullptr), shp(), pos(0) {
+    //
+  }
+
   explicit ArrayIterator(T* buf, const ArrayShape<D> shp,
       const difference_type pos) :
       buf(buf),
