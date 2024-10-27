@@ -5,7 +5,7 @@ Summary: Numerical kernels and copy-on-write arrays
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: Apache-2.0
 Group: Development/Libraries/C and C++
-URL: https://birch.sh
+URL: https://birch-lang.org
 Source0: %{name}-%{version}.tar.gz
 BuildRequires: gcc-c++ autoconf automake libtool eigen3-devel
 
@@ -29,7 +29,7 @@ Requires: %{name}-devel == %{version}
 %description devel-static
 Static libraries for Numbirch.
 
-%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 39
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 38
 
 %package -n lib%{name}-cuda-0_0_0
 Summary: Shared libraries for NumBirch with CUDA backend

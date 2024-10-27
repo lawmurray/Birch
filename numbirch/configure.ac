@@ -1,4 +1,4 @@
-AC_INIT([NumBirch], [0.0.0], [], [numbirch], [https://birch.sh])
+AC_INIT([NumBirch], [0.0.0], [], [numbirch], [https://birch-lang.org])
 AC_PREREQ([2.62])
 AC_LANG([C++])
 AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])
