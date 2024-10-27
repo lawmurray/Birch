@@ -39,13 +39,15 @@ executors:
 
   mac:
     macos:
-      xcode: 14.2.0
+      xcode: 16.0.0
     environment:
       CODENAME: mac
       OMP_NUM_THREADS: 4
       CXXFLAGS: -O0 -Wall
       MAKEFLAGS: -j8
       BIRCH_FLAGS: --unit=dir --jobs=1 --enable-verbose --disable-optimize --disable-static --disable-single
+      CPATH: /opt/homebrew/include
+      LIBRARY_PATH: /opt/homebrew/lib
     working_directory: /Users/distiller/mac
 
 commands:
@@ -71,7 +73,7 @@ commands:
                     libyaml \
                     libomp \
                     cairo
-                echo "export PATH=/usr/local/opt/gnu-time/libexec/gnubin:/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:\$PATH" >> $BASH_ENV
+                echo "export PATH=/opt/homebrew/opt/gnu-time/libexec/gnubin:/opt/homebrew/opt/flex/bin:/opt/homebrew/opt/bison/bin:\$PATH" >> $BASH_ENV
               else
                   zypper --non-interactive addrepo --no-gpgcheck "https://repo.mongodb.org/zypper/suse/15/mongodb-org/4.4/x86_64/" mongodb \
                   && zypper --non-interactive refresh \
@@ -117,10 +119,10 @@ commands:
               fi
               echo "export VERSION_SAFE=\`echo \$VERSION | sed -E 's/\./_/g'\`" >> $BASH_ENV
               echo "export PREFIX=$CIRCLE_WORKING_DIRECTORY" >> $BASH_ENV
-              echo "export PATH=\$PREFIX/bin:/usr/local/cuda/bin:\$PATH" >> $BASH_ENV
-              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:/usr/local/cuda/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
-              echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LD_LIBRARY_PATH" >> $BASH_ENV
-              echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:\$LIBRARY_PATH" >> $BASH_ENV
+              echo "export PATH=\$PREFIX/bin:\$PATH" >> $BASH_ENV
+              echo "export CPLUS_INCLUDE_PATH=\$PREFIX/include:\$CPLUS_INCLUDE_PATH" >> $BASH_ENV
+              echo "export LD_LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LD_LIBRARY_PATH" >> $BASH_ENV
+              echo "export LIBRARY_PATH=\$PREFIX/lib64:\$PREFIX/lib:\$LIBRARY_PATH" >> $BASH_ENV
               echo "export FORMAT=', \"real\": %e, \"user\": %U, \"system\": %S, \"memory\": %M, \"involuntary\": %c, \"voluntary\": %w'" >> $BASH_ENV
 
   end_if_pull_request:
