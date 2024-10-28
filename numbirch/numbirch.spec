@@ -67,7 +67,7 @@ export CPLUS_INCLUDE_PATH=/usr/local/cuda/include:/usr/local/include:$CPLUS_INCL
 export LIBRARY_PATH=/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:/usr/local/lib64:/usr/local/lib:$LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib/stubs:/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 
-%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 39
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 38
 mkdir -p cuda
 cd cuda
 %configure --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
@@ -85,7 +85,7 @@ cd ..
 
 %install
 
-%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 39
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 38
 cd cuda
 %make_install
 cd ..
@@ -117,7 +117,7 @@ cd ..
 %exclude %{_libdir}/lib%{name}-single.la
 %exclude %{_libdir}/lib%{name}.la
 
-%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 39
+%if 0%{?suse_version} <= 1550 && 0%{?fedora} <= 38
 
 %files -n lib%{name}-cuda-0_0_0
 %license LICENSE
