@@ -34,7 +34,7 @@ improvements, and will be linked in automatically if found:
 
 All Birch sources are in the same repository. Clone it:
 
-    git clone -b stable https://github.com/lawmurray/Birch.git
+    git clone https://github.com/lawmurray/Birch.git
 
 and change to the `Birch` directory:
 
