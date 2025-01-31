@@ -7,26 +7,26 @@ export LIBRARY_PATH := /usr/local/lib64:/usr/local/lib:$(LIBRARY_PATH)
 export LD_LIBRARY_PATH := /usr/local/lib64:/usr/local/lib:$(LD_LIBRARY_PATH)
 
 # disable link-time optimization, not working with CUDA builds
-export DEB_BUILD_MAINT_OPTIONS := optimize=-lto
+#export DEB_BUILD_MAINT_OPTIONS := optimize=-lto
 
 %:
 	dh $@ --builddir cuda
 	dh $@ --builddir eigen
 
 override_dh_auto_clean:
-	dh_auto_clean --builddir cuda
+#	dh_auto_clean --builddir cuda
 	dh_auto_clean --builddir eigen
 
 override_dh_auto_configure:
-	dh_auto_configure --builddir cuda -- --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
+#	dh_auto_configure --builddir cuda -- --disable-assert --enable-shared --enable-static --disable-eigen --enable-cuda
 	dh_auto_configure --builddir eigen -- --disable-assert --enable-shared --enable-static --enable-eigen --disable-cuda
 
 override_dh_auto_build:
-	dh_auto_build --builddir cuda
+#	dh_auto_build --builddir cuda
 	dh_auto_build --builddir eigen
 
 override_dh_auto_install:
-	dh_auto_install --builddir cuda
+#	dh_auto_install --builddir cuda
 	dh_auto_install --builddir eigen
 	find $(DESTDIR) -type f -name '*.la' -delete
 
@@ -34,4 +34,4 @@ override_dh_shlibdeps:
 	# fix "error: no dependency information found for... check if the library
 	# actually comes from a package" that arises from installing CUDA outside
 	# package ecosystem
-	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+#	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
