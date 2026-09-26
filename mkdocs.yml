@@ -9,19 +9,9 @@ theme:
   icon:
     repo: fontawesome/brands/github
   palette:
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to dark mode
-
-    # Dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to light mode
+    scheme: default
+    primary: white
+    accent: deep orange
 plugins:
   - search
 markdown_extensions:
