@@ -5,10 +5,8 @@ marginalization, automatic conditioning, automatic differentiation, and
 inference algorithms based on Sequential Monte Carlo (SMC). The Birch language
 transpiles to C++.
 
-See [https://birch-lang.org](https://birch-lang.org) for a gentle introduction, and
-[https://docs.birch-lang.org](https://docs.birch-lang.org) for reference documentation.
-
-[![lawmurray](https://circleci.com/gh/lawmurray/Birch.svg?style=shield)](https://circleci.com/gh/lawmurray/Birch) [![codecov](https://codecov.io/gh/lawmurray/Birch/graph/badge.svg)](https://codecov.io/gh/lawmurray/Birch)
+See [https://birch.indii.org](https://birch.indii.org) for a gentle introduction, and
+[https://birch-docs.indii.org](https://birch-docs.indii.org) for reference documentation.
 
 
 ## License
@@ -21,7 +19,7 @@ License. You may obtain a copy of the License at
 
 ## Getting started
 
-Binary packages may be available for your system, see [the website](https://birch-lang.org/getting-started/). If not, or if you have special requirements, you can install Birch from source. This requires:
+Binary packages may be available for your system, see [the website](https://birch.indii.org/getting-started/). If not, or if you have special requirements, you can install Birch from source. This requires:
 
   * GNU autoconf, automake, libtool, flex, and bison
   * [LibYAML](https://pyyaml.org/wiki/LibYAML)
