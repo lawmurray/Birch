@@ -96,7 +96,7 @@ std::string birch::escape_unicode(const std::string& str) {
     if (c <= 127) {
       buf << (char)c;
     } else {
-      buf << "\\u" << std::setfill('0') << std::setw(4) << std::hex << c;
+      buf << "\\u" << std::setfill('0') << std::setw(4) << std::hex << (int)c;
     }
   }
   return buf.str();
